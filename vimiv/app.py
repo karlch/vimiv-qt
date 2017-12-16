@@ -17,7 +17,7 @@ class Application(QApplication):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
 
-    @keybindings.add("quit", "q", "global")
+    @keybindings.add("q")
     @commands.register(instance="app")
     def quit(self):
         """Quit the QApplication and therefore exit."""

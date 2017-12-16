@@ -41,7 +41,7 @@ class Storage():
         self._paths = []
         self._index = 0
 
-    @keybindings.add("next", "n", "image")
+    @keybindings.add("n", mode="image")
     @commands.register(instance="impaths")
     def next(self):
         """Display the next currently loaded image."""
@@ -49,7 +49,7 @@ class Storage():
             self._index = (self._index + 1) % len(self._paths)
             signals.new_image.emit(self.current())
 
-    @keybindings.add("prev", "p", "image")
+    @keybindings.add("p", mode="image")
     @commands.register(instance="impaths")
     def prev(self):
         """Display the previous loaded image."""
@@ -57,8 +57,8 @@ class Storage():
             self._index = (self._index - 1) % len(self._paths)
             signals.new_image.emit(self.current())
 
-    @keybindings.add("goto --last", "G", "image")
-    @keybindings.add("goto", "g", "image")
+    @keybindings.add("G", mode="image", args=["--last"])
+    @keybindings.add("g", mode="image")
     @commands.argument("--last", action="store_true")
     @commands.register(instance="impaths")
     def goto(self, last=False):

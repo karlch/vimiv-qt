@@ -61,10 +61,10 @@ class ScrollableImage(QScrollArea):
         self.setWidget(Image(parent=self))
         self.setWidgetResizable(True)
 
-    @keybindings.add("scroll up", "k", "image")
-    @keybindings.add("scroll down", "j", "image")
-    @keybindings.add("scroll right", "l", "image")
-    @keybindings.add("scroll left", "h", "image")
+    @keybindings.add("k", mode="image", args=["up"])
+    @keybindings.add("j", mode="image", args=["down"])
+    @keybindings.add("l", mode="image", args=["right"])
+    @keybindings.add("h", mode="image", args=["left"])
     @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(instance="image")
     def scroll(self, direction):
@@ -147,8 +147,8 @@ class Image(QLabel):
             self._pm_original = QPixmap(path)
             self._scale_to_fit()
 
-    @keybindings.add("zoom out", "-", "image")
-    @keybindings.add("zoom in", "+", "image")
+    @keybindings.add("-", mode="image", args=["out"])
+    @keybindings.add("+", mode="image", args=["in"])
     @commands.argument("direction", type=argtypes.zoom)
     @commands.register(instance="pixmap")
     def zoom(self, direction):
@@ -165,10 +165,10 @@ class Image(QLabel):
         self._scale = width / self._pm_original.width()
         self.rescale()
 
-    @keybindings.add("scale --level=fit", "w", "image")
-    @keybindings.add("scale --level=1", "W", "image")
-    @keybindings.add("scale --level=fit-width", "e", "image")
-    @keybindings.add("scale --level=fit-height", "E", "image")
+    @keybindings.add("w", mode="image", args=["--level=fit"])
+    @keybindings.add("W", mode="image", args=["--level=1"])
+    @keybindings.add("e", mode="image", args=["--level=fit-width"])
+    @keybindings.add("E", mode="image", args=["--level=fit-height"])
     @commands.argument("level", optional=True, type=argtypes.image_scale)
     @commands.register(instance="pixmap")
     def scale(self, level):

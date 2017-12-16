@@ -41,7 +41,7 @@ class MainWindow(QWidget):
         b = bar.Bar()
         self.grid.addWidget(b, 1, 0, 1, 2)
 
-    @keybindings.add("fullscreen", "f", "global")
+    @keybindings.add("f")
     @commands.register(instance="mainwindow")
     def fullscreen(self):
         if self.isFullScreen():
