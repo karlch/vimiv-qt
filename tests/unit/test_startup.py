@@ -51,3 +51,13 @@ def test_init_paths_with_multiple_directories(mocker):
     assert startup.init_paths(["any"]) is None
     os.chdir.assert_called_once_with("dir1")
     logging.warning.assert_called_once()
+
+
+def test_init_directories(mocker):
+    mocker.patch("os.path.isdir", return_value=False)
+    mocker.patch("os.mkdir")
+    mocker.patch("vimiv.utils.xdg.get_vimiv_cache_dir", return_value="cache")
+    mocker.patch("vimiv.utils.xdg.get_vimiv_config_dir", return_value="config")
+    mocker.patch("vimiv.utils.xdg.get_vimiv_data_dir", return_value="data")
+    startup.init_directories()
+    os.mkdir.assert_called_with("data")
