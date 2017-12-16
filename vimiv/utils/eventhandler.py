@@ -30,7 +30,7 @@ def on_key_press(mode):
                 event: The emitted QKeyEvent.
             """
             bindings = keybindings.get(mode)
-            keyname = _keyevent_to_string(event)
+            keyname = keyevent_to_string(event)
             if keyname in bindings:
                 cmd = bindings[keyname]
                 commands.run(cmd)
@@ -44,7 +44,7 @@ def on_mouse_click(event):
     raise NotImplementedError
 
 
-def _keyevent_to_string(event):
+def keyevent_to_string(event):
     """Convert QKeyEvent to meaningful string.
 
     This gets the name of the main key and adds pressed modifiers via Mod+.
@@ -56,9 +56,9 @@ def _keyevent_to_string(event):
     """
     # Parse modifiers
     modmask2str = collections.OrderedDict([
-        (Qt.ControlModifier, "Ctrl"),
-        (Qt.AltModifier, "Alt"),
-        (Qt.MetaModifier, "Meta"),
+        (Qt.ControlModifier, "ctrl"),
+        (Qt.AltModifier, "alt"),
+        (Qt.MetaModifier, "meta"),
     ])
     modifiers = (Qt.Key_Control, Qt.Key_Alt, Qt.Key_Shift, Qt.Key_Meta,
                  Qt.Key_AltGr, Qt.Key_Super_L, Qt.Key_Super_R, Qt.Key_Hyper_L,
