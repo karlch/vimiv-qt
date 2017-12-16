@@ -1,0 +1,10 @@
+[run]
+source = vimiv
+omit =
+    */__init__.py
+
+[report]
+exclude_lines =
+    coverage: ignore
+    raise NotImplementedError
+    if __name__ == "__main__"
