@@ -7,6 +7,7 @@ Module Attributes:
 
 import collections
 
+from vimiv.commands import commands
 from vimiv.gui import statusbar
 from vimiv.utils import objreg
 
@@ -42,6 +43,8 @@ class Modes(collections.UserDict):
 modes = Modes()
 
 
+@commands.argument("mode")
+@commands.register()
 def enter(mode):
     """Enter a mode.
 
@@ -64,6 +67,8 @@ def enter(mode):
     widget.setFocus()
 
 
+@commands.argument("mode")
+@commands.register()
 def leave(mode):
     """Leave a mode.
 
