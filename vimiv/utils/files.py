@@ -5,6 +5,9 @@ import os
 
 from PyQt5.QtGui import QImageReader
 
+from vimiv.config import settings
+from vimiv.gui import statusbar
+
 
 def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
     """Wrapper around os.listdir.
@@ -78,3 +81,12 @@ def edit_supported(filename):
         filename: Name of file to check.
     """
     raise NotImplementedError
+
+
+@statusbar.module("{pwd}")
+def pwd():
+    """Print current working directory for the statusbar."""
+    wd = os.getcwd()
+    if settings.get_value("statusbar.collapse_home"):
+        wd = wd.replace(os.path.expanduser("~"), "~")
+    return wd

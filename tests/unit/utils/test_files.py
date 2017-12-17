@@ -111,3 +111,17 @@ def test_is_image():
 def test_is_not_image():
     QImageReader.canRead = MagicMock(return_value=False)
     assert not files.is_image("any")
+
+
+def test_pwd_no_collapse_home(mocker):
+    mocker.patch("os.getcwd", return_value="/home/foo/dir")
+    mocker.patch("os.path.expanduser", return_value="/home/foo")
+    mocker.patch("vimiv.config.settings.get_value", return_value=False)
+    assert files.pwd() == "/home/foo/dir"
+
+
+def test_pwd_collapse_home(mocker):
+    mocker.patch("os.getcwd", return_value="/home/foo/dir")
+    mocker.patch("os.path.expanduser", return_value="/home/foo")
+    mocker.patch("vimiv.config.settings.get_value", return_value=True)
+    assert files.pwd() == "~/dir"
