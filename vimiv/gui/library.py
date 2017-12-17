@@ -10,11 +10,15 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
-from vimiv.utils import objreg, libpaths, eventhandler
+from vimiv.utils import objreg, libpaths, eventhandler, modehandler
 
 
 class Library(QTreeView):
-    """Library widget."""
+    """Library widget.
+
+    Attributes:
+        _last_selected: Name of the path that was selected last.
+    """
 
     STYLESHEET = """
     QTreeView {
@@ -52,6 +56,8 @@ class Library(QTreeView):
     @objreg.register("library")
     def __init__(self):
         super().__init__()
+        self._last_selected = ""
+
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.setSelectionMode(QAbstractItemView.SingleSelection)
 
@@ -92,7 +98,13 @@ class Library(QTreeView):
         """
         path_index = self.selectionModel().selectedIndexes()[1]
         path = path_index.data()
-        commands.run("open %s" % (path))
+        commands.run("open %s --no-select-mode" % (path))
+        if path == self._last_selected:
+            modehandler.enter("image")
+            self.hide()
+            self._last_selected = ""
+        else:
+            self._last_selected = path
 
     def _on_paths_loaded(self, images, directories):
         """Fill library with paths when they were loaded.
