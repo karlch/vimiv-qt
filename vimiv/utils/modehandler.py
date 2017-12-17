@@ -60,8 +60,8 @@ def enter(mode):
     # Enter new mode
     modes[mode].active = True
     widget = objreg.get(mode)
-    widget.setFocus()
     widget.show()
+    widget.setFocus()
 
 
 def leave(mode):
