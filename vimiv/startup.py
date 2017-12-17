@@ -7,10 +7,11 @@ import logging.handlers
 import os
 
 import vimiv
+from vimiv import app
 from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings
 from vimiv.gui import mainwindow
-from vimiv.utils import files, impaths, xdg, modehandler, libpaths
+from vimiv.utils import xdg
 
 
 def run(argv):
@@ -32,16 +33,10 @@ def run(argv):
     configfile.parse(args)
     keyfile.parse(args)
     update_settings(args)
-    # Get paths
-    images = init_paths(args.paths)
     # Set up UI
     init_ui(args)
-    if images:
-        impaths.load(images)
-        modehandler.enter("image")
-    else:
-        libpaths.load(os.getcwd())
-        modehandler.enter("library")
+    # Open paths
+    app.open(args.paths)
     # Finalize
     logging.info("Startup completed")
 
@@ -109,32 +104,6 @@ def init_directories():
                       xdg.get_vimiv_data_dir()]:
         if not os.path.isdir(directory):
             os.mkdir(directory)
-
-
-def init_paths(paths):
-    """Initialize supported paths from commandline paths.
-
-    Returns a list of images if images were given. If only a directory was
-    passed, the current working directory is changed for the library.
-
-    Args:
-        paths: List of paths given to the command line.
-    Return:
-        images: List of images or None.
-    """
-    images, directories = files.get_supported(paths)
-    if images:
-        if directories:
-            logging.warning(
-                "Images and directories given as PATHS. Using images.")
-        os.chdir(os.path.dirname(os.path.abspath(images[0])))
-        return images
-    elif directories:
-        if len(directories) > 1:
-            logging.warning("Multiple directories given as PATHS. "
-                            "Using %s.", directories[0])
-        os.chdir(directories[0])
-    return None
 
 
 def init_ui(args):

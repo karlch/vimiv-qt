@@ -127,8 +127,6 @@ class Image(QLabel):
         impaths.signals.new_image.connect(self.open)
         self._scale = "fit"
 
-    @commands.argument("path", type=argtypes.existing_file)
-    @commands.register(instance="pixmap")
     def open(self, path):
         """Open an image and display it.
 

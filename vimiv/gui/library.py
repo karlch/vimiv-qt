@@ -10,7 +10,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
-from vimiv.utils import objreg, libpaths, eventhandler, impaths, modehandler
+from vimiv.utils import objreg, libpaths, eventhandler
 
 
 class Library(QTreeView):
@@ -92,12 +92,7 @@ class Library(QTreeView):
         """
         path_index = self.selectionModel().selectedIndexes()[1]
         path = path_index.data()
-        if os.path.isdir(path):
-            libpaths.load(path)
-        else:
-            impaths.load([path])
-            modehandler.enter("image")
-            self.hide()
+        commands.run("open %s" % (path))
 
     def _on_paths_loaded(self, images, directories):
         """Fill library with paths when they were loaded.
@@ -109,8 +104,6 @@ class Library(QTreeView):
         self.model().remove_all_rows()
         self._add_directories(directories)
         self._add_images(images)
-        if not impaths.current() and settings.get_value("library.expand"):
-            objreg.get("image").hide()
         self._select_row(0)
 
     def _add_directories(self, directories):

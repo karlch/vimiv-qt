@@ -39,6 +39,7 @@ def get_supported(paths):
     directories = []
     images = []
     for path in paths:
+        path = os.path.expanduser(path)
         if os.path.isdir(path):
             directories.append(path)
         elif is_image(path):
