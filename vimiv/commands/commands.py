@@ -6,14 +6,25 @@ Module Attributes:
 """
 
 import argparse
+import collections
 import shlex
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from vimiv.modes import modereg
 from vimiv.utils import objreg
 
 
-registry = {}
+class Registry(collections.UserDict):
+    """Dictionary to store commands of each mode."""
+
+    def __init__(self):
+        super().__init__()
+        for mode in modereg.modes:
+            self[mode] = {}
+
+
+registry = Registry()
 
 
 class Signals(QObject):
@@ -37,7 +48,7 @@ class CommandWarning(Exception):
     """Raised if a command wants to show the user a warning."""
 
 
-def run(text):
+def run(text, mode="global"):
     """Run a command given as string.
 
     Text is of the form:
@@ -45,16 +56,18 @@ def run(text):
 
     Args:
         text: The string to run.
+        mode: Mode in which the command should be run.
     """
     if not text:
         return
     split = shlex.split(text)
     cmdname = split[0]
     args = split[1:]
-    if cmdname not in registry:
-        signals.exited.emit(1, "%s: unknown command" % (cmdname))
+    if cmdname not in registry[mode]:
+        signals.exited.emit(
+            1, "%s: unknown command for mode %s" % (cmdname, mode))
     else:
-        cmd = registry[cmdname]
+        cmd = registry[mode][cmdname]
         try:
             cmd(args)
             signals.exited.emit(0, "")
@@ -91,7 +104,6 @@ class Command():
     """Skeleton for a command.
 
     Attributes:
-        args: Args class to store and parse command arguments.
         func: Corresponding executable to call.
         mode: Mode in which the command can be executed.
         name: Name of the command as string.
@@ -104,11 +116,10 @@ class Command():
         self.func = func
         self._instance = instance
         self.mode = mode
-        self.args = Args(name)
 
     def __call__(self, args):
         """Parse arguments and call func."""
-        parsed_args = self.args.parse_args(args)
+        parsed_args = self.func.vimiv_args.parse_args(args)
         kwargs = vars(parsed_args)
         if self._instance:
             obj = objreg.get(self._instance)
@@ -132,18 +143,8 @@ class argument:  # pylint: disable=invalid-name
         self._kwargs = kwargs
 
     def __call__(self, func):
-        cmd = self._get_command(func)
-        cmd.args.add_argument(self._argname, **self._kwargs)
+        func.vimiv_args.add_argument(self._argname, **self._kwargs)
         return func
-
-    def _get_command(self, func):
-        """Receive corresponding command from registry."""
-        funcname = func.__name__.lower().replace("_", "-")
-        if funcname not in registry:  # coverage: ignore
-            raise ValueError("@commands.argument got called before (below) "
-                             "@commands.register for %s" % (funcname))
-        cmd = registry[funcname]
-        return cmd
 
 
 class register:  # pylint: disable=invalid-name
@@ -162,6 +163,7 @@ class register:  # pylint: disable=invalid-name
 
     def __call__(self, func):
         name = func.__name__.lower().replace("_", "-")
+        func.vimiv_args = Args(name)
         cmd = Command(name, func, instance=self._instance, mode=self._mode)
-        registry[name] = cmd
+        registry[self._mode][name] = cmd
         return func
