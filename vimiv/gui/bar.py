@@ -44,7 +44,7 @@ class Bar(QWidget):
         modehandler.enter("command")
 
     @keybindings.add("escape", "leave-commandline", mode="command")
-    @commands.register(instance="bar")
+    @commands.register(instance="bar", mode="command")
     def leave_commandline(self):
         """Leave command mode."""
         self._stack.setCurrentWidget(self.statusbar)
