@@ -9,8 +9,8 @@ import os
 import vimiv
 from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings
-from vimiv.gui import mainwindow, statusbar, library
-from vimiv.utils import files, impaths, xdg, modehandler
+from vimiv.gui import mainwindow
+from vimiv.utils import files, impaths, xdg, modehandler, libpaths
 
 
 def run(argv):
@@ -40,10 +40,8 @@ def run(argv):
         impaths.load(images)
         modehandler.enter("image")
     else:
-        library.open(os.getcwd())
+        libpaths.load(os.getcwd())
         modehandler.enter("library")
-    # TODO Load library
-    statusbar.update()
     # Finalize
     logging.info("Startup completed")
 

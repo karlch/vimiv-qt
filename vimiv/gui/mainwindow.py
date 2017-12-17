@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 
 from vimiv.commands import commands
 from vimiv.config import styles, keybindings
-from vimiv.gui import image, bar
+from vimiv.gui import image, bar, library
 from vimiv.utils import objreg
 
 
@@ -31,6 +31,7 @@ class MainWindow(QWidget):
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
         self.init_bar()
         self.init_image()
+        self.init_library()
         styles.apply(self)
 
     def init_image(self):
@@ -40,6 +41,10 @@ class MainWindow(QWidget):
     def init_bar(self):
         b = bar.Bar()
         self.grid.addWidget(b, 1, 0, 1, 2)
+
+    def init_library(self):
+        lib = library.Library()
+        self.grid.addWidget(lib, 0, 0, 1, 1)
 
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")

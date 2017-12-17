@@ -39,6 +39,7 @@ class Bindings(collections.UserDict):
 _registry = {
     "global": Bindings(),
     "image": Bindings(),
+    "library": Bindings(),
     "command": Bindings(),
 }
 

@@ -129,7 +129,6 @@ class Image(QLabel):
         self._pm_original.fill(self._bg)
         self.setAlignment(Qt.AlignCenter)
         impaths.signals.new_image.connect(self.open)
-        self.show()
         self._scale = "fit"
 
     @commands.argument("path", type=argtypes.existing_file)

@@ -136,12 +136,9 @@ class StatusBar(QWidget):
 
         commands.signals.exited.connect(self._on_cmd_exited)
 
-    def update(self, mode="image"):
-        """Update the statusbar.
-
-        Args:
-            mode: Current mode which affects the text to display.
-        """
+    def update(self):
+        """Update the statusbar."""
+        mode = evaluate_modules("{mode}").lower()
         self.clear_message()
         for position in ["left", "center", "right"]:
             label = self[position]

@@ -34,6 +34,8 @@ class Modes(collections.UserDict):
         super().__init__()
         self["global"] = Mode("global")  # For keybindings
         self["image"] = Mode("image")
+        self["image"].active = True  # Default mode
+        self["library"] = Mode("library")
         self["command"] = Mode("command")
 
 
@@ -57,7 +59,9 @@ def enter(mode):
             modes[mode].last_mode = last_mode.name
     # Enter new mode
     modes[mode].active = True
-    objreg.get(mode).setFocus()
+    widget = objreg.get(mode)
+    widget.setFocus()
+    widget.show()
 
 
 def leave(mode):
