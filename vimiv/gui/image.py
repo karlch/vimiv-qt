@@ -92,10 +92,6 @@ class ScrollableImage(QScrollArea):
         self.widget().rescale()
         statusbar.update()  # Zoom level changes
 
-    def enter(self):
-        """Enter image mode."""
-        print("Entering image mode")
-
 
 class Image(QLabel):
     """QLabel to display a QPixmap.
