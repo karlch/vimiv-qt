@@ -3,7 +3,6 @@
 
 import argparse
 import logging
-import tempfile
 
 import pytest
 
@@ -42,14 +41,26 @@ def test_fail_geometry():
         argtypes.geometry("-100x200")
 
 
-def test_existing_file():
-    f = tempfile.NamedTemporaryFile()
-    assert f.name == argtypes.existing_file(f.name)
+def test_existing_file(mocker):
+    mocker.patch("os.path.isfile", return_value=True)
+    assert "any" == argtypes.existing_file("any")
 
 
-def test_fail_existing_file():
+def test_fail_existing_file(mocker):
+    mocker.patch("os.path.isfile", return_value=False)
     with pytest.raises(argparse.ArgumentTypeError, match="No file called"):
-        argtypes.existing_file("/foo/bar/baz/")
+        argtypes.existing_file("any")
+
+
+def test_existing_path(mocker):
+    mocker.patch("os.path.exists", return_value=True)
+    assert "any" == argtypes.existing_path("any")
+
+
+def test_fail_existing_path(mocker):
+    mocker.patch("os.path.exists", return_value=False)
+    with pytest.raises(argparse.ArgumentTypeError, match="No path called"):
+        argtypes.existing_path("any")
 
 
 def test_scroll_direction():
