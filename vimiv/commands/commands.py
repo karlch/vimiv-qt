@@ -63,9 +63,15 @@ def run(text, mode="global"):
     split = shlex.split(text)
     cmdname = split[0]
     args = split[1:]
-    if cmdname not in registry[mode]:
+    # Get all commands for mode
+    commands = registry[mode]
+    if mode in ["image", "library"]:
+        commands.update(registry["global"])
+    # Check if command exists
+    if cmdname not in commands:
         signals.exited.emit(
             1, "%s: unknown command for mode %s" % (cmdname, mode))
+    # Run
     else:
         cmd = registry[mode][cmdname]
         try:

@@ -152,13 +152,13 @@ class Library(QTreeView):
         row = [QStandardItem(elem) for elem in [index, name, size]]
         self.model().appendRow(row)
 
-    @keybindings.add("k", "move-lib up", mode="library")
-    @keybindings.add("j", "move-lib down", mode="library")
-    @keybindings.add("h", "move-lib left", mode="library")
-    @keybindings.add("l", "move-lib right", mode="library")
+    @keybindings.add("k", "scroll up", mode="library")
+    @keybindings.add("j", "scroll down", mode="library")
+    @keybindings.add("h", "scroll left", mode="library")
+    @keybindings.add("l", "scroll right", mode="library")
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="library")
-    def move_lib(self, direction):
+    @commands.register(instance="library", mode="library")
+    def scroll(self, direction):
         if direction == "up":
             index = self.moveCursor(self.MoveUp, Qt.NoModifier)
             self._select_index(index)
@@ -170,11 +170,11 @@ class Library(QTreeView):
         elif direction == "left":
             libpaths.load("..")
 
-    @keybindings.add("g", "goto-lib 1")
-    @keybindings.add("G", "goto-lib -1")
-    @commands.argument("number", type=int)
-    @commands.register(instance="library")
-    def goto_lib(self, row):
+    @keybindings.add("g", "goto 1")
+    @keybindings.add("G", "goto -1")
+    @commands.argument("row", type=int)
+    @commands.register(instance="library", mode="library")
+    def goto(self, row):
         """Command to select a specific row in the library.
 
         Args:

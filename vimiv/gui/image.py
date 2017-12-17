@@ -66,7 +66,7 @@ class ScrollableImage(QScrollArea):
     @keybindings.add("l", "scroll right", mode="image")
     @keybindings.add("h", "scroll left", mode="image")
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="image")
+    @commands.register(instance="image", mode="image")
     def scroll(self, direction):
         """Scroll the image.
 

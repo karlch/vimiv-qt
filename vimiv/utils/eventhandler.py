@@ -33,7 +33,7 @@ def on_key_press(mode):
             keyname = keyevent_to_string(event)
             if keyname in bindings:
                 cmd = bindings[keyname]
-                commands.run(cmd)
+                commands.run(cmd, mode)
             else:  # Allow default bindings
                 return key_press_event(obj, event)
         return inner
