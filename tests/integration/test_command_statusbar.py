@@ -21,7 +21,21 @@ def test_unkown_command_shows_error_message(mocker, qtbot, objregistry):
     qtbot.addWidget(sb)
     mocker.patch.object(sb, "message")
     commands.run("not_a_cmd")
-    sb.message.assert_called_once_with("not_a_cmd: unknown command", "Error")
+    sb.message.assert_called_once_with(
+        "not_a_cmd: unknown command for mode global", "Error")
+
+
+def test_unknown_command_in_other_mode_shows_error_message(
+        mocker, qtbot, objregistry):
+    @commands.register(mode="image")
+    def image():
+        pass
+    sb = statusbar.StatusBar()
+    qtbot.addWidget(sb)
+    mocker.patch.object(sb, "message")
+    commands.run("image", "library")
+    sb.message.assert_called_once_with(
+        "image: unknown command for mode library", "Error")
 
 
 def test_command_with_error_shows_error_message(mocker, qtbot, objregistry):
