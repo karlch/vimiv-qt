@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Tests for vimiv.utils.modehandler."""
 
-from vimiv.utils import modehandler
+from vimiv.modes import modehandler
 
 
 def test_enter_mode_without_active_mode(mocker, objregistry):
