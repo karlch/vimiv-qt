@@ -9,7 +9,7 @@ import os
 import vimiv
 from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings
-from vimiv.gui import mainwindow, statusbar
+from vimiv.gui import mainwindow, statusbar, library
 from vimiv.utils import files, impaths, xdg, modehandler
 
 
@@ -39,6 +39,9 @@ def run(argv):
     if images:
         impaths.load(images)
         modehandler.enter("image")
+    else:
+        library.open(os.getcwd())
+        modehandler.enter("library")
     # TODO Load library
     statusbar.update()
     # Finalize
@@ -96,7 +99,7 @@ def get_argparser():
     #                     help="Run in debug mode")
     parser.add_argument("--log-level", type=argtypes.loglevel, metavar="LEVEL",
                         help="Set log level to LEVEL", default="warning")
-    parser.add_argument("paths", nargs="*", type=argtypes.existing_file,
+    parser.add_argument("paths", nargs="*", type=argtypes.existing_path,
                         metavar="PATH", help="Paths to open")
     return parser
 

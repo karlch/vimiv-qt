@@ -73,6 +73,21 @@ def existing_file(value):
     return value
 
 
+def existing_path(value):
+    """Check if an argument value is an existing path.
+
+    The difference to existing_file above is that this allows directories.
+
+    Args:
+        value: Value given to commandline option as string.
+    Return:
+        Path to the file as string if it exists.
+    """
+    if not os.path.exists(os.path.expanduser(value)):
+        raise argparse.ArgumentTypeError("No path called '%s'" % (value))
+    return value
+
+
 def scroll_direction(value):
     """Check if an argument value is a valid scroll direction.
 
