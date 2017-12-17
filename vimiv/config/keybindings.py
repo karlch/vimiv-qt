@@ -8,7 +8,7 @@ Module Attributes:
 import collections
 
 
-def add(keybinding, mode="global", args=None):
+def add(keybinding, command, mode="global"):
     """Decorator to add a keybinding.
 
     Args:
@@ -17,9 +17,6 @@ def add(keybinding, mode="global", args=None):
         mode: Mode in which the keybinding is valid.
     """
     def decorator(function):
-        command = function.__name__.lower().replace("_", "-")
-        if args:
-            command = "%s %s" % (command, " ".join(args))
         _registry[mode][keybinding] = command
         def inside(*args, **kwargs):
             return function(*args, **kwargs)

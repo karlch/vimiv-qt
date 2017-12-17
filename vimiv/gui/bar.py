@@ -33,7 +33,7 @@ class Bar(QWidget):
 
         self.commandline.editingFinished.connect(self.leave_commandline)
 
-    @keybindings.add("colon")
+    @keybindings.add("colon", "command")
     @commands.argument("text", optional=True, default="")
     @commands.register(instance="bar")
     def command(self, text=""):
@@ -42,7 +42,7 @@ class Bar(QWidget):
         self.commandline.setText(":")
         modehandler.enter("command")
 
-    @keybindings.add("escape", mode="command")
+    @keybindings.add("escape", "leave-commandline", mode="command")
     @commands.register(instance="bar")
     def leave_commandline(self):
         """Leave command mode."""
