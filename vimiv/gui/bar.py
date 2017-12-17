@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import commandline, statusbar
-from vimiv.utils import objreg, modehandler
+from vimiv.modes import modehandler
+from vimiv.utils import objreg
 
 
 class Bar(QWidget):

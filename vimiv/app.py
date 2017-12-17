@@ -8,7 +8,8 @@ from PyQt5.QtWidgets import QApplication
 import vimiv
 from vimiv.config import keybindings
 from vimiv.commands import commands
-from vimiv.utils import objreg, impaths, libpaths, files, modehandler
+from vimiv.modes import modehandler
+from vimiv.utils import objreg, impaths, libpaths, files
 
 
 class Application(QApplication):

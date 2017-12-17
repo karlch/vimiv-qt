@@ -10,7 +10,8 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
-from vimiv.utils import objreg, libpaths, eventhandler, modehandler
+from vimiv.modes import modehandler
+from vimiv.utils import objreg, libpaths, eventhandler
 
 
 class Library(QTreeView):

@@ -6,7 +6,8 @@ import logging
 import os
 
 from vimiv.config import settings, styles
-from vimiv.utils import xdg, modehandler
+from vimiv.modes import modereg
+from vimiv.utils import xdg
 
 
 def parse(args):
@@ -93,8 +94,7 @@ def _update_setting(name, parser):
 def _add_statusbar_formatters(configsection):
     """Add optional statusbar formatters if they are in the config."""
     positions = ["left", "center", "right"]
-    modes = list(modehandler.modes)
-    possible = ["%s_%s" % (p, m) for p in positions for m in modes]
+    possible = ["%s_%s" % (p, m) for p in positions for m in modereg.modes]
     for name, value in configsection.items():
         if name in possible:
             settings.StrSetting("statusbar.%s" % (name), value)
