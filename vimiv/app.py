@@ -46,11 +46,29 @@ def open(paths, no_select_mode=False):  # pylint: disable=redefined-builtin
     images, directories = files.get_supported(paths)
     mode = ""
     if images:
-        os.chdir(os.path.dirname(os.path.abspath(images[0])))
-        impaths.load(images)
+        _open_images(images)
         mode = "image"
     elif directories:
         libpaths.load(directories[0])
         mode = "library"
     if mode and not no_select_mode:
         modehandler.enter(mode)
+
+
+def _open_images(images):
+    """Open a list of images.
+
+    If the list contains a single element, all images in the same directory are
+    opened. Otherwise the list is opened as is.
+
+    Args:
+        images: List of images.
+    """
+    os.chdir(os.path.dirname(os.path.abspath(images[0])))
+    index = 0
+    # Populate list of images in the same directory for only one path
+    if len(images) == 1:
+        first_image = images[0]
+        images, _ = files.get_supported(files.ls(os.getcwd()))
+        index = images.index(os.path.abspath(first_image))
+    impaths.load(images, index)
