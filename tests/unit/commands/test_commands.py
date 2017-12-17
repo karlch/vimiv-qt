@@ -47,3 +47,11 @@ def test_run_with_positional_and_optional_argument():
     cmd_mock.both.assert_called_once_with("baz", opt_arg="default")
     commands.run("both bar --opt_arg=foo")
     cmd_mock.both.assert_called_with("bar", opt_arg="foo")
+
+
+def test_run_command_with_different_mode():
+    @commands.register(mode="image")
+    def image():
+        cmd_mock.image()
+    commands.run("image", "image")
+    cmd_mock.image.assert_called_once()
