@@ -5,7 +5,7 @@ from vimiv.commands import commands
 from vimiv.gui import statusbar
 
 
-def test_command_updates_statusbar(mocker, qtbot, objregistry):
+def test_command_updates_statusbar(mocker, qtbot, cleansetup):
     @commands.register()
     def simple():
         pass
@@ -16,7 +16,7 @@ def test_command_updates_statusbar(mocker, qtbot, objregistry):
     sb.update.assert_called_once()
 
 
-def test_unkown_command_shows_error_message(mocker, qtbot, objregistry):
+def test_unkown_command_shows_error_message(mocker, qtbot, cleansetup):
     sb = statusbar.StatusBar()
     qtbot.addWidget(sb)
     mocker.patch.object(sb, "message")
@@ -26,7 +26,7 @@ def test_unkown_command_shows_error_message(mocker, qtbot, objregistry):
 
 
 def test_unknown_command_in_other_mode_shows_error_message(
-        mocker, qtbot, objregistry):
+        mocker, qtbot, cleansetup):
     @commands.register(mode="image")
     def image():
         pass
@@ -38,7 +38,7 @@ def test_unknown_command_in_other_mode_shows_error_message(
         "image: unknown command for mode library", "Error")
 
 
-def test_command_with_error_shows_error_message(mocker, qtbot, objregistry):
+def test_command_with_error_shows_error_message(mocker, qtbot, cleansetup):
     @commands.register()
     def error():
         raise commands.CommandError("Broken")
@@ -50,7 +50,7 @@ def test_command_with_error_shows_error_message(mocker, qtbot, objregistry):
 
 
 def test_command_with_wrong_arg_shows_error_message(mocker, qtbot,
-                                                    objregistry):
+                                                    cleansetup):
     @commands.register()
     def error():
         pass

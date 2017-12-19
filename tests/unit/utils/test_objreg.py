@@ -12,6 +12,6 @@ class Component:
         pass
 
 
-def test_is_registered(objregistry):
+def test_is_registered(cleansetup):
     Component()  # Register component
-    assert isinstance(objregistry.get("component-name"), Component)
+    assert isinstance(objreg.get("component-name"), Component)

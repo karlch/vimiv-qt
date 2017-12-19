@@ -4,13 +4,13 @@
 from vimiv.modes import modehandler
 
 
-def test_enter_mode_without_active_mode(mocker, objregistry):
+def test_enter_mode_without_active_mode(mocker, cleansetup):
     mocker.patch("vimiv.utils.objreg.get")
     modehandler.enter("image")
     assert modehandler.current() == "IMAGE"
 
 
-def test_store_last_mode_on_enter_mode(mocker, objregistry):
+def test_store_last_mode_on_enter_mode(mocker, cleansetup):
     mocker.patch("vimiv.utils.objreg.get")
     mocker.patch.object(modehandler, "get_active_mode",
                         return_value=modehandler.modes["image"])
@@ -19,7 +19,7 @@ def test_store_last_mode_on_enter_mode(mocker, objregistry):
     assert modehandler.modes["command"].last_mode == "image"
 
 
-def test_leave_mode(mocker, objregistry):
+def test_leave_mode(mocker, cleansetup):
     mocker.patch("vimiv.utils.objreg.get")
     mocker.patch.object(modehandler, "enter")
     modehandler.modes["command"].last_mode = "image"

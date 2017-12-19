@@ -6,8 +6,8 @@ import pytest
 from PyQt5.QtGui import QPixmap, QImageWriter
 
 from vimiv.commands import commands
-from vimiv.config import keybindings
-from vimiv.utils import objreg
+from vimiv.config import keybindings, settings
+from vimiv.utils import objreg, impaths
 
 
 @pytest.fixture
@@ -31,6 +31,15 @@ def cleansetup(mocker):
     """
     mocker.patch("vimiv.config.styles.apply")
     yield
+    # Disconnect any connected signals
+    try:
+        commands.signals.disconnect()
+        impaths.signals.disconnect()
+    # Fails if no signals were connected
+    except TypeError:
+        pass
     objreg.clear()
     commands.clear()
     keybindings.clear()
+    settings.reset()
+    assert not objreg._registry

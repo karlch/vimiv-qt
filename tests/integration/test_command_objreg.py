@@ -7,20 +7,19 @@ from vimiv.commands import commands
 from vimiv.utils import objreg
 
 
-class RunTest:
-    """Simple class to register a command associated with an object."""
+def test_run_cmd(mocker, cleansetup):
+    class RunTest:
+        """Simple class to register a command associated with an object."""
 
-    @objreg.register("test")
-    def __init__(self):
-        self.mock = Mock()
+        @objreg.register("test")
+        def __init__(self):
+            self.mock = Mock()
 
-    @commands.register(instance="test")
-    def run(self):
-        self.mock()
+        @commands.register(instance="test")
+        def run(self):
+            self.mock()
 
-
-def test_run_cmd(mocker, objregistry):
-    runtest = RunTest()  # Register
+    runtest = RunTest()  # Register in objreg
     mocker.patch("vimiv.gui.statusbar.StatusBar.update")
     commands.run("run")
     runtest.mock.assert_called_once()

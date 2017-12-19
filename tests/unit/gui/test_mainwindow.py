@@ -1,14 +1,25 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
+import pytest
+
 from vimiv.gui import mainwindow
 
 
-def test_toggle_fullscreen(mocker, qtbot, objregistry):
+@pytest.fixture
+def main_win(mocker, qtbot):
+    """Set up clean mainwindow."""
     mocker.patch.object(mainwindow.MainWindow, "init_bar")
     mocker.patch.object(mainwindow.MainWindow, "init_image")
     mw = mainwindow.MainWindow()
     qtbot.addWidget(mw)
-    mw.fullscreen()
-    assert mw.isFullScreen() is True
-    mw.fullscreen()
-    assert mw.isFullScreen() is False
+    yield mw
+
+
+@pytest.mark.usefixtures("cleansetup")
+class TestMainWindow():
+
+    def test_toggle_fullscreen(self, main_win):
+        main_win.fullscreen()
+        assert main_win.isFullScreen() is True
+        main_win.fullscreen()
+        assert main_win.isFullScreen() is False
