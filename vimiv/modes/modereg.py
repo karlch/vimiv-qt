@@ -7,6 +7,7 @@ Module Attributes:
 
 import collections
 
+
 class Mode():
     """Skeleton of a mode.
 
