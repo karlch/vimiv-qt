@@ -5,6 +5,8 @@ import pytest
 
 from PyQt5.QtGui import QPixmap, QImageWriter
 
+from vimiv.commands import commands
+from vimiv.config import keybindings
 from vimiv.utils import objreg
 
 
@@ -22,7 +24,13 @@ def tmpimage(tmpdir, qtbot):
 
 
 @pytest.fixture
-def objregistry():
-    """Clear registry automatically."""
-    yield objreg
+def cleansetup(mocker):
+    """Clean setup for the gui classes.
+
+    Patches applying styles and cleans up the registries when done.
+    """
+    mocker.patch("vimiv.config.styles.apply")
+    yield
     objreg.clear()
+    commands.clear()
+    keybindings.clear()
