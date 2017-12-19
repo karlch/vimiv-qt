@@ -1,7 +1,6 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Tests for vimiv.startup."""
 
-import logging
 import os
 
 from vimiv import startup
