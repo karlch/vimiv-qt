@@ -25,8 +25,12 @@ class Styles(collections.UserDict):
         super().__init__()
         self.current = "default"
 
-    def get_current(self):
-        return self[self.current]
+
+_styles = Styles()
+
+
+def get_current():
+    return _styles[_styles.current]
 
 
 class Style(collections.UserDict):
@@ -46,9 +50,6 @@ class Style(collections.UserDict):
         if not name.startswith("{"):
             name = "{%s}" % (name)
         super().__setitem__("%s" % (name), item)
-
-
-_styles = Styles()
 
 
 def parse():
@@ -78,7 +79,7 @@ def store(configsection):
 
 def replace_referenced_variables():
     """Replace referenced variables with the stored value."""
-    style = _styles.get_current()
+    style = get_current()
     iter_backup = dict(style)
     for option, value in iter_backup.items():
         if value in style:
@@ -93,14 +94,14 @@ def apply(obj, append=""):
         append: Extra string to append to the stylesheet.
     """
     sheet = obj.STYLESHEET + append
-    style = _styles.get_current()
+    style = get_current()
     for option, value in style.items():
         sheet = sheet.replace(option, value)
     obj.setStyleSheet(sheet)
 
 
 def get(name):
-    style = _styles.get_current()
+    style = get_current()
     return style["{%s}" % (name)]
 
 
@@ -166,3 +167,8 @@ def dump(name):
                 " set the style setting\n; in vimiv.conf to that name.\n")
         parser.write(f)
         f.write("; vim:ft=dosini")
+
+
+def clear():
+    """Delete all styles."""
+    _styles.clear()
