@@ -53,3 +53,9 @@ def get(mode):
 
 def items():
     return _registry.items()
+
+
+def clear():
+    """Clear all keybindings."""
+    for bindings in _registry.values():
+        bindings.clear()
