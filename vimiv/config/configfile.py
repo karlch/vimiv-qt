@@ -5,7 +5,7 @@ import configparser
 import logging
 import os
 
-from vimiv.config import settings, styles
+from vimiv.config import settings
 from vimiv.modes import modereg
 from vimiv.utils import xdg
 
@@ -69,13 +69,6 @@ def _read(files):
     # Try to update every single setting
     for name, _ in settings.items():
         _update_setting(name, parser)
-    # Store style settings
-    if "STYLE" in parser:
-        styles.store(parser["STYLE"])
-        styles.replace_referenced_variables()
-    # Optional statusbar settings
-    if "STATUSBAR" in parser:
-        _add_statusbar_formatters(parser["STATUSBAR"])
 
 
 def _update_setting(name, parser):

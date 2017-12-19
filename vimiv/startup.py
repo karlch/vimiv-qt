@@ -9,7 +9,7 @@ import os
 import vimiv
 from vimiv import app
 from vimiv.commands import argtypes
-from vimiv.config import configfile, keyfile, settings
+from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.utils import xdg
 
@@ -32,6 +32,7 @@ def run(argv):
     settings.init_defaults()
     configfile.parse(args)
     keyfile.parse(args)
+    styles.parse()
     update_settings(args)
     # Set up UI
     init_ui(args)
@@ -101,7 +102,8 @@ def init_directories():
     """Create vimiv cache, config and data directories."""
     for directory in [xdg.get_vimiv_cache_dir(),
                       xdg.get_vimiv_config_dir(),
-                      xdg.get_vimiv_data_dir()]:
+                      xdg.get_vimiv_data_dir(),
+                      xdg.join_vimiv_config("styles")]:
         if not os.path.isdir(directory):
             os.mkdir(directory)
 

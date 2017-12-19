@@ -279,7 +279,7 @@ def init_defaults():
     BoolSetting("search_case_sensitive", False)
     BoolSetting("incsearch", True)
     BoolSetting("copy_to_primary", False)
-    # recursive: no
+    StrSetting("style", "default")
 
     # Image
     BoolSetting("image.autoplay_animations", True)
