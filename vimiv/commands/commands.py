@@ -27,6 +27,15 @@ class Registry(collections.UserDict):
 registry = Registry()
 
 
+def clear():
+    """Clear all commands registered.
+
+    Used mainly to have a possibility to clean up in tests.
+    """
+    for dictionary in registry.values():
+        dictionary.clear()
+
+
 class Signals(QObject):
     """Class to store the qt signals for others to connect to."""
 
