@@ -38,7 +38,7 @@ class CommandRunner():
         count, cmdname, args = self._parse(text)
         try:
             cmd = commands.get(cmdname, mode)
-            cmd(args)
+            cmd(args, count=count)
             signals.exited.emit(0, "")
         except cmdexc.CommandNotFound as e:
             signals.exited.emit(1, str(e))

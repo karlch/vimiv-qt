@@ -81,25 +81,49 @@ class Command():
         func: Corresponding executable to call.
         mode: Mode in which the command can be executed.
         name: Name of the command as string.
+        count: Associated count. If it is not None, this count will be used as
+            default and passing other counts is supported by the command.
 
         _instance: Object to be passed to func as self argument if any.
     """
 
-    def __init__(self, name, func, instance=None, mode="global"):
+    def __init__(self, name, func, instance=None, mode="global", count=None):
         self.name = name
         self.func = func
         self._instance = instance
         self.mode = mode
+        self.count = count
 
-    def __call__(self, args):
-        """Parse arguments and call func."""
+    def __call__(self, args, count):
+        """Parse arguments and call func.
+
+        Args:
+            args: List of arguments for argparser to parse.
+            count: Count passed to the command.
+        """
         parsed_args = self.func.vimiv_args.parse_args(args)
+        parsed_count = self._parse_count(count)
         kwargs = vars(parsed_args)
+        # Add count for function to deal with
+        if parsed_count is not None:
+            kwargs["count"] = parsed_count
         if self._instance:
             obj = objreg.get(self._instance)
             self.func(obj, **kwargs)
         else:
             self.func(**kwargs)
+
+    def _parse_count(self, count):
+        """Parse given count."""
+        # Does not support count
+        if self.count is None:
+            return None
+        # Use default
+        elif count == "":
+            return self.count
+        # Use count given
+        else:
+            return int(count)
 
 
 class argument:  # pylint: disable=invalid-name
@@ -129,15 +153,19 @@ class register:  # pylint: disable=invalid-name
     Attributes:
         _instance: The object from the object registry to be used as "self".
         _mode: Mode in which the command can be executed.
+        _count: Associated count. If it is not None, this count will be used as
+            default and passing other counts is supported by the command.
     """
 
-    def __init__(self, instance=None, mode="global"):
+    def __init__(self, instance=None, mode="global", count=None):
         self._instance = instance
         self._mode = mode
+        self._count = count
 
     def __call__(self, func):
         name = func.__name__.lower().replace("_", "-")
         func.vimiv_args = Args(name)
-        cmd = Command(name, func, instance=self._instance, mode=self._mode)
+        cmd = Command(name, func, instance=self._instance, mode=self._mode,
+                      count=self._count)
         registry[self._mode][name] = cmd
         return func
