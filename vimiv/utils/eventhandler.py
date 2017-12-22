@@ -2,42 +2,78 @@
 """Handles key and mouse events."""
 
 import collections
+import string
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 
-
-from vimiv.commands import commands
+from vimiv.commands import runners
 from vimiv.config import keybindings
+from vimiv.modes import modehandler
 
 
-def on_key_press(mode):
-    """Decorator to handle keyPressEvent.
+class CountHandler(QTimer):
+    """Store and receive digits given by keypress.
 
-    Gets the stored keybindings for the corresponding mode and converts the
-    event to a meaningful keyname. If the keyname is in the stored bindings,
-    the corresponding command is called.
-
-    Args:
-        mode: The mode to check for keybindings.
+    Attributes:
+        _count: String containing all currently stored digits.
     """
-    def decorator(key_press_event):
-        """Decorator around the widgets keyPressEvent method."""
-        def inner(obj, event):
-            """Inner of the decorator.
 
-            Args:
-                obj: Corresponds to self in keyPressEvent.
-                event: The emitted QKeyEvent.
-            """
-            bindings = keybindings.get(mode)
-            keyname = keyevent_to_string(event)
-            if keyname in bindings:
-                cmd = bindings[keyname]
-                commands.run(cmd, mode)
-            else:  # Allow default bindings
-                return key_press_event(obj, event)
-        return inner
-    return decorator
+    def __init__(self):
+        super().__init__()
+        self._count = ""
+        self.setSingleShot(True)
+        self.setInterval(2000)
+        self.timeout.connect(self._clear_count)
+
+    def add_count(self, digit):
+        """Add one digit to the storage."""
+        self._count += digit
+        if self.isActive():  # Reset timeout when adding more digits
+            self.stop()
+        self.start()
+
+    def get_count(self):
+        """Receive the currently stored digits and clear storage."""
+        count = self._count
+        self._clear_count()
+        return count
+
+    def _clear_count(self):
+        self._count = ""
+        self.stop()
+
+
+class KeyHandler():
+    """Deal with keyPressEvent events for gui widgets.
+
+    This class is used by gui classes as first parent, second being some
+    QWidget, to handle the keyPressEvent slot.
+
+    Class Attributes:
+        count_handler: CountHandler object to store and receive digits.
+        runner: Runner for internal commands to run the bound commands.
+    """
+
+    count_handler = CountHandler()
+    runner = runners.CommandRunner()
+
+    def keyPressEvent(self, event):
+        """Handle key press event for the widget.
+
+        Args:
+            event: QKeyEvent that activated the keyPressEvent.
+        """
+        mode = modehandler.current().lower()
+        bindings = keybindings.get(mode)
+        keyname = keyevent_to_string(event)
+        if keyname in string.digits:
+            self.count_handler.add_count(keyname)
+        elif keyname in bindings:
+            count = self.count_handler.get_count()
+            cmd = bindings[keyname]
+            self.runner(count + cmd)
+        else:  # Default Qt bindings of parent object
+            super().keyPressEvent(event)
 
 
 def on_mouse_click(event):
