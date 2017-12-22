@@ -28,22 +28,28 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
-@commands.argument("no-select-mode", optional=True, action="store_true")
 @commands.argument("paths")
 @commands.register()
-def open(paths, no_select_mode=False):  # pylint: disable=redefined-builtin
-    """Open a list of paths.
+def open(path):  # pylint: disable=redefined-builtin
+    """Open a path.
 
-    If the paths contain images, these are opened in image mode. Otherwise if
-    the paths contain directories, the first directory is opened in the
-    library.
+    If the path is an image, it is opened in image mode. Otherwise if it is a
+    directory, it is opened in the library.
 
     Args:
-        paths: List of paths to open. A single path string is converted to a
-            list containing only this path.
+        path: The path as string.
     """
-    if isinstance(paths, str):
-        paths = [paths]
+    assert isinstance(path, str), "Path must be given as string."
+    open_paths([path])
+
+
+def open_paths(paths, select_mode=True):
+    """Open a list of paths possibly switching to a new mode.
+
+    Args:
+        paths: List of paths to open.
+        select_mode: If True, select mode according to paths given.
+    """
     images, directories = files.get_supported(paths)
     mode = "library"
     if images:
@@ -53,7 +59,7 @@ def open(paths, no_select_mode=False):  # pylint: disable=redefined-builtin
         libpaths.load(directories[0])
     else:
         libpaths.load(os.getcwd())
-    if mode and not no_select_mode:
+    if select_mode:
         modehandler.enter(mode)
 
 
@@ -66,12 +72,16 @@ def _open_images(images):
     Args:
         images: List of images.
     """
-    os.chdir(os.path.dirname(os.path.abspath(images[0])))
-    index = 0
+    image_directory = os.path.dirname(os.path.abspath(images[0]))
+    # Populate library if the directory has changed
+    if image_directory != os.getcwd():
+        os.chdir(image_directory)
+        libpaths.load(image_directory)
     # Populate list of images in the same directory for only one path
+    index = 0
     if len(images) == 1:
         first_image = os.path.abspath(os.path.basename(images[0]))
         images, _ = files.get_supported(files.ls(os.getcwd()))
         index = images.index(first_image)
+    # Load images
     impaths.load(images, index)
-    libpaths.load(os.path.dirname(images[0]))  # Populate library

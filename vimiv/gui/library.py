@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (QTreeView, QAbstractItemView, QStyledItemDelegate,
                              QSizePolicy)
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
+from vimiv import app
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
 from vimiv.modes import modehandler
@@ -99,7 +100,7 @@ class Library(QTreeView):
         """
         path_index = self.selectionModel().selectedIndexes()[1]
         path = path_index.data()
-        commands.run("open %s --no-select-mode" % (path))
+        app.open_paths([path], select_mode=False)  # We select mode later
         if path == self._last_selected:
             modehandler.enter("image")
             self.hide()

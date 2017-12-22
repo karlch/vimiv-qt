@@ -37,7 +37,7 @@ def run(argv):
     # Set up UI
     init_ui(args)
     # Open paths
-    app.open(args.paths)
+    app.open_paths(args.paths)
     # Finalize
     logging.info("Startup completed")
 
