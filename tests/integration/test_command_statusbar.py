@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Tests for the interaction between the commandline and the statusbar."""
 
-from vimiv.commands import commands
+from vimiv.commands import commands, cmdexc
 from vimiv.gui import statusbar
 
 
@@ -41,7 +41,7 @@ def test_unknown_command_in_other_mode_shows_error_message(
 def test_command_with_error_shows_error_message(mocker, qtbot, cleansetup):
     @commands.register()
     def error():
-        raise commands.CommandError("Broken")
+        raise cmdexc.CommandError("Broken")
     sb = statusbar.StatusBar()
     qtbot.addWidget(sb)
     mocker.patch.object(sb, "message")

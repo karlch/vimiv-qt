@@ -11,6 +11,7 @@ import shlex
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from vimiv.commands import cmdexc
 from vimiv.modes import modereg
 from vimiv.utils import objreg
 
@@ -45,18 +46,6 @@ class Signals(QObject):
 signals = Signals()
 
 
-class ArgumentError(Exception):
-    """Raised if a command was called with wrong arguments."""
-
-
-class CommandError(Exception):
-    """Raised if a command failed to run correctly."""
-
-
-class CommandWarning(Exception):
-    """Raised if a command wants to show the user a warning."""
-
-
 def run(text, mode="global"):
     """Run a command given as string.
 
@@ -86,10 +75,10 @@ def run(text, mode="global"):
         try:
             cmd(args)
             signals.exited.emit(0, "")
-        except (CommandError, ArgumentError) as e:
+        except (cmdexc.CommandError, cmdexc.ArgumentError) as e:
             message = "%s: %s" % (cmdname, str(e))
             signals.exited.emit(1, message)
-        except CommandWarning as w:
+        except cmdexc.CommandWarning as w:
             signals.exited.emit(2, str(w))
 
 
@@ -112,7 +101,7 @@ class Args(argparse.ArgumentParser):
         message = message.strip()
         message = " ".join(message.split())  # Remove multiple whitespace
         message = message.capitalize()
-        raise ArgumentError(message)
+        raise cmdexc.ArgumentError(message)
 
 
 class Command():
