@@ -15,7 +15,7 @@ from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, eventhandler
 
 
-class Library(QTreeView):
+class Library(eventhandler.KeyHandler, QTreeView):
     """Library widget.
 
     Attributes:
@@ -208,11 +208,12 @@ class Library(QTreeView):
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
 
-    @eventhandler.on_key_press("library")
-    def keyPressEvent(self, event):
-        """Call eventhandler for library mode."""
-        super().keyPressEvent(event)
-
+    # def keyPressEvent(self, event):
+    #     """Call eventhandler for library mode."""
+    #     keyhandler = objreg.get("keyhandler")
+    #     if not keyhandler(event):
+    #         super().keyPressEvent(event)
+    #
     def row(self):
         """Return the currently selected row."""
         selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns

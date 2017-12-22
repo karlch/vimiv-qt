@@ -8,7 +8,7 @@ from vimiv.config import styles
 from vimiv.utils import objreg, eventhandler
 
 
-class CommandLine(QLineEdit):
+class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar."""
 
     STYLESHEET = """
@@ -35,8 +35,3 @@ class CommandLine(QLineEdit):
             commands.run(text.lstrip(":"))
         elif text.startswith("/"):
             raise NotImplementedError("Search not implemented yet")
-
-    @eventhandler.on_key_press("command")
-    def keyPressEvent(self, event):
-        """Eventhandler parses keys, fallback to default."""
-        super().keyPressEvent(event)

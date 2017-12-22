@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.gui import image, bar, library
-from vimiv.utils import objreg
+from vimiv.utils import objreg, eventhandler
 
 
 class MainWindow(QWidget):
@@ -29,10 +29,14 @@ class MainWindow(QWidget):
         self.grid = QGridLayout(self)
         self.grid.setSpacing(0)
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
+        self.init_eventhandlers()
         self.init_bar()
         self.init_image()
         self.init_library()
         styles.apply(self)
+
+    def init_eventhandlers(self):
+        eventhandler.KeyHandler()
 
     def init_image(self):
         im = image.ScrollableImage()

@@ -11,7 +11,7 @@ from vimiv.gui import statusbar
 from vimiv.utils import eventhandler, impaths, objreg
 
 
-class ScrollableImage(QScrollArea):
+class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     """QScrollArea which contains the Image class to allow scrolling."""
 
     STYLESHEET = """
@@ -82,10 +82,6 @@ class ScrollableImage(QScrollArea):
         if direction in ["right", "down"]:
             step *= -1
         bar.setValue(bar.value() - step)
-
-    @eventhandler.on_key_press("image")
-    def keyPressEvent(self, event):
-        """Call eventhandler for image mode."""
 
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
