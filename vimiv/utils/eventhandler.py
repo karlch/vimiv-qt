@@ -66,9 +66,9 @@ class KeyHandler():
         mode = modehandler.current().lower()
         bindings = keybindings.get(mode)
         keyname = keyevent_to_string(event)
-        if keyname in string.digits:
+        if keyname and keyname in string.digits:
             self.count_handler.add_count(keyname)
-        elif keyname in bindings:
+        elif keyname and keyname in bindings:
             count = self.count_handler.get_count()
             cmd = bindings[keyname]
             self.runner(count + cmd)
