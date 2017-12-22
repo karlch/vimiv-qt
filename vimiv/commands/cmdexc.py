@@ -12,3 +12,7 @@ class CommandError(Exception):
 
 class CommandWarning(Exception):
     """Raised if a command wants to show the user a warning."""
+
+
+class CommandNotFound(Exception):
+    """Raised if a command does not exist for a specific mode."""

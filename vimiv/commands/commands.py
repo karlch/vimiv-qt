@@ -7,9 +7,6 @@ Module Attributes:
 
 import argparse
 import collections
-import shlex
-
-from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.commands import cmdexc
 from vimiv.modes import modereg
@@ -37,49 +34,22 @@ def clear():
         dictionary.clear()
 
 
-class Signals(QObject):
-    """Class to store the qt signals for others to connect to."""
-
-    exited = pyqtSignal(int, str)
-
-
-signals = Signals()
-
-
-def run(text, mode="global"):
-    """Run a command given as string.
-
-    Text is of the form:
-        command [positional_arg] [--optional_arg=value].
+def get(name, mode="global"):
+    """Get one command object.
 
     Args:
-        text: The string to run.
-        mode: Mode in which the command should be run.
+        name: Name of the command to look for.
+        mode: Mode in which to look for the command.
+    Return:
+        The Command object asserted with name and mode.
     """
-    if not text:
-        return
-    split = shlex.split(text)
-    cmdname = split[0]
-    args = split[1:]
-    # Get all commands for mode
     commands = registry[mode]
     if mode in ["image", "library"]:
         commands.update(registry["global"])
-    # Check if command exists
-    if cmdname not in commands:
-        signals.exited.emit(
-            1, "%s: unknown command for mode %s" % (cmdname, mode))
-    # Run
-    else:
-        cmd = registry[mode][cmdname]
-        try:
-            cmd(args)
-            signals.exited.emit(0, "")
-        except (cmdexc.CommandError, cmdexc.ArgumentError) as e:
-            message = "%s: %s" % (cmdname, str(e))
-            signals.exited.emit(1, message)
-        except cmdexc.CommandWarning as w:
-            signals.exited.emit(2, str(w))
+    if name not in commands:
+        raise cmdexc.CommandNotFound(
+            "%s: unknown command for mode %s" % (name, mode))
+    return commands[name]
 
 
 class Args(argparse.ArgumentParser):
