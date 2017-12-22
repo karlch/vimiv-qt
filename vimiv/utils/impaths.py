@@ -42,19 +42,27 @@ class Storage():
         self._index = 0
 
     @keybindings.add("n", "next", mode="image")
-    @commands.register(instance="impaths")
-    def next(self):
-        """Display the next currently loaded image."""
+    @commands.register(instance="impaths", count=1)
+    def next(self, count):
+        """Display the next currently loaded image.
+
+        Args:
+            count: How many images to jump forwards.
+        """
         if self._paths:
-            self._index = (self._index + 1) % len(self._paths)
+            self._index = (self._index + count) % len(self._paths)
             signals.new_image.emit(self.current())
 
     @keybindings.add("p", "prev", mode="image")
-    @commands.register(instance="impaths")
-    def prev(self):
-        """Display the previous loaded image."""
+    @commands.register(instance="impaths", count=1)
+    def prev(self, count):
+        """Display the previous loaded image.
+
+        Args:
+            count: How many images to jump backwards.
+        """
         if self._paths:
-            self._index = (self._index - 1) % len(self._paths)
+            self._index = (self._index - count) % len(self._paths)
             signals.new_image.emit(self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
