@@ -69,6 +69,9 @@ def _read(files):
     # Try to update every single setting
     for name, _ in settings.items():
         _update_setting(name, parser)
+    # Read additional statusbar formatters
+    if "STATUSBAR" in parser:
+        _add_statusbar_formatters(parser["STATUSBAR"])
 
 
 def _update_setting(name, parser):
@@ -85,7 +88,11 @@ def _update_setting(name, parser):
 
 
 def _add_statusbar_formatters(configsection):
-    """Add optional statusbar formatters if they are in the config."""
+    """Add optional statusbar formatters if they are in the config.
+
+    Args:
+        configsection: STATUSBAR Section in the config file.
+    """
     positions = ["left", "center", "right"]
     possible = ["%s_%s" % (p, m) for p in positions for m in modereg.modes]
     for name, value in configsection.items():
