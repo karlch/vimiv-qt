@@ -1,6 +1,5 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
-import abc
 import shlex
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -9,8 +8,8 @@ from vimiv.commands import commands, cmdexc
 from vimiv.modes import modehandler
 
 
-class Runner(QObject):
-    """Base class for command runner objects.
+class Signals(QObject):
+    """Signals used by command runner objects.
 
     Signals:
         exited: Emitted when a command exits.
@@ -18,12 +17,11 @@ class Runner(QObject):
 
     exited = pyqtSignal(int, str)
 
-    @abc.abstractmethod
-    def __call__(self, text):
-        """Run the command for a given string of text."""
+
+signals = Signals()
 
 
-class CommandRunner(Runner):
+class CommandRunner():
     """Runner for internal commands."""
 
     def __call__(self, text):
@@ -41,13 +39,13 @@ class CommandRunner(Runner):
         try:
             cmd = commands.get(cmdname, mode)
             cmd(args)
-            self.exited.emit(0, "")
+            signals.exited.emit(0, "")
         except cmdexc.CommandNotFound as e:
-            self.exited.emit(1, str(e))
+            signals.exited.emit(1, str(e))
         except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
-            self.exited.emit(1, "%s: %s" % (cmdname, str(e)))
+            signals.exited.emit(1, "%s: %s" % (cmdname, str(e)))
         except cmdexc.CommandWarning as w:
-            self.exited.emit(2, str(w))
+            signals.exited.emit(2, str(w))
 
     def _parse(self, text):
         """Parse given command text into count, name and arguments.

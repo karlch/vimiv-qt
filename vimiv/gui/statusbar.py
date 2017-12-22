@@ -11,7 +11,7 @@ Module Attributes:
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
-from vimiv.commands import commands
+from vimiv.commands import runners
 from vimiv.config import settings, styles
 from vimiv.gui import widgets
 from vimiv.utils import objreg
@@ -134,7 +134,7 @@ class StatusBar(QWidget):
 
         styles.apply(self)
 
-        commands.signals.exited.connect(self._on_cmd_exited)
+        runners.signals.exited.connect(self._on_cmd_exited)
 
     def update(self):
         """Update the statusbar."""
