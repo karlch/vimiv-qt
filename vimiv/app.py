@@ -45,13 +45,14 @@ def open(paths, no_select_mode=False):  # pylint: disable=redefined-builtin
     if isinstance(paths, str):
         paths = [paths]
     images, directories = files.get_supported(paths)
-    mode = ""
+    mode = "library"
     if images:
         _open_images(images)
         mode = "image"
     elif directories:
         libpaths.load(directories[0])
-        mode = "library"
+    else:
+        libpaths.load(os.getcwd())
     if mode and not no_select_mode:
         modehandler.enter(mode)
 
@@ -69,7 +70,8 @@ def _open_images(images):
     index = 0
     # Populate list of images in the same directory for only one path
     if len(images) == 1:
-        first_image = images[0]
+        first_image = os.path.abspath(os.path.basename(images[0]))
         images, _ = files.get_supported(files.ls(os.getcwd()))
-        index = images.index(os.path.abspath(first_image))
+        index = images.index(first_image)
     impaths.load(images, index)
+    libpaths.load(os.path.dirname(images[0]))  # Populate library
