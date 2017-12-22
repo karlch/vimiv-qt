@@ -157,3 +157,20 @@ def image_scale(value):
     if value in ["fit", "fit-width", "fit-height"]:
         return value
     return positive_float(value)
+
+
+def widget(value):
+    """Check if a value is a valid widget.
+
+    Allowed: "library"
+
+    Args:
+        value: Value given to command option as string.
+    Return:
+        The value if it was valid.
+    """
+    value = value.lower()
+    if value in ["library"]:
+        return value
+    else:
+        raise argparse.ArgumentTypeError("No widget called '%s'" % (value))

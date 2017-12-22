@@ -110,3 +110,14 @@ def test_image_scale_float(mocker):
     mocker.patch.object(argtypes, "positive_float")
     argtypes.image_scale("0.5")
     argtypes.positive_float.assert_called_once_with("0.5")
+
+
+def test_widget():
+    widgets = ["library"]
+    for w in widgets:
+        assert w == argtypes.widget(w)
+
+
+def test_fail_widget():
+    with pytest.raises(argparse.ArgumentTypeError, match="No widget"):
+        argtypes.widget("browser")

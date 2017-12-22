@@ -184,6 +184,12 @@ class Library(QTreeView):
         row = (row) % (self.model().rowCount() + 1) - 1
         self._select_row(row)
 
+    def toggle(self):
+        if self.isVisible():
+            self.hide()
+        else:
+            self.show()
+
     def _select_row(self, row):
         """Select a specific row in the library.
 

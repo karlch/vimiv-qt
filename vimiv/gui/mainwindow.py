@@ -8,7 +8,7 @@ Signals:
 from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QWidget, QGridLayout
 
-from vimiv.commands import commands
+from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.gui import image, bar, library
 from vimiv.utils import objreg
@@ -53,3 +53,10 @@ class MainWindow(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
+
+    @keybindings.add("O", "toggle library")
+    @commands.argument("widget", type=argtypes.widget)
+    @commands.register(instance="mainwindow")
+    def toggle(self, widget):
+        if widget == "library":
+            objreg.get("library").toggle()
