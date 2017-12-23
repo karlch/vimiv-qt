@@ -68,14 +68,16 @@ class KeyHandler():
         keyname = keyevent_to_string(event)
         if keyname and keyname in string.digits:
             self.count_handler.add_count(keyname)
-            if mode == "command":
-                super().keyPressEvent(event)  # Enter digits in command line
+            if mode == "command":  # Enter digits in command line
+                # super() is the parent Qt widget
+                super().keyPressEvent(event)  # pylint: disable=no-member
         elif keyname and keyname in bindings:
             count = self.count_handler.get_count()
             cmd = bindings[keyname]
             self.runner(count + cmd, mode)
         else:  # Default Qt bindings of parent object
-            super().keyPressEvent(event)
+            # super() is the parent Qt widget
+            super().keyPressEvent(event)  # pylint: disable=no-member
 
 
 def on_mouse_click(event):

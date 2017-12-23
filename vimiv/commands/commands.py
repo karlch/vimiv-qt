@@ -122,8 +122,7 @@ class Command():
         elif count == "":
             return self.count
         # Use count given
-        else:
-            return int(count)
+        return int(count)
 
 
 class argument:  # pylint: disable=invalid-name
