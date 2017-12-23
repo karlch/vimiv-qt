@@ -1,62 +1,56 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Tests for the interaction between the commandline and the statusbar."""
 
-from vimiv.commands import commands, cmdexc
+import pytest
+
+from vimiv.commands import commands, cmdexc, runners
 from vimiv.gui import statusbar
 
+@pytest.fixture
+def sb(qtbot, mocker, cleansetup):
+    """Set up statusbar widget and patch used methods."""
+    sbar = statusbar.StatusBar()
+    qtbot.addWidget(sbar)
+    mocker.patch.object(sbar, "message")
+    mocker.patch.object(sbar, "update")
+    yield sbar
 
-def test_command_updates_statusbar(mocker, qtbot, cleansetup):
+
+def test_command_updates_statusbar(sb):
     @commands.register()
     def simple():
         pass
-    sb = statusbar.StatusBar()
-    qtbot.addWidget(sb)
-    mocker.patch.object(sb, "update")
-    commands.run("simple")
+    runners.CommandRunner()("simple", "image")
     sb.update.assert_called_once()
 
 
-def test_unkown_command_shows_error_message(mocker, qtbot, cleansetup):
-    sb = statusbar.StatusBar()
-    qtbot.addWidget(sb)
-    mocker.patch.object(sb, "message")
-    commands.run("not_a_cmd")
+def test_unkown_command_shows_error_message(sb):
+    runners.CommandRunner()("not_a_cmd", "image")
     sb.message.assert_called_once_with(
-        "not_a_cmd: unknown command for mode global", "Error")
+        "not_a_cmd: unknown command for mode image", "Error")
 
 
-def test_unknown_command_in_other_mode_shows_error_message(
-        mocker, qtbot, cleansetup):
+def test_unknown_command_in_other_mode_shows_error_message(sb):
     @commands.register(mode="image")
     def image():
         pass
-    sb = statusbar.StatusBar()
-    qtbot.addWidget(sb)
-    mocker.patch.object(sb, "message")
-    commands.run("image", "library")
+    runners.CommandRunner()("image", "library")
     sb.message.assert_called_once_with(
         "image: unknown command for mode library", "Error")
 
 
-def test_command_with_error_shows_error_message(mocker, qtbot, cleansetup):
+def test_command_with_error_shows_error_message(sb):
     @commands.register()
     def error():
         raise cmdexc.CommandError("Broken")
-    sb = statusbar.StatusBar()
-    qtbot.addWidget(sb)
-    mocker.patch.object(sb, "message")
-    commands.run("error")
+    runners.CommandRunner()("error", "image")
     sb.message.assert_called_once_with("error: Broken", "Error")
 
 
-def test_command_with_wrong_arg_shows_error_message(mocker, qtbot,
-                                                    cleansetup):
+def test_command_with_wrong_arg_shows_error_message(sb):
     @commands.register()
     def error():
         pass
-    sb = statusbar.StatusBar()
-    qtbot.addWidget(sb)
-    mocker.patch.object(sb, "message")
-    commands.run("error --arg")
+    runners.CommandRunner()("error --arg", "image")
     sb.message.assert_called_once_with(
         "error: Unrecognized arguments: --arg", "Error")

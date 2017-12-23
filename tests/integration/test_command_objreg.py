@@ -3,7 +3,7 @@
 
 from unittest.mock import Mock
 
-from vimiv.commands import commands
+from vimiv.commands import commands, runners
 from vimiv.utils import objreg
 
 
@@ -21,5 +21,6 @@ def test_run_cmd(mocker, cleansetup):
 
     runtest = RunTest()  # Register in objreg
     mocker.patch("vimiv.gui.statusbar.StatusBar.update")
-    commands.run("run")
+    runner = runners.CommandRunner()
+    runner("run", "image")
     runtest.mock.assert_called_once()
