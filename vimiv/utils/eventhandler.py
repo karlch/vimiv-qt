@@ -71,7 +71,7 @@ class KeyHandler():
         elif keyname and keyname in bindings:
             count = self.count_handler.get_count()
             cmd = bindings[keyname]
-            self.runner(count + cmd)
+            self.runner(count + cmd, mode)
         else:  # Default Qt bindings of parent object
             super().keyPressEvent(event)
 

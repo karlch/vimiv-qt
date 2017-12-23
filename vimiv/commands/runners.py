@@ -6,7 +6,6 @@ import subprocess
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.commands import commands, cmdexc
-from vimiv.modes import modehandler
 
 
 class Signals(QObject):
@@ -25,7 +24,7 @@ signals = Signals()
 class CommandRunner():
     """Runner for internal commands."""
 
-    def __call__(self, text):
+    def __call__(self, text, mode):
         """Run internal command when called.
 
         Splits the given text into count, name and arguments. Then runs the
@@ -34,8 +33,8 @@ class CommandRunner():
 
         Args:
             text: String passed as command.
+            mode: Mode in which the command is supposed to run.
         """
-        mode = modehandler.current().lower()
         count, cmdname, args = self._parse(text)
         try:
             cmd = commands.get(cmdname, mode)
