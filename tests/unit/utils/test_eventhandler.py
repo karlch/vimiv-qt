@@ -6,6 +6,24 @@ from PyQt5.QtGui import QKeyEvent
 
 from vimiv.utils import eventhandler
 
+
+def test_count_handler_add_and_get_count(qtbot):
+    count_handler = eventhandler.CountHandler()
+    qtbot.addWidget(count_handler)
+    count_handler.add_count("2")
+    count_handler.add_count("3")
+    assert count_handler.get_count() == "23"
+
+
+def test_count_handler_clears_count(qtbot):
+    count_handler = eventhandler.CountHandler()
+    count_handler.setInterval(1)  # We do not want to wait 2s in test
+    qtbot.addWidget(count_handler)
+    with qtbot.waitSignal(count_handler.timeout, timeout=5):
+        count_handler.add_count("2")
+    assert count_handler.get_count() == ""
+
+
 def test_keyevent_to_string_for_lowercase_letter():
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.NoModifier, "a")
     assert eventhandler.keyevent_to_string(event) == "a"
