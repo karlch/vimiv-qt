@@ -57,3 +57,9 @@ def current():
     """Return the name of the currently active mode."""
     active_mode = get_active_mode()
     return active_mode.name.upper()
+
+
+def last():
+    """Return the name of the mode active before the current one."""
+    active_mode = get_active_mode()
+    return active_mode.last_mode

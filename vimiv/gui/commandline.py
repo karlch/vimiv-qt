@@ -3,13 +3,18 @@
 
 from PyQt5.QtWidgets import QLineEdit
 
-from vimiv.commands import commands, external
+from vimiv.commands import runners
 from vimiv.config import styles
+from vimiv.modes import modehandler
 from vimiv.utils import objreg, eventhandler
 
 
 class CommandLine(eventhandler.KeyHandler, QLineEdit):
-    """Commandline widget in the bar."""
+    """Commandline widget in the bar.
+
+    Attributes:
+        _runners: Dictionary containing the command runners.
+    """
 
     STYLESHEET = """
     QLineEdit {
@@ -24,14 +29,18 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @objreg.register("command")
     def __init__(self):
         super().__init__()
+        self._runners = {"command": runners.CommandRunner(),
+                         "external": runners.ExternalRunner()}
         self.returnPressed.connect(self._on_return_pressed)
         styles.apply(self)
 
     def _on_return_pressed(self):
         text = self.text()
         if text.startswith(":!"):
-            external.run(text.lstrip(":!"))
+            self._runners["external"](text.lstrip(":!"))
         elif text.startswith(":"):
-            commands.run(text.lstrip(":"))
+            # Run the command in the mode from which we entered COMMAND mode
+            mode = modehandler.last()
+            self._runners["command"](text.lstrip(":"), mode)
         elif text.startswith("/"):
             raise NotImplementedError("Search not implemented yet")
