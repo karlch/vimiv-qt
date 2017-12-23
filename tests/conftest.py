@@ -5,7 +5,7 @@ import pytest
 
 from PyQt5.QtGui import QPixmap, QImageWriter
 
-from vimiv.commands import commands
+from vimiv.commands import commands, runners
 from vimiv.config import keybindings, settings
 from vimiv.utils import objreg, impaths
 
@@ -33,7 +33,7 @@ def cleansetup(mocker):
     yield
     # Disconnect any connected signals
     try:
-        commands.signals.disconnect()
+        runners.signals.disconnect()
         impaths.signals.disconnect()
     # Fails if no signals were connected
     except TypeError:
