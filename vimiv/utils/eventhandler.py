@@ -68,6 +68,8 @@ class KeyHandler():
         keyname = keyevent_to_string(event)
         if keyname and keyname in string.digits:
             self.count_handler.add_count(keyname)
+            if mode == "command":
+                super().keyPressEvent(event)  # Enter digits in command line
         elif keyname and keyname in bindings:
             count = self.count_handler.get_count()
             cmd = bindings[keyname]
