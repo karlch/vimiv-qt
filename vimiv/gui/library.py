@@ -208,12 +208,6 @@ class Library(eventhandler.KeyHandler, QTreeView):
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
 
-    # def keyPressEvent(self, event):
-    #     """Call eventhandler for library mode."""
-    #     keyhandler = objreg.get("keyhandler")
-    #     if not keyhandler(event):
-    #         super().keyPressEvent(event)
-    #
     def row(self):
         """Return the currently selected row."""
         selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
