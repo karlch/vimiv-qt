@@ -174,3 +174,21 @@ def widget(value):
         return value
     else:
         raise argparse.ArgumentTypeError("No widget called '%s'" % (value))
+
+
+def command_history_direction(value):
+    """Check if a value is a valid command history direction.
+
+    Allowed: "next", "prev"
+
+    Args:
+        value: Value given to command option as string.
+    Return:
+        The value if it was valid.
+    """
+    value = value.lower()
+    if value in ["next", "prev"]:
+        return value
+    else:
+        raise argparse.ArgumentTypeError(
+            "Invalid history direction '%s'" % (value))

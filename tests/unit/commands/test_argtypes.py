@@ -121,3 +121,14 @@ def test_widget():
 def test_fail_widget():
     with pytest.raises(argparse.ArgumentTypeError, match="No widget"):
         argtypes.widget("browser")
+
+
+def test_command_history_direction():
+    directions = ["next", "prev"]
+    for d in directions:
+        assert d == argtypes.command_history_direction(d)
+
+
+def test_fail_command_history_direction():
+    with pytest.raises(argparse.ArgumentTypeError, match="Invalid history"):
+        argtypes.command_history_direction("other")
