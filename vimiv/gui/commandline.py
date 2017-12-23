@@ -13,7 +13,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Attributes:
-        _runners: Dictionary containing the command runners.
+        runners: Dictionary containing the command runners.
     """
 
     STYLESHEET = """
@@ -29,18 +29,18 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @objreg.register("command")
     def __init__(self):
         super().__init__()
-        self._runners = {"command": runners.CommandRunner(),
-                         "external": runners.ExternalRunner()}
+        self.runners = {"command": runners.CommandRunner(),
+                        "external": runners.ExternalRunner()}
         self.returnPressed.connect(self._on_return_pressed)
         styles.apply(self)
 
     def _on_return_pressed(self):
         text = self.text()
         if text.startswith(":!"):
-            self._runners["external"](text.lstrip(":!"))
+            self.runners["external"](text.lstrip(":!"))
         elif text.startswith(":"):
             # Run the command in the mode from which we entered COMMAND mode
             mode = modehandler.last()
-            self._runners["command"](text.lstrip(":"), mode)
+            self.runners["command"](text.lstrip(":"), mode)
         elif text.startswith("/"):
             raise NotImplementedError("Search not implemented yet")
