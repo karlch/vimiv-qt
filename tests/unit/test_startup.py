@@ -23,5 +23,8 @@ def test_init_directories(mocker):
     mocker.patch("vimiv.utils.xdg.get_vimiv_config_dir", return_value="config")
     mocker.patch("vimiv.utils.xdg.get_vimiv_data_dir", return_value="data")
     startup.init_directories()
-    # Only the last call is stored
-    os.mkdir.assert_called_with("config/styles")
+    # Check if all directories were created
+    os.mkdir.assert_any_call("cache")
+    os.mkdir.assert_any_call("config")
+    os.mkdir.assert_any_call("data")
+    os.mkdir.assert_any_call("config/styles")
