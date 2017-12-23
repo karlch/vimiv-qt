@@ -3,7 +3,6 @@
 
 import pytest
 
-from vimiv.commands import commands, external
 from vimiv.gui import commandline
 
 
@@ -19,14 +18,15 @@ def cmdline(qtbot):
 class TestCommandline():
 
     def test_run_internal_command(self, mocker, cmdline):
-        mocker.patch.object(commands, "run")
+        mocker.patch.object(cmdline, "runners")
+        mocker.patch("vimiv.modes.modehandler.last", return_value="image")
         cmdline.setText(":zoom in")
         cmdline.returnPressed.emit()
-        commands.run.assert_called_once_with("zoom in")
+        cmdline.runners["command"].assert_called_once_with("zoom in", "image")
 
 
     def test_run_external_command(self, mocker, cmdline):
-        mocker.patch.object(external, "run")
+        mocker.patch.object(cmdline, "runners")
         cmdline.setText(":!ls")
         cmdline.returnPressed.emit()
-        external.run.assert_called_once_with("ls")
+        cmdline.runners["external"].assert_called_once_with("ls")
