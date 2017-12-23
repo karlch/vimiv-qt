@@ -50,3 +50,4 @@ class Bar(QWidget):
         self._stack.setCurrentWidget(self.statusbar)
         self.commandline.setText("")
         modehandler.leave("command")
+        self.statusbar.update()
