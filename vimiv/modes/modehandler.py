@@ -56,6 +56,4 @@ def get_active_mode():
 def current():
     """Return the name of the currently active mode."""
     active_mode = get_active_mode()
-    if active_mode:
-        return active_mode.name.upper()
-    return ""
+    return active_mode.name.upper()
