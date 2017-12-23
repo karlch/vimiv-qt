@@ -158,30 +158,35 @@ class Library(eventhandler.KeyHandler, QTreeView):
     @keybindings.add("h", "scroll left", mode="library")
     @keybindings.add("l", "scroll right", mode="library")
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="library", mode="library")
-    def scroll(self, direction):
-        if direction == "up":
-            index = self.moveCursor(self.MoveUp, Qt.NoModifier)
-            self._select_index(index)
-        elif direction == "down":
-            index = self.moveCursor(self.MoveDown, Qt.NoModifier)
-            self._select_index(index)
-        elif direction == "right":
+    @commands.register(instance="library", mode="library", count=1)
+    def scroll(self, direction, count):
+        if direction == "right":
             self.activated.emit(self.selectionModel().currentIndex())
         elif direction == "left":
             libpaths.load("..")
+        else:
+            row = self.row()
+            if direction == "up":
+                row -= count
+            else:
+                row += count
+            self._select_row(row % self.model().rowCount())
 
     @keybindings.add("g", "goto 1")
     @keybindings.add("G", "goto -1")
     @commands.argument("row", type=int)
-    @commands.register(instance="library", mode="library")
-    def goto(self, row):
+    @commands.register(instance="library", mode="library", count=0)
+    def goto(self, row, count):
         """Command to select a specific row in the library.
 
         Args:
-            row: Number of the row to select. -1 is the last row.
+            row: Number of the row to select of no count is given.
+                -1 is the last row.
         """
-        row = (row) % (self.model().rowCount() + 1) - 1
+        row = count if count else row  # Prefer count
+        if row > 0:
+            row -= 1  # Start indexing at 1
+        row = (row) % (self.model().rowCount())
         self._select_row(row)
 
     def toggle(self):
