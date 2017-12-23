@@ -7,6 +7,8 @@ Module Attributes:
 
 import argparse
 import collections
+import inspect
+import logging
 
 from vimiv.commands import cmdexc
 from vimiv.modes import modereg
@@ -60,9 +62,8 @@ class Args(argparse.ArgumentParser):
 
         Args:
             cmdname: Name of the command for which the arguments are stored.
-            description: Description of the command for error messages.
         """
-        super().__init__(prog=cmdname, description=description)
+        super().__init__(prog=cmdname)
 
     def error(self, message):
         """Override error to raise an exception instead of calling sys.exit."""
@@ -83,16 +84,19 @@ class Command():
         name: Name of the command as string.
         count: Associated count. If it is not None, this count will be used as
             default and passing other counts is supported by the command.
+        description: Description of the command for help.
 
         _instance: Object to be passed to func as self argument if any.
     """
 
-    def __init__(self, name, func, instance=None, mode="global", count=None):
+    def __init__(self, name, func, instance=None, mode="global", count=None,
+                 description=""):
         self.name = name
         self.func = func
         self._instance = instance
         self.mode = mode
         self.count = count
+        self.description = description
 
     def __call__(self, args, count):
         """Parse arguments and call func.
@@ -163,8 +167,14 @@ class register:  # pylint: disable=invalid-name
 
     def __call__(self, func):
         name = func.__name__.lower().replace("_", "-")
+        try:
+            desc = inspect.getdoc(func).split("\n")[0]
+        except AttributeError:
+            desc = ""
+            logging.error("Command %s for %s is missing docstring.",
+                          name, func)
         func.vimiv_args = Args(name)
         cmd = Command(name, func, instance=self._instance, mode=self._mode,
-                      count=self._count)
+                      count=self._count, description=desc)
         registry[self._mode][name] = cmd
         return func

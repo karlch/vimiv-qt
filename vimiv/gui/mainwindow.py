@@ -49,6 +49,7 @@ class MainWindow(QWidget):
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")
     def fullscreen(self):
+        """Toggle fullscreen mode."""
         if self.isFullScreen():
             self.showNormal()
         else:
@@ -58,5 +59,10 @@ class MainWindow(QWidget):
     @commands.argument("widget", type=argtypes.widget)
     @commands.register(instance="mainwindow")
     def toggle(self, widget):
+        """Toggle the visibility of one widget.
+
+        Args:
+            widget: The widget to toggle.
+        """
         if widget == "library":
             objreg.get("library").toggle()

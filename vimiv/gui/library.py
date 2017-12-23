@@ -160,6 +160,11 @@ class Library(eventhandler.KeyHandler, QTreeView):
     @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(instance="library", mode="library", count=1)
     def scroll(self, direction, count):
+        """Scroll the library.
+
+        Args:
+            direction: One of "right", "left", "up", "down".
+        """
         if direction == "right":
             self.activated.emit(self.selectionModel().currentIndex())
         elif direction == "left":
