@@ -66,8 +66,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("l", "scroll right", mode="image")
     @keybindings.add("h", "scroll left", mode="image")
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="image", mode="image")
-    def scroll(self, direction):
+    @commands.register(instance="image", mode="image", count=1)
+    def scroll(self, direction, count):
         """Scroll the image.
 
         Args:
@@ -75,10 +75,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """
         if direction in ["left", "right"]:
             bar = self.horizontalScrollBar()
-            step = self.widget().width() * 0.05
+            step = self.widget().width() * 0.05 * count
         else:
             bar = self.verticalScrollBar()
-            step = self.widget().height() * 0.05
+            step = self.widget().height() * 0.05 * count
         if direction in ["right", "down"]:
             step *= -1
         bar.setValue(bar.value() - step)
@@ -139,8 +139,8 @@ class Image(QLabel):
     @keybindings.add("-", "zoom out", mode="image")
     @keybindings.add("+", "zoom in", mode="image")
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(instance="pixmap")
-    def zoom(self, direction):
+    @commands.register(instance="pixmap", count=1)
+    def zoom(self, direction, count):
         """Zoom the image.
 
         Args:
@@ -148,9 +148,9 @@ class Image(QLabel):
         """
         width = self.pixmap().width()
         if direction == "in":
-            width *= 1.1
+            width *= 1.1**count
         else:
-            width /= 1.1
+            width /= 1.1**count
         self._scale = width / self._pm_original.width()
         self.rescale()
 
@@ -159,8 +159,8 @@ class Image(QLabel):
     @keybindings.add("e", "scale --level=fit-width", mode="image")
     @keybindings.add("E", "scale --level=fit-height", mode="image")
     @commands.argument("level", optional=True, type=argtypes.image_scale)
-    @commands.register(instance="pixmap")
-    def scale(self, level):
+    @commands.register(instance="pixmap", count=1)
+    def scale(self, level, count):
         """Scale the image displayed.
 
         Args:
@@ -174,12 +174,12 @@ class Image(QLabel):
         elif level == "fit-height":
             self._scale_to_height()
         else:
-            self._scale_to_float(level)
+            self._scale_to_float(level * count)
         self._scale = level
 
     def rescale(self):
         """Rescale the image to a new scale."""
-        self.scale(self._scale)
+        self.scale(self._scale, 1)
 
     def _scale_to_fit(self):
         """Scale image so it fits the widget size."""

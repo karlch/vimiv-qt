@@ -27,7 +27,7 @@ class TestImage():
     def test_zoom_image(self, tmpimage, im):
         im.open(tmpimage)
         w_before = im.pixmap().width()
-        im.zoom("in")
+        im.zoom("in", 1)
         assert im.pixmap().width() > w_before
-        im.zoom("out")
+        im.zoom("out", 1)
         assert im.pixmap().width() == pytest.approx(w_before, rel=2)
