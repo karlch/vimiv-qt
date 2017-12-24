@@ -16,6 +16,7 @@ class CommandModel(QStandardItemModel):
         super().__init__()
         for name, command in commands.registry[mode].items():
             self._add_command(name, command.description.rstrip("."))
+        self.sort(0)
 
     def _add_command(self, name, description):
         row = [QStandardItem(name), QStandardItem(description)]

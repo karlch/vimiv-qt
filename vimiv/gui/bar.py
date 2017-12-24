@@ -32,7 +32,7 @@ class Bar(QWidget):
         self._stack.addWidget(self.commandline)
         self._stack.setCurrentWidget(self.statusbar)
 
-        self.commandline.editingFinished.connect(self.leave_commandline)
+        self.commandline.editingFinished.connect(self._on_editing_finished)
 
     @keybindings.add("colon", "command")
     @commands.argument("text", optional=True, default="")
@@ -47,7 +47,11 @@ class Bar(QWidget):
     @commands.register(instance="bar", mode="command")
     def leave_commandline(self):
         """Leave command mode."""
-        self._stack.setCurrentWidget(self.statusbar)
+        self.commandline.editingFinished.emit()
+
+    def _on_editing_finished(self):
+        """Leave command mode on the editingFinished signal."""
         self.commandline.setText("")
+        self._stack.setCurrentWidget(self.statusbar)
         modehandler.leave("command")
         self.statusbar.update()

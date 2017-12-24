@@ -36,7 +36,6 @@ class MainWindow(QWidget):
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
         self.init_image()
         self.init_library()
-        self.init_completion()
         self.init_bar()
         styles.apply(self)
 
@@ -45,16 +44,17 @@ class MainWindow(QWidget):
         self.grid.addWidget(im, 0, 1, 1, 1)
 
     def init_bar(self):
+        """Create bar widget and completion."""
+        compwidget = completionwidget.CompletionView(self)
+        self._overlays.append(compwidget)
         b = bar.Bar()
         self.grid.addWidget(b, 1, 0, 1, 2)
+        b.commandline.textEdited.connect(compwidget.model().filter)
+        b.commandline.editingFinished.connect(compwidget.model().reset)
 
     def init_library(self):
         lib = library.Library()
         self.grid.addWidget(lib, 0, 0, 1, 1)
-
-    def init_completion(self):
-        compwidget = completionwidget.CompletionView(self)
-        self._overlays.append(compwidget)
 
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")

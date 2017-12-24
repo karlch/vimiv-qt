@@ -3,7 +3,7 @@
 
 from PyQt5.QtWidgets import QSizePolicy
 
-from vimiv.completion import completionmodels
+from vimiv.completion import completionmodels, completionfilters
 from vimiv.config import styles, settings
 from vimiv.gui import widgets
 from vimiv.utils import objreg
@@ -49,6 +49,8 @@ class CompletionView(widgets.FlatTreeView):
     @objreg.register("completion")
     def __init__(self, parent):
         super().__init__(parent=parent)
+        self.proxy_model = completionfilters.TextFilter()
+        self.setModel(self.proxy_model)
 
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.setFixedHeight(settings.get_value("completion.height"))
@@ -63,6 +65,11 @@ class CompletionView(widgets.FlatTreeView):
         self.setGeometry(0, y, window_width, self.height())
 
     def init(self, mode):
-        model = completionmodels.CommandModel(mode)
-        self.setModel(model)
+        """Initialize completion for commands.
+
+        Args:
+            mode: Mode for which commands are filtered.
+        """
+        source_model = completionmodels.CommandModel(mode)
+        self.proxy_model.setSourceModel(source_model)
         self.show()
