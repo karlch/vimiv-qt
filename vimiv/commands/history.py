@@ -53,6 +53,7 @@ class History(collections.UserList):
         self._index = 0
         self._max_items = max_items
         self._temporary_element_stored = False
+        self._substr_matches = []
 
     def update(self, command):
         """Update history with a new command.
@@ -71,6 +72,7 @@ class History(collections.UserList):
         if self._temporary_element_stored:
             self.pop(i=0)
             self._temporary_element_stored = False
+            self._substr_matches = []
 
     def insert(self, command):
         """Insert a command into the history.
@@ -87,7 +89,7 @@ class History(collections.UserList):
     def cycle(self, direction, text):
         """Cycle through command history.
 
-        Called from the command line by the command-history command.
+        Called from the command line by the history command.
 
         Args:
             direction: One of "next", "prev".
@@ -105,3 +107,28 @@ class History(collections.UserList):
         else:
             self._index = (self._index - 1) % len(self)
         return self[self._index]
+
+    def substr_cycle(self, direction, text):
+        """Cycle through command history with substring matching.
+
+        Called from the command line by the history-substr-search command.
+
+        Args:
+            direction: One of "next", "prev".
+            text: Current text in the command line used as substring.
+        Return:
+            The received command string to set in the command line.
+        """
+        if not self:
+            return ""
+        if not self._temporary_element_stored:
+            self.insert(text)
+            self._temporary_element_stored = True
+            for command in self:
+                if text in command:
+                    self._substr_matches.append(command)
+        if direction == "next":
+            self._index = (self._index + 1) % len(self._substr_matches)
+        else:
+            self._index = (self._index - 1) % len(self._substr_matches)
+        return self._substr_matches[self._index]

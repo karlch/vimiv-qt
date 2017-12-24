@@ -55,19 +55,29 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         elif text.startswith("/"):
             raise NotImplementedError("Search not implemented yet")
 
-    @keybindings.add("up", "command-history next", mode="command")
-    @keybindings.add("down", "command-history prev", mode="command")
-    @keybindings.add("ctrl+p", "command-history next", mode="command")
-    @keybindings.add("ctrl+n", "command-history prev", mode="command")
+    @keybindings.add("ctrl+p", "history next", mode="command")
+    @keybindings.add("ctrl+n", "history prev", mode="command")
     @commands.argument("direction", type=argtypes.command_history_direction)
     @commands.register(instance="command", mode="command")
-    def command_history(self, direction):
-        """Select command from history in command line.
+    def history(self, direction):
+        """Cycle through command history.
 
         Args:
             direction: One of "next", "prev" defining the command to select.
         """
         self.setText(self._history.cycle(direction, self.text()))
+
+    @keybindings.add("up", "history-substr-search next", mode="command")
+    @keybindings.add("down", "history-substr-search prev", mode="command")
+    @commands.argument("direction", type=argtypes.command_history_direction)
+    @commands.register(instance="command", mode="command")
+    def history_substr_search(self, direction):
+        """Cycle through command history with substring matching.
+
+        Args:
+            direction: One of "next", "prev" defining the command to select.
+        """
+        self.setText(self._history.substr_cycle(direction, self.text()))
 
     def _write_history(self):
         """Write command history to file on quit."""

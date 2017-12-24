@@ -43,3 +43,11 @@ def test_clear_temporary_history_element():
     hist.cycle("next", "temporary")
     hist.update("second")
     assert "temporary" not in hist
+
+
+def test_substring_search_history():
+    hist = history.History(["first", "final", "useless"])
+    assert hist.substr_cycle("next", "fi") == "first"
+    assert hist.substr_cycle("next", "fi") == "final"
+    assert hist.substr_cycle("next", "fi") == "fi"
+    assert hist.substr_cycle("prev", "fi") == "final"
