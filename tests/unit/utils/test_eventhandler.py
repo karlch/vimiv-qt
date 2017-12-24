@@ -7,38 +7,21 @@ from PyQt5.QtGui import QKeyEvent
 from vimiv.utils import eventhandler
 
 
-def test_count_handler_add_and_get_count(qtbot):
-    count_handler = eventhandler.CountHandler()
-    qtbot.addWidget(count_handler)
-    count_handler.add_count("2")
-    count_handler.add_count("3")
-    assert count_handler.get_count() == "23"
+def test_temp_key_storage_add_and_get_text(qtbot):
+    storage = eventhandler.TempKeyStorage()
+    qtbot.addWidget(storage)
+    storage.add_text("a")
+    storage.add_text("1")
+    assert storage.get_text() == "a1"
 
 
-def test_count_handler_clears_count(qtbot):
-    count_handler = eventhandler.CountHandler()
-    count_handler.setInterval(1)  # We do not want to wait 2s in test
-    qtbot.addWidget(count_handler)
-    with qtbot.waitSignal(count_handler.timeout, timeout=5):
-        count_handler.add_count("2")
-    assert count_handler.get_count() == ""
-
-
-def test_partial_handler_add_and_get_key(qtbot):
-    partial_handler = eventhandler.PartialMatchHandler()
-    qtbot.addWidget(partial_handler)
-    partial_handler.add_key("g")
-    partial_handler.add_key("g")
-    assert partial_handler.get_keys() == "gg"
-
-
-def test_partial_handler_clears_keys(qtbot):
-    partial_handler = eventhandler.PartialMatchHandler()
-    partial_handler.setInterval(1)  # We do not want to wait 2s in test
-    qtbot.addWidget(partial_handler)
-    with qtbot.waitSignal(partial_handler.timeout, timeout=5):
-        partial_handler.add_key("g")
-    assert partial_handler.get_keys() == ""
+def test_temp_key_storage_clears_text(qtbot):
+    storage = eventhandler.TempKeyStorage()
+    storage.setInterval(1)  # We do not want to wait 2s in test
+    qtbot.addWidget(storage)
+    with qtbot.waitSignal(storage.timeout, timeout=5):
+        storage.add_text("g")
+    assert storage.get_text() == ""
 
 
 def test_keyevent_to_string_for_lowercase_letter():

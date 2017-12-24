@@ -4,75 +4,53 @@
 import collections
 import string
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QObject
 from PyQt5.QtGui import QKeySequence
 
 from vimiv.commands import runners
 from vimiv.config import keybindings
 from vimiv.modes import modehandler
+from vimiv.utils import objreg
 
 
-class CountHandler(QTimer):
-    """Store and receive digits given by keypress.
+class TempKeyStorage(QTimer):
+    """Storage to store and get keynames until timeout.
 
     Attributes:
-        _count: String containing all currently stored digits.
+        text: Currently stored keynames.
     """
 
     def __init__(self):
         super().__init__()
-        self._count = ""
         self.setSingleShot(True)
         self.setInterval(2000)
-        self.timeout.connect(self._clear_count)
+        self.text = ""
+        self.timeout.connect(self._clear_text)
 
-    def add_count(self, digit):
-        """Add one digit to the storage."""
-        self._count += digit
-        if self.isActive():  # Reset timeout when adding more digits
+    def add_text(self, text):
+        """Add text to storage."""
+        self.text += text
+        if self.isActive():  # Reset timeout
             self.stop()
         self.start()
 
-    def get_count(self):
-        """Receive the currently stored digits and clear storage."""
-        count = self._count
-        self._clear_count()
-        return count
+    def get_text(self):
+        """Get text from storage"""
+        text = self.text
+        self._clear_text()
+        return text
 
-    def _clear_count(self):
-        self._count = ""
+    def _clear_text(self):
+        self.text = ""
 
 
-class PartialMatchHandler(QTimer):
-    """Store and receive keynames that match a binding partially.
+class PartialHandler(QObject):
 
-    Attributes:
-        _keys: String containing all currently stored keynames.
-    """
-
+    @objreg.register("partialkeys")
     def __init__(self):
         super().__init__()
-        self._keys = ""
-        self.setSingleShot(True)
-        self.setInterval(2000)
-        self.timeout.connect(self.clear_keys)
-
-    def add_key(self, key):
-        """Add one key to the storage."""
-        self._keys += key
-        if self.isActive():  # Reset timeout when adding more keys
-            self.stop()
-        self.start()
-
-    def get_keys(self):
-        """Receive the currently stored keys and clear storage."""
-        keys = self._keys
-        self.clear_keys()
-        return keys
-
-    def clear_keys(self):
-        """Clear keys on timeout."""
-        self._keys = ""
+        self.count = TempKeyStorage()
+        self.keys = TempKeyStorage()
 
 
 class KeyHandler():
@@ -82,14 +60,12 @@ class KeyHandler():
     QWidget, to handle the keyPressEvent slot.
 
     Class Attributes:
-        count_handler: CountHandler object to store and receive digits.
         partial_handler: PartialMatchHandler object to store and receive
-            partially matching keys.
+            partially matching keys and count digits.
         runner: Runner for internal commands to run the bound commands.
     """
 
-    count_handler = CountHandler()
-    partial_handler = PartialMatchHandler()
+    partial_handler = PartialHandler()
     runner = runners.CommandRunner()
 
     def keyPressEvent(self, event):
@@ -99,22 +75,23 @@ class KeyHandler():
             event: QKeyEvent that activated the keyPressEvent.
         """
         mode = modehandler.current().lower()
-        keyname = self.partial_handler.get_keys() + keyevent_to_string(event)
+        stored_keys = self.partial_handler.keys.get_text()
+        keyname = stored_keys + keyevent_to_string(event)
         bindings = keybindings.get(mode)
         # Count
         if keyname and keyname in string.digits:
-            self.count_handler.add_count(keyname)
+            self.partial_handler.count.add_text(keyname)
             if mode == "command":  # Enter digits in command line
                 # super() is the parent Qt widget
                 super().keyPressEvent(event)  # pylint: disable=no-member
         # Complete match => run command
         elif keyname and keyname in bindings:
-            count = self.count_handler.get_count()
+            count = self.partial_handler.count.get_text()
             cmd = bindings[keyname]
             self.runner(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
-            self.partial_handler.add_key(keyname)
+            self.partial_handler.keys.add_text(keyname)
         # Nothing => run default Qt bindings of parent object
         else:
             # super() is the parent Qt widget
