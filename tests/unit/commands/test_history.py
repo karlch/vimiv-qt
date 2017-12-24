@@ -26,14 +26,10 @@ def test_never_exceed_history_max_elements():
 
 def test_cycle_through_history():
     hist = history.History(["first", "second", "third"])
-    first = hist.cycle("next", "temporary")
-    assert first == "first"
-    second = hist.cycle("next", "")
-    assert second == "second"
-    first = hist.cycle("prev", "")
-    assert first == "first"
-    temporary = hist.cycle("prev", "")
-    assert temporary == "temporary"
+    assert hist.cycle("next", "temporary") == "first"
+    assert hist.cycle("next", "") == "second"
+    assert hist.cycle("prev", "") == "first"
+    assert hist.cycle("prev", "") == "temporary"
 
 
 def test_do_not_fail_cycle_on_empty_history():
