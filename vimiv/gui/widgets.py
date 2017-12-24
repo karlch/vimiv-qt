@@ -1,8 +1,9 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Simple QtWidgets."""
 
-from PyQt5.QtCore import QMargins
-from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QGridLayout
+from PyQt5.QtCore import QMargins, Qt
+from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QGridLayout, QTreeView,
+                             QAbstractItemView)
 
 
 class SimpleGrid(QGridLayout):
@@ -30,3 +31,21 @@ class SimpleVBox(QVBoxLayout):
         super().__init__(parent)
         self.setSpacing(0)
         self.setContentsMargins(QMargins(0, 0, 0, 0))
+
+
+class FlatTreeView(QTreeView):
+    """QTreeView without expandable items."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
+
+        self.setUniformRowHeights(True)
+        self.setIndentation(0)
+        self.setHeaderHidden(True)
+        self.setAlternatingRowColors(True)
+        self.setItemsExpandable(False)
+        self.setExpandsOnDoubleClick(False)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)

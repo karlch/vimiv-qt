@@ -89,3 +89,13 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def _write_history(self):
         """Write command history to file on quit."""
         history.write(self._history)
+
+    def focusInEvent(self, event):
+        """Override focus in event to also show completion."""
+        super().focusInEvent(event)
+        objreg.get("completion").show()
+
+    def focusOutEvent(self, event):
+        """Override focus in event to also hide completion."""
+        super().focusInEvent(event)
+        objreg.get("completion").hide()

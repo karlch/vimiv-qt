@@ -4,18 +4,18 @@
 import os
 
 from PyQt5.QtCore import QItemSelectionModel, Qt
-from PyQt5.QtWidgets import (QTreeView, QAbstractItemView, QStyledItemDelegate,
-                             QSizePolicy)
+from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 from vimiv import app
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
+from vimiv.gui import widgets
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, eventhandler
 
 
-class Library(eventhandler.KeyHandler, QTreeView):
+class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     """Library widget.
 
     Attributes:
@@ -60,16 +60,6 @@ class Library(eventhandler.KeyHandler, QTreeView):
         super().__init__()
         self._last_selected = ""
 
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
-
-        self.setUniformRowHeights(True)
-        self.setIndentation(0)
-        self.setHeaderHidden(True)
-        self.setAlternatingRowColors(True)
-        self.setItemsExpandable(False)
-        self.setExpandsOnDoubleClick(False)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
 

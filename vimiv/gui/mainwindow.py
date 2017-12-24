@@ -10,12 +10,16 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
-from vimiv.gui import image, bar, library
+from vimiv.gui import image, bar, library, completionwidget
 from vimiv.utils import objreg
 
 
 class MainWindow(QWidget):
-    """QMainWindow which groups all the other widgets."""
+    """QMainWindow which groups all the other widgets.
+
+    Attributes:
+        _overlays: List of overlay widgets.
+    """
 
     STYLESHEET = """
     QWidget {
@@ -26,12 +30,14 @@ class MainWindow(QWidget):
     @objreg.register("mainwindow")
     def __init__(self):
         super().__init__()
+        self._overlays = []
         self.grid = QGridLayout(self)
         self.grid.setSpacing(0)
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
-        self.init_bar()
         self.init_image()
         self.init_library()
+        self.init_completion()
+        self.init_bar()
         styles.apply(self)
 
     def init_image(self):
@@ -45,6 +51,10 @@ class MainWindow(QWidget):
     def init_library(self):
         lib = library.Library()
         self.grid.addWidget(lib, 0, 0, 1, 1)
+
+    def init_completion(self):
+        compwidget = completionwidget.CompletionView(self)
+        self._overlays.append(compwidget)
 
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")
@@ -66,3 +76,13 @@ class MainWindow(QWidget):
         """
         if widget == "library":
             objreg.get("library").toggle()
+
+    def resizeEvent(self, event):
+        """Update resize event to resize overlays.
+
+        Args:
+            event: The QResizeEvent.
+        """
+        super().resizeEvent(event)
+        for overlay in self._overlays:
+            overlay.update_geometry(self.width(), self.height())
