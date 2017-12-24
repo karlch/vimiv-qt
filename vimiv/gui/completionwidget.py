@@ -93,3 +93,10 @@ class CompletionView(widgets.FlatTreeView):
         command_index = self.selectionModel().selectedIndexes()[0]
         command = command_index.data()
         self.activated.emit(command)
+
+    def resizeEvent(self, event):
+        """Resize columns on resize event."""
+        super().resizeEvent(event)
+        for i in range(self.model().columnCount()):
+            fraction = self.model().sourceModel().column_widths[i]
+            self.setColumnWidth(i, fraction * self.width())
