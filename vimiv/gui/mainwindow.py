@@ -49,8 +49,8 @@ class MainWindow(QWidget):
         self._overlays.append(compwidget)
         b = bar.Bar()
         self.grid.addWidget(b, 1, 0, 1, 2)
-        b.commandline.textEdited.connect(compwidget.model().filter)
         b.commandline.editingFinished.connect(compwidget.model().reset)
+        compwidget.activated.connect(b.commandline._on_completion)
 
     def init_library(self):
         lib = library.Library()

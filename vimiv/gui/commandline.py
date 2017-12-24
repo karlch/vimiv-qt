@@ -100,3 +100,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """Override focus in event to also hide completion."""
         super().focusInEvent(event)
         objreg.get("completion").hide()
+
+    def _on_completion(self, selected_command):
+        self.setText(":" + selected_command)

@@ -1,10 +1,12 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Completion widget in the bar."""
 
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
+from vimiv.commands import commands
 from vimiv.completion import completionmodels, completionfilters
-from vimiv.config import styles, settings
+from vimiv.config import styles, settings, keybindings
 from vimiv.gui import widgets
 from vimiv.utils import objreg
 
@@ -46,6 +48,8 @@ class CompletionView(widgets.FlatTreeView):
     }
     """
 
+    activated = pyqtSignal(str)
+
     @objreg.register("completion")
     def __init__(self, parent):
         super().__init__(parent=parent)
@@ -73,3 +77,16 @@ class CompletionView(widgets.FlatTreeView):
         source_model = completionmodels.CommandModel(mode)
         self.proxy_model.setSourceModel(source_model)
         self.show()
+
+    @keybindings.add("ctrl+k", "complete --inverse", mode="command")
+    @keybindings.add("ctrl+j", "complete", mode="command")
+    @commands.argument("inverse", optional=True, action="store_true")
+    @commands.register(instance="completion", mode="command")
+    def complete(self, inverse):
+        """Invoke command line completion."""
+        row = self.row() - 1 if inverse else self.row() + 1
+        row = row % self.model().rowCount()
+        self._select_row(row)
+        command_index = self.selectionModel().selectedIndexes()[0]
+        command = command_index.data()
+        self.activated.emit(command)

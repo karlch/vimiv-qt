@@ -71,4 +71,4 @@ class FlatTreeView(QTreeView):
     def row(self):
         """Return the currently selected row."""
         selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
-        return selected_indexes[0].row()
+        return selected_indexes[0].row() if selected_indexes else 0
