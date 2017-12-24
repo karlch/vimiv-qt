@@ -41,6 +41,11 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.textEdited.connect(self._on_text_edited)
         QCoreApplication.instance().aboutToQuit.connect(self._write_history)
 
+        compwidget = objreg.get("completion")
+        self.textEdited.connect(compwidget.model().filter)
+        self.editingFinished.connect(compwidget.model().reset)
+        compwidget.activated.connect(self._on_completion)
+
         styles.apply(self)
 
     def _on_return_pressed(self):
