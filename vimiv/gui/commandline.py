@@ -38,6 +38,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
         self.returnPressed.connect(self._on_return_pressed)
         self.editingFinished.connect(self._history.reset)
+        self.textEdited.connect(self._on_text_edited)
         QCoreApplication.instance().aboutToQuit.connect(self._write_history)
 
         styles.apply(self)
@@ -54,6 +55,12 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             self.runners["command"](text.lstrip(":"), mode)
         elif text.startswith("/"):
             raise NotImplementedError("Search not implemented yet")
+
+    def _on_text_edited(self, text):
+        if not text:
+            self.editingFinished.emit()
+        else:
+            self._history.reset()
 
     @keybindings.add("ctrl+p", "history next", mode="command")
     @keybindings.add("ctrl+n", "history prev", mode="command")
