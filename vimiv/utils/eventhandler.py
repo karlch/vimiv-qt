@@ -5,6 +5,7 @@ import collections
 import string
 
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QKeySequence
 
 from vimiv.commands import runners
 from vimiv.config import keybindings
@@ -150,4 +151,6 @@ def _get_keyname(event):
         return text
     if event.key() == Qt.Key_Colon:  # Required as : is the separator
         return "colon"
-    return event.text()
+    if event.text().isprintable():
+        return event.text()
+    return QKeySequence(event.key()).toString().lower()
