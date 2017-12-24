@@ -28,6 +28,7 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
+@keybindings.add("o", "command --text=open")
 @commands.argument("path")
 @commands.register()
 def open(path):  # pylint: disable=redefined-builtin

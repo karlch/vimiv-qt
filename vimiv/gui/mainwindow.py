@@ -63,7 +63,6 @@ class MainWindow(QWidget):
         else:
             self.showFullScreen()
 
-    @keybindings.add("O", "toggle library")
     @commands.argument("widget", type=argtypes.widget)
     @commands.register(instance="mainwindow")
     def toggle(self, widget):
