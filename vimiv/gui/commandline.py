@@ -43,6 +43,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
         compwidget = objreg.get("completion")
         self.textEdited.connect(compwidget.model().filter)
+        self.textEdited.connect(compwidget.selectionModel().clear)
         self.editingFinished.connect(compwidget.model().reset)
         compwidget.activated.connect(self._on_completion)
 
