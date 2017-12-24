@@ -8,8 +8,10 @@ from vimiv.gui import mainwindow
 @pytest.fixture
 def main_win(mocker, qtbot):
     """Set up clean mainwindow."""
-    mocker.patch.object(mainwindow.MainWindow, "init_bar")
-    mocker.patch.object(mainwindow.MainWindow, "init_image")
+    mocker.patch("vimiv.gui.image")
+    mocker.patch("vimiv.gui.library")
+    mocker.patch("vimiv.gui.bar")
+    mocker.patch("vimiv.gui.completionwidget")
     mw = mainwindow.MainWindow()
     qtbot.addWidget(mw)
     yield mw
