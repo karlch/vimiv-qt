@@ -7,8 +7,9 @@ from vimiv.gui import commandline
 
 
 @pytest.fixture
-def cmdline(qtbot):
+def cmdline(mocker, qtbot):
     """Set up commandline widget in qtbot."""
+    mocker.patch("vimiv.utils.objreg.get")  # Do not try to get completion
     my_cmdline = commandline.CommandLine()
     qtbot.addWidget(my_cmdline)
     yield my_cmdline
