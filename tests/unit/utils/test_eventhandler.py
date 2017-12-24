@@ -24,6 +24,23 @@ def test_count_handler_clears_count(qtbot):
     assert count_handler.get_count() == ""
 
 
+def test_partial_handler_add_and_get_key(qtbot):
+    partial_handler = eventhandler.PartialMatchHandler()
+    qtbot.addWidget(partial_handler)
+    partial_handler.add_key("g")
+    partial_handler.add_key("g")
+    assert partial_handler.get_keys() == "gg"
+
+
+def test_partial_handler_clears_keys(qtbot):
+    partial_handler = eventhandler.PartialMatchHandler()
+    partial_handler.setInterval(1)  # We do not want to wait 2s in test
+    qtbot.addWidget(partial_handler)
+    with qtbot.waitSignal(partial_handler.timeout, timeout=5):
+        partial_handler.add_key("g")
+    assert partial_handler.get_keys() == ""
+
+
 def test_keyevent_to_string_for_lowercase_letter():
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.NoModifier, "a")
     assert eventhandler.keyevent_to_string(event) == "a"
