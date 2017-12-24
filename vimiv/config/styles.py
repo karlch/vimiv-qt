@@ -134,6 +134,16 @@ def create_default():
     default["statusbar.info"] = "#96b5b4"
     default["statusbar.message_border"] = "2px solid"
     default["statusbar.padding"] = "4"
+    # Completion
+    default["completion.fg"] = "{statusbar.fg}"
+    default["completion.even.bg"] = "{statusbar.bg}"
+    default["completion.odd.bg"] = "{statusbar.bg}"
+    default["completion.selected.fg"] = "{library.selected.fg}"
+    default["completion.selected.bg"] = "{library.selected.bg}"
+    default["completion.scrollbar.width"] = "{image.scrollbar.width}"
+    default["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
+    default["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
+    default["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
 
 
 def read(name):
