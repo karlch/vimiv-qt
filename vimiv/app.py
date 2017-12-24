@@ -40,7 +40,7 @@ def open(path):  # pylint: disable=redefined-builtin
         path: The path as string.
     """
     assert isinstance(path, str), "Path must be given as string."
-    open_paths([path])
+    open_paths([os.path.expanduser(path)])
 
 
 def open_paths(paths, select_mode=True):

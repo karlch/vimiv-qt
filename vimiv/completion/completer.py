@@ -19,6 +19,8 @@ class Completer(QObject):
 
         _cmd: CommandLine object.
         _modelfunc: Current model function to avoid duplicate model setting.
+        _modelargs: Current arguments for model function to avoid duplicate
+            model setting.
         _mode: Mode before entering command line for commands.
     """
 
@@ -28,6 +30,7 @@ class Completer(QObject):
         self._cmd = objreg.get("command")
         self.proxy_model = completionfilters.TextFilter()
         self._modelfunc = None
+        self._modelargs = None
         self._mode = "image"
 
         self.parent().setModel(self.proxy_model)
@@ -65,11 +68,16 @@ class Completer(QObject):
     def _maybe_update_model(self, text):
         """Update model depending on text."""
         modelfunc, args = self._get_modelfunc(text)
-        if modelfunc != self._modelfunc:
+        if modelfunc != self._modelfunc or args != self._modelargs:
             self._set_model(modelfunc, *args)
 
     def _get_modelfunc(self, text):
         """Return the needed model function depending on text."""
+        text = text.lstrip(":").lstrip()
+        # Path completion
+        if text.startswith("open"):
+            return completionmodels.paths, [text.lstrip("open").lstrip()]
+        # Default: command completion
         return completionmodels.command, [self._mode]
 
     def _set_model(self, modelfunc, *args):
@@ -80,6 +88,7 @@ class Completer(QObject):
             args: List of arguments to pass to modelfunc.
         """
         self._modelfunc = modelfunc
+        self._modelargs = args
         self.proxy_model.setSourceModel(modelfunc(*args))
 
     def _on_completion(self, text):
