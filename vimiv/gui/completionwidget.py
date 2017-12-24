@@ -19,6 +19,7 @@ class CompletionView(widgets.FlatTreeView):
         alternate-background-color: {completion.odd.bg};
         outline: 0;
         border: 0px;
+        padding: {statusbar.padding};
     }
 
     QTreeView::item:selected, QTreeView::item:selected:hover {
