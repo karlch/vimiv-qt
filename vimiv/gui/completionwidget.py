@@ -84,7 +84,10 @@ class CompletionView(widgets.FlatTreeView):
     @commands.register(instance="completion", mode="command")
     def complete(self, inverse):
         """Invoke command line completion."""
-        row = self.row() - 1 if inverse else self.row() + 1
+        try:
+            row = self.row() - 1 if inverse else self.row() + 1
+        except IndexError:  # First trigger of completion
+            row = -1 if inverse else 0
         row = row % self.model().rowCount()
         self._select_row(row)
         command_index = self.selectionModel().selectedIndexes()[0]
