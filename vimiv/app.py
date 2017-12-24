@@ -3,6 +3,7 @@
 
 import os
 
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
@@ -28,7 +29,7 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
-@commands.argument("paths")
+@commands.argument("path")
 @commands.register()
 def open(path):  # pylint: disable=redefined-builtin
     """Open a path.
@@ -60,7 +61,10 @@ def open_paths(paths, select_mode=True):
     else:
         libpaths.load(os.getcwd())
     if select_mode:
-        modehandler.enter(mode)
+        # Use QTimer here as the command line still has to be left
+        # If we do not do this, the mode is entered first but immediately
+        # overridden by modehandler.leave("command")
+        QTimer.singleShot(0, lambda: modehandler.enter(mode))
 
 
 def _open_images(images):
