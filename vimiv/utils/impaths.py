@@ -68,13 +68,15 @@ class Storage():
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
     @commands.argument("index", type=int)
-    @commands.register(instance="impaths", mode="image")
-    def goto(self, index):
+    @commands.register(instance="impaths", mode="image", count=0)
+    def goto(self, index, count):
         """Display a specific loaded image.
 
         Args:
-            index: Index of the image in the paths list.
+            index: Index of the image to select of no count is given.
+                -1 is the last image.
         """
+        index = count if count else index
         self._index = index % (len(self._paths) + 1) - 1
         signals.new_image.emit(self.current())
 
