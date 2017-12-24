@@ -72,7 +72,8 @@ def _open_images(images):
     Args:
         images: List of images.
     """
-    image_directory = os.path.dirname(os.path.abspath(images[0]))
+    images = [os.path.abspath(image) for image in images]  # chdir later
+    image_directory = os.path.dirname(images[0])
     # Populate library if the directory has changed
     if image_directory != os.getcwd():
         os.chdir(image_directory)
