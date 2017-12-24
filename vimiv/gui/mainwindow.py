@@ -83,3 +83,7 @@ class MainWindow(QWidget):
             bottom -= self.bar.height()
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
+
+    def focusNextPrevChild(self, next):
+        """Override to do nothing as focusing is handled by modehandler."""
+        return False
