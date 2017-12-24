@@ -91,9 +91,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         history.write(self._history)
 
     def focusInEvent(self, event):
-        """Override focus in event to also show completion."""
+        """Override focus in event to also prepare completion."""
         super().focusInEvent(event)
-        objreg.get("completion").show()
+        mode = modehandler.last()
+        objreg.get("completion").init(mode)
 
     def focusOutEvent(self, event):
         """Override focus in event to also hide completion."""

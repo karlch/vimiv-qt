@@ -3,6 +3,7 @@
 
 from PyQt5.QtWidgets import QSizePolicy
 
+from vimiv.completion import completionmodels
 from vimiv.config import styles, settings
 from vimiv.gui import widgets
 from vimiv.utils import objreg
@@ -60,3 +61,8 @@ class CompletionView(widgets.FlatTreeView):
         """Rescale width when main window was resized."""
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
+
+    def init(self, mode):
+        model = completionmodels.CommandModel(mode)
+        self.setModel(model)
+        self.show()
