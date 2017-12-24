@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.gui import image, bar, library, completionwidget
+from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
@@ -66,10 +67,16 @@ class MainWindow(QWidget):
         """Toggle the visibility of one widget.
 
         Args:
-            widget: The widget to toggle.
+            widget: Name of the widget to toggle.
         """
-        if widget == "library":
-            objreg.get("library").toggle()
+        qwidget = objreg.get(widget)
+        if qwidget.isVisible():
+            qwidget.hide()
+            if qwidget.hasFocus():
+                modehandler.leave(widget)
+        else:
+            qwidget.show()
+
 
     def resizeEvent(self, event):
         """Update resize event to resize overlays.

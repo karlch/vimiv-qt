@@ -184,12 +184,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = (row) % (self.model().rowCount())
         self._select_row(row)
 
-    def toggle(self):
-        if self.isVisible():
-            self.hide()
-        else:
-            self.show()
-
     def resizeEvent(self, event):
         """Resize columns on resize event."""
         width = self.width()
