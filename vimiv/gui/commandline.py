@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """CommandLine widget in the bar."""
 
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import runners, history, commands, argtypes
@@ -56,12 +56,16 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
+        # Run commands in QTimer so the command line has been left when the
+        # command runs
         if prefix == ":" and command.startswith("!"):
-            self.runners["external"](command.lstrip(":!"))
+            QTimer.singleShot(
+                0, lambda: self.runners["external"](command.lstrip(":!")))
         elif prefix == ":":
             # Run the command in the mode from which we entered COMMAND mode
             mode = modehandler.last()
-            self.runners["command"](command, mode)
+            QTimer.singleShot(
+                0, lambda: self.runners["command"](command, mode))
         elif prefix == "/":
             raise NotImplementedError("Search not implemented yet")
 

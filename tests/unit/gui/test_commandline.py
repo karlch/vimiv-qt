@@ -18,16 +18,20 @@ def cmdline(mocker, qtbot):
 @pytest.mark.usefixtures("cleansetup")
 class TestCommandline():
 
-    def test_run_internal_command(self, mocker, cmdline):
+    def test_run_internal_command(self, mocker, cmdline, qtbot):
         mocker.patch.object(cmdline, "runners")
         mocker.patch("vimiv.modes.modehandler.last", return_value="image")
         cmdline.setText(":zoom in")
         cmdline.returnPressed.emit()
-        cmdline.runners["command"].assert_called_once_with("zoom in", "image")
+        def runner_called():
+            cmdline.runners["command"].assert_called_once_with("zoom in", "image")
+        qtbot.waitUntil(runner_called, timeout=100)
 
 
-    def test_run_external_command(self, mocker, cmdline):
+    def test_run_external_command(self, mocker, cmdline, qtbot):
         mocker.patch.object(cmdline, "runners")
         cmdline.setText(":!ls")
         cmdline.returnPressed.emit()
-        cmdline.runners["external"].assert_called_once_with("ls")
+        def runner_called():
+            cmdline.runners["external"].assert_called_once_with("ls")
+        qtbot.waitUntil(runner_called, timeout=100)
