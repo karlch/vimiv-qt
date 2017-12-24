@@ -16,6 +16,7 @@ disable=no-self-use,
         suppressed-message,
         unused-argument,
         arguments-differ,
+        duplicate-code,
 
 [BASIC]
 function-rgx=[a-z_][a-z0-9_]{2,50}$
