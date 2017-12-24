@@ -25,34 +25,30 @@ class MainWindow(QWidget):
     QWidget {
         background-color: {statusbar.bg};
     }
+
+    Attributes:
+        bar: bar.Bar object containing statusbar and command line.
     """
 
     @objreg.register("mainwindow")
     def __init__(self):
         super().__init__()
         self._overlays = []
+        # Create layout
         self.grid = QGridLayout(self)
         self.grid.setSpacing(0)
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
-        self.init_image()
-        self.init_library()
-        self.init_bar()
-        styles.apply(self)
-
-    def init_image(self):
+        # Create widgets and add to layout
         im = image.ScrollableImage()
+        lib = library.Library()
         self.grid.addWidget(im, 0, 1, 1, 1)
-
-    def init_bar(self):
-        """Create bar widget and completion."""
+        self.grid.addWidget(lib, 0, 0, 1, 1)
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
-        b = bar.Bar()
-        self.grid.addWidget(b, 1, 0, 1, 2)
+        self.bar = bar.Bar()
+        self.grid.addWidget(self.bar, 1, 0, 1, 2)
 
-    def init_library(self):
-        lib = library.Library()
-        self.grid.addWidget(lib, 0, 0, 1, 1)
+        styles.apply(self)
 
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")
@@ -82,5 +78,8 @@ class MainWindow(QWidget):
             event: The QResizeEvent.
         """
         super().resizeEvent(event)
+        bottom = self.height()
+        if self.bar.isVisible():
+            bottom -= self.bar.height()
         for overlay in self._overlays:
-            overlay.update_geometry(self.width(), self.height())
+            overlay.update_geometry(self.width(), bottom)
