@@ -78,8 +78,8 @@ class CompletionView(widgets.FlatTreeView):
         self.proxy_model.setSourceModel(source_model)
         self.show()
 
-    @keybindings.add("ctrl+k", "complete --inverse", mode="command")
-    @keybindings.add("ctrl+j", "complete", mode="command")
+    @keybindings.add("shift+tab", "complete --inverse", mode="command")
+    @keybindings.add("tab", "complete", mode="command")
     @commands.argument("inverse", optional=True, action="store_true")
     @commands.register(instance="completion", mode="command")
     def complete(self, inverse):
