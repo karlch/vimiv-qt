@@ -16,11 +16,13 @@ def sb(qtbot, mocker, cleansetup):
     yield sbar
 
 
-def test_command_updates_statusbar(sb):
+def test_command_updates_statusbar(sb, qtbot):
     @commands.register()
     def simple():
         pass
-    runners.CommandRunner()("simple", "image")
+    # Wait for QTimer
+    with qtbot.waitSignal(runners.signals.exited, timeout=100):
+        runners.CommandRunner()("simple", "image")
     sb.update.assert_called_once()
 
 
