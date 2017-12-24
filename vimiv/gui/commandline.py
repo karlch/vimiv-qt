@@ -57,6 +57,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     @keybindings.add("up", "command-history next", mode="command")
     @keybindings.add("down", "command-history prev", mode="command")
+    @keybindings.add("ctrl+p", "command-history next", mode="command")
+    @keybindings.add("ctrl+n", "command-history prev", mode="command")
     @commands.argument("direction", type=argtypes.command_history_direction)
     @commands.register(instance="command", mode="command")
     def command_history(self, direction):
