@@ -40,7 +40,9 @@ class Bar(QWidget):
     def command(self, text=""):
         """Enter command mode."""
         self._stack.setCurrentWidget(self.commandline)
-        self.commandline.setText(":")
+        if text:
+            text += " "
+        self.commandline.setText(":" + text)
         modehandler.enter("command")
 
     @keybindings.add("escape", "leave-commandline", mode="command")
