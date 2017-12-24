@@ -77,7 +77,6 @@ class MainWindow(QWidget):
         else:
             qwidget.show()
 
-
     def resizeEvent(self, event):
         """Update resize event to resize overlays.
 
@@ -91,6 +90,6 @@ class MainWindow(QWidget):
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
 
-    def focusNextPrevChild(self, next):
+    def focusNextPrevChild(self, next_child):
         """Override to do nothing as focusing is handled by modehandler."""
         return False
