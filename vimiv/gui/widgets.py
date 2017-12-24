@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Simple QtWidgets."""
 
-from PyQt5.QtCore import QMargins, Qt
+from PyQt5.QtCore import QItemSelectionModel, QMargins, Qt
 from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QGridLayout, QTreeView,
                              QAbstractItemView)
 
@@ -49,3 +49,26 @@ class FlatTreeView(QTreeView):
         self.setItemsExpandable(False)
         self.setExpandsOnDoubleClick(False)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def _select_row(self, row):
+        """Select a specific row in the library.
+
+        Args:
+            row: Number of the row to select.
+        """
+        index = self.model().index(row, 0)
+        self._select_index(index)
+
+    def _select_index(self, index):
+        """Select a specific index in the library.
+
+        Args:
+            index: QModelIndex to select.
+        """
+        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
+        self.selectionModel().setCurrentIndex(index, selmod)
+
+    def row(self):
+        """Return the currently selected row."""
+        selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
+        return selected_indexes[0].row()

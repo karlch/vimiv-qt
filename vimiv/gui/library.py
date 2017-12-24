@@ -3,7 +3,7 @@
 
 import os
 
-from PyQt5.QtCore import QItemSelectionModel, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
@@ -189,29 +189,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.hide()
         else:
             self.show()
-
-    def _select_row(self, row):
-        """Select a specific row in the library.
-
-        Args:
-            row: Number of the row to select.
-        """
-        index = self.model().index(row, 0)
-        self._select_index(index)
-
-    def _select_index(self, index):
-        """Select a specific index in the library.
-
-        Args:
-            index: QModelIndex to select.
-        """
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(index, selmod)
-
-    def row(self):
-        """Return the currently selected row."""
-        selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
-        return selected_indexes[0].row()
 
     def resizeEvent(self, event):
         """Resize columns on resize event."""
