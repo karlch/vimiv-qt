@@ -66,7 +66,7 @@ class Storage():
             signals.new_image.emit(self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
-    @keybindings.add("g", "goto 1", mode="image")
+    @keybindings.add("gg", "goto 1", mode="image")
     @commands.argument("index", type=int)
     @commands.register(instance="impaths", mode="image")
     def goto(self, index):

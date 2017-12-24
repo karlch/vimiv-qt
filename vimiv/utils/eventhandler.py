@@ -41,7 +41,38 @@ class CountHandler(QTimer):
 
     def _clear_count(self):
         self._count = ""
-        self.stop()
+
+
+class PartialMatchHandler(QTimer):
+    """Store and receive keynames that match a binding partially.
+
+    Attributes:
+        _keys: String containing all currently stored keynames.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self._keys = ""
+        self.setSingleShot(True)
+        self.setInterval(2000)
+        self.timeout.connect(self.clear_keys)
+
+    def add_key(self, key):
+        """Add one key to the storage."""
+        self._keys += key
+        if self.isActive():  # Reset timeout when adding more keys
+            self.stop()
+        self.start()
+
+    def get_keys(self):
+        """Receive the currently stored keys and clear storage."""
+        keys = self._keys
+        self.clear_keys()
+        return keys
+
+    def clear_keys(self):
+        """Clear keys on timeout."""
+        self._keys = ""
 
 
 class KeyHandler():
@@ -52,10 +83,13 @@ class KeyHandler():
 
     Class Attributes:
         count_handler: CountHandler object to store and receive digits.
+        partial_handler: PartialMatchHandler object to store and receive
+            partially matching keys.
         runner: Runner for internal commands to run the bound commands.
     """
 
     count_handler = CountHandler()
+    partial_handler = PartialMatchHandler()
     runner = runners.CommandRunner()
 
     def keyPressEvent(self, event):
@@ -65,18 +99,24 @@ class KeyHandler():
             event: QKeyEvent that activated the keyPressEvent.
         """
         mode = modehandler.current().lower()
+        keyname = self.partial_handler.get_keys() + keyevent_to_string(event)
         bindings = keybindings.get(mode)
-        keyname = keyevent_to_string(event)
+        # Count
         if keyname and keyname in string.digits:
             self.count_handler.add_count(keyname)
             if mode == "command":  # Enter digits in command line
                 # super() is the parent Qt widget
                 super().keyPressEvent(event)  # pylint: disable=no-member
+        # Complete match => run command
         elif keyname and keyname in bindings:
             count = self.count_handler.get_count()
             cmd = bindings[keyname]
             self.runner(count + cmd, mode)
-        else:  # Default Qt bindings of parent object
+        # Partial match => store keys
+        elif bindings.partial_match(keyname):
+            self.partial_handler.add_key(keyname)
+        # Nothing => run default Qt bindings of parent object
+        else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
 
@@ -106,7 +146,7 @@ def keyevent_to_string(event):
                  Qt.Key_Hyper_R, Qt.Key_Direction_L, Qt.Key_Direction_R)
     if event.key() in modifiers:
         # Only modifier pressed
-        return None
+        return ""
     mod = event.modifiers()
     parts = []
     for mask, mod_name in modmask2str.items():

@@ -56,7 +56,7 @@ def test_keyevent_to_string_for_alt_modifier_and_letter():
 
 def test_keyevent_to_string_for_only_modifier():
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
-    assert eventhandler.keyevent_to_string(event) is None
+    assert eventhandler.keyevent_to_string(event) == ""
 
 
 def test_keyevent_to_string_for_colon():

@@ -2,11 +2,14 @@
 """Handler to deal with entering and leaving modes."""
 
 from vimiv.commands import commands
+from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes.modereg import modes
 from vimiv.utils import objreg
 
 
+@keybindings.add("gl", "enter library")
+@keybindings.add("gi", "enter image")
 @commands.argument("mode")
 @commands.register()
 def enter(mode):

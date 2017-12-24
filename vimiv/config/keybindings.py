@@ -32,8 +32,28 @@ class Bindings(collections.UserDict):
     get(mode) function.
     """
 
+    def __init__(self, startdict=None):
+        super().__init__()
+        if startdict:
+            self.update(startdict)
+
     def __add__(self, other):
-        return {**self, **other}
+        return Bindings(startdict={**self, **other})
+
+    def partial_match(self, keys):
+        """Check if keys match some of the bindings partially.
+
+        Args:
+            keys: String containing the keynames to check, e.g. "g".
+        Return:
+            True for match.
+        """
+        if not keys:
+            return False
+        for binding in self:
+            if binding.startswith(keys):
+                return True
+        return False
 
 
 _registry = {
