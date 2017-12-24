@@ -4,7 +4,7 @@
 import shlex
 import subprocess
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QTimer
 
 from vimiv.commands import commands, cmdexc
 
@@ -40,7 +40,8 @@ class CommandRunner():
         try:
             cmd = commands.get(cmdname, mode)
             cmd(args, count=count)
-            signals.exited.emit(0, "")
+            # Use QTimer to make sure this is run last
+            QTimer.singleShot(0, lambda: signals.exited.emit(0, ""))
         except cmdexc.CommandNotFound as e:
             signals.exited.emit(1, str(e))
         except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
