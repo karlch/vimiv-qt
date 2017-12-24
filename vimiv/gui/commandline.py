@@ -51,16 +51,30 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     def _on_return_pressed(self):
         """Run command and store history on return."""
-        text = self.text()
-        self._history.update(text)
-        if text.startswith(":!"):
-            self.runners["external"](text.lstrip(":!"))
-        elif text.startswith(":"):
+        prefix, command = self._split_prefix(self.text())
+        if not command:  # Only prefix entered
+            return
+        # Write prefix to history as well for "separate" search history
+        self._history.update(prefix + command)
+        if prefix == ":" and command.startswith("!"):
+            self.runners["external"](command.lstrip(":!"))
+        elif prefix == ":":
             # Run the command in the mode from which we entered COMMAND mode
             mode = modehandler.last()
-            self.runners["command"](text.lstrip(":"), mode)
-        elif text.startswith("/"):
+            self.runners["command"](command, mode)
+        elif prefix == "/":
             raise NotImplementedError("Search not implemented yet")
+
+    def _split_prefix(self, text):
+        """Remove prefix from text for command processing.
+
+        Return:
+            prefix: One of ":", "/"
+            command: Rest of the text stripped from whitespace.
+        """
+        prefix, command = text[0], text[1:]
+        command = command.strip()
+        return prefix, command
 
     def _on_text_edited(self, text):
         if not text:
