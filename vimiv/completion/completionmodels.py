@@ -1,27 +1,23 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Models for the completion treeview in the command line."""
 
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
-
 from vimiv.commands import commands
+from vimiv.completion import completionbasemodel
 
 
-class CommandModel(QStandardItemModel):
-    """Model used for internal commands.
+def command(mode):
+    """Completion model filled with commands and descriptions.
 
-    The model stores the rows.
-
-    Attributes:
-        column_widths: List of widths between 0 and 1 for every column.
+    Args:
+        mode: Mode for which commands are valid.
+    Return:
+        The generated completion model.
     """
-
-    def __init__(self, mode):
-        super().__init__()
-        self.column_widths = (0.3, 0.7)
-        for name, command in commands.registry[mode].items():
-            self._add_command(name, command.description.rstrip("."))
-        self.sort(0)
-
-    def _add_command(self, name, description):
-        row = [QStandardItem(name), QStandardItem(description)]
-        self.appendRow(row)
+    model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
+    cmdlist = []
+    for name, cmd in commands.registry[mode].items():
+        elem = (name, cmd.description.rstrip("."))
+        cmdlist.append(elem)
+    model.set_data(cmdlist)
+    model.sort(0)
+    return model

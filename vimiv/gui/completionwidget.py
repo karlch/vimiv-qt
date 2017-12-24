@@ -5,7 +5,6 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv.commands import commands
-from vimiv.completion import completionmodels, completionfilters
 from vimiv.config import styles, settings, keybindings
 from vimiv.gui import widgets
 from vimiv.utils import objreg
@@ -53,8 +52,6 @@ class CompletionView(widgets.FlatTreeView):
     @objreg.register("completion")
     def __init__(self, parent):
         super().__init__(parent=parent)
-        self.proxy_model = completionfilters.TextFilter()
-        self.setModel(self.proxy_model)
 
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.setFixedHeight(settings.get_value("completion.height"))
@@ -67,16 +64,6 @@ class CompletionView(widgets.FlatTreeView):
         """Rescale width when main window was resized."""
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
-
-    def init(self, mode):
-        """Initialize completion for commands.
-
-        Args:
-            mode: Mode for which commands are filtered.
-        """
-        source_model = completionmodels.CommandModel(mode)
-        self.proxy_model.setSourceModel(source_model)
-        self.show()
 
     @keybindings.add("shift+tab", "complete --inverse", mode="command")
     @keybindings.add("tab", "complete", mode="command")

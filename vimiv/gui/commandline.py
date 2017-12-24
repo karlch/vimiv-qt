@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """CommandLine widget in the bar."""
 
-from PyQt5.QtCore import QCoreApplication, QTimer
+from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import runners, history, commands, argtypes
@@ -17,6 +17,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         runners: Dictionary containing the command runners.
 
         _history: History object to store and interact with history.
+
+    Signals:
+        entered: Emitted when command line is entered to trigger completion.
     """
 
     STYLESHEET = """
@@ -29,6 +32,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     }
     """
 
+    entered = pyqtSignal(str)
+
     @objreg.register("command")
     def __init__(self):
         super().__init__()
@@ -40,12 +45,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         QCoreApplication.instance().aboutToQuit.connect(self._write_history)
-
-        compwidget = objreg.get("completion")
-        self.textEdited.connect(compwidget.model().filter)
-        self.textEdited.connect(compwidget.selectionModel().clear)
-        self.editingFinished.connect(compwidget.model().reset)
-        compwidget.activated.connect(self._on_completion)
 
         styles.apply(self)
 
@@ -115,15 +114,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         history.write(self._history)
 
     def focusInEvent(self, event):
-        """Override focus in event to also prepare completion."""
+        """Override focus in event to also emit entered signal."""
         super().focusInEvent(event)
-        mode = modehandler.last()
-        objreg.get("completion").init(mode)
-
-    def focusOutEvent(self, event):
-        """Override focus in event to also hide completion."""
-        super().focusInEvent(event)
-        objreg.get("completion").hide()
-
-    def _on_completion(self, selected_command):
-        self.setText(":" + selected_command)
+        self.entered.emit(modehandler.last())

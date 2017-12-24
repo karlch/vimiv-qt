@@ -11,7 +11,7 @@ class TextFilter(QSortFilterProxyModel):
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
 
-    def filter(self, text):
+    def refilter(self, text):
         """Filter completions based on text in command line.
 
         Args:
