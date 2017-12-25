@@ -304,7 +304,6 @@ def init_defaults():
     FloatSetting("image.overzoom", 1.0)
 
     # Library
-    BoolSetting("library.show_at_startup", False)
     IntSetting("library.width", 300)
     BoolSetting("library.expand", True)
     BoolSetting("library.show_hidden", False)
@@ -312,14 +311,10 @@ def init_defaults():
 
     # Thumbnail
     ThumbnailSizeSetting("thumbnail.size", 128)
-    IntSetting("thumbnail.padding", 10)
 
     # Slideshow
     FloatSetting("slideshow.delay", 2.0)
     StrSetting("slideshow.indicator", "slideshow:")
-
-    # Command
-    # IntSetting("command.padding", 6)
 
     # Statusbar
     BoolSetting("statusbar.collapse_home", True)
