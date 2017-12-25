@@ -29,6 +29,8 @@ def copy_name(abspath):
 
 
 def _get_path_name():
+    """Return base name of currently selected path."""
+    # TODO move this to another module
     mode = modehandler.current().lower()
     if mode == "image":
         return os.path.basename(impaths.current())

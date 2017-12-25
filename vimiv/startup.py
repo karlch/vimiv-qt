@@ -37,7 +37,7 @@ def run(argv):
     # Set up UI
     init_ui(args)
     # Open paths
-    app.open_paths(args.paths)
+    init_paths(args)
     # Finalize
     logging.info("Startup completed")
 
@@ -106,6 +106,11 @@ def init_directories():
                       xdg.join_vimiv_config("styles")]:
         if not os.path.isdir(directory):
             os.mkdir(directory)
+
+
+def init_paths(args):
+    if not app.open_paths(args.paths):
+        app.open_paths([os.getcwd()])
 
 
 def init_ui(args):

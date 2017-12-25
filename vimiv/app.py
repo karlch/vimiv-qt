@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv.config import keybindings
-from vimiv.commands import commands
+from vimiv.commands import commands, cmdexc
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, impaths, libpaths, files
 
@@ -41,7 +41,8 @@ def open(path):  # pylint: disable=redefined-builtin
         path: The path as string.
     """
     assert isinstance(path, str), "Path must be given as string."
-    open_paths([os.path.expanduser(path)])
+    if not open_paths([os.path.expanduser(path)]):
+        raise cmdexc.CommandError("Cannot open %s" % (path))
 
 
 def open_paths(paths, select_mode=True):
@@ -50,6 +51,8 @@ def open_paths(paths, select_mode=True):
     Args:
         paths: List of paths to open.
         select_mode: If True, select mode according to paths given.
+    Return:
+        True on success.
     """
     images, directories = files.get_supported(paths)
     mode = "library"
@@ -59,9 +62,10 @@ def open_paths(paths, select_mode=True):
     elif directories:
         libpaths.load(directories[0])
     else:
-        libpaths.load(os.getcwd())
+        return False
     if select_mode:
         modehandler.enter(mode)
+    return True
 
 
 def _open_images(images):
