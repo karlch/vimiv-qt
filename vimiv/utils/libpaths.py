@@ -12,7 +12,7 @@ from vimiv.utils import files
 class Signals(QObject):
     """Class to store the qt signals for the library to connect to."""
 
-    loaded = pyqtSignal(list, list)
+    loaded = pyqtSignal(list)
 
 
 signals = Signals()
@@ -29,5 +29,29 @@ def load(directory):
     paths = files.ls(directory,
                      show_hidden=settings.get_value("library.show_hidden"))
     images, directories = files.get_supported(paths)
+    data = []
+    _extend_data(data, directories, dirs=True)
+    _extend_data(data, images)
     os.chdir(directory)
-    signals.loaded.emit(images, directories)
+    signals.loaded.emit(data)
+
+
+def _extend_data(data, paths, dirs=False):
+    """Extend list with list of data tuples for paths.
+
+    Generates a tuple in the form of (name, size) for each path and adds it to
+    the data list.
+
+    Args:
+        data: List to extend.
+        paths: List of paths to generate data for.
+        dirs: Whether all paths are directories.
+    """
+    if not paths:
+        return data
+    for path in paths:
+        name = os.path.basename(path)
+        if dirs:
+            name += "/"
+        size = files.get_size(path)
+        data.append((name, size))

@@ -1,6 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Functions dealing with files and paths."""
 
+import itertools
 import os
 
 from PyQt5.QtGui import QImageReader
@@ -46,12 +47,81 @@ def get_supported(paths):
     return images, directories
 
 
+def get_size(path):
+    """Get the size of a path in human readable format.
+
+    If the path is an image, the filesize is returned in the form of 2.3M. If
+    the path is a directory, the amount of supported files in the directory is
+    returned.
+
+    Return:
+        Size of path as string.
+    """
+    try:
+        if os.path.isfile(path):
+            return sizeof_fmt(os.path.getsize(path))
+        return get_size_directory(path)
+    except PermissionError:
+        return "N/A"
+
+
+def sizeof_fmt(num):
+    """Print size of a byte number in human-readable format.
+
+    Args:
+        num: Filesize in bytes.
+
+    Return:
+        Filesize in human-readable format.
+    """
+    for unit in ["B", "K", "M", "G", "T", "P", "E", "Z"]:
+        if abs(num) < 1024.0:
+            if abs(num) < 100:
+                return "%3.1f%s" % (num, unit)
+            return "%3.0f%s" % (num, unit)
+        num /= 1024.0
+    return "%.1f%s" % (num, "Y")
+
+
+def yield_supported(paths):
+    """Generator to yield supported paths.
+
+    Args:
+        paths: List of paths to check for supported paths.
+    Return:
+        Generator yielding paths if they are supported.
+    """
+    for path in paths:
+        if os.path.isdir(path) or is_image(path):
+            yield path
+
+
+def get_size_directory(path):
+    """Get size of directory by checking amount of supported paths.
+
+    Args:
+        path: Path to directory to check.
+    Return:
+        Size as formatted string.
+    """
+    max_amount = settings.get_value("library.file_check_amount")
+    if max_amount < 0:  # Check all
+        max_amount = None
+    supported = yield_supported(ls(path))
+    size = len(list(itertools.islice(supported, max_amount)))
+    if size == max_amount:
+        return ">30"
+    return str(size)
+
+
 def is_image(filename):
     """Check whether a file is an image.
 
     Args:
         filename: Name of file to check.
     """
+    if not os.path.isfile(filename):
+        return False
     reader = QImageReader(filename)
     return reader.canRead()
 

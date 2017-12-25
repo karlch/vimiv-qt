@@ -1,8 +1,6 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Library widget with model and delegate."""
 
-import os
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
@@ -100,7 +98,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         else:
             self._last_selected = path
 
-    def _on_paths_loaded(self, images, directories):
+    def _on_paths_loaded(self, data):
         """Fill library with paths when they were loaded.
 
         Args:
@@ -108,42 +106,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             directories: List of directories.
         """
         self.model().remove_all_rows()
-        self._add_directories(directories)
-        self._add_images(images)
+        for i, row in enumerate(data):
+            row = [QStandardItem(elem) for elem in row]
+            row.insert(0, QStandardItem(str(i + 1)))
+            self.model().appendRow(row)
         self._select_row(0)
-
-    def _add_directories(self, directories):
-        """Add directories to the library.
-
-        Args:
-            directories: List of directories to add.
-        """
-        for directory in directories:
-            index = str(self.model().rowCount() + 1)
-            name = os.path.basename(directory) + "/"
-            self._add_row(index, name, "0")
-
-    def _add_images(self, images):
-        """Add images to the library.
-
-        Args:
-            images: List of images to add.
-        """
-        for image in images:
-            index = str(self.model().rowCount() + 1)
-            name = os.path.basename(image)
-            self._add_row(index, name, "0")
-
-    def _add_row(self, index, name, size):
-        """Add one row to the library.
-
-        Args:
-            index: String representation of the row number.
-            name: Name of the path.
-            size: Size of the path.
-        """
-        row = [QStandardItem(elem) for elem in [index, name, size]]
-        self.model().appendRow(row)
 
     def _on_settings_changed(self, setting, new_value):
         if setting == "library.width":
