@@ -121,6 +121,7 @@ class StatusBar(QWidget):
         labelbox = widgets.SimpleHBox(self["status"])
         self["left"] = QLabel()
         self["center"] = QLabel()
+        self["center"].setAlignment(Qt.AlignCenter)
         self["right"] = QLabel()
         self["right"].setAlignment(Qt.AlignRight)
         labelbox.addWidget(self["left"])
