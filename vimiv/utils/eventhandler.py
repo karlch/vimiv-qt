@@ -106,11 +106,8 @@ class KeyHandler():
             return
         keyname = stored_keys + keyname
         # Count
-        if keyname and keyname in string.digits:
+        if keyname and keyname in string.digits and mode != "command":
             self.partial_handler.count.add_text(keyname)
-            if mode == "command":  # Enter digits in command line
-                # super() is the parent Qt widget
-                super().keyPressEvent(event)  # pylint: disable=no-member
         # Complete match => run command
         elif keyname and keyname in bindings:
             count = self.partial_handler.count.get_text()
