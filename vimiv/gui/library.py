@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
 from vimiv import app
-from vimiv.commands import commands, argtypes
+from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.modes import modehandler
@@ -88,7 +88,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         Args:
             index: The QModelIndex activated.
         """
-        path_index = self.selectionModel().selectedIndexes()[1]
+        try:
+            path_index = self.selectionModel().selectedIndexes()[1]
+        # Path does not exist, do not try to select
+        except IndexError:
+            return
         path = path_index.data()
         app.open_paths([path], select_mode=False)  # We select mode later
         if path == self._last_selected:
@@ -133,7 +137,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         elif direction == "left":
             libpaths.load("..")
         else:
-            row = self.row()
+            try:
+                row = self.row()
+            # Directory is empty
+            except IndexError:
+                raise cmdexc.CommandError("Directory is empty")
             if direction == "up":
                 row -= count
             else:
