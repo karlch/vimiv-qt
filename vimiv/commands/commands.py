@@ -85,18 +85,20 @@ class Command():
         count: Associated count. If it is not None, this count will be used as
             default and passing other counts is supported by the command.
         description: Description of the command for help.
+        hide: Hide command from command line.
 
         _instance: Object to be passed to func as self argument if any.
     """
 
     def __init__(self, name, func, instance=None, mode="global", count=None,
-                 description=""):
+                 description="", hide=False):
         self.name = name
         self.func = func
         self._instance = instance
         self.mode = mode
         self.count = count
         self.description = description
+        self.hide = hide
 
     def __call__(self, args, count):
         """Parse arguments and call func.
@@ -158,12 +160,14 @@ class register:  # pylint: disable=invalid-name
         _mode: Mode in which the command can be executed.
         _count: Associated count. If it is not None, this count will be used as
             default and passing other counts is supported by the command.
+        _hide: Hide command from command line.
     """
 
-    def __init__(self, instance=None, mode="global", count=None):
+    def __init__(self, instance=None, mode="global", count=None, hide=False):
         self._instance = instance
         self._mode = mode
         self._count = count
+        self._hide = hide
 
     def __call__(self, func):
         name = func.__name__.lower().replace("_", "-")
@@ -175,6 +179,6 @@ class register:  # pylint: disable=invalid-name
                           name, func)
         func.vimiv_args = Args(name)
         cmd = Command(name, func, instance=self._instance, mode=self._mode,
-                      count=self._count, description=desc)
+                      count=self._count, description=desc, hide=self._hide)
         registry[self._mode][name] = cmd
         return func

@@ -19,8 +19,9 @@ def command(mode):
     model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
     cmdlist = []
     for name, cmd in commands.registry[mode].items():
-        elem = (name, cmd.description.rstrip("."))
-        cmdlist.append(elem)
+        if not cmd.hide:
+            elem = (name, cmd.description.rstrip("."))
+            cmdlist.append(elem)
     model.set_data(cmdlist)
     model.sort(0)
     return model
