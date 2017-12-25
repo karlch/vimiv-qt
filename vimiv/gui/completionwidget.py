@@ -77,6 +77,9 @@ class CompletionView(widgets.FlatTreeView):
             row = self.row() - 1 if inverse else self.row() + 1
         except IndexError:  # First trigger of completion
             row = -1 if inverse else 0
+        # No suggestions
+        if not self.model().rowCount():
+            return
         row = row % self.model().rowCount()
         self._select_row(row)
         command_index = self.selectionModel().selectedIndexes()[0]
