@@ -11,7 +11,7 @@ from vimiv import app
 from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
-from vimiv.utils import xdg
+from vimiv.utils import xdg, clipboard
 
 
 def run(argv):

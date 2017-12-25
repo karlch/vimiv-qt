@@ -173,6 +173,14 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setColumnWidth(2, 0.2 * width)
         super().resizeEvent(event)
 
+    def current(self):
+        """Return name of currently selected path."""
+        try:
+            return self.selectionModel().selectedIndexes()[1].data()
+        except IndexError:
+            return ""
+
+
 
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
