@@ -66,6 +66,8 @@ class Bar(QWidget):
         if setting == "statusbar.show":
             self.statusbar.setVisible(new_value)
             self._maybe_hide()
+        elif setting == "statusbar.timeout":
+            self.statusbar.timer.setInterval(new_value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
