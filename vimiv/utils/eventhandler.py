@@ -7,7 +7,7 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject
 from PyQt5.QtGui import QKeySequence
 
-from vimiv.commands import runners
+from vimiv.commands import runners, commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
@@ -26,7 +26,7 @@ class TempKeyStorage(QTimer):
         self.setSingleShot(True)
         self.setInterval(2000)
         self.text = ""
-        self.timeout.connect(self._clear_text)
+        self.timeout.connect(self.clear_text)
 
     def add_text(self, text):
         """Add text to storage."""
@@ -39,10 +39,10 @@ class TempKeyStorage(QTimer):
     def get_text(self):
         """Get text from storage."""
         text = self.text
-        self._clear_text()
+        self.clear_text()
         return text
 
-    def _clear_text(self):
+    def clear_text(self):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
         self.text = ""
@@ -62,6 +62,13 @@ class PartialHandler(QObject):
         super().__init__()
         self.count = TempKeyStorage()
         self.keys = TempKeyStorage()
+
+    @keybindings.add("escape", "clear-keys")
+    @commands.register(instance="partialkeys")
+    def clear_keys(self):
+        """Clear count and partially matched keys."""
+        self.count.clear_text()
+        self.keys.clear_text()
 
     @statusbar.module("{keys}", instance="partialkeys")
     def get_keys(self):
