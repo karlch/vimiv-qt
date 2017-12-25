@@ -92,5 +92,17 @@ class Completer(QObject):
         self.proxy_model.setSourceModel(modelfunc(*args))
 
     def _on_completion(self, text):
-        """Set commandline text when completion was activated."""
-        self._cmd.setText(":" + text)
+        """Set commandline text when completion was activated.
+
+        Args:
+            text: Suggested text from completion.
+        """
+        # Get prefix and prepended digits
+        cmdtext = self._cmd.text()
+        prefix, cmdtext = cmdtext[0], cmdtext[1:]
+        digits = ""
+        while cmdtext[0].isdigit():
+            digits += cmdtext[0]
+            cmdtext = cmdtext[1:]
+        # Set text in commandline
+        self._cmd.setText(prefix + digits + text)

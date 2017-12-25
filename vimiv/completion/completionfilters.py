@@ -1,6 +1,8 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Filter classes for the completion widget."""
 
+import string
+
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 
 
@@ -19,6 +21,8 @@ class TextFilter(QSortFilterProxyModel):
         """
         # Remove trailing ":" or "/"
         text = text.lstrip(":/")
+        # Do not filter on counts
+        text = text.lstrip(string.digits)
         regex = QRegExp(text, Qt.CaseInsensitive)
         self.setFilterRegExp(regex)
 
