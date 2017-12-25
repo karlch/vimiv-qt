@@ -5,7 +5,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv.commands import commands
-from vimiv.config import styles, settings, keybindings
+from vimiv.config import styles, keybindings
 from vimiv.gui import widgets
 from vimiv.utils import objreg
 
@@ -22,6 +22,8 @@ class CompletionView(widgets.FlatTreeView):
         outline: 0;
         border: 0px;
         padding: {statusbar.padding};
+        min-height: {completion.height};
+        max-height: {completion.height};
     }
 
     QTreeView::item:selected, QTreeView::item:selected:hover {
@@ -54,7 +56,7 @@ class CompletionView(widgets.FlatTreeView):
         super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        self.setFixedHeight(settings.get_value("completion.height"))
+        # self.setFixedHeight(settings.get_value("completion.height"))
 
         self.hide()
 

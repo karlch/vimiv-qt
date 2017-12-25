@@ -322,9 +322,6 @@ def init_defaults():
     # Command
     # IntSetting("command.padding", 6)
 
-    # Completion
-    IntSetting("completion.height", 400)
-
     # Statusbar
     BoolSetting("statusbar.collapse_home", True)
     StrSetting("statusbar.mark_indicator", "[*]")

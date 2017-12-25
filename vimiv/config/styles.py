@@ -135,6 +135,7 @@ def create_default():
     default["statusbar.message_border"] = "2px solid"
     default["statusbar.padding"] = "4"
     # Completion
+    default["completion.height"] = "200px"
     default["completion.fg"] = "{statusbar.fg}"
     default["completion.even.bg"] = "{statusbar.bg}"
     default["completion.odd.bg"] = "{statusbar.bg}"
