@@ -40,7 +40,7 @@ def paths(text):
     if not text:
         directory = "."
     elif "/" not in text:
-        directory = text
+        directory = text if os.path.isdir(text) else "."
     else:
         directory = os.path.dirname(text)
     # Get supported paths

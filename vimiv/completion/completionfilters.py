@@ -23,6 +23,8 @@ class TextFilter(QSortFilterProxyModel):
         text = text.lstrip(":/")
         # Do not filter on counts
         text = text.lstrip(string.digits)
+        # Still allow match inside word for open
+        text = text.replace("open ", "")
         regex = QRegExp(text, Qt.CaseInsensitive)
         self.setFilterRegExp(regex)
 
