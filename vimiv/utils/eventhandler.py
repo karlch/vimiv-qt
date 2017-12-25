@@ -63,7 +63,7 @@ class PartialHandler(QObject):
         self.count = TempKeyStorage()
         self.keys = TempKeyStorage()
 
-    @keybindings.add("escape", "clear-keys")
+    @keybindings.add("<escape>", "clear-keys")
     @commands.register(instance="partialkeys")
     def clear_keys(self):
         """Clear count and partially matched keys."""
@@ -136,9 +136,9 @@ def keyevent_to_string(event):
     """
     # Parse modifiers
     modmask2str = collections.OrderedDict([
-        (Qt.ControlModifier, "ctrl"),
-        (Qt.AltModifier, "alt"),
-        (Qt.MetaModifier, "meta"),
+        (Qt.ControlModifier, "<ctrl>"),
+        (Qt.AltModifier, "<alt>"),
+        (Qt.MetaModifier, "<meta>"),
     ])
     modifiers = (Qt.Key_Control, Qt.Key_Alt, Qt.Key_Shift, Qt.Key_Meta,
                  Qt.Key_AltGr, Qt.Key_Super_L, Qt.Key_Super_R, Qt.Key_Hyper_L,
@@ -153,7 +153,7 @@ def keyevent_to_string(event):
             parts.append(mod_name)
     # Append keyname
     parts.append(_get_keyname(event))
-    keyname = "+".join(parts)
+    keyname = "".join(parts)
     return keyname
 
 
@@ -168,28 +168,28 @@ def _get_keyname(event):
         Name of the main key press escaping special keys.
     """
     special_keys = {
-        Qt.Key_Space: "space",
-        Qt.Key_Backtab: "tab",
-        Qt.Key_Tab: "tab",
-        Qt.Key_Escape: "escape",
-        Qt.Key_Enter: "enter",
-        Qt.Key_Return: "return",
-        Qt.Key_Backspace: "backspace",
-        Qt.Key_Left: "left",
-        Qt.Key_Right: "right",
-        Qt.Key_Up: "up",
-        Qt.Key_Down: "down",
-        Qt.Key_Home: "home",
-        Qt.Key_End: "end",
+        Qt.Key_Space: "<space>",
+        Qt.Key_Backtab: "<tab>",
+        Qt.Key_Tab: "<tab>",
+        Qt.Key_Escape: "<escape>",
+        Qt.Key_Enter: "<enter>",
+        Qt.Key_Return: "<return>",
+        Qt.Key_Backspace: "<backspace>",
+        Qt.Key_Left: "<left>",
+        Qt.Key_Right: "<right>",
+        Qt.Key_Up: "<up>",
+        Qt.Key_Down: "<down>",
+        Qt.Key_Home: "<home>",
+        Qt.Key_End: "<end>",
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
         text = special_keys[event.key()]
         if event.modifiers() & Qt.ShiftModifier:
-            text = "shift+" + text
+            text = "<shift>" + text
         return text
     if event.key() == Qt.Key_Colon:  # Required as : is the separator
-        return "colon"
+        return "<colon>"
     if event.text().isprintable():
         return event.text()
     return QKeySequence(event.key()).toString().lower()

@@ -85,8 +85,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         else:
             self._history.reset()
 
-    @keybindings.add("ctrl+p", "history next", mode="command")
-    @keybindings.add("ctrl+n", "history prev", mode="command")
+    @keybindings.add("<ctrl>p", "history next", mode="command")
+    @keybindings.add("<ctrl>n", "history prev", mode="command")
     @commands.argument("direction", type=argtypes.command_history_direction)
     @commands.register(instance="command", mode="command")
     def history(self, direction):
@@ -97,8 +97,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.cycle(direction, self.text()))
 
-    @keybindings.add("up", "history-substr-search next", mode="command")
-    @keybindings.add("down", "history-substr-search prev", mode="command")
+    @keybindings.add("<up>", "history-substr-search next", mode="command")
+    @keybindings.add("<down>", "history-substr-search prev", mode="command")
     @commands.argument("direction", type=argtypes.command_history_direction)
     @commands.register(instance="command", mode="command")
     def history_substr_search(self, direction):
