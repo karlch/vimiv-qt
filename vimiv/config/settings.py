@@ -321,7 +321,9 @@ def init_defaults():
     StrSetting("statusbar.mark_indicator", "[*]")
     BoolSetting("statusbar.show", True)
     IntSetting("statusbar.message_timeout", 5000)
-    StrSetting("statusbar.left", "{index}/{total} {basename} [{zoomlevel}]")
+    StrSetting("statusbar.left", "{pwd}")
+    StrSetting("statusbar.left_image",
+               "{index}/{total} {basename} [{zoomlevel}]")
     StrSetting("statusbar.center", "{slideshow_indicator} {slideshow_delay}")
     StrSetting("statusbar.right", "{keys}  {mode}")
 
