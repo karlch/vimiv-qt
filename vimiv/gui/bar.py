@@ -36,7 +36,7 @@ class Bar(QWidget):
 
     @keybindings.add("<colon>", "command")
     @commands.argument("text", optional=True, default="")
-    @commands.register(instance="bar")
+    @commands.register(instance="bar", hide=True)
     def command(self, text=""):
         """Enter command mode."""
         self._stack.setCurrentWidget(self.commandline)

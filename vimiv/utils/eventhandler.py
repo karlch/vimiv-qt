@@ -64,7 +64,7 @@ class PartialHandler(QObject):
         self.keys = TempKeyStorage()
 
     @keybindings.add("<escape>", "clear-keys")
-    @commands.register(instance="partialkeys")
+    @commands.register(instance="partialkeys", hide=True)
     def clear_keys(self):
         """Clear count and partially matched keys."""
         self.count.clear_text()
