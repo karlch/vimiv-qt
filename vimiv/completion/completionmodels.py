@@ -20,7 +20,7 @@ def command(mode):
     cmdlist = []
     for name, cmd in commands.registry[mode].items():
         if not cmd.hide:
-            elem = (name, cmd.description.rstrip("."))
+            elem = (name, cmd.description)
             cmdlist.append(elem)
     model.set_data(cmdlist)
     model.sort(0)
