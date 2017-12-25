@@ -36,16 +36,11 @@ def parse(args):
 def dump():
     """Write default configurations to config file."""
     parser = configparser.ConfigParser()
-    # Add sections
-    parser.add_section("GENERAL")
-    parser.add_section("IMAGE")
-    parser.add_section("LIBRARY")
-    parser.add_section("THUMBNAIL")
-    parser.add_section("STATUSBAR")
-    parser.add_section("COMPLETION")
     # Add default options
     for name, setting in settings.items():
         section, option = _get_section_option(name)
+        if section not in parser:
+            parser.add_section(section)
         default = str(setting.get_default())
         parser[section][option] = default
     # Write to file
