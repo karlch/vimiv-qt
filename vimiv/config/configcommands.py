@@ -2,9 +2,10 @@
 """Commands dealing with settings and configuration."""
 
 from vimiv.commands import commands, cmdexc
-from vimiv.config import settings
+from vimiv.config import settings, keybindings
 
 
+@keybindings.add("b", "set statusbar.show!")
 @commands.argument("value", optional=True)
 @commands.argument("setting")
 @commands.register()

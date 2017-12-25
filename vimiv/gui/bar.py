@@ -4,7 +4,7 @@
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv.commands import commands
-from vimiv.config import keybindings
+from vimiv.config import keybindings, settings
 from vimiv.gui import commandline, statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
@@ -31,14 +31,17 @@ class Bar(QWidget):
         self.commandline = commandline.CommandLine()
         self._stack.addWidget(self.commandline)
         self._stack.setCurrentWidget(self.statusbar)
+        self._maybe_hide()
 
         self.commandline.editingFinished.connect(self._on_editing_finished)
+        settings.signals.changed.connect(self._on_settings_changed)
 
     @keybindings.add("<colon>", "command")
     @commands.argument("text", optional=True, default="")
     @commands.register(instance="bar", hide=True)
     def command(self, text=""):
         """Enter command mode."""
+        self.show()
         self._stack.setCurrentWidget(self.commandline)
         if text:
             text += " "
@@ -56,3 +59,18 @@ class Bar(QWidget):
         self.commandline.setText("")
         self._stack.setCurrentWidget(self.statusbar)
         modehandler.leave("command")
+        self._maybe_hide()
+
+    def _on_settings_changed(self, setting, new_value):
+        """React to changed settings."""
+        if setting == "statusbar.show":
+            self.statusbar.setVisible(new_value)
+            self._maybe_hide()
+
+    def _maybe_hide(self):
+        """Hide bar if statusbar is not visible and not in command mode."""
+        always_show = settings.get_value("statusbar.show")
+        if not always_show and not self.commandline.hasFocus():
+            self.hide()
+        else:
+            self.show()
