@@ -16,7 +16,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
-from vimiv.utils import objreg
+from vimiv.utils import objreg, slideshow
 
 
 class Signals(QObject):
@@ -40,6 +40,8 @@ class Storage():
     def __init__(self):
         self._paths = []
         self._index = 0
+        slides = slideshow.Slideshow()
+        slides.next_im.connect(self._on_slideshow_event)
 
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="impaths", count=1)
@@ -106,6 +108,9 @@ class Storage():
     def total(self):
         """Return total amount of paths as string."""
         return str(len(self._paths))
+
+    def _on_slideshow_event(self):
+        self.next(1)
 
 
 _storage = Storage()
