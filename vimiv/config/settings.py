@@ -295,7 +295,6 @@ def init_defaults():
     BoolSetting("shuffle", False)
     BoolSetting("search_case_sensitive", False)
     BoolSetting("incsearch", True)
-    BoolSetting("copy_to_primary", False)
     StrSetting("style", "default")
 
     # Image
