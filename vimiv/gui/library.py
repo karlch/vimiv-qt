@@ -75,6 +75,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setColumnWidth(2, 0.2 * width)
 
         self.activated.connect(self._on_activated)
+        settings.signals.changed.connect(self._on_settings_changed)
         libpaths.signals.loaded.connect(self._on_paths_loaded)
 
         styles.apply(self)
@@ -142,6 +143,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         row = [QStandardItem(elem) for elem in [index, name, size]]
         self.model().appendRow(row)
+
+    def _on_settings_changed(self, setting, new_value):
+        if setting == "library.width":
+            self.setFixedWidth(new_value)
 
     @keybindings.add("k", "scroll up", mode="library")
     @keybindings.add("j", "scroll down", mode="library")

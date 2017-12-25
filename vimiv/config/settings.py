@@ -2,6 +2,8 @@
 """Store and change settings.
 
 Module attributes:
+    signals: Signals for the settings module.
+
     _storage: Initialized Storage object to store settings globally.
 """
 
@@ -9,7 +11,23 @@ import collections
 import logging
 from abc import ABC, abstractmethod
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
 from vimiv.utils import strconvert
+
+
+class Signals(QObject):
+    """Signals for the settings module.
+
+    Signals:
+        changed: Emitted with name and new value when a setting was changed via
+            the :set command.
+    """
+
+    changed = pyqtSignal(str, object)
+
+
+signals = Signals()
 
 
 class Storage(collections.UserDict):

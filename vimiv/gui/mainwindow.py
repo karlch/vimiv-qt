@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout
 
 from vimiv.commands import commands, argtypes
 from vimiv.completion import completer
-from vimiv.config import styles, keybindings
+from vimiv.config import styles, keybindings, configcommands
 from vimiv.gui import image, bar, library, completionwidget
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
@@ -49,8 +49,9 @@ class MainWindow(QWidget):
         self._overlays.append(compwidget)
         self.bar = bar.Bar()
         self.grid.addWidget(self.bar, 1, 0, 1, 2)
-        # Initialize completer
+        # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
+        configcommands.init()
 
         styles.apply(self)
 
