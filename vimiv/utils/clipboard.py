@@ -3,7 +3,7 @@
 
 import os
 
-from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication, QClipboard
 
 from vimiv import app
 from vimiv.commands import commands
@@ -12,20 +12,24 @@ from vimiv.modes import modehandler
 from vimiv.utils import impaths, objreg
 
 
+@keybindings.add("yA", "copy-name --abspath --primary")
+@keybindings.add("yY", "copy-name --primary")
 @keybindings.add("ya", "copy-name --abspath")
 @keybindings.add("yy", "copy-name")
+@commands.argument("primary", optional=True, action="store_true")
 @commands.argument("abspath", optional=True, action="store_true")
 @commands.register(hide=True)
-def copy_name(abspath):
+def copy_name(abspath, primary):
     """Copy name of current path to system clipboard.
 
     Args:
         abspath: Copy absolute path instead of basename.
     """
     clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
     basename = _get_path_name()
     name = os.path.abspath(basename) if abspath else basename
-    clipboard.setText(name)
+    clipboard.setText(name, mode=mode)
 
 
 def _get_path_name():
@@ -38,9 +42,12 @@ def _get_path_name():
     return library.current()
 
 
+@keybindings.add("PP", "paste-name --primary")
 @keybindings.add("Pp", "paste-name")
+@commands.argument("primary", optional=True, action="store_true")
 @commands.register(hide=True)
-def paste_name():
+def paste_name(primary):
     """Paste path from clipboard to open command."""
     clipboard = QGuiApplication.clipboard()
-    app.open(clipboard.text())
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    app.open(clipboard.text(mode=mode))
