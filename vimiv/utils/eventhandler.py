@@ -98,8 +98,13 @@ class KeyHandler():
         """
         mode = modehandler.current().lower()
         stored_keys = self.partial_handler.keys.get_text()
-        keyname = stored_keys + keyevent_to_string(event)
+        keyname = keyevent_to_string(event)
         bindings = keybindings.get(mode)
+        # Prefer clear-keys
+        if keyname in bindings and bindings[keyname] == "clear-keys":
+            self.runner("clear-keys", mode)
+            return
+        keyname = stored_keys + keyname
         # Count
         if keyname and keyname in string.digits:
             self.partial_handler.count.add_text(keyname)
