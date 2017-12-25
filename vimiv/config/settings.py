@@ -311,7 +311,7 @@ def init_defaults():
     IntSetting("statusbar.message_timeout", 5000)
     StrSetting("statusbar.left", "{index}/{total} {basename} [{zoomlevel}%%]")
     StrSetting("statusbar.center", "")
-    StrSetting("statusbar.right", "{mode}")
+    StrSetting("statusbar.right", "{keys}  {mode}")
 
     # Log message
     logging.info("Initialized default settings")
