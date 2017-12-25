@@ -153,7 +153,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @commands.argument("row", type=int)
     @commands.register(instance="library", mode="library", count=0)
     def goto(self, row, count):
-        """Command to select a specific row in the library.
+        """Select row in library.
 
         Args:
             row: Number of the row to select of no count is given.

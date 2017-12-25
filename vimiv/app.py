@@ -23,7 +23,7 @@ class Application(QApplication):
     @keybindings.add("q", "quit")
     @commands.register(instance="app")
     def quit(self):
-        """Quit the QApplication and therefore exit."""
+        """Quit vimiv."""
         super().quit()
 
 

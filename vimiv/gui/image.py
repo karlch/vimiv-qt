@@ -161,7 +161,7 @@ class Image(QLabel):
     @commands.argument("level", optional=True, type=argtypes.image_scale)
     @commands.register(instance="pixmap", count=1)
     def scale(self, level, count):
-        """Scale the image displayed.
+        """Scale the image.
 
         Args:
             level: One of "fit", "fit-width", "fit-height", positive_float
