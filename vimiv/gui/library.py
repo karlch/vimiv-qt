@@ -181,7 +181,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             return ""
 
 
-
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
 
