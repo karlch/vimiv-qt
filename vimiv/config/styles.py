@@ -125,6 +125,7 @@ def create_default():
     default["library.scrollbar.bg"] = "{image.bg}"
     default["library.scrollbar.fg"] = "{image.scrollbar.fg}"
     default["library.scrollbar.padding"] = "{image.scrollbar.padding}"
+    default["library.border"] = "0px solid"
     # Statusbar
     default["statusbar.font"] = "10pt Monospace"
     default["statusbar.bg"] = "#4f5b66"

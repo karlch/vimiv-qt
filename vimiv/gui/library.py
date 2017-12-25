@@ -29,7 +29,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         background-color: {library.even.bg};
         alternate-background-color: {library.odd.bg};
         outline: 0;
-        border: 0px;
+        border: 0px solid;
+        border-right: {library.border};
     }
 
     QTreeView::item:selected, QTreeView::item:selected:hover {

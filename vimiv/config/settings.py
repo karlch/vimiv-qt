@@ -307,7 +307,6 @@ def init_defaults():
     BoolSetting("library.show_at_startup", False)
     IntSetting("library.width", 300)
     BoolSetting("library.expand", True)
-    IntSetting("library.border_width", 0)
     BoolSetting("library.show_hidden", False)
     IntSetting("library.file_check_amount", 30)
 
