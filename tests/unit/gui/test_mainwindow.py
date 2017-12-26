@@ -10,6 +10,7 @@ def main_win(mocker, qtbot):
     """Set up clean mainwindow."""
     mocker.patch("vimiv.gui.image")
     mocker.patch("vimiv.gui.library")
+    mocker.patch("vimiv.config.styles.get", return_value="#000000")
     mocker.patch("vimiv.gui.bar")
     mocker.patch("vimiv.gui.completionwidget")
     mocker.patch("vimiv.gui.statusbar.update")

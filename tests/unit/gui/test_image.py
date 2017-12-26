@@ -3,13 +3,15 @@
 
 import pytest
 
+from PyQt5.QtWidgets import QStackedLayout
+
 from vimiv.gui import image
 
 
 @pytest.fixture
 def im(qtbot):
     """Set up image widget in qtbot."""
-    scrollable_image = image.ScrollableImage()
+    scrollable_image = image.ScrollableImage(QStackedLayout())
     qtbot.addWidget(scrollable_image)
     my_im = image.Image(parent=scrollable_image)
     qtbot.addWidget(my_im)
