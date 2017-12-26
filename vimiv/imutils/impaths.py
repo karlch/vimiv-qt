@@ -11,22 +11,11 @@ Signals:
 
 import os
 
-from PyQt5.QtCore import QObject, pyqtSignal
-
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
+from vimiv.imutils.communicate import signals
 from vimiv.utils import objreg, slideshow
-
-
-class Signals(QObject):
-    """Class to store the qt signals for others to connect to."""
-
-    new_image = pyqtSignal(str)
-    new_paths = pyqtSignal(list)
-
-
-signals = Signals()
 
 
 class Storage():
@@ -54,7 +43,7 @@ class Storage():
         """
         if self._paths:
             self._index = (self._index + count) % len(self._paths)
-            signals.new_image.emit(self.current())
+            signals.image_loaded.emit(self.current())
 
     @keybindings.add("p", "prev", mode="image")
     @commands.register(instance="impaths", count=1)
@@ -66,7 +55,7 @@ class Storage():
         """
         if self._paths:
             self._index = (self._index - count) % len(self._paths)
-            signals.new_image.emit(self.current())
+            signals.image_loaded.emit(self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
@@ -81,7 +70,7 @@ class Storage():
         """
         index = count if count else index
         self._index = index % (len(self._paths) + 1) - 1
-        signals.new_image.emit(self.current())
+        signals.image_loaded.emit(self.current())
 
     def current(self):
         """Return the path to the current image or None."""
@@ -97,9 +86,9 @@ class Storage():
             index: Index of the image to select in paths.
         """
         self._paths = paths
-        signals.new_paths.emit(self._paths)
+        signals.paths_loaded.emit(self._paths)
         self._index = index
-        signals.new_image.emit(self.current())
+        signals.image_loaded.emit(self.current())
 
     def index(self):
         """Return index formatted as zero prepended string."""

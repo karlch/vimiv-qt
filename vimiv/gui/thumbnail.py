@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
-from vimiv.imutils import impaths
+from vimiv.imutils.communicate import signals
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
 from vimiv.utils import objreg, eventhandler, icon_creater, thumbnail_manager
@@ -76,14 +76,14 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setIconSize(QSize(256, 256))
         self.setResizeMode(QListWidget.Adjust)
 
-        impaths.signals.new_paths.connect(self._on_new_paths)
+        signals.paths_loaded.connect(self._on_paths_loaded)
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
         self._manager.created.connect(self._on_thumbnail_created)
 
         styles.apply(self)
 
-    def _on_new_paths(self, paths):
+    def _on_paths_loaded(self, paths):
         """Load new paths into thumbnail widget.
 
         Args:

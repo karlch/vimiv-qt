@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPixmap, QColor
 from vimiv.config import styles, keybindings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar
-from vimiv.imutils import impaths
+from vimiv.imutils.communicate import signals
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
@@ -129,10 +129,10 @@ class Image(QLabel):
             self._bg.setNamedColor("#000000")
         self._pm_original.fill(self._bg)
         self.setAlignment(Qt.AlignCenter)
-        impaths.signals.new_image.connect(self.open)
+        signals.image_loaded.connect(self._on_image_loaded)
         self._scale = "fit"
 
-    def open(self, path):
+    def _on_image_loaded(self, path):
         """Open an image and display it.
 
         Args:
