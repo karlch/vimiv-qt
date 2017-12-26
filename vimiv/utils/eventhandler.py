@@ -120,6 +120,7 @@ class KeyHandler():
         else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
+            statusbar.update()  # Will not be called by command
 
 
 def on_mouse_click(event):
