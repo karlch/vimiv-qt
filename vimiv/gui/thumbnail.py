@@ -80,6 +80,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
         self._manager.created.connect(self._on_thumbnail_created)
+        self.activated.connect(self._on_activated)
 
         styles.apply(self)
 
@@ -97,6 +98,15 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
                 item.setSizeHint(QSize(self.item_size(), self.item_size()))
                 self.addItem(item)
             self._manager.create_thumbnails_async(paths)
+
+    def _on_activated(self, index):
+        """Emit signal to update image index on activated.
+
+        Args:
+            index: QModelIndex activated.
+        """
+        signals.update_index.emit(index.row() + 1)
+        modehandler.enter("image")
 
     def _on_enter(self, widget):
         if widget == "thumbnail":

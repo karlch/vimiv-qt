@@ -32,6 +32,7 @@ class Storage():
         self._index = 0
         slides = slideshow.Slideshow()
         slides.next_im.connect(self._on_slideshow_event)
+        signals.update_index.connect(self._on_update_index)
 
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="impaths", count=1)
@@ -102,6 +103,9 @@ class Storage():
 
     def _on_slideshow_event(self):
         self.next(1)
+
+    def _on_update_index(self, index):
+        self.goto(index, 0)
 
 
 _storage = Storage()
