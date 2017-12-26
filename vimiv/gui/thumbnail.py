@@ -1,6 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Thumbnail widget."""
 
+import collections
 import os
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel
@@ -20,6 +21,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     Attributes:
         _stack: QStackedLayout containing image and thumbnail.
         _paths: Last paths loaded to avoid duplicate loading.
+        _sizes: Dictionary of thumbnail sizes with integer size as key and
+            string name of the size as value.
     """
 
     STYLESHEET = """
@@ -61,6 +64,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         super().__init__()
         self._stack = stack
         self._paths = []
+        self._sizes = collections.OrderedDict(
+            [(64, "small"), (128, "normal"), (256, "large")])
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
@@ -179,13 +184,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @statusbar.module("{thumbnail_size}", instance="thumbnail")
     def size(self):
         """Return the size of the thumbnails for the statusbar."""
-        size = self.iconSize().width()
-        if size == 64:
-            return "small"
-        elif size == 128:
-            return "normal"
-        else:
-            return "large"
+        return self._sizes[self.iconSize().width()]
 
     @statusbar.module("{thumbnail_index}", instance="thumbnail")
     def index(self):
