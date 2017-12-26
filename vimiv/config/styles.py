@@ -134,6 +134,7 @@ def create_default():
     default["thumbnail.selected.bg"] = "{library.selected.bg}"
     default["thumbnail.default.bg"] = "{statusbar.info}"
     default["thumbnail.error.bg"] = "{statusbar.error}"
+    default["thumbnail.frame.fg"] = "{thumbnail.fg}"
     # Statusbar
     default["statusbar.font"] = "10pt Monospace"
     default["statusbar.bg"] = "#4f5b66"

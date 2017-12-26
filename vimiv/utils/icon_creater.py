@@ -1,7 +1,8 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Create simple versions of QIcon."""
 
-from PyQt5.QtGui import QIcon, QPixmap, QColor
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon, QPixmap, QColor, QPainter
 
 from vimiv.config import styles
 
@@ -19,13 +20,36 @@ def error_thumbnail():
 
 
 def thumbnail(colorname):
-    """Return QIcon of size 256 filled with one color.
+    """Return QIcon of size 256 filled with one color and a frame.
 
     Args:
-        colorname: Color in hex format, e.g. #000000.
+        colorname: Color in hex format.
     """
     pixmap = QPixmap(256, 256)
-    color = QColor(0, 0, 0)
-    color.setNamedColor(colorname)
-    pixmap.fill(color)
+    frame_color = styles.get("thumbnail.frame.fg")
+    _draw(pixmap, colorname, 10, frame_color)
     return QIcon(pixmap)
+
+
+def _draw(pixmap, colorname, frame_size, frame_colorname):
+    """Draw pixmap with frame and inner color.
+
+    Args:
+        pixmap: QPixmap to draw on.
+        colorname: Name of the inner color in hex format.
+        frame_size: Size of the frame to draw in px.
+        frame-colorname: Name of the frame color in hex format.
+    """
+    painter = QPainter(pixmap)
+    painter.setPen(Qt.NoPen)
+    color = QColor(0, 0, 0)
+    # Frame
+    color.setNamedColor(frame_colorname)
+    painter.setBrush(color)
+    painter.drawRect(pixmap.rect())
+    # Inner
+    color.setNamedColor(colorname)
+    painter.setBrush(color)
+    x = y = frame_size
+    width = height = pixmap.width() - 2 * frame_size
+    painter.drawRect(x, y, width, height)
