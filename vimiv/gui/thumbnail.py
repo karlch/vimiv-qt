@@ -146,6 +146,24 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         item = item % self.count()
         self._select_item(item)
 
+    @keybindings.add("-", "zoom out", mode="thumbnail")
+    @keybindings.add("+", "zoom in", mode="thumbnail")
+    @commands.argument("direction", type=argtypes.zoom)
+    @commands.register(instance="thumbnail")
+    def zoom(self, direction):
+        """Zoom thumbnails.
+
+        Moves between the sizes in the self._sizes dictionary.
+
+        Args:
+            direction: One of "in", "out".
+        """
+        size = self.iconSize().width()
+        size = size // 2 if direction == "out" else size * 2
+        size = max(size, 64)
+        size = min(size, 512)
+        self.setIconSize(QSize(size, size))
+
     def _select_item(self, index):
         """Select specific item in the ListWidget.
 
