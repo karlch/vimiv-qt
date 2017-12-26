@@ -9,10 +9,10 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
+from vimiv.imutils import impaths
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
-from vimiv.utils import (impaths, objreg, eventhandler, icon_creater,
-                         thumbnail_manager)
+from vimiv.utils import objreg, eventhandler, icon_creater, thumbnail_manager
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):

@@ -8,8 +8,9 @@ from PyQt5.QtGui import QGuiApplication, QClipboard
 from vimiv import app
 from vimiv.commands import commands
 from vimiv.config import keybindings
+from vimiv.imutils import impaths
 from vimiv.modes import modehandler
-from vimiv.utils import impaths, objreg
+from vimiv.utils import objreg
 
 
 @keybindings.add("yA", "copy-name --abspath --primary")

@@ -8,8 +8,9 @@ from PyQt5.QtGui import QPixmap, QColor
 from vimiv.config import styles, keybindings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar
+from vimiv.imutils import impaths
 from vimiv.modes import modehandler
-from vimiv.utils import eventhandler, impaths, objreg
+from vimiv.utils import eventhandler, objreg
 
 
 class ScrollableImage(eventhandler.KeyHandler, QScrollArea):

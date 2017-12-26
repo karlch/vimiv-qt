@@ -3,7 +3,7 @@
 
 from unittest.mock import Mock
 
-from vimiv.utils import impaths
+from vimiv.imutils import impaths
 
 
 def test_load_paths_into_storage(cleansetup):

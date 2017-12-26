@@ -7,7 +7,8 @@ from PyQt5.QtGui import QPixmap, QImageWriter
 
 from vimiv.commands import commands, runners
 from vimiv.config import keybindings, settings
-from vimiv.utils import objreg, impaths
+from vimiv.imutils import impaths
+from vimiv.utils import objreg
 
 
 @pytest.fixture
