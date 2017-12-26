@@ -74,7 +74,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
         self.setIconSize(QSize(256, 256))
-        self.setUniformItemSizes(True)
         self.setResizeMode(QListWidget.Adjust)
 
         impaths.signals.new_paths.connect(self._on_new_paths)
@@ -95,6 +94,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             self.clear()
             for _ in paths:
                 item = QListWidgetItem(self._default_icon, None)
+                item.setSizeHint(QSize(self.item_size(), self.item_size()))
                 self.addItem(item)
             self._manager.create_thumbnails_async(paths)
 
@@ -118,6 +118,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         self.takeItem(index)
         item = QListWidgetItem(icon, None)
+        item.setSizeHint(QSize(self.item_size(), self.item_size()))
         self.insertItem(index, item)
 
     @keybindings.add("k", "scroll up", mode="thumbnail")
@@ -180,6 +181,13 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = max(size, 64)
         size = min(size, 256)
         self.setIconSize(QSize(size, size))
+        self.rescale_items()
+
+    def rescale_items(self):
+        """Reset item hint when item size has changed."""
+        for i in range(self.count()):
+            item = self.item(i)
+            item.setSizeHint(QSize(self.item_size(), self.item_size()))
 
     def _select_item(self, index):
         """Select specific item in the ListWidget.
@@ -202,8 +210,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def columns(self):
         """Return the number of columns."""
         padding = 2 * int(styles.get("thumbnail.padding"))
-        item_width = self.iconSize().width() + padding
-        return (self.width() - padding - 2) // item_width
+        return (self.width() - padding - 2) // self.item_size()
+
+    def item_size(self):
+        """Return the size of one icon including padding."""
+        padding = int(styles.get("thumbnail.padding"))
+        return self.iconSize().width() + 2 * padding
 
     @statusbar.module("{thumbnail_name}", instance="thumbnail")
     def current(self):
