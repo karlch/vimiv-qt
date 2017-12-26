@@ -33,6 +33,7 @@ class Modes(collections.UserDict):
         self["image"] = Mode("image")
         self["image"].active = True  # Default mode
         self["library"] = Mode("library")
+        self["thumbnail"] = Mode("thumbnail")
         self["command"] = Mode("command")
 
 

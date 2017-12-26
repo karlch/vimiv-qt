@@ -8,6 +8,7 @@ from PyQt5.QtGui import QPixmap, QColor
 from vimiv.config import styles, keybindings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar
+from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, impaths, objreg
 
 
@@ -55,11 +56,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     """
 
     @objreg.register("image")
-    def __init__(self):
+    def __init__(self, stack):
         super().__init__()
+        self._stack = stack
         styles.apply(self)
         self.setWidget(Image(parent=self))
         self.setWidgetResizable(True)
+
+        modehandler.signals.enter.connect(self._on_enter)
 
     @keybindings.add("k", "scroll up", mode="image")
     @keybindings.add("j", "scroll down", mode="image")
@@ -87,6 +91,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Rescale the child image and update statusbar on resize event."""
         self.widget().rescale()
         statusbar.update()  # Zoom level changes
+
+    def _on_enter(self, widget):
+        if widget == "image":
+            self._stack.setCurrentWidget(self)
 
 
 class Image(QLabel):

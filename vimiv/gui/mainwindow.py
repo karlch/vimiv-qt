@@ -6,13 +6,12 @@ Signals:
 """
 
 from PyQt5.QtCore import QMargins
-from PyQt5.QtWidgets import QWidget, QGridLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout, QStackedLayout
 
-from vimiv.commands import commands, argtypes
+from vimiv.commands import commands
 from vimiv.completion import completer
 from vimiv.config import styles, keybindings, configcommands
-from vimiv.gui import image, bar, library, completionwidget
-from vimiv.modes import modehandler
+from vimiv.gui import image, bar, library, completionwidget, thumbnail
 from vimiv.utils import objreg
 
 
@@ -30,6 +29,7 @@ class MainWindow(QWidget):
 
     Attributes:
         bar: bar.Bar object containing statusbar and command line.
+        stack: Stack containing thumbnail and image.
     """
 
     @objreg.register("mainwindow")
@@ -40,14 +40,19 @@ class MainWindow(QWidget):
         self.grid = QGridLayout(self)
         self.grid.setSpacing(0)
         self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
+        self.stack = QStackedLayout()
+        self.bar = bar.Bar()
         # Create widgets and add to layout
-        im = image.ScrollableImage()
+        im = image.ScrollableImage(self.stack)
+        thumb = thumbnail.ThumbnailView(self.stack)
+        self.stack.addWidget(im)
+        self.stack.addWidget(thumb)
+        self.stack.setCurrentWidget(im)
         lib = library.Library()
-        self.grid.addWidget(im, 0, 1, 1, 1)
+        self.grid.addLayout(self.stack, 0, 1, 1, 1)
         self.grid.addWidget(lib, 0, 0, 1, 1)
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
-        self.bar = bar.Bar()
         self.grid.addWidget(self.bar, 1, 0, 1, 2)
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
@@ -63,23 +68,6 @@ class MainWindow(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
-
-    @keybindings.add("tl", "toggle library")
-    @commands.argument("widget", type=argtypes.widget)
-    @commands.register(instance="mainwindow")
-    def toggle(self, widget):
-        """Toggle the visibility of one widget.
-
-        Args:
-            widget: Name of the widget to toggle.
-        """
-        qwidget = objreg.get(widget)
-        if qwidget.isVisible():
-            qwidget.hide()
-            if qwidget.hasFocus():
-                modehandler.leave(widget)
-        else:
-            qwidget.show()
 
     def resizeEvent(self, event):
         """Update resize event to resize overlays.

@@ -76,6 +76,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
         libpaths.signals.loaded.connect(self._on_paths_loaded)
+        modehandler.signals.enter.connect(self._on_enter)
+        modehandler.signals.leave.connect(self._on_leave)
 
         styles.apply(self)
 
@@ -119,6 +121,14 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def _on_settings_changed(self, setting, new_value):
         if setting == "library.width":
             self.setFixedWidth(new_value)
+
+    def _on_enter(self, widget):
+        if widget == "library":
+            self.show()
+
+    def _on_leave(self, widget):
+        if widget == "library":
+            self.hide()
 
     @keybindings.add("k", "scroll up", mode="library")
     @keybindings.add("j", "scroll down", mode="library")

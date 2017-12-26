@@ -60,6 +60,7 @@ _registry = {
     "global": Bindings(),
     "image": Bindings(),
     "library": Bindings(),
+    "thumbnail": Bindings(),
     "command": Bindings(),
 }
 

@@ -1,6 +1,8 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Handler to deal with entering and leaving modes."""
 
+from PyQt5.QtCore import pyqtSignal, QObject
+
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
@@ -8,6 +10,21 @@ from vimiv.modes.modereg import modes
 from vimiv.utils import objreg
 
 
+class Signals(QObject):
+    """Signals for modehandler.
+
+    Signals:
+        toggled: Emitted with the widget name when a widget was toggled.
+    """
+
+    enter = pyqtSignal(str)
+    leave = pyqtSignal(str)
+
+
+signals = Signals()
+
+
+@keybindings.add("gt", "enter thumbnail")
 @keybindings.add("gl", "enter library")
 @keybindings.add("gi", "enter image")
 @commands.argument("mode")
@@ -32,6 +49,7 @@ def enter(mode):
     widget = objreg.get(mode)
     widget.show()
     widget.setFocus()
+    signals.enter.emit(mode)
 
 
 @commands.argument("mode")
@@ -46,6 +64,26 @@ def leave(mode):
     """
     last_mode = modes[mode].last_mode
     enter(last_mode)
+    signals.leave.emit(mode)
+
+
+@keybindings.add("tt", "toggle thumbnail")
+@keybindings.add("tl", "toggle library")
+@commands.argument("mode")
+@commands.register()
+def toggle(mode):
+    """Toggle one mode.
+
+    If mode is currently visible, leave. Else enter.
+
+    Args:
+        widget: Name of the mode to toggle.
+    """
+    qwidget = objreg.get(mode)
+    if qwidget.isVisible():
+        leave(mode)
+    else:
+        enter(mode)
 
 
 def get_active_mode():

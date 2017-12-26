@@ -46,7 +46,7 @@ def get(name, mode="global"):
         The Command object asserted with name and mode.
     """
     commands = registry[mode]
-    if mode in ["image", "library"]:
+    if mode in ["image", "library", "thumbnail"]:
         commands.update(registry["global"])
     if name not in commands:
         raise cmdexc.CommandNotFound(

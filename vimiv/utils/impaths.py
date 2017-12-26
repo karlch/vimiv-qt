@@ -23,6 +23,7 @@ class Signals(QObject):
     """Class to store the qt signals for others to connect to."""
 
     new_image = pyqtSignal(str)
+    new_paths = pyqtSignal(list)
 
 
 signals = Signals()
@@ -96,6 +97,7 @@ class Storage():
             index: Index of the image to select in paths.
         """
         self._paths = paths
+        signals.new_paths.emit(self._paths)
         self._index = index
         signals.new_image.emit(self.current())
 

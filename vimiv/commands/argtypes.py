@@ -170,7 +170,7 @@ def widget(value):
         The value if it was valid.
     """
     value = value.lower()
-    if value in ["library"]:
+    if value in ["library", "thumbnail"]:
         return value
     else:
         raise argparse.ArgumentTypeError("No widget called '%s'" % (value))
