@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QApplication
 import vimiv
 from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
-from vimiv.imutils import impaths
+from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, files
 
@@ -91,4 +91,4 @@ def _open_images(images):
         images, _ = files.get_supported(files.ls(os.getcwd()))
         index = images.index(first_image)
     # Load images
-    impaths.load(images, index)
+    imcommunicate.signals.update_paths.emit(images, index)

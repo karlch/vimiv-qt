@@ -8,7 +8,7 @@ from PyQt5.QtGui import QPixmap, QColor
 from vimiv.config import styles, keybindings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar
-from vimiv.imutils.communicate import signals
+from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
@@ -129,21 +129,18 @@ class Image(QLabel):
             self._bg.setNamedColor("#000000")
         self._pm_original.fill(self._bg)
         self.setAlignment(Qt.AlignCenter)
-        signals.image_loaded.connect(self._on_image_loaded)
+        imcommunicate.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
         self._scale = "fit"
 
-    def _on_image_loaded(self, path):
+    def _on_pixmap_loaded(self, pixmap):
         """Open an image and display it.
 
         Args:
             path: Path of the image to open.
         """
         self._scale = "fit"
-        if not path:  # TODO test if image was there
-            self._pm_original.fill(self._bg)
-        else:
-            self._pm_original = QPixmap(path)
-            self._scale_to_fit()
+        self._pm_original = pixmap
+        self._scale_to_fit()
 
     @keybindings.add("-", "zoom out", mode="image")
     @keybindings.add("+", "zoom in", mode="image")

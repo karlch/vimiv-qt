@@ -11,6 +11,7 @@ from vimiv import app
 from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
+from vimiv.imutils import iminitialize
 from vimiv.utils import xdg, clipboard
 
 
@@ -115,6 +116,7 @@ def init_paths(args):
 
 def init_ui(args):
     """Initialize the Qt UI."""
+    iminitialize.init()
     mw = mainwindow.MainWindow()
     if args.fullscreen:
         mw.fullscreen()

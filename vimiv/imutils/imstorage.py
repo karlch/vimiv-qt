@@ -14,7 +14,7 @@ import os
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
-from vimiv.imutils.communicate import signals
+from vimiv.imutils.imcommunicate import signals
 from vimiv.utils import objreg, slideshow
 
 
@@ -33,6 +33,8 @@ class Storage():
         slides = slideshow.Slideshow()
         slides.next_im.connect(self._on_slideshow_event)
         signals.update_index.connect(self._on_update_index)
+        signals.update_path.connect(self._on_update_path)
+        signals.update_paths.connect(self._on_update_paths)
 
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="impaths", count=1)
@@ -44,7 +46,7 @@ class Storage():
         """
         if self._paths:
             self._index = (self._index + count) % len(self._paths)
-            signals.image_loaded.emit(self.current())
+            signals.path_loaded.emit(self.current())
 
     @keybindings.add("p", "prev", mode="image")
     @commands.register(instance="impaths", count=1)
@@ -56,7 +58,7 @@ class Storage():
         """
         if self._paths:
             self._index = (self._index - count) % len(self._paths)
-            signals.image_loaded.emit(self.current())
+            signals.path_loaded.emit(self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
@@ -71,32 +73,28 @@ class Storage():
         """
         index = count if count else index
         self._index = index % (len(self._paths) + 1) - 1
-        signals.image_loaded.emit(self.current())
+        signals.path_loaded.emit(self.current())
 
+    @statusbar.module("{abspath}", instance="impaths")
     def current(self):
         """Return the path to the current image or None."""
         if self._paths:
             return self._paths[self._index]
         return ""
 
-    def load(self, paths, index=0):
-        """Load paths into storage.
+    @statusbar.module("{basename}", instance="impaths")
+    def basename(self):
+        """Return the basename of the currently selected image."""
+        return os.path.basename(self.current())
 
-        Args:
-            paths: List of paths to store.
-            index: Index of the image to select in paths.
-        """
-        self._paths = paths
-        signals.paths_loaded.emit(self._paths)
-        self._index = index
-        signals.image_loaded.emit(self.current())
-
+    @statusbar.module("{index}", instance="impaths")
     def index(self):
         """Return index formatted as zero prepended string."""
         if self._paths:
             return str(self._index + 1).zfill(len(self.total()))
         return "0"
 
+    @statusbar.module("{total}", instance="impaths")
     def total(self):
         """Return total amount of paths as string."""
         return str(len(self._paths))
@@ -107,34 +105,14 @@ class Storage():
     def _on_update_index(self, index):
         self.goto(index, 0)
 
+    def _on_update_path(self, path):
+        if path in self._paths:
+            self.goto(self._paths.index(path), 0)
+        else:
+            raise NotImplementedError
 
-_storage = Storage()
-
-
-def load(paths, index=0):
-    """Load paths into the image path storage."""
-    _storage.load(paths, index)
-
-
-@statusbar.module("{abspath}")
-def current():
-    """Return the absolute path of the currently selected image."""
-    return _storage.current()
-
-
-@statusbar.module("{basename}")
-def _basename_current():
-    """Return the basename of the currently selected image."""
-    return os.path.basename(current())
-
-
-@statusbar.module("{index}")
-def _index():
-    """Return the index of the currently selected image."""
-    return _storage.index()
-
-
-@statusbar.module("{total}")
-def _total():
-    """Return the total amount of loaded images."""
-    return _storage.total()
+    def _on_update_paths(self, paths, index):
+        self._paths = paths
+        signals.paths_loaded.emit(paths)
+        self._index = index
+        signals.path_loaded.emit(paths[index])

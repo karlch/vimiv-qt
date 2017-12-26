@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
-from vimiv.imutils.communicate import signals
+from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
 from vimiv.utils import objreg, eventhandler, icon_creater, thumbnail_manager
@@ -76,7 +76,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setIconSize(QSize(256, 256))
         self.setResizeMode(QListWidget.Adjust)
 
-        signals.paths_loaded.connect(self._on_paths_loaded)
+        imcommunicate.signals.paths_loaded.connect(self._on_paths_loaded)
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -105,7 +105,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
-        signals.update_index.emit(index.row() + 1)
+        imcommunicate.signals.update_index.emit(index.row() + 1)
         modehandler.enter("image")
 
     def _on_enter(self, widget):
