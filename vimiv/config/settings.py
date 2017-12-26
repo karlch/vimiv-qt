@@ -323,6 +323,10 @@ def init_defaults():
     StrSetting("statusbar.left", "{pwd}")
     StrSetting("statusbar.left_image",
                "{index}/{total} {basename} [{zoomlevel}]")
+    StrSetting("statusbar.left_thumbnail",
+               "{thumbnail_index}/{thumbnail_total} {thumbnail_name}")
+    StrSetting("statusbar.center_thumbnail",
+               "{thumbnail_size}")
     StrSetting("statusbar.center", "{slideshow_indicator} {slideshow_delay}")
     StrSetting("statusbar.right", "{keys}  {mode}")
 

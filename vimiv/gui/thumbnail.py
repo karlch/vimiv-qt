@@ -1,12 +1,15 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Thumbnail widget."""
 
+import os
+
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
 from PyQt5.QtGui import QIcon
 
 from vimiv.config import styles
 from vimiv.modes import modehandler
+from vimiv.gui import statusbar
 from vimiv.utils import impaths, objreg, eventhandler
 
 
@@ -92,3 +95,34 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         # for the library
         if widget == "thumbnail":
             self._stack.setCurrentWidget(objreg.get("image"))
+
+    @statusbar.module("{thumbnail_name}", instance="thumbnail")
+    def current(self):
+        """Return the name of the current thumbnail for the statusbar."""
+        try:
+            abspath = self._paths[self.currentRow()]
+            basename = os.path.basename(abspath)
+            name, _ = os.path.splitext(basename)
+            return name
+        except IndexError:
+            return ""
+
+    @statusbar.module("{thumbnail_size}", instance="thumbnail")
+    def size(self):
+        """Return the size of the thumbnails for the statusbar."""
+        size = self.iconSize().width()
+        if size == 64:
+            return "small"
+        elif size == 128:
+            return "normal"
+        else:
+            return "large"
+
+    @statusbar.module("{thumbnail_index}", instance="thumbnail")
+    def index(self):
+        return str(self.currentRow() + 1)
+
+    @statusbar.module("{thumbnail_total}", instance="thumbnail")
+    def total(self):
+        """Return the size of the thumbnails for the statusbar."""
+        return str(self.model().rowCount())
