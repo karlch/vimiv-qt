@@ -177,7 +177,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("-", "zoom out", mode="thumbnail")
     @keybindings.add("+", "zoom in", mode="thumbnail")
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(instance="thumbnail")
+    @commands.register(instance="thumbnail", mode="thumbnail")
     def zoom(self, direction):
         """Zoom thumbnails.
 
