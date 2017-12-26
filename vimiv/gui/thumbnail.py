@@ -11,7 +11,8 @@ from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
-from vimiv.utils import impaths, objreg, eventhandler, icon_creater
+from vimiv.utils import (impaths, objreg, eventhandler, icon_creater,
+                         thumbnail_manager)
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -22,6 +23,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         _paths: Last paths loaded to avoid duplicate loading.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
             string name of the size as value.
+        _default_icon: QIcon to display before thumbnails were generated.
+        _manager: ThumbnailManager class to create thumbnails asynchronously.
     """
 
     STYLESHEET = """
@@ -66,6 +69,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large")])
         self._default_icon = icon_creater.default_thumbnail()
+        self._manager = thumbnail_manager.ThumbnailManager()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
@@ -76,6 +80,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         impaths.signals.new_paths.connect(self._on_new_paths)
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
+        self._manager.created.connect(self._on_thumbnail_created)
 
         styles.apply(self)
 
@@ -88,9 +93,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if paths != self._paths:
             self._paths = paths
             self.clear()
-            for path in paths:
+            for _ in paths:
                 item = QListWidgetItem(self._default_icon, None)
                 self.addItem(item)
+            self._manager.create_thumbnails_async(paths)
 
     def _on_enter(self, widget):
         if widget == "thumbnail":
@@ -102,6 +108,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         # for the library
         if widget == "thumbnail":
             self._stack.setCurrentWidget(objreg.get("image"))
+
+    def _on_thumbnail_created(self, index, icon):
+        """Insert created thumbnail as soon as manager created it.
+
+        Args:
+            index: Index of the created thumbnail as integer.
+            icon: QIcon to insert.
+        """
+        self.takeItem(index)
+        item = QListWidgetItem(icon, None)
+        self.insertItem(index, item)
 
     @keybindings.add("k", "scroll up", mode="thumbnail")
     @keybindings.add("j", "scroll down", mode="thumbnail")
