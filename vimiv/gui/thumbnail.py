@@ -6,13 +6,12 @@ import os
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem
-from PyQt5.QtGui import QIcon
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
-from vimiv.utils import impaths, objreg, eventhandler
+from vimiv.utils import impaths, objreg, eventhandler, icon_creater
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -66,6 +65,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._paths = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large")])
+        self._default_icon = icon_creater.default_thumbnail()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
@@ -89,7 +89,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             self._paths = paths
             self.clear()
             for path in paths:
-                item = QListWidgetItem(QIcon(path), None)
+                item = QListWidgetItem(self._default_icon, None)
                 self.addItem(item)
 
     def _on_enter(self, widget):
@@ -161,7 +161,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2
         size = max(size, 64)
-        size = min(size, 512)
+        size = min(size, 256)
         self.setIconSize(QSize(size, size))
 
     def _select_item(self, index):
