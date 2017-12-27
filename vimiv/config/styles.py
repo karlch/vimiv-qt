@@ -121,6 +121,7 @@ def create_default():
     # Library
     default["library.font"] = "10pt Monospace"
     default["library.fg"] = "#dfe1e8"
+    default["library.directory.fg"] = "#eff1f5"
     default["library.even.bg"] = "#2b303b"
     default["library.odd.bg"] = "#343d46"
     default["library.selected.bg"] = "#8fa1b3"

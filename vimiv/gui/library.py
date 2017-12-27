@@ -8,16 +8,16 @@
 import logging
 import os
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QTextDocument
 
 from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
-from vimiv.utils import objreg, libpaths, eventhandler
+from vimiv.utils import objreg, libpaths, eventhandler, htmltags
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -105,7 +105,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             logging.warning("library: selecting empty path")
             return
-        path = path_index.data()
+        path = htmltags.strip(path_index.data())
         # Open directory in library
         if os.path.isdir(path):
             libpaths.load(path)
@@ -232,6 +232,22 @@ class LibraryDelegate(QStyledItemDelegate):
     The delegate draws the items.
     """
 
+    def __init__(self):
+        super().__init__()
+        self.doc = QTextDocument(self)
+        self.doc.setDocumentMargin(0)
+
+        self.font = styles.get("library.font")
+        self.fg = styles.get("library.fg")
+        self.dir_fg = styles.get("library.directory.fg")
+
+        self.selection_bg = QColor()
+        self.selection_bg.setNamedColor(styles.get("library.selected.bg"))
+        self.even_bg = QColor()
+        self.odd_bg = QColor()
+        self.even_bg.setNamedColor(styles.get("library.even.bg"))
+        self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
+
     def createEditor(self, *args):
         """Library is not editable by the user."""
         return None
@@ -240,18 +256,58 @@ class LibraryDelegate(QStyledItemDelegate):
         """Override the QStyledItemDelegate paint function.
 
         Args:
-            painter: QPainter * painter
-            option: const QStyleOptionViewItem & option
-            index: const QModelIndex & index
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            index: The QModelIndex.
         """
-        font = QFont()
-        align = Qt.AlignLeft
-        if index.column() == 0:
-            font.setBold(True)
-        elif index.column() == 1:
-            pass
+        text = index.model().data(index)
+        if option.state & QStyle.State_Selected:
+            self._draw_background(painter, option, self.selection_bg)
+        elif index.row() % 2:
+            self._draw_background(painter, option, self.odd_bg)
         else:
-            align = Qt.AlignRight
-        option.font = font
-        option.displayAlignment = align
-        super().paint(painter, option, index)
+            self._draw_background(painter, option, self.even_bg)
+        self._draw_text(text, painter, option)
+
+    def _draw_text(self, text, painter, option):
+        """Draw text for the library.
+
+        Sets the font and the foreground color using html. The foreground color
+        depends on whether the path is a directory.
+
+        Args:
+            text: The text to draw.
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+        """
+        painter.save()
+        color = self.dir_fg if "<b>" in text else self.fg
+        text = '<span style="color: %s; font: %s;">%s</span>' \
+            % (color, self.font, text)
+        self.doc.setHtml(text)
+        self.doc.setTextWidth(option.rect.width() - 1)
+        painter.translate(option.rect.x(), option.rect.y())
+        self.doc.drawContents(painter)
+        painter.restore()
+
+    def _draw_background(self, painter, option, color):
+        """Draw the background rectangle of the text.
+
+        The color depends on whether the item is selected, in an even row or in
+        an odd row.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            color: The QColor to use.
+        """
+        painter.save()
+        painter.setBrush(color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(option.rect)
+        painter.restore()
+
+    def sizeHint(self, option, index):
+        text = '<span style="font: %s;">any</>' % (self.font)
+        self.doc.setHtml(text)
+        return QSize(self.doc.idealWidth(), self.doc.size().height())
