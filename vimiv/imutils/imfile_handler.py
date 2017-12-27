@@ -4,7 +4,7 @@ import logging
 import os
 import tempfile
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader
 
 from vimiv.commands import commands
@@ -23,18 +23,25 @@ class ImageFileHandler(QObject):
         self.transform = imtransform.Transform(self)
         # This is the reason for this wrapper class
         # self.manipulate = immanipulate.Manipulate()
-        imcommunicate.signals.maybe_write_file.connect(self._on_maybe_write)
+        imcommunicate.signals.maybe_write_file.connect(self._maybe_write)
+        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def pixmap(self):
         """Convenience method to get the fully edited pixmap."""
         pixmap = imloader.current()
         return self.transform.transform_pixmap(pixmap)
 
-    def _on_maybe_write(self, path):
+    def _maybe_write(self, path):
         if not settings.get_value("image.autowrite"):
             self._reset()
         elif self.transform.changed():
             self.write([path])
+
+    def _on_quit(self):
+        """Possibly write changes to disk on quit."""
+        path = imstorage.current()
+        self._maybe_write(path)
+        self._pool.waitForDone()
 
     def _reset(self):
         self.transform.reset()
