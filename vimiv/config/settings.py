@@ -358,7 +358,6 @@ def init_defaults():
     # Library
     IntSetting("library.width", 300, desc="Width of the library in px",
                suggestions=["200", "300", "400", "500"])
-    BoolSetting("library.expand", True)
     BoolSetting("library.show_hidden", False,
                 desc="Show hidden files in the library")
     IntSetting("library.file_check_amount", 30,
@@ -377,7 +376,6 @@ def init_defaults():
     # Statusbar
     BoolSetting("statusbar.collapse_home", True,
                 desc="Collapse /home/user to ~ in statusbar")
-    StrSetting("statusbar.mark_indicator", "[*]")
     BoolSetting("statusbar.show", True, desc="Always display the statusbar")
     IntSetting("statusbar.message_timeout", 5000,
                desc="Time until statusbar messages are removed")
