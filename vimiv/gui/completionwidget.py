@@ -56,7 +56,6 @@ class CompletionView(widgets.FlatTreeView):
         super().__init__(parent=parent)
 
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
-        # self.setFixedHeight(settings.get_value("completion.height"))
 
         self.hide()
 
