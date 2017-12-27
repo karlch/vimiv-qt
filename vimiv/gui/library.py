@@ -26,6 +26,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     Attributes:
         _last_selected: Name of the path that was selected last.
+        _positions: Dictionary that stores positions in directories.
     """
 
     STYLESHEET = """
@@ -66,6 +67,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def __init__(self):
         super().__init__()
         self._last_selected = ""
+        self._positions = {}
 
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -132,7 +134,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             row = [QStandardItem(elem) for elem in row]
             row.insert(0, QStandardItem(str(i + 1)))
             self.model().appendRow(row)
-        self._select_row(0)
+        row = self._positions[os.getcwd()] if os.getcwd() in self._positions else 0
+        self._select_row(row)
 
     def _on_maybe_update(self, directory):
         """Possibly load library for new directory."""
@@ -164,8 +167,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             direction: One of "right", "left", "up", "down".
         """
         if direction == "right":
+            self._positions[os.getcwd()] = self.row()
             self.activated.emit(self.selectionModel().currentIndex())
         elif direction == "left":
+            self._positions[os.getcwd()] = self.row()
             libpaths.load("..")
         else:
             try:
