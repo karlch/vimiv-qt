@@ -78,8 +78,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         width = settings.get_value("library.width")
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
-        self.setColumnWidth(1, 0.7 * width)
-        self.setColumnWidth(2, 0.2 * width)
+        self.setColumnWidth(1, 0.75 * width)
+        self.setColumnWidth(2, 0.15 * width)
 
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
@@ -200,8 +200,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Resize columns on resize event."""
         width = self.width()
         self.setColumnWidth(0, 0.1 * width)
-        self.setColumnWidth(1, 0.7 * width)
-        self.setColumnWidth(2, 0.2 * width)
+        self.setColumnWidth(1, 0.75 * width)
+        self.setColumnWidth(2, 0.15 * width)
         super().resizeEvent(event)
 
     def current(self):
