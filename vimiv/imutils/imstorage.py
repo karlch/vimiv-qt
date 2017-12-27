@@ -112,6 +112,12 @@ class Storage():
             self._load_single(path)
 
     def _on_update_paths(self, paths, index):
+        """Load new paths into storage.
+
+        Args:
+            paths: List of paths to load.
+            index: Index of the path to display.
+        """
         paths = [os.path.abspath(path) for path in paths]
         directory = os.path.dirname(paths[0])
         signals.maybe_update_library.emit(directory)
