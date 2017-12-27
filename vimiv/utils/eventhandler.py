@@ -101,7 +101,7 @@ class KeyHandler():
         Args:
             event: QKeyEvent that activated the keyPressEvent.
         """
-        mode = modehandler.current().lower()
+        mode = modehandler.current()
         stored_keys = self.partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
         bindings = keybindings.get(mode)

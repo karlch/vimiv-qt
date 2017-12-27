@@ -98,11 +98,14 @@ def get_active_mode():
             return mode
 
 
-@statusbar.module("{mode}")
 def current():
     """Return the name of the currently active mode."""
-    active_mode = get_active_mode()
-    return active_mode.name.upper()
+    return get_active_mode().name
+
+
+@statusbar.module("{mode}")
+def current_formatted():
+    return current().upper()
 
 
 def last():

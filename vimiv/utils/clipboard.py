@@ -41,7 +41,7 @@ def copy_name(abspath, primary):
 def _get_path_name():
     """Return base name of currently selected path."""
     # TODO move this to another module?
-    mode = modehandler.current().lower()
+    mode = modehandler.current()
     if mode == "image":
         return os.path.basename(imstorage.current())
     library = objreg.get("library")
