@@ -146,7 +146,7 @@ def loglevel(value):
 def image_scale(value):
     """Check if value is a valid image scale.
 
-    Allowed: "fit", "fit-width", "fit-height", positive_float.
+    Allowed: "overzoom", "fit", "fit-width", "fit-height", positive_float.
 
     Args:
         value: Value given to command option as string.
@@ -154,7 +154,7 @@ def image_scale(value):
         value as image scale.
     """
     value = value.lower()
-    if value in ["fit", "fit-width", "fit-height"]:
+    if value in ["fit", "fit-width", "fit-height", "overzoom"]:
         return value
     return positive_float(value)
 

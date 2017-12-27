@@ -23,7 +23,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     Attributes:
         _scale: How to scale image on resize.
-            One of "fit", "fit-height", "fit-width", float.
+            One of "overzoom", "fit", "fit-height", "fit-width", float.
     """
 
     STYLESHEET = """
@@ -81,7 +81,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     def _on_pixmap_loaded(self, pixmap):
         self.setWidget(Image(self, pixmap))
-        self.scale("fit", 1)
+        self.scale("overzoom", 1)
 
     def _on_movie_loaded(self, movie):
         self.setWidget(Animation(self, movie))
@@ -140,7 +140,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             level: One of "fit", "fit-width", "fit-height", positive_float
                 defining the level of the scale.
         """
-        if level == "fit":
+        if level == "overzoom":
+            self._scale_to_fit(limit=settings.get_value("image.overzoom"))
+        elif level == "fit":
             self._scale_to_fit()
         elif level == "fit-width":
             self._scale_to_width()
@@ -150,14 +152,19 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level * count)
         self._scale = level
 
-    def _scale_to_fit(self):
-        """Scale image so it fits the widget size."""
+    def _scale_to_fit(self, limit=-1):
+        """Scale image so it fits the widget size.
+
+        Args:
+            limit: Largest scale to apply trying to fit the widget size.
+        """
         w_factor = self.width() / self.original().width()
         h_factor = self.height() / self.original().height()
-        if w_factor < h_factor:
-            self._scale_to_width()
-        else:
-            self._scale_to_height()
+        scale = min(w_factor, h_factor)
+        # Apply overzoom limit
+        if limit > 0:
+            scale = min(scale, limit)
+        self._scale_to_float(scale)
 
     def _scale_to_width(self):
         """Scale image so the width fits the widgets width."""
