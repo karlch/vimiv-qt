@@ -114,6 +114,35 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             step *= -1
         bar.setValue(bar.value() - step)
 
+    @keybindings.add("M", "center", mode="image")
+    @commands.register(instance="image", mode="image")
+    def center(self):
+        """Center the image."""
+        for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
+            bar.setValue(bar.maximum() // 2)
+
+    @keybindings.add("K", "scroll-edge up", mode="image")
+    @keybindings.add("J", "scroll-edge down", mode="image")
+    @keybindings.add("L", "scroll-edge right", mode="image")
+    @keybindings.add("H", "scroll-edge left", mode="image")
+    @commands.argument("direction", type=argtypes.scroll_direction)
+    @commands.register(instance="image", mode="image")
+    def scroll_edge(self, direction):
+        """Scroll the image to the edge.
+
+        Args:
+            direction: One of "left", "right", "up", "down".
+        """
+        if direction in ["left", "right"]:
+            bar = self.horizontalScrollBar()
+        else:
+            bar = self.verticalScrollBar()
+        if direction in ["left", "up"]:
+            value = 0
+        else:
+            value = bar.maximum()
+        bar.setValue(value)
+
     @keybindings.add("-", "zoom out", mode="image")
     @keybindings.add("+", "zoom in", mode="image")
     @commands.argument("direction", type=argtypes.zoom)
