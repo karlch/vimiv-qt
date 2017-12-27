@@ -9,7 +9,7 @@ from vimiv.commands import commands, cmdexc
 from vimiv.imutils import imstorage, imloader
 
 
-@commands.argument("path", optional=True)
+@commands.argument("path", nargs="*")
 @commands.register(mode="image")
 def write(path):
     """Write an image to disk.
@@ -17,7 +17,7 @@ def write(path):
     Args:
         path: Use path instead of currently loaded path.
     """
-    path = path if path else imstorage.current()
+    path = " ".join(path) if path else imstorage.current()  # List from nargs
     image = imloader.current()
     _can_write(path, image)
     image.save(path)
