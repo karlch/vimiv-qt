@@ -6,6 +6,8 @@ import logging
 import logging.handlers
 import os
 
+from PyQt5.QtWidgets import QApplication
+
 import vimiv
 from vimiv import app
 from vimiv.commands import argtypes
@@ -119,9 +121,15 @@ def init_ui(args):
     """Initialize the Qt UI."""
     iminitialize.init()
     mw = mainwindow.MainWindow()
+    mw.show()
     if args.fullscreen:
         mw.fullscreen()
-    mw.show()
+    # Center on screen and apply size
+    geometry = args.geometry if args.geometry else (800, 600)
+    screen_geometry = QApplication.desktop().screenGeometry()
+    x = (screen_geometry.width() - geometry[0]) // 2
+    y = (screen_geometry.height() - geometry[1]) // 2
+    mw.setGeometry(x, y, *geometry)
 
 
 def update_settings(args):
