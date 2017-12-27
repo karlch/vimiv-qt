@@ -298,7 +298,7 @@ def init_defaults():
     StrSetting("style", "default")
 
     # Image
-    BoolSetting("image.autoplay_animations", True)
+    BoolSetting("image.autoplay", True)
     # BoolSetting("image.rescale_svg", True)
     FloatSetting("image.overzoom", 1.0)
 

@@ -3,7 +3,9 @@
 
 from PyQt5.QtCore import QItemSelectionModel, QMargins, Qt
 from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QGridLayout, QTreeView,
-                             QAbstractItemView)
+                             QAbstractItemView, QLabel)
+
+from vimiv.config import styles
 
 
 class SimpleGrid(QGridLayout):
@@ -72,3 +74,18 @@ class FlatTreeView(QTreeView):
         """Return the currently selected row."""
         selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
         return selected_indexes[0].row()
+
+
+class ImageLabel(QLabel):
+    """Label used to display images in image mode."""
+
+    STYLESHEET = """
+    QLabel {
+        background-color: {image.bg};
+    }
+    """
+
+    def __init__(self, parent):
+        super().__init__(parent=parent)
+        styles.apply(self)
+        self.setAlignment(Qt.AlignCenter)
