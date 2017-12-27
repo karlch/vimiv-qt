@@ -5,6 +5,8 @@ import logging
 import shlex
 import subprocess
 
+from PyQt5.QtCore import QRunnable, QObject, QThreadPool
+
 from vimiv.commands import commands, cmdexc
 from vimiv.gui import statusbar
 
@@ -58,23 +60,41 @@ class CommandRunner():
         return count, cmdname, args
 
 
-class ExternalRunner():
+class ExternalRunner(QObject):
     """Runner for external commands."""
 
-    def __call__(self, text):
-        """Run external command using subprocess.run.
+    _pool = QThreadPool.globalInstance()
 
-        Captures stdout and stderr. The signals.exited signal is emitted
-        depending on the returncode of the command.
+    def __call__(self, text):
+        """Run external command using ShellCommandRunnable.
 
         Args:
             text: Text parsed as command to run.
         """
+        runner = ShellCommandRunnable(text)
+        self._pool.start(runner)
+
+
+class ShellCommandRunnable(QRunnable):
+    """Run shell command in an extra thread.
+
+    Captures stdout and stderr. Logging is called according to the returncode
+    of the command.
+
+    Attributes:
+        _text: Text parsed as command to run.
+    """
+
+    def __init__(self, text):
+        super().__init__()
+        self._text = text
+
+    def run(self):
         try:
-            subprocess.run(text, shell=True, check=True,
+            subprocess.run(self._text, shell=True, check=True,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             statusbar.update()
-            logging.debug("Ran '!%s' succesfully", text)
+            logging.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:
             message = e.stderr.decode().split("\n")[0]
             logging.error("%d  %s", e.returncode, message)
