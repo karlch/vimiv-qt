@@ -14,7 +14,7 @@ from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
-from vimiv.utils import xdg, clipboard, statusbar_loghandler
+from vimiv.utils import xdg, clipboard, statusbar_loghandler, strconvert
 
 
 def run(argv):
@@ -141,4 +141,9 @@ def update_settings(args):
     for pair in args.cmd_settings:
         option = pair[0]
         value = pair[1]
-        settings.override(option, value)
+        try:
+            settings.override(option, value)
+        except KeyError:
+            logging.error("Unknown setting %s", option)
+        except strconvert.ConversionError as e:
+            logging.error(str(e))
