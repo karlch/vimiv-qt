@@ -3,6 +3,7 @@
 # This file is part of vimiv.
 # Copyright 2017 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
+
 """Functions to be used by the argparse module as type.
 
 Example for parsing commandline arguments:

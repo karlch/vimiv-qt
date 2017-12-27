@@ -3,6 +3,7 @@
 # This file is part of vimiv.
 # Copyright 2017 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
+
 """Commands dealing with settings and configuration."""
 
 from vimiv.commands import commands, cmdexc
