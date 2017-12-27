@@ -22,8 +22,8 @@ class Slideshow(QTimer):
     def __init__(self):
         super().__init__()
         settings.signals.changed.connect(self._on_settings_changed)
-        # TODO get default somehow
-        self.setInterval(2000)
+        interval = settings.get_value("slideshow.delay") * 1000
+        self.setInterval(interval)
 
     @keybindings.add("s", "slideshow", mode="image")
     @commands.register(instance="slideshow", mode="image", count=0)
