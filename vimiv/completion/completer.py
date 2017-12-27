@@ -50,6 +50,7 @@ class Completer(QObject):
         # Default to command completion
         self._set_model(completionmodels.command, self._mode)
         self.parent().show()
+        self.parent().raise_()
 
     def _on_text_changed(self, text):
         """Update completions when text changed."""
