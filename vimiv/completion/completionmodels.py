@@ -5,6 +5,7 @@ import os
 
 from vimiv.commands import commands
 from vimiv.completion import completionbasemodel
+from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files
 
 
@@ -53,6 +54,37 @@ def paths(text):
     for path in pathlist:
         path = os.path.join(directory, os.path.basename(path))
         data.append(["open %s" % (path)])
+    model.set_data(data)
+    return model
+
+
+def settings(text):
+    """Completion model filled with valid options for the :set command.
+
+    Args:
+        text: Text in the command line after :set used to find values.
+    Return:
+        The generated completion model.
+    """
+    data = []
+    # Show valid options for the setting
+    if text in vimivsettings.names():
+        model = completionbasemodel.BaseModel((0.5, 0.5))
+        setting = vimivsettings.get(text)
+        values = {
+            "default": str(setting.get_default()),
+            "current": str(setting.get_value())
+        }
+        for i, suggestion in enumerate(setting.suggestions()):
+            values["suggestion %d" % (i + 1)] = suggestion
+        for name, value in values.items():
+            data.append(("set %s %s" % (text, value), name))
+    # Show all settings
+    else:
+        model = completionbasemodel.BaseModel((0.4, 0.1, 0.5))
+        for name, setting in vimivsettings.items():
+            cmd = "set %s" % (name)
+            data.append((cmd, str(setting), setting.desc))
     model.set_data(data)
     return model
 

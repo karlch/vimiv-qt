@@ -25,6 +25,8 @@ class TextFilter(QSortFilterProxyModel):
         text = text.lstrip(string.digits)
         # Still allow match inside word for open
         text = text.replace("open ", "")
+        # Still allow match inside word for set
+        text = text.replace("set ", "")
         regex = QRegExp(text, Qt.CaseInsensitive)
         self.setFilterRegExp(regex)
 

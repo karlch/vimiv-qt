@@ -125,15 +125,19 @@ def set_to_default(name):
 
 def store(init):
     """Decorator to store a setting as soon as it is initialized."""
-    def setting_init(setting, name, default_value):
+    def setting_init(setting, name, default_value, desc="", suggestions=None):
         """Initialize the setting and store it."""
-        init(setting, name, default_value)
+        init(setting, name, default_value, desc, suggestions)
         _storage[name] = setting
     return setting_init
 
 
 def items():
     return _storage.items()
+
+
+def names():
+    return _storage.keys()
 
 
 class Setting(ABC):
@@ -150,17 +154,21 @@ class Setting(ABC):
     """
 
     @store
-    def __init__(self, name, default_value):
+    def __init__(self, name, default_value, desc="", suggestions=None):
         """Initialize attributes with default values.
 
         Args:
             name: Name of the setting to initialize.
             default_value: Default value of the setting to start with.
+            desc: Description of the setting.
+            suggestions: List of useful values to show in completion widget.
         """
         super(Setting, self).__init__()
         self.name = name
         self._default_value = default_value
         self._value = default_value
+        self.desc = desc
+        self._suggestions = suggestions
 
     def get_default(self):
         return self._default_value
@@ -182,6 +190,13 @@ class Setting(ABC):
         depending on the type of value.
         """
 
+    def suggestions(self):
+        """Return a list of valid or useful suggestions for the setting.
+
+        Used by the completion widget.
+        """
+        return self._suggestions if self._suggestions else []
+
 
 class BoolSetting(Setting):
     """Stores a boolean setting."""
@@ -191,6 +206,12 @@ class BoolSetting(Setting):
 
     def toggle(self):
         self._value = not self._value
+
+    def suggestions(self):
+        return ["True", "False"]
+
+    def __str__(self):
+        return "Bool"
 
 
 class NumberSetting(Setting, ABC):
@@ -229,6 +250,9 @@ class IntSetting(NumberSetting):
         value = strconvert.to_int(value, allow_sign=True)
         self._value *= value
 
+    def __str__(self):
+        return "Integer"
+
 
 class FloatSetting(NumberSetting):
     """Stores a float setting."""
@@ -254,6 +278,9 @@ class FloatSetting(NumberSetting):
         value = strconvert.to_float(value, allow_sign=True)
         self._value *= value
 
+    def __str__(self):
+        return "Float"
+
 
 class ThumbnailSizeSetting(Setting):
     """Stores a thumbnail size setting.
@@ -262,7 +289,7 @@ class ThumbnailSizeSetting(Setting):
     512.
     """
 
-    ALLOWED_VALUES = [64, 128, 256, 512]
+    ALLOWED_VALUES = [64, 128, 256]
 
     def override(self, new_value):
         """Override the setting with a new thumbnail size.
@@ -289,6 +316,12 @@ class ThumbnailSizeSetting(Setting):
         index = max(index, 0)
         self._value = self.ALLOWED_VALUES[index]
 
+    def suggestions(self):
+        return self.ALLOWED_VALUES
+
+    def __str__(self):
+        return "todo"
+
 
 class StrSetting(Setting):
     """Stores a string setting."""
@@ -297,38 +330,52 @@ class StrSetting(Setting):
         assert isinstance(new_value, str), "Type of StrSetting must be str"
         self._value = new_value
 
+    def __str__(self):
+        return "String"
+
 
 def init_defaults():
     """Store default values of all settings."""
     # General
-    BoolSetting("shuffle", False)
-    BoolSetting("search_case_sensitive", False)
-    BoolSetting("incsearch", True)
+    BoolSetting("shuffle", False, desc="Randomly shuffle images")
+    BoolSetting("search_case_sensitive", False, desc="Search respects case")
+    BoolSetting("incsearch", True, desc="Select search results while typing")
     StrSetting("style", "default")
 
     # Image
-    BoolSetting("image.autoplay", True)
-    BoolSetting("image.autowrite", True)
-    FloatSetting("image.overzoom", 1.0)
+    BoolSetting("image.autoplay", True,
+                desc="Start playing animations on open")
+    BoolSetting("image.autowrite", True, desc="Save images on changes")
+    FloatSetting("image.overzoom", 1.0,
+                 desc="Maximum scale to apply trying to fit image to window",
+                 suggestions=["1.0", "1.5", "2.0", "5.0"])
 
     # Library
-    IntSetting("library.width", 300)
+    IntSetting("library.width", 300, desc="Width of the library in px",
+               suggestions=["200", "300", "400", "500"])
     BoolSetting("library.expand", True)
-    BoolSetting("library.show_hidden", False)
-    IntSetting("library.file_check_amount", 30)
+    BoolSetting("library.show_hidden", False,
+                desc="Show hidden files in the library")
+    IntSetting("library.file_check_amount", 30,
+               desc="Number of files to check when calculating directory size",
+               suggestions=["-1", "10", "30", "100"])
 
     # Thumbnail
-    ThumbnailSizeSetting("thumbnail.size", 128)
+    ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
 
     # Slideshow
-    FloatSetting("slideshow.delay", 2.0)
-    StrSetting("slideshow.indicator", "slideshow:")
+    FloatSetting("slideshow.delay", 2.0,
+                 desc="Delay to next image in slideshow")
+    StrSetting("slideshow.indicator", "slideshow:",
+               desc="Text to display in statusbar when slideshow is running")
 
     # Statusbar
-    BoolSetting("statusbar.collapse_home", True)
+    BoolSetting("statusbar.collapse_home", True,
+                desc="Collapse /home/user to ~ in statusbar")
     StrSetting("statusbar.mark_indicator", "[*]")
-    BoolSetting("statusbar.show", True)
-    IntSetting("statusbar.message_timeout", 5000)
+    BoolSetting("statusbar.show", True, desc="Always display the statusbar")
+    IntSetting("statusbar.message_timeout", 5000,
+               desc="Time until statusbar messages are removed")
     StrSetting("statusbar.left", "{pwd}")
     StrSetting("statusbar.left_image",
                "{index}/{total} {basename} [{zoomlevel}]")
