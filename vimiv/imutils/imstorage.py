@@ -137,3 +137,13 @@ class Storage():
         self._index = self._paths.index(path)
         signals.paths_loaded.emit(self._paths)
         signals.path_loaded.emit(self._paths[self._index])
+
+
+def current():
+    """Convenience function to get name of current image.
+
+    Return:
+        abspath to the current image.
+    """
+    storage = objreg.get("imstorage")
+    return storage.current()

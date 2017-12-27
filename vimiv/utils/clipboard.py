@@ -8,6 +8,7 @@ from PyQt5.QtGui import QGuiApplication, QClipboard
 from vimiv import app
 from vimiv.commands import commands
 from vimiv.config import keybindings
+from vimiv.imutils import imstorage
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
@@ -37,7 +38,6 @@ def _get_path_name():
     # TODO move this to another module?
     mode = modehandler.current().lower()
     if mode == "image":
-        imstorage = objreg.get("imstorage")
         return os.path.basename(imstorage.current())
     library = objreg.get("library")
     return library.current()
