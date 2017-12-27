@@ -76,11 +76,11 @@ class Completer(QObject):
         text = text.lstrip(":").lstrip()
         # Path completion
         if text.startswith("open"):
-            return completionmodels.paths, [text.lstrip("open").lstrip()]
+            return completionmodels.paths, (text.lstrip("open").lstrip(),)
         elif text.startswith("!"):
-            return completionmodels.external, []
+            return completionmodels.external, ()
         # Default: command completion
-        return completionmodels.command, [self._mode]
+        return completionmodels.command, (self._mode,)
 
     def _set_model(self, modelfunc, *args):
         """Set the source model of the proxy model.
