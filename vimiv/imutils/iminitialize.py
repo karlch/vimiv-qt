@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Initialize the classes to load and select image paths."""
 
-from vimiv.imutils import imloader, imstorage
+from vimiv.imutils import imloader, imstorage, imwriter
 
 
 def init():
