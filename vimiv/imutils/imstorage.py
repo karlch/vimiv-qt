@@ -45,7 +45,7 @@ class Storage():
             count: How many images to jump forwards.
         """
         if self._paths:
-            self._index = (self._index + count) % len(self._paths)
+            self._set_index((self._index + count) % len(self._paths))
             signals.path_loaded.emit(self.current())
 
     @keybindings.add("p", "prev", mode="image")
@@ -57,7 +57,7 @@ class Storage():
             count: How many images to jump backwards.
         """
         if self._paths:
-            self._index = (self._index - count) % len(self._paths)
+            self._set_index((self._index - count) % len(self._paths))
             signals.path_loaded.emit(self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
@@ -72,7 +72,7 @@ class Storage():
                 -1 is the last image.
         """
         index = count if count else index
-        self._index = index % (len(self._paths) + 1) - 1
+        self._set_index(index % (len(self._paths) + 1) - 1)
         signals.path_loaded.emit(self.current())
 
     @statusbar.module("{abspath}", instance="imstorage")
@@ -126,7 +126,7 @@ class Storage():
             self._load_single(paths[0])
         else:
             self._paths = paths
-            self._index = index
+            self._set_index(index)
             signals.paths_loaded.emit(self._paths)
             signals.path_loaded.emit(self._paths[self._index])
 
@@ -134,9 +134,13 @@ class Storage():
         """Populate list of paths in same directory for single path."""
         directory = os.path.dirname(path)
         self._paths, _ = files.get_supported(files.ls(directory))
-        self._index = self._paths.index(path)
+        self._set_index(self._paths.index(path))
         signals.paths_loaded.emit(self._paths)
         signals.path_loaded.emit(self._paths[self._index])
+
+    def _set_index(self, index):
+        signals.maybe_write_file.emit(self.current())
+        self._index = index
 
 
 def current():

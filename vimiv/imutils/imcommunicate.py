@@ -37,6 +37,8 @@ class ImageCommunicate(QObject):
 
     # Tell the library that it may make sense to update
     maybe_update_library = pyqtSignal(str)
+    # Tell transformation to write to file
+    maybe_write_file = pyqtSignal(str)
 
 
 signals = ImageCommunicate()

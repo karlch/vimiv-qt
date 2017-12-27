@@ -308,7 +308,7 @@ def init_defaults():
 
     # Image
     BoolSetting("image.autoplay", True)
-    # BoolSetting("image.rescale_svg", True)
+    BoolSetting("image.autowrite", True)
     FloatSetting("image.overzoom", 1.0)
 
     # Library
