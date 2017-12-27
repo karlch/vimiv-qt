@@ -35,5 +35,8 @@ class ImageCommunicate(QObject):
     pixmap_loaded = pyqtSignal(QPixmap)
     movie_loaded = pyqtSignal(QMovie)
 
+    # Tell the library that it may make sense to update
+    maybe_update_library = pyqtSignal(str)
+
 
 signals = ImageCommunicate()

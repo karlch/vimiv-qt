@@ -80,6 +80,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.signals.loaded.connect(self._on_paths_loaded)
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
+        imcommunicate.signals.maybe_update_library.connect(self._on_maybe_update)
 
         styles.apply(self)
 
@@ -124,6 +125,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             row.insert(0, QStandardItem(str(i + 1)))
             self.model().appendRow(row)
         self._select_row(0)
+
+    def _on_maybe_update(self, directory):
+        """Possibly load library for new directory."""
+        if not self.model().rowCount() or directory != os.getcwd():
+            libpaths.load(directory)
 
     def _on_settings_changed(self, setting, new_value):
         if setting == "library.width":

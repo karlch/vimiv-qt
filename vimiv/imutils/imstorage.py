@@ -114,9 +114,7 @@ class Storage():
     def _on_update_paths(self, paths, index):
         paths = [os.path.abspath(path) for path in paths]
         directory = os.path.dirname(paths[0])
-        # TODO update library
-        if directory != os.getcwd():
-            os.chdir(directory)
+        signals.maybe_update_library.emit(directory)
         # Populate list of paths in same directory for single path
         if len(paths) == 1:
             self._load_single(paths[0])
