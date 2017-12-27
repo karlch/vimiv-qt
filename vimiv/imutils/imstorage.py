@@ -10,9 +10,10 @@ Signals:
 """
 
 import os
+from random import shuffle
 
 from vimiv.commands import commands
-from vimiv.config import keybindings
+from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imcommunicate import signals
 from vimiv.utils import objreg, slideshow, files
@@ -126,6 +127,8 @@ class Storage():
             self._load_single(paths[0])
         else:
             self._paths = paths
+            if settings.get_value("shuffle"):
+                shuffle(self._paths)
             self._set_index(index)
             signals.paths_loaded.emit(self._paths)
             signals.path_loaded.emit(self._paths[self._index])
@@ -134,6 +137,8 @@ class Storage():
         """Populate list of paths in same directory for single path."""
         directory = os.path.dirname(path)
         self._paths, _ = files.get_supported(files.ls(directory))
+        if settings.get_value("shuffle"):
+            shuffle(self._paths)
         self._set_index(self._paths.index(path))
         signals.paths_loaded.emit(self._paths)
         signals.path_loaded.emit(self._paths[self._index])
