@@ -77,6 +77,8 @@ class Completer(QObject):
         # Path completion
         if text.startswith("open"):
             return completionmodels.paths, [text.lstrip("open").lstrip()]
+        elif text.startswith("!"):
+            return completionmodels.external, []
         # Default: command completion
         return completionmodels.command, [self._mode]
 

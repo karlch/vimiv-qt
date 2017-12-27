@@ -55,3 +55,45 @@ def paths(text):
         data.append(["open %s" % (path)])
     model.set_data(data)
     return model
+
+
+class ExternalCommandModel(completionbasemodel.BaseModel):
+    """Completion model filled with shell executables for :!."""
+
+    def __init__(self):
+        super().__init__()
+        executables = self._get_executables()
+        data = [["!%s" % (cmd)]
+                for cmd in executables
+                if not cmd.startswith(".")]
+        self.set_data(data)
+
+    def _get_executables(self):
+        """Return ordered list of shell executables.
+
+        Thanks to aszlig https://github.com/aszlig who wrote the initial
+        version of this for the Gtk version of vimiv.
+        """
+        pathenv = os.environ.get('PATH')
+        if pathenv is not None:
+            pathdirs = [d for d in pathenv.split(":") if os.path.isdir(d)]
+            executables = set()
+            for bindir in pathdirs:
+                executables |= set(os.listdir(bindir))
+            external_commands = sorted(list(executables))
+        else:
+            external_commands = []
+        return external_commands
+
+
+# Only generate list of executables once
+_external_command_model = ExternalCommandModel()
+
+
+def external():
+    """Completion model filled with external commands for :!.
+
+    Return:
+        The generated completion model.
+    """
+    return _external_command_model
