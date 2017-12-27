@@ -147,7 +147,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             direction: One of "right", "left", "up", "down".
         """
-        # print(self.columns())
         current = self.currentRow()
         if direction == "right":
             current += 1
