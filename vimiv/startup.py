@@ -12,7 +12,7 @@ from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
-from vimiv.utils import xdg, clipboard
+from vimiv.utils import xdg, clipboard, statusbar_loghandler
 
 
 def run(argv):
@@ -64,6 +64,9 @@ def setup_logging(log_level):
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_format)
     logger.addHandler(console_handler)
+
+    sb_handler = statusbar_loghandler.StatusbarLogHandler()
+    logger.addHandler(sb_handler)
 
 
 def get_argparser():

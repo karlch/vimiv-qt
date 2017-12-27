@@ -46,7 +46,6 @@ class TempKeyStorage(QTimer):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
         self.text = ""
-        statusbar.update()
 
 
 class PartialHandler(QObject):
@@ -69,6 +68,7 @@ class PartialHandler(QObject):
         """Clear count and partially matched keys."""
         self.count.clear_text()
         self.keys.clear_text()
+        statusbar.update()
 
     @statusbar.module("{keys}", instance="partialkeys")
     def get_keys(self):

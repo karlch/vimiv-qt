@@ -1,25 +1,12 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Classes to run commands."""
 
+import logging
 import shlex
 import subprocess
 
-from PyQt5.QtCore import pyqtSignal, QObject
-
 from vimiv.commands import commands, cmdexc
-
-
-class Signals(QObject):
-    """Signals used by command runner objects.
-
-    Signals:
-        exited: Emitted when a command exits.
-    """
-
-    exited = pyqtSignal(int, str)
-
-
-signals = Signals()
+from vimiv.gui import statusbar
 
 
 class CommandRunner():
@@ -40,13 +27,14 @@ class CommandRunner():
         try:
             cmd = commands.get(cmdname, mode)
             cmd(args, count=count)
-            signals.exited.emit(0, "")
+            statusbar.update()
+            logging.debug("Ran '%s' succesfully", text)
         except cmdexc.CommandNotFound as e:
-            signals.exited.emit(1, str(e))
+            logging.error(str(e))
         except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
-            signals.exited.emit(1, "%s: %s" % (cmdname, str(e)))
+            logging.error("%s: %s", cmdname, str(e))
         except cmdexc.CommandWarning as w:
-            signals.exited.emit(2, str(w))
+            logging.warning("%s: %s", cmdname, str(w))
 
     def _parse(self, text):
         """Parse given command text into count, name and arguments.
@@ -85,7 +73,8 @@ class ExternalRunner():
         try:
             subprocess.run(text, shell=True, check=True,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            signals.exited.emit(0, "")
+            statusbar.update()
+            logging.debug("Ran '!%s' succesfully", text)
         except subprocess.CalledProcessError as e:
             message = e.stderr.decode().split("\n")[0]
-            signals.exited.emit(e.returncode, message)
+            logging.error("%d  %s", e.returncode, message)

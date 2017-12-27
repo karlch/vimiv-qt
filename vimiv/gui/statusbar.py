@@ -11,10 +11,9 @@ Module Attributes:
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
-from vimiv.commands import runners
 from vimiv.config import settings, styles
 from vimiv.gui import widgets
-from vimiv.utils import objreg
+from vimiv.utils import objreg, statusbar_loghandler
 
 
 _modules = {}
@@ -135,7 +134,19 @@ class StatusBar(QWidget):
 
         styles.apply(self)
 
-        runners.signals.exited.connect(self._on_cmd_exited)
+        statusbar_loghandler.signals.message.connect(self._on_message)
+
+    def _on_message(self, severity, message):
+        """Display log message when logging was called.
+
+        Args:
+            severity: levelname of the log record.
+            message: message of the log record.
+        """
+        self._set_severity_style(severity)
+        self["message"].setText(message)
+        self["stack"].setCurrentWidget(self["message"])
+        self.timer.start()
 
     def update(self):
         """Update the statusbar."""
@@ -145,18 +156,6 @@ class StatusBar(QWidget):
             label = self[position]
             text = self._get_text(position, mode)
             label.setText(text)
-
-    def message(self, text, severity="Info"):
-        """Push a temporary message to the statusbar.
-
-        Args:
-            text: Text of the temporary message.
-            severity: One of "Info", "Warning", "Error". Affects the style.
-        """
-        self._set_severity_style(severity.lower())
-        self["message"].setText(text)
-        self["stack"].setCurrentWidget(self["message"])
-        self.timer.start()
 
     def clear_message(self):
         """Remove a temporary message from the statusbar."""
@@ -180,15 +179,6 @@ class StatusBar(QWidget):
             text = settings.get_value("statusbar.%s" % (position))
         return evaluate_modules(text)
 
-    def _on_cmd_exited(self, returncode, message):
-        """Push message or update status when a command exited."""
-        if returncode == 0:
-            self.update()
-        elif returncode == 42:
-            self.message(message, "Warning")
-        else:
-            self.message(message, "Error")
-
     def _set_severity_style(self, severity):
         """Set the style of the statusbar for a temporary message.
 
@@ -196,7 +186,7 @@ class StatusBar(QWidget):
         depends on the severity.
 
         Args:
-            severity: One of "Info", "Warning", "Error".
+            severity: One of "debug", "info", "warning", "error"
         """
         append = """
         QLabel {
