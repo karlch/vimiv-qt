@@ -65,6 +65,10 @@ class Args(argparse.ArgumentParser):
         """
         super().__init__(prog=cmdname)
 
+    def print_help(self):
+        """Override help message to display in statusbar."""
+        raise cmdexc.ArgumentError(self.format_usage().rstrip())
+
     def error(self, message):
         """Override error to raise an exception instead of calling sys.exit."""
         if message.startswith("argument"):  # Remove argument argname:
