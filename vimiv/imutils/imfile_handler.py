@@ -1,4 +1,5 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
+"""Classes to deal with the actual image file."""
 
 import logging
 import os
@@ -14,13 +15,25 @@ from vimiv.utils import objreg
 
 
 class ImageFileHandler(QObject):
+    """Handler to check for changes and write images to disk.
+
+    The handler connects to the maybe_write_file signal, checks if the user
+    wants writing and if the image has changed and if so writes the file to
+    disk applying all changes.
+
+    Also provides a generic :write command to force writing an image to disk
+    with possibly a new filename.
+
+    Attributes:
+        transform: Transform class to get rotate and flip from.
+    """
 
     _pool = QThreadPool.globalInstance()
 
     @objreg.register("imfile_handler")
     def __init__(self):
         super().__init__()
-        self.transform = imtransform.Transform(self)
+        self.transform = imtransform.Transform()
         # This is the reason for this wrapper class
         # self.manipulate = immanipulate.Manipulate()
         imcommunicate.signals.maybe_write_file.connect(self._maybe_write)
@@ -32,6 +45,11 @@ class ImageFileHandler(QObject):
         return self.transform.transform_pixmap(pixmap)
 
     def _maybe_write(self, path):
+        """Write image to disk if requested and it has changed.
+
+        Args:
+            path: Path to the image file.
+        """
         if not settings.get_value("image.autowrite"):
             self._reset()
         elif self.transform.changed():
@@ -55,7 +73,7 @@ class ImageFileHandler(QObject):
             path: Use path instead of currently loaded path.
         """
         assert isinstance(path, list), "Must be list from nargs"
-        path = " ".join(path) if path else imstorage.current()  # List from nargs
+        path = " ".join(path) if path else imstorage.current()
         pixmap = self.pixmap()
         self.write_pixmap(pixmap, path)
 
@@ -72,7 +90,12 @@ class ImageFileHandler(QObject):
 
 
 class WriteImageRunner(QRunnable):
-    """Write QPixmap to file in an extra thread."""
+    """Write QPixmap to file in an extra thread.
+
+    Attributes:
+        _pixmap: The QPixmap to write.
+        _path: Path to write the pixmap to.
+    """
 
     def __init__(self, pixmap, path):
         super().__init__()
@@ -80,6 +103,7 @@ class WriteImageRunner(QRunnable):
         self._path = path
 
     def run(self):
+        """Write image to file."""
         logging.info("Saving %s", self._path)
         try:
             self._can_write()

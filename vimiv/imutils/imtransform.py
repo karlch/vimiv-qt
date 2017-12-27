@@ -11,10 +11,20 @@ from vimiv.utils import objreg
 
 
 class Transform():
+    """Apply transformations to an image.
+
+    Provides the :rotate and :flip commands and applies transformations to a
+    given pixmap.
+
+    Attributes:
+        _transform: QTransform object used to apply transformations.
+        _rotation_angle: Currently applied rotation angle in degrees.
+        _flip_horizontal: Flip the image horizontally.
+        _flip_vertical: Flip the image vertically.
+    """
 
     @objreg.register("transform")
-    def __init__(self, image_file_handler):
-        self._parent = image_file_handler
+    def __init__(self):
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
@@ -46,7 +56,7 @@ class Transform():
             vertical: Flip image vertically instead of horizontally.
         """
         # Vertical flip but image rotated by 90 degrees
-        if (vertical and self._rotation_angle % 180):
+        if vertical and self._rotation_angle % 180:
             self._transform.scale(-1, 1)
         # Standard vertical flip
         elif vertical:
@@ -66,14 +76,18 @@ class Transform():
         imcommunicate.signals.pixmap_loaded.emit(pixmap)
 
     def transform_pixmap(self, pm):
+        """Apply all transformations to the given pixmap."""
         return pm.transformed(self._transform, mode=Qt.SmoothTransformation)
 
     def changed(self):
-        if self._rotation_angle or self._flip_horizontal or self._flip_vertical:
+        """Return True if transformations have been applied."""
+        if self._rotation_angle or self._flip_horizontal \
+                or self._flip_vertical:
             return True
         return False
 
     def reset(self):
+        """Reset transformations."""
         self._transform.reset()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False

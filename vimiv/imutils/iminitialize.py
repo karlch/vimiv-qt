@@ -5,6 +5,7 @@ from vimiv.imutils import imloader, imstorage, imfile_handler
 
 
 def init():
+    """Initialize the classes needed for imutils."""
     imstorage.Storage()
     imloader.ImageLoader()
     imfile_handler.ImageFileHandler()
