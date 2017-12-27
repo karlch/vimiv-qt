@@ -114,6 +114,15 @@ def reset():
         setting.set_to_default()
 
 
+def set_to_default(name):
+    """Set one setting back to default.
+
+    Args:
+        name: Name of the setting as stored in the storage.
+    """
+    _storage[name].set_to_default()
+
+
 def store(init):
     """Decorator to store a setting as soon as it is initialized."""
     def setting_init(setting, name, default_value):

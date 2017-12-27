@@ -3,10 +3,11 @@
 
 from vimiv.commands import commands, cmdexc
 from vimiv.config import settings, keybindings
+from vimiv.utils import strconvert
 
 
 @keybindings.add("b", "set statusbar.show!")
-@commands.argument("value", optional=True)
+@commands.argument("value", nargs="*")
 @commands.argument("setting")
 @commands.register()
 def set(setting, value=None):  # pylint: disable=redefined-builtin
@@ -16,14 +17,18 @@ def set(setting, value=None):  # pylint: disable=redefined-builtin
         setting: Name of the setting to set.
         value: Value to set the setting to.
     """
+    value = " ".join(value)  # List comes from nargs='*'
     try:
         # Toggle boolean settings
         if setting.endswith("!"):
             setting = setting.rstrip("!")
             settings.toggle(setting)
         # Add to number settings
-        elif value and value.startswith("+") or value.startswith("-"):
+        elif value and (value.startswith("+") or value.startswith("-")):
             settings.add_to(setting, value)
+        # Set default
+        elif value == "":
+            settings.set_to_default(setting)
         else:
             settings.override(setting, value)
         new_value = settings.get_value(setting)
@@ -31,6 +36,8 @@ def set(setting, value=None):  # pylint: disable=redefined-builtin
     except KeyError as e:
         raise cmdexc.CommandError("unknown setting %s" % (setting))
     except TypeError as e:
+        raise cmdexc.CommandError(str(e))
+    except strconvert.ConversionError as e:
         raise cmdexc.CommandError(str(e))
 
 
