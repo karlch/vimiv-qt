@@ -3,7 +3,7 @@
 
 The ThumbnailManager class uses the Creator classes to create thumbnails for a
 list of paths. When one thumbnail was created, the 'created' signal is emitted
-with the index and the QIcon of the generated thumbnail for the thumbnail
+with the index and the QPixmap of the generated thumbnail for the thumbnail
 widget to update.
 """
 
@@ -12,10 +12,10 @@ import os
 import tempfile
 
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, Qt
-from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
+from PyQt5.QtGui import QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, icon_creater
+from vimiv.utils import xdg, pixmap_creater
 
 
 KEY_URI = 'Thumb::URI'
@@ -39,10 +39,10 @@ class ThumbnailManager(QObject):
         _large: Create large thumbnails.
 
     Signals:
-        created: Emitted with index and QIcon when a thumbnail was created.
+        created: Emitted with index and pixmap when a thumbnail was created.
     """
 
-    created = pyqtSignal(int, QIcon)
+    created = pyqtSignal(int, QPixmap)
     pool = QThreadPool.globalInstance()
 
     def __init__(self, large=True):
@@ -54,7 +54,7 @@ class ThumbnailManager(QObject):
             else os.path.join(directory, "normal")
         self.fail_directory = \
             os.path.join(directory, "fail", "vimiv-%s" % (vimiv.__version__))
-        self.fail_icon = icon_creater.error_thumbnail()
+        self.fail_pixmap = pixmap_creater.error_thumbnail()
 
     def create_thumbnails_async(self, paths):
         """Start ThumbnailsAsyncCreator to create thumbnails.
@@ -110,10 +110,10 @@ class ThumbnailCreator(QRunnable):
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
         if os.path.exists(thumbnail_path):
-            icon = self._maybe_recreate_thumbnail(self._path, thumbnail_path)
+            pixmap = self._maybe_recreate_thumbnail(self._path, thumbnail_path)
         else:
-            icon = self._create_thumbnail(self._path, thumbnail_path)
-        self._manager.created.emit(self._index, icon)
+            pixmap = self._create_thumbnail(self._path, thumbnail_path)
+        self._manager.created.emit(self._index, pixmap)
 
     def _get_thumbnail_path(self, path):
         filename = self._get_thumbnail_filename(path)
@@ -138,7 +138,7 @@ class ThumbnailCreator(QRunnable):
             path: Path to the image for which the thumbnail is created.
             thumbnail_path: Path to which the thumbnail is stored.
         Return:
-            The created QIcon.
+            The created QPixmap.
         """
         # Cannot access source; create neither thumbnail nor fail file
         if not os.access(path, os.R_OK):
@@ -162,8 +162,8 @@ class ThumbnailCreator(QRunnable):
             os.chmod(tmp_filename, 0o600)
             image.save(tmp_filename, format="png")
             os.replace(tmp_filename, thumbnail_path)
-            return QIcon(QPixmap(image))
-        return self._manager.fail_icon
+            return QPixmap(image)
+        return self._manager.fail_pixmap
 
     def _get_thumbnail_attributes(self, path, image):
         """Return a dictionary filled with thumbnail attributes.
@@ -190,11 +190,11 @@ class ThumbnailCreator(QRunnable):
             path: Path to the image for which the thumbnail is created.
             thumbnail_path: Path to which the thumbnail is stored.
         Return:
-            The created QIcon.
+            The created QPixmap.
         """
         path_mtime = str(int(os.path.getmtime(path)))
         image = QImage(thumbnail_path)
         thumb_mtime = image.text(KEY_MTIME)
         if path_mtime == thumb_mtime:
-            return QIcon(QPixmap(image))
+            return QPixmap(image)
         return self._create_thumbnail(path, thumbnail_path)

@@ -112,7 +112,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("-", "zoom out", mode="image")
     @keybindings.add("+", "zoom in", mode="image")
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(instance="image", count=1)
+    @commands.register(instance="image", count=1, mode="image")
     def zoom(self, direction, count):
         """Zoom the image.
 

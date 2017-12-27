@@ -5,14 +5,14 @@ import collections
 import os
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem
+from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QLabel
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
-from vimiv.utils import objreg, eventhandler, icon_creater, thumbnail_manager
+from vimiv.utils import objreg, eventhandler, pixmap_creater, thumbnail_manager
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -23,7 +23,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         _paths: Last paths loaded to avoid duplicate loading.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
             string name of the size as value.
-        _default_icon: QIcon to display before thumbnails were generated.
+        _default_thumb: Thumbnail to display before thumbnails were generated.
         _manager: ThumbnailManager class to create thumbnails asynchronously.
     """
 
@@ -68,7 +68,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._paths = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large")])
-        self._default_icon = icon_creater.default_thumbnail()
+        self._default_pixmap = pixmap_creater.default_thumbnail()
         self._manager = thumbnail_manager.ThumbnailManager()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -94,9 +94,11 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             self._paths = paths
             self.clear()
             for _ in paths:
-                item = QListWidgetItem(self._default_icon, None)
+                item = QListWidgetItem()
                 item.setSizeHint(QSize(self.item_size(), self.item_size()))
                 self.addItem(item)
+                thumb = Thumbnail(self._default_pixmap)
+                self.setItemWidget(item, thumb)
             self._manager.create_thumbnails_async(paths)
 
     def _on_activated(self, index):
@@ -119,17 +121,19 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if widget == "thumbnail":
             self._stack.setCurrentWidget(objreg.get("image"))
 
-    def _on_thumbnail_created(self, index, icon):
+    def _on_thumbnail_created(self, index, pixmap):
         """Insert created thumbnail as soon as manager created it.
 
         Args:
             index: Index of the created thumbnail as integer.
-            icon: QIcon to insert.
+            pixmap: QPixmap to insert.
         """
         self.takeItem(index)
-        item = QListWidgetItem(icon, None)
+        item = QListWidgetItem()
         item.setSizeHint(QSize(self.item_size(), self.item_size()))
         self.insertItem(index, item)
+        thumb = Thumbnail(pixmap)
+        self.setItemWidget(item, thumb)
 
     @keybindings.add("k", "scroll up", mode="thumbnail")
     @keybindings.add("j", "scroll down", mode="thumbnail")
@@ -251,3 +255,22 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def total(self):
         """Return the size of the thumbnails for the statusbar."""
         return str(self.model().rowCount())
+
+
+class Thumbnail(QLabel):
+    """Simple class to represent one thumbnail."""
+
+    def __init__(self, pixmap):
+        super().__init__()
+        self.original = pixmap
+        self.setPixmap(pixmap)
+        self.setAlignment(Qt.AlignCenter)
+        self.setStyleSheet("QLabel { background: none; }")
+
+    def resizeEvent(self, event):
+        """Rescale thumbnail on resize event."""
+        super().resizeEvent(event)
+        scale = self.width() / 256
+        pixmap = self.original.scaledToWidth(
+            self.original.width() * scale, Qt.SmoothTransformation)
+        self.setPixmap(pixmap)

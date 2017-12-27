@@ -1,8 +1,8 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
-"""Create simple versions of QIcon."""
+"""Create simple versions of QPixmap."""
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap, QColor, QPainter
+from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from vimiv.config import styles
 
@@ -28,7 +28,7 @@ def thumbnail(colorname):
     pixmap = QPixmap(256, 256)
     frame_color = styles.get("thumbnail.frame.fg")
     _draw(pixmap, colorname, 10, frame_color)
-    return QIcon(pixmap)
+    return pixmap
 
 
 def _draw(pixmap, colorname, frame_size, frame_colorname):
