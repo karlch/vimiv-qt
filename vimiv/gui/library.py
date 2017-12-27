@@ -1,14 +1,16 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Library widget with model and delegate."""
 
+import os
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QFont
 
-from vimiv import app
 from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
+from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, eventhandler
 
@@ -96,12 +98,17 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             return
         path = path_index.data()
-        app.open_paths([path], select_mode=False)  # We select mode later
-        if path == self._last_selected:
+        # Open directory in library
+        if os.path.isdir(path):
+            libpaths.load(path)
+        # Close library and enter image mode on double selection
+        elif path == self._last_selected:
             modehandler.enter("image")
             self.hide()
             self._last_selected = ""
+        # Update image
         else:
+            imcommunicate.signals.update_path.emit(os.path.abspath(path))
             self._last_selected = path
 
     def _on_paths_loaded(self, data):

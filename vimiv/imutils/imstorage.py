@@ -15,7 +15,7 @@ from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.imutils.imcommunicate import signals
-from vimiv.utils import objreg, slideshow
+from vimiv.utils import objreg, slideshow, files
 
 
 class Storage():
@@ -107,12 +107,29 @@ class Storage():
 
     def _on_update_path(self, path):
         if path in self._paths:
-            self.goto(self._paths.index(path), 0)
+            self.goto(self._paths.index(path) + 1, 0)
         else:
-            raise NotImplementedError
+            self._load_single(path)
 
     def _on_update_paths(self, paths, index):
-        self._paths = paths
-        signals.paths_loaded.emit(paths)
-        self._index = index
-        signals.path_loaded.emit(paths[index])
+        paths = [os.path.abspath(path) for path in paths]
+        directory = os.path.dirname(paths[0])
+        # TODO update library
+        if directory != os.getcwd():
+            os.chdir(directory)
+        # Populate list of paths in same directory for single path
+        if len(paths) == 1:
+            self._load_single(paths[0])
+        else:
+            self._paths = paths
+            self._index = index
+            signals.paths_loaded.emit(self._paths)
+            signals.path_loaded.emit(self._paths[self._index])
+
+    def _load_single(self, path):
+        """Populate list of paths in same directory for single path."""
+        directory = os.path.dirname(path)
+        self._paths, _ = files.get_supported(files.ls(directory))
+        self._index = self._paths.index(path)
+        signals.paths_loaded.emit(self._paths)
+        signals.path_loaded.emit(self._paths[self._index])

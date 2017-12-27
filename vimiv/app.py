@@ -58,7 +58,7 @@ def open_paths(paths, select_mode=True):
     images, directories = files.get_supported(paths)
     mode = "library"
     if images:
-        _open_images(images)
+        imcommunicate.signals.update_paths.emit(images, 0)
         mode = "image"
     elif directories:
         libpaths.load(directories[0])
@@ -67,28 +67,3 @@ def open_paths(paths, select_mode=True):
     if select_mode:
         modehandler.enter(mode)
     return True
-
-
-def _open_images(images):
-    """Open a list of images.
-
-    If the list contains a single element, all images in the same directory are
-    opened. Otherwise the list is opened as is.
-
-    Args:
-        images: List of images.
-    """
-    images = [os.path.abspath(image) for image in images]  # chdir later
-    image_directory = os.path.dirname(images[0])
-    # Populate library if the directory has changed
-    if image_directory != os.getcwd():
-        os.chdir(image_directory)
-        libpaths.load(image_directory)
-    # Populate list of images in the same directory for only one path
-    index = 0
-    if len(images) == 1:
-        first_image = os.path.abspath(os.path.basename(images[0]))
-        images, _ = files.get_supported(files.ls(os.getcwd()))
-        index = images.index(first_image)
-    # Load images
-    imcommunicate.signals.update_paths.emit(images, index)
