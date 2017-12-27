@@ -131,20 +131,21 @@ class Storage():
         if len(paths) == 1:
             self._load_single(paths[0])
         else:
+            self._set_index(index)
             self._paths = paths
             if settings.get_value("shuffle"):
                 shuffle(self._paths)
-            self._set_index(index)
             signals.paths_loaded.emit(self._paths)
             signals.path_loaded.emit(self._paths[self._index])
 
     def _load_single(self, path):
         """Populate list of paths in same directory for single path."""
         directory = os.path.dirname(path)
-        self._paths, _ = files.get_supported(files.ls(directory))
+        paths, _ = files.get_supported(files.ls(directory))
         if settings.get_value("shuffle"):
-            shuffle(self._paths)
-        self._set_index(self._paths.index(path))
+            shuffle(paths)
+        self._set_index(paths.index(path))
+        self._paths = paths  # Must update after index for maybe_write
         signals.paths_loaded.emit(self._paths)
         signals.path_loaded.emit(self._paths[self._index])
 
