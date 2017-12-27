@@ -11,7 +11,7 @@ from PyQt5.QtGui import QPixmap, QImageReader
 from vimiv.commands import commands
 from vimiv.config import settings
 from vimiv.imutils import imtransform, imcommunicate, imloader, imstorage
-from vimiv.utils import objreg
+from vimiv.utils import objreg, files
 
 
 class ImageFileHandler(QObject):
@@ -104,17 +104,13 @@ class WriteImageRunner(QRunnable):
 
     def run(self):
         """Write image to file."""
-        logging.info("Saving %s", self._path)
+        logging.info("Saving %s...", self._path)
         try:
             self._can_write()
+            self._write()
+            logging.info("Saved %s", self._path)
         except WriteError as e:
             logging.error(str(e))
-            return
-        self._write()
-        if not os.path.isfile(self._path):
-            logging.error("Writing failed, was the extension valid?")
-        else:
-            logging.info("Successfully saved %s", self._path)
 
     def _can_write(self):
         """Check if the given path is writable.
@@ -143,6 +139,12 @@ class WriteImageRunner(QRunnable):
         os.close(handle)
         self._pixmap.save(filename)
         os.rename(filename, self._path)
+        # Check if valid image was created
+        if not os.path.isfile(self._path):
+            raise WriteError("File not written, unknown exception")
+        elif not files.is_image(self._path):
+            os.remove(self._path)
+            raise WriteError("No valid image written. Is the extention valid?")
 
 
 class WriteError(Exception):

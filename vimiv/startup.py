@@ -93,8 +93,6 @@ def get_argparser():
     parser.add_argument("-s", "--set", nargs=2, default=[], action="append",
                         dest="cmd_settings", metavar=("OPTION", "VALUE"),
                         help="Set a temporary setting")
-    # parser.add_argument("--debug", action="store_true",
-    #                     help="Run in debug mode")
     parser.add_argument("--log-level", type=argtypes.loglevel, metavar="LEVEL",
                         help="Set log level to LEVEL", default="warning")
     parser.add_argument("paths", nargs="*", type=argtypes.existing_path,

@@ -1,6 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 """Library widget with model and delegate."""
 
+import logging
 import os
 
 from PyQt5.QtCore import Qt
@@ -98,6 +99,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             path_index = self.selectionModel().selectedIndexes()[1]
         # Path does not exist, do not try to select
         except IndexError:
+            logging.warning("library: selecting empty path")
             return
         path = path_index.data()
         # Open directory in library
@@ -165,7 +167,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row = self.row()
             # Directory is empty
             except IndexError:
-                raise cmdexc.CommandError("Directory is empty")
+                raise cmdexc.CommandWarning("Directory is empty")
             if direction == "up":
                 row -= count
             else:
