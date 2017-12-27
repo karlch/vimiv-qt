@@ -362,7 +362,7 @@ def init_defaults():
                 desc="Show hidden files in the library")
     IntSetting("library.file_check_amount", 30,
                desc="Number of files to check when calculating directory size",
-               suggestions=["-1", "10", "30", "100"])
+               suggestions=["10", "30", "100", "0"])
 
     # Thumbnail
     ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
