@@ -8,7 +8,7 @@ from PyQt5.QtCore import Qt, QSize, QItemSelectionModel
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QLabel
 
 from vimiv.commands import commands, argtypes
-from vimiv.config import styles, keybindings
+from vimiv.config import styles, keybindings, settings
 from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
@@ -73,7 +73,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
-        self.setIconSize(QSize(256, 256))
+        default_size = settings.get_value("thumbnail.size")
+        self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
         imcommunicate.signals.paths_loaded.connect(self._on_paths_loaded)
