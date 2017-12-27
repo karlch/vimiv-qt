@@ -26,7 +26,7 @@ class Storage():
         _index: Index of the currently displayed image in the _paths list.
     """
 
-    @objreg.register("impaths")
+    @objreg.register("imstorage")
     def __init__(self):
         self._paths = []
         self._index = 0
@@ -37,7 +37,7 @@ class Storage():
         signals.update_paths.connect(self._on_update_paths)
 
     @keybindings.add("n", "next", mode="image")
-    @commands.register(instance="impaths", count=1)
+    @commands.register(instance="imstorage", count=1)
     def next(self, count):
         """Goto to next image.
 
@@ -49,7 +49,7 @@ class Storage():
             signals.path_loaded.emit(self.current())
 
     @keybindings.add("p", "prev", mode="image")
-    @commands.register(instance="impaths", count=1)
+    @commands.register(instance="imstorage", count=1)
     def prev(self, count):
         """Goto to previous image.
 
@@ -63,7 +63,7 @@ class Storage():
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
     @commands.argument("index", type=int)
-    @commands.register(instance="impaths", mode="image", count=0)
+    @commands.register(instance="imstorage", mode="image", count=0)
     def goto(self, index, count):
         """Goto image at index.
 
@@ -75,26 +75,26 @@ class Storage():
         self._index = index % (len(self._paths) + 1) - 1
         signals.path_loaded.emit(self.current())
 
-    @statusbar.module("{abspath}", instance="impaths")
+    @statusbar.module("{abspath}", instance="imstorage")
     def current(self):
         """Return the path to the current image or None."""
         if self._paths:
             return self._paths[self._index]
         return ""
 
-    @statusbar.module("{basename}", instance="impaths")
+    @statusbar.module("{basename}", instance="imstorage")
     def basename(self):
         """Return the basename of the currently selected image."""
         return os.path.basename(self.current())
 
-    @statusbar.module("{index}", instance="impaths")
+    @statusbar.module("{index}", instance="imstorage")
     def index(self):
         """Return index formatted as zero prepended string."""
         if self._paths:
             return str(self._index + 1).zfill(len(self.total()))
         return "0"
 
-    @statusbar.module("{total}", instance="impaths")
+    @statusbar.module("{total}", instance="imstorage")
     def total(self):
         """Return total amount of paths as string."""
         return str(len(self._paths))

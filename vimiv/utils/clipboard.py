@@ -37,7 +37,7 @@ def _get_path_name():
     # TODO move this to another module?
     mode = modehandler.current().lower()
     if mode == "image":
-        imstorage = objreg.get("impaths")
+        imstorage = objreg.get("imstorage")
         return os.path.basename(imstorage.current())
     library = objreg.get("library")
     return library.current()
