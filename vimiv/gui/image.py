@@ -225,6 +225,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self.scale(self._scale, 1)
         statusbar.update()  # Zoom level changes
 
+    def width(self):
+        """Return width of the viewport to remove scrollbar width."""
+        return self.viewport().width()
+
+    def height(self):
+        """Returh height of the viewport to remove scrollbar height."""
+        return self.viewport().height()
+
     @statusbar.module("{zoomlevel}", instance="image")
     def _get_zoom_level(self):
         """Return the current zoom level in percent."""
