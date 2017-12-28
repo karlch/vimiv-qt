@@ -69,7 +69,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._last_selected = ""
         self._positions = {}
 
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
 
         model = LibraryModel()
