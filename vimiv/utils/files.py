@@ -26,11 +26,11 @@ def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
     """
     directory = os.path.abspath(os.path.expanduser(directory))
     def listdir_wrapper(show_hidden):
+        """Wrapper around os.listdir to possible hide dotfiles."""
         for path in os.listdir(directory):
             if not path.startswith(".") or show_hidden:
                 yield os.path.join(directory, path)
-    paths = listdir_wrapper(show_hidden)
-    return sorted(paths)
+    return sorted(listdir_wrapper(show_hidden))
 
 
 def get_supported(paths):

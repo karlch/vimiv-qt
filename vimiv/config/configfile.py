@@ -84,7 +84,7 @@ def _update_setting(name, parser):
         settings.override(setting_name, parser_option)
         logging.info("Overriding '%s' with '%s'", setting_name, parser_option)
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
-        logging.warning(str(e) + " in configfile")
+        logging.warning("%s in configfile", str(e))
 
 
 def _add_statusbar_formatters(configsection):

@@ -95,6 +95,7 @@ class ShellCommandRunnable(QRunnable):
         self._text = text
 
     def run(self):
+        """Run shell command on QThreadPool.start(self)."""
         try:
             subprocess.run(self._text, shell=True, check=True,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)

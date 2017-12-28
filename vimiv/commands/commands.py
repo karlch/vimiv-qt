@@ -197,15 +197,15 @@ class register:  # pylint: disable=invalid-name
 @argument("command", nargs="*")
 @argument("alias")
 @register()
-def alias(alias, command, mode):
+def alias(name, command, mode):
     """Add an alias for a command.
 
     Args:
-        alias: Name of the alias to create.
+        name: Name of the alias to create.
         command: Name of the command to alias.
         mode: Mode in which the command is valid.
     """
     command = " ".join(command)
-    if alias in registry[mode]:
+    if name in registry[mode]:
         raise cmdexc.CommandError(
-            "Not overriding default command %s" % (alias))
+            "Not overriding default command %s" % (name))

@@ -11,7 +11,8 @@ import os
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
-from PyQt5.QtGui import QStandardItemModel, QStandardItem, QColor, QTextDocument
+from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
+                         QTextDocument)
 
 from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
@@ -134,7 +135,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             row = [QStandardItem(elem) for elem in row]
             row.insert(0, QStandardItem(str(i + 1)))
             self.model().appendRow(row)
-        row = self._positions[os.getcwd()] if os.getcwd() in self._positions else 0
+        row = self._positions[os.getcwd()] \
+            if os.getcwd() in self._positions \
+            else 0
         self._select_row(row)
 
     def _on_maybe_update(self, directory):
@@ -316,6 +319,7 @@ class LibraryDelegate(QStyledItemDelegate):
         painter.restore()
 
     def sizeHint(self, option, index):
+        """Return size of the QTextDocument as size hint."""
         text = '<span style="font: %s;">any</>' % (self.font)
         self.doc.setHtml(text)
         return QSize(self.doc.idealWidth(), self.doc.size().height())

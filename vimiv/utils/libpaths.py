@@ -52,8 +52,6 @@ def _extend_data(data, paths, dirs=False):
         paths: List of paths to generate data for.
         dirs: Whether all paths are directories.
     """
-    if not paths:
-        return data
     for path in paths:
         name = os.path.basename(path)
         if dirs:

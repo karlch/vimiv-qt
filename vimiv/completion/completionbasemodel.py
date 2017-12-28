@@ -21,6 +21,11 @@ class BaseModel(QStandardItemModel):
         self.column_widths = column_widths
 
     def set_data(self, data):
+        """Add rows to the model.
+
+        Args:
+            data: List of tuples containing the data for each row.
+        """
         for item in data:
             row = [QStandardItem(elem) for elem in item]
             self.appendRow(row)

@@ -96,6 +96,7 @@ def get_active_mode():
     for mode in modes.values():
         if mode.active:
             return mode
+    return None
 
 
 def current():

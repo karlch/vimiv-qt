@@ -26,7 +26,7 @@ attr-rgx=[a-z_][a-z0-9_]{0,30}$
 argument-rgx=[a-z_][a-z0-9_]{0,30}$
 variable-rgx=[a-z_][a-z0-9_]{0,30}$
 docstring-min-length=3
-no-docstring-rgx=(^__|^main$|^test_|decorator|inside)
+no-docstring-rgx=(^__|^main$|^test_|decorator|inside|^_on)
 
 [FORMAT]
 max-line-length=79

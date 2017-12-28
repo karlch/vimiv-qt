@@ -4,7 +4,6 @@
 import re
 
 
-
 def add_html(tag, text):
     """Surround text in a html tag.
 
