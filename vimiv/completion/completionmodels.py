@@ -8,7 +8,7 @@
 
 import os
 
-from vimiv.commands import commands
+from vimiv.commands import commands, runners
 from vimiv.completion import completionbasemodel
 from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files
@@ -28,6 +28,9 @@ def command(mode):
         if not cmd.hide:
             elem = (name, cmd.description)
             cmdlist.append(elem)
+    for alias, cmd in runners.AliasRunner.aliases.items():
+        desc = "Alias for '%s'" % (cmd)
+        cmdlist.append((alias, desc))
     model.set_data(cmdlist)
     model.sort(0)
     return model
