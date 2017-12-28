@@ -11,7 +11,7 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.config import settings
-from vimiv.utils import files, htmltags
+from vimiv.utils import files, misc
 
 
 class Signals(QObject):
@@ -57,6 +57,6 @@ def _extend_data(data, paths, dirs=False):
     for path in paths:
         name = os.path.basename(path)
         if dirs:
-            name = htmltags.add("b", name + "/")
+            name = misc.add_html("b", name + "/")
         size = files.get_size(path)
         data.append((name, size))

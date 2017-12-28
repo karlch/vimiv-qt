@@ -18,7 +18,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
-from vimiv.utils import objreg, libpaths, eventhandler, htmltags
+from vimiv.utils import objreg, libpaths, eventhandler, misc
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -108,7 +108,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             logging.warning("library: selecting empty path")
             return
-        path = htmltags.strip(path_index.data())
+        path = misc.strip_html(path_index.data())
         # Open directory in library
         if os.path.isdir(path):
             libpaths.load(path)
@@ -182,7 +182,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row -= count
             else:
                 row += count
-            self._select_row(row % self.model().rowCount())
+            self._select_row(misc.clamp(row, self.model().rowCount() - 1, 0))
 
     @keybindings.add("gg", "goto 1", mode="library")
     @keybindings.add("G", "goto -1", mode="library")
@@ -195,10 +195,12 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             row: Number of the row to select of no count is given.
                 -1 is the last row.
         """
+        if row == - 1:
+            row = self.model().rowCount()
         row = count if count else row  # Prefer count
         if row > 0:
             row -= 1  # Start indexing at 1
-        row = (row) % (self.model().rowCount())
+        row = misc.clamp(row, self.model().rowCount() - 1, 0)
         self._select_row(row)
 
     def resizeEvent(self, event):

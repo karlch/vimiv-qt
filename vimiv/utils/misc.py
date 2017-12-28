@@ -1,11 +1,11 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
-"""Functions to manipulate html tags of text."""
+"""Various small functions that don't really fit into an own module."""
 
 import re
 
 
 
-def add(tag, text):
+def add_html(tag, text):
     """Surround text in a html tag.
 
     Args:
@@ -15,7 +15,7 @@ def add(tag, text):
     return "<%s>%s</%s>" % (tag, text, tag)
 
 
-def strip(text):
+def strip_html(text):
     """Strip all html tags from text.
 
     strip("<b>hello</b>") = "hello"
@@ -25,3 +25,9 @@ def strip(text):
     """
     stripper = re.compile('<.*?>')
     return re.sub(stripper, '', text)
+
+
+def clamp(value, maximum, minimum):
+    """Clamp a value so it does not exceed boundaries."""
+    value = min(value, maximum)
+    return max(value, minimum)
