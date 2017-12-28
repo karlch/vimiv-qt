@@ -10,6 +10,7 @@ import configparser
 import logging
 import os
 
+from vimiv.commands.runners import AliasRunner, cmdexc
 from vimiv.config import settings
 from vimiv.modes import modereg
 from vimiv.utils import xdg
@@ -72,6 +73,9 @@ def _read(files):
     # Read additional statusbar formatters
     if "STATUSBAR" in parser:
         _add_statusbar_formatters(parser["STATUSBAR"])
+    # Read aliases
+    if "ALIASES" in parser:
+        _add_aliases(parser["ALIASES"])
 
 
 def _update_setting(name, parser):
@@ -121,3 +125,17 @@ def _get_section_option(name):
     section = split[0].upper()
     option = split[1]
     return section, option
+
+
+def _add_aliases(configsection):
+    """Add optional aliases defined in the alias section to AliasRunner.
+
+    Args:
+        configsection: ALIASES section in the config file.
+    """
+    for name, command in configsection.items():
+        try:
+            AliasRunner.alias(AliasRunner, name, [command], "global")
+        except cmdexc.CommandError as e:
+            logging.error("Reading aliases from config: %s", str(e))
+
