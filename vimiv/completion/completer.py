@@ -52,8 +52,9 @@ class Completer(QObject):
             mode: Mode from which the command line was entered for commands.
         """
         self._mode = mode
-        # Default to command completion
-        self._set_model(completionmodels.command, self._mode)
+        # Set model according to text, defaults are not possible as :command
+        # accepts arbitrary text as argument
+        self._maybe_update_model(self._cmd.text())
         self.parent().show()
         self.parent().raise_()
 
