@@ -154,16 +154,22 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             direction: One of "right", "left", "up", "down".
         """
         current = self.currentRow()
+        column = current % self.columns()
         if direction == "right":
             current += 1
+            current = min(current, self.count() - 1)
         elif direction == "left":
             current -= 1
+            current = max(0, current)
         elif direction == "down":
-            current += self.columns()
+            elems_in_last_row = self.count() % self.columns()
+            # Do not jump to last element when in last row
+            if current < self.count() - elems_in_last_row:
+                current += self.columns()
+                current = min(current, self.count() - 1)
         else:
             current -= self.columns()
-        current = max(0, current)
-        current = min(current, self.count() - 1)
+            current = max(column, current)
         self._select_item(current)
 
     @keybindings.add("gg", "goto 1", mode="thumbnail")
