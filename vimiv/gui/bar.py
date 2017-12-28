@@ -48,8 +48,6 @@ class Bar(QWidget):
         """Enter command mode."""
         self.show()
         self._stack.setCurrentWidget(self.commandline)
-        if text:
-            text += " "
         self.commandline.setText(":" + text)
         modehandler.enter("command")
 
