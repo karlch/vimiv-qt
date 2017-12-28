@@ -43,7 +43,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def __init__(self):
         super().__init__()
         self.runners = {"command": runners.CommandRunner(),
-                        "external": runners.ExternalRunner()}
+                        "external": runners.ExternalRunner(),
+                        "alias": runners.AliasRunner()}
         self._history = history.History(history.read())
 
         self.returnPressed.connect(self._on_return_pressed)
@@ -60,6 +61,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
+        # Dereference aliases
+        command = self.runners["alias"](command)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         if prefix == ":" and command.startswith("!"):

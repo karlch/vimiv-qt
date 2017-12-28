@@ -191,21 +191,3 @@ class register:  # pylint: disable=invalid-name
                       count=self._count, description=desc, hide=self._hide)
         registry[self._mode][name] = cmd
         return func
-
-
-@argument("mode", optional=True, default="global")
-@argument("command", nargs="*")
-@argument("alias")
-@register()
-def alias(name, command, mode):
-    """Add an alias for a command.
-
-    Args:
-        name: Name of the alias to create.
-        command: Name of the command to alias.
-        mode: Mode in which the command is valid.
-    """
-    command = " ".join(command)
-    if name in registry[mode]:
-        raise cmdexc.CommandError(
-            "Not overriding default command %s" % (name))
