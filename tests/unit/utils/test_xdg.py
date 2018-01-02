@@ -7,7 +7,6 @@
 """Tests for vimiv.utils.xdg."""
 
 import os
-from unittest.mock import MagicMock
 
 from vimiv.utils import xdg
 
@@ -15,20 +14,19 @@ import pytest
 
 
 @pytest.fixture
-def unset_xdg_env(*args, **kwargs):
+def unset_xdg_env(monkeypatch):
     """Unset the XDG_*_HOME environment variables."""
-    os.unsetenv("XDG_CACHE_HOME")
-    os.unsetenv("XDG_CONFIG_HOME")
-    os.unsetenv("XDG_DATA_HOME")
+    monkeypatch.delenv("XDG_CACHE_HOME", raising=False)
+    monkeypatch.delenv("XDG_CONFIG_HOME", raising=False)
+    monkeypatch.delenv("XDG_DATA_HOME", raising=False)
 
 
 @pytest.fixture
-def mock_getenv(*args, **kwargs):
+def mock_getenv(monkeypatch):
     """Mock getenv to always return '.'."""
-    orig_getenv = os.getenv
-    os.getenv = MagicMock(return_value=".")
-    yield
-    os.getenv = orig_getenv
+    monkeypatch.setenv("XDG_CACHE_HOME", ".")
+    monkeypatch.setenv("XDG_CONFIG_HOME", ".")
+    monkeypatch.setenv("XDG_DATA_HOME", ".")
 
 
 def test_get_xdg_defaults(unset_xdg_env):
