@@ -12,7 +12,7 @@ import subprocess
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool
 
-from vimiv.commands import commands, cmdexc
+from vimiv.commands import commands, cmdexc, aliasreg
 from vimiv.gui import statusbar
 from vimiv.utils import objreg
 
@@ -116,21 +116,21 @@ class AliasRunner():
         aliases: The dictionary of aliases stored.
     """
 
-    aliases = {}
+    aliases = aliasreg.Aliases()
 
     @objreg.register("aliases")
     def __init__(self):
-        self.aliases["q"] = "quit"
-        self.aliases["w"] = "write"
+        self.aliases["global"]["q"] = "quit"
+        self.aliases["image"]["w"] = "write"
 
-    def __call__(self, text):
+    def __call__(self, text, mode):
         """Replace alias with the actual command.
 
         Return:
             The replaced text if text was an alias else text.
         """
-        if text in self.aliases:
-            return self.aliases[text]
+        if text in self.aliases.get(mode):
+            return self.aliases.get(mode)[text]
         return text
 
     @commands.argument("mode", optional=True, default="global")
@@ -149,4 +149,4 @@ class AliasRunner():
         if name in commands.registry[mode]:
             raise cmdexc.CommandError(
                 "Not overriding default command %s" % (name))
-        self.aliases[name] = command
+        self.aliases[mode][name] = command

@@ -28,8 +28,8 @@ def command(mode):
         if not cmd.hide:
             elem = (name, cmd.description)
             cmdlist.append(elem)
-    for alias, cmd in runners.AliasRunner.aliases.items():
-        desc = "Alias for '%s'" % (cmd)
+    for alias, cmd in runners.AliasRunner.aliases.get(mode).items():
+        desc = "Alias for '%s'." % (cmd)
         cmdlist.append((alias, desc))
     model.set_data(cmdlist)
     model.sort(0)
