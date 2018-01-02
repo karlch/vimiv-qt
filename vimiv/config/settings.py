@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import strconvert
+from vimiv.utils import strconvert, misc
 
 
 class Signals(QObject):
@@ -224,7 +224,18 @@ class NumberSetting(Setting, ABC):
 
     This allows using isinstance(setting, NumberSetting) for add_to and
     multiply functions.
+
+    Attributes:
+        min_value: Minimum value allowed for this setting.
+        max_value: Maximum value allowed for this setting.
     """
+
+    def __init__(self, name, default_value, desc="", suggestions=None,
+                 min_value=None, max_value=None):
+        """Additionally allow setting minimum and maximum value."""
+        super().__init__(name, default_value, desc, suggestions)
+        self.min_value = min_value
+        self.max_value = max_value
 
     @abstractmethod
     def override(self, new_value):
@@ -235,7 +246,8 @@ class IntSetting(NumberSetting):
     """Stores an integer setting."""
 
     def override(self, new_value):
-        self._value = strconvert.to_int(new_value)
+        value = strconvert.to_int(new_value, allow_sign=True)
+        self._value = misc.clamp(value, self.max_value, self.min_value)
 
     def add(self, value):
         """Add a value to the currently stored integer.
@@ -244,7 +256,8 @@ class IntSetting(NumberSetting):
             value: The integer value to add as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value += value
+        self._value = misc.clamp(self._value + value, self.max_value,
+                                 self.min_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -253,7 +266,8 @@ class IntSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value *= value
+        self._value = misc.clamp(self._value * value, self.max_value,
+                                 self.min_value)
 
     def __str__(self):
         return "Integer"
@@ -263,7 +277,8 @@ class FloatSetting(NumberSetting):
     """Stores a float setting."""
 
     def override(self, new_value):
-        self._value = strconvert.to_float(new_value)
+        value = strconvert.to_float(new_value, allow_sign=True)
+        self._value = misc.clamp(value, self.max_value, self.min_value)
 
     def add(self, value):
         """Add a value to the currently stored float.
@@ -272,7 +287,8 @@ class FloatSetting(NumberSetting):
             value: The float value to add as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value += value
+        self._value = misc.clamp(self._value + value, self.max_value,
+                                 self.min_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -281,7 +297,8 @@ class FloatSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value *= value
+        self._value = misc.clamp(self._value * value, self.max_value,
+                                 self.min_value)
 
     def __str__(self):
         return "Float"

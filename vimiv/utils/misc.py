@@ -28,5 +28,8 @@ def strip_html(text):
 
 def clamp(value, maximum, minimum):
     """Clamp a value so it does not exceed boundaries."""
-    value = min(value, maximum)
-    return max(value, minimum)
+    if maximum is not None:
+        value = min(value, maximum)
+    if minimum is not None:
+        value = max(value, minimum)
+    return value
