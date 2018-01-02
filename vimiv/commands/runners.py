@@ -7,11 +7,13 @@
 """Classes to run commands."""
 
 import logging
+import os
 import shlex
 import subprocess
 
-from PyQt5.QtCore import QRunnable, QObject, QThreadPool
+from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
+from vimiv.app import open_paths
 from vimiv.commands import commands, cmdexc, aliasreg
 from vimiv.gui import statusbar
 from vimiv.utils import objreg
@@ -67,9 +69,18 @@ class CommandRunner():
 
 
 class ExternalRunner(QObject):
-    """Runner for external commands."""
+    """Runner for external commands.
+
+    Signals:
+        pipe_output_received: Emitted with the shell command and stdout.
+    """
 
     _pool = QThreadPool.globalInstance()
+    pipe_output_received = pyqtSignal(str, str)
+
+    def __init__(self):
+        super().__init__()
+        self.pipe_output_received.connect(self._on_pipe_output_received)
 
     def __call__(self, text):
         """Run external command using ShellCommandRunnable.
@@ -77,8 +88,22 @@ class ExternalRunner(QObject):
         Args:
             text: Text parsed as command to run.
         """
-        runner = ShellCommandRunnable(text)
-        self._pool.start(runner)
+        runnable = ShellCommandRunnable(text, self)
+        self._pool.start(runnable)
+
+    def _on_pipe_output_received(self, command, stdout):
+        """Open paths from stdout.
+
+        Args:
+            command: Executed shell command.
+            stdout: String form of stdout of the exited shell command.
+        """
+        paths = [path for path in stdout.split("\n") if os.path.exists(path)]
+        if paths and open_paths(paths):
+            statusbar.update()
+            logging.debug("Opened paths from pipe '%s'", command)
+        else:
+            logging.warning("%s: No paths from pipe", command)
 
 
 class ShellCommandRunnable(QRunnable):
@@ -89,18 +114,27 @@ class ShellCommandRunnable(QRunnable):
 
     Attributes:
         _text: Text parsed as command to run.
+        _runner: ExternalRunner that started this runnable.
+        _pipe: Whether to check stdout for paths to open.
     """
 
-    def __init__(self, text):
+    def __init__(self, text, runner):
         super().__init__()
-        self._text = text
+        self._text = text.rstrip("|").strip()
+        self._runner = runner
+        self._pipe = True if text.endswith("|") else False
 
     def run(self):
         """Run shell command on QThreadPool.start(self)."""
         try:
-            subprocess.run(self._text, shell=True, check=True,
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            logging.debug("Ran '!%s' succesfully", self._text)
+            pargs = subprocess.run(self._text, shell=True, check=True,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.PIPE)
+            if self._pipe:
+                self._runner.pipe_output_received.emit(self._text,
+                                                       pargs.stdout.decode())
+            else:
+                logging.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:
             message = e.stderr.decode().split("\n")[0]
             logging.error("%d  %s", e.returncode, message)
