@@ -52,6 +52,9 @@ def paths(text):
         directory = text if os.path.isdir(text) else "."
     else:
         directory = os.path.dirname(text)
+    # Empty model for non-existent directories
+    if not os.path.isdir(os.path.expanduser(directory)):
+        return model
     # Get supported paths
     pathlist = []
     images, directories = files.get_supported(files.ls(directory))
