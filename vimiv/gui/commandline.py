@@ -50,6 +50,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.returnPressed.connect(self._on_return_pressed)
         self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
+        self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._write_history)
 
         styles.apply(self)
@@ -92,6 +93,11 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             self.editingFinished.emit()
         else:
             self._history.reset()
+
+    def _on_cursor_position_changed(self, _old, new):
+        """Prevent the cursor from moving before the prefix."""
+        if new < 1:
+            self.setCursorPosition(1)
 
     @keybindings.add("<ctrl>p", "history next", mode="command")
     @keybindings.add("<ctrl>n", "history prev", mode="command")
