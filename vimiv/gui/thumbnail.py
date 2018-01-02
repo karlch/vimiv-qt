@@ -17,7 +17,8 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.imutils import imcommunicate
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
-from vimiv.utils import objreg, eventhandler, pixmap_creater, thumbnail_manager
+from vimiv.utils import (objreg, eventhandler, pixmap_creater,
+                         thumbnail_manager, misc)
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -85,6 +86,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         imcommunicate.signals.paths_loaded.connect(self._on_paths_loaded)
         modehandler.signals.enter.connect(self._on_enter)
         modehandler.signals.leave.connect(self._on_leave)
+        settings.signals.changed.connect(self._on_settings_changed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
 
@@ -203,10 +205,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2
-        size = max(size, 64)
-        size = min(size, 512)
-        self.setIconSize(QSize(size, size))
-        self.rescale_items()
+        size = misc.clamp(size, 512, 64)
+        settings.override("thumbnail.size", str(size))
+        settings.signals.changed.emit("thumbnail.size", size)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
@@ -231,6 +232,11 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
+
+    def _on_settings_changed(self, setting, new_value):
+        if setting == "thumbnail.size":
+            self.setIconSize(QSize(new_value, new_value))
+            self.rescale_items()
 
     def columns(self):
         """Return the number of columns."""
