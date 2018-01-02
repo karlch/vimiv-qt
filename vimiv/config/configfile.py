@@ -138,4 +138,3 @@ def _add_aliases(configsection):
             AliasRunner.alias(AliasRunner, name, [command], "global")
         except cmdexc.CommandError as e:
             logging.error("Reading aliases from config: %s", str(e))
-
