@@ -100,7 +100,6 @@ class ShellCommandRunnable(QRunnable):
         try:
             subprocess.run(self._text, shell=True, check=True,
                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            statusbar.update()
             logging.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:
             message = e.stderr.decode().split("\n")[0]
