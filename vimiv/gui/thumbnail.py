@@ -72,7 +72,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._stack = stack
         self._paths = []
         self._sizes = collections.OrderedDict(
-            [(64, "small"), (128, "normal"), (256, "large")])
+            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")])
         self._default_pixmap = pixmap_creater.default_thumbnail()
         self._manager = thumbnail_manager.ThumbnailManager()
 
@@ -204,7 +204,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2
         size = max(size, 64)
-        size = min(size, 256)
+        size = min(size, 512)
         self.setIconSize(QSize(size, size))
         self.rescale_items()
 

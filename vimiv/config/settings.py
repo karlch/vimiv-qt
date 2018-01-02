@@ -311,7 +311,7 @@ class ThumbnailSizeSetting(Setting):
     512.
     """
 
-    ALLOWED_VALUES = [64, 128, 256]
+    ALLOWED_VALUES = [64, 128, 256, 512]
 
     def override(self, new_value):
         """Override the setting with a new thumbnail size.
@@ -342,7 +342,7 @@ class ThumbnailSizeSetting(Setting):
         return self.ALLOWED_VALUES
 
     def __str__(self):
-        return "todo"
+        return "ThumbSize"
 
 
 class StrSetting(Setting):
