@@ -72,6 +72,7 @@ class Completer(QObject):
     @pyqtSlot()
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
+        self.parent().selectionModel().clear()
         self.proxy_model.reset()
         self.parent().hide()
 
