@@ -106,6 +106,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         path = misc.strip_html(path_index.data())
         # Open directory in library
         if os.path.isdir(path):
+            self._positions[os.getcwd()] = self.row()
             libpaths.load(path)
         # Close library and enter image mode on double selection
         elif path == self._last_selected:
@@ -164,10 +165,13 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             direction: One of "right", "left", "up", "down".
         """
         if direction == "right":
-            self._positions[os.getcwd()] = self.row()
             self.activated.emit(self.selectionModel().currentIndex())
         elif direction == "left":
-            self._positions[os.getcwd()] = self.row()
+            try:
+                self._positions[os.getcwd()] = self.row()
+            # Do not store empty positions
+            except IndexError:
+                pass
             libpaths.load("..")
         else:
             try:
