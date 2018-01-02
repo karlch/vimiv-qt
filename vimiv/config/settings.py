@@ -360,8 +360,6 @@ def init_defaults():
     """Store default values of all settings."""
     # General
     BoolSetting("shuffle", False, desc="Randomly shuffle images")
-    BoolSetting("search_case_sensitive", False, desc="Search respects case")
-    BoolSetting("incsearch", True, desc="Select search results while typing")
     StrSetting("style", "default")
 
     # Image
