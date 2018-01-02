@@ -79,6 +79,7 @@ def test_sizeof_fmt_small_file():
 
 
 def test_get_size_directory_with_directories(mocker):
+    mocker.patch("vimiv.config.settings.get_value", return_value=30)
     paths = [str(i) for i in range(15)]
     mocker.patch.object(files, "ls", return_value=paths)
     mocker.patch("os.path.isdir", return_value=True)
@@ -87,6 +88,7 @@ def test_get_size_directory_with_directories(mocker):
 
 
 def test_get_size_directory_with_images(mocker):
+    mocker.patch("vimiv.config.settings.get_value", return_value=30)
     paths = [str(i) for i in range(10)]
     mocker.patch.object(files, "ls", return_value=paths)
     mocker.patch("os.path.isdir", return_value=False)
