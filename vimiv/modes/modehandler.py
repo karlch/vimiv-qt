@@ -6,6 +6,8 @@
 
 """Handler to deal with entering and leaving modes."""
 
+import logging
+
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.commands import commands
@@ -45,9 +47,13 @@ def enter(mode):
     """
     # Store last mode
     last_mode = get_active_mode()
+    if mode == last_mode.name:
+        logging.debug("Staying in mode %s", mode)
+        return
     if last_mode:
+        logging.debug("Leaving mode %s", last_mode.name)
         last_mode.active = False
-        if last_mode not in ["command"]:
+        if last_mode.name not in ["command"]:
             modes[mode].last_mode = last_mode.name
     # Enter new mode
     modes[mode].active = True
@@ -55,6 +61,7 @@ def enter(mode):
     widget.show()
     widget.setFocus()
     signals.enter.emit(mode)
+    logging.debug("Entered mode %s", mode)
 
 
 @commands.argument("mode")

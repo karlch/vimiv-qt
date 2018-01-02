@@ -25,7 +25,7 @@ class Mode():
     def __init__(self, name):
         self.active = False
         self.name = name
-        self.last_mode = name
+        self.last_mode = "image" if name != "image" else "library"
 
 
 class Modes(collections.UserDict):
