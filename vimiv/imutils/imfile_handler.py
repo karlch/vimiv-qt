@@ -10,7 +10,8 @@ import logging
 import os
 import tempfile
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication
+from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
+                          pyqtSlot)
 from PyQt5.QtGui import QPixmap, QImageReader
 
 from vimiv.commands import commands
@@ -49,6 +50,7 @@ class ImageFileHandler(QObject):
         pixmap = imloader.current()
         return self.transform.transform_pixmap(pixmap)
 
+    @pyqtSlot(str)
     def _maybe_write(self, path):
         """Write image to disk if requested and it has changed.
 
@@ -60,6 +62,7 @@ class ImageFileHandler(QObject):
         elif self.transform.changed():
             self.write([path])
 
+    @pyqtSlot()
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         path = imstorage.current()

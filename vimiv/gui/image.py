@@ -6,9 +6,9 @@
 
 """QtWidgets for IMAGE mode."""
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import QScrollArea
-from PyQt5.QtGui import QMovie
+from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
@@ -84,10 +84,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         imcommunicate.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imcommunicate.signals.movie_loaded.connect(self._on_movie_loaded)
 
+    @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
         self.setWidget(Image(self, pixmap))
         self.scale("overzoom", 1)
 
+    @pyqtSlot(QMovie)
     def _on_movie_loaded(self, movie):
         self.setWidget(Animation(self, movie))
         self.scale(1, 1)
@@ -249,6 +251,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Convenience method to get the widgets original pixmap."""
         return self.widget().original
 
+    @pyqtSlot(str)
     def _on_enter(self, widget):
         if widget == "image":
             self._stack.setCurrentWidget(self)

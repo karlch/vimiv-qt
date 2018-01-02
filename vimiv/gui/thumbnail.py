@@ -9,8 +9,9 @@
 import collections
 import os
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QLabel
+from PyQt5.QtGui import QPixmap
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
@@ -92,6 +93,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         styles.apply(self)
 
+    @pyqtSlot(list)
     def _on_paths_loaded(self, paths):
         """Load new paths into thumbnail widget.
 
@@ -109,6 +111,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
                 self.setItemWidget(item, thumb)
             self._manager.create_thumbnails_async(paths)
 
+    @pyqtSlot(QModelIndex)
     def _on_activated(self, index):
         """Emit signal to update image index on activated.
 
@@ -118,17 +121,20 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         imcommunicate.signals.update_index.emit(index.row() + 1)
         modehandler.enter("image")
 
+    @pyqtSlot(str)
     def _on_enter(self, widget):
         if widget == "thumbnail":
             self._stack.setCurrentWidget(self)
             self._select_item(0)
 
+    @pyqtSlot(str)
     def _on_leave(self, widget):
         # Need this here in addition to _on_enter in image because we may leave
         # for the library
         if widget == "thumbnail":
             self._stack.setCurrentWidget(objreg.get("image"))
 
+    @pyqtSlot(int, QPixmap)
     def _on_thumbnail_created(self, index, pixmap):
         """Insert created thumbnail as soon as manager created it.
 
@@ -233,6 +239,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
 
+    @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
         if setting == "thumbnail.size":
             self.setIconSize(QSize(new_value, new_value))

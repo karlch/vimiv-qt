@@ -17,6 +17,8 @@ Signals:
 import os
 from random import shuffle
 
+from PyQt5.QtCore import pyqtSlot, QObject
+
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
@@ -24,7 +26,7 @@ from vimiv.imutils.imcommunicate import signals
 from vimiv.utils import objreg, slideshow, files
 
 
-class Storage():
+class Storage(QObject):
     """Store and manipulate paths to images.
 
     Attributes:
@@ -34,6 +36,7 @@ class Storage():
 
     @objreg.register("imstorage")
     def __init__(self):
+        super().__init__()
         self._paths = []
         self._index = 0
         slides = slideshow.Slideshow()
@@ -105,18 +108,22 @@ class Storage():
         """Return total amount of paths as string."""
         return str(len(self._paths))
 
+    @pyqtSlot()
     def _on_slideshow_event(self):
         self.next(1)
 
+    @pyqtSlot(int)
     def _on_update_index(self, index):
         self.goto(index, 0)
 
+    @pyqtSlot(str)
     def _on_update_path(self, path):
         if path in self._paths:
             self.goto(self._paths.index(path) + 1, 0)
         else:
             self._load_single(path)
 
+    @pyqtSlot(list, int)
     def _on_update_paths(self, paths, index):
         """Load new paths into storage.
 

@@ -6,7 +6,7 @@
 
 """CommandLine widget in the bar."""
 
-from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal
+from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import runners, history, commands, argtypes
@@ -51,10 +51,11 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
-        QCoreApplication.instance().aboutToQuit.connect(self._write_history)
+        QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
 
         styles.apply(self)
 
+    @pyqtSlot()
     def _on_return_pressed(self):
         """Run command and store history on return."""
         prefix, command = self._split_prefix(self.text())
@@ -88,12 +89,14 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         command = command.strip()
         return prefix, command
 
+    @pyqtSlot(str)
     def _on_text_edited(self, text):
         if not text:
             self.editingFinished.emit()
         else:
             self._history.reset()
 
+    @pyqtSlot(int, int)
     def _on_cursor_position_changed(self, _old, new):
         """Prevent the cursor from moving before the prefix."""
         if new < 1:
@@ -123,7 +126,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.substr_cycle(direction, self.text()))
 
-    def _write_history(self):
+    @pyqtSlot()
+    def _on_app_quit(self):
         """Write command history to file on quit."""
         history.write(self._history)
 

@@ -6,6 +6,7 @@
 
 """Bar widget at the bottom including statusbar and commandline."""
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv.commands import commands
@@ -57,6 +58,7 @@ class Bar(QWidget):
         """Leave command mode."""
         self.commandline.editingFinished.emit()
 
+    @pyqtSlot()
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
         modehandler.leave("command")
@@ -64,6 +66,7 @@ class Bar(QWidget):
         self._stack.setCurrentWidget(self.statusbar)
         self._maybe_hide()
 
+    @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
         """React to changed settings."""
         if setting == "statusbar.show":

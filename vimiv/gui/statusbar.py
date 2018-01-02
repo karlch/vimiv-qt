@@ -13,7 +13,7 @@ Module Attributes:
         for the statubar to show.
 """
 
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
 from vimiv.config import settings, styles
@@ -141,6 +141,7 @@ class StatusBar(QWidget):
 
         statusbar_loghandler.signals.message.connect(self._on_message)
 
+    @pyqtSlot(str, str)
     def _on_message(self, severity, message):
         """Display log message when logging was called.
 
@@ -162,6 +163,7 @@ class StatusBar(QWidget):
             text = self._get_text(position, mode)
             label.setText(text)
 
+    @pyqtSlot()
     def clear_message(self):
         """Remove a temporary message from the statusbar."""
         if self.timer.isActive():

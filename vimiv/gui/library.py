@@ -9,7 +9,7 @@
 import logging
 import os
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
                          QTextDocument)
@@ -88,6 +88,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         styles.apply(self)
 
+    @pyqtSlot(QModelIndex)
     def _on_activated(self, index):
         """Open path correctly on activate.
 
@@ -118,6 +119,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             imcommunicate.signals.update_path.emit(os.path.abspath(path))
             self._last_selected = path
 
+    @pyqtSlot(list)
     def _on_paths_loaded(self, data):
         """Fill library with paths when they were loaded.
 
@@ -135,19 +137,23 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             else 0
         self._select_row(row)
 
+    @pyqtSlot(str)
     def _on_maybe_update(self, directory):
         """Possibly load library for new directory."""
         if not self.model().rowCount() or directory != os.getcwd():
             libpaths.load(directory)
 
+    @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
         if setting == "library.width":
             self.setFixedWidth(new_value)
 
+    @pyqtSlot(str)
     def _on_enter(self, widget):
         if widget == "library":
             self.show()
 
+    @pyqtSlot(str)
     def _on_leave(self, widget):
         if widget == "library":
             self.hide()

@@ -6,7 +6,7 @@
 
 """Completer class as man-in-the-middle between command line and completion."""
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv.completion import completionfilters, completionmodels
 from vimiv.utils import objreg
@@ -45,6 +45,7 @@ class Completer(QObject):
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
+    @pyqtSlot(str)
     def _on_commandline_entered(self, mode):
         """Initialize completion model and show completion widget.
 
@@ -58,6 +59,7 @@ class Completer(QObject):
         self.parent().show()
         self.parent().raise_()
 
+    @pyqtSlot(str)
     def _on_text_changed(self, text):
         """Update completions when text changed."""
         # Clear selection
@@ -67,6 +69,7 @@ class Completer(QObject):
         # Refilter
         self.proxy_model.refilter(text)
 
+    @pyqtSlot()
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
         self.proxy_model.reset()
@@ -106,6 +109,7 @@ class Completer(QObject):
         self._modelargs = args
         self.proxy_model.setSourceModel(modelfunc(*args))
 
+    @pyqtSlot(str)
     def _on_completion(self, text):
         """Set commandline text when completion was activated.
 

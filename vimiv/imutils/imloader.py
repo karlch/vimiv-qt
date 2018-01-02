@@ -8,7 +8,7 @@
 
 import logging
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv.imutils.imcommunicate import signals
@@ -28,6 +28,7 @@ class ImageLoader(QObject):
         self.image = None
         signals.path_loaded.connect(self._on_path_loaded)
 
+    @pyqtSlot(str)
     def _on_path_loaded(self, path):
         """Load proper displayable QWidget for a path."""
         reader = QImageReader(path)

@@ -9,7 +9,7 @@
 import collections
 import string
 
-from PyQt5.QtCore import Qt, QTimer, QObject
+from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
 from vimiv.commands import runners, commands
@@ -47,6 +47,7 @@ class TempKeyStorage(QTimer):
         self.clear_text()
         return text
 
+    @pyqtSlot()
     def clear_text(self):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
