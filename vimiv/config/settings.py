@@ -370,7 +370,8 @@ def init_defaults():
     BoolSetting("image.autowrite", True, desc="Save images on changes")
     FloatSetting("image.overzoom", 1.0,
                  desc="Maximum scale to apply trying to fit image to window",
-                 suggestions=["1.0", "1.5", "2.0", "5.0"])
+                 suggestions=["1.0", "1.5", "2.0", "5.0"],
+                 min_value=1.0)
 
     # Library
     FloatSetting("library.width", 0.3,
@@ -388,7 +389,7 @@ def init_defaults():
 
     # Slideshow
     FloatSetting("slideshow.delay", 2.0,
-                 desc="Delay to next image in slideshow")
+                 desc="Delay to next image in slideshow", min_value=0.5)
     StrSetting("slideshow.indicator", "slideshow:",
                desc="Text to display in statusbar when slideshow is running")
 
@@ -397,7 +398,8 @@ def init_defaults():
                 desc="Collapse /home/user to ~ in statusbar")
     BoolSetting("statusbar.show", True, desc="Always display the statusbar")
     IntSetting("statusbar.message_timeout", 5000,
-               desc="Time until statusbar messages are removed")
+               desc="Time in ms until statusbar messages are removed",
+               min_value=500)
     StrSetting("statusbar.left", "{pwd}")
     StrSetting("statusbar.left_image",
                "{index}/{total} {basename} [{zoomlevel}]")
