@@ -125,3 +125,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """Override focus in event to also emit entered signal."""
         super().focusInEvent(event)
         self.entered.emit(modehandler.last())
+
+    def focusOutEvent(self, event):
+        """Override focus out event to not emit editingFinished."""
