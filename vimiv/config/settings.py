@@ -373,8 +373,10 @@ def init_defaults():
                  suggestions=["1.0", "1.5", "2.0", "5.0"])
 
     # Library
-    IntSetting("library.width", 300, desc="Width of the library in px",
-               suggestions=["200", "300", "400", "500"])
+    FloatSetting("library.width", 0.3,
+                 desc="Width of the library as fraction of main window size",
+                 suggestions=["0.2", "0.3", "0.4", "0.5"], min_value=0.05,
+                 max_value=0.95)
     BoolSetting("library.show_hidden", False,
                 desc="Show hidden files in the library")
     IntSetting("library.file_check_amount", 30,

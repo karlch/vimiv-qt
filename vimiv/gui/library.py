@@ -65,8 +65,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     """
 
     @objreg.register("library")
-    def __init__(self):
-        super().__init__()
+    def __init__(self, mainwindow):
+        super().__init__(parent=mainwindow)
         self._last_selected = ""
         self._positions = {}
 
@@ -77,12 +77,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setModel(model)
         self.setItemDelegate(LibraryDelegate())
         self.hide()
-
-        width = settings.get_value("library.width")
-        self.setFixedWidth(width)
-        self.setColumnWidth(0, 0.1 * width)
-        self.setColumnWidth(1, 0.75 * width)
-        self.setColumnWidth(2, 0.15 * width)
 
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
@@ -207,12 +201,12 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._select_row(row)
 
     def resizeEvent(self, event):
-        """Resize columns on resize event."""
-        width = self.width()
+        """Resize width and columns on resize event."""
+        width = self.parent().width() * settings.get_value("library.width")
+        self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
         self.setColumnWidth(1, 0.75 * width)
         self.setColumnWidth(2, 0.15 * width)
-        super().resizeEvent(event)
 
     def current(self):
         """Return name of currently selected path."""

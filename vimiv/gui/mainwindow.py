@@ -53,7 +53,7 @@ class MainWindow(QWidget):
         self.stack.addWidget(im)
         self.stack.addWidget(thumb)
         self.stack.setCurrentWidget(im)
-        lib = library.Library()
+        lib = library.Library(self)
         self.grid.addLayout(self.stack, 0, 1, 1, 1)
         self.grid.addWidget(lib, 0, 0, 1, 1)
         compwidget = completionwidget.CompletionView(self)
