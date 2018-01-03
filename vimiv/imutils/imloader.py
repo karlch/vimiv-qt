@@ -11,7 +11,7 @@ import logging
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
-from vimiv.imutils.imcommunicate import signals
+from vimiv.imutils import imsignals
 from vimiv.utils import objreg
 
 
@@ -26,7 +26,7 @@ class ImageLoader(QObject):
     def __init__(self):
         super().__init__()
         self.image = None
-        signals.path_loaded.connect(self._on_path_loaded)
+        imsignals.connect(self._on_path_loaded, "path_loaded")
 
     @pyqtSlot(str)
     def _on_path_loaded(self, path):
@@ -36,10 +36,10 @@ class ImageLoader(QObject):
             logging.error("Cannot read image %s", path)
         elif reader.supportsAnimation():
             self.image = QMovie(path)
-            signals.movie_loaded.emit(self.image)
+            imsignals.emit("movie_loaded", self.image)
         else:
             self.image = QPixmap(path)
-            signals.pixmap_loaded.emit(self.image)
+            imsignals.emit("pixmap_loaded", self.image)
 
 
 def current():

@@ -11,7 +11,7 @@ from PyQt5.QtGui import QTransform
 
 from vimiv.commands import commands
 from vimiv.config import keybindings
-from vimiv.imutils import imcommunicate, imloader
+from vimiv.imutils import imsignals, imloader
 from vimiv.utils import objreg
 
 
@@ -48,7 +48,7 @@ class Transform():
         self._rotation_angle += angle
         self._transform.rotate(angle)
         pixmap = self.transform_pixmap(imloader.current())
-        imcommunicate.signals.pixmap_loaded.emit(pixmap)
+        imsignals.emit("pixmap_loaded", pixmap)
 
     @keybindings.add("_", "flip --vertical")
     @keybindings.add("|", "flip")
@@ -78,7 +78,7 @@ class Transform():
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        imcommunicate.signals.pixmap_loaded.emit(pixmap)
+        imsignals.emit("pixmap_loaded", pixmap)
 
     def transform_pixmap(self, pm):
         """Apply all transformations to the given pixmap."""

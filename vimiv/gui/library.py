@@ -17,7 +17,7 @@ from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
 from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
-from vimiv.imutils import imcommunicate
+from vimiv.imutils import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, eventhandler, misc
 
@@ -83,8 +83,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.signals.loaded.connect(self._on_paths_loaded)
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
-        imcommunicate.signals.maybe_update_library.connect(
-            self._on_maybe_update)
+        imsignals.connect(self._on_maybe_update, "maybe_update_library")
 
         styles.apply(self)
 
@@ -116,7 +115,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self._last_selected = ""
         # Update image
         else:
-            imcommunicate.signals.update_path.emit(os.path.abspath(path))
+            imsignals.emit("update_path", os.path.abspath(path))
             self._last_selected = path
 
     @pyqtSlot(list)

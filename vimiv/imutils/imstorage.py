@@ -22,7 +22,7 @@ from PyQt5.QtCore import pyqtSlot, QObject
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
-from vimiv.imutils.imcommunicate import signals
+from vimiv.imutils import imsignals
 from vimiv.utils import objreg, files
 
 
@@ -41,9 +41,9 @@ class Storage(QObject):
         self._index = 0
         slideshow = objreg.get("slideshow")
         slideshow.next_im.connect(self._on_slideshow_event)
-        signals.update_index.connect(self._on_update_index)
-        signals.update_path.connect(self._on_update_path)
-        signals.update_paths.connect(self._on_update_paths)
+        imsignals.connect(self._on_update_index, "update_index")
+        imsignals.connect(self._on_update_path, "update_path")
+        imsignals.connect(self._on_update_paths, "update_paths")
 
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="imstorage", count=1)
@@ -55,7 +55,7 @@ class Storage(QObject):
         """
         if self._paths:
             self._set_index((self._index + count) % len(self._paths))
-            signals.path_loaded.emit(self.current())
+            imsignals.emit("path_loaded", self.current())
 
     @keybindings.add("p", "prev", mode="image")
     @commands.register(instance="imstorage", count=1)
@@ -67,7 +67,7 @@ class Storage(QObject):
         """
         if self._paths:
             self._set_index((self._index - count) % len(self._paths))
-            signals.path_loaded.emit(self.current())
+            imsignals.emit("path_loaded", self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
@@ -82,7 +82,7 @@ class Storage(QObject):
         """
         index = count if count else index
         self._set_index(index % (len(self._paths) + 1) - 1)
-        signals.path_loaded.emit(self.current())
+        imsignals.emit("path_loaded", self.current())
 
     @statusbar.module("{abspath}", instance="imstorage")
     def current(self):
@@ -133,7 +133,7 @@ class Storage(QObject):
         """
         paths = [os.path.abspath(path) for path in paths]
         directory = os.path.dirname(paths[0])
-        signals.maybe_update_library.emit(directory)
+        imsignals.emit("maybe_update_library", directory)
         # Populate list of paths in same directory for single path
         if len(paths) == 1:
             self._load_single(paths[0])
@@ -142,8 +142,8 @@ class Storage(QObject):
             self._paths = paths
             if settings.get_value("shuffle"):
                 shuffle(self._paths)
-            signals.paths_loaded.emit(self._paths)
-            signals.path_loaded.emit(self._paths[self._index])
+            imsignals.emit("paths_loaded", self._paths)
+            imsignals.emit("path_loaded", self.current())
 
     def _load_single(self, path):
         """Populate list of paths in same directory for single path."""
@@ -153,11 +153,11 @@ class Storage(QObject):
             shuffle(paths)
         self._set_index(paths.index(path))
         self._paths = paths  # Must update after index for maybe_write
-        signals.paths_loaded.emit(self._paths)
-        signals.path_loaded.emit(self._paths[self._index])
+        imsignals.emit("paths_loaded", self._paths)
+        imsignals.emit("path_loaded", self.current())
 
     def _set_index(self, index):
-        signals.maybe_write_file.emit(self.current())
+        imsignals.emit("maybe_write_file", self.current())
         self._index = index
 
 

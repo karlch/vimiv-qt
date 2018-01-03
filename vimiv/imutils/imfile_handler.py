@@ -16,7 +16,7 @@ from PyQt5.QtGui import QPixmap, QImageReader
 
 from vimiv.commands import commands
 from vimiv.config import settings
-from vimiv.imutils import imtransform, imcommunicate, imloader, imstorage
+from vimiv.imutils import imtransform, imloader, imstorage, imsignals
 from vimiv.utils import objreg, files
 
 
@@ -42,7 +42,7 @@ class ImageFileHandler(QObject):
         self.transform = imtransform.Transform()
         # This is the reason for this wrapper class
         # self.manipulate = immanipulate.Manipulate()
-        imcommunicate.signals.maybe_write_file.connect(self._maybe_write)
+        imsignals.connect(self._maybe_write, "maybe_write_file")
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def pixmap(self):
