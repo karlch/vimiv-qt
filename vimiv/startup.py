@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import app
-from vimiv.commands import argtypes
+from vimiv.commands import argtypes, aliases
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
@@ -51,6 +51,13 @@ def run(argv):
     init_paths(args)
     # Finalize
     logging.info("Startup completed")
+
+
+def earlyinit():
+    """Initialize objects needed as early as poxxible."""
+    aliases.init()
+    modehandler.init()
+    iminitialize.init()
 
 
 def setup_logging(log_level):
@@ -125,12 +132,6 @@ def init_directories():
 def init_paths(args):
     if not app.open_paths(args.paths):
         app.open_paths([os.getcwd()])
-
-
-def earlyinit():
-    """Initialize objects needed before the UI."""
-    modehandler.init()
-    iminitialize.init()
 
 
 def init_ui(args):

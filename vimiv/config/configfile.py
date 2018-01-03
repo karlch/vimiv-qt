@@ -10,7 +10,7 @@ import configparser
 import logging
 import os
 
-from vimiv.commands.runners import AliasRunner, cmdexc
+from vimiv.commands import aliases, cmdexc
 from vimiv.config import settings
 from vimiv.modes import modereg
 from vimiv.utils import xdg
@@ -135,6 +135,6 @@ def _add_aliases(configsection):
     """
     for name, command in configsection.items():
         try:
-            AliasRunner.alias(AliasRunner, name, [command], "global")
+            aliases.alias(name, [command], "global")
         except cmdexc.CommandError as e:
             logging.error("Reading aliases from config: %s", str(e))
