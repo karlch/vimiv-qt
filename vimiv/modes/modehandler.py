@@ -60,6 +60,10 @@ def enter(mode):
     widget = objreg.get(mode)
     widget.show()
     widget.setFocus()
+    if widget.hasFocus():
+        logging.debug("%s widget focused", mode)
+    else:
+        logging.debug("Could not focus %s widget", mode)
     signals.enter.emit(mode)
     logging.debug("Entered mode %s", mode)
 
