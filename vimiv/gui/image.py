@@ -264,7 +264,6 @@ class Image(widgets.ImageLabel):
         original: Pixmap without rescaling.
     """
 
-    @objreg.register("pixmap")
     def __init__(self, parent, pixmap):
         """Create the image object.
 
@@ -289,7 +288,6 @@ class Animation(widgets.ImageLabel):
         original: Pixmap of the first frame without rescaling.
     """
 
-    @objreg.register("animation")
     def __init__(self, parent, movie):
         super().__init__(parent=parent)
         self.setMovie(movie)
