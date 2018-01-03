@@ -33,9 +33,12 @@ def register(name):
         def inside(component, *args, **kwargs):
             # The first argument is always self and can be used to register the
             # component
-            component_init(component, *args, **kwargs)
-            _registry[name] = component
-            logging.debug("Registered %s in objreg", name)
+            if name not in _registry:
+                component_init(component, *args, **kwargs)
+                _registry[name] = component
+                logging.debug("Registered %s in objreg", name)
+            else:
+                logging.error("%s already registered in objreg", name)
         return inside
     return decorator
 
