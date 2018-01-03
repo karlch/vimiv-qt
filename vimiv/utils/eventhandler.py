@@ -19,6 +19,11 @@ from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
+def init():
+    """Create objects needed by the event handler class."""
+    PartialHandler()
+
+
 class TempKeyStorage(QTimer):
     """Storage to store and get keynames until timeout.
 
@@ -87,14 +92,7 @@ class KeyHandler():
 
     This class is used by gui classes as first parent, second being some
     QWidget, to handle the keyPressEvent slot.
-
-    Class Attributes:
-        partial_handler: PartialMatchHandler object to store and receive
-            partially matching keys and count digits.
-        runner: Runner for internal commands to run the bound commands.
     """
-
-    partial_handler = PartialHandler()
 
     def keyPressEvent(self, event):
         """Handle key press event for the widget.
@@ -103,7 +101,8 @@ class KeyHandler():
             event: QKeyEvent that activated the keyPressEvent.
         """
         mode = modehandler.current()
-        stored_keys = self.partial_handler.keys.get_text()
+        partial_handler = objreg.get("partialkeys")
+        stored_keys = partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
         bindings = keybindings.get(mode)
         # Prefer clear-keys
@@ -113,15 +112,15 @@ class KeyHandler():
         keyname = stored_keys + keyname
         # Count
         if keyname and keyname in string.digits and mode != "command":
-            self.partial_handler.count.add_text(keyname)
+            partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
-            count = self.partial_handler.count.get_text()
+            count = partial_handler.count.get_text()
             cmd = bindings[keyname]
             cmdrunner.run(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
-            self.partial_handler.keys.add_text(keyname)
+            partial_handler.keys.add_text(keyname)
         # Nothing => run default Qt bindings of parent object
         else:
             # super() is the parent Qt widget

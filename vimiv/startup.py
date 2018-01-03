@@ -20,7 +20,8 @@ from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
-from vimiv.utils import xdg, clipboard, statusbar_loghandler, strconvert
+from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
+                         eventhandler)
 
 
 def run(argv):
@@ -57,6 +58,7 @@ def earlyinit():
     """Initialize objects needed as early as possible."""
     aliases.init()
     cmdrunner.init()
+    eventhandler.init()
     iminitialize.init()
     modehandler.init()
 
