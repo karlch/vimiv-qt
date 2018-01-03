@@ -14,6 +14,11 @@ from vimiv.gui import statusbar
 from vimiv.utils import objreg
 
 
+def init():
+    """Create Slideshow object."""
+    Slideshow()
+
+
 class Slideshow(QTimer):
     """Slideshow class inheriting from QTimer.
 

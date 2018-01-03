@@ -23,7 +23,7 @@ from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imcommunicate import signals
-from vimiv.utils import objreg, slideshow, files
+from vimiv.utils import objreg, files
 
 
 class Storage(QObject):
@@ -39,8 +39,8 @@ class Storage(QObject):
         super().__init__()
         self._paths = []
         self._index = 0
-        slides = slideshow.Slideshow()
-        slides.next_im.connect(self._on_slideshow_event)
+        slideshow = objreg.get("slideshow")
+        slideshow.next_im.connect(self._on_slideshow_event)
         signals.update_index.connect(self._on_update_index)
         signals.update_path.connect(self._on_update_path)
         signals.update_paths.connect(self._on_update_paths)

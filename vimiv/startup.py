@@ -21,7 +21,7 @@ from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
-                         eventhandler)
+                         eventhandler, slideshow)
 
 
 def run(argv):
@@ -59,8 +59,9 @@ def earlyinit():
     aliases.init()
     cmdrunner.init()
     eventhandler.init()
-    iminitialize.init()
     modehandler.init()
+    slideshow.init()
+    iminitialize.init()  # imstorage needs slideshow
 
 
 def setup_logging(log_level):
