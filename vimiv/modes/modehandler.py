@@ -23,7 +23,7 @@ def init():
 
 
 def instance():
-    """Get the ModeHandler object. """
+    """Get the ModeHandler object."""
     return objreg.get("mode-handler")
 
 
@@ -40,7 +40,7 @@ def enter(mode):
 @commands.argument("mode")
 @commands.register()
 def leave(mode):
-    """Leave the mode 'mode.'"""
+    """Leave the mode 'mode'."""
     instance().leave(mode)
 
 
@@ -88,7 +88,7 @@ def last():
 
 
 class ModeHandler(QObject):
-    """
+    """Singleton to enter and leave modes.
 
     Signals:
         entered: Emitted when a mode is entered.
