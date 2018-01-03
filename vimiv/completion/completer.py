@@ -42,8 +42,8 @@ class Completer(QObject):
         self.parent().setModel(self.proxy_model)
 
         self.parent().activated.connect(self._on_completion)
-        modehandler = objreg.get("mode-handler")
-        modehandler.entered.connect(self._on_mode_entered)
+        mode_handler = objreg.get("mode-handler")
+        mode_handler.entered.connect(self._on_mode_entered)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
