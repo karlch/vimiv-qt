@@ -32,8 +32,9 @@ def get(mode):
 @commands.argument("command", nargs="*")
 @commands.argument("name")
 @commands.register()
-def alias(name, command, mode):
+def alias(name, command, mode="global"):
     """Add an alias for a command."""
+    assert isinstance(command, list), "Aliases defined as list via nargs='*'"
     instance().alias(name, command, mode)
 
 
