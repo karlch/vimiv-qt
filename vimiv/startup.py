@@ -60,7 +60,9 @@ def setup_logging(log_level):
     """
     log_format = logging.Formatter(
         "[%(asctime)s] %(levelname)s: %(message)s", datefmt="%H:%M:%S")
+
     logger = logging.getLogger()
+    logger.handlers = []
     logger.setLevel(log_level)
 
     file_handler = logging.FileHandler(
