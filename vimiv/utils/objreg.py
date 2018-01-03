@@ -54,6 +54,11 @@ def get(name):
     return _registry[name]
 
 
+def delete(name):
+    """Delete one object from the registry."""
+    del _registry[name]
+
+
 def clear():
     """Delete all objects from the registry."""
     _registry.clear()
