@@ -9,7 +9,7 @@
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
-from vimiv.commands import runners, history, commands, argtypes
+from vimiv.commands import history, commands, argtypes
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, eventhandler
@@ -19,8 +19,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Attributes:
-        runners: Dictionary containing the command runners.
-
         _history: History object to store and interact with history.
 
     Signals:
@@ -42,9 +40,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @objreg.register("command")
     def __init__(self):
         super().__init__()
-        self.runners = {"command": runners.CommandRunner(),
-                        "external": runners.ExternalRunner(),
-                        "alias": runners.AliasRunner()}
         self._history = history.History(history.read())
 
         self.returnPressed.connect(self._on_return_pressed)
@@ -65,18 +60,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self._history.update(prefix + command)
         # Run the command in the mode from which we entered COMMAND mode
         mode = modehandler.last()
-        # Dereference aliases
-        command = self.runners["alias"](command, mode)
         # Run commands in QTimer so the command line has been left when the
         # command runs
-        if prefix == ":" and command.startswith("!"):
-            QTimer.singleShot(
-                0, lambda: self.runners["external"](command.lstrip(":!")))
-        elif prefix == ":":
-            QTimer.singleShot(
-                0, lambda: self.runners["command"](command, mode))
-        elif prefix == "/":
-            raise NotImplementedError("Search not implemented yet")
+        runner = objreg.get("cmd-runner")
+        QTimer.singleShot(0, lambda: runner(prefix, command, mode))
 
     def _split_prefix(self, text):
         """Remove prefix from text for command processing.

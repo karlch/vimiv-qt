@@ -12,7 +12,7 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
-from vimiv.commands import runners, commands
+from vimiv.commands import commands, cmdrunner
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
@@ -95,7 +95,6 @@ class KeyHandler():
     """
 
     partial_handler = PartialHandler()
-    runner = runners.CommandRunner()
 
     def keyPressEvent(self, event):
         """Handle key press event for the widget.
@@ -109,7 +108,7 @@ class KeyHandler():
         bindings = keybindings.get(mode)
         # Prefer clear-keys
         if keyname in bindings and bindings[keyname] == "clear-keys":
-            self.runner("clear-keys", mode)
+            cmdrunner.run("clear-keys", mode)
             return
         keyname = stored_keys + keyname
         # Count
@@ -119,7 +118,7 @@ class KeyHandler():
         elif keyname and keyname in bindings:
             count = self.partial_handler.count.get_text()
             cmd = bindings[keyname]
-            self.runner(count + cmd, mode)
+            cmdrunner.run(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
             self.partial_handler.keys.add_text(keyname)

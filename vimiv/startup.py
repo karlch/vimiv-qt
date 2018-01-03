@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import app
-from vimiv.commands import argtypes, aliases
+from vimiv.commands import argtypes, aliases, cmdrunner
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
@@ -54,10 +54,11 @@ def run(argv):
 
 
 def earlyinit():
-    """Initialize objects needed as early as poxxible."""
+    """Initialize objects needed as early as possible."""
     aliases.init()
-    modehandler.init()
+    cmdrunner.init()
     iminitialize.init()
+    modehandler.init()
 
 
 def setup_logging(log_level):
