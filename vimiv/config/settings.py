@@ -247,7 +247,7 @@ class IntSetting(NumberSetting):
 
     def override(self, new_value):
         value = strconvert.to_int(new_value, allow_sign=True)
-        self._value = misc.clamp(value, self.max_value, self.min_value)
+        self._value = misc.clamp(value, self.min_value, self.max_value)
 
     def add(self, value):
         """Add a value to the currently stored integer.
@@ -256,8 +256,8 @@ class IntSetting(NumberSetting):
             value: The integer value to add as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = misc.clamp(self._value + value, self.max_value,
-                                 self.min_value)
+        self._value = misc.clamp(self._value + value, self.min_value,
+                                 self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -266,8 +266,8 @@ class IntSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = misc.clamp(self._value * value, self.max_value,
-                                 self.min_value)
+        self._value = misc.clamp(self._value * value, self.min_value,
+                                 self.max_value)
 
     def __str__(self):
         return "Integer"
@@ -278,7 +278,7 @@ class FloatSetting(NumberSetting):
 
     def override(self, new_value):
         value = strconvert.to_float(new_value, allow_sign=True)
-        self._value = misc.clamp(value, self.max_value, self.min_value)
+        self._value = misc.clamp(value, self.min_value, self.max_value)
 
     def add(self, value):
         """Add a value to the currently stored float.
@@ -287,8 +287,8 @@ class FloatSetting(NumberSetting):
             value: The float value to add as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = misc.clamp(self._value + value, self.max_value,
-                                 self.min_value)
+        self._value = misc.clamp(self._value + value, self.min_value,
+                                 self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -297,8 +297,8 @@ class FloatSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = misc.clamp(self._value * value, self.max_value,
-                                 self.min_value)
+        self._value = misc.clamp(self._value * value, self.min_value,
+                                 self.max_value)
 
     def __str__(self):
         return "Float"

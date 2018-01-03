@@ -211,7 +211,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2
-        size = misc.clamp(size, 512, 64)
+        size = misc.clamp(size, 64, 512)
         settings.override("thumbnail.size", str(size))
         settings.signals.changed.emit("thumbnail.size", size)
 

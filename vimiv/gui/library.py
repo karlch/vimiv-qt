@@ -189,7 +189,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row -= count
             else:
                 row += count
-            self._select_row(misc.clamp(row, self.model().rowCount() - 1, 0))
+            self._select_row(misc.clamp(row, 0, self.model().rowCount() - 1))
 
     @keybindings.add("gg", "goto 1", mode="library")
     @keybindings.add("G", "goto -1", mode="library")
@@ -207,7 +207,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = count if count else row  # Prefer count
         if row > 0:
             row -= 1  # Start indexing at 1
-        row = misc.clamp(row, self.model().rowCount() - 1, 0)
+        row = misc.clamp(row, 0, self.model().rowCount() - 1)
         self._select_row(row)
 
     def resizeEvent(self, event):
