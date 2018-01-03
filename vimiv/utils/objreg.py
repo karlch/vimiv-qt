@@ -11,6 +11,7 @@ and stay alive for a longer period of time.
 """
 
 import collections
+import logging
 
 
 class Registry(collections.UserDict):
@@ -34,6 +35,7 @@ def register(name):
             # component
             component_init(component, *args, **kwargs)
             _registry[name] = component
+            logging.debug("Registered %s in objreg", name)
         return inside
     return decorator
 
