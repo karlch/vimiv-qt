@@ -4,7 +4,7 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Handler to deal with entering and leaving modes."""
+"""ModeHandler singleton to deal with entering and leaving modes."""
 
 import logging
 
@@ -17,18 +17,14 @@ from vimiv.modes.modereg import modes
 from vimiv.utils import objreg
 
 
-class Signals(QObject):
-    """Signals for modehandler.
-
-    Signals:
-        toggled: Emitted with the widget name when a widget was toggled.
-    """
-
-    enter = pyqtSignal(str)
-    leave = pyqtSignal(str)
+def init():
+    """Initialize the ModeHandler object."""
+    ModeHandler()
 
 
-signals = Signals()
+def instance():
+    """Get the ModeHandler object. """
+    return objreg.get("mode-handler")
 
 
 @keybindings.add("gt", "enter thumbnail")
@@ -37,50 +33,15 @@ signals = Signals()
 @commands.argument("mode")
 @commands.register()
 def enter(mode):
-    """Enter a mode.
-
-    Saves the last mode, sets the new mode as active and focuses the widget
-    corresponding to the new mode.
-
-    Args:
-        mode: The mode to enter.
-    """
-    # Store last mode
-    last_mode = get_active_mode()
-    if mode == last_mode.name:
-        logging.debug("Staying in mode %s", mode)
-        return
-    if last_mode:
-        logging.debug("Leaving mode %s", last_mode.name)
-        last_mode.active = False
-        if last_mode.name not in ["command"]:
-            modes[mode].last_mode = last_mode.name
-    # Enter new mode
-    modes[mode].active = True
-    widget = objreg.get(mode)
-    widget.show()
-    widget.setFocus()
-    if widget.hasFocus():
-        logging.debug("%s widget focused", mode)
-    else:
-        logging.debug("Could not focus %s widget", mode)
-    signals.enter.emit(mode)
-    logging.debug("Entered mode %s", mode)
+    """Enter the mode 'mode'."""
+    instance().enter(mode)
 
 
 @commands.argument("mode")
 @commands.register()
 def leave(mode):
-    """Leave a mode.
-
-    Enters the mode that was active before the mode to leave.
-
-    Args:
-        mode: The mode to leave.
-    """
-    last_mode = modes[mode].last_mode
-    enter(last_mode)
-    signals.leave.emit(mode)
+    """Leave the mode 'mode.'"""
+    instance().leave(mode)
 
 
 @keybindings.add("tt", "toggle thumbnail")
@@ -124,3 +85,64 @@ def last():
     """Return the name of the mode active before the current one."""
     active_mode = get_active_mode()
     return active_mode.last_mode
+
+
+class ModeHandler(QObject):
+    """
+
+    Signals:
+        entered: Emitted when a mode is entered.
+            arg1: Name of the mode entered.
+        left: Emitted when a mode is left.
+            arg1: Name of the mode left.
+    """
+
+    entered = pyqtSignal(str)
+    left = pyqtSignal(str)
+
+    @objreg.register("mode-handler")
+    def __init__(self):
+        super().__init__()
+
+    def enter(self, mode):
+        """Enter a mode.
+
+        Saves the last mode, sets the new mode as active and focuses the widget
+        corresponding to the new mode.
+
+        Args:
+            mode: The mode to enter.
+        """
+        # Store last mode
+        last_mode = get_active_mode()
+        if mode == last_mode.name:
+            logging.debug("Staying in mode %s", mode)
+            return
+        if last_mode:
+            logging.debug("Leaving mode %s", last_mode.name)
+            last_mode.active = False
+            if last_mode.name not in ["command"]:
+                modes[mode].last_mode = last_mode.name
+        # Enter new mode
+        modes[mode].active = True
+        widget = objreg.get(mode)
+        widget.show()
+        widget.setFocus()
+        if widget.hasFocus():
+            logging.debug("%s widget focused", mode)
+        else:
+            logging.debug("Could not focus %s widget", mode)
+        self.entered.emit(mode)
+        logging.debug("Entered mode %s", mode)
+
+    def leave(self, mode):
+        """Leave a mode.
+
+        Enters the mode that was active before the mode to leave.
+
+        Args:
+            mode: The mode to leave.
+        """
+        last_mode = modes[mode].last_mode
+        enter(last_mode)
+        self.left.emit(mode)

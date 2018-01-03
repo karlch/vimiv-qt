@@ -19,6 +19,7 @@ from vimiv.commands import argtypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
+from vimiv.modes import modehandler
 from vimiv.utils import xdg, clipboard, statusbar_loghandler, strconvert
 
 
@@ -42,6 +43,8 @@ def run(argv):
     keyfile.parse(args)
     styles.parse()
     update_settings(args)
+    # Objects needed before UI
+    earlyinit()
     # Set up UI
     init_ui(args)
     # Open paths
@@ -124,9 +127,14 @@ def init_paths(args):
         app.open_paths([os.getcwd()])
 
 
+def earlyinit():
+    """Initialize objects needed before the UI."""
+    modehandler.init()
+    iminitialize.init()
+
+
 def init_ui(args):
     """Initialize the Qt UI."""
-    iminitialize.init()
     mw = mainwindow.MainWindow()
     mw.show()
     if args.fullscreen:

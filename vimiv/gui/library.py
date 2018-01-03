@@ -81,8 +81,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
         libpaths.signals.loaded.connect(self._on_paths_loaded)
-        modehandler.signals.enter.connect(self._on_enter)
-        modehandler.signals.leave.connect(self._on_leave)
+        modehandler.instance().entered.connect(self._on_enter)
+        modehandler.instance().left.connect(self._on_leave)
         imcommunicate.signals.maybe_update_library.connect(
             self._on_maybe_update)
 

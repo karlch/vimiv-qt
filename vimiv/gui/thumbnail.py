@@ -85,8 +85,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setResizeMode(QListWidget.Adjust)
 
         imcommunicate.signals.paths_loaded.connect(self._on_paths_loaded)
-        modehandler.signals.enter.connect(self._on_enter)
-        modehandler.signals.leave.connect(self._on_leave)
+        modehandler.instance().entered.connect(self._on_enter)
+        modehandler.instance().left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)

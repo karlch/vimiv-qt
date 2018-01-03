@@ -80,7 +80,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
         self._scale = "1"
 
-        modehandler.signals.enter.connect(self._on_enter)
+        modehandler.instance().entered.connect(self._on_enter)
         imcommunicate.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imcommunicate.signals.movie_loaded.connect(self._on_movie_loaded)
 
