@@ -3,3 +3,5 @@
 *.cache
 *.coverage
 *.hypothesis
+*.tox
+htmlcov/*
