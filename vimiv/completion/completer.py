@@ -9,6 +9,7 @@
 from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv.completion import completionfilters, completionmodels
+from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
@@ -41,23 +42,25 @@ class Completer(QObject):
         self.parent().setModel(self.proxy_model)
 
         self.parent().activated.connect(self._on_completion)
-        self._cmd.entered.connect(self._on_commandline_entered)
+        modehandler = objreg.get("mode-handler")
+        modehandler.entered.connect(self._on_mode_entered)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
     @pyqtSlot(str)
-    def _on_commandline_entered(self, mode):
-        """Initialize completion model and show completion widget.
+    def _on_mode_entered(self, mode):
+        """Initialize completion when command mode was entered.
 
         Args:
-            mode: Mode from which the command line was entered for commands.
+            mode: The mode entered.
         """
-        self._mode = mode
-        # Set model according to text, defaults are not possible as :command
-        # accepts arbitrary text as argument
-        self._maybe_update_model(self._cmd.text())
-        self.parent().show()
-        self.parent().raise_()
+        if mode == "command":
+            self._mode = modehandler.last()
+            # Set model according to text, defaults are not possible as
+            # :command accepts arbitrary text as argument
+            self._maybe_update_model(self._cmd.text())
+            self.parent().show()
+            self.parent().raise_()
 
     @pyqtSlot(str)
     def _on_text_changed(self, text):

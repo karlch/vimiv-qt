@@ -6,7 +6,7 @@
 
 """CommandLine widget in the bar."""
 
-from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import history, commands, argtypes
@@ -20,9 +20,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     Attributes:
         _history: History object to store and interact with history.
-
-    Signals:
-        entered: Emitted when command line is entered to trigger completion.
     """
 
     STYLESHEET = """
@@ -34,8 +31,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         padding: {statusbar.padding};
     }
     """
-
-    entered = pyqtSignal(str)
 
     @objreg.register("command")
     def __init__(self):
@@ -117,11 +112,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def _on_app_quit(self):
         """Write command history to file on quit."""
         history.write(self._history)
-
-    def focusInEvent(self, event):
-        """Override focus in event to also emit entered signal."""
-        super().focusInEvent(event)
-        self.entered.emit(modehandler.last())
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
