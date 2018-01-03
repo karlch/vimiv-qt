@@ -52,6 +52,7 @@ class TempKeyStorage(QTimer):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
         self.text = ""
+        statusbar.update()
 
 
 class PartialHandler(QObject):
