@@ -32,15 +32,6 @@ class Registry(collections.UserDict):
 registry = Registry()
 
 
-def clear():
-    """Clear all commands registered.
-
-    Used mainly to have a possibility to clean up in tests.
-    """
-    for dictionary in registry.values():
-        dictionary.clear()
-
-
 def get(name, mode="global"):
     """Get one command object.
 
