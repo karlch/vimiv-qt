@@ -57,6 +57,11 @@ def resize_main_window(size):
     mw.resize(width, height)
 
 
+@bdd.when(bdd.parsers.parse("I wait for {N}ms"))
+def wait(qtbot, N):
+    qtbot.wait(int(N))
+
+
 ###############################################################################
 #                                    Then                                     #
 ###############################################################################
