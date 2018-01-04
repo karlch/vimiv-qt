@@ -145,7 +145,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
         if setting == "library.width":
-            self.setFixedWidth(new_value)
+            self.update_width()
 
     @pyqtSlot(str)
     def _on_enter(self, widget):
@@ -209,8 +209,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = misc.clamp(row, 0, self.model().rowCount() - 1)
         self._select_row(row)
 
-    def resizeEvent(self, event):
-        """Resize width and columns on resize event."""
+    def update_width(self):
+        """Resize width and columns when main window width changes."""
         width = self.parent().width() * settings.get_value("library.width")
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)

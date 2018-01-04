@@ -75,7 +75,7 @@ class MainWindow(QWidget):
             self.showFullScreen()
 
     def resizeEvent(self, event):
-        """Update resize event to resize overlays.
+        """Update resize event to resize overlays and library.
 
         Args:
             event: The QResizeEvent.
@@ -86,6 +86,8 @@ class MainWindow(QWidget):
             bottom -= self.bar.height()
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
+        lib = objreg.get("library")
+        lib.update_width()
 
     def focusNextPrevChild(self, next_child):
         """Override to do nothing as focusing is handled by modehandler."""
