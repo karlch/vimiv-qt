@@ -11,6 +11,7 @@ import pytest
 from vimiv.commands import aliases
 from vimiv.utils import objreg
 
+
 @pytest.fixture
 def setup():
     aliases.init()
