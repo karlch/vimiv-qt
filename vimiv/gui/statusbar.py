@@ -76,13 +76,16 @@ def evaluate_modules(text):
     return text
 
 
-def update():
+def update(clear_message=True):
     """Update the statusbar.
 
-    Clears any pushed messages and then re-evaluates the assigned modules.
+    Re-evaluates the assigned modules.
+
+    Args:
+        clear_message: Additionally clear any pushed messages.
     """
     bar = objreg.get("statusbar")
-    bar.update()
+    bar.update(clear_message=clear_message)
 
 
 class StatusBar(QWidget):
@@ -154,10 +157,15 @@ class StatusBar(QWidget):
         self["stack"].setCurrentWidget(self["message"])
         self.timer.start()
 
-    def update(self):
-        """Update the statusbar."""
+    def update(self, clear_message=True):
+        """Update the statusbar.
+
+        Args:
+            clear_message: Additionally clear any pushed messages.
+        """
         mode = evaluate_modules("{mode}").lower()
-        self.clear_message()
+        if clear_message:
+            self.clear_message()
         for position in ["left", "center", "right"]:
             label = self[position]
             text = self._get_text(position, mode)

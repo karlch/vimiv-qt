@@ -225,7 +225,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         super().resizeEvent(event)
         if self.widget():
             self.scale(self._scale, 1)
-        statusbar.update()  # Zoom level changes
+        statusbar.update(clear_message=False)  # Zoom level changes
 
     def width(self):
         """Return width of the viewport to remove scrollbar width."""
