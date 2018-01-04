@@ -4,10 +4,10 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Command storage, initialization decorators and execution.
+"""Command storage and initialization decorators.
 
 Module Attributes:
-    _registry: Dictionary to store commands in.
+    registry: Dictionary to store commands in.
 """
 
 import argparse
@@ -53,7 +53,7 @@ def get(name, mode="global"):
 class Args(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
-    def __init__(self, cmdname, description=""):
+    def __init__(self, cmdname):
         """Create the argparse.ArgumentParser.
 
         Args:

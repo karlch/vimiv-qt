@@ -34,17 +34,27 @@ class ImageSignalHandler(QObject):
         _signals: Dictionary mapping signal names to the actual signals.
 
     Signals:
-        image_loaded: Emitted with the path when a new image was loaded.
-        pixmap_loaded: Emitted with the QPixmap when a new image was loaded.
-        movie_loaded: Emitted with the QMovie when a new image was loaded.
-        paths_loaded: Emitted with the list of paths when new paths were
-            loaded.
-        update_index: Emitted with the index when the image should select a new
-            index.
-        update_path: Emitted with the path when the image should select a new
-            path.
-        load_paths: Emitted with the list of paths when new paths should be
-            loaded.
+        update_index: Emitted when a new index should be opened.
+            arg1: Integer of the new index to select.
+        update_path: Emitted when a new image path should be opened.
+            arg1: Path of the new image.
+        update_paths: Emitted when new paths should be opened.
+            arg1: List of new paths.
+        path_loaded: Emitted when the imstorage loaded a new path.
+            arg1: Path of the new image.
+        paths_loaded: Emitted when the imstorage loaded new paths.
+            arg1: List of new paths.
+        pixmap_loaded: Emitted when the imloader loaded a new pixmap.
+            arg1: The QPixmap loaded.
+        movie_loaded: Emitted when the imloader loaded a new animation.
+            arg1: The QMovie loaded.
+        maybe_update_library: Emitted when the working directory may have
+                changed.
+            arg1: The new working directory.
+        maybe_write_file: Emitted when the selected image changes and the
+                imwriter might have write changes to disk.
+            arg1: The path to the file that might have to be written to disk.
+
     """
 
     # Tell the storage to set new things

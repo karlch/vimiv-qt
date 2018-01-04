@@ -4,7 +4,7 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Models for the completion treeview in the command line."""
+"""Functions to create models for command line completion."""
 
 import os
 
@@ -101,7 +101,11 @@ def settings(text):
 
 
 class ExternalCommandModel(completionbasemodel.BaseModel):
-    """Completion model filled with shell executables for :!."""
+    """Completion model filled with shell executables for :!.
+
+    Implemented as a class so the external commands must only be found once not
+    on every completion model change.
+    """
 
     def __init__(self):
         super().__init__()

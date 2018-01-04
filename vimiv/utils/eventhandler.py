@@ -33,9 +33,10 @@ class TempKeyStorage(QTimer):
 
     def __init__(self):
         super().__init__()
+        self.text = ""
+
         self.setSingleShot(True)
         self.setInterval(2000)
-        self.text = ""
         self.timeout.connect(self.clear_text)
 
     def add_text(self, text):

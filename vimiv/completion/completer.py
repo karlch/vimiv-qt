@@ -33,8 +33,8 @@ class Completer(QObject):
     @objreg.register("completer")
     def __init__(self, commandline, completion):
         super().__init__(parent=completion)
-        self._cmd = objreg.get("command")
         self.proxy_model = completionfilters.TextFilter()
+        self._cmd = objreg.get("command")
         self._modelfunc = None
         self._modelargs = None
         self._mode = "image"

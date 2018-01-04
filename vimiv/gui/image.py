@@ -23,12 +23,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     Connects to the pixmap_loaded and movie_loaded signals to create the
     appropriate child widget. All commands used for both children are
-    implemented here. Interaction to the children happens via the
+    implemented here. Interaction with the children happens via the
     pixmap(), original(), and rescale() methods.
 
     Attributes:
         _scale: How to scale image on resize.
             One of "overzoom", "fit", "fit-height", "fit-width", float.
+        _stack: QStackedLayout containing the ScrollableImage and Thumbnail
+            widgets.
     """
 
     STYLESHEET = """
@@ -75,10 +77,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @objreg.register("image")
     def __init__(self, stack):
         super().__init__()
+        self._scale = "1"
         self._stack = stack
+
         styles.apply(self)
         self.setWidgetResizable(True)
-        self._scale = "1"
 
         modehandler.instance().entered.connect(self._on_enter)
         imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")

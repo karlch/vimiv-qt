@@ -282,7 +282,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
 
 class Thumbnail(QLabel):
-    """Simple class to represent one thumbnail."""
+    """Simple class representing one thumbnail.
+
+    Attributes:
+        original: The original thumbnail QPixmap received from the the
+            thumbnail manager.
+    """
 
     def __init__(self, pixmap):
         super().__init__()

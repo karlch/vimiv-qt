@@ -40,6 +40,7 @@ class ThumbnailManager(QObject):
     Attributes:
         directory: Directory to store generated thumbnails in.
         fail_directory: Directory to store information on failed thumbnails in.
+        fail_pixmap: QPixmap to display when thumbnail generation failed.
 
         _large: Create large thumbnails.
 
@@ -77,6 +78,10 @@ class ThumbnailsAsyncCreator(QRunnable):
 
     Adds one ThumbnailCreator runnable to the thread pool for each thumbnail
     and starts it.
+
+    Attributes:
+        _paths: List of paths to original images.
+        _manager: The ThumbnailManager object used for callback.
     """
 
     _pool = QThreadPool.globalInstance()
@@ -102,7 +107,7 @@ class ThumbnailCreator(QRunnable):
     Attributes:
         _index: Index of the thumbnail in the thumbnail widget.
         _path: Path to the original image.
-        _manager: ThumbnailManager class to interact with.
+        _manager: The ThumbnailManager object used for callback.
     """
 
     def __init__(self, index, path, manager):

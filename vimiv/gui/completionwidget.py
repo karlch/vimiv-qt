@@ -16,7 +16,12 @@ from vimiv.utils import objreg
 
 
 class CompletionView(widgets.FlatTreeView):
-    """Completion widget."""
+    """Completion widget.
+
+    Signals:
+        activated: Emitted when the complete command was called.
+            arg1: The selected completion text.
+    """
 
     STYLESHEET = """
     QTreeView {
@@ -86,9 +91,9 @@ class CompletionView(widgets.FlatTreeView):
             return
         row = row % self.model().rowCount()
         self._select_row(row)
-        command_index = self.selectionModel().selectedIndexes()[0]
-        command = command_index.data()
-        self.activated.emit(command)
+        index = self.selectionModel().selectedIndexes()[0]
+        completion = index.data()
+        self.activated.emit(completion)
 
     def resizeEvent(self, event):
         """Resize columns on resize event."""

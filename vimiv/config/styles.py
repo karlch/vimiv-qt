@@ -194,8 +194,3 @@ def dump(name):
                 " set the style setting\n; in vimiv.conf to that name.\n")
         parser.write(f)
         f.write("; vim:ft=dosini")
-
-
-def clear():
-    """Delete all styles."""
-    _styles.clear()

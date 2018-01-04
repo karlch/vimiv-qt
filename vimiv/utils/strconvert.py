@@ -49,7 +49,6 @@ def to_bool(text):
 @is_str
 def to_int(text, allow_sign=False):
     """Convert text to int."""
-    assert isinstance(text, str)
     try:
         int_val = int(text)
     except ValueError:
@@ -62,7 +61,6 @@ def to_int(text, allow_sign=False):
 @is_str
 def to_float(text, allow_sign=False):
     """Convert text to float."""
-    assert isinstance(text, str)
     try:
         float_val = float(text)
     except ValueError:

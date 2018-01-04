@@ -114,10 +114,11 @@ class StatusBar(QWidget):
 
     @objreg.register("statusbar")
     def __init__(self):
-        self._items = {}
         super().__init__()
-        timeout = settings.get_value("statusbar.message_timeout")
         self.timer = QTimer()
+        self._items = {}
+
+        timeout = settings.get_value("statusbar.message_timeout")
         self.timer.setInterval(timeout)
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.clear_message)

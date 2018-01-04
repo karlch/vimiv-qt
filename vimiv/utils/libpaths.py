@@ -15,7 +15,12 @@ from vimiv.utils import files, misc
 
 
 class Signals(QObject):
-    """Class to store the qt signals for the library to connect to."""
+    """Class to store the qt signals for the library to connect to.
+
+    Signals:
+        loaded: Emitted when a new list of paths for the library was loaded.
+            arg1: The new list of paths.
+    """
 
     loaded = pyqtSignal(list)
 

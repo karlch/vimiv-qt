@@ -79,7 +79,12 @@ def _read(files):
 
 
 def _update_setting(name, parser):
-    """Update one setting from the values in the config parser."""
+    """Update one setting from the values in the config parser.
+
+    Args:
+        name: Name of the setting to update.
+        parser: configparser.ConfigParser object.
+    """
     section, option = _get_section_option(name)
     try:
         parser_option = parser.get(section, option)
@@ -95,7 +100,7 @@ def _add_statusbar_formatters(configsection):
     """Add optional statusbar formatters if they are in the config.
 
     Args:
-        configsection: STATUSBAR Section in the config file.
+        configsection: STATUSBAR section in the config file.
     """
     positions = ["left", "center", "right"]
     possible = ["%s_%s" % (p, m) for p in positions for m in modes.__names__]

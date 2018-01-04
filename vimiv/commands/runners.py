@@ -71,7 +71,9 @@ class ExternalRunner(QObject):
     """Runner for external commands.
 
     Signals:
-        pipe_output_received: Emitted with the shell command and stdout.
+        pipe_output_received: Emitted when :!command | completes.
+            arg1: The shell command that was executed.
+            arg2: stdout of the shell command.
     """
 
     _pool = QThreadPool.globalInstance()
@@ -141,13 +143,7 @@ class ShellCommandRunnable(QRunnable):
 
 
 class AliasRunner():
-    """Runner for aliased commands.
-
-    Includes command to add aliases and creates default aliases.
-
-    Class attributes:
-        aliases: The dictionary of aliases stored.
-    """
+    """Runner for aliased commands."""
 
     def __call__(self, text, mode):
         """Replace alias with the actual command.

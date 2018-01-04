@@ -25,8 +25,9 @@ class Signals(QObject):
     """Signals for the settings module.
 
     Signals:
-        changed: Emitted with name and new value when a setting was changed via
-            the :set command.
+        changed: Emitted when a setting has changed.
+            arg1: Name of the setting changed.
+            arg2: New value of the changed setting
     """
 
     changed = pyqtSignal(str, object)
@@ -36,7 +37,10 @@ signals = Signals()
 
 
 class Storage(collections.UserDict):
-    """Stores all settings."""
+    """Stores all settings.
+
+    Currently a plain dictionary but may become fancier in the future.
+    """
 
 
 _storage = Storage()

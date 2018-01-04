@@ -4,19 +4,14 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""QMainWindow which groups all the other widgets.
+"""QMainWindow which groups all the other widgets."""
 
-Signals:
-    resized: Emitted when the main window was resized.
-"""
-
-from PyQt5.QtCore import QMargins
-from PyQt5.QtWidgets import QWidget, QGridLayout, QStackedLayout
+from PyQt5.QtWidgets import QWidget, QStackedLayout
 
 from vimiv.commands import commands
 from vimiv.completion import completer
 from vimiv.config import styles, keybindings, configcommands
-from vimiv.gui import image, bar, library, completionwidget, thumbnail
+from vimiv.gui import image, bar, library, completionwidget, thumbnail, widgets
 from vimiv.utils import objreg
 
 
@@ -24,6 +19,8 @@ class MainWindow(QWidget):
     """QMainWindow which groups all the other widgets.
 
     Attributes:
+        bar: bar.Bar object containing statusbar and command line.
+
         _overlays: List of overlay widgets.
     """
 
@@ -31,34 +28,29 @@ class MainWindow(QWidget):
     QWidget {
         background-color: {statusbar.bg};
     }
-
-    Attributes:
-        bar: bar.Bar object containing statusbar and command line.
-        stack: Stack containing thumbnail and image.
     """
 
     @objreg.register("mainwindow")
     def __init__(self):
         super().__init__()
-        self._overlays = []
-        # Create layout
-        self.grid = QGridLayout(self)
-        self.grid.setSpacing(0)
-        self.grid.setContentsMargins(QMargins(0, 0, 0, 0))
-        self.stack = QStackedLayout()
         self.bar = bar.Bar()
+        self._overlays = []
+
+        grid = widgets.SimpleGrid(self)
+        stack = QStackedLayout()
+
         # Create widgets and add to layout
-        im = image.ScrollableImage(self.stack)
-        thumb = thumbnail.ThumbnailView(self.stack)
-        self.stack.addWidget(im)
-        self.stack.addWidget(thumb)
-        self.stack.setCurrentWidget(im)
+        im = image.ScrollableImage(stack)
+        thumb = thumbnail.ThumbnailView(stack)
+        stack.addWidget(im)
+        stack.addWidget(thumb)
+        stack.setCurrentWidget(im)
         lib = library.Library(self)
-        self.grid.addLayout(self.stack, 0, 1, 1, 1)
-        self.grid.addWidget(lib, 0, 0, 1, 1)
+        grid.addLayout(stack, 0, 1, 1, 1)
+        grid.addWidget(lib, 0, 0, 1, 1)
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
-        self.grid.addWidget(self.bar, 1, 0, 1, 2)
+        grid.addWidget(self.bar, 1, 0, 1, 2)
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
         configcommands.init()

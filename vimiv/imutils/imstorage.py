@@ -4,15 +4,7 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Deals with changing and storing paths to currently loaded images.
-
-Module Attributes:
-    signals: Class with the Qt signals for other parts to connect to.
-    _storage: Created Storage class with the loaded paths.
-
-Signals:
-    new_image: Emitted if the path of the current image has changed.
-"""
+"""Deals with changing and storing paths to currently loaded images."""
 
 import os
 from random import shuffle
@@ -27,7 +19,7 @@ from vimiv.utils import objreg, files
 
 
 class Storage(QObject):
-    """Store and manipulate paths to images.
+    """Store and move between paths to images.
 
     Attributes:
         _paths: List of image paths.

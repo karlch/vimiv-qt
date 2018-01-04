@@ -31,12 +31,14 @@ class Bar(QWidget):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
-        self._stack = QStackedLayout(self)
         self.statusbar = statusbar.StatusBar()
-        self._stack.addWidget(self.statusbar)
         self.commandline = commandline.CommandLine()
+        self._stack = QStackedLayout(self)
+
+        self._stack.addWidget(self.statusbar)
         self._stack.addWidget(self.commandline)
         self._stack.setCurrentWidget(self.statusbar)
+
         self._maybe_hide()
 
         self.commandline.editingFinished.connect(self._on_editing_finished)
@@ -46,7 +48,11 @@ class Bar(QWidget):
     @commands.argument("text", optional=True, default="")
     @commands.register(instance="bar", hide=True)
     def command(self, text=""):
-        """Enter command mode."""
+        """Enter command mode.
+
+        Args:
+            text: String to append to the : prefix.
+        """
         self.show()
         self._stack.setCurrentWidget(self.commandline)
         self.commandline.setText(":" + text)

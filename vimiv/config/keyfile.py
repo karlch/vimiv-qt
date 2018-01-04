@@ -79,6 +79,14 @@ class KeyfileParser(configparser.ConfigParser):
 
 
 def _update_bindings(bindings, section):
-    """Update keybindings dictionary with values from config section."""
+    """Update keybindings dictionary with values from config section.
+
+    The section corresponds to one mode and the bindings dictionary is the
+    corresponding dictionary.
+
+    Args:
+        bindings: The keybindings dictionary to update.
+        section: Section in keys.conf file to read keysbindings from.
+    """
     for keybinding, command in section.items():
         bindings[keybinding] = command
