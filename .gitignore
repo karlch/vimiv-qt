@@ -4,4 +4,4 @@
 *.coverage
 *.hypothesis
 *.tox
-htmlcov/*
+coverage/*
