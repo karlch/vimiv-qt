@@ -104,3 +104,15 @@ def check_no_statusbar_message():
 @bdd.then(bdd.parsers.parse("the working directory should be {basename}"))
 def check_working_directory(basename):
     assert os.path.basename(os.getcwd()) == basename
+
+
+@bdd.then("the window should be fullscreen")
+def check_fullscreen():
+    mw = objreg.get("mainwindow")
+    assert mw.isFullScreen()
+
+
+@bdd.then("the window should not be fullscreen")
+def check_not_fullscreen():
+    mw = objreg.get("mainwindow")
+    assert not mw.isFullScreen()
