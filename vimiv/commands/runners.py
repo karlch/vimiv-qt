@@ -155,6 +155,7 @@ class AliasRunner():
         Return:
             The replaced text if text was an alias else text.
         """
-        if text in aliases.get(mode):
-            return aliases.get(mode)[text]
+        command = text.split()[0]
+        if command in aliases.get(mode):
+            return text.replace(command, aliases.get(mode)[command])
         return text
