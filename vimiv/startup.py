@@ -57,6 +57,7 @@ def run(argv):
 def earlyinit():
     """Initialize objects needed as early as possible."""
     aliases.init()
+    clipboard.init()
     cmdrunner.init()
     eventhandler.init()
     modehandler.init()

@@ -18,6 +18,12 @@ from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
+def init():
+    """Initialize clipboard commands."""
+    # Currently does not do anything but the commands need to be registered by
+    # an import. May become useful in the future.
+
+
 @keybindings.add("yA", "copy-name --abspath --primary")
 @keybindings.add("yY", "copy-name --primary")
 @keybindings.add("ya", "copy-name --abspath")
