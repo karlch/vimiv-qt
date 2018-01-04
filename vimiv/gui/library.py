@@ -218,9 +218,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setColumnWidth(2, 0.15 * width)
 
     def current(self):
-        """Return name of currently selected path."""
+        """Return absolute path of currently selected path."""
         try:
-            return self.selectionModel().selectedIndexes()[1].data()
+            basename = self.selectionModel().selectedIndexes()[1].data()
+            basename = misc.strip_html(basename)
+            return os.path.abspath(basename)
         except IndexError:
             return ""
 
