@@ -6,19 +6,20 @@
 
 """ModeHandler singleton to deal with entering and leaving modes."""
 
+import collections
 import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from vimiv import modes
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
-from vimiv.modes.modereg import modes
 from vimiv.utils import objreg
 
 
 def init():
-    """Initialize the ModeHandler object."""
+    """Initialize the Modes and ModeHandler objects."""
     ModeHandler()
 
 
@@ -65,7 +66,7 @@ def toggle(mode):
 
 def get_active_mode():
     """Return the currently active mode as Mode class."""
-    for mode in modes.values():
+    for mode in instance().modes.values():
         if mode.active:
             return mode
     return None
@@ -90,6 +91,9 @@ def last():
 class ModeHandler(QObject):
     """Singleton to enter and leave modes.
 
+    Attributes:
+        modes: Dictionary storing all modes.
+
     Signals:
         entered: Emitted when a mode is entered.
             arg1: Name of the mode entered.
@@ -103,6 +107,7 @@ class ModeHandler(QObject):
     @objreg.register("mode-handler")
     def __init__(self):
         super().__init__()
+        self.modes = Modes()
 
     def enter(self, mode):
         """Enter a mode.
@@ -122,9 +127,9 @@ class ModeHandler(QObject):
             logging.debug("Leaving mode %s", last_mode.name)
             last_mode.active = False
             if last_mode.name not in ["command"]:
-                modes[mode].last_mode = last_mode.name
+                self.modes[mode].last_mode = last_mode.name
         # Enter new mode
-        modes[mode].active = True
+        self.modes[mode].active = True
         widget = objreg.get(mode)
         widget.show()
         widget.setFocus()
@@ -143,6 +148,32 @@ class ModeHandler(QObject):
         Args:
             mode: The mode to leave.
         """
-        last_mode = modes[mode].last_mode
+        last_mode = self.modes[mode].last_mode
         enter(last_mode)
         self.left.emit(mode)
+
+
+class Mode():
+    """Skeleton of a mode.
+
+    Attributes:
+        active: True if the mode is currently active.
+        name: Name of the mode as string.
+        last_mode: Name of the mode that was focused before entering this mode.
+    """
+
+    def __init__(self, name):
+        self.active = False
+        self.name = name
+        self.last_mode = "image" if name != "image" else "library"
+
+
+class Modes(collections.UserDict):
+    """Dictionary to store all modes."""
+
+    def __init__(self):
+        """Init dictionary and create modes."""
+        super().__init__()
+        for name in modes.__names__:
+            self[name] = Mode(name)
+        self["image"].active = True  # Default mode

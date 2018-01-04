@@ -8,8 +8,8 @@
 
 import collections
 
+from vimiv import modes
 from vimiv.commands import commands, cmdexc
-from vimiv.modes import modereg
 from vimiv.utils import objreg
 
 
@@ -44,7 +44,7 @@ class Aliases(collections.UserDict):
     @objreg.register("aliases")
     def __init__(self):
         super().__init__()
-        for mode in modereg.modes:
+        for mode in modes.__names__:
             self[mode] = {}
         # Add defaults
         self["global"]["q"] = "quit"

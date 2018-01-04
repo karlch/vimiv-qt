@@ -5,3 +5,6 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions to enter, leave and get current mode."""
+
+
+__names__ = ["global", "image", "library", "thumbnail", "command"]

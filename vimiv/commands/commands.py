@@ -15,8 +15,8 @@ import collections
 import inspect
 import logging
 
+from vimiv import modes
 from vimiv.commands import cmdexc
-from vimiv.modes import modereg
 from vimiv.utils import objreg
 
 
@@ -25,7 +25,7 @@ class Registry(collections.UserDict):
 
     def __init__(self):
         super().__init__()
-        for mode in modereg.modes:
+        for mode in modes.__names__:
             self[mode] = {}
 
 

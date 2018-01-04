@@ -10,9 +10,9 @@ import configparser
 import logging
 import os
 
+from vimiv import modes
 from vimiv.commands import aliases, cmdexc
 from vimiv.config import settings
-from vimiv.modes import modereg
 from vimiv.utils import xdg
 
 
@@ -98,7 +98,7 @@ def _add_statusbar_formatters(configsection):
         configsection: STATUSBAR Section in the config file.
     """
     positions = ["left", "center", "right"]
-    possible = ["%s_%s" % (p, m) for p in positions for m in modereg.modes]
+    possible = ["%s_%s" % (p, m) for p in positions for m in modes.__names__]
     for name, value in configsection.items():
         if name in possible:
             settings.StrSetting("statusbar.%s" % (name), value)
