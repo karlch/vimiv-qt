@@ -34,14 +34,24 @@ def create_image(path, fileformat="jpg", size=(300, 300)):
 ###############################################################################
 
 
-@pytest.fixture
+@pytest.fixture()
 def vimivproc():
     yield vimivprocess.instance()
+
 
 
 ###############################################################################
 #                                  bdd Given                                  #
 ###############################################################################
+
+
+@bdd.given("I start vimiv")
+def startup(qtbot, tmpdir):
+    # Not really any different from "I open any directory" below but cleaner to
+    # read in scenarios where the directory is not explicitly needed
+    vimivprocess.init(qtbot, [str(tmpdir)])
+    yield
+    vimivprocess.exit()
 
 
 @bdd.given("I open any directory")
