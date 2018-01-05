@@ -158,11 +158,11 @@ class ThumbnailCreator(QRunnable):
         size = 256 if self._manager.large else 128
         reader = QImageReader(path)
         if reader.canRead():
+            qsize = reader.size()
+            qsize.scale(size, size, Qt.KeepAspectRatio)
+            reader.setScaledSize(qsize)
             image = reader.read()
             attributes = self._get_thumbnail_attributes(path, image)
-            image = image.scaled(size, size,
-                                 transformMode=Qt.SmoothTransformation,
-                                 aspectRatioMode=Qt.KeepAspectRatio)
             for key, value in attributes.items():
                 image.setText(key, value)
             # First create temporary file and then move it. This avoids
