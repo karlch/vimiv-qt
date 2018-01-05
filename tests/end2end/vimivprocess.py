@@ -6,6 +6,7 @@
 
 """Singleton to start one vimiv process for tests."""
 
+from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import QWidget
 
 from vimiv import startup
@@ -37,10 +38,15 @@ class VimivProc():
     """Process class to start and exit one vimiv process."""
 
     def __init__(self, qtbot, argv=[]):
+        argv.append("--temp-basedir")
         startup.run(argv)
         for name, widget in objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)
 
     def exit(self):
+        # Do not start any new threads
+        QThreadPool.globalInstance().clear()
+        # Wait for any running threads to exit safely
+        QThreadPool.globalInstance().waitForDone()
         objreg.clear()
