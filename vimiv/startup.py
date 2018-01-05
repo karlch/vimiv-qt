@@ -10,6 +10,7 @@ import argparse
 import logging
 import logging.handlers
 import os
+import tempfile
 
 from PyQt5.QtWidgets import QApplication
 
@@ -30,11 +31,11 @@ def run(argv):
     Args:
         argv: sys.argv[1:] from the executable.
     """
-    # Setup directories
-    init_directories()
     # Parse args
     parser = get_argparser()
     args = parser.parse_args(argv)
+    # Setup directories
+    init_directories(args)
     # Setup logging
     setup_logging(args.log_level)
     logging.info("Start: vimiv %s", " ".join(argv))
@@ -125,8 +126,22 @@ def get_argparser():
     return parser
 
 
-def init_directories():
-    """Create vimiv cache, config and data directories."""
+def init_directories(args):
+    """Create vimiv cache, config and data directories.
+
+    The directories are either the directories defined in the freedesktop
+    standard or located in a temporary base directory.
+
+    Args:
+        args: Arguments returned from parser.parse_args().
+    """
+    if args.temp_basedir:
+        tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
+        app.save_temp_basedir(tmpdir)
+        basedir = tmpdir.name
+        os.environ["XDG_CACHE_HOME"] = os.path.join(basedir, "cache")
+        os.environ["XDG_CONFIG_HOME"] = os.path.join(basedir, "config")
+        os.environ["XDG_DATA_HOME"] = os.path.join(basedir, "data")
     for directory in [xdg.get_vimiv_cache_dir(),
                       xdg.get_vimiv_config_dir(),
                       xdg.get_vimiv_data_dir(),
