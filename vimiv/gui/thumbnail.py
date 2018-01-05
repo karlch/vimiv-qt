@@ -164,19 +164,24 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         current = self.currentRow()
         column = current % self.columns()
         if direction == "right":
-            current += 1
+            current += 1 * count
             current = min(current, self.count() - 1)
         elif direction == "left":
-            current -= 1
+            current -= 1 * count
             current = max(0, current)
         elif direction == "down":
+            # Do not jump between columns
+            current += self.columns() * count
             elems_in_last_row = self.count() % self.columns()
-            # Do not jump to last element when in last row
-            if current < self.count() - elems_in_last_row:
-                current += self.columns()
-                current = min(current, self.count() - 1)
+            if not elems_in_last_row:
+                elems_in_last_row = self.columns()
+            if column < elems_in_last_row:
+                current = min(self.count() - (elems_in_last_row - column),
+                              current)
+            else:
+                current = min(self.count() - 1, current)
         else:
-            current -= self.columns()
+            current -= self.columns() * count
             current = max(column, current)
         self._select_item(current)
 
