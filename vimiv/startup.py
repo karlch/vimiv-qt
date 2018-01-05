@@ -17,7 +17,7 @@ import vimiv
 from vimiv import app
 from vimiv.commands import argtypes, aliases, cmdrunner
 from vimiv.config import configfile, keyfile, settings, styles
-from vimiv.gui import mainwindow
+from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
@@ -52,6 +52,7 @@ def run(argv):
     init_paths(args)
     # Finalize
     logging.info("Startup completed")
+    statusbar.update()
 
 
 def earlyinit():
