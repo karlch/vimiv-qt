@@ -22,7 +22,7 @@ from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
-                         eventhandler, slideshow, objreg)
+                         eventhandler, slideshow, objreg, trash_manager)
 
 
 def run(argv):
@@ -64,6 +64,7 @@ def earlyinit():
     eventhandler.init()
     modehandler.init()
     slideshow.init()
+    trash_manager.init()
     iminitialize.init()  # imstorage needs slideshow
 
 
