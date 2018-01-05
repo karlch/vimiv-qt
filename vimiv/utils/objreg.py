@@ -43,6 +43,11 @@ def register(name):
     return decorator
 
 
+def register_object(name, obj):
+    """Store an object in the registry."""
+    _registry[name] = obj
+
+
 def get(name):
     """Get a component from the registry.
 

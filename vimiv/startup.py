@@ -22,7 +22,7 @@ from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
-                         eventhandler, slideshow)
+                         eventhandler, slideshow, objreg)
 
 
 def run(argv):
@@ -137,7 +137,8 @@ def init_directories(args):
     """
     if args.temp_basedir:
         tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
-        app.save_temp_basedir(tmpdir)
+        # Store the object so the directory stay around until exit
+        objreg.register_object("temp-basedir", tmpdir)
         basedir = tmpdir.name
         os.environ["XDG_CACHE_HOME"] = os.path.join(basedir, "cache")
         os.environ["XDG_CONFIG_HOME"] = os.path.join(basedir, "config")
