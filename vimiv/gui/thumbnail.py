@@ -225,6 +225,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         for i in range(self.count()):
             item = self.item(i)
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
+        self.scrollTo(self.selectionModel().currentIndex(),
+                      hint=self.PositionAtCenter)
 
     def _select_item(self, index):
         """Select specific item in the ListWidget.
@@ -243,6 +245,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
+        self.scrollTo(index, hint=self.PositionAtCenter)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
@@ -291,6 +294,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def total(self):
         """Return the size of the thumbnails for the statusbar."""
         return str(self.model().rowCount())
+
+    def resizeEvent(self, event):
+        """Update resize event to keep selected thumbnail centered."""
+        super().resizeEvent(event)
+        self.scrollTo(self.selectionModel().currentIndex(),
+                      hint=self.PositionAtCenter)
 
 
 class Thumbnail(QLabel):
