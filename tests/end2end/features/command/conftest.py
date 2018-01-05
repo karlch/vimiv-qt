@@ -21,6 +21,11 @@ def check_file_exists(name):
     assert os.path.isfile(name)
 
 
+@bdd.then(bdd.parsers.parse("the file {name} should not exist"))
+def check_not_file_exists(name):
+    assert not os.path.isfile(name)
+
+
 @bdd.then(bdd.parsers.parse("the directory {name} should exist"))
 def check_directory_exists(name):
     assert os.path.isdir(name)

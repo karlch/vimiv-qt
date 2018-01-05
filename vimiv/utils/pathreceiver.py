@@ -14,6 +14,8 @@ def current(mode=None):
 
     Args:
         mode: Force getting the currently selected path of a specific mode.
+    Return:
+        The currently selected path as abspath.
     """
     mode = mode if mode else modehandler.current()
     if mode == "library":
@@ -24,3 +26,20 @@ def current(mode=None):
         return objreg.get("thumbnail").abspath()
     else:
         return ""
+
+
+def pathlist(mode=None):
+    """Get the list of all currently open paths.
+
+    Args:
+        mode: Force getting the pathlist of a specific mode.
+    Return:
+        The list of currently open paths.
+    """
+    mode = mode if mode else modehandler.current()
+    if mode == "library":
+        return objreg.get("library").pathlist()
+    elif mode in ["image", "thumbnail"]:
+        return objreg.get("imstorage").pathlist()
+    else:
+        return []

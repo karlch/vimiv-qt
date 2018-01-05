@@ -100,6 +100,10 @@ class Storage(QObject):
         """Return total amount of paths as string."""
         return str(len(self._paths))
 
+    def pathlist(self):
+        """Return the currently loaded list of paths."""
+        return self._paths
+
     @pyqtSlot()
     def _on_slideshow_event(self):
         self.next(1)

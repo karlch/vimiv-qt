@@ -52,7 +52,7 @@ class CommandRunner(collections.UserDict):
         """
         # Dereference aliases first
         command = self["alias"](command, mode)
-        # Expand wildcards
+        # Expand wildcards % and *
         command = self._expand_wildcards(command, mode)
         if prefix == ":" and command.startswith("!"):
             self["external"](command.lstrip(":!"))
@@ -64,6 +64,17 @@ class CommandRunner(collections.UserDict):
             logging.error("Unknown prefix '%s'", prefix)
 
     def _expand_wildcards(self, command, mode):
-        current = pathreceiver.current(mode)
-        command = re.sub(r'(?<!\\)%', current, command)
+        """Expand % and * to the corresponding path and pathlist.
+
+        Args:
+            command: The command in which the wildcards are expanded.
+            mode: Mode the command is run in to get correct path(-list).
+        """
+        # Check first as the re substitutions are rather expensive
+        if "%" in command:
+            current = pathreceiver.current(mode)
+            command = re.sub(r'(?<!\\)%', current, command)
+        if "*" in command:
+            pathlist = " ".join(pathreceiver.pathlist())
+            command = re.sub(r'(?<!\\)\*', pathlist, command)
         return command

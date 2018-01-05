@@ -226,6 +226,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             return ""
 
+    def pathlist(self):
+        """Return the list of currently open paths."""
+        return self.model().pathlist()
+
 
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
@@ -240,6 +244,15 @@ class LibraryModel(QStandardItemModel):
         formatting.
         """
         self.removeRows(0, self.rowCount())
+
+    def pathlist(self):
+        """Return the list of currently open paths."""
+        pathlist = []
+        for i in range(self.rowCount()):
+            basename = self.index(i, 1).data()
+            basename = misc.strip_html(basename)
+            pathlist.append(os.path.abspath(basename))
+        return pathlist
 
 
 class LibraryDelegate(QStyledItemDelegate):

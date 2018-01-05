@@ -18,3 +18,25 @@ Feature: Expand wildcards when running commands
         And I wait for the command to complete
         Then the directory child_1_bak should not exist
         And a message should be displayed
+
+    Scenario: Expand * to the list of paths in the library
+        Given I open a directory with 2 paths
+        When I run !rmdir *
+        And I wait for the command to complete
+        Then the directory child_1 should not exist
+        And the directory child_2 should not exist
+
+    Scenario: Expand * to the list of images in image mode
+        Given I open 2 images
+        When I run !rm *
+        And I wait for the command to complete
+        Then the file image_1.jpg should not exist
+        And the file image_2.jpg should not exist
+
+    Scenario: Do not expand * when escaped
+        Given I open a directory with 2 paths
+        When I run !rmdir \*
+        And I wait for the command to complete
+        Then the directory child_1 should exist
+        And the directory child_2 should exist
+        And a message should be displayed
