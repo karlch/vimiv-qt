@@ -17,6 +17,7 @@ from vimiv.imutils import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
+# We need the check as svg support is optional
 try:
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:

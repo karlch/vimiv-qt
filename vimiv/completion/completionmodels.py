@@ -116,7 +116,8 @@ def trash():
         original, date = trash_manager.get_trash_info(path)
         original = original.replace(os.path.expanduser("~"), "~")
         original = os.path.dirname(original)
-        date = "%s-%s-%s %s:%s" % (date[2:4], date[4:6], date[6:8], date[9:11], date[11:13])
+        date = "%s-%s-%s %s:%s" % (date[2:4], date[4:6], date[6:8], date[9:11],
+                                   date[11:13])
         # Append data in column form
         data.append((cmd, original, date))
     model.set_data(data)

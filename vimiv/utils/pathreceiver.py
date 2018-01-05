@@ -24,8 +24,7 @@ def current(mode=None):
         return objreg.get("imstorage").current()
     elif mode == "thumbnail":
         return objreg.get("thumbnail").abspath()
-    else:
-        return ""
+    return ""
 
 
 def pathlist(mode=None):
@@ -41,5 +40,4 @@ def pathlist(mode=None):
         return objreg.get("library").pathlist()
     elif mode in ["image", "thumbnail"]:
         return objreg.get("imstorage").pathlist()
-    else:
-        return []
+    return []

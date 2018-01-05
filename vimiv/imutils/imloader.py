@@ -14,6 +14,7 @@ from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 from vimiv.imutils import imsignals
 from vimiv.utils import objreg
 
+# We need the check as svg support is optional
 try:
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:

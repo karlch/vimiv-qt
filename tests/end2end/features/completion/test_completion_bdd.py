@@ -21,7 +21,7 @@ def check_completion_model(model):
               "path": completionmodels.paths,
               "external": completionmodels.external,
               "settings": completionmodels.settings,
-              "trash": completionmodels.trash,}
+              "trash": completionmodels.trash}
     assert completer._modelfunc == models[model]
 
 
