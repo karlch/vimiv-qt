@@ -60,6 +60,8 @@ class ThumbnailManager(QObject):
             else os.path.join(directory, "normal")
         self.fail_directory = \
             os.path.join(directory, "fail", "vimiv-%s" % (vimiv.__version__))
+        os.makedirs(self.directory, exist_ok=True)
+        os.makedirs(self.fail_directory, exist_ok=True)
         self.fail_pixmap = pixmap_creater.error_thumbnail()
 
     def create_thumbnails_async(self, paths):
