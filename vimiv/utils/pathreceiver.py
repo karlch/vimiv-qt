@@ -14,7 +14,9 @@ def current():
     mode = modehandler.current()
     if mode == "library":
         return objreg.get("library").current()
-    elif mode in ["image", "thumbnail"]:
+    elif mode == "image":
         return objreg.get("imstorage").current()
+    elif mode == "thumbnail":
+        return objreg.get("thumbnail").abspath()
     else:
         return ""

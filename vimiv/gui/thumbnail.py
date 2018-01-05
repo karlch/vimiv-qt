@@ -271,6 +271,13 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
+    def abspath(self):
+        """Return the absolute path of the current thumbnail."""
+        try:
+            return self._paths[self.currentRow()]
+        except IndexError:
+            return ""
+
     @statusbar.module("{thumbnail_size}", instance="thumbnail")
     def size(self):
         """Return the size of the thumbnails for the statusbar."""
