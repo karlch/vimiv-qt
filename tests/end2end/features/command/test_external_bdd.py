@@ -15,7 +15,7 @@ bdd.scenarios("external.feature")
 @bdd.when("I wait for the command to complete")
 def wait_for_external_command(qtbot):
     """Just wait for a short time as tests should run fast commands."""
-    qtbot.wait(10)
+    qtbot.wait(50)
 
 
 @bdd.then(bdd.parsers.parse("the file {name} should exist"))
