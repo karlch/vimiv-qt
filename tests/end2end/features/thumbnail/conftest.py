@@ -14,10 +14,12 @@ from vimiv.utils import objreg
 @bdd.given("I enter thumbnail mode")
 def enter_thumbnail():
     modehandler.enter("thumbnail")
+    thumb = objreg.get("thumbnail")
+    thumb.setFixedWidth(400)  # Make sure the width is as expected
 
 
 @bdd.then(bdd.parsers.parse("the thumbnail number {N} should be selected"))
-def check_selected_thumbnail(N):
+def check_selected_thumbnail(qtbot, N):
     thumb = objreg.get("thumbnail")
     assert thumb.columns() == 2, "Default settings not respected"
     assert thumb.currentRow() + 1 == int(N)
