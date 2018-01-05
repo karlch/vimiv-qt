@@ -8,6 +8,7 @@
 
 import os
 
+from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
@@ -30,6 +31,10 @@ class Application(QApplication):
     @commands.register(instance="app")
     def quit(self):
         """Quit vimiv."""
+        # Do not start any new threads
+        QThreadPool.globalInstance().clear()
+        # Wait for any running threads to exit safely
+        QThreadPool.globalInstance().waitForDone()
         super().quit()
 
 
