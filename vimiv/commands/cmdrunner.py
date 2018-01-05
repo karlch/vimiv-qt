@@ -8,10 +8,11 @@
 
 import collections
 import logging
+import re
 
 from vimiv.commands import runners
 from vimiv.modes import modehandler
-from vimiv.utils import objreg
+from vimiv.utils import objreg, pathreceiver
 
 
 def init():
@@ -51,6 +52,8 @@ class CommandRunner(collections.UserDict):
         """
         # Dereference aliases first
         command = self["alias"](command, mode)
+        # Expand wildcards
+        command = self._expand_wildcards(command, mode)
         if prefix == ":" and command.startswith("!"):
             self["external"](command.lstrip(":!"))
         elif prefix == ":":
@@ -59,3 +62,8 @@ class CommandRunner(collections.UserDict):
             raise NotImplementedError("Search not implemented yet")
         else:
             logging.error("Unknown prefix '%s'", prefix)
+
+    def _expand_wildcards(self, command, mode):
+        current = pathreceiver.current(mode)
+        command = re.sub(r'(?<!\\)%', current, command)
+        return command

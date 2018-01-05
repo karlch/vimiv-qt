@@ -9,9 +9,13 @@ from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
-def current():
-    """Get the currently selected path."""
-    mode = modehandler.current()
+def current(mode=None):
+    """Get the currently selected path.
+
+    Args:
+        mode: Force getting the currently selected path of a specific mode.
+    """
+    mode = mode if mode else modehandler.current()
     if mode == "library":
         return objreg.get("library").current()
     elif mode == "image":

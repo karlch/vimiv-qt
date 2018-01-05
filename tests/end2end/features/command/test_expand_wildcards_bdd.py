@@ -7,4 +7,4 @@
 import pytest_bdd as bdd
 
 
-bdd.scenarios("external.feature")
+bdd.scenarios("expand_wildcards.feature")
