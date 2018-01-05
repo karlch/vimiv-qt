@@ -97,6 +97,9 @@ class Completer(QObject):
             if setting:
                 return completionmodels.settings, (setting[0],)
             return completionmodels.settings, ("",)
+        # Undelete completion
+        elif text.startswith("undelete"):
+            return completionmodels.trash, ()
         elif text.startswith("!"):
             return completionmodels.external, ()
         # Default: command completion

@@ -11,7 +11,7 @@ import os
 from vimiv.commands import commands, aliases
 from vimiv.completion import completionbasemodel
 from vimiv.config import settings as vimivsettings  # Modelfunc called settings
-from vimiv.utils import files
+from vimiv.utils import files, xdg, objreg
 
 
 def command(mode):
@@ -96,6 +96,29 @@ def settings(text):
         for name, setting in vimivsettings.items():
             cmd = "set %s" % (name)
             data.append((cmd, str(setting), setting.desc))
+    model.set_data(data)
+    return model
+
+
+def trash():
+    """Completion model filled with valid paths for the :undelete command.
+
+    Return:
+        The generated completion model.
+    """
+    data = []
+    model = completionbasemodel.BaseModel((0.4, 0.45, 0.15))
+    trash_dir = os.path.join(xdg.get_user_data_dir(), "Trash", "files")
+    trash_manager = objreg.get("trash-manager")
+    for path in files.ls(trash_dir):
+        cmd = "undelete %s" % (os.path.basename(path))
+        # Get info and format it neatly
+        original, date = trash_manager.get_trash_info(path)
+        original = original.replace(os.path.expanduser("~"), "~")
+        original = os.path.dirname(original)
+        date = "%s-%s-%s %s:%s" % (date[2:4], date[4:6], date[6:8], date[9:11], date[11:13])
+        # Append data in column form
+        data.append((cmd, original, date))
     model.set_data(data)
     return model
 

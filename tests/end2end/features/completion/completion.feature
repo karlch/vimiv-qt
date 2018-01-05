@@ -22,6 +22,11 @@ Feature: Using completion.
         When I enter command mode with set
         Then the completion model should be settings
 
+    Scenario: Using trash completion.
+        Given I open any directory
+        When I enter command mode with undelete
+        Then the completion model should be trash
+
     Scenario: Crash on path completion with non-existent directory
         Given I open any directory
         When I enter command mode with open /foo/bar/baz

@@ -20,7 +20,8 @@ def check_completion_model(model):
     models = {"command": completionmodels.command,
               "path": completionmodels.paths,
               "external": completionmodels.external,
-              "settings": completionmodels.settings}
+              "settings": completionmodels.settings,
+              "trash": completionmodels.trash,}
     assert completer._modelfunc == models[model]
 
 
