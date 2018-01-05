@@ -146,8 +146,10 @@ def init_ui(args):
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size
-    geometry = args.geometry if args.geometry else (800, 600)
     screen_geometry = QApplication.desktop().screenGeometry()
+    geometry = args.geometry \
+        if args.geometry \
+        else (screen_geometry.width() / 2, screen_geometry.height() / 2)
     x = (screen_geometry.width() - geometry[0]) // 2
     y = (screen_geometry.height() - geometry[1]) // 2
     mw.setGeometry(x, y, *geometry)
