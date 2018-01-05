@@ -14,6 +14,11 @@ from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 from vimiv.imutils import imsignals
 from vimiv.utils import objreg
 
+try:
+    from PyQt5.QtSvg import QSvgWidget
+except ImportError:
+    QSvgWidget = None
+
 
 class ImageLoader(QObject):
     """Load proper displayable QObject for a path.
@@ -34,6 +39,11 @@ class ImageLoader(QObject):
         reader = QImageReader(path)
         if not reader.canRead():
             logging.error("Cannot read image %s", path)
+        elif reader.format().data().decode() == "svg" and QSvgWidget:
+            # Do not store image and only emit with the path as the
+            # VectorGraphic widget needs the path in the constructor
+            self.image = None
+            imsignals.emit("svg_loaded", path)
         elif reader.supportsAnimation():
             self.image = QMovie(path)
             imsignals.emit("movie_loaded", self.image)

@@ -17,6 +17,11 @@ from vimiv.imutils import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
+try:
+    from PyQt5.QtSvg import QSvgWidget
+except ImportError:
+    QSvgWidget = None
+
 
 class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     """QScrollArea to display Image or Animation.
@@ -77,15 +82,17 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @objreg.register("image")
     def __init__(self, stack):
         super().__init__()
-        self._scale = "1"
+        self._scale = 1
         self._stack = stack
 
         styles.apply(self)
+        self.setAlignment(Qt.AlignCenter)
         self.setWidgetResizable(True)
 
         modehandler.instance().entered.connect(self._on_enter)
         imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")
         imsignals.connect(self._on_movie_loaded, "movie_loaded")
+        imsignals.connect(self._on_svg_loaded, "svg_loaded")
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
@@ -96,6 +103,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_movie_loaded(self, movie):
         self.setWidget(Animation(self, movie))
         self.scale(1, 1)
+
+    @pyqtSlot(str)
+    def _on_svg_loaded(self, path):
+        self.setWidget(VectorGraphic(path))
+        self.scale("fit", 1)
 
     @keybindings.add("k", "scroll up", mode="image")
     @keybindings.add("j", "scroll down", mode="image")
@@ -317,3 +329,32 @@ class Animation(widgets.ImageLabel):
             self.movie().setPaused(False)
         else:
             self.movie().setPaused(True)
+
+
+class VectorGraphic(QSvgWidget):
+    """Widget to display a vector graphic.
+
+    Attributes:
+        original: QSize of the original svg for proper rescaling.
+    """
+
+    STYLESHEET = """
+    QSvgWidget {
+        background-color: {image.bg};
+    }
+    """
+
+    def __init__(self, path):
+        super().__init__(path)
+        self.original = self.sizeHint()
+        styles.apply(self)
+
+    def pixmap(self):
+        """Return the QSvgWidget for size comparisons."""
+        return super()
+
+    def rescale(self, scale):
+        """Rescale the svg to a new scale."""
+        width = self.original.width() * scale
+        height = self.original.height() * scale
+        self.setFixedSize(width, height)
