@@ -108,9 +108,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if os.path.isdir(path):
             self._positions[os.getcwd()] = self.row()
             libpaths.load(path)
-        # Close library and enter image mode on double selection
+        # Close library on double selection
         elif path == self._last_selected:
-            modehandler.enter("image")
+            modehandler.leave("library")
             self.hide()
             self._last_selected = ""
         # Update image

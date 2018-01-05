@@ -84,6 +84,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
+        imsignals.connect(self._on_path_loaded, "path_loaded")
         imsignals.connect(self._on_paths_loaded, "paths_loaded")
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
@@ -111,6 +112,11 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
                 self.setItemWidget(item, thumb)
             self._manager.create_thumbnails_async(paths)
 
+    @pyqtSlot(str)
+    def _on_path_loaded(self, path):
+        index = self._paths.index(os.path.abspath(path))
+        self._select_item(index)
+
     @pyqtSlot(QModelIndex)
     def _on_activated(self, index):
         """Emit signal to update image index on activated.
@@ -118,14 +124,13 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
-        imsignals.emit("update_index", index.row() + 1)
         modehandler.enter("image")
+        imsignals.emit("update_index", index.row() + 1)
 
     @pyqtSlot(str)
     def _on_enter(self, widget):
         if widget == "thumbnail":
             self._stack.setCurrentWidget(self)
-            self._select_item(0)
 
     @pyqtSlot(str)
     def _on_leave(self, widget):
