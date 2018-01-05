@@ -131,8 +131,7 @@ def init_directories():
                       xdg.get_vimiv_config_dir(),
                       xdg.get_vimiv_data_dir(),
                       xdg.join_vimiv_config("styles")]:
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
+        os.makedirs(directory, exist_ok=True)
 
 
 def init_paths(args):
