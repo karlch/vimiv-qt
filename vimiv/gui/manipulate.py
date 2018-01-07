@@ -9,8 +9,7 @@
 import logging
 
 from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import (QWidget, QHBoxLayout, QProgressBar, QLabel,
-                             QSizePolicy)
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
 from vimiv.config import styles
 from vimiv.imutils import imsignals
@@ -29,6 +28,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
     STYLESHEET = """
     QWidget {
+        font: {statusbar.font};
         color: {manipulate.fg};
         background: {manipulate.bg};
     }
@@ -51,10 +51,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         self._error = "No image to manipulate"
         self._labels = {}
         self._bars = {}
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         styles.apply(self)
-        self.setFixedHeight(2 * self.height())  # Don't ask me why
 
         layout = QHBoxLayout()
 
@@ -83,6 +81,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         manipulator = objreg.get("manipulator")
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
+
         self.hide()
 
     def _on_mode_entered(self, mode):
@@ -94,9 +93,15 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             self.hide()
 
     def _on_edited(self, name, value):
+        """Update progressbar value on edit."""
         self._bars[name].setValue(value)
 
     def _on_focused(self, name):
+        """Highlight newly focused mode label.
+
+        Args:
+            name: Name of the label focused.
+        """
         fg = styles.get("manipulate.fg")
         fg_focused = styles.get("manipulate.focused.fg")
         for manipulation, label in self._labels.items():
@@ -117,5 +122,10 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         self._error = "Manipulating vector graphics is not supported"
 
     def update_geometry(self, window_width, window_height):
+        """Rescale width when main window was resized."""
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
+
+    def height(self):
+        """Update height to get preferred height of the progress bar."""
+        return self._bars["brightness"].sizeHint().height() * 2
