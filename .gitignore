@@ -5,3 +5,7 @@
 *.hypothesis
 *.tox
 coverage/*
+build*
+dist*
+install_log.txt
+*.so
