@@ -1,5 +1,5 @@
 coverage
-pytest
+pytest==3.3.1
 pytest-cov
 pytest-mock
 pytest-qt
