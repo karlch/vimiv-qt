@@ -6,6 +6,7 @@
 
 """Functions dealing with files and paths."""
 
+import datetime
 import itertools
 import os
 
@@ -13,6 +14,7 @@ from PyQt5.QtGui import QImageReader
 
 from vimiv.config import settings
 from vimiv.gui import statusbar
+from vimiv.utils import pathreceiver
 
 
 def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
@@ -165,3 +167,17 @@ def pwd():
     if settings.get_value("statusbar.collapse_home"):
         wd = wd.replace(os.path.expanduser("~"), "~")
     return wd
+
+
+@statusbar.module("{filesize}")
+def filesize():
+    """Return size of the current file for the statusbar."""
+    return get_size(pathreceiver.current())
+
+
+@statusbar.module("{modified}")
+def modified():
+    """Return modification date of the current file for the statusbar."""
+    mtime = os.path.getmtime(pathreceiver.current())
+    d = datetime.datetime.fromtimestamp(mtime)
+    return d.strftime("%y-%m-%d %H:%M")

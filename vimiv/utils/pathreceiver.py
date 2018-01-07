@@ -20,7 +20,7 @@ def current(mode=None):
     mode = mode if mode else modehandler.current()
     if mode == "library":
         return objreg.get("library").current()
-    elif mode == "image":
+    elif mode in ["image", "manipulate"]:
         return objreg.get("imstorage").current()
     elif mode == "thumbnail":
         return objreg.get("thumbnail").abspath()
