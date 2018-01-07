@@ -10,8 +10,9 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout
 
 from vimiv.commands import commands
 from vimiv.completion import completer
-from vimiv.config import styles, keybindings, configcommands
-from vimiv.gui import image, bar, library, completionwidget, thumbnail, widgets
+from vimiv.config import keybindings, configcommands
+from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
+                       widgets, manipulate)
 from vimiv.utils import objreg
 
 
@@ -22,12 +23,6 @@ class MainWindow(QWidget):
         bar: bar.Bar object containing statusbar and command line.
 
         _overlays: List of overlay widgets.
-    """
-
-    STYLESHEET = """
-    QWidget {
-        background-color: {statusbar.bg};
-    }
     """
 
     @objreg.register("mainwindow")
@@ -48,14 +43,14 @@ class MainWindow(QWidget):
         lib = library.Library(self)
         grid.addLayout(stack, 0, 1, 1, 1)
         grid.addWidget(lib, 0, 0, 1, 1)
+        manwidget = manipulate.Manipulate(self)
+        self._overlays.append(manwidget)
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
         grid.addWidget(self.bar, 1, 0, 1, 2)
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
         configcommands.init()
-
-        styles.apply(self)
 
     @keybindings.add("f", "fullscreen")
     @commands.register(instance="mainwindow")

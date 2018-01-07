@@ -46,6 +46,8 @@ class ImageSignalHandler(QObject):
             arg1: List of new paths.
         pixmap_loaded: Emitted when the imloader loaded a new pixmap.
             arg1: The QPixmap loaded.
+        pixmap_updated: Emitted when the the pixmap was edited.
+            arg1: The edited QPixmap.
         movie_loaded: Emitted when the imloader loaded a new animation.
             arg1: The QMovie loaded.
         svg_loaded: Emitted when the imloader loaded a new vector graphic.
@@ -72,6 +74,7 @@ class ImageSignalHandler(QObject):
     pixmap_loaded = pyqtSignal(QPixmap)
     movie_loaded = pyqtSignal(QMovie)
     svg_loaded = pyqtSignal(str)
+    pixmap_updated = pyqtSignal(QPixmap)
 
     # Tell the library that it may make sense to update
     maybe_update_library = pyqtSignal(str)
@@ -89,6 +92,7 @@ class ImageSignalHandler(QObject):
                          "pixmap_loaded": self.pixmap_loaded,
                          "movie_loaded": self.movie_loaded,
                          "svg_loaded": self.svg_loaded,
+                         "pixmap_updated": self.pixmap_updated,
                          "maybe_update_library": self.maybe_update_library,
                          "maybe_write_file": self.maybe_write_file}
 

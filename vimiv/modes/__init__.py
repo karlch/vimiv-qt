@@ -7,4 +7,5 @@
 """Functions to enter, leave and get current mode."""
 
 
-__names__ = ["global", "image", "library", "thumbnail", "command"]
+__names__ = ["global", "image", "library", "thumbnail", "command",
+             "manipulate"]

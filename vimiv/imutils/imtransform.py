@@ -78,7 +78,7 @@ class Transform():
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        imsignals.emit("pixmap_loaded", pixmap)
+        imsignals.emit("pixmap_updated", pixmap)
 
     def transform_pixmap(self, pm):
         """Apply all transformations to the given pixmap."""

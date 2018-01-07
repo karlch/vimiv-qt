@@ -16,7 +16,8 @@ from PyQt5.QtGui import QPixmap, QImageReader
 
 from vimiv.commands import commands
 from vimiv.config import settings
-from vimiv.imutils import imtransform, imloader, imstorage, imsignals
+from vimiv.imutils import (imtransform, imloader, imstorage, imsignals,
+                           immanipulate)
 from vimiv.utils import objreg, files
 
 
@@ -40,8 +41,7 @@ class ImageFileHandler(QObject):
     def __init__(self):
         super().__init__()
         self.transform = imtransform.Transform()
-        # This is the reason for this wrapper class
-        # self.manipulate = immanipulate.Manipulate()
+        self.manipulate = immanipulate.Manipulator()
         imsignals.connect(self._maybe_write, "maybe_write_file")
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
@@ -59,7 +59,7 @@ class ImageFileHandler(QObject):
         """
         if not settings.get_value("image.autowrite"):
             self._reset()
-        elif self.transform.changed():
+        elif self.transform.changed() or self.manipulate.changed():
             self.write([path])
 
     @pyqtSlot()
@@ -115,6 +115,7 @@ class WriteImageRunner(QRunnable):
         logging.info("Saving %s...", self._path)
         try:
             self._can_write()
+            logging.debug("Image is writable")
             self._write()
             logging.info("Saved %s", self._path)
         except WriteError as e:

@@ -94,6 +94,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")
         imsignals.connect(self._on_movie_loaded, "movie_loaded")
         imsignals.connect(self._on_svg_loaded, "svg_loaded")
+        imsignals.connect(self._on_pixmap_updated, "pixmap_updated")
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
@@ -109,6 +110,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_svg_loaded(self, path):
         self.setWidget(VectorGraphic(path))
         self.scale("fit", 1)
+
+    @pyqtSlot(QPixmap)
+    def _on_pixmap_updated(self, pixmap):
+        self.setWidget(Image(self, pixmap))
+        self.scale(self._scale, 1)
 
     @keybindings.add("k", "scroll up", mode="image")
     @keybindings.add("j", "scroll down", mode="image")
@@ -258,6 +264,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             return "None"
         level = self.pixmap().width() / self.original().width()
         return "%2.0f%%" % (level * 100)
+
+    @statusbar.module("{image-size}", instance="image")
+    def _get_image_size(self):
+        """Return the size of the image in the form WIDTHxHEIGHT."""
+        return "%dx%d" % (self.original().width(), self.original().height())
 
     def pixmap(self):
         """Convenience method to get the widgets current pixmap."""

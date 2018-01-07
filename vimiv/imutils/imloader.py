@@ -57,3 +57,8 @@ def current():
     """Convenience function to get currently displayed QObject."""
     loader = objreg.get("imageloader")
     return loader.image
+
+
+def set_pixmap(pixmap):
+    loader = objreg.get("imageloader")
+    loader.image = pixmap

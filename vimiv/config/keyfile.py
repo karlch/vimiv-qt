@@ -41,6 +41,7 @@ def dump():
     parser.add_section("IMAGE")
     parser.add_section("LIBRARY")
     parser.add_section("THUMBNAIL")
+    parser.add_section("MANIPULATE")
     parser.add_section("COMMAND")
     # Add default bindings
     for mode, bindings in keybindings.items():

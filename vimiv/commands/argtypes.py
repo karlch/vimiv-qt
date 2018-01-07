@@ -197,3 +197,19 @@ def command_history_direction(value):
     else:
         raise argparse.ArgumentTypeError(
             "Invalid history direction '%s'" % (value))
+
+
+def manipulate_level(value):
+    """Check if the value is a valid manipulation integer.
+
+    Allowed: Any integer between -127 and 127.
+
+    Args:
+        value: Value given to command option as string.
+    Return:
+        The value if it was valid.
+    """
+    value = int(value)
+    if value < -127 or value > 127:
+        raise argparse.ArgumentTypeError("Value must be between -127 and 127")
+    return value

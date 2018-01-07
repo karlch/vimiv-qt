@@ -161,6 +161,13 @@ def create_default():
     default["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
     default["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
     default["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
+    # Manipulate
+    default["manipulate.fg"] = "{statusbar.fg}"
+    default["manipulate.focused.fg"] = "#96b5b4"
+    default["manipulate.bg"] = "{image.bg}"
+    default["manipulate.bar.bg"] = "{statusbar.bg}"
+    default["manipulate.bar.fg"] = "{library.selected.bg}"
+    default["manipulate.bar.border"] = "0px solid"
 
 
 def read(name):

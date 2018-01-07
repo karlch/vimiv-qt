@@ -9,7 +9,6 @@
 from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv.completion import completionfilters, completionmodels
-from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
@@ -27,7 +26,6 @@ class Completer(QObject):
         _modelfunc: Current model function to avoid duplicate model setting.
         _modelargs: Current arguments for model function to avoid duplicate
             model setting.
-        _mode: Mode before entering command line for commands.
     """
 
     @objreg.register("completer")
@@ -37,7 +35,6 @@ class Completer(QObject):
         self._cmd = objreg.get("command")
         self._modelfunc = None
         self._modelargs = None
-        self._mode = "image"
 
         self.parent().setModel(self.proxy_model)
 
@@ -55,7 +52,6 @@ class Completer(QObject):
             mode: The mode entered.
         """
         if mode == "command":
-            self._mode = modehandler.last()
             # Set model according to text, defaults are not possible as
             # :command accepts arbitrary text as argument
             self._maybe_update_model(self._cmd.text())
@@ -103,7 +99,7 @@ class Completer(QObject):
         elif text.startswith("!"):
             return completionmodels.external, ()
         # Default: command completion
-        return completionmodels.command, (self._mode,)
+        return completionmodels.command, (self._cmd.mode,)
 
     def _set_model(self, modelfunc, *args):
         """Set the source model of the proxy model.

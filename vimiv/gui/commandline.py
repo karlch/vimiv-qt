@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import history, commands, argtypes
 from vimiv.config import styles, keybindings
-from vimiv.modes import modehandler
 from vimiv.utils import objreg, eventhandler
 
 
@@ -19,6 +18,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Attributes:
+        mode: Mode before entering command line for commands.
         _history: History object to store and interact with history.
     """
 
@@ -36,12 +36,16 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def __init__(self):
         super().__init__()
         self._history = history.History(history.read())
+        self.mode = "image"
 
         self.returnPressed.connect(self._on_return_pressed)
         self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
+
+        modehandler = objreg.get("mode-handler")
+        modehandler.entered.connect(self._on_mode_entered)
 
         styles.apply(self)
 
@@ -53,12 +57,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
-        # Run the command in the mode from which we entered COMMAND mode
-        mode = modehandler.last()
         # Run commands in QTimer so the command line has been left when the
         # command runs
         runner = objreg.get("cmd-runner")
-        QTimer.singleShot(0, lambda: runner(prefix, command, mode))
+        QTimer.singleShot(0, lambda: runner(prefix, command, self.mode))
 
     def _split_prefix(self, text):
         """Remove prefix from text for command processing.
@@ -112,6 +114,11 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def _on_app_quit(self):
         """Write command history to file on quit."""
         history.write(self._history)
+
+    @pyqtSlot(str)
+    def _on_mode_entered(self, mode):
+        if mode != "command":
+            self.mode = mode
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""

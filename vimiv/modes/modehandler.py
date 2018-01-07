@@ -28,6 +28,7 @@ def instance():
     return objreg.get("mode-handler")
 
 
+@keybindings.add("gm", "enter manipulate")
 @keybindings.add("gt", "enter thumbnail")
 @keybindings.add("gl", "enter library")
 @keybindings.add("gi", "enter image")
@@ -45,6 +46,7 @@ def leave(mode):
     instance().leave(mode)
 
 
+@keybindings.add("tm", "toggle manipulate")
 @keybindings.add("tt", "toggle thumbnail")
 @keybindings.add("tl", "toggle library")
 @commands.argument("mode")
@@ -126,7 +128,7 @@ class ModeHandler(QObject):
         if last_mode:
             logging.debug("Leaving mode %s", last_mode.name)
             last_mode.active = False
-            if last_mode.name not in ["command"]:
+            if last_mode.name not in ["command", "manipulate"]:
                 self.modes[mode].last_mode = last_mode.name
         # Enter new mode
         self.modes[mode].active = True

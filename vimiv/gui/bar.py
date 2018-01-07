@@ -44,8 +44,10 @@ class Bar(QWidget):
         self.commandline.editingFinished.connect(self._on_editing_finished)
         settings.signals.changed.connect(self._on_settings_changed)
 
+    @keybindings.add("<colon>", "command", mode="manipulate")
     @keybindings.add("<colon>", "command")
     @commands.argument("text", optional=True, default="")
+    @commands.register(instance="bar", hide=True, mode="manipulate")
     @commands.register(instance="bar", hide=True)
     def command(self, text=""):
         """Enter command mode.
@@ -67,10 +69,10 @@ class Bar(QWidget):
     @pyqtSlot()
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
-        modehandler.leave("command")
         self.commandline.setText("")
         self._stack.setCurrentWidget(self.statusbar)
         self._maybe_hide()
+        modehandler.enter(self.commandline.mode)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):

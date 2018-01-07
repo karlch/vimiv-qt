@@ -1,6 +1,7 @@
 # vim: ft=dosini fileencoding=utf-8:
 [MASTER]
-extension-pkg-whitelist=PyQt5
+extension-pkg-whitelist=PyQt5,
+                        vimiv.imutils._c_manipulate
 
 [MESSAGES CONTROL]
 enable=all

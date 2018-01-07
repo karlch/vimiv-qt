@@ -6,11 +6,16 @@
 
 import setuptools
 
+# C extensions
+manipulate_module = setuptools.Extension("vimiv.imutils._c_manipulate",
+                                         sources=["c-extension/manipulate.c"])
+
 setuptools.setup(
     name="vimiv",
     version="0.1",
     packages=setuptools.find_packages(),
+    ext_modules= [manipulate_module],
     description="An image viewer with vim-like keybindings",
     scripts=["vimiv/vimiv"],
-    license="MIT",
+    license="GPLv3",
 )
