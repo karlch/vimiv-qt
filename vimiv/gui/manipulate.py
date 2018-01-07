@@ -101,7 +101,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         fg_focused = styles.get("manipulate.focused.fg")
         for manipulation, label in self._labels.items():
             if manipulation == name:
-                label.setText("<b><span style='color: %s;'>%s</span></b>"
+                label.setText("<span style='color: %s;'>%s</span>"
                               % (fg_focused, manipulation))
             else:
                 label.setText("<span style='color: %s;'>%s</span>"
