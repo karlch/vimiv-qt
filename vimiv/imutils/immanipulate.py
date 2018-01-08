@@ -15,6 +15,7 @@ from PyQt5.QtGui import QPixmap, QImage
 from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
 from vimiv.imutils import imsignals, _c_manipulate, imloader
+from vimiv.gui import statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, misc
 
@@ -151,6 +152,12 @@ class Manipulator(QObject):
             self.thread_id += 1
             runnable = ManipulateRunner(self, self.thread_id)
             self.pool.start(runnable)
+
+    @statusbar.module("{processing}", instance="manipulator")
+    def _processing_indicator(self):
+        if self.pool.activeThreadCount():
+            return "processing..."
+        return ""
 
 
 class ManipulateRunner(QRunnable):

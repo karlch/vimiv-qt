@@ -115,6 +115,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_pixmap_updated(self, pixmap):
         self.setWidget(Image(self, pixmap))
         self.scale(self._scale, 1)
+        statusbar.update()
 
     @keybindings.add("k", "scroll up", mode="image")
     @keybindings.add("j", "scroll down", mode="image")
