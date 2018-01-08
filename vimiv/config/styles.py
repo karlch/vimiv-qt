@@ -112,6 +112,8 @@ def get(name):
 
 def create_default():
     """Create the default style."""
+    # We are only adding values
+    # pylint: disable=too-many-statements
     default = Style("default")
     # Image
     default["image.bg"] = "#2b303b"
