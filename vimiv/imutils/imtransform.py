@@ -34,8 +34,8 @@ class Transform():
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
 
-    @keybindings.add("<", "rotate --counter-clockwise")
-    @keybindings.add(">", "rotate")
+    @keybindings.add("<", "rotate --counter-clockwise", mode="image")
+    @keybindings.add(">", "rotate", mode="image")
     @commands.argument("counter-clockwise", optional=True, action="store_true")
     @commands.register(mode="image", count=1, instance="transform")
     def rotate(self, counter_clockwise, count):
@@ -50,8 +50,8 @@ class Transform():
         pixmap = self.transform_pixmap(imloader.current())
         imsignals.emit("pixmap_loaded", pixmap)
 
-    @keybindings.add("_", "flip --vertical")
-    @keybindings.add("|", "flip")
+    @keybindings.add("_", "flip --vertical", mode="image")
+    @keybindings.add("|", "flip", mode="image")
     @commands.argument("vertical", optional=True, action="store_true")
     @commands.register(mode="image", instance="transform")
     def flip(self, vertical):
