@@ -70,7 +70,7 @@ def parse():
         create_default_dark()
     else:
         read(name)
-        _styles.current = name
+    _styles.current = name
     replace_referenced_variables()
 
 
@@ -112,22 +112,24 @@ def create_default():
     """Create the default style."""
     default = Style("default")
     # Color definitions
-    default["base00"] = "#2b303b"  # black
-    default["base01"] = "#343d46"  # .
-    default["base02"] = "#4f5b66"  # .
-    default["base03"] = "#65737e"  # .
-    default["base04"] = "#a7adba"  # .
-    default["base05"] = "#c0c5ce"  # .
-    default["base06"] = "#dfe1e8"  # .
-    default["base07"] = "#eff1f5"  # white
-    default["base08"] = "#bf616a"  # red
-    default["base09"] = "#d08770"  # orange
-    default["base0A"] = "#ebcb8b"  # yellow
-    default["base0B"] = "#a3be8c"  # green
-    default["base0C"] = "#96b5b4"  # cyan
-    default["base0D"] = "#8fa1b3"  # blue
-    default["base0E"] = "#b48ead"  # magenta
-    default["base0F"] = "#ab7967"  # another red
+    # Uses base16 tomorrow
+    # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
+    default["base00"] = "#ffffff"
+    default["base01"] = "#e0e0e0"
+    default["base02"] = "#d6d6d6"
+    default["base03"] = "#8e908c"
+    default["base04"] = "#969896"
+    default["base05"] = "#4d4d4c"
+    default["base06"] = "#282a2e"
+    default["base07"] = "#1d1f21"
+    default["base08"] = "#c82829"
+    default["base09"] = "#f5871f"
+    default["base0a"] = "#eab700"
+    default["base0b"] = "#718c00"
+    default["base0c"] = "#3e999f"
+    default["base0d"] = "#81a2be"
+    default["base0e"] = "#8959a8"
+    default["base0f"] = "#a3685a"
     # Insert style
     _insert_values(default)
     # Dump
@@ -139,22 +141,24 @@ def create_default_dark():
     """Create the default dark style."""
     default_dark = Style("default-dark")
     # Color definitions
-    default_dark["base00"] = "#2b303b"  # black
-    default_dark["base01"] = "#343d46"  # .
-    default_dark["base02"] = "#4f5b66"  # .
-    default_dark["base03"] = "#65737e"  # .
-    default_dark["base04"] = "#a7adba"  # .
-    default_dark["base05"] = "#c0c5ce"  # .
-    default_dark["base06"] = "#dfe1e8"  # .
-    default_dark["base07"] = "#eff1f5"  # white
-    default_dark["base08"] = "#bf616a"  # red
-    default_dark["base09"] = "#d08770"  # orange
-    default_dark["base0A"] = "#ebcb8b"  # yellow
-    default_dark["base0B"] = "#a3be8c"  # green
-    default_dark["base0C"] = "#96b5b4"  # cyan
-    default_dark["base0D"] = "#8fa1b3"  # blue
-    default_dark["base0E"] = "#b48ead"  # magenta
-    default_dark["base0F"] = "#ab7967"  # another red
+    # Uses base16 tomorrow-night
+    # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
+    default_dark["base00"] = "#1d1f21"
+    default_dark["base01"] = "#282a2e"
+    default_dark["base02"] = "#373b41"
+    default_dark["base03"] = "#969896"
+    default_dark["base04"] = "#b4b7b4"
+    default_dark["base05"] = "#c5c8c6"
+    default_dark["base06"] = "#e0e0e0"
+    default_dark["base07"] = "#ffffff"
+    default_dark["base08"] = "#cc6666"
+    default_dark["base09"] = "#de935f"
+    default_dark["base0a"] = "#f0c674"
+    default_dark["base0b"] = "#b5bd68"
+    default_dark["base0c"] = "#8abeb7"
+    default_dark["base0d"] = "#81a2be"
+    default_dark["base0e"] = "#b294bb"
+    default_dark["base0f"] = "#a3685a"
     # Insert style
     _insert_values(default_dark)
     # Dump
@@ -180,7 +184,7 @@ def _insert_values(style):
     style["library.directory.fg"] = "{base07}"
     style["library.even.bg"] = "{base01}"
     style["library.odd.bg"] = "{base01}"
-    style["library.selected.bg"] = "{base0D}"
+    style["library.selected.bg"] = "{base0d}"
     style["library.selected.fg"] = "{base07}"
     style["library.scrollbar.width"] = "{image.scrollbar.width}"
     style["library.scrollbar.bg"] = "{image.bg}"
@@ -202,7 +206,7 @@ def _insert_values(style):
     style["statusbar.fg"] = "{base07}"
     style["statusbar.error"] = "{base08}"
     style["statusbar.warning"] = "{base09}"
-    style["statusbar.info"] = "{base0C}"
+    style["statusbar.info"] = "{base0c}"
     style["statusbar.message_border"] = "2px solid"
     style["statusbar.padding"] = "4"
     # Completion
@@ -218,7 +222,7 @@ def _insert_values(style):
     style["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
     # Manipulate
     style["manipulate.fg"] = "{statusbar.fg}"
-    style["manipulate.focused.fg"] = "{base0C}"
+    style["manipulate.focused.fg"] = "{base0c}"
     style["manipulate.bg"] = "{image.bg}"
     style["manipulate.bar.bg"] = "{statusbar.bg}"
     style["manipulate.bar.fg"] = "{library.selected.bg}"
