@@ -151,6 +151,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def _on_enter(self, widget):
         if widget == "library":
             self.show()
+            self.update_width()
 
     @pyqtSlot(str)
     def _on_leave(self, widget):
