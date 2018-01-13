@@ -87,6 +87,7 @@ def current():
 
 @statusbar.module("{mode}")
 def current_formatted():
+    """Current mode."""
     return current().upper()
 
 

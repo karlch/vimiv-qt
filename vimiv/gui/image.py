@@ -280,7 +280,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @statusbar.module("{zoomlevel}", instance="image")
     def _get_zoom_level(self):
-        """Return the current zoom level in percent."""
+        """Zoom level of the image in percent."""
         if not self.widget():
             return "None"
         level = self.pixmap().width() / self.original().width()
@@ -288,7 +288,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @statusbar.module("{image-size}", instance="image")
     def _get_image_size(self):
-        """Return the size of the image in the form WIDTHxHEIGHT."""
+        """Size of the image in pixels in the form WIDTHxHEIGHT."""
         return "%dx%d" % (self.original().width(), self.original().height())
 
     def pixmap(self):

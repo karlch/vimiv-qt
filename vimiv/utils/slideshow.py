@@ -52,17 +52,17 @@ class Slideshow(QTimer):
         self.next_im.emit()
         statusbar.update()
 
-    @statusbar.module("{slideshow_delay}", instance="slideshow")
+    @statusbar.module("{slideshow-delay}", instance="slideshow")
     def get_delay(self):
-        """Return current delay if slideshow is running for statusbar."""
+        """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
             delay = self.interval() / 1000
             return "%.1fs" % (delay)
         return ""
 
-    @statusbar.module("{slideshow_indicator}", instance="slideshow")
+    @statusbar.module("{slideshow-indicator}", instance="slideshow")
     def running_indicator(self):
-        """Return indicator if slideshow is running for statusbar."""
+        """Indicator if slideshow is running."""
         if self.isActive():
             return settings.get_value("slideshow.indicator")
         return ""

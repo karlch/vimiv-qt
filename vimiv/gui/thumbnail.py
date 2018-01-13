@@ -280,9 +280,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
-    @statusbar.module("{thumbnail_name}", instance="thumbnail")
+    @statusbar.module("{thumbnail-name}", instance="thumbnail")
     def current(self):
-        """Return the name of the current thumbnail for the statusbar."""
+        """Name of the currently selected thumbnail."""
         try:
             abspath = self._paths[self.currentRow()]
             basename = os.path.basename(abspath)
@@ -298,18 +298,19 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    @statusbar.module("{thumbnail_size}", instance="thumbnail")
+    @statusbar.module("{thumbnail-size}", instance="thumbnail")
     def size(self):
-        """Return the size of the thumbnails for the statusbar."""
+        """Current thumbnail size (small/normal/large/x-large)."""
         return self._sizes[self.iconSize().width()]
 
-    @statusbar.module("{thumbnail_index}", instance="thumbnail")
+    @statusbar.module("{thumbnail-index}", instance="thumbnail")
     def index(self):
+        """Index of the currently selected thumbnail."""
         return str(self.currentRow() + 1)
 
-    @statusbar.module("{thumbnail_total}", instance="thumbnail")
+    @statusbar.module("{thumbnail-total}", instance="thumbnail")
     def total(self):
-        """Return the size of the thumbnails for the statusbar."""
+        """Total number of thumbnails."""
         return str(self.model().rowCount())
 
     def resizeEvent(self, event):

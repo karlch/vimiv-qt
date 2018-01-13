@@ -406,10 +406,10 @@ def init_defaults():
     StrSetting("statusbar.left_image",
                "{index}/{total} {basename} [{zoomlevel}]")
     StrSetting("statusbar.left_thumbnail",
-               "{thumbnail_index}/{thumbnail_total} {thumbnail_name}")
+               "{thumbnail-index}/{thumbnail-total} {thumbnail-name}")
     StrSetting("statusbar.center_thumbnail",
-               "{thumbnail_size}")
-    StrSetting("statusbar.center", "{slideshow_indicator} {slideshow_delay}")
+               "{thumbnail-size}")
+    StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
     StrSetting("statusbar.right", "{keys}  {mode}")
 
     # Log message

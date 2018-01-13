@@ -201,7 +201,7 @@ class Manipulator(QObject):
 
     @statusbar.module("{processing}", instance="manipulator")
     def _processing_indicator(self):
-        """Return 'processing...' if manipulations are running."""
+        """Print ``processing...`` if manipulations are running."""
         if self.pool.activeThreadCount():
             return "processing..."
         return ""

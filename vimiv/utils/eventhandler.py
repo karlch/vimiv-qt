@@ -85,6 +85,7 @@ class PartialHandler(QObject):
 
     @statusbar.module("{keys}", instance="partialkeys")
     def get_keys(self):
+        """Unprocessed keys that were pressed."""
         return self.count.text + self.keys.text
 
 

@@ -162,7 +162,7 @@ def edit_supported(filename):
 
 @statusbar.module("{pwd}")
 def pwd():
-    """Print current working directory for the statusbar."""
+    """Current working directory."""
     wd = os.getcwd()
     if settings.get_value("statusbar.collapse_home"):
         wd = wd.replace(os.path.expanduser("~"), "~")
@@ -171,13 +171,13 @@ def pwd():
 
 @statusbar.module("{filesize}")
 def filesize():
-    """Return size of the current file for the statusbar."""
+    """Size of the current image in bytes."""
     return get_size(pathreceiver.current())
 
 
 @statusbar.module("{modified}")
 def modified():
-    """Return modification date of the current file for the statusbar."""
+    """Modification date of the current image."""
     mtime = os.path.getmtime(pathreceiver.current())
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")

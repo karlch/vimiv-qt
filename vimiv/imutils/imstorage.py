@@ -81,26 +81,26 @@ class Storage(QObject):
 
     @statusbar.module("{abspath}", instance="imstorage")
     def current(self):
-        """Return the path to the current image or None."""
+        """Absolute path to the current image."""
         if self._paths:
             return self._paths[self._index]
         return ""
 
     @statusbar.module("{basename}", instance="imstorage")
     def basename(self):
-        """Return the basename of the currently selected image."""
+        """Basename of the current image."""
         return os.path.basename(self.current())
 
     @statusbar.module("{index}", instance="imstorage")
     def index(self):
-        """Return index formatted as zero prepended string."""
+        """Index of the current image."""
         if self._paths:
             return str(self._index + 1).zfill(len(self.total()))
         return "0"
 
     @statusbar.module("{total}", instance="imstorage")
     def total(self):
-        """Return total amount of paths as string."""
+        """Total amount of images."""
         return str(len(self._paths))
 
     def pathlist(self):
