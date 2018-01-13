@@ -35,12 +35,16 @@ def instance():
 @commands.argument("mode")
 @commands.register()
 def enter(mode):
-    """Enter the mode 'mode'."""
+    """Enter another mode.
+
+    **syntax:** ``:enter mode``
+
+    positional arguments:
+        * ``mode``: The mode to enter (image/library/thumbnail/manipulate).
+    """
     instance().enter(mode)
 
 
-@commands.argument("mode")
-@commands.register()
 def leave(mode):
     """Leave the mode 'mode'."""
     instance().leave(mode)
@@ -54,10 +58,12 @@ def leave(mode):
 def toggle(mode):
     """Toggle one mode.
 
-    If mode is currently visible, leave. Else enter.
+    **syntax:** ``:toggle mode``.
 
-    Args:
-        widget: Name of the mode to toggle.
+    If the mode is currently visible, leave it. Otherwise enter it.
+
+    positional arguments:
+        * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
     """
     qwidget = objreg.get(mode)
     if qwidget.isVisible():

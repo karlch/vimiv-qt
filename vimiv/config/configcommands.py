@@ -22,9 +22,11 @@ from vimiv.utils import strconvert
 def set(setting, value=None):  # pylint: disable=redefined-builtin
     """Set an option.
 
-    Args:
-        setting: Name of the setting to set.
-        value: Value to set the setting to.
+    **syntax:** ``:set setting [value]``
+
+    positional arguments:
+        * ``setting``: Name of the setting to set.
+        * ``value``: Value to set the setting to. If not given, set to default.
     """
     value = " ".join(value)  # List comes from nargs='*'
     try:

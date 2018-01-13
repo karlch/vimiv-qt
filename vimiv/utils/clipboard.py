@@ -32,9 +32,11 @@ def init():
 def copy_name(abspath, primary):
     """Copy name of current path to system clipboard.
 
-    Args:
-        abspath: Copy absolute path instead of basename.
-        primary: Copy to primary selection.
+    **syntax:** ``:copy-name [--abspath] [--primary]``
+
+    optional arguments:
+        * ``--abspath``: Copy absolute path instead of basename.
+        * ``--primary``: Copy to primary selection.
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
@@ -50,8 +52,10 @@ def copy_name(abspath, primary):
 def paste_name(primary):
     """Paste path from clipboard to open command.
 
-    Args:
-        primary: Paste from primary selection.
+    **syntax:** ``:paste-name [--primary]``
+
+    optional arguments:
+        * ``--primary``: Paste from  primary selection.
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard

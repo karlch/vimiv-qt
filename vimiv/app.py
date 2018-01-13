@@ -45,11 +45,13 @@ class Application(QApplication):
 def open(path):  # pylint: disable=redefined-builtin
     """Open a path.
 
-    If the path is an image, it is opened in image mode. Otherwise if it is a
-    directory, it is opened in the library.
+    **syntax:** ``:open path``
 
-    Args:
-        path: The path as string.
+    If the path is an image, it is opened in image mode. If it is a directory,
+    it is opened in the library. Other paths are not supported.
+
+    positional arguments:
+        * ``path``: The path to open.
     """
     assert isinstance(path, str), "Path must be given as string."
     if not open_paths([os.path.expanduser(path)]):

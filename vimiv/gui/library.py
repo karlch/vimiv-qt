@@ -165,10 +165,20 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(instance="library", mode="library", count=1)
     def scroll(self, direction, count):
-        """Scroll the library.
+        """Scroll the library in the given direction.
 
-        Args:
-            direction: One of "right", "left", "up", "down".
+        **syntax:** ``:scroll direction``
+
+        The behaviour is similar to the file manager ranger.
+
+        * Scrolling left selects the current file.
+        * Scrolling right selects the parent directory.
+        * Scrolling up and down moves the cursor.
+
+        positional arguments:
+            * ``direction``: The direction to scroll in (left/right/up/down).
+
+        **count:** multiplier
         """
         if direction == "right":
             self.activated.emit(self.selectionModel().currentIndex())
@@ -193,14 +203,19 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @keybindings.add("gg", "goto 1", mode="library")
     @keybindings.add("G", "goto -1", mode="library")
-    @commands.argument("row", type=int)
+    @commands.argument("index", type=int)
     @commands.register(instance="library", mode="library", count=0)
     def goto(self, row, count):
-        """Select row in library.
+        """Select specific row in current filelist.
 
-        Args:
-            row: Number of the row to select of no count is given.
-                -1 is the last row.
+        **syntax:** ``:goto row``
+
+        positional arguments:
+            * ``row``: Number of the row to select.
+
+        .. hint:: -1 is the last row.
+
+        **count:** Select [count]th element instead.
         """
         if row == - 1:
             row = self.model().rowCount()

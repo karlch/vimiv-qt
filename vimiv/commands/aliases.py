@@ -33,7 +33,20 @@ def get(mode):
 @commands.argument("name")
 @commands.register()
 def alias(name, command, mode="global"):
-    """Add an alias for a command."""
+    """Add an alias for a command.
+
+    **syntax:** ``:alias name command [--mode=MODE]``
+
+    The command can be a vimiv command like ``quit`` or an external shell
+    command like ``!gimp``.
+
+    positional arguments:
+        * ``name``: Name of the newly defined alias.
+        * ``command`` Name of the command to alias.
+
+    optional arguments:
+        * ``--mode``: Mode in which the alias is valid. Default: ``global``.
+    """
     assert isinstance(command, list), "Aliases defined as list via nargs='*'"
     instance().alias(name, command, mode)
 

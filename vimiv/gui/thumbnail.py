@@ -161,10 +161,14 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(instance="thumbnail", mode="thumbnail", count=1)
     def scroll(self, direction, count):
-        """Scroll thumbnails.
+        """Scroll to another thumbnail in the given direction.
 
-        Args:
-            direction: One of "right", "left", "up", "down".
+        **syntax:** ``:scroll direction``
+
+        positional arguments:
+            * ``direction``: The direction to scroll in (left/right/up/down).
+
+        **count:** multiplier
         """
         current = self.currentRow()
         column = current % self.columns()
@@ -192,32 +196,40 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("gg", "goto 1", mode="thumbnail")
     @keybindings.add("G", "goto -1", mode="thumbnail")
-    @commands.argument("item", type=int)
+    @commands.argument("index", type=int)
     @commands.register(instance="thumbnail", mode="thumbnail", count=0)
-    def goto(self, item, count):
-        """Select thumbnail.
+    def goto(self, index, count):
+        """Select specific thumbnail in current filelist.
 
-        Args:
-            item: Number of the item to select if no count is given.
-                -1 is the last item.
+        **syntax:** ``:goto index``
+
+
+        positional arguments:
+            * ``index``: Number of the thumbnail to select.
+
+        .. hint:: -1 is the last thumbnail.
+
+        **count:** Select [count]th thubnail instead.
         """
-        item = count if count else item  # Prefer count
-        if item > 0:
-            item -= 1  # Start indexing at 1
-        item = item % self.count()
-        self._select_item(item)
+        index = count if count else index  # Prefer count
+        if index > 0:
+            index -= 1  # Start indexing at 1
+        index = index % self.count()
+        self._select_item(index)
 
     @keybindings.add("-", "zoom out", mode="thumbnail")
     @keybindings.add("+", "zoom in", mode="thumbnail")
     @commands.argument("direction", type=argtypes.zoom)
     @commands.register(instance="thumbnail", mode="thumbnail")
     def zoom(self, direction):
-        """Zoom thumbnails.
+        """Zoom the current widget.
 
-        Moves between the sizes in the self._sizes dictionary.
+        **syntax:** ``:zoom direction``
 
-        Args:
-            direction: One of "in", "out".
+        positional arguments:
+            * ``direction``: The direction to zoom in (in/out).
+
+        **count:** multiplier
         """
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2

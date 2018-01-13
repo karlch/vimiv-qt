@@ -40,10 +40,9 @@ class Storage(QObject):
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="imstorage", count=1)
     def next(self, count):
-        """Goto to next image.
+        """Select next image.
 
-        Args:
-            count: How many images to jump forwards.
+        **count:** multiplier
         """
         if self._paths:
             self._set_index((self._index + count) % len(self._paths))
@@ -52,10 +51,9 @@ class Storage(QObject):
     @keybindings.add("p", "prev", mode="image")
     @commands.register(instance="imstorage", count=1)
     def prev(self, count):
-        """Goto to previous image.
+        """Select previous image.
 
-        Args:
-            count: How many images to jump backwards.
+        **count:** multiplier
         """
         if self._paths:
             self._set_index((self._index - count) % len(self._paths))
@@ -66,11 +64,16 @@ class Storage(QObject):
     @commands.argument("index", type=int)
     @commands.register(instance="imstorage", mode="image", count=0)
     def goto(self, index, count):
-        """Goto image at index.
+        """Select specific image in current filelist.
 
-        Args:
-            index: Index of the image to select of no count is given.
-                -1 is the last image.
+        **syntax:** ``:goto index``
+
+        positional arguments:
+            * index: Number of the image to select.
+
+        .. hint:: -1 is the last image.
+
+        **count:** Select [count]th image instead.
         """
         index = count if count else index
         self._set_index(index % (len(self._paths) + 1) - 1)

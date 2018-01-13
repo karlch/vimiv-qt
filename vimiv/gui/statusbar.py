@@ -4,7 +4,11 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Statusbar widget in the bar and functions to interact with it.
+"""Some cool information on the statusbar.
+
+===============================================================================
+
+Statusbar widget in the bar and functions to interact with it.
 
 Module Attributes:
     _modules: Dictionary to store any modules for the statusbar. These modules

@@ -81,7 +81,13 @@ class CompletionView(widgets.FlatTreeView):
     @commands.argument("inverse", optional=True, action="store_true")
     @commands.register(instance="completion", mode="command")
     def complete(self, inverse):
-        """Invoke command line completion."""
+        """Invoke command line completion.
+
+        **syntax:** ``:complete [--inverse]``
+
+        optional arguments:
+            * ``--inverse``: Complete in inverse direction.
+        """
         try:
             row = self.row() - 1 if inverse else self.row() + 1
         except IndexError:  # First trigger of completion

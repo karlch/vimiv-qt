@@ -93,7 +93,18 @@ class Manipulator(QObject):
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)
     @commands.register(mode="manipulate", instance="manipulator", count=0)
     def brightness(self, value, count):
-        """Manipulate brightness."""
+        """Manipulate brightness.
+
+        **syntax:** ``:brightness [value]``
+
+        If neither value nor count are given, set brightness to the current
+        manipulation. Otherwise set brightness to the given value.
+
+        positional arguments:
+            * ``value``: Set the brightness to value. Range: -127 to 127.
+
+        **count:** Set brightness to [count].
+        """
         value = count if count else value
         self._update_manipulation("brightness", value)
 
@@ -101,7 +112,18 @@ class Manipulator(QObject):
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)
     @commands.register(mode="manipulate", instance="manipulator", count=0)
     def contrast(self, value, count):
-        """Manipulate contrast."""
+        """Manipulate contrast.
+
+        **syntax:** ``:contrast [value]``
+
+        If neither value nor count are given, set contrast to the current
+        manipulation. Otherwise set contrast to the given value.
+
+        positional arguments:
+            * ``value``: Set the contrast to value. Range: -127 to 127.
+
+        **count:** Set contrast to [count].
+        """
         value = count if count else value
         self._update_manipulation("contrast", value)
 
@@ -110,7 +132,15 @@ class Manipulator(QObject):
     @commands.argument("value", type=int)
     @commands.register(mode="manipulate", instance="manipulator", count=1)
     def increase(self, value, count):
-        """Increase the value of the current manipulation."""
+        """Increase the value of the current manipulation.
+
+        **syntax:** ``:increase value``
+
+        positional arguments:
+            * ``value``: The value to increase by.
+
+        **count:** multiplier
+        """
         value = self.manipulations[self._current] + value * count
         self._update_manipulation(self._current, value)
 
@@ -119,7 +149,15 @@ class Manipulator(QObject):
     @commands.argument("value", type=int)
     @commands.register(mode="manipulate", instance="manipulator", count=1)
     def decrease(self, value, count):
-        """Decrease the value of the current manipulation."""
+        """Decrease the value of the current manipulation.
+
+        **syntax:** ``:decrease value``
+
+        positional arguments:
+            * ``value``: The value to decrease by.
+
+        **count:** multiplier
+        """
         value = self.manipulations[self._current] - value * count
         self._update_manipulation(self._current, value)
 
@@ -128,7 +166,15 @@ class Manipulator(QObject):
     @commands.argument("value", type=int)
     @commands.register(mode="manipulate", instance="manipulator", count=0)
     def set(self, value, count):
-        """Set the value of the current manipulation."""
+        """Set the value of the current manipulation.
+
+        **syntax:** ``:set value``
+
+        positional arguments:
+            * ``value``: Value to set the manipulation to. Range -127 to 127.
+
+        **count:** Set the manipulation to [count] instead.
+        """
         value = count if count else value
         self._update_manipulation(self._current, value)
 

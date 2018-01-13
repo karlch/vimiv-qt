@@ -93,8 +93,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def history(self, direction):
         """Cycle through command history.
 
-        Args:
-            direction: One of "next", "prev" defining the command to select.
+        **syntax:** ``:history direction``
+
+        positional arguments:
+            * ``direction``: The direction to cycle in (next/prev).
         """
         self.setText(self._history.cycle(direction, self.text()))
 
@@ -105,8 +107,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def history_substr_search(self, direction):
         """Cycle through command history with substring matching.
 
-        Args:
-            direction: One of "next", "prev" defining the command to select.
+        **syntax:** ``:history-substr-search direction``
+
+        positional arguments:
+            * ``direction``: The direction to cycle in (next/prev).
         """
         self.setText(self._history.substr_cycle(direction, self.text()))
 

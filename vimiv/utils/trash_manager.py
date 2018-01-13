@@ -49,8 +49,10 @@ class TrashManager():
     def delete(self, filename):
         """Move a file to the trash directory.
 
-        Args:
-            filename: The name of the file to delete.
+        **syntax:** ``:delete filename``
+
+        positional arguments:
+            * ``filename``: The name of the file to delete.
         """
         if not os.path.exists(filename):
             raise cmdexc.CommandError("path '%s' does not exist" % (filename))
@@ -61,10 +63,12 @@ class TrashManager():
     @commands.argument("basename")
     @commands.register(instance="trash-manager")
     def undelete(self, basename):
-        """Undelete a file from the trash directory.
+        """Restore a file from the trash directory.
 
-        Args:
-            basename: The basename of the file in the trash directory.
+        **syntax:** ``:undelete basename``
+
+        positional arguments:
+            * ``basename``: The basename of the file in the trash directory.
         """
         trash_filename = os.path.join(self.files_directory, basename)
         info_filename = self._get_info_filename(basename)

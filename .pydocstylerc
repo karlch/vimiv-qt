@@ -4,4 +4,5 @@
 # D203: No blank lines before class docstrings.
 # D213: Multi-line docstring summary should start at the second line, we use
 #       D212 Muli-line docstring summary should start at the first line
-ignore = D102,D103,D104,D105,D203,D213
+# D402: First line shuold not be function's "signature", false positives.
+ignore = D102,D103,D104,D105,D203,D213,D402

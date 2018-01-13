@@ -52,8 +52,10 @@ class Bar(QWidget):
     def command(self, text=""):
         """Enter command mode.
 
-        Args:
-            text: String to append to the : prefix.
+        **syntax:** ``:command [--text=TEXT]``
+
+        optional arguments:
+            * ``text``: String to append to the ``:`` prefix.
         """
         self.show()
         self._stack.setCurrentWidget(self.commandline)

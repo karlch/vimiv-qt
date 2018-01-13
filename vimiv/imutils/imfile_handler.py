@@ -75,10 +75,12 @@ class ImageFileHandler(QObject):
     @commands.argument("path", nargs="*")
     @commands.register(mode="image", instance="imfile_handler")
     def write(self, path):
-        """Write the image to disk.
+        """Save the current image to disk.
 
-        Args:
-            path: Use path instead of currently loaded path.
+        **syntax:** ``:write [path]``.
+
+        positional arguments:
+            * ``path``: Save to this path instead of the current one.
         """
         assert isinstance(path, list), "Must be list from nargs"
         path = " ".join(path) if path else imstorage.current()

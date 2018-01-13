@@ -41,8 +41,12 @@ class Transform():
     def rotate(self, counter_clockwise, count):
         """Rotate the image.
 
-        Args:
-            counter_clockwise: Rotate counter clockwise.
+        **syntax:** ``:rotate [--counter-clockwise]``
+
+        optional arguments:
+            * ``--counter_clockwise``: Rotate counter clockwise.
+
+        **count:** multiplier
         """
         angle = 90 * count * -1 if counter_clockwise else 90 * count
         self._rotation_angle += angle
@@ -57,8 +61,10 @@ class Transform():
     def flip(self, vertical):
         """Flip the image.
 
-        Args:
-            vertical: Flip image vertically instead of horizontally.
+        **syntax:** ``:flip [--vertical]``
+
+        optional arguments:
+            * ``--vertical``: Flip image vertically instead of horizontally.
         """
         # Vertical flip but image rotated by 90 degrees
         if vertical and self._rotation_angle % 180:
