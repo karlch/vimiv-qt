@@ -89,6 +89,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             modehandler.leave("manipulate")
             # Must wait for every other statusbar update to complete
             QTimer.singleShot(0, lambda: logging.error(self._error))
+        elif mode == "manipulate":
+            self.raise_()
         if mode != "manipulate":
             self.hide()
 
