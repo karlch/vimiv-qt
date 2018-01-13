@@ -115,20 +115,37 @@ def create_default():
     # We are only adding values
     # pylint: disable=too-many-statements
     default = Style("default")
+    # Color definitions
+    default["base00"] = "#2b303b"  # black
+    default["base01"] = "#343d46"  # .
+    default["base02"] = "#4f5b66"  # .
+    default["base03"] = "#65737e"  # .
+    default["base04"] = "#a7adba"  # .
+    default["base05"] = "#c0c5ce"  # .
+    default["base06"] = "#dfe1e8"  # .
+    default["base07"] = "#eff1f5"  # white
+    default["base08"] = "#bf616a"  # red
+    default["base09"] = "#d08770"  # orange
+    default["base0A"] = "#ebcb8b"  # yellow
+    default["base0B"] = "#a3be8c"  # green
+    default["base0C"] = "#96b5b4"  # cyan
+    default["base0D"] = "#8fa1b3"  # blue
+    default["base0E"] = "#b48ead"  # magenta
+    default["base0F"] = "#ab7967"  # another red
     # Image
-    default["image.bg"] = "#2b303b"
+    default["image.bg"] = "{base00}"
     default["image.scrollbar.width"] = "8px"
     default["image.scrollbar.bg"] = "{image.bg}"
-    default["image.scrollbar.fg"] = "#65737e"
+    default["image.scrollbar.fg"] = "{base03}"
     default["image.scrollbar.padding"] = "2px"
     # Library
     default["library.font"] = "10pt Monospace"
-    default["library.fg"] = "#dfe1e8"
-    default["library.directory.fg"] = "#eff1f5"
-    default["library.even.bg"] = "#2b303b"
-    default["library.odd.bg"] = "#343d46"
-    default["library.selected.bg"] = "#8fa1b3"
-    default["library.selected.fg"] = "#eff1f5"
+    default["library.fg"] = "{base06}"
+    default["library.directory.fg"] = "{base07}"
+    default["library.even.bg"] = "{base01}"
+    default["library.odd.bg"] = "{base01}"
+    default["library.selected.bg"] = "{base0D}"
+    default["library.selected.fg"] = "{base07}"
     default["library.scrollbar.width"] = "{image.scrollbar.width}"
     default["library.scrollbar.bg"] = "{image.bg}"
     default["library.scrollbar.fg"] = "{image.scrollbar.fg}"
@@ -145,11 +162,11 @@ def create_default():
     default["thumbnail.frame.fg"] = "{thumbnail.fg}"
     # Statusbar
     default["statusbar.font"] = "10pt Monospace"
-    default["statusbar.bg"] = "#4f5b66"
-    default["statusbar.fg"] = "#eff1f5"
-    default["statusbar.error"] = "#bf616a"
-    default["statusbar.warning"] = "#d08770"
-    default["statusbar.info"] = "#96b5b4"
+    default["statusbar.bg"] = "{base02}"
+    default["statusbar.fg"] = "{base07}"
+    default["statusbar.error"] = "{base08}"
+    default["statusbar.warning"] = "{base09}"
+    default["statusbar.info"] = "{base0C}"
     default["statusbar.message_border"] = "2px solid"
     default["statusbar.padding"] = "4"
     # Completion
@@ -165,7 +182,7 @@ def create_default():
     default["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
     # Manipulate
     default["manipulate.fg"] = "{statusbar.fg}"
-    default["manipulate.focused.fg"] = "#96b5b4"
+    default["manipulate.focused.fg"] = "{base0C}"
     default["manipulate.bg"] = "{image.bg}"
     default["manipulate.bar.bg"] = "{statusbar.bg}"
     default["manipulate.bar.fg"] = "{library.selected.bg}"
