@@ -65,11 +65,9 @@ def parse():
     reference.
     """
     name = settings.get_value("style")
-    filename = xdg.join_vimiv_config("styles/%s" % (name))
-    if name == "default":
+    if name in ["default", "default-dark"]:
         create_default()
-        if not os.path.isfile(filename):
-            dump("default")
+        create_default_dark()
     else:
         read(name)
         _styles.current = name
@@ -112,8 +110,6 @@ def get(name):
 
 def create_default():
     """Create the default style."""
-    # We are only adding values
-    # pylint: disable=too-many-statements
     default = Style("default")
     # Color definitions
     default["base00"] = "#2b303b"  # black
@@ -132,61 +128,101 @@ def create_default():
     default["base0D"] = "#8fa1b3"  # blue
     default["base0E"] = "#b48ead"  # magenta
     default["base0F"] = "#ab7967"  # another red
+    # Insert style
+    _insert_values(default)
+    # Dump
+    if not os.path.isfile(xdg.join_vimiv_config("styles/default")):
+        dump("default")
+
+
+def create_default_dark():
+    """Create the default dark style."""
+    default_dark = Style("default-dark")
+    # Color definitions
+    default_dark["base00"] = "#2b303b"  # black
+    default_dark["base01"] = "#343d46"  # .
+    default_dark["base02"] = "#4f5b66"  # .
+    default_dark["base03"] = "#65737e"  # .
+    default_dark["base04"] = "#a7adba"  # .
+    default_dark["base05"] = "#c0c5ce"  # .
+    default_dark["base06"] = "#dfe1e8"  # .
+    default_dark["base07"] = "#eff1f5"  # white
+    default_dark["base08"] = "#bf616a"  # red
+    default_dark["base09"] = "#d08770"  # orange
+    default_dark["base0A"] = "#ebcb8b"  # yellow
+    default_dark["base0B"] = "#a3be8c"  # green
+    default_dark["base0C"] = "#96b5b4"  # cyan
+    default_dark["base0D"] = "#8fa1b3"  # blue
+    default_dark["base0E"] = "#b48ead"  # magenta
+    default_dark["base0F"] = "#ab7967"  # another red
+    # Insert style
+    _insert_values(default_dark)
+    # Dump
+    if not os.path.isfile(xdg.join_vimiv_config("styles/default-dark")):
+        dump("default-dark")
+
+
+def _insert_values(style):
+    """Insert all style values into a default style.
+
+    Args:
+        style: The Style object to insert values into.
+    """
     # Image
-    default["image.bg"] = "{base00}"
-    default["image.scrollbar.width"] = "8px"
-    default["image.scrollbar.bg"] = "{image.bg}"
-    default["image.scrollbar.fg"] = "{base03}"
-    default["image.scrollbar.padding"] = "2px"
+    style["image.bg"] = "{base00}"
+    style["image.scrollbar.width"] = "8px"
+    style["image.scrollbar.bg"] = "{image.bg}"
+    style["image.scrollbar.fg"] = "{base03}"
+    style["image.scrollbar.padding"] = "2px"
     # Library
-    default["library.font"] = "10pt Monospace"
-    default["library.fg"] = "{base06}"
-    default["library.directory.fg"] = "{base07}"
-    default["library.even.bg"] = "{base01}"
-    default["library.odd.bg"] = "{base01}"
-    default["library.selected.bg"] = "{base0D}"
-    default["library.selected.fg"] = "{base07}"
-    default["library.scrollbar.width"] = "{image.scrollbar.width}"
-    default["library.scrollbar.bg"] = "{image.bg}"
-    default["library.scrollbar.fg"] = "{image.scrollbar.fg}"
-    default["library.scrollbar.padding"] = "{image.scrollbar.padding}"
-    default["library.border"] = "0px solid"
+    style["library.font"] = "10pt Monospace"
+    style["library.fg"] = "{base06}"
+    style["library.directory.fg"] = "{base07}"
+    style["library.even.bg"] = "{base01}"
+    style["library.odd.bg"] = "{base01}"
+    style["library.selected.bg"] = "{base0D}"
+    style["library.selected.fg"] = "{base07}"
+    style["library.scrollbar.width"] = "{image.scrollbar.width}"
+    style["library.scrollbar.bg"] = "{image.bg}"
+    style["library.scrollbar.fg"] = "{image.scrollbar.fg}"
+    style["library.scrollbar.padding"] = "{image.scrollbar.padding}"
+    style["library.border"] = "0px solid"
     # Thumbnail
-    default["thumbnail.font"] = "{library.font}"
-    default["thumbnail.fg"] = "{library.fg}"
-    default["thumbnail.bg"] = "{image.bg}"
-    default["thumbnail.padding"] = "20"
-    default["thumbnail.selected.bg"] = "{library.selected.bg}"
-    default["thumbnail.default.bg"] = "{statusbar.info}"
-    default["thumbnail.error.bg"] = "{statusbar.error}"
-    default["thumbnail.frame.fg"] = "{thumbnail.fg}"
+    style["thumbnail.font"] = "{library.font}"
+    style["thumbnail.fg"] = "{library.fg}"
+    style["thumbnail.bg"] = "{image.bg}"
+    style["thumbnail.padding"] = "20"
+    style["thumbnail.selected.bg"] = "{library.selected.bg}"
+    style["thumbnail.default.bg"] = "{statusbar.info}"
+    style["thumbnail.error.bg"] = "{statusbar.error}"
+    style["thumbnail.frame.fg"] = "{thumbnail.fg}"
     # Statusbar
-    default["statusbar.font"] = "10pt Monospace"
-    default["statusbar.bg"] = "{base02}"
-    default["statusbar.fg"] = "{base07}"
-    default["statusbar.error"] = "{base08}"
-    default["statusbar.warning"] = "{base09}"
-    default["statusbar.info"] = "{base0C}"
-    default["statusbar.message_border"] = "2px solid"
-    default["statusbar.padding"] = "4"
+    style["statusbar.font"] = "10pt Monospace"
+    style["statusbar.bg"] = "{base02}"
+    style["statusbar.fg"] = "{base07}"
+    style["statusbar.error"] = "{base08}"
+    style["statusbar.warning"] = "{base09}"
+    style["statusbar.info"] = "{base0C}"
+    style["statusbar.message_border"] = "2px solid"
+    style["statusbar.padding"] = "4"
     # Completion
-    default["completion.height"] = "16em"
-    default["completion.fg"] = "{statusbar.fg}"
-    default["completion.even.bg"] = "{statusbar.bg}"
-    default["completion.odd.bg"] = "{statusbar.bg}"
-    default["completion.selected.fg"] = "{library.selected.fg}"
-    default["completion.selected.bg"] = "{library.selected.bg}"
-    default["completion.scrollbar.width"] = "{image.scrollbar.width}"
-    default["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
-    default["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
-    default["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
+    style["completion.height"] = "16em"
+    style["completion.fg"] = "{statusbar.fg}"
+    style["completion.even.bg"] = "{statusbar.bg}"
+    style["completion.odd.bg"] = "{statusbar.bg}"
+    style["completion.selected.fg"] = "{library.selected.fg}"
+    style["completion.selected.bg"] = "{library.selected.bg}"
+    style["completion.scrollbar.width"] = "{image.scrollbar.width}"
+    style["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
+    style["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
+    style["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
     # Manipulate
-    default["manipulate.fg"] = "{statusbar.fg}"
-    default["manipulate.focused.fg"] = "{base0C}"
-    default["manipulate.bg"] = "{image.bg}"
-    default["manipulate.bar.bg"] = "{statusbar.bg}"
-    default["manipulate.bar.fg"] = "{library.selected.bg}"
-    default["manipulate.bar.border"] = "0px solid"
+    style["manipulate.fg"] = "{statusbar.fg}"
+    style["manipulate.focused.fg"] = "{base0C}"
+    style["manipulate.bg"] = "{image.bg}"
+    style["manipulate.bar.bg"] = "{statusbar.bg}"
+    style["manipulate.bar.fg"] = "{library.selected.bg}"
+    style["manipulate.bar.border"] = "0px solid"
 
 
 def read(name):
