@@ -24,10 +24,11 @@
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="Contributing" href="../contributing.html" />
-    <link rel="prev" title="Configuration" href="index.html" />
+    <link rel="prev" title="Settings" href="settings.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -55,8 +56,9 @@
             
                 <li><a href="../index.html">Docs</a></li>
                 <li><a href="../install.html">Install</a></li>
+                <li><a href="../../screenshots.html">Screenshots</a></li>
                 <li><a href="../../changelog.html">Changelog</a></li>
-                <li><a href="https://github.com/karlch/vimiv">GitHub</a></li>
+                <li><a href="https://github.com/karlch/vimiv-qt">GitHub</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -84,10 +86,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Statusbar</a><ul>
-<li><a class="reference internal" href="#modules">Modules</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">Statusbar</a></li>
 </ul>
 </ul>
 </li>
@@ -114,9 +113,9 @@
 <p>In vimiv a statusbar at the bottom is used to display useful information.</p>
 <p>The content of the statusbar is completely configurable and mode dependent. The
 bar is grouped into three parts: left, center and right. Each part has a
-default content and can have a mode-dependent content which overrides the
-default. The content is defined <code class="docutils literal"><span class="pre">STATUSBAR</span></code> section of the <code class="docutils literal"><span class="pre">vimiv.conf</span></code>
-configuration file located in <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> where
+fallback content and can have a mode-dependent content which overrides the
+default. The content is defined in the <code class="docutils literal"><span class="pre">STATUSBAR</span></code> section of the
+<code class="docutils literal"><span class="pre">vimiv.conf</span></code> configuration file located in <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> where
 <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal"><span class="pre">~/.config/*</span></code> if you have not configured it.</p>
 <p>The three default options are defined via:</p>
 <ul class="simple">
@@ -129,14 +128,13 @@ configuration file located in <code class="docutils literal"><span class="pre">$
 <li><code class="docutils literal"><span class="pre">left_image</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">left</span> <span class="pre">in</span> <span class="pre">image</span> <span class="pre">mode</span></code></li>
 <li><code class="docutils literal"><span class="pre">center_thumbnail</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">center</span> <span class="pre">in</span> <span class="pre">thumbnail</span> <span class="pre">mode</span></code></li>
 </ul>
-<p>Any text you enter is displayed <em>as is</em>. Formatting using a subset of the html
+<p>Text you enter is displayed <em>as is</em>. Formatting using a subset of the html
 styles is possible. As this is not very useful, vimiv provides a set of so
 called <code class="docutils literal"><span class="pre">modules</span></code> for the statusbar. A module is indicated by surrounding its
 name in curly braces, e.g. <code class="docutils literal"><span class="pre">{pwd}</span></code>. This gets replaced by the output of the
 module. A list of available modules can be found below.</p>
-<div class="section" id="modules">
-<h2>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h2>
-<table border="1" class="colwidths-auto docutils">
+<table border="1" class="colwidths-auto docutils" id="id1">
+<caption><span class="caption-text">Overview of statusbar modules</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Module</th>
 <th class="head">Description</th>
@@ -199,7 +197,6 @@ module. A list of available modules can be found below.</p>
 </tr>
 </tbody>
 </table>
-</div>
 </div>
 
 

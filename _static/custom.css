@@ -1,3 +1,4 @@
+/* Underline headers with differently sized blue lines */
 h1 {
     border-bottom: solid 4px #1F7DE6;
 }
@@ -10,10 +11,18 @@ h3, h4, h5, h6 {
     border-bottom: solid 1px #1F7DE6;
 }
 
+/* Add a margin around images */
 img {
     margin: 8px;
 }
 
+/* But not in the navbar on the top */
+.navbar img {
+    margin: 0px;
+    margin-right: 4px;
+}
+
+/* Change navbar color to blue */
 .navbar {
     background: #1861B3;
     color: #FFFFFF;
@@ -52,9 +61,4 @@ img {
   .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
     background-color: #1F7DE6;
   }
-}
-
-.navbar img {
-    margin: 0px;
-    margin-right: 4px;
 }

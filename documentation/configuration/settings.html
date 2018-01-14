@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Configuration &#8212; vimiv  documentation</title>
+    <title>Settings &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -27,8 +27,8 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Settings" href="settings.html" />
-    <link rel="prev" title="Commands" href="../commands.html" />
+    <link rel="next" title="Statusbar" href="statusbar.html" />
+    <link rel="prev" title="Configuration" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -86,7 +86,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Configuration</a></li>
+<li><a class="reference internal" href="#">Settings</a></li>
 </ul>
 </ul>
 </li>
@@ -108,15 +108,66 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="configuration">
-<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
-<p>TODO info here</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a></li>
-<li class="toctree-l1"><a class="reference internal" href="statusbar.html">Statusbar</a></li>
+  <div class="section" id="settings">
+<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h1>
+<p>Vimiv provides configurable settings.</p>
+<p>There are two ways to change a setting:</p>
+<ul class="simple">
+<li>Update the configuration file to change it permanently</li>
+<li>Run the <code class="docutils literal"><span class="pre">:set</span></code> command to change it temporarily</li>
 </ul>
-</div>
+<p>The configuration file is <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
+<code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
+<p>The following table explains all available settings.</p>
+<table border="1" class="colwidths-auto docutils" id="id1">
+<caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Setting</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>image.autoplay</td>
+<td>Start playing animations on open</td>
+</tr>
+<tr class="row-odd"><td>image.autowrite</td>
+<td>Save images on changes</td>
+</tr>
+<tr class="row-even"><td>image.overzoom</td>
+<td>Maximum scale to apply trying to fit image to window</td>
+</tr>
+<tr class="row-odd"><td>library.file_check_amount</td>
+<td>Number of files to check when calculating directory size</td>
+</tr>
+<tr class="row-even"><td>library.show_hidden</td>
+<td>Show hidden files in the library</td>
+</tr>
+<tr class="row-odd"><td>library.width</td>
+<td>Width of the library as fraction of main window size</td>
+</tr>
+<tr class="row-even"><td>shuffle</td>
+<td>Randomly shuffle images</td>
+</tr>
+<tr class="row-odd"><td>slideshow.delay</td>
+<td>Delay to next image in slideshow</td>
+</tr>
+<tr class="row-even"><td>slideshow.indicator</td>
+<td>Text to display in statusbar when slideshow is running</td>
+</tr>
+<tr class="row-odd"><td>statusbar.collapse_home</td>
+<td>Collapse /home/user to ~ in statusbar</td>
+</tr>
+<tr class="row-even"><td>statusbar.message_timeout</td>
+<td>Time in ms until statusbar messages are removed</td>
+</tr>
+<tr class="row-odd"><td>statusbar.show</td>
+<td>Always display the statusbar</td>
+</tr>
+<tr class="row-even"><td>thumbnail.size</td>
+<td>Size of thumbnails</td>
+</tr>
+</tbody>
+</table>
 </div>
 
 
@@ -132,7 +183,7 @@
         <br/>
         
 <div id="sourcelink">
-  <a href="../../_sources/documentation/configuration/index.rst.txt"
+  <a href="../../_sources/documentation/configuration/settings.rst.txt"
      rel="nofollow">Source</a>
 </div>
       

@@ -1,8 +1,15 @@
 .. title:: vimiv
 
-.. image:: _static/vimiv_banner_800.png
+.. image:: _static/vimiv/vimiv_banner_800.png
    :width: 400px
    :align: center
+
+.. warning:: This website is WIP.
+
+   The repository for vimiv-qt is still private as the code is not yet
+   completed. As soon as it goes public, this website will be completed as
+   well. Thank you for your patience.
+
 
 Vimiv is an image viewer with vim-like keybindings. It is written in python3
 using the Qt5 toolkit and is free software, licensed under the GPL. Some of the
@@ -14,9 +21,12 @@ features are:
 * Command line with tab completion
 * Complete customization with style sheets
 
-For much more information please check out the documentation. If you are new to
-vimiv, this is a good place to get started. For a quick overview check out the
-keybinding cheatsheet.
+For information on how to get vimiv running take a look at
+:doc:`the installation instructions <documentation/install>`. Afterwards, this
+is a good place to :doc:`get started <documentation/getting_started>`.
+For more information please check out the
+:doc:`documentation <documentation/index>`.
+
 
 Screenshots
 -----------
