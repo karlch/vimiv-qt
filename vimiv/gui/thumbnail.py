@@ -260,12 +260,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     def columns(self):
         """Return the number of columns."""
-        padding = 2 * int(styles.get("thumbnail.padding"))
-        return (self.width() - padding - 2) // self.item_size()
+        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
+        return (self.width() - sb_width) // self.item_size()
 
     def item_size(self):
         """Return the size of one icon including padding."""
-        padding = int(styles.get("thumbnail.padding"))
+        padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
     @statusbar.module("{thumbnail_name}", instance="thumbnail")
