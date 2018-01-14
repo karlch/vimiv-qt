@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Commands &#8212; vimiv  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Configuration" href="configuration/index.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/vimiv.png"></span>
+          vimiv</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Docs</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="../changelog.html">Changelog</a></li>
+                <li><a href="https://github.com/karlch/vimiv">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../screenshots.html">Screenshots</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Commands</a><ul>
+<li><a class="reference internal" href="#global">Global</a><ul>
+<li><a class="reference internal" href="#alias">alias</a></li>
+<li><a class="reference internal" href="#clear-keys">clear-keys</a></li>
+<li><a class="reference internal" href="#command">command</a></li>
+<li><a class="reference internal" href="#copy-name">copy-name</a></li>
+<li><a class="reference internal" href="#delete">delete</a></li>
+<li><a class="reference internal" href="#enter">enter</a></li>
+<li><a class="reference internal" href="#fullscreen">fullscreen</a></li>
+<li><a class="reference internal" href="#next">next</a></li>
+<li><a class="reference internal" href="#open">open</a></li>
+<li><a class="reference internal" href="#paste-name">paste-name</a></li>
+<li><a class="reference internal" href="#prev">prev</a></li>
+<li><a class="reference internal" href="#quit">quit</a></li>
+<li><a class="reference internal" href="#scale">scale</a></li>
+<li><a class="reference internal" href="#set">set</a></li>
+<li><a class="reference internal" href="#toggle">toggle</a></li>
+<li><a class="reference internal" href="#undelete">undelete</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#image">Image</a><ul>
+<li><a class="reference internal" href="#center">center</a></li>
+<li><a class="reference internal" href="#flip">flip</a></li>
+<li><a class="reference internal" href="#goto">goto</a></li>
+<li><a class="reference internal" href="#play-or-pause">play-or-pause</a></li>
+<li><a class="reference internal" href="#rotate">rotate</a></li>
+<li><a class="reference internal" href="#scroll">scroll</a></li>
+<li><a class="reference internal" href="#scroll-edge">scroll-edge</a></li>
+<li><a class="reference internal" href="#slideshow">slideshow</a></li>
+<li><a class="reference internal" href="#write">write</a></li>
+<li><a class="reference internal" href="#zoom">zoom</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#library">Library</a><ul>
+<li><a class="reference internal" href="#ref-library-goto">goto</a></li>
+<li><a class="reference internal" href="#ref-library-scroll">scroll</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#thumbnail">Thumbnail</a><ul>
+<li><a class="reference internal" href="#ref-thumbnail-goto">goto</a></li>
+<li><a class="reference internal" href="#ref-thumbnail-scroll">scroll</a></li>
+<li><a class="reference internal" href="#ref-thumbnail-zoom">zoom</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">Command</a><ul>
+<li><a class="reference internal" href="#complete">complete</a></li>
+<li><a class="reference internal" href="#history">history</a></li>
+<li><a class="reference internal" href="#history-substr-search">history-substr-search</a></li>
+<li><a class="reference internal" href="#leave-commandline">leave-commandline</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#manipulate">Manipulate</a><ul>
+<li><a class="reference internal" href="#accept">accept</a></li>
+<li><a class="reference internal" href="#brightness">brightness</a></li>
+<li><a class="reference internal" href="#ref-manipulate-command">command</a></li>
+<li><a class="reference internal" href="#contrast">contrast</a></li>
+<li><a class="reference internal" href="#decrease">decrease</a></li>
+<li><a class="reference internal" href="#discard">discard</a></li>
+<li><a class="reference internal" href="#increase">increase</a></li>
+<li><a class="reference internal" href="#ref-manipulate-set">set</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="commands">
+<h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
+<p>In vimiv all keybindings are mapped to commands.</p>
+<p>Most of the commands can also be run from the command line but some are hidden
+as they are not useful to run by hand. A typical example is the <code class="docutils literal"><span class="pre">:command</span></code>
+command which enters the command line.</p>
+<p>Every command is limited to its mode. This allows commands with equal names to
+do different things depending on the mode they are run in. For example the
+<code class="docutils literal"><span class="pre">:zoom</span></code> command rescales the image in <code class="docutils literal"><span class="pre">image</span></code> mode but changes the size of
+thumbnails in <code class="docutils literal"><span class="pre">thumbnail</span></code> mode. This also prevents running commands that are
+useless in the current mode. Commands available in the special <code class="docutils literal"><span class="pre">global</span></code> mode
+can be run in <code class="docutils literal"><span class="pre">image</span></code>, <code class="docutils literal"><span class="pre">library</span></code> and <code class="docutils literal"><span class="pre">thumbnail</span></code> mode.</p>
+<p>Below is a complete list of all commands in every mode.</p>
+<div class="section" id="global">
+<h2>Global<a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id9">
+<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id9" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-alias"><span class="std std-ref">alias</span></a></td>
+<td>Add an alias for a command.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-clear-keys"><span class="std std-ref">clear-keys</span></a></td>
+<td>Clear count and partially matched keys.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-command"><span class="std std-ref">command</span></a></td>
+<td>Enter command mode.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-copy-name"><span class="std std-ref">copy-name</span></a></td>
+<td>Copy name of current path to system clipboard.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-delete"><span class="std std-ref">delete</span></a></td>
+<td>Move a file to the trash directory.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-enter"><span class="std std-ref">enter</span></a></td>
+<td>Enter another mode.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></td>
+<td>Toggle fullscreen mode.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></td>
+<td>Select next image.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></td>
+<td>Open a path.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></td>
+<td>Paste path from clipboard to open command.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></td>
+<td>Select previous image.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></td>
+<td>Quit vimiv.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></td>
+<td>Scale the image.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></td>
+<td>Set an option.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></td>
+<td>Toggle one mode.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></td>
+<td>Restore a file from the trash directory.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="alias">
+<span id="ref-global-alias"></span><h3>alias<a class="headerlink" href="#alias" title="Permalink to this headline">¶</a></h3>
+<p>Add an alias for a command.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:alias</span> <span class="pre">name</span> <span class="pre">command</span> <span class="pre">[--mode=MODE]</span></code></p>
+<p>The command can be a vimiv command like <code class="docutils literal"><span class="pre">quit</span></code> or an external shell
+command like <code class="docutils literal"><span class="pre">!gimp</span></code>.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">name</span></code>: Name of the newly defined alias.</li>
+<li><code class="docutils literal"><span class="pre">command</span></code> Name of the command to alias.</li>
+</ul>
+</dd>
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--mode</span></code>: Mode in which the alias is valid. Default: <code class="docutils literal"><span class="pre">global</span></code>.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="clear-keys">
+<span id="ref-global-clear-keys"></span><h3>clear-keys<a class="headerlink" href="#clear-keys" title="Permalink to this headline">¶</a></h3>
+<p>Clear count and partially matched keys.</p>
+</div>
+<div class="section" id="command">
+<span id="ref-global-command"></span><h3>command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h3>
+<p>Enter command mode.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">text</span></code>: String to append to the <code class="docutils literal"><span class="pre">:</span></code> prefix.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="copy-name">
+<span id="ref-global-copy-name"></span><h3>copy-name<a class="headerlink" href="#copy-name" title="Permalink to this headline">¶</a></h3>
+<p>Copy name of current path to system clipboard.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:copy-name</span> <span class="pre">[--abspath]</span> <span class="pre">[--primary]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--abspath</span></code>: Copy absolute path instead of basename.</li>
+<li><code class="docutils literal"><span class="pre">--primary</span></code>: Copy to primary selection.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="delete">
+<span id="ref-global-delete"></span><h3>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
+<p>Move a file to the trash directory.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:delete</span> <span class="pre">filename</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">filename</span></code>: The name of the file to delete.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="enter">
+<span id="ref-global-enter"></span><h3>enter<a class="headerlink" href="#enter" title="Permalink to this headline">¶</a></h3>
+<p>Enter another mode.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:enter</span> <span class="pre">mode</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">mode</span></code>: The mode to enter (image/library/thumbnail/manipulate).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="fullscreen">
+<span id="ref-global-fullscreen"></span><h3>fullscreen<a class="headerlink" href="#fullscreen" title="Permalink to this headline">¶</a></h3>
+<p>Toggle fullscreen mode.</p>
+</div>
+<div class="section" id="next">
+<span id="ref-global-next"></span><h3>next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h3>
+<p>Select next image.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="open">
+<span id="ref-global-open"></span><h3>open<a class="headerlink" href="#open" title="Permalink to this headline">¶</a></h3>
+<p>Open a path.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:open</span> <span class="pre">path</span></code></p>
+<p>If the path is an image, it is opened in image mode. If it is a directory,
+it is opened in the library. Other paths are not supported.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">path</span></code>: The path to open.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="paste-name">
+<span id="ref-global-paste-name"></span><h3>paste-name<a class="headerlink" href="#paste-name" title="Permalink to this headline">¶</a></h3>
+<p>Paste path from clipboard to open command.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:paste-name</span> <span class="pre">[--primary]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--primary</span></code>: Paste from  primary selection.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="prev">
+<span id="ref-global-prev"></span><h3>prev<a class="headerlink" href="#prev" title="Permalink to this headline">¶</a></h3>
+<p>Select previous image.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="quit">
+<span id="ref-global-quit"></span><h3>quit<a class="headerlink" href="#quit" title="Permalink to this headline">¶</a></h3>
+<p>Quit vimiv.</p>
+</div>
+<div class="section" id="scale">
+<span id="ref-global-scale"></span><h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
+<p>Scale the image.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:scale</span> <span class="pre">[--level=LEVEL]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">level</span></code>: The level to scale the image to. Default: <strong>fit</strong>.</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p>supported levels:</p>
+<ul class="last simple">
+<li><strong>fit</strong>: Fit image to current viewport.</li>
+<li><strong>fit-width</strong>: Fit image width to current viewport.</li>
+<li><strong>fit-height</strong>: Fit image height to current viewport.</li>
+<li><strong>overzoom</strong>: Like <strong>fit</strong> but limit to the overzoom setting.</li>
+<li><strong>float</strong>: Set scale to arbitrary decimal value.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="set">
+<span id="ref-global-set"></span><h3>set<a class="headerlink" href="#set" title="Permalink to this headline">¶</a></h3>
+<p>Set an option.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:set</span> <span class="pre">setting</span> <span class="pre">[value]</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">setting</span></code>: Name of the setting to set.</li>
+<li><code class="docutils literal"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="toggle">
+<span id="ref-global-toggle"></span><h3>toggle<a class="headerlink" href="#toggle" title="Permalink to this headline">¶</a></h3>
+<p>Toggle one mode.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:toggle</span> <span class="pre">mode</span></code>.</p>
+<p>If the mode is currently visible, leave it. Otherwise enter it.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">mode</span></code>: The mode to toggle (image/library/thumbnail/manipulate).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="undelete">
+<span id="ref-global-undelete"></span><h3>undelete<a class="headerlink" href="#undelete" title="Permalink to this headline">¶</a></h3>
+<p>Restore a file from the trash directory.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:undelete</span> <span class="pre">basename</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">basename</span></code>: The basename of the file in the trash directory.</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="image">
+<h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id10">
+<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id10" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-image-center"><span class="std std-ref">center</span></a></td>
+<td>Center the image in the viewport.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-image-flip"><span class="std std-ref">flip</span></a></td>
+<td>Flip the image.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-image-goto"><span class="std std-ref">goto</span></a></td>
+<td>Select specific image in current filelist.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></td>
+<td>Toggle betwen play and pause of animation.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></td>
+<td>Rotate the image.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></td>
+<td>Scroll the image in the given direction.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></td>
+<td>Scroll the image to one edge.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></td>
+<td>Toggle slideshow.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></td>
+<td>Save the current image to disk.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></td>
+<td>Zoom the current widget.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="center">
+<span id="ref-image-center"></span><h3>center<a class="headerlink" href="#center" title="Permalink to this headline">¶</a></h3>
+<p>Center the image in the viewport.</p>
+</div>
+<div class="section" id="flip">
+<span id="ref-image-flip"></span><h3>flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h3>
+<p>Flip the image.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:flip</span> <span class="pre">[--vertical]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--vertical</span></code>: Flip image vertically instead of horizontally.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="goto">
+<span id="ref-image-goto"></span><h3>goto<a class="headerlink" href="#goto" title="Permalink to this headline">¶</a></h3>
+<p>Select specific image in current filelist.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li>index: Number of the image to select.</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">-1 is the last image.</p>
+</div>
+<p><strong>count:</strong> Select [count]th image instead.</p>
+</div>
+<div class="section" id="play-or-pause">
+<span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this headline">¶</a></h3>
+<p>Toggle betwen play and pause of animation.</p>
+</div>
+<div class="section" id="rotate">
+<span id="ref-image-rotate"></span><h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
+<p>Rotate the image.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:rotate</span> <span class="pre">[--counter-clockwise]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--counter_clockwise</span></code>: Rotate counter clockwise.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="scroll">
+<span id="ref-image-scroll"></span><h3>scroll<a class="headerlink" href="#scroll" title="Permalink to this headline">¶</a></h3>
+<p>Scroll the image in the given direction.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="scroll-edge">
+<span id="ref-image-scroll-edge"></span><h3>scroll-edge<a class="headerlink" href="#scroll-edge" title="Permalink to this headline">¶</a></h3>
+<p>Scroll the image to one edge.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:scroll-edge</span> <span class="pre">direction</span></code>.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="slideshow">
+<span id="ref-image-slideshow"></span><h3>slideshow<a class="headerlink" href="#slideshow" title="Permalink to this headline">¶</a></h3>
+<p>Toggle slideshow.</p>
+</div>
+<div class="section" id="write">
+<span id="ref-image-write"></span><h3>write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>
+<p>Save the current image to disk.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:write</span> <span class="pre">[path]</span></code>.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">path</span></code>: Save to this path instead of the current one.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="zoom">
+<span id="ref-image-zoom"></span><h3>zoom<a class="headerlink" href="#zoom" title="Permalink to this headline">¶</a></h3>
+<p>Zoom the current widget.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to zoom in (in/out).</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+</div>
+<div class="section" id="library">
+<h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id11">
+<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-library-goto"><span class="std std-ref">goto</span></a></td>
+<td>Select specific row in current filelist.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-library-scroll"><span class="std std-ref">scroll</span></a></td>
+<td>Scroll the library in the given direction.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="ref-library-goto">
+<span id="id1"></span><h3>goto<a class="headerlink" href="#ref-library-goto" title="Permalink to this headline">¶</a></h3>
+<p>Select specific row in current filelist.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:goto</span> <span class="pre">row</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">row</span></code>: Number of the row to select.</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">-1 is the last row.</p>
+</div>
+<p><strong>count:</strong> Select [count]th element instead.</p>
+</div>
+<div class="section" id="ref-library-scroll">
+<span id="id2"></span><h3>scroll<a class="headerlink" href="#ref-library-scroll" title="Permalink to this headline">¶</a></h3>
+<p>Scroll the library in the given direction.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
+<p>The behaviour is similar to the file manager ranger.</p>
+<ul class="simple">
+<li>Scrolling left selects the current file.</li>
+<li>Scrolling right selects the parent directory.</li>
+<li>Scrolling up and down moves the cursor.</li>
+</ul>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+</div>
+<div class="section" id="thumbnail">
+<h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id12">
+<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-thumbnail-goto"><span class="std std-ref">goto</span></a></td>
+<td>Select specific thumbnail in current filelist.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-thumbnail-scroll"><span class="std std-ref">scroll</span></a></td>
+<td>Scroll to another thumbnail in the given direction.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-thumbnail-zoom"><span class="std std-ref">zoom</span></a></td>
+<td>Zoom the current widget.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="ref-thumbnail-goto">
+<span id="id3"></span><h3>goto<a class="headerlink" href="#ref-thumbnail-goto" title="Permalink to this headline">¶</a></h3>
+<p>Select specific thumbnail in current filelist.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">index</span></code>: Number of the thumbnail to select.</li>
+</ul>
+</dd>
+</dl>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">-1 is the last thumbnail.</p>
+</div>
+<p><strong>count:</strong> Select [count]th thubnail instead.</p>
+</div>
+<div class="section" id="ref-thumbnail-scroll">
+<span id="id4"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Permalink to this headline">¶</a></h3>
+<p>Scroll to another thumbnail in the given direction.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="ref-thumbnail-zoom">
+<span id="id5"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Permalink to this headline">¶</a></h3>
+<p>Zoom the current widget.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to zoom in (in/out).</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>Command<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id13">
+<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id13" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-command-complete"><span class="std std-ref">complete</span></a></td>
+<td>Invoke command line completion.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-command-history"><span class="std std-ref">history</span></a></td>
+<td>Cycle through command history.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-command-history-substr-search"><span class="std std-ref">history-substr-search</span></a></td>
+<td>Cycle through command history with substring matching.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-command-leave-commandline"><span class="std std-ref">leave-commandline</span></a></td>
+<td>Leave command mode.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="complete">
+<span id="ref-command-complete"></span><h3>complete<a class="headerlink" href="#complete" title="Permalink to this headline">¶</a></h3>
+<p>Invoke command line completion.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:complete</span> <span class="pre">[--inverse]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">--inverse</span></code>: Complete in inverse direction.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="history">
+<span id="ref-command-history"></span><h3>history<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h3>
+<p>Cycle through command history.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:history</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to cycle in (next/prev).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="history-substr-search">
+<span id="ref-command-history-substr-search"></span><h3>history-substr-search<a class="headerlink" href="#history-substr-search" title="Permalink to this headline">¶</a></h3>
+<p>Cycle through command history with substring matching.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:history-substr-search</span> <span class="pre">direction</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">direction</span></code>: The direction to cycle in (next/prev).</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="leave-commandline">
+<span id="ref-command-leave-commandline"></span><h3>leave-commandline<a class="headerlink" href="#leave-commandline" title="Permalink to this headline">¶</a></h3>
+<p>Leave command mode.</p>
+</div>
+</div>
+<div class="section" id="manipulate">
+<h2>Manipulate<a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="colwidths-auto docutils" id="id14">
+<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id14" title="Permalink to this table">¶</a></caption>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Command</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference internal" href="#ref-manipulate-accept"><span class="std std-ref">accept</span></a></td>
+<td>Apply changes to file and leave manipulate.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-manipulate-brightness"><span class="std std-ref">brightness</span></a></td>
+<td>Manipulate brightness.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-manipulate-command"><span class="std std-ref">command</span></a></td>
+<td>Enter command mode.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-manipulate-contrast"><span class="std std-ref">contrast</span></a></td>
+<td>Manipulate contrast.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-manipulate-decrease"><span class="std std-ref">decrease</span></a></td>
+<td>decrease the value of the current manipulation.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-manipulate-discard"><span class="std std-ref">discard</span></a></td>
+<td>Discard any changes and leave manipulate.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#ref-manipulate-increase"><span class="std std-ref">increase</span></a></td>
+<td>Increase the value of the current manipulation.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#ref-manipulate-set"><span class="std std-ref">set</span></a></td>
+<td>Set the value of the current manipulation.</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="accept">
+<span id="ref-manipulate-accept"></span><h3>accept<a class="headerlink" href="#accept" title="Permalink to this headline">¶</a></h3>
+<p>Apply changes to file and leave manipulate.</p>
+</div>
+<div class="section" id="brightness">
+<span id="ref-manipulate-brightness"></span><h3>brightness<a class="headerlink" href="#brightness" title="Permalink to this headline">¶</a></h3>
+<p>Manipulate brightness.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:brightness</span> <span class="pre">[value]</span></code></p>
+<p>If neither value nor count are given, set brightness to the current
+manipulation. Otherwise set brightness to the given value.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">value</span></code>: Set the brightness to value. Range: -127 to 127.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> Set brightness to [count].</p>
+</div>
+<div class="section" id="ref-manipulate-command">
+<span id="id7"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Permalink to this headline">¶</a></h3>
+<p>Enter command mode.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
+<dl class="docutils">
+<dt>optional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">text</span></code>: String to append to the <code class="docutils literal"><span class="pre">:</span></code> prefix.</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="contrast">
+<span id="ref-manipulate-contrast"></span><h3>contrast<a class="headerlink" href="#contrast" title="Permalink to this headline">¶</a></h3>
+<p>Manipulate contrast.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:contrast</span> <span class="pre">[value]</span></code></p>
+<p>If neither value nor count are given, set contrast to the current
+manipulation. Otherwise set contrast to the given value.</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">value</span></code>: Set the contrast to value. Range: -127 to 127.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> Set contrast to [count].</p>
+</div>
+<div class="section" id="decrease">
+<span id="ref-manipulate-decrease"></span><h3>decrease<a class="headerlink" href="#decrease" title="Permalink to this headline">¶</a></h3>
+<p>decrease the value of the current manipulation.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:decrease</span> <span class="pre">value</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">value</span></code>: The value to decrease by.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="discard">
+<span id="ref-manipulate-discard"></span><h3>discard<a class="headerlink" href="#discard" title="Permalink to this headline">¶</a></h3>
+<p>Discard any changes and leave manipulate.</p>
+</div>
+<div class="section" id="increase">
+<span id="ref-manipulate-increase"></span><h3>increase<a class="headerlink" href="#increase" title="Permalink to this headline">¶</a></h3>
+<p>Increase the value of the current manipulation.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:increase</span> <span class="pre">value</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">value</span></code>: The value to increase by.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="ref-manipulate-set">
+<span id="id8"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
+<p>Set the value of the current manipulation.</p>
+<p><strong>syntax:</strong> <code class="docutils literal"><span class="pre">:set</span> <span class="pre">value</span></code></p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd><ul class="first last simple">
+<li><code class="docutils literal"><span class="pre">value</span></code>: Value to set the manipulation to. Range -127 to 127.</li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> Set the manipulation to [count] instead.</p>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/documentation/commands.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

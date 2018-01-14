@@ -1,0 +1,60 @@
+h1 {
+    border-bottom: solid 4px #1F7DE6;
+}
+
+h2 {
+    border-bottom: solid 2px #1F7DE6;
+}
+
+h3, h4, h5, h6 {
+    border-bottom: solid 1px #1F7DE6;
+}
+
+img {
+    margin: 8px;
+}
+
+.navbar {
+    background: #1861B3;
+    color: #FFFFFF;
+    border-bottom: solid 4px #1F7DE6;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  background-color: #1F7DE6;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: #1F7DE6;
+}
+
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+  background-color: #1F7DE6;
+}
+
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+  background-color: #1F7DE6;
+}
+
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    background-color: #1F7DE6;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    background-color: #1F7DE6;
+  }
+}
+
+.navbar img {
+    margin: 0px;
+    margin-right: 4px;
+}
