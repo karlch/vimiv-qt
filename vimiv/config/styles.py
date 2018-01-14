@@ -13,6 +13,7 @@ Module Attributes:
 
 import collections
 import configparser
+import logging
 import os
 
 from vimiv.config import settings
@@ -65,11 +66,17 @@ def parse():
     reference.
     """
     name = settings.get_value("style")
+    filename = xdg.join_vimiv_config("styles/%s" % (name))
     if name in ["default", "default-dark"]:
         create_default()
         create_default_dark()
+    elif os.path.exists(filename):
+        read(name, filename)
     else:
-        read(name)
+        logging.error("style file '%s' does not exist", filename)
+        logging.info("falling back to default style")
+        name = "default"
+        create_default()
     _styles.current = name
     replace_referenced_variables()
 
@@ -229,13 +236,13 @@ def _insert_values(style):
     style["manipulate.bar.border"] = "0px solid"
 
 
-def read(name):
+def read(name, filename):
     """Read style from styles file.
 
-    Name:
-        name of the style to read. Defines the filename to read.
+    Args:
+        name: Name of the style.
+        filename: Name of the styles file to read
     """
-    filename = xdg.join_vimiv_config("styles/%s" % (name))
     parser = configparser.ConfigParser()
     parser.read(filename)
     style = Style(name)
