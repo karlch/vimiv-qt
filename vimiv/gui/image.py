@@ -364,30 +364,31 @@ class Animation(widgets.ImageLabel):
             self.movie().setPaused(True)
 
 
-class VectorGraphic(QSvgWidget):
-    """Widget to display a vector graphic.
+if QSvgWidget is not None:
+    class VectorGraphic(QSvgWidget):
+        """Widget to display a vector graphic.
 
-    Attributes:
-        original: QSize of the original svg for proper rescaling.
-    """
+        Attributes:
+            original: QSize of the original svg for proper rescaling.
+        """
 
-    STYLESHEET = """
-    QSvgWidget {
-        background-color: {image.bg};
-    }
-    """
+        STYLESHEET = """
+        QSvgWidget {
+            background-color: {image.bg};
+        }
+        """
 
-    def __init__(self, path):
-        super().__init__(path)
-        self.original = self.sizeHint()
-        styles.apply(self)
+        def __init__(self, path):
+            super().__init__(path)
+            self.original = self.sizeHint()
+            styles.apply(self)
 
-    def pixmap(self):
-        """Return the QSvgWidget for size comparisons."""
-        return super()
+        def pixmap(self):
+            """Return the QSvgWidget for size comparisons."""
+            return super()
 
-    def rescale(self, scale):
-        """Rescale the svg to a new scale."""
-        width = self.original.width() * scale
-        height = self.original.height() * scale
-        self.setFixedSize(width, height)
+        def rescale(self, scale):
+            """Rescale the svg to a new scale."""
+            width = self.original.width() * scale
+            height = self.original.height() * scale
+            self.setFixedSize(width, height)
