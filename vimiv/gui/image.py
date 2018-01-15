@@ -190,7 +190,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("W", "scale --level=1", mode="image")
     @keybindings.add("e", "scale --level=fit-width", mode="image")
     @keybindings.add("E", "scale --level=fit-height", mode="image")
-    @commands.argument("level", optional=True, type=argtypes.image_scale)
+    @commands.argument("level", optional=True, type=argtypes.image_scale,
+                       default="fit")
     @commands.register(instance="image", count=1)
     def scale(self, level, count):
         """Scale the image.
