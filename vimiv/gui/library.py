@@ -203,7 +203,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @keybindings.add("gg", "goto 1", mode="library")
     @keybindings.add("G", "goto -1", mode="library")
-    @commands.argument("index", type=int)
+    @commands.argument("row", type=int)
     @commands.register(instance="library", mode="library", count=0)
     def goto(self, row, count):
         """Select specific row in current filelist.
