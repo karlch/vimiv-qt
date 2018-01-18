@@ -39,10 +39,11 @@ def get_current():
     return _styles[_styles.current]
 
 
-class Style(collections.UserDict):
+class Style(collections.OrderedDict):
     """Class defining a single style.
 
     A python dictionary with a name and overridden __setitem__ for convenience.
+    Ordered so referencing and dereferencing variables is well defined.
     """
 
     def __init__(self, name):
