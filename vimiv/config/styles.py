@@ -56,7 +56,10 @@ class Style(collections.OrderedDict):
         assert isinstance(item, str), "Style values must be strings."
         if not name.startswith("{"):
             name = "{%s}" % (name)
-        super().__setitem__("%s" % (name), item)
+        if item in self:
+            super().__setitem__(name, self[item])
+        else:
+            super().__setitem__(name, item)
 
 
 def parse():
@@ -79,22 +82,12 @@ def parse():
         name = "default"
         create_default()
     _styles.current = name
-    replace_referenced_variables()
 
 
 def store(configsection):
     """Store all styles defined in the STYLES section of the config file."""
     for option, value in configsection.items():
         _styles["{%s}" % (option)] = value
-
-
-def replace_referenced_variables():
-    """Replace referenced variables with the stored value."""
-    style = get_current()
-    iter_backup = dict(style)
-    for option, value in iter_backup.items():
-        if value in style:
-            style[option] = style[value]
 
 
 def apply(obj, append=""):

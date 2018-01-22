@@ -36,5 +36,4 @@ def test_replace_referenced_variables(mocker, new_style):
     mocker.patch.object(styles, "get_current", return_value=new_style)
     new_style["red"] = "#ff0000"
     new_style["error.fg"] = "{red}"
-    styles.replace_referenced_variables()
     assert new_style["{error.fg}"] == "#ff0000"
