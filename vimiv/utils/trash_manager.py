@@ -128,7 +128,7 @@ class TrashManager(QObject):
             original_filename: The original name of the file.
         """
         # Note: we cannot use configparser here as it writes keys in lowercase
-        info_path = self._get_info_filename(original_filename)
+        info_path = self._get_info_filename(trash_filename)
         # Write to temporary file and use shutil.move to make sure the
         # operation is an atomic operation as specified by the standard
         fd, temp_path = tempfile.mkstemp(dir=self.info_directory)

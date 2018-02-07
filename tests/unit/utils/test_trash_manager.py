@@ -51,3 +51,13 @@ def test_do_not_override_existing_file_in_trash(tmpdir, trash):
     trashdir = os.path.join(str(tmpdir), "Trash", "files")
     assert os.path.exists(os.path.join(trashdir, "new_file"))
     assert os.path.exists(os.path.join(trashdir, "new_file.2"))
+
+
+def test_create_trash_info_file(tmpdir, trash):
+    manager = trash[0]
+    for i in range(2):
+        path = create_tmpfile(tmpdir, "new_file")
+        manager.delete(path)
+    infodir = os.path.join(str(tmpdir), "Trash", "info")
+    assert os.path.exists(os.path.join(infodir, "new_file.trashinfo"))
+    assert os.path.exists(os.path.join(infodir, "new_file.2.trashinfo"))
