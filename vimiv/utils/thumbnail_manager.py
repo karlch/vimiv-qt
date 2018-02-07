@@ -125,6 +125,8 @@ class ThumbnailCreator(QRunnable):
             pixmap = self._maybe_recreate_thumbnail(self._path, thumbnail_path)
         else:
             pixmap = self._create_thumbnail(self._path, thumbnail_path)
+            # Additional safety net
+            pixmap = pixmap if pixmap else self._manager.fail_pixmap
         self._manager.created.emit(self._index, pixmap)
 
     def _get_thumbnail_path(self, path):
@@ -162,7 +164,11 @@ class ThumbnailCreator(QRunnable):
             qsize.scale(size, size, Qt.KeepAspectRatio)
             reader.setScaledSize(qsize)
             image = reader.read()
-            attributes = self._get_thumbnail_attributes(path, image)
+            # Image was deleted in the time between reader.read() and now
+            try:
+                attributes = self._get_thumbnail_attributes(path, image)
+            except FileNotFoundError:
+                return self._manager.fail_pixmap
             for key, value in attributes.items():
                 image.setText(key, value)
             # First create temporary file and then move it. This avoids
