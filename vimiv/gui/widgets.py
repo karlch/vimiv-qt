@@ -90,7 +90,7 @@ class ImageLabel(QLabel):
     }
     """
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
+    def __init__(self):
+        super().__init__()
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)

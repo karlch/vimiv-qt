@@ -98,12 +98,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
-        self.setWidget(Image(self, pixmap))
+        self.setWidget(Image(pixmap))
         self.scale("overzoom", 1)
 
     @pyqtSlot(QMovie)
     def _on_movie_loaded(self, movie):
-        self.setWidget(Animation(self, movie))
+        self.setWidget(Animation(movie))
         self.scale(1, 1)
 
     @pyqtSlot(str)
@@ -113,7 +113,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_updated(self, pixmap):
-        self.setWidget(Image(self, pixmap))
+        self.setWidget(Image(pixmap))
         self.scale(self._scale, 1)
         statusbar.update()
 
@@ -312,13 +312,13 @@ class Image(widgets.ImageLabel):
         original: Pixmap without rescaling.
     """
 
-    def __init__(self, parent, pixmap):
+    def __init__(self, pixmap):
         """Create the image object.
 
         Args:
             paths: Initial paths given from the command line.
         """
-        super().__init__(parent=parent)
+        super().__init__()
         self.original = pixmap
 
     def rescale(self, scale):
@@ -336,8 +336,8 @@ class Animation(widgets.ImageLabel):
         original: Pixmap of the first frame without rescaling.
     """
 
-    def __init__(self, parent, movie):
-        super().__init__(parent=parent)
+    def __init__(self, movie):
+        super().__init__()
         self.setMovie(movie)
         movie.jumpToFrame(0)
         self.original = movie.currentPixmap()
