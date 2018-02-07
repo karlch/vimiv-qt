@@ -17,6 +17,7 @@ import time
 
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv.commands import commands, cmdexc
+from vimiv.config import keybindings
 from vimiv.utils import objreg, xdg
 
 
@@ -44,6 +45,7 @@ class TrashManager():
         os.makedirs(self.files_directory, exist_ok=True)
         os.makedirs(self.info_directory, exist_ok=True)
 
+    @keybindings.add("x", "delete %")
     @commands.argument("filename")
     @commands.register(instance="trash-manager")
     def delete(self, filename):

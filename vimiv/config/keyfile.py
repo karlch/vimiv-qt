@@ -46,7 +46,7 @@ def dump():
     # Add default bindings
     for mode, bindings in keybindings.items():
         for binding, command in bindings.items():
-            parser[mode.upper()][binding] = command
+            parser[mode.upper()][binding] = command.replace("%","%%")
     # Write to file
     user_file = xdg.join_vimiv_config("keys.conf")
     with open(user_file, "w") as f:
