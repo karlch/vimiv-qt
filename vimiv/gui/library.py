@@ -83,6 +83,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.signals.loaded.connect(self._on_paths_loaded)
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
+        trash_manager = objreg.get("trash-manager")
+        trash_manager.path_removed.connect(self._on_path_removed)
+        trash_manager.path_restored.connect(self._on_path_restored)
         imsignals.connect(self._on_maybe_update, "maybe_update_library")
 
         styles.apply(self)
@@ -245,6 +248,20 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def pathlist(self):
         """Return the list of currently open paths."""
         return self.model().pathlist()
+
+    @pyqtSlot(str)
+    def _on_path_removed(self, path):
+        """Clear path from library on deletion."""
+        if path in self.model().pathlist():
+            row = self.model().pathlist().index(path)
+            self.model().removeRows(row, 1)
+
+    @pyqtSlot(str)
+    def _on_path_restored(self, path):
+        """Reload library if restored path is in the current directory."""
+        if os.path.dirname(path) == os.getcwd():
+            self._positions[os.getcwd()] = self.row()
+            libpaths.load(".")
 
 
 class LibraryModel(QStandardItemModel):
