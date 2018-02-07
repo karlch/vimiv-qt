@@ -15,6 +15,8 @@ import shutil
 import tempfile
 import time
 
+from PyQt5.QtCore import QObject, pyqtSignal
+
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv.commands import commands, cmdexc
 from vimiv.config import keybindings
@@ -26,18 +28,28 @@ def init():
     TrashManager()
 
 
-class TrashManager():
+class TrashManager(QObject):
     """Provides mechanism to delete and undelete images.
 
     Attributes:
         files_directory: Directory to which the "deleted" files are moved.
         info_directory: Directory in which information on the trashed files is
         stored.
+
+    Signals:
+        path_removed: Emitted after delete to clear path from filelists.
+            arg1: The path to remove from filelists.
+        path_restored: Emitted after undelete to restore path to filelists.
+            arg1: The path to restore to filelists.
     """
+
+    path_removed = pyqtSignal(str)
+    path_restored = pyqtSignal(str)
 
     @objreg.register("trash-manager")
     def __init__(self):
         """Create a new TrashManager."""
+        super().__init__()
         self.files_directory = os.path.join(xdg.get_user_data_dir(),
                                             "Trash/files")
         self.info_directory = os.path.join(xdg.get_user_data_dir(),
@@ -61,6 +73,7 @@ class TrashManager():
         trash_filename = self._get_trash_filename(filename)
         self._create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)
+        self.path_removed.emit(filename)
 
     @commands.argument("basename")
     @commands.register(instance="trash-manager")
@@ -85,6 +98,7 @@ class TrashManager():
             raise cmdexc.CommandError("original directory is not accessible")
         shutil.move(trash_filename, original_filename)
         os.remove(info_filename)
+        self.path_restored.emit(original_filename)
 
     def _get_trash_filename(self, filename):
         """Return the name of the file in self.files_directory.
