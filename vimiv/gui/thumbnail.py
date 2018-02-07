@@ -89,6 +89,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
+        trash_manager = objreg.get("trash-manager")
+        trash_manager.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
 
@@ -318,6 +320,11 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         super().resizeEvent(event)
         self.scrollTo(self.selectionModel().currentIndex(),
                       hint=self.PositionAtCenter)
+
+    def _on_path_removed(self, path):
+        """Clear path from thumbnails on removal."""
+        if path in self._paths:
+            self.takeItem(self._paths.index(path))
 
 
 class Thumbnail(QLabel):
