@@ -70,6 +70,7 @@ class TrashManager(QObject):
         """
         if not os.path.exists(filename):
             raise cmdexc.CommandError("path '%s' does not exist" % (filename))
+        filename = os.path.abspath(filename)
         trash_filename = self._get_trash_filename(filename)
         self._create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)
