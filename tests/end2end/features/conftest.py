@@ -116,3 +116,9 @@ def check_fullscreen():
 def check_not_fullscreen():
     mw = objreg.get("mainwindow")
     assert not mw.isFullScreen()
+
+
+@bdd.then(bdd.parsers.parse("the mode should be {mode}"))
+def check_mode(mode, qtbot):
+    assert modehandler.current() == mode, \
+        "Modehandler did not switch to %s" % (mode)

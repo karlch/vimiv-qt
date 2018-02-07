@@ -6,13 +6,5 @@
 
 import pytest_bdd as bdd
 
-from vimiv.modes import modehandler
-
 
 bdd.scenarios("modeswitch.feature")
-
-
-@bdd.then(bdd.parsers.parse("the mode should be {mode}"))
-def check_mode(mode, qtbot):
-    assert modehandler.current() == mode, \
-        "Modehandler did not switch to %s" % (mode)

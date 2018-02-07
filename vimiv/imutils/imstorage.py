@@ -11,6 +11,7 @@ from random import shuffle
 
 from PyQt5.QtCore import pyqtSlot, QObject
 
+from vimiv import app
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
@@ -33,6 +34,9 @@ class Storage(QObject):
         self._index = 0
         slideshow = objreg.get("slideshow")
         slideshow.next_im.connect(self._on_slideshow_event)
+        trash_manager = objreg.get("trash-manager")
+        trash_manager.path_removed.connect(self._on_path_removed)
+        trash_manager.path_restored.connect(self._on_path_restored)
         imsignals.connect(self._on_update_index, "update_index")
         imsignals.connect(self._on_update_path, "update_path")
         imsignals.connect(self._on_update_paths, "update_paths")
@@ -158,6 +162,34 @@ class Storage(QObject):
     def _set_index(self, index):
         imsignals.emit("maybe_write_file", self.current())
         self._index = index
+
+    @pyqtSlot(str)
+    def _on_path_removed(self, path):
+        """Remove path from filelist and reload paths if necessary."""
+        if path in self._paths:
+            path_index = self._paths.index(path)
+            current_path = self.current()
+            self._paths.remove(path)
+            # Select parent directory in library if no more paths are available
+            if not self._paths:
+                # TODO clear the image displayed
+                app.open("..")
+            # Move to next image available if the current path was removed
+            elif path == current_path:
+                self._index = min(path_index, len(self._paths) - 1)
+                imsignals.emit("path_loaded", self.current())
+            # Make sure the current image is still selected
+            else:
+                self._set_index(self._paths.index(current_path))
+
+    @pyqtSlot(str)
+    def _on_path_restored(self, path):
+        """Restore path to filelist and reload paths if necessary."""
+        if os.path.dirname(path) == os.path.dirname(self.current()):
+            current_path = self.current()
+            self._paths.append(path)
+            self._paths.sort()
+            self._set_index(self._paths.index(current_path))
 
 
 def current():
