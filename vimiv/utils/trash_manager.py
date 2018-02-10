@@ -92,9 +92,6 @@ class TrashManager(QObject):
                 or not os.path.exists(trash_filename):
             raise cmdexc.CommandError("file does not exist")
         original_filename, _ = self.get_trash_info(basename)
-        if os.path.isdir(trash_filename):
-            raise cmdexc.CommandError("directories are not supported")
-        # Directory of the file is not accessible
         if not os.path.isdir(os.path.dirname(original_filename)):
             raise cmdexc.CommandError("original directory is not accessible")
         shutil.move(trash_filename, original_filename)
