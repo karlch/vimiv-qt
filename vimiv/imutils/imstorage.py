@@ -185,7 +185,8 @@ class Storage(QObject):
     @pyqtSlot(str)
     def _on_path_restored(self, path):
         """Restore path to filelist and reload paths if necessary."""
-        if os.path.dirname(path) == os.path.dirname(self.current()):
+        if files.is_image(path) and \
+                os.path.dirname(path) == os.path.dirname(self.current()):
             current_path = self.current()
             self._paths.append(path)
             self._paths.sort()
