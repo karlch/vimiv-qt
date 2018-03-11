@@ -60,7 +60,7 @@ class CommandRunner():
         split = shlex.split(text)
         cmdname = split[0]
         # Receive prepended digits as count
-        while cmdname[0].isdigit():
+        while cmdname and cmdname[0].isdigit():
             count += cmdname[0]
             cmdname = cmdname[1:]
         args = split[1:]

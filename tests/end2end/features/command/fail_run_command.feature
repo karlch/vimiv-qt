@@ -23,3 +23,7 @@ Feature: Do not crash and display error message on failed commands.
         And the message
             'scroll: The following arguments are required: direction'
             should be displayed
+
+    Scenario: Crash on plain number command
+        When I run 3
+        Then no crash should happen
