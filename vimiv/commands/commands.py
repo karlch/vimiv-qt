@@ -114,8 +114,11 @@ class Command():
         if parsed_count is not None:
             kwargs["count"] = parsed_count
         if self._instance:
-            obj = objreg.get(self._instance)
-            self.func(obj, **kwargs)
+            try:
+                obj = objreg.get(self._instance)
+                self.func(obj, **kwargs)
+            except KeyError:
+                logging.error("Object %s does not exist", self._instance)
         else:
             self.func(**kwargs)
 
