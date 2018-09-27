@@ -12,16 +12,11 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
-from vimiv.commands import commands, cmdrunner
+from vimiv.commands import cmdrunner
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
-
-
-def init():
-    """Create objects needed by the event handler class."""
-    PartialHandler()
 
 
 class TempKeyStorage(QTimer):
@@ -75,8 +70,6 @@ class PartialHandler(QObject):
         self.count = TempKeyStorage()
         self.keys = TempKeyStorage()
 
-    @keybindings.add("<escape>", "clear-keys")
-    @commands.register(instance="partialkeys", hide=True)
     def clear_keys(self):
         """Clear count and partially matched keys."""
         self.count.clear_text()
@@ -96,6 +89,8 @@ class KeyHandler():
     QWidget, to handle the keyPressEvent slot.
     """
 
+    _partial_handler = PartialHandler()
+
     def keyPressEvent(self, event):
         """Handle key press event for the widget.
 
@@ -103,26 +98,26 @@ class KeyHandler():
             event: QKeyEvent that activated the keyPressEvent.
         """
         mode = modehandler.current()
-        partial_handler = objreg.get("partialkeys")
-        stored_keys = partial_handler.keys.get_text()
+        stored_keys = self._partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
         bindings = keybindings.get(mode)
-        # Prefer clear-keys
-        if keyname in bindings and bindings[keyname] == "clear-keys":
-            cmdrunner.run("clear-keys", mode)
+        # Handle escape separately as it affects multiple widgets
+        if keyname == "<escape>" and mode in ["image", "library", "thumbnail"]:
+            self._partial_handler.clear_keys()
+            objreg.get("search").clear()
             return
         keyname = stored_keys + keyname
         # Count
         if keyname and keyname in string.digits and mode != "command":
-            partial_handler.count.add_text(keyname)
+            self._partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
-            count = partial_handler.count.get_text()
+            count = self._partial_handler.count.get_text()
             cmd = bindings[keyname]
             cmdrunner.run(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
-            partial_handler.keys.add_text(keyname)
+            self._partial_handler.keys.add_text(keyname)
         # Nothing => run default Qt bindings of parent object
         else:
             # super() is the parent Qt widget

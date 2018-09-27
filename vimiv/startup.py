@@ -61,7 +61,6 @@ def earlyinit():
     aliases.init()
     clipboard.init()
     cmdrunner.init()
-    eventhandler.init()
     modehandler.init()
     slideshow.init()
     trash_manager.init()
