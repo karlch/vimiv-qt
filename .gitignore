@@ -12,3 +12,5 @@ install_log.txt
 docs/_build
 docs/_static/vimiv
 docs/_static/scrots
+TODO
+.pytest_cache
