@@ -231,6 +231,15 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level * count)
         self._scale = level
 
+    @keybindings.add("<space>", "play-or-pause", mode="image")
+    @commands.register(instance="image", mode="image")
+    def play_or_pause(self):
+        """Toggle betwen play and pause of animation."""
+        try:
+            self.widget().play_or_pause()
+        except AttributeError:  # Currently no animation displayed
+            pass
+
     def _scale_to_fit(self, limit=-1):
         """Scale image so it fits the widget size.
 
@@ -354,8 +363,6 @@ class Animation(widgets.ImageLabel):
         height = self.original.height() * scale
         self.movie().setScaledSize(QSize(width, height))
 
-    @keybindings.add("<space>", "play-or-pause", mode="image")
-    @commands.register(instance="animation", mode="image")
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         if self.movie().state() == QMovie.Paused:
