@@ -128,7 +128,7 @@ class Command():
         if self.count is None:
             return None
         # Use default
-        elif count == "":
+        if count == "":
             return self.count
         # Use count given
         return int(count)

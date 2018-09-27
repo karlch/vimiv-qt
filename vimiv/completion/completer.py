@@ -88,15 +88,15 @@ class Completer(QObject):
         if text.startswith("open"):
             return completionmodels.paths, (text.lstrip("open").lstrip(),)
         # Setting completion
-        elif text.startswith("set"):
+        if text.startswith("set"):
             setting = text.lstrip("set").lstrip().split()
             if setting:
                 return completionmodels.settings, (setting[0],)
             return completionmodels.settings, ("",)
         # Undelete completion
-        elif text.startswith("undelete"):
+        if text.startswith("undelete"):
             return completionmodels.trash, ()
-        elif text.startswith("!"):
+        if text.startswith("!"):
             return completionmodels.external, ()
         # Default: command completion
         return completionmodels.command, (self._cmd.mode,)

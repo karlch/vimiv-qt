@@ -139,11 +139,11 @@ def loglevel(value):
         raise argparse.ArgumentTypeError("Invalid loglevel  '%s'" % (value))
     if value == "critical":
         return logging.CRITICAL
-    elif value == "error":
+    if value == "error":
         return logging.ERROR
-    elif value == "warning":
+    if value == "warning":
         return logging.WARNING
-    elif value == "info":
+    if value == "info":
         return logging.INFO
     return logging.DEBUG
 
@@ -177,8 +177,7 @@ def widget(value):
     value = value.lower()
     if value in ["library", "thumbnail"]:
         return value
-    else:
-        raise argparse.ArgumentTypeError("No widget called '%s'" % (value))
+    raise argparse.ArgumentTypeError("No widget called '%s'" % (value))
 
 
 def command_history_direction(value):
@@ -194,9 +193,8 @@ def command_history_direction(value):
     value = value.lower()
     if value in ["next", "prev"]:
         return value
-    else:
-        raise argparse.ArgumentTypeError(
-            "Invalid history direction '%s'" % (value))
+    raise argparse.ArgumentTypeError(
+        "Invalid history direction '%s'" % (value))
 
 
 def manipulate_level(value):

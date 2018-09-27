@@ -20,9 +20,9 @@ def current(mode=None):
     mode = mode if mode else modehandler.current()
     if mode == "library":
         return objreg.get("library").current()
-    elif mode in ["image", "manipulate"]:
+    if mode in ["image", "manipulate"]:
         return objreg.get("imstorage").current()
-    elif mode == "thumbnail":
+    if mode == "thumbnail":
         return objreg.get("thumbnail").abspath()
     return ""
 
@@ -38,6 +38,6 @@ def pathlist(mode=None):
     mode = mode if mode else modehandler.current()
     if mode == "library":
         return objreg.get("library").pathlist()
-    elif mode in ["image", "thumbnail"]:
+    if mode in ["image", "thumbnail"]:
         return objreg.get("imstorage").pathlist()
     return []
