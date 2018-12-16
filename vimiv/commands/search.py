@@ -11,7 +11,7 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.commands import commands
-from vimiv.config import keybindings
+from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.utils import objreg, pathreceiver
 
@@ -82,7 +82,6 @@ class Search(QObject):
 
     def _matches(self, first, second):
         """Check if first string is in second string."""
-        case_sensitive = False
-        if case_sensitive:
-            return first in second
-        return first.lower() in second.lower()
+        if settings.get_value("search.ignore_case"):
+            return first.lower() in second.lower()
+        return first in second

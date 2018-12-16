@@ -366,6 +366,10 @@ def init_defaults():
     BoolSetting("shuffle", False, desc="Randomly shuffle images")
     StrSetting("style", "default")
 
+    # Search
+    BoolSetting("search.ignore_case", True,
+                desc="Ignore case when searching, i.e. 'A' and 'a' are equal")
+
     # Image
     BoolSetting("image.autoplay", True,
                 desc="Start playing animations on open")
