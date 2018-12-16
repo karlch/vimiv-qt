@@ -62,7 +62,6 @@ class Bar(QWidget):
         self.commandline.setText(":" + text)
         modehandler.enter("command")
 
-
     @keybindings.add("/", "search")
     @commands.register(instance="bar", hide=True)
     def search(self):

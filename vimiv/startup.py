@@ -22,7 +22,7 @@ from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
 from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
-                         eventhandler, slideshow, objreg, trash_manager)
+                         slideshow, objreg, trash_manager)
 
 
 def run(argv):

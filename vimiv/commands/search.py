@@ -17,6 +17,21 @@ from vimiv.utils import objreg, pathreceiver
 
 
 class Search(QObject):
+    """Command runner for searching.
+
+    The class retrieves a list of paths and searches for a given string in the
+    paths. When results are found, the new_search signal is emitted with the
+    index to select and a list of search results.
+
+    Attributes:
+        _text: The string to search for.
+        _reverse: Search in reverse mode.
+
+    Signals:
+        new_search: Emitted when a new search result is found.
+            arg1: Integer of the index to select.
+            arg2: List of all search results.
+    """
 
     @objreg.register("search")
     def __init__(self):
@@ -69,11 +84,28 @@ class Search(QObject):
         self._text = ""
 
     def _sort_for_search(self, paths, index, reverse):
+        """Sort list of paths so the order is usable by search.
+
+        This moves the currently selected image to end of the list and the next
+        index to the very front.
+
+        Args:
+            paths: List of paths to sort.
+            index: The currently selected index.
+            reverse: If True sort for reverse search, reversing the list.
+        """
         if reverse:
             return paths[index - 1::-1] + paths[-1:index - 1:-1]
         return paths[index + 1:] + paths[:index + 1]
 
     def _get_next_match(self, text, count, paths):
+        """Return the next match from a list of paths.
+
+        Args:
+            text: The string to search for.
+            count: Defines how many matches to jump forward.
+            paths: List of paths to search in.
+        """
         matches = [path for path in paths if self._matches(text, path)]
         if matches and count:
             count = count % len(matches)
