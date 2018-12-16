@@ -57,7 +57,7 @@ class ImageFileHandler(QObject):
         Args:
             path: Path to the image file.
         """
-        if not settings.get_value("image.autowrite"):
+        if not settings.get_value(settings.Names.IMAGE_AUTOWRITE):
             self._reset()
         elif self.transform.changed() or self.manipulate.changed():
             self.write([path])

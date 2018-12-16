@@ -100,7 +100,7 @@ class Bar(QWidget):
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
-        always_show = settings.get_value("statusbar.show")
+        always_show = settings.get_value(settings.Names.STATUSBAR_SHOW)
         if not always_show and not self.commandline.hasFocus():
             self.hide()
         else:

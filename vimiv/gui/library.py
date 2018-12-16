@@ -243,7 +243,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def update_width(self):
         """Resize width and columns when main window width changes."""
-        width = self.parent().width() * settings.get_value("library.width")
+        width = self.parent().width() * \
+            settings.get_value(settings.Names.LIBRARY_WIDTH)
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
         self.setColumnWidth(1, 0.75 * width)

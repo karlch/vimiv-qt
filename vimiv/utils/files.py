@@ -111,7 +111,7 @@ def get_size_directory(path):
     Return:
         Size as formatted string.
     """
-    max_amount = settings.get_value("library.file_check_amount")
+    max_amount = settings.get_value(settings.Names.LIBRARY_FILE_CHECK_AMOUNT)
     if max_amount == 0:  # Check all
         max_amount = None
     supported = yield_supported(ls(path))
@@ -164,7 +164,7 @@ def edit_supported(filename):
 def pwd():
     """Current working directory."""
     wd = os.getcwd()
-    if settings.get_value("statusbar.collapse_home"):
+    if settings.get_value(settings.Names.STATUSBAR_COLLAPSE_HOME):
         wd = wd.replace(os.path.expanduser("~"), "~")
     return wd
 

@@ -82,6 +82,6 @@ class Search(QObject):
 
     def _matches(self, first, second):
         """Check if first string is in second string."""
-        if settings.get_value("search.ignore_case"):
+        if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
             return first.lower() in second.lower()
         return first in second

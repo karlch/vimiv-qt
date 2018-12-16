@@ -36,8 +36,8 @@ def load(directory):
     Args:
         directory: The directory to load.
     """
-    paths = files.ls(directory,
-                     show_hidden=settings.get_value("library.show_hidden"))
+    show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
+    paths = files.ls(directory, show_hidden=show_hidden)
     images, directories = files.get_supported(paths)
     data = []
     _extend_data(data, directories, dirs=True)

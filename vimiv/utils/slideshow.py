@@ -32,7 +32,7 @@ class Slideshow(QTimer):
     def __init__(self):
         super().__init__()
         settings.signals.changed.connect(self._on_settings_changed)
-        interval = settings.get_value("slideshow.delay") * 1000
+        interval = settings.get_value(settings.Names.SLIDESHOW_DELAY) * 1000
         self.setInterval(interval)
 
     @keybindings.add("s", "slideshow", mode="image")
@@ -64,7 +64,7 @@ class Slideshow(QTimer):
     def running_indicator(self):
         """Indicator if slideshow is running."""
         if self.isActive():
-            return settings.get_value("slideshow.indicator")
+            return settings.get_value(settings.Names.SLIDESHOW_INDICATOR)
         return ""
 
     @pyqtSlot(str, object)

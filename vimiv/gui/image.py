@@ -220,7 +220,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             * **float**: Set scale to arbitrary decimal value.
         """
         if level == "overzoom":
-            self._scale_to_fit(limit=settings.get_value("image.overzoom"))
+            self._scale_to_fit(
+                limit=settings.get_value(settings.Names.IMAGE_OVERZOOM))
         elif level == "fit":
             self._scale_to_fit()
         elif level == "fit-width":
@@ -350,7 +351,7 @@ class Animation(widgets.ImageLabel):
         self.setMovie(movie)
         movie.jumpToFrame(0)
         self.original = movie.currentPixmap()
-        if settings.get_value("image.autoplay"):
+        if settings.get_value(settings.Names.IMAGE_AUTOPLAY):
             movie.start()
 
     def pixmap(self):

@@ -80,7 +80,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
-        default_size = settings.get_value("thumbnail.size")
+        default_size = settings.get_value(settings.Names.THUMBNAIL_SIZE)
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 

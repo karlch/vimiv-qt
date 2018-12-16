@@ -156,7 +156,7 @@ class Storage(QObject):
         else:
             self._set_index(index)
             self._paths = paths
-            if settings.get_value("shuffle"):
+            if settings.get_value(settings.Names.SHUFFLE):
                 shuffle(self._paths)
             imsignals.emit("paths_loaded", self._paths)
             imsignals.emit("path_loaded", self.current())
@@ -165,7 +165,7 @@ class Storage(QObject):
         """Populate list of paths in same directory for single path."""
         directory = os.path.dirname(path)
         paths, _ = files.get_supported(files.ls(directory))
-        if settings.get_value("shuffle"):
+        if settings.get_value(settings.Names.SHUFFLE):
             shuffle(paths)
         self._set_index(paths.index(path))
         self._paths = paths  # Must update after index for maybe_write

@@ -360,21 +360,48 @@ class StrSetting(Setting):
         return "String"
 
 
+class Names:
+    """Simple class which stores the string names of all settings."""
+
+    SHUFFLE = "shuffle"
+    STYLE = "style"
+
+    SEARCH_IGNORE_CASE = "search.ignore_case"
+    # SEARCH_INCREMENTAL = "search.incremental"
+
+    IMAGE_AUTOPLAY = "image.autoplay"
+    IMAGE_AUTOWRITE = "image.autowrite"
+    IMAGE_OVERZOOM = "image.overzoom"
+
+    LIBRARY_WIDTH = "library.width"
+    LIBRARY_SHOW_HIDDEN = "library.show_hidden"
+    LIBRARY_FILE_CHECK_AMOUNT = "library.file_check_amount"
+
+    THUMBNAIL_SIZE = "thumbnail.size"
+
+    SLIDESHOW_DELAY = "slideshow.delay"
+    SLIDESHOW_INDICATOR = "slideshow.indicator"
+
+    STATUSBAR_COLLAPSE_HOME = "statusbar.collapse_home"
+    STATUSBAR_SHOW = "statusbar.show"
+    STATUSBAR_MESSAGE_TIMEOUT = "statusbar.message_timeout"
+
+
 def init_defaults():
     """Store default values of all settings."""
     # General
-    BoolSetting("shuffle", False, desc="Randomly shuffle images")
-    StrSetting("style", "default")
+    BoolSetting(Names.SHUFFLE, False, desc="Randomly shuffle images")
+    StrSetting(Names.STYLE, "default")
 
     # Search
-    BoolSetting("search.ignore_case", True,
+    BoolSetting(Names.SEARCH_IGNORE_CASE, True,
                 desc="Ignore case when searching, i.e. 'A' and 'a' are equal")
 
     # Image
-    BoolSetting("image.autoplay", True,
+    BoolSetting(Names.IMAGE_AUTOPLAY, True,
                 desc="Start playing animations on open")
-    BoolSetting("image.autowrite", True, desc="Save images on changes")
-    FloatSetting("image.overzoom", 1.0,
+    BoolSetting(Names.IMAGE_AUTOWRITE, True, desc="Save images on changes")
+    FloatSetting(Names.IMAGE_OVERZOOM, 1.0,
                  desc="Maximum scale to apply trying to fit image to window",
                  suggestions=["1.0", "1.5", "2.0", "5.0"],
                  min_value=1.0)
