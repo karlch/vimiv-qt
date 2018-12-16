@@ -10,7 +10,7 @@ import collections
 import logging
 import re
 
-from vimiv.commands import runners
+from vimiv.commands import runners, search
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, pathreceiver
 
@@ -41,6 +41,7 @@ class CommandRunner(collections.UserDict):
         self["command"] = runners.CommandRunner()
         self["external"] = runners.ExternalRunner()
         self["alias"] = runners.AliasRunner()
+        self["search"] = search.Search()
 
     def __call__(self, prefix, command, mode):
         """Run a command using the appropriate runner.
@@ -59,7 +60,7 @@ class CommandRunner(collections.UserDict):
         elif prefix == ":":
             self["command"](command, mode)
         elif prefix == "/":
-            raise NotImplementedError("Search not implemented yet")
+            self["search"](command)
         else:
             logging.error("Unknown prefix '%s'", prefix)
 

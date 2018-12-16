@@ -62,6 +62,19 @@ class Bar(QWidget):
         self.commandline.setText(":" + text)
         modehandler.enter("command")
 
+
+    @keybindings.add("/", "search")
+    @commands.register(instance="bar", hide=True)
+    def search(self):
+        """Start a search.
+
+        **syntax:** ``:search``
+        """
+        self.show()
+        self._stack.setCurrentWidget(self.commandline)
+        self.commandline.setText("/")
+        modehandler.enter("command")
+
     @keybindings.add("<escape>", "leave-commandline", mode="command")
     @commands.register(instance="bar", mode="command")
     def leave_commandline(self):

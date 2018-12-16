@@ -81,6 +81,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
         libpaths.signals.loaded.connect(self._on_paths_loaded)
+        search = objreg.get("search")
+        search.new_search.connect(self._on_new_search)
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
         trash_manager = objreg.get("trash-manager")
@@ -144,6 +146,17 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Possibly load library for new directory."""
         if not self.model().rowCount() or directory != os.getcwd():
             libpaths.load(directory)
+
+    @pyqtSlot(int, list)
+    def _on_new_search(self, index, matches):
+        """Select search result after new search.
+
+        Args:
+            index: Index to select.
+            matches: List of all matches of the search.
+        """
+        # TODO show matches visually
+        self._select_row(index)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):

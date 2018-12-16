@@ -89,6 +89,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
+        search = objreg.get("search")
+        search.new_search.connect(self._on_new_search)
         trash_manager = objreg.get("trash-manager")
         trash_manager.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -155,6 +157,18 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.insertItem(index, item)
         thumb = Thumbnail(pixmap)
         self.setItemWidget(item, thumb)
+
+    @pyqtSlot(int, list)
+    def _on_new_search(self, index, matches):
+        """Select search result after new search.
+
+        Args:
+            index: Index to select.
+            matches: List of all matches of the search.
+        """
+        if self._paths and os.getcwd() == os.path.dirname(self.abspath()):
+            # TODO show matches visually
+            self._select_item(index)
 
     @keybindings.add("k", "scroll up", mode="thumbnail")
     @keybindings.add("j", "scroll down", mode="thumbnail")

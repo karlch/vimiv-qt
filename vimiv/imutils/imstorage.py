@@ -32,6 +32,8 @@ class Storage(QObject):
         super().__init__()
         self._paths = []
         self._index = 0
+        search = objreg.get("search")
+        search.new_search.connect(self._on_new_search)
         slideshow = objreg.get("slideshow")
         slideshow.next_im.connect(self._on_slideshow_event)
         trash_manager = objreg.get("trash-manager")
@@ -40,6 +42,18 @@ class Storage(QObject):
         imsignals.connect(self._on_update_index, "update_index")
         imsignals.connect(self._on_update_path, "update_path")
         imsignals.connect(self._on_update_paths, "update_paths")
+
+    @pyqtSlot(int, list)
+    def _on_new_search(self, index, matches):
+        """Select search result after new search.
+
+        Args:
+            index: Index to select.
+            matches: List of all matches of the search.
+        """
+        if self._paths and os.getcwd() == os.path.dirname(self.current()):
+            self._set_index(index)
+            imsignals.emit("path_loaded", self.current())
 
     @keybindings.add("n", "next", mode="image")
     @commands.register(instance="imstorage", count=1)
@@ -61,7 +75,6 @@ class Storage(QObject):
         """
         if self._paths:
             self._set_index((self._index - count) % len(self._paths))
-            imsignals.emit("path_loaded", self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
