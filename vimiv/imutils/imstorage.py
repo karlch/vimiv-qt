@@ -75,6 +75,7 @@ class Storage(QObject):
         """
         if self._paths:
             self._set_index((self._index - count) % len(self._paths))
+            imsignals.emit("path_loaded", self.current())
 
     @keybindings.add("G", "goto -1", mode="image")
     @keybindings.add("gg", "goto 1", mode="image")
