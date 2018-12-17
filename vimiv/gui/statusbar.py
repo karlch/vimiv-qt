@@ -7,6 +7,8 @@
 """Statusbar widget in the bar and functions to interact with it.
 
 Module Attributes:
+    statusbar: The actual statusbar widget.
+
     _modules: Dictionary to store any modules for the statusbar. These modules
         are instances of the _Module class which essentially have a name in the
         form of {module} and a callable function that returns a parsed string
@@ -22,6 +24,8 @@ from vimiv.utils import objreg, statusbar_loghandler
 
 
 _modules = {}
+
+statusbar = None
 
 
 class Module():
@@ -84,8 +88,7 @@ def update(clear_message=True):
     Args:
         clear_message: Additionally clear any pushed messages.
     """
-    bar = objreg.get("statusbar")
-    bar.update(clear_message=clear_message)
+    statusbar.update(clear_message=clear_message)
 
 
 class StatusBar(QWidget):
@@ -112,7 +115,6 @@ class StatusBar(QWidget):
     }
     """
 
-    @objreg.register("statusbar")
     def __init__(self):
         super().__init__()
         self.timer = QTimer()
@@ -219,3 +221,8 @@ class StatusBar(QWidget):
 
     def __getitem__(self, name):
         return self._items[name]
+
+
+def init():
+    global statusbar
+    statusbar = StatusBar()

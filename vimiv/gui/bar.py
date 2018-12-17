@@ -20,7 +20,6 @@ class Bar(QWidget):
     """Bar at the bottom including statusbar and commandline.
 
     Attributes:
-        statusbar: vimiv.gui.statusbar.StatusBar object.
         commandline: vimiv.gui.commandline.CommandLine object.
 
         _stack: QStackedLayout containing statusbar and commandline.
@@ -31,13 +30,13 @@ class Bar(QWidget):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
-        self.statusbar = statusbar.StatusBar()
+        statusbar.init()
         self.commandline = commandline.CommandLine()
         self._stack = QStackedLayout(self)
 
-        self._stack.addWidget(self.statusbar)
+        self._stack.addWidget(statusbar.statusbar)
         self._stack.addWidget(self.commandline)
-        self._stack.setCurrentWidget(self.statusbar)
+        self._stack.setCurrentWidget(statusbar.statusbar)
 
         self._maybe_hide()
 
@@ -84,7 +83,7 @@ class Bar(QWidget):
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
         self.commandline.setText("")
-        self._stack.setCurrentWidget(self.statusbar)
+        self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
         modehandler.enter(self.commandline.mode)
 
@@ -92,10 +91,10 @@ class Bar(QWidget):
     def _on_settings_changed(self, setting, new_value):
         """React to changed settings."""
         if setting == "statusbar.show":
-            self.statusbar.setVisible(new_value)
+            statusbar.statusbar.setVisible(new_value)
             self._maybe_hide()
         elif setting == "statusbar.timeout":
-            self.statusbar.timer.setInterval(new_value)
+            statusbar.statusbar.timer.setInterval(new_value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""

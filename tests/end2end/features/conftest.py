@@ -11,6 +11,7 @@ import os
 import pytest_bdd as bdd
 
 from vimiv.commands import cmdrunner
+from vimiv.gui import statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
@@ -75,28 +76,28 @@ def no_crash(qtbot):
 
 @bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
 def check_statusbar_message(message):
-    bar = objreg.get("statusbar")
+    bar = statusbar.statusbar
     assert bar["stack"].currentWidget() == bar["message"]
     assert message == bar["message"].text()
 
 
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
 def check_left_status(qtbot, position, text):
-    bar = objreg.get("statusbar")
+    bar = statusbar.statusbar
     assert bar["stack"].currentWidget() == bar["status"]
     assert text in bar[position].text()
 
 
 @bdd.then("a message should be displayed")
 def check_a_statusbar_message():
-    bar = objreg.get("statusbar")
+    bar = statusbar.statusbar
     assert bar["message"].text() != ""
     assert bar["stack"].currentWidget() == bar["message"]
 
 
 @bdd.then("no message should be displayed")
 def check_no_statusbar_message():
-    bar = objreg.get("statusbar")
+    bar = statusbar.statusbar
     assert bar["message"].text() == ""
     assert bar["stack"].currentWidget() == bar["status"]
 
