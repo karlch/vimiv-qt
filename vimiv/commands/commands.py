@@ -134,54 +134,62 @@ class Command():
         return int(count)
 
 
-class argument:  # pylint: disable=invalid-name
+def argument(argname, optional=False, **kwargs):
     """Decorator to update command a command argument.
 
-    As a class with "wrong" name it is cleaner to implement.
-
-    Attributes:
-        _argname: Name of the argument.
-        _kwargs: kwargs to be passed to parser.parse_args.
+    Args:
+        argname: Name of the argument.
+        optional: True if the argument optional, else it is positional.
+        kwargs: kwargs to be passed to parser.parse_args.
     """
-
-    def __init__(self, argname, optional=False, **kwargs):
-        self._argname = "--%s" % (argname) if optional else argname
-        self._kwargs = kwargs
-
-    def __call__(self, func):
-        func.vimiv_args.add_argument(self._argname, **self._kwargs)
+    argname = "--%s" % (argname) if optional else argname
+    def decorator(func):
+        func.vimiv_args.add_argument(argname, **kwargs)
         return func
+    return decorator
 
 
-class register:  # pylint: disable=invalid-name
-    """Decorator to register a new command.
+def register(instance=None, mode="global", count=None, hide=False):
+    """Decorator to store a command in the registry.
 
-    As a class with "wrong" name it is cleaner to implement.
-
-    Attributes:
-        _instance: The object from the object registry to be used as "self".
-        _mode: Mode in which the command can be executed.
-        _count: Associated count. If it is not None, this count will be used as
-            default and passing other counts is supported by the command.
-        _hide: Hide command from command line.
+    Args:
+        instance: The name of the object in the registry.
+        mode: Mode in which the command can be executed.
+        count: Associated count. If it is not None, this count will be used as
+        default and passing other counts is supported by the command.
+        hide: Hide command from command line.
     """
-
-    def __init__(self, instance=None, mode="global", count=None, hide=False):
-        self._instance = instance
-        self._mode = mode
-        self._count = count
-        self._hide = hide
-
-    def __call__(self, func):
-        name = func.__name__.lower().replace("_", "-")
-        try:
-            desc = inspect.getdoc(func).split("\n")[0]
-        except AttributeError:
-            desc = ""
-            logging.error("Command %s for %s is missing docstring.",
-                          name, func)
+    def decorator(func):
+        name = _get_command_name(func)
+        desc = _get_description(func, name)
         func.vimiv_args = Args(name)
-        cmd = Command(name, func, instance=self._instance, mode=self._mode,
-                      count=self._count, description=desc, hide=self._hide)
-        registry[self._mode][name] = cmd
+        cmd = Command(name, func, instance=instance,
+                      mode=mode, count=count, description=desc, hide=hide)
+        registry[mode][name] = cmd
         return func
+    return decorator
+
+
+def _get_command_name(func):
+    """Retrieve command name from name of function object."""
+    return func.__name__.lower().replace("_", "-")
+
+
+def _get_description(func, name):
+    """Retrive the command description from function docstring.
+
+    Args:
+        func: Python function object to retrieve the docstring from.
+        name: Name of the command to retrieve the description for.
+    Return:
+        The string description of the command.
+    """
+    try:
+        return inspect.getdoc(func).split("\n")[0]
+    except AttributeError:
+        logging.error("Command %s for %s is missing docstring.", name, func)
+    return ""
+
+
+def _is_method(func):
+    return "self" in inspect.signature(func).parameters
