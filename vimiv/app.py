@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QApplication
 import vimiv
 from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, files
 
@@ -70,7 +70,7 @@ def open_paths(paths, select_mode=True):
     images, directories = files.get_supported(paths)
     mode = "library"
     if images:
-        imsignals.emit("update_paths", images, 0)
+        imsignals.update_paths.emit(images, 0)
         mode = "image"
     elif directories:
         libpaths.load(directories[0])

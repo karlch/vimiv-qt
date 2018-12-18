@@ -4,34 +4,18 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Singleton to handle communication between image and utilities."""
+"""Single class storing signals for image utilities.
+
+Module Attributes:
+    imsignals: The created ImageSignalHandler class to store the signals.
+"""
 
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie
 
-from vimiv.utils import objreg
-
-
-def instance():
-    """Get the ImageSignalHandler object."""
-    return objreg.get("image-signal-handler")
-
-
-def emit(signalname, *args):
-    """Emit signal mapped to 'signalname' with '*args'."""
-    instance().emit(signalname, *args)
-
-
-def connect(func, signalname):
-    """Connect 'func' to 'signalname'."""
-    instance().connect(func, signalname)
-
 
 class ImageSignalHandler(QObject):
-    """Store, connect and emit signals for image utilities.
-
-    Attributes:
-        _signals: Dictionary mapping signal names to the actual signals.
+    """Store signals for image utilities as class attributes.
 
     Signals:
         update_index: Emitted when a new index should be opened.
@@ -81,35 +65,5 @@ class ImageSignalHandler(QObject):
     # Tell transformation to write to file
     maybe_write_file = pyqtSignal(str)
 
-    @objreg.register("image-signal-handler")
-    def __init__(self):
-        super().__init__()
-        self._signals = {"update_index": self.update_index,
-                         "update_path": self.update_path,
-                         "update_paths": self.update_paths,
-                         "path_loaded": self.path_loaded,
-                         "paths_loaded": self.paths_loaded,
-                         "pixmap_loaded": self.pixmap_loaded,
-                         "movie_loaded": self.movie_loaded,
-                         "svg_loaded": self.svg_loaded,
-                         "pixmap_updated": self.pixmap_updated,
-                         "maybe_update_library": self.maybe_update_library,
-                         "maybe_write_file": self.maybe_write_file}
 
-    def connect(self, func, signal_name):
-        """Connect 'func' to 'signalname'.
-
-        Args:
-            func: The function to connect to the signal.
-            signal_name: Name of the signal as mapped in self._signals.
-        """
-        self._signals[signal_name].connect(func)
-
-    def emit(self, signal_name, *args):
-        """Emit signal mapped to 'signalname' with '*args'.
-
-        Args:
-            signal_name: Name of the signal as mapped in self._signals.
-            *args: Arguments to be passed via signal.emit(*args).
-        """
-        self._signals[signal_name].emit(*args)
+imsignals = ImageSignalHandler()

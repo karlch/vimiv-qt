@@ -15,7 +15,7 @@ from PyQt5.QtGui import QPixmap
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
@@ -84,8 +84,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
-        imsignals.connect(self._on_path_loaded, "path_loaded")
-        imsignals.connect(self._on_paths_loaded, "paths_loaded")
+        imsignals.path_loaded.connect(self._on_path_loaded)
+        imsignals.paths_loaded.connect(self._on_paths_loaded)
         modehandler.instance().entered.connect(self._on_enter)
         modehandler.instance().left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
@@ -129,7 +129,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             index: QModelIndex activated.
         """
         modehandler.enter("image")
-        imsignals.emit("update_index", index.row() + 1)
+        imsignals.update_index.emit(index.row() + 1)
 
     @pyqtSlot(str)
     def _on_enter(self, widget):

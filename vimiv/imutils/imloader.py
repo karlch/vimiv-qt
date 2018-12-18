@@ -11,7 +11,7 @@ import logging
 from PyQt5.QtCore import QObject, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import objreg
 
 # We need the check as svg support is optional
@@ -32,7 +32,7 @@ class ImageLoader(QObject):
     def __init__(self):
         super().__init__()
         self.image = None
-        imsignals.connect(self._on_path_loaded, "path_loaded")
+        imsignals.path_loaded.connect(self._on_path_loaded)
 
     @pyqtSlot(str)
     def _on_path_loaded(self, path):
@@ -44,13 +44,13 @@ class ImageLoader(QObject):
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self.image = None
-            imsignals.emit("svg_loaded", path)
+            imsignals.svg_loaded.emit(path)
         elif reader.supportsAnimation():
             self.image = QMovie(path)
-            imsignals.emit("movie_loaded", self.image)
+            imsignals.movie_loaded.emit(self.image)
         else:
             self.image = QPixmap(path)
-            imsignals.emit("pixmap_loaded", self.image)
+            imsignals.pixmap_loaded.emit(self.image)
 
 
 def current():

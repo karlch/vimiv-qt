@@ -17,7 +17,7 @@ from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
 from vimiv.commands import commands, argtypes, cmdexc
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, libpaths, eventhandler, misc
 
@@ -88,7 +88,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         trash_manager = objreg.get("trash-manager")
         trash_manager.path_removed.connect(self._on_path_removed)
         trash_manager.path_restored.connect(self._on_path_restored)
-        imsignals.connect(self._on_maybe_update, "maybe_update_library")
+        imsignals.maybe_update_library.connect(self._on_maybe_update)
 
         styles.apply(self)
 
@@ -120,7 +120,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self._last_selected = ""
         # Update image
         else:
-            imsignals.emit("update_path", os.path.abspath(path))
+            imsignals.update_path.emit(os.path.abspath(path))
             self._last_selected = path
 
     @pyqtSlot(list)

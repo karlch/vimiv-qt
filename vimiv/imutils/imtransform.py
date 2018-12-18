@@ -52,7 +52,7 @@ class Transform():
         self._rotation_angle += angle
         self._transform.rotate(angle)
         pixmap = self.transform_pixmap(imloader.current())
-        imsignals.emit("pixmap_loaded", pixmap)
+        imsignals.imsignals.pixmap_updated.emit(pixmap)
 
     @keybindings.add("_", "flip --vertical", mode="image")
     @keybindings.add("|", "flip", mode="image")
@@ -84,7 +84,7 @@ class Transform():
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        imsignals.emit("pixmap_updated", pixmap)
+        imsignals.imsignals.pixmap_updated.emit(pixmap)
 
     def transform_pixmap(self, pm):
         """Apply all transformations to the given pixmap."""

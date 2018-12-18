@@ -12,7 +12,7 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
 from vimiv.config import styles
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
@@ -73,9 +73,9 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
-        imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")
-        imsignals.connect(self._on_movie_loaded, "movie_loaded")
-        imsignals.connect(self._on_svg_loaded, "svg_loaded")
+        imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        imsignals.movie_loaded.connect(self._on_movie_loaded)
+        imsignals.svg_loaded.connect(self._on_svg_loaded)
         modehandler_obj = objreg.get("mode-handler")
         modehandler_obj.entered.connect(self._on_mode_entered)
         manipulator = objreg.get("manipulator")

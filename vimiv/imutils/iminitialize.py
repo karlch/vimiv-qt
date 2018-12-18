@@ -6,12 +6,11 @@
 
 """Initialize the classes to load and select image paths."""
 
-from vimiv.imutils import imloader, imstorage, imfile_handler, imsignals
+from vimiv.imutils import imloader, imstorage, imfile_handler
 
 
 def init():
     """Initialize the classes needed for imutils."""
-    imsignals.ImageSignalHandler()  # First as it provides the signals
     imstorage.Storage()
     imloader.ImageLoader()
     imfile_handler.ImageFileHandler()

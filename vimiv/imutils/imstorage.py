@@ -15,7 +15,7 @@ from vimiv import app
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import objreg, files
 
 
@@ -32,7 +32,7 @@ def next(count):
     """
     if _paths:
         _set_index((_index + count) % len(_paths))
-        imsignals.emit("path_loaded", current())
+        imsignals.path_loaded.emit(current())
 
 
 @keybindings.add("p", "prev", mode="image")
@@ -44,7 +44,7 @@ def prev(count):
     """
     if _paths:
         _set_index((_index - count) % len(_paths))
-        imsignals.emit("path_loaded", current())
+        imsignals.path_loaded.emit(current())
 
 
 @keybindings.add("G", "goto -1", mode="image")
@@ -65,7 +65,7 @@ def goto(index, count):
     """
     index = count if count else index
     _set_index(index % (len(_paths) + 1) - 1)
-    imsignals.emit("path_loaded", current())
+    imsignals.path_loaded.emit(current())
 
 
 @statusbar.module("{abspath}")
@@ -114,9 +114,9 @@ class Storage(QObject):
         trash_manager = objreg.get("trash-manager")
         trash_manager.path_removed.connect(self._on_path_removed)
         trash_manager.path_restored.connect(self._on_path_restored)
-        imsignals.connect(self._on_update_index, "update_index")
-        imsignals.connect(self._on_update_path, "update_path")
-        imsignals.connect(self._on_update_paths, "update_paths")
+        imsignals.update_index.connect(self._on_update_index)
+        imsignals.update_path.connect(self._on_update_path)
+        imsignals.update_paths.connect(self._on_update_paths)
 
     @pyqtSlot(int, list)
     def _on_new_search(self, index, matches):
@@ -128,7 +128,7 @@ class Storage(QObject):
         """
         if _paths and os.getcwd() == os.path.dirname(current()):
             _set_index(index)
-            imsignals.emit("path_loaded", current())
+            imsignals.path_loaded.emit(current())
 
     def pathlist(self):
         """Return the currently loaded list of paths."""
@@ -159,7 +159,7 @@ class Storage(QObject):
         """
         paths = [os.path.abspath(path) for path in paths]
         directory = os.path.dirname(paths[0])
-        imsignals.emit("maybe_update_library", directory)
+        imsignals.maybe_update_library.emit(directory)
         # Populate list of paths in same directory for single path
         if len(paths) == 1:
             _load_single(paths[0])
@@ -168,8 +168,8 @@ class Storage(QObject):
             _set_paths(paths)
             if settings.get_value(settings.Names.SHUFFLE):
                 shuffle(_paths)
-            imsignals.emit("paths_loaded", _paths)
-            imsignals.emit("path_loaded", current())
+            imsignals.paths_loaded.emit(_paths)
+            imsignals.path_loaded.emit(current())
 
     @pyqtSlot(str)
     def _on_path_removed(self, path):
@@ -185,7 +185,7 @@ class Storage(QObject):
             # Move to next image available if the current path was removed
             elif path == current_path:
                 _set_index(min(path_index, len(_paths) - 1))
-                imsignals.emit("path_loaded", current())
+                imsignals.path_loaded.emit(current())
             # Make sure the current image is still selected
             else:
                 _set_index(_paths.index(current_path))
@@ -203,7 +203,7 @@ class Storage(QObject):
 
 def _set_index(index):
     """Set the global _index to index."""
-    imsignals.emit("maybe_write_file", current())
+    imsignals.maybe_write_file.emit(current())
     global _index
     _index = index
 
@@ -222,5 +222,5 @@ def _load_single(path):
         shuffle(paths)
     _set_index(paths.index(path))
     _set_paths(paths)  # Must update after index for maybe_write
-    imsignals.emit("paths_loaded", _paths)
-    imsignals.emit("path_loaded", current())
+    imsignals.paths_loaded.emit(_paths)
+    imsignals.path_loaded.emit(current())

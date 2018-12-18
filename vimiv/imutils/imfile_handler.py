@@ -42,7 +42,7 @@ class ImageFileHandler(QObject):
         super().__init__()
         self.transform = imtransform.Transform()
         self.manipulate = immanipulate.Manipulator()
-        imsignals.connect(self._maybe_write, "maybe_write_file")
+        imsignals.imsignals.maybe_write_file.connect(self._maybe_write)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def pixmap(self):

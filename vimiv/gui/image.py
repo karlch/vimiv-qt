@@ -13,7 +13,7 @@ from PyQt5.QtGui import QMovie, QPixmap
 from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
-from vimiv.imutils import imsignals
+from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.utils import eventhandler, objreg
 
@@ -91,10 +91,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
 
         modehandler.instance().entered.connect(self._on_enter)
-        imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")
-        imsignals.connect(self._on_movie_loaded, "movie_loaded")
-        imsignals.connect(self._on_svg_loaded, "svg_loaded")
-        imsignals.connect(self._on_pixmap_updated, "pixmap_updated")
+        imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        imsignals.movie_loaded.connect(self._on_movie_loaded)
+        imsignals.svg_loaded.connect(self._on_svg_loaded)
+        imsignals.pixmap_updated.connect(self._on_pixmap_updated)
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):

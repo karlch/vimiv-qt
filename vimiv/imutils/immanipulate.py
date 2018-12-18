@@ -56,12 +56,12 @@ class Manipulator(QObject):
         self.pixmap = None
         self._current = "brightness"
 
-        imsignals.connect(self._on_pixmap_loaded, "pixmap_loaded")
+        imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
 
     def set_pixmap(self, pixmap):
         """Set the pixmap to a newly edited version."""
         self.pixmap = pixmap
-        imsignals.emit("pixmap_updated", self.pixmap)
+        imsignals.imsignals.pixmap_updated.emit(self.pixmap)
 
     def changed(self):
         """Return True if anything was edited."""
@@ -83,7 +83,7 @@ class Manipulator(QObject):
         modehandler.leave("manipulate")
         # Show original image
         if self.manipulations != {"brightness": 0, "contrast": 0}:
-            imsignals.emit("pixmap_updated", self.original)
+            imsignals.imsignals.pixmap_updated.emit(self.original)
         self.manipulations = {
             "brightness": 0,
             "contrast": 0
