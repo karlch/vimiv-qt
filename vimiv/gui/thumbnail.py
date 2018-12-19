@@ -353,13 +353,12 @@ class Thumbnail(QLabel):
         super().__init__()
         self.original = pixmap
         self.setPixmap(pixmap)
-        self.setAlignment(Qt.AlignCenter)
         self.setStyleSheet("QLabel { background: none; }")
 
     def resizeEvent(self, event):
         """Rescale thumbnail on resize event."""
-        super().resizeEvent(event)
-        scale = self.width() / 256
+        scale = event.size().height() / 256
         pixmap = self.original.scaledToWidth(
             self.original.width() * scale, Qt.SmoothTransformation)
         self.setPixmap(pixmap)
+        super().resizeEvent(event)
