@@ -325,7 +325,7 @@ class ThumbnailSizeSetting(Setting):
         """
         new_value = strconvert.to_int(new_value)
         if new_value not in self.ALLOWED_VALUES:
-            raise ValueError("Thumnbail size must be one of 64, 128, 256, 512")
+            raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
         self._value = new_value
 
     def increase(self):
