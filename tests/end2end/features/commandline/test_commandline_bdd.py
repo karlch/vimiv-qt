@@ -10,6 +10,7 @@ import pytest_bdd as bdd
 
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
+from vimiv.imutils import imstorage
 
 
 bdd.scenarios("commandline.feature")
@@ -18,6 +19,8 @@ bdd.scenarios("commandline.feature")
 @bdd.when("I activate the command line")
 def activate_commandline(qtbot):
     """Needed as passing return as a string is not possible."""
+    print(imstorage._paths)
+    print(imstorage._index)
     cmd = objreg.get("command")
     qtbot.keyClick(cmd, Qt.Key_Return)
     qtbot.wait(10)

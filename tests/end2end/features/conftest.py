@@ -43,7 +43,7 @@ def leave_mode(mode):
 
 
 @bdd.when(bdd.parsers.parse("I enter command mode with {text}"))
-def enter_command_with_text(vimivproc, text):
+def enter_command_with_text(text):
     modehandler.enter("command")
     cmd = objreg.get("command")
     cmd .setText(":" + text)

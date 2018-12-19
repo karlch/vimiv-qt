@@ -8,7 +8,7 @@ import os
 
 import pytest_bdd as bdd
 
-from vimiv.utils import objreg
+from vimiv.imutils import imstorage
 
 
 bdd.scenarios("imagedelete.feature")
@@ -16,12 +16,10 @@ bdd.scenarios("imagedelete.feature")
 
 @bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
 def check_filelist_length(number):
-    imstorage = objreg.get("imstorage")
     assert imstorage.total() == number
 
 
 @bdd.then(bdd.parsers.parse("{basename} should not be in the filelist"))
 def check_image_not_in_filelist(basename):
     abspath = os.path.abspath(basename)
-    imstorage = objreg.get("imstorage")
     assert abspath not in imstorage._paths

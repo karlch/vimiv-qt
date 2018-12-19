@@ -8,7 +8,6 @@
 
 from PyQt5.QtGui import QPixmap
 
-import pytest
 import pytest_bdd as bdd
 
 import vimivprocess
@@ -27,16 +26,6 @@ def create_image(path, fileformat="jpg", size=(300, 300)):
     """
     pixmap = QPixmap(*size)
     pixmap.save(path, fileformat)
-
-
-###############################################################################
-#                               pytest fixtures                               #
-###############################################################################
-
-
-@pytest.fixture()
-def vimivproc():
-    yield vimivprocess.instance()
 
 
 ###############################################################################

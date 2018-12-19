@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QWidget
 
 from vimiv import startup
 from vimiv.utils import objreg
+from vimiv.imutils import imstorage
 
 
 _processes = []
@@ -50,3 +51,5 @@ class VimivProc():
         # Wait for any running threads to exit safely
         QThreadPool.globalInstance().waitForDone()
         objreg.clear()
+        imstorage._paths = []
+        imstorage._index = 0

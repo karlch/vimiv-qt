@@ -5,6 +5,7 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 """Functions to get the current path and pathlist."""
 
+from vimiv.imutils import imstorage
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
@@ -21,7 +22,7 @@ def current(mode=None):
     if mode == "library":
         return objreg.get("library").current()
     if mode in ["image", "manipulate"]:
-        return objreg.get("imstorage").current()
+        return imstorage.current()
     if mode == "thumbnail":
         return objreg.get("thumbnail").abspath()
     return ""
@@ -39,5 +40,5 @@ def pathlist(mode=None):
     if mode == "library":
         return objreg.get("library").pathlist()
     if mode in ["image", "thumbnail"]:
-        return objreg.get("imstorage").pathlist()
+        return imstorage.pathlist()
     return []

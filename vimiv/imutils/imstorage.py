@@ -96,6 +96,11 @@ def total():
     return str(len(_paths))
 
 
+def pathlist():
+    """Return the currently loaded list of paths."""
+    return _paths
+
+
 class Storage(QObject):
     """Store and move between paths to images.
 
@@ -129,10 +134,6 @@ class Storage(QObject):
         if _paths and os.getcwd() == os.path.dirname(current()):
             _set_index(index)
             imsignals.path_loaded.emit(current())
-
-    def pathlist(self):
-        """Return the currently loaded list of paths."""
-        return _paths
 
     @pyqtSlot()
     def _on_slideshow_event(self):
@@ -203,7 +204,10 @@ class Storage(QObject):
 
 def _set_index(index):
     """Set the global _index to index."""
-    imsignals.maybe_write_file.emit(current())
+    try:
+        imsignals.maybe_write_file.emit(current())
+    except IndexError:  # Image has been deleted
+        pass
     global _index
     _index = index
 

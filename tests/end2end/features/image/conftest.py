@@ -8,10 +8,9 @@
 
 import pytest_bdd as bdd
 
-from vimiv.utils import objreg
+from vimiv.imutils import imstorage
 
 
 @bdd.then(bdd.parsers.parse("the image should have the index {index}"))
 def check_image_index(index):
-    imstorage = objreg.get("imstorage")
-    assert imstorage.index() == index
+    assert imstorage.get_index() == index
