@@ -187,6 +187,8 @@ def _insert_values(style):
     style["library.odd.bg"] = "{base01}"
     style["library.selected.bg"] = "{base0d}"
     style["library.selected.fg"] = "{base07}"
+    style["library.search.highlighted.fg"] = "{base01}"
+    style["library.search.highlighted.bg"] = "{base04}"
     style["library.scrollbar.width"] = "{image.scrollbar.width}"
     style["library.scrollbar.bg"] = "{image.bg}"
     style["library.scrollbar.fg"] = "{image.scrollbar.fg}"
@@ -198,6 +200,8 @@ def _insert_values(style):
     style["thumbnail.bg"] = "{image.bg}"
     style["thumbnail.padding"] = "20"
     style["thumbnail.selected.bg"] = "{library.selected.bg}"
+    style["thumbnail.search.highlighted.bg"] = \
+        "{library.search.highlighted.bg}"
     style["thumbnail.default.bg"] = "{statusbar.info}"
     style["thumbnail.error.bg"] = "{statusbar.error}"
     style["thumbnail.frame.fg"] = "{thumbnail.fg}"
