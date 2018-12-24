@@ -73,8 +73,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
 
-        model = LibraryModel()
-        self.setModel(model)
+        self.setModel(LibraryModel())
         self.setItemDelegate(LibraryDelegate())
         self.hide()
 
@@ -83,6 +82,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.signals.loaded.connect(self._on_paths_loaded)
         search = objreg.get("search")
         search.new_search.connect(self._on_new_search)
+        search.cleared.connect(self._on_search_cleared)
         modehandler.signals.entered.connect(self._on_enter)
         modehandler.signals.left.connect(self._on_leave)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
@@ -156,6 +156,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         if self.hasFocus():
             self._select_row(index)
+
+    @pyqtSlot()
+    def _on_search_cleared(self):
+        """Force repainting when the search results were cleared."""
+        self.repaint()
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
@@ -281,7 +286,35 @@ class LibraryModel(QStandardItemModel):
     """Model used for the library.
 
     The model stores the rows.
+
+    Attributes:
+        _highlighted: List of indices that are highlighted as search results.
     """
+
+    def __init__(self):
+        super().__init__()
+        self._highlighted = []
+        search = objreg.get("search")
+        search.new_search.connect(self._on_new_search)
+        search.cleared.connect(self._on_search_cleared)
+
+    @pyqtSlot(int, list)
+    def _on_new_search(self, index, matches):
+        """Store list of indices to highlight on new search.
+
+        Args:
+            index: Index that will be selected.
+            matches: List of all matches of the search.
+        """
+        self._highlighted = []
+        for i, path in enumerate(self.pathlist()):
+            if os.path.basename(path) in matches:
+                self._highlighted.append(i)
+
+    @pyqtSlot()
+    def _on_search_cleared(self):
+        """Reset highlighted when the search results were cleared."""
+        self._highlighted = []
 
     def remove_all_rows(self):
         """Remove all rows from the model.
@@ -300,6 +333,10 @@ class LibraryModel(QStandardItemModel):
             pathlist.append(os.path.abspath(basename))
         return pathlist
 
+    def is_highlighted(self, index):
+        """Return True if the index is highlighted as search result."""
+        return index.row() in self._highlighted
+
 
 class LibraryDelegate(QStyledItemDelegate):
     """Delegate used for the library.
@@ -312,16 +349,21 @@ class LibraryDelegate(QStyledItemDelegate):
         self.doc = QTextDocument(self)
         self.doc.setDocumentMargin(0)
 
+        # Named properties for html
         self.font = styles.get("library.font")
         self.fg = styles.get("library.fg")
         self.dir_fg = styles.get("library.directory.fg")
+        self.search_fg = styles.get("library.search.highlighted.fg")
 
+        # QColor options for background drawing
         self.selection_bg = QColor()
         self.selection_bg.setNamedColor(styles.get("library.selected.bg"))
         self.even_bg = QColor()
         self.odd_bg = QColor()
         self.even_bg.setNamedColor(styles.get("library.even.bg"))
         self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
+        self.search_bg = QColor()
+        self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
 
     def createEditor(self, *args):
         """Library is not editable by the user."""
@@ -335,28 +377,24 @@ class LibraryDelegate(QStyledItemDelegate):
             option: The QStyleOptionViewItem.
             index: The QModelIndex.
         """
-        text = index.model().data(index)
-        if option.state & QStyle.State_Selected:
-            self._draw_background(painter, option, self.selection_bg)
-        elif index.row() % 2:
-            self._draw_background(painter, option, self.odd_bg)
-        else:
-            self._draw_background(painter, option, self.even_bg)
-        self._draw_text(text, painter, option)
+        self._draw_background(painter, option, index)
+        self._draw_text(painter, option, index)
 
-    def _draw_text(self, text, painter, option):
+    def _draw_text(self, painter, option, index):
         """Draw text for the library.
 
         Sets the font and the foreground color using html. The foreground color
-        depends on whether the path is a directory.
+        depends on whether the path is a directory and on whether it is
+        highlighted as search result or not.
 
         Args:
-            text: The text to draw.
             painter: The QPainter.
             option: The QStyleOptionViewItem.
+            index: The QModelIndex.
         """
+        text = index.model().data(index)
         painter.save()
-        color = self.dir_fg if "<b>" in text else self.fg
+        color = self._get_foreground_color(index, text)
         text = '<span style="color: %s; font: %s;">%s</span>' \
             % (color, self.font, text)
         self.doc.setHtml(text)
@@ -365,7 +403,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.doc.drawContents(painter)
         painter.restore()
 
-    def _draw_background(self, painter, option, color):
+    def _draw_background(self, painter, option, index):
         """Draw the background rectangle of the text.
 
         The color depends on whether the item is selected, in an even row or in
@@ -374,13 +412,35 @@ class LibraryDelegate(QStyledItemDelegate):
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            color: The QColor to use.
+            index: The QModelIndex.
         """
+        color = self._get_background_color(index, option.state)
         painter.save()
         painter.setBrush(color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
+
+    def _get_foreground_color(self, index, text):
+        if index.model().is_highlighted(index):
+            return self.search_fg
+        return self.dir_fg if "<b>" in text else self.fg
+
+    def _get_background_color(self, index, state):
+        """Return the background color depending on even/odd/selected.
+
+        Args:
+            index: Index of the element indicating even/odd.
+            state: State of the index indicating selected.
+        """
+        if state & QStyle.State_Selected:
+            return self.selection_bg
+        elif index.model().is_highlighted(index):
+            return self.search_bg
+        elif index.row() % 2:
+            return self.odd_bg
+        else:
+            return self.even_bg
 
     def sizeHint(self, option, index):
         """Return size of the QTextDocument as size hint."""
