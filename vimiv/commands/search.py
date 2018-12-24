@@ -31,6 +31,7 @@ class Search(QObject):
         new_search: Emitted when a new search result is found.
             arg1: Integer of the index to select.
             arg2: List of all search results.
+        cleared: Emitted when the search was cleared.
     """
 
     @objreg.register("search")
@@ -40,6 +41,7 @@ class Search(QObject):
         self._reverse = False
 
     new_search = pyqtSignal(int, list)
+    cleared = pyqtSignal()
 
     def __call__(self, text, count=1, reverse=False):
         """Run search.
@@ -84,6 +86,7 @@ class Search(QObject):
     def clear(self):
         """Clear search string."""
         self._text = ""
+        self.cleared.emit()
 
     def _sort_for_search(self, paths, index, reverse):
         """Sort list of paths so the order is usable by search.
