@@ -173,6 +173,8 @@ def _insert_values(style):
     Args:
         style: The Style object to insert values into.
     """
+    # We are only storing all the values here
+    # pylint: disable=too-many-statements
     # Image
     style["image.bg"] = "{base00}"
     style["image.scrollbar.width"] = "8px"

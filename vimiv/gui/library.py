@@ -344,6 +344,8 @@ class LibraryDelegate(QStyledItemDelegate):
     The delegate draws the items.
     """
 
+    # Storing the styles makes the code more readable and faster IMHO
+    # pylint: disable=too-many-instance-attributes
     def __init__(self):
         super().__init__()
         self.doc = QTextDocument(self)
@@ -363,7 +365,8 @@ class LibraryDelegate(QStyledItemDelegate):
         self.even_bg.setNamedColor(styles.get("library.even.bg"))
         self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
         self.search_bg = QColor()
-        self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
+        self.search_bg.setNamedColor(
+            styles.get("library.search.highlighted.bg"))
 
     def createEditor(self, *args):
         """Library is not editable by the user."""
@@ -422,25 +425,36 @@ class LibraryDelegate(QStyledItemDelegate):
         painter.restore()
 
     def _get_foreground_color(self, index, text):
-        if index.model().is_highlighted(index):
-            return self.search_fg
-        return self.dir_fg if "<b>" in text else self.fg
+        """Return the foreground color of an item.
 
-    def _get_background_color(self, index, state):
-        """Return the background color depending on even/odd/selected.
+        The color depends on highlighted as search result and whether it is a
+        directory.
 
         Args:
-            index: Index of the element indicating even/odd.
+            index: Index of the element indicating even/odd/highlighted.
+            text: Text indicating directory or not.
+        """
+        if index.model().is_highlighted(index):
+            return self.search_fg
+        return self.dir_fg if text.endswith("/") else self.fg
+
+    def _get_background_color(self, index, state):
+        """Return the background color of an item.
+
+        The color depends on selected, highlighted as search result and
+        even/odd.
+
+        Args:
+            index: Index of the element indicating even/odd/highlighted.
             state: State of the index indicating selected.
         """
         if state & QStyle.State_Selected:
             return self.selection_bg
-        elif index.model().is_highlighted(index):
+        if index.model().is_highlighted(index):
             return self.search_bg
-        elif index.row() % 2:
+        if index.row() % 2:
             return self.odd_bg
-        else:
-            return self.even_bg
+        return self.even_bg
 
     def sizeHint(self, option, index):
         """Return size of the QTextDocument as size hint."""
