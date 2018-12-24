@@ -7,6 +7,7 @@ extension-pkg-whitelist=PyQt5,
 enable=all
 disable=no-self-use,
         fixme,
+        cyclic-import,
         global-statement,
         locally-disabled,
         too-many-ancestors,
