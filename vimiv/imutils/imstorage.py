@@ -16,6 +16,7 @@ from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
+from vimiv.modes import modehandler
 from vimiv.utils import objreg, files, slideshow, trash_manager
 
 
@@ -130,7 +131,7 @@ class Storage(QObject):
             index: Index to select.
             matches: List of all matches of the search.
         """
-        if _paths and os.getcwd() == os.path.dirname(current()):
+        if _paths and modehandler.current() == "image":
             _set_index(index)
             imsignals.path_loaded.emit(current())
 

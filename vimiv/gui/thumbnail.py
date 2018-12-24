@@ -165,7 +165,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             index: Index to select.
             matches: List of all matches of the search.
         """
-        if self._paths and os.getcwd() == os.path.dirname(self.abspath()):
+        if self.hasFocus() and self._paths:
             # TODO show matches visually
             self._select_item(index)
 

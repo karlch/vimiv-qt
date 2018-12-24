@@ -154,8 +154,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             index: Index to select.
             matches: List of all matches of the search.
         """
-        # TODO show matches visually
-        self._select_row(index)
+        if self.hasFocus():
+            self._select_row(index)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
