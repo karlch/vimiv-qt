@@ -11,7 +11,7 @@ import os
 from vimiv.commands import commands, aliases
 from vimiv.completion import completionbasemodel
 from vimiv.config import settings as vimivsettings  # Modelfunc called settings
-from vimiv.utils import files, xdg, objreg
+from vimiv.utils import files, xdg, trash_manager
 
 
 def command(mode):
@@ -109,7 +109,6 @@ def trash():
     data = []
     model = completionbasemodel.BaseModel((0.4, 0.45, 0.15))
     trash_dir = os.path.join(xdg.get_user_data_dir(), "Trash", "files")
-    trash_manager = objreg.get("trash-manager")
     for path in files.ls(trash_dir):
         cmd = "undelete %s" % (os.path.basename(path))
         # Get info and format it neatly

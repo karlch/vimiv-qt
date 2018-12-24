@@ -16,7 +16,7 @@ from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import objreg, files
+from vimiv.utils import objreg, files, trash_manager
 
 
 _paths = []
@@ -116,9 +116,8 @@ class Storage(QObject):
         search.new_search.connect(self._on_new_search)
         slideshow = objreg.get("slideshow")
         slideshow.next_im.connect(self._on_slideshow_event)
-        trash_manager = objreg.get("trash-manager")
-        trash_manager.path_removed.connect(self._on_path_removed)
-        trash_manager.path_restored.connect(self._on_path_restored)
+        trash_manager.signals.path_removed.connect(self._on_path_removed)
+        trash_manager.signals.path_restored.connect(self._on_path_restored)
         imsignals.update_index.connect(self._on_update_index)
         imsignals.update_path.connect(self._on_update_path)
         imsignals.update_paths.connect(self._on_update_paths)

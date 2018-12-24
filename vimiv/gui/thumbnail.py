@@ -19,7 +19,7 @@ from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
 from vimiv.gui import statusbar
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
-                         thumbnail_manager, misc)
+                         thumbnail_manager, trash_manager, misc)
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -91,8 +91,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         settings.signals.changed.connect(self._on_settings_changed)
         search = objreg.get("search")
         search.new_search.connect(self._on_new_search)
-        trash_manager = objreg.get("trash-manager")
-        trash_manager.path_removed.connect(self._on_path_removed)
+        trash_manager.signals.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
 

@@ -19,7 +19,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
-from vimiv.utils import objreg, libpaths, eventhandler, misc
+from vimiv.utils import objreg, libpaths, eventhandler, misc, trash_manager
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -85,9 +85,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         search.new_search.connect(self._on_new_search)
         modehandler.signals.entered.connect(self._on_enter)
         modehandler.signals.left.connect(self._on_leave)
-        trash_manager = objreg.get("trash-manager")
-        trash_manager.path_removed.connect(self._on_path_removed)
-        trash_manager.path_restored.connect(self._on_path_restored)
+        trash_manager.signals.path_removed.connect(self._on_path_removed)
+        trash_manager.signals.path_restored.connect(self._on_path_restored)
         imsignals.maybe_update_library.connect(self._on_maybe_update)
 
         styles.apply(self)
