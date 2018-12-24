@@ -19,7 +19,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Attributes:
-        mode: Mode before entering command line for commands.
         _history: History object to store and interact with history.
     """
 
