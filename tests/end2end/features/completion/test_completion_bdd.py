@@ -8,6 +8,7 @@ import pytest
 import pytest_bdd as bdd
 
 from vimiv.completion import completionmodels
+from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
@@ -27,8 +28,8 @@ def check_completion_model(model):
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))
 def check_completion_model_mode(mode):
-    cmd = objreg.get("command")
-    assert cmd.mode == mode
+    assert modehandler.current() == "command"  # Sanity check
+    assert modehandler.last() == mode
 
 
 @bdd.then("no completion should be selected")

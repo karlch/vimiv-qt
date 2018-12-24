@@ -85,7 +85,7 @@ class Bar(QWidget):
         self.commandline.setText("")
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
-        modehandler.enter(self.commandline.mode)
+        modehandler.leave("command")
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):

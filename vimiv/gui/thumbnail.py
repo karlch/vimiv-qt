@@ -86,8 +86,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imsignals.path_loaded.connect(self._on_path_loaded)
         imsignals.paths_loaded.connect(self._on_paths_loaded)
-        modehandler.instance().entered.connect(self._on_enter)
-        modehandler.instance().left.connect(self._on_leave)
+        modehandler.signals.entered.connect(self._on_enter)
+        modehandler.signals.left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
         search = objreg.get("search")
         search.new_search.connect(self._on_new_search)

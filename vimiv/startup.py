@@ -20,7 +20,6 @@ from vimiv.commands import argtypes, aliases, cmdrunner
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
-from vimiv.modes import modehandler
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
                          slideshow, objreg, trash_manager)
 
@@ -61,7 +60,6 @@ def earlyinit():
     aliases.init()
     clipboard.init()
     cmdrunner.init()
-    modehandler.init()
     slideshow.init()
     trash_manager.init()
     iminitialize.init()  # imstorage needs slideshow

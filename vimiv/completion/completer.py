@@ -9,6 +9,7 @@
 from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv.completion import completionfilters, completionmodels
+from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
 
@@ -39,8 +40,7 @@ class Completer(QObject):
         self.parent().setModel(self.proxy_model)
 
         self.parent().activated.connect(self._on_completion)
-        mode_handler = objreg.get("mode-handler")
-        mode_handler.entered.connect(self._on_mode_entered)
+        modehandler.signals.entered.connect(self._on_mode_entered)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
@@ -99,7 +99,7 @@ class Completer(QObject):
         if text.startswith("!"):
             return completionmodels.external, ()
         # Default: command completion
-        return completionmodels.command, (self._cmd.mode,)
+        return completionmodels.command, (modehandler.last(),)
 
     def _set_model(self, modelfunc, *args):
         """Set the source model of the proxy model.

@@ -90,7 +90,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setAlignment(Qt.AlignCenter)
         self.setWidgetResizable(True)
 
-        modehandler.instance().entered.connect(self._on_enter)
+        modehandler.signals.entered.connect(self._on_enter)
         imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.svg_loaded.connect(self._on_svg_loaded)
