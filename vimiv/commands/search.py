@@ -10,7 +10,7 @@ import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.commands import commands
+from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.utils import objreg, pathreceiver
@@ -47,6 +47,8 @@ class Search(QObject):
         Args:
             text: The string to search for.
         """
+        if not text:
+            raise cmdexc.CommandError("no search performed")
         self._text = text
         paths = pathreceiver.pathlist()
         current_index = paths.index(pathreceiver.current())
