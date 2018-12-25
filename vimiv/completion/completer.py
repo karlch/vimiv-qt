@@ -55,7 +55,8 @@ class Completer(QObject):
             # Set model according to text, defaults are not possible as
             # :command accepts arbitrary text as argument
             self._maybe_update_model(self._cmd.text())
-            self.parent().show()
+            # Show if the model is not empty
+            self._maybe_show()
             self.parent().raise_()
 
     @pyqtSlot(str)
@@ -81,8 +82,16 @@ class Completer(QObject):
         if modelfunc != self._modelfunc or args != self._modelargs:
             self._set_model(modelfunc, *args)
 
+    def _maybe_show(self):
+        """Show completion widget if the model is not empty."""
+        if self._modelfunc != completionmodels.empty:
+            self.parent().show()
+
     def _get_modelfunc(self, text):
         """Return the needed model function depending on text."""
+        # Search
+        if not text.startswith(":"):
+            return completionmodels.empty, ()
         text = text.lstrip(":").lstrip()
         # Path completion
         if text.startswith("open"):

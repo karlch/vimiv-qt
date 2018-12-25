@@ -14,6 +14,11 @@ from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files, xdg, trash_manager
 
 
+def empty():
+    """Empty completion model when no completions should be shown."""
+    return completionbasemodel.BaseModel()
+
+
 def command(mode):
     """Completion model filled with commands and descriptions.
 
