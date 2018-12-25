@@ -9,31 +9,23 @@
 import pytest
 
 from vimiv.commands import aliases
-from vimiv.utils import objreg
 
 
-@pytest.fixture
-def setup():
-    aliases.init()
-    yield
-    objreg.delete("aliases")
-
-
-def test_add_alias(setup):
+def test_add_alias():
     aliases.alias("test", ["quit"])
     assert aliases.get("global")["test"] == "quit"
 
 
-def test_fail_add_alias_no_list(setup):
+def test_fail_add_alias_no_list():
     with pytest.raises(AssertionError, match="defined as list"):
-        aliases.alias("test", "any")
+        aliases.alias("test2", "any")
 
 
-def test_add_alias_for_different_mode(setup):
-    aliases.alias("test", ["quit"], mode="image")
+def test_add_alias_for_different_mode():
+    aliases.alias("test3", ["quit"], mode="image")
     assert aliases.get("image")["test"] == "quit"
-    assert "test" not in aliases.get("global")
+    assert "test3" not in aliases.get("global")
 
 
-def test_get_global_alias_from_image_mode(setup):
+def test_get_global_alias_from_image_mode():
     assert "q" in aliases.get("image")
