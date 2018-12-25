@@ -21,6 +21,14 @@ from vimiv.modes import modehandler
 from vimiv.utils import pathreceiver
 
 
+def use_incremental():
+    """Return True if incremental search should be used."""
+    enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
+    if enabled and modehandler.last() in ["library", "thumbnail"]:
+        return True
+    return False
+
+
 class Search(QObject):
     """Command runner for searching.
 

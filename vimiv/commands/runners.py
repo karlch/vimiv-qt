@@ -21,6 +21,17 @@ from vimiv.modes import modehandler
 from vimiv.utils import pathreceiver
 
 
+def update_command(text, mode):
+    """Update command with aliases and wildcards.
+
+    Args:
+        text: String passed as command.
+        mode: Mode in which the command is supposed to run.
+    """
+    command = alias(text, mode)
+    return expand_wildcards(command, mode)
+
+
 def command(text, mode=None):
     """Run internal command when called.
 
