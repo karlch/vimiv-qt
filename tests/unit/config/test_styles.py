@@ -33,7 +33,11 @@ def test_fail_add_non_string_style_value(new_style):
 
 
 def test_replace_referenced_variables(mocker, new_style):
-    mocker.patch.object(styles, "get_current", return_value=new_style)
     new_style["red"] = "#ff0000"
     new_style["error.fg"] = "{red}"
     assert new_style["{error.fg}"] == "#ff0000"
+
+
+def test_fail_get_nonexisting_style_option(mocker, new_style):
+    mocker.patch.object(styles, "get_current", return_value=new_style)
+    assert styles.get("anything") == ""

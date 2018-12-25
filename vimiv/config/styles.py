@@ -105,8 +105,14 @@ def apply(obj, append=""):
 
 
 def get(name):
+    """Return style option for a given name."""
     style = get_current()
-    return style["{%s}" % (name)]
+    try:
+        return style["{%s}" % (name)]
+    except KeyError:
+        logging.error("Style option '%s' not found, falling back to default",
+                      name)
+        return ""
 
 
 def create_default():
