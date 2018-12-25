@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QLabel,
                              QStyle, QStyledItemDelegate)
 from PyQt5.QtGui import QColor, QPixmap
 
-from vimiv.commands import commands, argtypes
+from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler
@@ -92,9 +92,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         modehandler.signals.entered.connect(self._on_enter)
         modehandler.signals.left.connect(self._on_leave)
         settings.signals.changed.connect(self._on_settings_changed)
-        search = objreg.get("search")
-        search.new_search.connect(self._on_new_search)
-        search.cleared.connect(self._on_search_cleared)
+        search.search.new_search.connect(self._on_new_search)
+        search.search.cleared.connect(self._on_search_cleared)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)

@@ -12,7 +12,7 @@ from random import shuffle
 from PyQt5.QtCore import pyqtSlot, QObject
 
 from vimiv import app
-from vimiv.commands import commands
+from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
@@ -112,8 +112,7 @@ class Storage(QObject):
     @objreg.register("imstorage")
     def __init__(self):
         super().__init__()
-        search = objreg.get("search")
-        search.new_search.connect(self._on_new_search)
+        search.search.new_search.connect(self._on_new_search)
         sshow = slideshow.Slideshow()
         sshow.next_im.connect(self._on_slideshow_event)
         trash_manager.signals.path_removed.connect(self._on_path_removed)

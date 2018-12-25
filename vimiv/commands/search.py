@@ -4,7 +4,11 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Functions to run search."""
+"""Search class implementing functions to search.
+
+Module Attributes:
+    search: Instance of the Search class used.
+"""
 
 import os
 
@@ -14,7 +18,7 @@ from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
-from vimiv.utils import objreg, pathreceiver
+from vimiv.utils import pathreceiver
 
 
 class Search(QObject):
@@ -37,7 +41,6 @@ class Search(QObject):
         cleared: Emitted when the search was cleared.
     """
 
-    @objreg.register("search")
     def __init__(self):
         super().__init__()
         self._text = ""
@@ -75,33 +78,11 @@ class Search(QObject):
         paths = pathreceiver.pathlist(mode)
         current_index = paths.index(pathreceiver.current(mode))
         basenames = [os.path.basename(path) for path in paths]
-        sorted_paths = self._sort_for_search(basenames, current_index, reverse)
-        next_match, matches = self._get_next_match(text, count, sorted_paths)
+        sorted_paths = _sort_for_search(basenames, current_index, reverse)
+        next_match, matches = _get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
         self.new_search.emit(index, matches, mode, incremental)
         statusbar.update()
-
-    @keybindings.add("N", "search-next")
-    @commands.register(instance="search", count=1, hide=True)
-    def search_next(self, count):
-        """Continue search to the next match.
-
-        **syntax:** ``:search-next``
-
-        **count:** multiplier
-        """
-        self.repeat(count)
-
-    @keybindings.add("P", "search-prev")
-    @commands.register(instance="search", count=1, hide=True)
-    def search_prev(self, count):
-        """Continue search to the previous match.
-
-        **syntax:** ``:search-next``
-
-        **count:** multiplier
-        """
-        self.repeat(count, reverse=True)
 
     def clear(self):
         """Clear search string."""
@@ -109,40 +90,67 @@ class Search(QObject):
         self._reverse = False
         self.cleared.emit()
 
-    def _sort_for_search(self, paths, index, reverse):
-        """Sort list of paths so the order is usable by search.
-
-        This moves the currently selected image to end of the list and the next
-        index to the very front.
-
-        Args:
-            paths: List of paths to sort.
-            index: The currently selected index.
-            reverse: If True sort for reverse search, reversing the list.
-        """
-        if reverse:
-            return paths[index::-1] + paths[-1:index:-1]
-        return paths[index:] + paths[:index]
-
-    def _get_next_match(self, text, count, paths):
-        """Return the next match from a list of paths.
-
-        Args:
-            text: The string to search for.
-            count: Defines how many matches to jump forward.
-            paths: List of paths to search in.
-        """
-        matches = [path for path in paths if self._matches(text, path)]
-        if matches:
-            count = count % len(matches)
-            return matches[count], matches
-        return paths[0], []
-
-    def _matches(self, first, second):
-        """Check if first string is in second string."""
-        if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
-            return first.lower() in second.lower()
-        return first in second
-
 
 search = Search()
+
+
+@keybindings.add("N", "search-next")
+@commands.register(count=1, hide=True)
+def search_next(count):
+    """Continue search to the next match.
+
+    **syntax:** ``:search-next``
+
+    **count:** multiplier
+    """
+    search.repeat(count)
+
+
+@keybindings.add("P", "search-prev")
+@commands.register(count=1, hide=True)
+def search_prev(count):
+    """Continue search to the previous match.
+
+    **syntax:** ``:search-next``
+
+    **count:** multiplier
+    """
+    search.repeat(count, reverse=True)
+
+
+def _sort_for_search(paths, index, reverse):
+    """Sort list of paths so the order is usable by search.
+
+    This moves the currently selected image to end of the list and the next
+    index to the very front.
+
+    Args:
+        paths: List of paths to sort.
+        index: The currently selected index.
+        reverse: If True sort for reverse search, reversing the list.
+    """
+    if reverse:
+        return paths[index::-1] + paths[-1:index:-1]
+    return paths[index:] + paths[:index]
+
+
+def _get_next_match(text, count, paths):
+    """Return the next match from a list of paths.
+
+    Args:
+        text: The string to search for.
+        count: Defines how many matches to jump forward.
+        paths: List of paths to search in.
+    """
+    matches = [path for path in paths if _matches(text, path)]
+    if matches:
+        count = count % len(matches)
+        return matches[count], matches
+    return paths[0], []
+
+
+def _matches(first, second):
+    """Check if first string is in second string."""
+    if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
+        return first.lower() in second.lower()
+    return first in second

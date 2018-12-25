@@ -12,7 +12,7 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
-from vimiv.commands import runners
+from vimiv.commands import runners, search
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
@@ -104,7 +104,7 @@ class KeyHandler():
         # Handle escape separately as it affects multiple widgets
         if keyname == "<escape>" and mode in ["image", "library", "thumbnail"]:
             self._partial_handler.clear_keys()
-            objreg.get("search").clear()
+            search.search.clear()
             return
         keyname = stored_keys + keyname
         # Count

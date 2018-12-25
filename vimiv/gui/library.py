@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
                          QTextDocument)
 
-from vimiv.commands import commands, argtypes, cmdexc
+from vimiv.commands import commands, argtypes, cmdexc, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
@@ -80,9 +80,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
         libpaths.signals.loaded.connect(self._on_paths_loaded)
-        search = objreg.get("search")
-        search.new_search.connect(self._on_new_search)
-        search.cleared.connect(self._on_search_cleared)
+        search.search.new_search.connect(self._on_new_search)
+        search.search.cleared.connect(self._on_search_cleared)
         modehandler.signals.entered.connect(self._on_enter)
         modehandler.signals.left.connect(self._on_leave)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
@@ -297,9 +296,8 @@ class LibraryModel(QStandardItemModel):
     def __init__(self):
         super().__init__()
         self._highlighted = []
-        search = objreg.get("search")
-        search.new_search.connect(self._on_new_search)
-        search.cleared.connect(self._on_search_cleared)
+        search.search.new_search.connect(self._on_new_search)
+        search.search.cleared.connect(self._on_search_cleared)
 
     @pyqtSlot(int, list, str, bool)
     def _on_new_search(self, index, matches, mode, incremental):
