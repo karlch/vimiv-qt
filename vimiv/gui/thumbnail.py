@@ -10,8 +10,9 @@ import collections
 import os
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex
-from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QLabel
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QLabel,
+                             QStyle, QStyledItemDelegate)
+from PyQt5.QtGui import QColor, QPixmap
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import styles, keybindings, settings
@@ -42,8 +43,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     QListWidget::item {
         padding: {thumbnail.padding}px;
-        color: {thumbnail.fg};
-        background: {thumbnail.bg}
     }
 
     QListWidget::item:selected {
@@ -83,6 +82,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         default_size = settings.get_value(settings.Names.THUMBNAIL_SIZE)
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
+
+        self.setItemDelegate(ThumbnailDelegate())
 
         imsignals.path_loaded.connect(self._on_path_loaded)
         imsignals.paths_loaded.connect(self._on_paths_loaded)
@@ -361,3 +362,63 @@ class Thumbnail(QLabel):
             self.original.width() * scale, Qt.SmoothTransformation)
         self.setPixmap(pixmap)
         super().resizeEvent(event)
+
+
+class ThumbnailDelegate(QStyledItemDelegate):
+    """Delegate used for the thumbnail widget.
+
+    The delegate draws the items.
+    """
+
+    def __init__(self):
+        super().__init__()
+
+        # QColor options for background drawing
+        self.bg = QColor()
+        self.bg.setNamedColor(styles.get("thumbnail.bg"))
+        self.selection_bg = QColor()
+        self.selection_bg.setNamedColor(styles.get("thumbnail.selected.bg"))
+        self.search_bg = QColor()
+        self.search_bg.setNamedColor(
+            styles.get("thumbnail.search.highlighted.bg"))
+
+    def paint(self, painter, option, index):
+        """Override the QStyledItemDelegate paint function.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            index: The QModelIndex.
+        """
+        self._draw_background(painter, option, index)
+
+    def _draw_background(self, painter, option, index):
+        """Draw the background rectangle of the thumbnail.
+
+        The color depends on whether the item is selected and on whether it is
+        highlighted as a search result.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            index: The QModelIndex.
+        """
+        color = self._get_background_color(index, option.state)
+        painter.save()
+        painter.setBrush(color)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(option.rect)
+        painter.restore()
+
+    def _get_background_color(self, index, state):
+        """Return the background color of an item.
+
+        The color depends on selected and highlighted as search result.
+
+        Args:
+            index: Index of the element indicating even/odd/highlighted.
+            state: State of the index indicating selected.
+        """
+        if state & QStyle.State_Selected:
+            return self.selection_bg
+        return self.bg
