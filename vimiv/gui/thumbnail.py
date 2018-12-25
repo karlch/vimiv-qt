@@ -161,20 +161,23 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         thumb = Thumbnail(pixmap)
         self.setItemWidget(item, thumb)
 
-    @pyqtSlot(int, list, bool)
-    def _on_new_search(self, index, matches, incremental):
+    @pyqtSlot(int, list, str, bool)
+    def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
         Args:
             index: Index to select.
             matches: List of all matches of the search.
+            mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if self.hasFocus() and self._paths:
+        self._highlighted = []
+        if self._paths and mode == "thumbnail":
+            self._select_item(index)
             for i, path in enumerate(self._paths):
                 if os.path.basename(path) in matches:
                     self._highlighted.append(i)
-            self._select_item(index)
+            self.repaint()
 
     @pyqtSlot()
     def _on_search_cleared(self):

@@ -13,6 +13,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
+from vimiv.modes import modehandler
 from vimiv.utils import objreg, pathreceiver
 
 
@@ -31,7 +32,8 @@ class Search(QObject):
         new_search: Emitted when a new search result is found.
             arg1: Integer of the index to select.
             arg2: List of all search results.
-            arg3: True if incremental search was performed.
+            arg3: Mode for which the search was performed.
+            arg4: True if incremental search was performed.
         cleared: Emitted when the search was cleared.
     """
 
@@ -41,10 +43,10 @@ class Search(QObject):
         self._text = ""
         self._reverse = False
 
-    new_search = pyqtSignal(int, list, bool)
+    new_search = pyqtSignal(int, list, str, bool)
     cleared = pyqtSignal()
 
-    def __call__(self, text, count=1, reverse=False, incremental=False):
+    def __call__(self, text, mode, count=1, reverse=False, incremental=False):
         """Run search.
 
         Args:
@@ -53,13 +55,13 @@ class Search(QObject):
         if not text:
             raise cmdexc.CommandError("no search performed")
         self._text = text
-        paths = pathreceiver.pathlist()
-        current_index = paths.index(pathreceiver.current())
+        paths = pathreceiver.pathlist(mode)
+        current_index = paths.index(pathreceiver.current(mode))
         basenames = [os.path.basename(path) for path in paths]
         sorted_paths = self._sort_for_search(basenames, current_index, reverse)
         next_match, matches = self._get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
-        self.new_search.emit(index, matches, incremental)
+        self.new_search.emit(index, matches, mode, incremental)
         statusbar.update()
 
     @keybindings.add("N", "search-next")
@@ -71,7 +73,7 @@ class Search(QObject):
 
         **count:** multiplier
         """
-        self(self._text, count)
+        self(self._text, modehandler.current(), count=count)
 
     @keybindings.add("P", "search-prev")
     @commands.register(instance="search", count=1, hide=True)
@@ -82,7 +84,7 @@ class Search(QObject):
 
         **count:** multiplier
         """
-        self(self._text, count, True)
+        self(self._text, modehandler.current(), count=count, reverse=True)
 
     def clear(self):
         """Clear search string."""

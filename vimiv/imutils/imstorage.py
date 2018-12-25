@@ -16,7 +16,6 @@ from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
 from vimiv.utils import objreg, files, slideshow, trash_manager
 
 
@@ -123,8 +122,8 @@ class Storage(QObject):
         imsignals.update_path.connect(self._on_update_path)
         imsignals.update_paths.connect(self._on_update_paths)
 
-    @pyqtSlot(int, list, bool)
-    def _on_new_search(self, index, matches, incremental):
+    @pyqtSlot(int, list, str, bool)
+    def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
         Incremental search is ignored for images as highlighting the results is
@@ -134,9 +133,10 @@ class Storage(QObject):
         Args:
             index: Index to select.
             matches: List of all matches of the search.
+            mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if _paths and not incremental and modehandler.current() == "image":
+        if _paths and not incremental and mode == "image":
             _set_index(index)
             imsignals.path_loaded.emit(current())
 

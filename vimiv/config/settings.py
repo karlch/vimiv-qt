@@ -367,7 +367,7 @@ class Names:
     STYLE = "style"
 
     SEARCH_IGNORE_CASE = "search.ignore_case"
-    # SEARCH_INCREMENTAL = "search.incremental"
+    SEARCH_INCREMENTAL = "search.incremental"
 
     IMAGE_AUTOPLAY = "image.autoplay"
     IMAGE_AUTOWRITE = "image.autowrite"
@@ -396,6 +396,8 @@ def init_defaults():
     # Search
     BoolSetting(Names.SEARCH_IGNORE_CASE, True,
                 desc="Ignore case when searching, i.e. 'A' and 'a' are equal")
+    BoolSetting(Names.SEARCH_INCREMENTAL, True,
+                desc="Automatically filter search results when typing")
 
     # Image
     BoolSetting(Names.IMAGE_AUTOPLAY, True,

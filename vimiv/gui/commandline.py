@@ -6,13 +6,11 @@
 
 """CommandLine widget in the bar."""
 
-import logging
-
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import history, commands, argtypes, runners, search
-from vimiv.config import styles, keybindings
+from vimiv.config import styles, keybindings, settings
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, eventhandler
 
@@ -42,6 +40,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.returnPressed.connect(self._on_return_pressed)
         self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
+        self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
 
@@ -60,7 +59,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         command = runners.alias(command, mode)
         command = runners.expand_wildcards(command, mode)
         # Retrieve function to call depending on prefix
-        func = self._get_command_func(prefix, command)
+        func = self._get_command_func(prefix, command, mode)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         QTimer.singleShot(0, func)
@@ -76,15 +75,15 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         command = command.strip()
         return prefix, command
 
-    def _get_command_func(self, prefix, command):
+    def _get_command_func(self, prefix, command, mode):
         """Return callable function for command depending on prefix."""
         if prefix == ":" and command.startswith("!"):
             return lambda: runners.external(command[1:])
         if prefix == ":":
             return lambda: runners.command(command)
-        if prefix == "/":
-            return lambda: search.search(command)
-        logging.error("Unknown prefix '%s'", prefix)
+        # No need to search again if incsearch is enabled
+        if prefix == "/" and not self._use_incremental_search():
+            return lambda: search.search(command, mode)
         return lambda: None
 
     @pyqtSlot(str)
@@ -93,6 +92,25 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             self.editingFinished.emit()
         else:
             self._history.reset()
+
+    @pyqtSlot()
+    def _incremental_search(self):
+        """Run incremental search if enabled."""
+        if not self._use_incremental_search():
+            return
+        try:
+            prefix, text = self._split_prefix(self.text())
+            if prefix == "/" and text:
+                search.search(text, modehandler.last(), incremental=True, )
+        except IndexError:  # Not enough text
+            pass
+
+    def _use_incremental_search(self):
+        """Return True if incremental search should be used."""
+        enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
+        if enabled and modehandler.last() in ["library", "thumbnail"]:
+            return True
+        return False
 
     @pyqtSlot(int, int)
     def _on_cursor_position_changed(self, _old, new):
