@@ -9,46 +9,35 @@
 from vimiv.commands import search
 
 
-def test_clear_search(mocker):
-    mocker.patch("vimiv.utils.objreg")
-    search_class = search.Search()
-    search_class._text = "Something"
-    search_class.clear()
-    assert search_class._text == ""
+def test_clear_search():
+    search.search._text = "Something"
+    search.search.clear()
+    assert search.search._text == ""
 
 
-def test_sort_for_search(mocker):
-    mocker.patch("vimiv.utils.objreg")
-    search_class = search.Search()
+def test_sort_for_search():
     testlist = [1, 2, 3]
-    updated_list = search_class._sort_for_search(testlist, 1, False)
-    assert updated_list == [3, 1, 2]
+    updated_list = search._sort_for_search(testlist, 1, False)
+    assert updated_list == [2, 3, 1]
 
 
 def test_sort_for_search_reverse(mocker):
-    mocker.patch("vimiv.utils.objreg")
-    search_class = search.Search()
     testlist = [1, 2, 3]
-    updated_list = search_class._sort_for_search(testlist, 1, True)
-    assert updated_list == [1, 3, 2]
+    updated_list = search._sort_for_search(testlist, 1, True)
+    assert updated_list == [2, 1, 3]
 
 
 def test_get_next_match(mocker):
-    mocker.patch("vimiv.utils.objreg")
     mocker.patch("vimiv.config.settings.get_value", return_value=True)
-    search_class = search.Search()
     testlist = ["one", "two", "three"]
-    next_match, matches = search_class._get_next_match("t", 1, testlist)
+    next_match, matches = search._get_next_match("t", 0, testlist)
     assert next_match == "two"
     assert matches == ["two", "three"]
 
 
 def test_get_no_match(mocker):
-    mocker.patch("vimiv.utils.objreg")
     mocker.patch("vimiv.config.settings.get_value", return_value=True)
-    search_class = search.Search()
     testlist = ["one", "two", "three"]
-    next_match, matches = search_class._get_next_match("nothing", 1, testlist)
-    # Returns the last element in the list as this is the starting point
-    assert next_match == "three"
+    next_match, matches = search._get_next_match("nothing", 1, testlist)
+    assert next_match == "one"
     assert matches == []

@@ -11,7 +11,7 @@ Feature: Create and run aliases.
 
     Scenario: Create an alias and run it with arguments.
         When I run alias new_goto goto
-        And I run goto 0
+        And I run new_goto 0
         Then no message should be displayed
 
     Scenario: Create and run an alias with arguments.

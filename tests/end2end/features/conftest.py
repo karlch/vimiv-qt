@@ -10,8 +10,8 @@ import os
 
 import pytest_bdd as bdd
 
-from vimiv.commands import cmdrunner
-from vimiv.gui import statusbar
+from vimiv.commands import runners
+from vimiv.gui import commandline, statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import objreg
 
@@ -22,7 +22,10 @@ from vimiv.utils import objreg
 
 @bdd.when(bdd.parsers.parse("I run {command}"))
 def run_command(command):
-    cmdrunner.run(command)
+    mode = modehandler.current()
+    command = runners.update_command(command, mode)
+    func = commandline.get_command_func(":", command, mode)
+    func()
 
 
 @bdd.when(bdd.parsers.parse("I press {keys}"))
