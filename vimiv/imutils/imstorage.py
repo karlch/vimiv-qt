@@ -123,15 +123,20 @@ class Storage(QObject):
         imsignals.update_path.connect(self._on_update_path)
         imsignals.update_paths.connect(self._on_update_paths)
 
-    @pyqtSlot(int, list)
-    def _on_new_search(self, index, matches):
+    @pyqtSlot(int, list, bool)
+    def _on_new_search(self, index, matches, incremental):
         """Select search result after new search.
+
+        Incremental search is ignored for images as highlighting the results is
+        not possible anyway and permanently loading images is much too
+        expensive.
 
         Args:
             index: Index to select.
             matches: List of all matches of the search.
+            incremental: True if incremental search was performed.
         """
-        if _paths and modehandler.current() == "image":
+        if _paths and not incremental and modehandler.current() == "image":
             _set_index(index)
             imsignals.path_loaded.emit(current())
 

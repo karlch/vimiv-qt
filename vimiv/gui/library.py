@@ -146,13 +146,14 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if not self.model().rowCount() or directory != os.getcwd():
             libpaths.load(directory)
 
-    @pyqtSlot(int, list)
-    def _on_new_search(self, index, matches):
+    @pyqtSlot(int, list, bool)
+    def _on_new_search(self, index, matches, incremental):
         """Select search result after new search.
 
         Args:
             index: Index to select.
             matches: List of all matches of the search.
+            incremental: True if incremental search was performed.
         """
         if self.hasFocus():
             self._select_row(index)

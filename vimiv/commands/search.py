@@ -31,6 +31,7 @@ class Search(QObject):
         new_search: Emitted when a new search result is found.
             arg1: Integer of the index to select.
             arg2: List of all search results.
+            arg3: True if incremental search was performed.
         cleared: Emitted when the search was cleared.
     """
 
@@ -40,10 +41,10 @@ class Search(QObject):
         self._text = ""
         self._reverse = False
 
-    new_search = pyqtSignal(int, list)
+    new_search = pyqtSignal(int, list, bool)
     cleared = pyqtSignal()
 
-    def __call__(self, text, count=1, reverse=False):
+    def __call__(self, text, count=1, reverse=False, incremental=False):
         """Run search.
 
         Args:
@@ -58,7 +59,7 @@ class Search(QObject):
         sorted_paths = self._sort_for_search(basenames, current_index, reverse)
         next_match, matches = self._get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
-        self.new_search.emit(index, matches)
+        self.new_search.emit(index, matches, incremental)
         statusbar.update()
 
     @keybindings.add("N", "search-next")
