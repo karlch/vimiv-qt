@@ -82,8 +82,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         if prefix == ":":
             return lambda: runners.command(command)
         # No need to search again if incsearch is enabled
-        if prefix == "/" and not self._use_incremental_search():
-            return lambda: search.search(command, mode)
+        if prefix in "/?" and not self._use_incremental_search():
+            return lambda: search.search(command, mode, reverse=prefix == "?")
         return lambda: None
 
     @pyqtSlot(str)
@@ -100,8 +100,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         try:
             prefix, text = self._split_prefix(self.text())
-            if prefix == "/" and text:
-                search.search(text, modehandler.last(), incremental=True, )
+            if prefix in "/?" and text:
+                search.search(text, modehandler.last(), reverse=prefix == "?",
+                              incremental=True)
         except IndexError:  # Not enough text
             pass
 

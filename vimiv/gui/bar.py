@@ -56,21 +56,30 @@ class Bar(QWidget):
         optional arguments:
             * ``text``: String to append to the ``:`` prefix.
         """
-        self.show()
-        self._stack.setCurrentWidget(self.commandline)
-        self.commandline.setText(":" + text)
-        modehandler.enter("command")
+        self._enter_command_mode(":" + text)
 
+    @keybindings.add("?", "search --reverse")
     @keybindings.add("/", "search")
+    @commands.argument("reverse", optional=True, action="store_true")
     @commands.register(instance="bar", hide=True)
-    def search(self):
+    def search(self, reverse):
         """Start a search.
 
-        **syntax:** ``:search``
+        **syntax:** ``:search [--reverse]``
+
+        optional arguments:
+            * ``--reverse``: Search in reverse direction.
         """
+        if reverse:
+            self._enter_command_mode("?")
+        else:
+            self._enter_command_mode("/")
+
+    def _enter_command_mode(self, text):
+        """Enter command mode setting the text to text."""
         self.show()
         self._stack.setCurrentWidget(self.commandline)
-        self.commandline.setText("/")
+        self.commandline.setText(text)
         modehandler.enter("command")
 
     @keybindings.add("<escape>", "leave-commandline", mode="command")

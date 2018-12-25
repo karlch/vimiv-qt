@@ -46,15 +46,32 @@ class Search(QObject):
     new_search = pyqtSignal(int, list, str, bool)
     cleared = pyqtSignal()
 
-    def __call__(self, text, mode, count=1, reverse=False, incremental=False):
+    def __call__(self, text, mode, count=0, reverse=False, incremental=False):
         """Run search.
+
+        This method is called from the command line and stores text and reverse
+        for the search-next and search-prev commands.
 
         Args:
             text: The string to search for.
         """
-        if not text:
-            raise cmdexc.CommandError("no search performed")
         self._text = text
+        self._reverse = reverse
+        self._run(text, mode, count, reverse, incremental)
+
+    def repeat(self, count, reverse=False):
+        """Repeat last search.
+
+        Used by the search-next and search-prev commands.
+        """
+        reverse = reverse if not self._reverse else not reverse
+        mode = modehandler.current()
+        if not self._text:
+            raise cmdexc.CommandError("no search performed")
+        self._run(self._text, mode, count, reverse, False)
+
+    def _run(self, text, mode, count, reverse, incremental):
+        """Implementation of running search."""
         paths = pathreceiver.pathlist(mode)
         current_index = paths.index(pathreceiver.current(mode))
         basenames = [os.path.basename(path) for path in paths]
@@ -73,7 +90,7 @@ class Search(QObject):
 
         **count:** multiplier
         """
-        self(self._text, modehandler.current(), count=count)
+        self.repeat(count)
 
     @keybindings.add("P", "search-prev")
     @commands.register(instance="search", count=1, hide=True)
@@ -84,11 +101,12 @@ class Search(QObject):
 
         **count:** multiplier
         """
-        self(self._text, modehandler.current(), count=count, reverse=True)
+        self.repeat(count, reverse=True)
 
     def clear(self):
         """Clear search string."""
         self._text = ""
+        self._reverse = False
         self.cleared.emit()
 
     def _sort_for_search(self, paths, index, reverse):
@@ -103,8 +121,8 @@ class Search(QObject):
             reverse: If True sort for reverse search, reversing the list.
         """
         if reverse:
-            return paths[index - 1::-1] + paths[-1:index - 1:-1]
-        return paths[index + 1:] + paths[:index + 1]
+            return paths[index::-1] + paths[-1:index:-1]
+        return paths[index:] + paths[:index]
 
     def _get_next_match(self, text, count, paths):
         """Return the next match from a list of paths.
@@ -115,10 +133,10 @@ class Search(QObject):
             paths: List of paths to search in.
         """
         matches = [path for path in paths if self._matches(text, path)]
-        if matches and count:
+        if matches:
             count = count % len(matches)
-            return matches[count - 1], matches
-        return paths[-1], []
+            return matches[count], matches
+        return paths[0], []
 
     def _matches(self, first, second):
         """Check if first string is in second string."""
