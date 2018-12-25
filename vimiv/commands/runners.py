@@ -4,10 +4,11 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Classes to run commands."""
+"""Classes and functions to run commands."""
 
 import logging
 import os
+import re
 import shlex
 import subprocess
 
@@ -16,55 +17,74 @@ from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 from vimiv.app import open_paths
 from vimiv.commands import commands, cmdexc, aliases
 from vimiv.gui import statusbar
+from vimiv.modes import modehandler
+from vimiv.utils import pathreceiver
 
 
-class CommandRunner():
-    """Runner for internal commands."""
+def command(text, mode=None):
+    """Run internal command when called.
 
-    def __call__(self, text, mode):
-        """Run internal command when called.
+    Splits the given text into count, name and arguments. Then runs the
+    command corresponding to name with count and arguments. Emits the
+    exited signal when done.
 
-        Splits the given text into count, name and arguments. Then runs the
-        command corresponding to name with count and arguments. Emits the
-        exited signal when done.
+    Args:
+        text: String passed as command.
+        mode: Mode in which the command is supposed to run.
+    """
+    if mode is None:
+        mode = modehandler.current()
+    count, cmdname, args = _parse(text)
+    try:
+        cmd = commands.get(cmdname, mode)
+        cmd(args, count=count)
+        statusbar.update()
+        logging.debug("Ran '%s' succesfully", text)
+    except cmdexc.CommandNotFound as e:
+        logging.error(str(e))
+    except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
+        logging.error("%s: %s", cmdname, str(e))
+    except cmdexc.CommandWarning as w:
+        logging.warning("%s: %s", cmdname, str(w))
 
-        Args:
-            text: String passed as command.
-            mode: Mode in which the command is supposed to run.
-        """
-        count, cmdname, args = self._parse(text)
-        try:
-            cmd = commands.get(cmdname, mode)
-            cmd(args, count=count)
-            statusbar.update()
-            logging.debug("Ran '%s' succesfully", text)
-        except cmdexc.CommandNotFound as e:
-            logging.error(str(e))
-        except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
-            logging.error("%s: %s", cmdname, str(e))
-        except cmdexc.CommandWarning as w:
-            logging.warning("%s: %s", cmdname, str(w))
 
-    def _parse(self, text):
-        """Parse given command text into count, name and arguments.
+def _parse(text):
+    """Parse given command text into count, name and arguments.
 
-        Args:
-            text: String passed as command.
-        Return:
-            count: Digits prepending the command to interpret as count.
-            name: Name of the command passed.
-            args: Arguments passed.
-        """
-        text = text.strip()
-        count = ""
-        split = shlex.split(text)
-        cmdname = split[0]
-        # Receive prepended digits as count
-        while cmdname and cmdname[0].isdigit():
-            count += cmdname[0]
-            cmdname = cmdname[1:]
-        args = split[1:]
-        return count, cmdname, args
+    Args:
+        text: String passed as command.
+    Return:
+        count: Digits prepending the command to interpret as count.
+        name: Name of the command passed.
+        args: Arguments passed.
+    """
+    text = text.strip()
+    count = ""
+    split = shlex.split(text)
+    cmdname = split[0]
+    # Receive prepended digits as count
+    while cmdname and cmdname[0].isdigit():
+        count += cmdname[0]
+        cmdname = cmdname[1:]
+    args = split[1:]
+    return count, cmdname, args
+
+
+def expand_wildcards(command, mode):
+    """Expand % and * to the corresponding path and pathlist.
+
+    Args:
+        command: The command in which the wildcards are expanded.
+        mode: Mode the command is run in to get correct path(-list).
+    """
+    # Check first as the re substitutions are rather expensive
+    if "%" in command:
+        current = pathreceiver.current(mode)
+        command = re.sub(r'(?<!\\)%', current, command)
+    if "*" in command:
+        pathlist = " ".join(pathreceiver.pathlist())
+        command = re.sub(r'(?<!\\)\*', pathlist, command)
+    return command
 
 
 class ExternalRunner(QObject):
@@ -108,6 +128,9 @@ class ExternalRunner(QObject):
             logging.warning("%s: No paths from pipe", command)
 
 
+external = ExternalRunner()
+
+
 class ShellCommandRunnable(QRunnable):
     """Run shell command in an extra thread.
 
@@ -142,16 +165,13 @@ class ShellCommandRunnable(QRunnable):
             logging.error("%d  %s", e.returncode, message)
 
 
-class AliasRunner():
-    """Runner for aliased commands."""
+def alias(text, mode):
+    """Replace alias with the actual command.
 
-    def __call__(self, text, mode):
-        """Replace alias with the actual command.
-
-        Return:
-            The replaced text if text was an alias else text.
-        """
-        command = text.split()[0]
-        if command in aliases.get(mode):
-            return text.replace(command, aliases.get(mode)[command])
-        return text
+    Return:
+        The replaced text if text was an alias else text.
+    """
+    command = text.split()[0]
+    if command in aliases.get(mode):
+        return text.replace(command, aliases.get(mode)[command])
+    return text

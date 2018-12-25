@@ -12,7 +12,7 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
-from vimiv.commands import cmdrunner
+from vimiv.commands import runners
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
@@ -114,7 +114,7 @@ class KeyHandler():
         elif keyname and keyname in bindings:
             count = self._partial_handler.count.get_text()
             cmd = bindings[keyname]
-            cmdrunner.run(count + cmd, mode)
+            runners.command(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
             self._partial_handler.keys.add_text(keyname)

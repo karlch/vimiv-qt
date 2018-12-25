@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import app
-from vimiv.commands import argtypes, aliases, cmdrunner
+from vimiv.commands import argtypes, aliases
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
@@ -59,7 +59,6 @@ def earlyinit():
     """Initialize objects needed as early as possible."""
     aliases.init()
     clipboard.init()
-    cmdrunner.init()
     trash_manager.init()
     iminitialize.init()  # imstorage needs slideshow
 

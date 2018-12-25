@@ -123,3 +123,6 @@ class Search(QObject):
         if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
             return first.lower() in second.lower()
         return first in second
+
+
+search = Search()

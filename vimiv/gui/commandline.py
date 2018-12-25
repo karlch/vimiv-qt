@@ -6,10 +6,12 @@
 
 """CommandLine widget in the bar."""
 
+import logging
+
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
-from vimiv.commands import history, commands, argtypes
+from vimiv.commands import history, commands, argtypes, runners, search
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler
 from vimiv.utils import objreg, eventhandler
@@ -53,11 +55,15 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
+        # Update command with aliases and wildcards
+        mode = modehandler.last()
+        command = runners.alias(command, mode)
+        command = runners.expand_wildcards(command, mode)
+        # Retrieve function to call depending on prefix
+        func = self._get_command_func(prefix, command)
         # Run commands in QTimer so the command line has been left when the
         # command runs
-        runner = objreg.get("cmd-runner")
-        QTimer.singleShot(0, lambda: runner(prefix, command,
-                                            modehandler.current()))
+        QTimer.singleShot(0, func)
 
     def _split_prefix(self, text):
         """Remove prefix from text for command processing.
@@ -69,6 +75,17 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         prefix, command = text[0], text[1:]
         command = command.strip()
         return prefix, command
+
+    def _get_command_func(self, prefix, command):
+        """Return callable function for command depending on prefix."""
+        if prefix == ":" and command.startswith("!"):
+            return lambda: runners.external(command[1:])
+        if prefix == ":":
+            return lambda: runners.command(command)
+        if prefix == "/":
+            return lambda: search.search(command)
+        logging.error("Unknown prefix '%s'", prefix)
+        return lambda: None
 
     @pyqtSlot(str)
     def _on_text_edited(self, text):
