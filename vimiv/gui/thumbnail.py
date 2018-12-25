@@ -29,6 +29,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     Attributes:
         _stack: QStackedLayout containing image and thumbnail.
         _paths: Last paths loaded to avoid duplicate loading.
+        _highlighted: List of indices that are highlighted as search results.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
             string name of the size as value.
         _default_thumb: Thumbnail to display before thumbnails were generated.
@@ -72,6 +73,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         super().__init__()
         self._stack = stack
         self._paths = []
+        self._highlighted = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")])
         self._default_pixmap = pixmap_creater.default_thumbnail()
@@ -83,7 +85,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
-        self.setItemDelegate(ThumbnailDelegate())
+        self.setItemDelegate(ThumbnailDelegate(self))
 
         imsignals.path_loaded.connect(self._on_path_loaded)
         imsignals.paths_loaded.connect(self._on_paths_loaded)
@@ -92,6 +94,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         settings.signals.changed.connect(self._on_settings_changed)
         search = objreg.get("search")
         search.new_search.connect(self._on_new_search)
+        search.cleared.connect(self._on_search_cleared)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
@@ -167,8 +170,20 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             matches: List of all matches of the search.
         """
         if self.hasFocus() and self._paths:
-            # TODO show matches visually
+            for i, path in enumerate(self._paths):
+                if os.path.basename(path) in matches:
+                    self._highlighted.append(i)
             self._select_item(index)
+
+    @pyqtSlot()
+    def _on_search_cleared(self):
+        """Reset highlighted and force repaint when search results cleared."""
+        self._highlighted = []
+        self.repaint()
+
+    def is_highlighted(self, index):
+        """Return True if the index is highlighted as search result."""
+        return index.row() in self._highlighted
 
     @keybindings.add("k", "scroll up", mode="thumbnail")
     @keybindings.add("j", "scroll down", mode="thumbnail")
@@ -370,8 +385,8 @@ class ThumbnailDelegate(QStyledItemDelegate):
     The delegate draws the items.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent)
 
         # QColor options for background drawing
         self.bg = QColor()
@@ -421,4 +436,6 @@ class ThumbnailDelegate(QStyledItemDelegate):
         """
         if state & QStyle.State_Selected:
             return self.selection_bg
+        if self.parent().is_highlighted(index):
+            return self.search_bg
         return self.bg
