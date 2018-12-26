@@ -7,6 +7,7 @@ using the Qt5 toolkit. Complete rewrite of the initial Gtk3 version.
 * python3
 * python-pyqt5
 * python-setuptools (for installation)
+* piexif (optional for EXIF support)
 
 ## Thanks to
 * James Campos, author of [Pim](https://github.com/Narrat/Pim) which was the
