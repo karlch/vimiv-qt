@@ -20,6 +20,12 @@ from vimiv.imutils import (imtransform, imloader, imstorage, imsignals,
                            immanipulate)
 from vimiv.utils import objreg, files
 
+# We need the check as exif support is optional
+try:
+    import piexif
+except ImportError:
+    piexif = None
+
 
 class ImageFileHandler(QObject):
     """Handler to check for changes and write images to disk.
@@ -149,6 +155,9 @@ class WriteImageRunner(QRunnable):
         handle, filename = tempfile.mkstemp(dir=os.getcwd(), suffix=ext)
         os.close(handle)
         self._pixmap.save(filename)
+        # Copy exif info from old file to new file
+        if piexif is not None:
+            self._copy_exif(self._path, filename)
         os.rename(filename, self._path)
         # Check if valid image was created
         if not os.path.isfile(self._path):
@@ -156,6 +165,14 @@ class WriteImageRunner(QRunnable):
         elif not files.is_image(self._path):
             os.remove(self._path)
             raise WriteError("No valid image written. Is the extention valid?")
+
+    @staticmethod
+    def _copy_exif(src, dest):
+        """Copy exif information from src to dest."""
+        try:
+            piexif.transplant(src, dest)
+        except piexif.InvalidImageDataError:  # File is not a jpg
+            pass
 
 
 class WriteError(Exception):
