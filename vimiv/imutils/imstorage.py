@@ -19,6 +19,13 @@ from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import objreg, files, slideshow, trash_manager
 
 
+# We need the check as exif support is optional
+try:
+    import piexif
+except ImportError:
+    piexif = None
+
+
 _paths = []
 _index = 0
 
@@ -94,6 +101,25 @@ def get_index():
 def total():
     """Total amount of images."""
     return str(len(_paths))
+
+
+@statusbar.module("{exif-date-time}")
+def exif_date_time():
+    """Exif creation date and time of the current image.
+
+    This is meant as an example statusbar module to show how to display exif
+    data in the statusbar. If there are any requests/ideas for more, this can
+    be used as basis to work with.
+    """
+    if piexif is not None:
+        try:
+            exif_dict = piexif.load(current())
+            return exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode()
+        except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+            pass
+    return ""
+
+
 
 
 def pathlist():
