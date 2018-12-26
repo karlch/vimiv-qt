@@ -114,7 +114,7 @@ def exif_date_time():
     if piexif is not None:
         try:
             exif_dict = piexif.load(current())
-            return exif_dict["Exif"][piexif.ExifIFD.DateTimeOriginal].decode()
+            return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             pass
     return ""
