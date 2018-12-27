@@ -111,6 +111,7 @@ class KeyHandler():
         elif keyname and keyname in bindings:
             count = self._partial_handler.count.get_text()
             cmd = bindings[keyname]
+            cmd = runners.update_command(cmd, mode)
             runners.command(count + cmd, mode)
         # Partial match => store keys
         elif bindings.partial_match(keyname):
