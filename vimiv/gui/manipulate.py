@@ -8,12 +8,12 @@
 
 import logging
 
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
 from vimiv.config import styles
-from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
+from vimiv.imutils import imsignals, immanipulate
+from vimiv.modes import modehandler, modewidget, Modes
 from vimiv.utils import eventhandler, objreg
 
 
@@ -44,7 +44,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     }
     """
 
-    @objreg.register("manipulate")
+    @modewidget(Modes.MANIPULATE)
+    @objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -73,24 +74,25 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
-        imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imsignals.movie_loaded.connect(self._on_movie_loaded)
-        imsignals.svg_loaded.connect(self._on_svg_loaded)
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        manipulator = objreg.get("manipulator")
+        imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        imsignals.imsignals.movie_loaded.connect(self._on_movie_loaded)
+        imsignals.imsignals.svg_loaded.connect(self._on_svg_loaded)
+        modehandler.signals.entered.connect(self._on_enter)
+        manipulator = immanipulate.instance()
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
 
         self.hide()
 
-    def _on_mode_entered(self, mode):
-        if mode == "manipulate" and self._error:
-            modehandler.leave("manipulate")
+    @pyqtSlot(Modes)
+    def _on_enter(self, mode):
+        if mode == Modes.MANIPULATE and self._error:
+            modehandler.leave(Modes.MANIPULATE)
             # Must wait for every other statusbar update to complete
             QTimer.singleShot(0, lambda: logging.error(self._error))
-        elif mode == "manipulate":
+        elif mode == Modes.MANIPULATE:
             self.raise_()
-        if mode != "manipulate":
+        if mode != Modes.MANIPULATE:
             self.hide()
 
     def _on_edited(self, name, value):
@@ -130,3 +132,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     def height(self):
         """Update height to get preferred height of the progress bar."""
         return self._bars["brightness"].sizeHint().height() * 2
+
+
+def instance():
+    return objreg.get(Manipulate)

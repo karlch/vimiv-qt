@@ -7,6 +7,7 @@
 import pytest_bdd as bdd
 
 from vimiv.commands import aliases
+from vimiv.modes import Modes
 
 
 bdd.scenarios("aliases.feature")
@@ -14,4 +15,4 @@ bdd.scenarios("aliases.feature")
 
 @bdd.then(bdd.parsers.parse("the alias {name} should not exist"))
 def check_alias_non_existent(name):
-    assert name not in aliases.get("global")
+    assert name not in aliases.get(Modes.GLOBAL)

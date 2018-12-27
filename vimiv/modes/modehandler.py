@@ -12,16 +12,14 @@ Module Attributes:
         leaving modes.
 """
 
-import collections
 import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv import modes
+from ._modes import Mode, Modes
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
-from vimiv.utils import objreg
 
 
 class Signals(QObject):
@@ -34,37 +32,10 @@ class Signals(QObject):
             arg1: Name of the mode left.
     """
 
-    entered = pyqtSignal(str)
-    left = pyqtSignal(str)
+    entered = pyqtSignal(Mode)
+    left = pyqtSignal(Mode)
 
 
-class Mode():
-    """Skeleton of a mode.
-
-    Attributes:
-        active: True if the mode is currently active.
-        name: Name of the mode as string.
-        last_mode: Name of the mode that was focused before entering this mode.
-    """
-
-    def __init__(self, name):
-        self.active = False
-        self.name = name
-        self.last_mode = "image" if name != "image" else "library"
-
-
-class Modes(collections.UserDict):
-    """Dictionary to store all modes."""
-
-    def __init__(self):
-        """Init dictionary and create modes."""
-        super().__init__()
-        for name in modes.__names__:
-            self[name] = Mode(name)
-        self["image"].active = True  # Default mode
-
-
-_modes = Modes()
 signals = Signals()
 
 
@@ -82,22 +53,23 @@ def enter(mode):
     positional arguments:
         * ``mode``: The mode to enter (image/library/thumbnail/manipulate).
     """
+    if isinstance(mode, str):
+        mode = Modes.get_by_name(mode)
     # Store last mode
-    last_mode = get_active_mode()
-    if mode == last_mode.name:
-        logging.debug("Staying in mode %s", mode)
+    last_mode = current()
+    if mode == last_mode:
+        logging.debug("Staying in mode %s", mode.name)
         return
     if last_mode:
         logging.debug("Leaving mode %s", last_mode.name)
         last_mode.active = False
-        if last_mode.name not in ["command", "manipulate"]:
-            _modes[mode].last_mode = last_mode.name
+        if last_mode not in [Modes.COMMAND, Modes.MANIPULATE]:
+            mode.last_mode = last_mode
     # Enter new mode
-    _modes[mode].active = True
-    widget = objreg.get(mode)
-    widget.show()
-    widget.setFocus()
-    if widget.hasFocus():
+    mode.active = True
+    mode.widget.show()
+    mode.widget.setFocus()
+    if mode.widget.hasFocus():
         logging.debug("%s widget focused", mode)
     else:
         logging.debug("Could not focus %s widget", mode)
@@ -107,8 +79,9 @@ def enter(mode):
 
 def leave(mode):
     """Leave the mode 'mode'."""
-    last_mode = _modes[mode].last_mode
-    enter(last_mode)
+    if isinstance(mode, str):
+        mode = Modes.get_by_name(mode)
+    enter(mode.last_mode)
     signals.left.emit(mode)
 
 
@@ -127,33 +100,28 @@ def toggle(mode):
     positional arguments:
         * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
     """
-    qwidget = objreg.get(mode)
-    if qwidget.isVisible():
+    if isinstance(mode, str):
+        mode = Modes.get_by_name(mode)
+    if mode.widget.isVisible():
         leave(mode)
     else:
         enter(mode)
 
 
-def get_active_mode():
-    """Return the currently active mode as Mode class."""
-    for mode in _modes.values():
+def current():
+    """Return the currently active mode."""
+    for mode in Modes:
         if mode.active:
             return mode
-    return None
-
-
-def current():
-    """Return the name of the currently active mode."""
-    return get_active_mode().name
+    return Modes.IMAGE
 
 
 @statusbar.module("{mode}")
-def current_formatted():
+def get_active_name():
     """Current mode."""
-    return current().upper()
+    return current().name.upper()
 
 
 def last():
-    """Return the name of the mode active before the current one."""
-    active_mode = get_active_mode()
-    return active_mode.last_mode
+    """Return the mode active before the current one."""
+    return current().last_mode

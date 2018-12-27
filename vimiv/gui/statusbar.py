@@ -15,12 +15,14 @@ Module Attributes:
         for the statubar to show.
 """
 
+import logging
+
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
 from vimiv.config import settings, styles
 from vimiv.gui import widgets
-from vimiv.utils import objreg, statusbar_loghandler
+from vimiv.utils import misc, objreg, statusbar_loghandler
 
 
 _modules = {}
@@ -31,17 +33,39 @@ statusbar = None
 class Module():
     """Class to store function of one statusbar module."""
 
-    def __init__(self, func, instance=None):
+    def __init__(self, func):
+        self._instance = None
+        self._initialized = False
         self._func = func
-        self._instance = instance
 
     def __call__(self):
-        if self._instance:
-            return self._func(objreg.get(self._instance))
-        return self._func()
+        func = self._create_func(self._func)
+        return func()
+
+    def __repr__(self):
+        return "StatusbarModule('%s')" % (self._func.__name__)
+
+    @misc.cached_method
+    def _create_func(self, func):
+        """Create function to call for a statusbar module.
+
+        This retrieves the instance of a class object for methods and sets it
+        as first argument (the 'self' argument) of a lambda. For standard
+        functions nothing is done.
+
+        Returns:
+            A function to be called without arguments.
+        """
+        logging.debug("Creating function for statusbar module '%s'",
+                      func.__name__)
+        if misc.is_method(func):
+            cls = misc.get_class_that_defined_method(func)
+            instance = objreg.get(cls)
+            return lambda: func(instance)
+        return func
 
 
-def module(name, instance=None):
+def module(name):
     """Decorator to register a command as a statusbar module.
 
     Args:
@@ -50,7 +74,7 @@ def module(name, instance=None):
     """
     def decorator(function):
         """Store function executable under module name."""
-        _modules[name] = Module(function, instance)
+        _modules[name] = Module(function)
         def inner(*args):
             """Run the function."""
             return function(*args)

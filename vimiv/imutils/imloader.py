@@ -28,7 +28,7 @@ class ImageLoader(QObject):
     either movie_loaded or image_loaded when the QWidget was created.
     """
 
-    @objreg.register("imageloader")
+    @objreg.register
     def __init__(self):
         super().__init__()
         self.image = None
@@ -53,12 +53,14 @@ class ImageLoader(QObject):
             imsignals.pixmap_loaded.emit(self.image)
 
 
+def instance():
+    return objreg.get(ImageLoader)
+
+
 def current():
     """Convenience function to get currently displayed QObject."""
-    loader = objreg.get("imageloader")
-    return loader.image
+    return instance().image
 
 
 def set_pixmap(pixmap):
-    loader = objreg.get("imageloader")
-    loader.image = pixmap
+    instance().image = pixmap

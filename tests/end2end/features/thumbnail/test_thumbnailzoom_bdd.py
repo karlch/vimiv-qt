@@ -7,7 +7,7 @@
 import pytest_bdd as bdd
 
 from vimiv.config import settings
-from vimiv.utils import objreg
+from vimiv.gui import thumbnail
 
 
 bdd.scenarios("thumbnailzoom.feature")
@@ -19,5 +19,4 @@ def check_thumbnail_size(size):
     # Check setting
     assert settings.get_value("thumbnail.size") == size
     # Check actual value
-    thumb = objreg.get("thumbnail")
-    assert thumb.iconSize().width() == size
+    assert thumbnail.instance().iconSize().width() == size

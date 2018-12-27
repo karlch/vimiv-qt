@@ -12,6 +12,7 @@ from PyQt5.QtGui import QTransform
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.imutils import imsignals, imloader
+from vimiv.modes import Modes
 from vimiv.utils import objreg
 
 
@@ -28,16 +29,16 @@ class Transform():
         _flip_vertical: Flip the image vertically.
     """
 
-    @objreg.register("transform")
+    @objreg.register
     def __init__(self):
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
 
-    @keybindings.add("<", "rotate --counter-clockwise", mode="image")
-    @keybindings.add(">", "rotate", mode="image")
+    @keybindings.add("<", "rotate --counter-clockwise", mode=Modes.IMAGE)
+    @keybindings.add(">", "rotate", mode=Modes.IMAGE)
     @commands.argument("counter-clockwise", optional=True, action="store_true")
-    @commands.register(mode="image", count=1, instance="transform")
+    @commands.register(mode=Modes.IMAGE, count=1)
     def rotate(self, counter_clockwise, count):
         """Rotate the image.
 
@@ -54,10 +55,10 @@ class Transform():
         pixmap = self.transform_pixmap(imloader.current())
         imsignals.imsignals.pixmap_updated.emit(pixmap)
 
-    @keybindings.add("_", "flip --vertical", mode="image")
-    @keybindings.add("|", "flip", mode="image")
+    @keybindings.add("_", "flip --vertical", mode=Modes.IMAGE)
+    @keybindings.add("|", "flip", mode=Modes.IMAGE)
     @commands.argument("vertical", optional=True, action="store_true")
-    @commands.register(mode="image", instance="transform")
+    @commands.register(mode=Modes.IMAGE)
     def flip(self, vertical):
         """Flip the image.
 

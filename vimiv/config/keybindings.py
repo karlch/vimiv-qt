@@ -12,10 +12,10 @@ Module Attributes:
 
 import collections
 
-from vimiv import modes
+from vimiv.modes import Modes
 
 
-def add(keybinding, command, mode="global"):
+def add(keybinding, command, mode=Modes.GLOBAL):
     """Decorator to add a keybinding.
 
     Args:
@@ -63,13 +63,13 @@ class Bindings(collections.UserDict):
         return False
 
 
-_registry = {mode: Bindings() for mode in modes.__names__}
+_registry = {mode: Bindings() for mode in Modes}
 
 
 def get(mode):
     """Return the keybindings of one specific mode."""
-    if mode in ["image", "thumbnail", "library"]:
-        return _registry[mode] + _registry["global"]
+    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY]:
+        return _registry[mode] + _registry[Modes.GLOBAL]
     return _registry[mode]
 
 

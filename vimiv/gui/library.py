@@ -18,7 +18,7 @@ from vimiv.commands import commands, argtypes, cmdexc, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, Mode, Modes, modewidget
 from vimiv.utils import objreg, libpaths, eventhandler, misc, trash_manager
 
 
@@ -64,7 +64,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     }
     """
 
-    @objreg.register("library")
+    @modewidget(Modes.LIBRARY)
+    @objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
@@ -113,7 +114,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             libpaths.load(path)
         # Close library on double selection
         elif path == self._last_selected:
-            modehandler.leave("library")
+            modehandler.leave(Modes.LIBRARY)
             self.hide()
             self._last_selected = ""
         # Update image
@@ -169,23 +170,23 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if setting == "library.width":
             self.update_width()
 
-    @pyqtSlot(str)
-    def _on_enter(self, widget):
-        if widget == "library":
+    @pyqtSlot(Mode)
+    def _on_enter(self, mode):
+        if mode == Modes.LIBRARY:
             self.show()
             self.update_width()
 
-    @pyqtSlot(str)
-    def _on_leave(self, widget):
-        if widget == "library":
+    @pyqtSlot(Mode)
+    def _on_leave(self, mode):
+        if mode == Modes.LIBRARY:
             self.hide()
 
-    @keybindings.add("k", "scroll up", mode="library")
-    @keybindings.add("j", "scroll down", mode="library")
-    @keybindings.add("h", "scroll left", mode="library")
-    @keybindings.add("l", "scroll right", mode="library")
+    @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
+    @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
+    @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
+    @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="library", mode="library", count=1)
+    @commands.register(mode=Modes.LIBRARY, count=1)
     def scroll(self, direction, count):
         """Scroll the library in the given direction.
 
@@ -223,10 +224,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row += count
             self._select_row(misc.clamp(row, 0, self.model().rowCount() - 1))
 
-    @keybindings.add("gg", "goto 1", mode="library")
-    @keybindings.add("G", "goto -1", mode="library")
+    @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
+    @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
     @commands.argument("row", type=int)
-    @commands.register(instance="library", mode="library", count=0)
+    @commands.register(mode=Modes.LIBRARY, count=0)
     def goto(self, row, count):
         """Select specific row in current filelist.
 
@@ -464,3 +465,7 @@ class LibraryDelegate(QStyledItemDelegate):
         text = '<span style="font: %s;">any</>' % (self.font)
         self.doc.setHtml(text)
         return QSize(self.doc.idealWidth(), self.doc.size().height())
+
+
+def instance():
+    return objreg.get(Library)

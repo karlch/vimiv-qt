@@ -7,11 +7,12 @@
 """Tests for vimiv.config.keybindings."""
 
 from vimiv.config import keybindings
+from vimiv.modes import Modes
 
 
 def test_add_keybinding():
     @keybindings.add("t", "test")
     def test():
         pass
-    bindings = keybindings.get("global")
+    bindings = keybindings.get(Modes.GLOBAL)
     assert ("t", "test") in bindings.items()

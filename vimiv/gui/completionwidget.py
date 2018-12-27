@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QSizePolicy
 from vimiv.commands import commands
 from vimiv.config import styles, keybindings
 from vimiv.gui import widgets
+from vimiv.modes import Modes
 from vimiv.utils import objreg
 
 
@@ -61,7 +62,7 @@ class CompletionView(widgets.FlatTreeView):
 
     activated = pyqtSignal(str)
 
-    @objreg.register("completion")
+    @objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
 
@@ -76,10 +77,10 @@ class CompletionView(widgets.FlatTreeView):
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
 
-    @keybindings.add("<shift><tab>", "complete --inverse", mode="command")
-    @keybindings.add("<tab>", "complete", mode="command")
+    @keybindings.add("<shift><tab>", "complete --inverse", mode=Modes.COMMAND)
+    @keybindings.add("<tab>", "complete", mode=Modes.COMMAND)
     @commands.argument("inverse", optional=True, action="store_true")
-    @commands.register(instance="completion", mode="command")
+    @commands.register(mode=Modes.COMMAND)
     def complete(self, inverse):
         """Invoke command line completion.
 
@@ -107,3 +108,7 @@ class CompletionView(widgets.FlatTreeView):
         for i in range(self.model().columnCount()):
             fraction = self.model().sourceModel().column_widths[i]
             self.setColumnWidth(i, fraction * self.width())
+
+
+def instance():
+    return objreg.get(CompletionView)

@@ -6,6 +6,4 @@
 
 """Functions to enter, leave and get current mode."""
 
-
-__names__ = ["global", "image", "library", "thumbnail", "command",
-             "manipulate"]
+from ._modes import Mode, Modes, modewidget

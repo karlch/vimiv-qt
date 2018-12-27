@@ -14,7 +14,7 @@ import subprocess
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 
-from vimiv.app import open_paths
+from vimiv import app
 from vimiv.commands import commands, cmdexc, aliases
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler
@@ -132,7 +132,7 @@ class ExternalRunner(QObject):
             stdout: String form of stdout of the exited shell command.
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
-        if paths and open_paths(paths):
+        if paths and app.open_paths(paths):
             statusbar.update()
             logging.debug("Opened paths from pipe '%s'", command)
         else:

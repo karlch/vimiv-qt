@@ -6,8 +6,8 @@
 """Functions to get the current path and pathlist."""
 
 from vimiv.imutils import imstorage
-from vimiv.modes import modehandler
-from vimiv.utils import objreg
+from vimiv.gui import library, thumbnail
+from vimiv.modes import modehandler, Modes
 
 
 def current(mode=None):
@@ -19,12 +19,12 @@ def current(mode=None):
         The currently selected path as abspath.
     """
     mode = mode if mode else modehandler.current()
-    if mode == "library":
-        return objreg.get("library").current()
-    if mode in ["image", "manipulate"]:
+    if mode == Modes.LIBRARY:
+        return library.instance().current()
+    if mode in [Modes.IMAGE, Modes.MANIPULATE]:
         return imstorage.current()
-    if mode == "thumbnail":
-        return objreg.get("thumbnail").abspath()
+    if mode == Modes.THUMBNAIL:
+        return thumbnail.instance().abspath()
     return ""
 
 
@@ -37,8 +37,8 @@ def pathlist(mode=None):
         The list of currently open paths.
     """
     mode = mode if mode else modehandler.current()
-    if mode == "library":
-        return objreg.get("library").pathlist()
-    if mode in ["image", "thumbnail"]:
+    if mode == Modes.LIBRARY:
+        return library.instance().pathlist()
+    if mode in [Modes.IMAGE, Modes.THUMBNAIL]:
         return imstorage.pathlist()
     return []

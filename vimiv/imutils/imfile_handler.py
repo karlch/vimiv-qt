@@ -18,6 +18,7 @@ from vimiv.commands import commands
 from vimiv.config import settings
 from vimiv.imutils import (imtransform, imloader, imstorage, imsignals,
                            immanipulate)
+from vimiv.modes import Modes
 from vimiv.utils import objreg, files
 
 # We need the check as exif support is optional
@@ -43,7 +44,7 @@ class ImageFileHandler(QObject):
 
     _pool = QThreadPool.globalInstance()
 
-    @objreg.register("imfile_handler")
+    @objreg.register
     def __init__(self):
         super().__init__()
         self.transform = imtransform.Transform()
@@ -79,7 +80,7 @@ class ImageFileHandler(QObject):
         self.transform.reset()
 
     @commands.argument("path", nargs="*")
-    @commands.register(mode="image", instance="imfile_handler")
+    @commands.register(mode=Modes.IMAGE)
     def write(self, path):
         """Save the current image to disk.
 

@@ -25,7 +25,7 @@ class MainWindow(QWidget):
         _overlays: List of overlay widgets.
     """
 
-    @objreg.register("mainwindow")
+    @objreg.register
     def __init__(self):
         super().__init__()
         self.bar = bar.Bar()
@@ -53,7 +53,7 @@ class MainWindow(QWidget):
         configcommands.init()
 
     @keybindings.add("f", "fullscreen")
-    @commands.register(instance="mainwindow")
+    @commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""
         if self.isFullScreen():
@@ -73,9 +73,12 @@ class MainWindow(QWidget):
             bottom -= self.bar.height()
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
-        lib = objreg.get("library")
-        lib.update_width()
+        library.instance().update_width()
 
     def focusNextPrevChild(self, next_child):
         """Override to do nothing as focusing is handled by modehandler."""
         return False
+
+
+def instance():
+    return objreg.get(MainWindow)

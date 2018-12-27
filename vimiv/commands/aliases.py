@@ -12,27 +12,25 @@ Module Attribute:
 
 import collections
 
-from vimiv import modes
+from vimiv.modes import Modes
 from vimiv.commands import commands, cmdexc
-from vimiv.utils import objreg
 
 
 class Aliases(collections.UserDict):
     """Store and receive aliases for every mode."""
 
-    @objreg.register("aliases")
     def __init__(self):
         super().__init__()
-        for mode in modes.__names__:
+        for mode in Modes:
             self[mode] = {}
         # Add defaults
-        self["global"]["q"] = "quit"
-        self["image"]["w"] = "write"
+        self[Modes.GLOBAL]["q"] = "quit"
+        self[Modes.IMAGE]["w"] = "write"
 
     def get(self, mode):
         """Return all aliases for one mode."""
-        if mode in ["image", "library", "thumbnail"]:
-            return {**self["global"], **self[mode]}
+        if mode in [Modes.IMAGE, Modes.LIBRARY, Modes.THUMBNAIL]:
+            return {**self[Modes.GLOBAL], **self[mode]}
         return self[mode]
 
 
@@ -41,8 +39,8 @@ _aliases = Aliases()
 
 def get(mode):
     """Return all aliases for the mode 'mode'."""
-    if mode in ["image", "library", "thumbnail"]:
-        return {**_aliases["global"], **_aliases[mode]}
+    if mode in [Modes.IMAGE, Modes.LIBRARY, Modes.THUMBNAIL]:
+        return {**_aliases[Modes.GLOBAL], **_aliases[mode]}
     return _aliases[mode]
 
 
@@ -67,6 +65,7 @@ def alias(name, command, mode="global"):
     """
     assert isinstance(command, list), "Aliases defined as list via nargs='*'"
     command = " ".join(command)
+    mode = Modes.get_by_name(mode)
     if name in commands.registry[mode]:
         raise cmdexc.CommandError(
             "Not overriding default command %s" % (name))

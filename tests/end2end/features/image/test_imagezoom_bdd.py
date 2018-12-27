@@ -7,7 +7,7 @@
 import pytest
 import pytest_bdd as bdd
 
-from vimiv.utils import objreg
+from vimiv.gui import image
 
 
 bdd.scenarios("imagezoom.feature")
@@ -15,6 +15,6 @@ bdd.scenarios("imagezoom.feature")
 
 @bdd.then(bdd.parsers.parse("the zoom level should be {level}"))
 def check_zoom_level(level):
-    image = objreg.get("image")
-    im_level = image.pixmap().width() / image.original().width()
+    img = image.instance()
+    im_level = img.pixmap().width() / img.original().width()
     assert float(level) == pytest.approx(im_level, 0.01)

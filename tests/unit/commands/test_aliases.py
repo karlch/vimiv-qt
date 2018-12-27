@@ -9,11 +9,12 @@
 import pytest
 
 from vimiv.commands import aliases
+from vimiv.modes import Modes
 
 
 def test_add_alias():
     aliases.alias("test", ["quit"])
-    assert aliases.get("global")["test"] == "quit"
+    assert aliases.get(Modes.GLOBAL)["test"] == "quit"
 
 
 def test_fail_add_alias_no_list():
@@ -23,9 +24,9 @@ def test_fail_add_alias_no_list():
 
 def test_add_alias_for_different_mode():
     aliases.alias("test3", ["quit"], mode="image")
-    assert aliases.get("image")["test"] == "quit"
-    assert "test3" not in aliases.get("global")
+    assert aliases.get(Modes.IMAGE)["test"] == "quit"
+    assert "test3" not in aliases.get(Modes.GLOBAL)
 
 
 def test_get_global_alias_from_image_mode():
-    assert "q" in aliases.get("image")
+    assert "q" in aliases.get(Modes.IMAGE)

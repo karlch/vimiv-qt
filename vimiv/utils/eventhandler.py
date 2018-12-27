@@ -15,8 +15,7 @@ from PyQt5.QtGui import QKeySequence
 from vimiv.commands import runners, search
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
-from vimiv.modes import modehandler
-from vimiv.utils import objreg
+from vimiv.modes import modehandler, Modes
 
 
 class TempKeyStorage(QTimer):
@@ -64,7 +63,6 @@ class PartialHandler(QObject):
         keys: TempKeyStorage for partially matched keys.
     """
 
-    @objreg.register("partialkeys")
     def __init__(self):
         super().__init__()
         self.count = TempKeyStorage()
@@ -76,9 +74,7 @@ class PartialHandler(QObject):
         self.keys.clear_text()
         statusbar.update()
 
-    @statusbar.module("{keys}", instance="partialkeys")
     def get_keys(self):
-        """Unprocessed keys that were pressed."""
         return self.count.text + self.keys.text
 
 
@@ -102,13 +98,14 @@ class KeyHandler():
         keyname = keyevent_to_string(event)
         bindings = keybindings.get(mode)
         # Handle escape separately as it affects multiple widgets
-        if keyname == "<escape>" and mode in ["image", "library", "thumbnail"]:
+        if keyname == "<escape>" and mode in [Modes.IMAGE, Modes.LIBRARY,
+                                              Modes.THUMBNAIL]:
             self._partial_handler.clear_keys()
             search.search.clear()
             return
         keyname = stored_keys + keyname
         # Count
-        if keyname and keyname in string.digits and mode != "command":
+        if keyname and keyname in string.digits and mode != Modes.COMMAND:
             self._partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
@@ -123,6 +120,12 @@ class KeyHandler():
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
             statusbar.update()  # Will not be called by command
+
+    @staticmethod
+    @statusbar.module("{keys}")
+    def unprocessed_keys():
+        """Unprocessed keys that were pressed."""
+        return KeyHandler._partial_handler.get_keys()
 
 
 def on_mouse_click(event):

@@ -16,6 +16,7 @@ from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
+from vimiv.modes import Modes
 from vimiv.utils import objreg, files, slideshow, trash_manager
 
 
@@ -30,7 +31,7 @@ _paths = []
 _index = 0
 
 
-@keybindings.add("n", "next", mode="image")
+@keybindings.add("n", "next", mode=Modes.IMAGE)
 @commands.register(count=1)
 def next(count):
     """Select next image.
@@ -42,7 +43,7 @@ def next(count):
         imsignals.path_loaded.emit(current())
 
 
-@keybindings.add("p", "prev", mode="image")
+@keybindings.add("p", "prev", mode=Modes.IMAGE)
 @commands.register(count=1)
 def prev(count):
     """Select previous image.
@@ -54,10 +55,10 @@ def prev(count):
         imsignals.path_loaded.emit(current())
 
 
-@keybindings.add("G", "goto -1", mode="image")
-@keybindings.add("gg", "goto 1", mode="image")
+@keybindings.add("G", "goto -1", mode=Modes.IMAGE)
+@keybindings.add("gg", "goto 1", mode=Modes.IMAGE)
 @commands.argument("index", type=int)
-@commands.register(mode="image", count=0)
+@commands.register(mode=Modes.IMAGE, count=0)
 def goto(index, count):
     """Select specific image in current filelist.
 
@@ -135,7 +136,7 @@ class Storage(QObject):
         _index: Index of the currently displayed image in the _paths list.
     """
 
-    @objreg.register("imstorage")
+    @objreg.register
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)

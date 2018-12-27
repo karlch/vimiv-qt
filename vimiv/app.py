@@ -22,13 +22,13 @@ from vimiv.utils import objreg, libpaths, files
 class Application(QApplication):
     """Main application class."""
 
-    @objreg.register("app")
+    @objreg.register
     def __init__(self):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
 
     @keybindings.add("q", "quit")
-    @commands.register(instance="app")
+    @commands.register()
     def quit(self):
         """Quit vimiv."""
         # Do not start any new threads
@@ -79,3 +79,7 @@ def open_paths(paths, select_mode=True):
     if select_mode:
         modehandler.enter(mode)
     return True
+
+
+def instance():
+    return objreg.get(Application)

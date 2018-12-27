@@ -11,9 +11,8 @@ import os
 import pytest_bdd as bdd
 
 from vimiv.commands import runners
-from vimiv.gui import commandline, statusbar
-from vimiv.modes import modehandler
-from vimiv.utils import objreg
+from vimiv.gui import commandline, statusbar, mainwindow
+from vimiv.modes import modehandler, Modes
 
 ###############################################################################
 #                                    When                                     #
@@ -31,8 +30,7 @@ def run_command(command):
 @bdd.when(bdd.parsers.parse("I press {keys}"))
 def key_press(qtbot, keys):
     mode = modehandler.current()
-    widget = objreg.get(mode)
-    qtbot.keyClicks(widget, keys)
+    qtbot.keyClicks(mode.widget, keys)
 
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))
@@ -42,23 +40,22 @@ def enter_mode(mode):
 
 @bdd.when(bdd.parsers.parse("I leave {mode} mode"))
 def leave_mode(mode):
+    mode = Modes.get_by_name(mode)
     modehandler.leave(mode)
 
 
 @bdd.when(bdd.parsers.parse("I enter command mode with {text}"))
 def enter_command_with_text(text):
-    modehandler.enter("command")
-    cmd = objreg.get("command")
-    cmd .setText(":" + text)
-    cmd.textEdited.emit(":" + text)
+    modehandler.enter(Modes.COMMAND)
+    commandline.instance().setText(":" + text)
+    commandline.instance().textEdited.emit(":" + text)
 
 
 @bdd.when(bdd.parsers.parse("I resize the window to {size}"))
 def resize_main_window(size):
     width = int(size.split("x")[0])
     height = int(size.split("x")[1])
-    mw = objreg.get("mainwindow")
-    mw.resize(width, height)
+    mainwindow.instance().resize(width, height)
 
 
 @bdd.when(bdd.parsers.parse("I wait for {N}ms"))
@@ -112,17 +109,16 @@ def check_working_directory(basename):
 
 @bdd.then("the window should be fullscreen")
 def check_fullscreen():
-    mw = objreg.get("mainwindow")
-    assert mw.isFullScreen()
+    assert mainwindow.instance().isFullScreen()
 
 
 @bdd.then("the window should not be fullscreen")
 def check_not_fullscreen():
-    mw = objreg.get("mainwindow")
-    assert not mw.isFullScreen()
+    assert not mainwindow.instance().isFullScreen()
 
 
 @bdd.then(bdd.parsers.parse("the mode should be {mode}"))
 def check_mode(mode, qtbot):
+    mode = Modes.get_by_name(mode)
     assert modehandler.current() == mode, \
-        "Modehandler did not switch to %s" % (mode)
+        "Modehandler did not switch to %s" % (mode.name)

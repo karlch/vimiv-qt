@@ -8,9 +8,8 @@ from PyQt5.QtCore import Qt
 
 import pytest_bdd as bdd
 
-from vimiv.modes import modehandler
-from vimiv.utils import objreg
-from vimiv.imutils import imstorage
+from vimiv.gui import commandline
+from vimiv.modes import modehandler, Modes
 
 
 bdd.scenarios("commandline.feature")
@@ -19,27 +18,22 @@ bdd.scenarios("commandline.feature")
 @bdd.when("I activate the command line")
 def activate_commandline(qtbot):
     """Needed as passing return as a string is not possible."""
-    print(imstorage._paths)
-    print(imstorage._index)
-    cmd = objreg.get("command")
-    qtbot.keyClick(cmd, Qt.Key_Return)
+    qtbot.keyClick(commandline.instance(), Qt.Key_Return)
     qtbot.wait(10)
 
 
 @bdd.when("I hit backspace")
 def hit_backspace(qtbot):
     """Needed as passing backspace as a string is not possible."""
-    cmd = objreg.get("command")
-    qtbot.keyClick(cmd, Qt.Key_Backspace)
+    qtbot.keyClick(commandline.instance(), Qt.Key_Backspace)
     qtbot.wait(10)
 
 
 @bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
 def check_commandline_text(text):
-    cmd = objreg.get("command")
-    assert cmd.text() == text
+    assert commandline.instance().text() == text
 
 
 @bdd.then("the mode should not be command")
 def check_commandline_closed():
-    assert modehandler.current() != "command"
+    assert modehandler.current() != Modes.COMMAND

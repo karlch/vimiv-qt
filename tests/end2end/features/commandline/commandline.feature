@@ -3,6 +3,10 @@ Feature: Use the command line.
     Background:
         Given I start vimiv
 
+    Scenario: Set prefix correctly when entering command mode
+        When I run command
+        Then the text in the command line should be :
+
     Scenario: Run a command from the command line.
         When I run command
         And I press fullscreen

@@ -17,8 +17,8 @@ from PyQt5.QtGui import QColor, QPixmap
 from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
-from vimiv.gui import statusbar
+from vimiv.modes import modehandler, modewidget, Modes
+from vimiv.gui import statusbar, image
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
                          thumbnail_manager, trash_manager, misc)
 
@@ -68,7 +68,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     }
     """
 
-    @objreg.register("thumbnail")
+    @modewidget(Modes.THUMBNAIL)
+    @objreg.register
     def __init__(self, stack):
         super().__init__()
         self._stack = stack
@@ -130,20 +131,20 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
-        modehandler.enter("image")
+        modehandler.enter(Modes.IMAGE)
         imsignals.update_index.emit(index.row() + 1)
 
-    @pyqtSlot(str)
-    def _on_enter(self, widget):
-        if widget == "thumbnail":
+    @pyqtSlot(Modes)
+    def _on_enter(self, mode):
+        if mode == Modes.THUMBNAIL:
             self._stack.setCurrentWidget(self)
 
-    @pyqtSlot(str)
-    def _on_leave(self, widget):
+    @pyqtSlot(Modes)
+    def _on_leave(self, mode):
         # Need this here in addition to _on_enter in image because we may leave
         # for the library
-        if widget == "thumbnail":
-            self._stack.setCurrentWidget(objreg.get("image"))
+        if mode == Modes.THUMBNAIL:
+            self._stack.setCurrentWidget(image.instance())
 
     @pyqtSlot(int, QPixmap)
     def _on_thumbnail_created(self, index, pixmap):
@@ -188,12 +189,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    @keybindings.add("k", "scroll up", mode="thumbnail")
-    @keybindings.add("j", "scroll down", mode="thumbnail")
-    @keybindings.add("h", "scroll left", mode="thumbnail")
-    @keybindings.add("l", "scroll right", mode="thumbnail")
+    @keybindings.add("k", "scroll up", mode=Modes.THUMBNAIL)
+    @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)
+    @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
+    @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="thumbnail", mode="thumbnail", count=1)
+    @commands.register(mode=Modes.THUMBNAIL, count=1)
     def scroll(self, direction, count):
         """Scroll to another thumbnail in the given direction.
 
@@ -228,10 +229,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             current = max(column, current)
         self._select_item(current)
 
-    @keybindings.add("gg", "goto 1", mode="thumbnail")
-    @keybindings.add("G", "goto -1", mode="thumbnail")
+    @keybindings.add("gg", "goto 1", mode=Modes.THUMBNAIL)
+    @keybindings.add("G", "goto -1", mode=Modes.THUMBNAIL)
     @commands.argument("index", type=int)
-    @commands.register(instance="thumbnail", mode="thumbnail", count=0)
+    @commands.register(mode=Modes.THUMBNAIL, count=0)
     def goto(self, index, count):
         """Select specific thumbnail in current filelist.
 
@@ -251,10 +252,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         index = index % self.count()
         self._select_item(index)
 
-    @keybindings.add("-", "zoom out", mode="thumbnail")
-    @keybindings.add("+", "zoom in", mode="thumbnail")
+    @keybindings.add("-", "zoom out", mode=Modes.THUMBNAIL)
+    @keybindings.add("+", "zoom in", mode=Modes.THUMBNAIL)
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(instance="thumbnail", mode="thumbnail")
+    @commands.register(mode=Modes.THUMBNAIL)
     def zoom(self, direction):
         """Zoom the current widget.
 
@@ -314,7 +315,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
-    @statusbar.module("{thumbnail-name}", instance="thumbnail")
+    @statusbar.module("{thumbnail-name}")
     def current(self):
         """Name of the currently selected thumbnail."""
         try:
@@ -332,17 +333,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    @statusbar.module("{thumbnail-size}", instance="thumbnail")
+    @statusbar.module("{thumbnail-size}")
     def size(self):
         """Current thumbnail size (small/normal/large/x-large)."""
         return self._sizes[self.iconSize().width()]
 
-    @statusbar.module("{thumbnail-index}", instance="thumbnail")
+    @statusbar.module("{thumbnail-index}")
     def index(self):
         """Index of the currently selected thumbnail."""
         return str(self.currentRow() + 1)
 
-    @statusbar.module("{thumbnail-total}", instance="thumbnail")
+    @statusbar.module("{thumbnail-total}")
     def total(self):
         """Total number of thumbnails."""
         return str(self.model().rowCount())
@@ -442,3 +443,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         if self.parent().is_highlighted(index):
             return self.search_bg
         return self.bg
+
+
+def instance():
+    return objreg.get(ThumbnailView)

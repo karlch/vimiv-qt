@@ -4,9 +4,10 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import pytest
 import pytest_bdd as bdd
 
-from vimiv.utils import objreg
+from vimiv.gui import image
 
 
 bdd.scenarios("imagefit.feature")
@@ -22,37 +23,36 @@ def almost_equal(size, expected):
     assert size <= expected
 
 
+@pytest.fixture
+def img():
+    yield image.instance()
+
+
 @bdd.then(bdd.parsers.parse("the pixmap width should be {width}"))
-def check_pixmap_width(width):
-    image = objreg.get("image")
-    almost_equal(image.pixmap().width(), int(width))
+def check_pixmap_width(img, width):
+    almost_equal(img.pixmap().width(), int(width))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should be {height}"))
-def check_pixmap_height(height):
-    image = objreg.get("image")
-    almost_equal(image.pixmap().height(), int(height))
+def check_pixmap_height(img, height):
+    almost_equal(img.pixmap().height(), int(height))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should fit"))
-def check_pixmap_width_fit():
-    image = objreg.get("image")
-    almost_equal(image.pixmap().width(), image.width())
+def check_pixmap_width_fit(img):
+    almost_equal(img.pixmap().width(), img.width())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should fit"))
-def check_pixmap_height_fit():
-    image = objreg.get("image")
-    almost_equal(image.pixmap().height(), image.height())
+def check_pixmap_height_fit(img):
+    almost_equal(img.pixmap().height(), img.height())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should not fit"))
-def check_pixmap_width_no_fit():
-    image = objreg.get("image")
-    assert image.width() != image.pixmap().width()
+def check_pixmap_width_no_fit(img):
+    assert img.width() != img.pixmap().width()
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should not fit"))
-def check_pixmap_height_no_fit():
-    image = objreg.get("image")
-    assert image.height() != image.pixmap().height()
+def check_pixmap_height_no_fit(img):
+    assert img.height() != img.pixmap().height()

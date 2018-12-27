@@ -11,6 +11,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
+from vimiv.modes import Modes
 from vimiv.utils import objreg
 
 
@@ -23,15 +24,15 @@ class Slideshow(QTimer):
 
     next_im = pyqtSignal()
 
-    @objreg.register("slideshow")
+    @objreg.register
     def __init__(self):
         super().__init__()
         settings.signals.changed.connect(self._on_settings_changed)
         interval = settings.get_value(settings.Names.SLIDESHOW_DELAY) * 1000
         self.setInterval(interval)
 
-    @keybindings.add("s", "slideshow", mode="image")
-    @commands.register(instance="slideshow", mode="image", count=0)
+    @keybindings.add("s", "slideshow", mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE, count=0)
     def slideshow(self, count):
         """Toggle slideshow."""
         if count:
@@ -47,7 +48,7 @@ class Slideshow(QTimer):
         self.next_im.emit()
         statusbar.update()
 
-    @statusbar.module("{slideshow-delay}", instance="slideshow")
+    @statusbar.module("{slideshow-delay}")
     def get_delay(self):
         """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
@@ -55,7 +56,7 @@ class Slideshow(QTimer):
             return "%.1fs" % (delay)
         return ""
 
-    @statusbar.module("{slideshow-indicator}", instance="slideshow")
+    @statusbar.module("{slideshow-indicator}")
     def running_indicator(self):
         """Indicator if slideshow is running."""
         if self.isActive():
@@ -66,3 +67,7 @@ class Slideshow(QTimer):
     def _on_settings_changed(self, setting, new_value):
         if setting == "slideshow.delay":
             self.setInterval(new_value * 1000)
+
+
+def instance():
+    return objreg.get(Slideshow)

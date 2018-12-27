@@ -8,13 +8,14 @@
 
 from vimiv.commands import commands, cmdexc
 from vimiv.config import settings, keybindings
+from vimiv.modes import Modes
 from vimiv.utils import strconvert
 
 
-@keybindings.add(".", "set slideshow.delay +0.5", mode="image")
-@keybindings.add(",", "set slideshow.delay -0.5", mode="image")
-@keybindings.add("H", "set library.width -0.05", mode="library")
-@keybindings.add("L", "set library.width +0.05", mode="library")
+@keybindings.add(".", "set slideshow.delay +0.5", mode=Modes.IMAGE)
+@keybindings.add(",", "set slideshow.delay -0.5", mode=Modes.IMAGE)
+@keybindings.add("H", "set library.width -0.05", mode=Modes.LIBRARY)
+@keybindings.add("L", "set library.width +0.05", mode=Modes.LIBRARY)
 @keybindings.add("b", "set statusbar.show!")
 @commands.argument("value", nargs="*")
 @commands.argument("setting")

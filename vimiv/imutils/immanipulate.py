@@ -16,7 +16,7 @@ from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
 from vimiv.imutils import imsignals, _c_manipulate, imloader
 from vimiv.gui import statusbar
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg, misc
 
 
@@ -43,7 +43,7 @@ class Manipulator(QObject):
     edited = pyqtSignal(str, int)
     focused = pyqtSignal(str)
 
-    @objreg.register("manipulator")
+    @objreg.register
     def __init__(self):
         super().__init__()
         self.manipulations = collections.OrderedDict([
@@ -67,8 +67,8 @@ class Manipulator(QObject):
         """Return True if anything was edited."""
         return self.manipulations != {"brightness": 0, "contrast": 0}
 
-    @keybindings.add("<return>", "accept", mode="manipulate")
-    @commands.register(instance="manipulator", mode="manipulate")
+    @keybindings.add("<return>", "accept", mode=Modes.MANIPULATE)
+    @commands.register(mode=Modes.MANIPULATE)
     def accept(self):
         """Apply changes to file and leave manipulate."""
         modehandler.leave("manipulate")
@@ -76,8 +76,8 @@ class Manipulator(QObject):
             return
         imloader.set_pixmap(self.pixmap)
 
-    @keybindings.add("<escape>", "discard", mode="manipulate")
-    @commands.register(instance="manipulator", mode="manipulate")
+    @keybindings.add("<escape>", "discard", mode=Modes.MANIPULATE)
+    @commands.register(mode=Modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
         modehandler.leave("manipulate")
@@ -89,9 +89,9 @@ class Manipulator(QObject):
             "contrast": 0
         }
 
-    @keybindings.add("b", "brightness", mode="manipulate")
+    @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)
-    @commands.register(mode="manipulate", instance="manipulator", count=0)
+    @commands.register(mode=Modes.MANIPULATE, count=0)
     def brightness(self, value, count):
         """Manipulate brightness.
 
@@ -108,9 +108,9 @@ class Manipulator(QObject):
         value = count if count else value
         self._update_manipulation("brightness", value)
 
-    @keybindings.add("c", "contrast", mode="manipulate")
+    @keybindings.add("c", "contrast", mode=Modes.MANIPULATE)
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)
-    @commands.register(mode="manipulate", instance="manipulator", count=0)
+    @commands.register(mode=Modes.MANIPULATE, count=0)
     def contrast(self, value, count):
         """Manipulate contrast.
 
@@ -127,10 +127,10 @@ class Manipulator(QObject):
         value = count if count else value
         self._update_manipulation("contrast", value)
 
-    @keybindings.add("K", "increase 10", mode="manipulate")
-    @keybindings.add("k", "increase 1", mode="manipulate")
+    @keybindings.add("K", "increase 10", mode=Modes.MANIPULATE)
+    @keybindings.add("k", "increase 1", mode=Modes.MANIPULATE)
     @commands.argument("value", type=int)
-    @commands.register(mode="manipulate", instance="manipulator", count=1)
+    @commands.register(mode=Modes.MANIPULATE, count=1)
     def increase(self, value, count):
         """Increase the value of the current manipulation.
 
@@ -144,10 +144,10 @@ class Manipulator(QObject):
         value = self.manipulations[self._current] + value * count
         self._update_manipulation(self._current, value)
 
-    @keybindings.add("J", "decrease 10", mode="manipulate")
-    @keybindings.add("j", "decrease 1", mode="manipulate")
+    @keybindings.add("J", "decrease 10", mode=Modes.MANIPULATE)
+    @keybindings.add("j", "decrease 1", mode=Modes.MANIPULATE)
     @commands.argument("value", type=int)
-    @commands.register(mode="manipulate", instance="manipulator", count=1)
+    @commands.register(mode=Modes.MANIPULATE, count=1)
     def decrease(self, value, count):
         """Decrease the value of the current manipulation.
 
@@ -161,10 +161,10 @@ class Manipulator(QObject):
         value = self.manipulations[self._current] - value * count
         self._update_manipulation(self._current, value)
 
-    @keybindings.add("gg", "set -127", mode="manipulate")
-    @keybindings.add("G", "set 127", mode="manipulate")
+    @keybindings.add("gg", "set -127", mode=Modes.MANIPULATE)
+    @keybindings.add("G", "set 127", mode=Modes.MANIPULATE)
     @commands.argument("value", type=int)
-    @commands.register(mode="manipulate", instance="manipulator", count=0)
+    @commands.register(mode=Modes.MANIPULATE, count=0)
     def set(self, value, count):
         """Set the value of the current manipulation.
 
@@ -199,12 +199,16 @@ class Manipulator(QObject):
             runnable = ManipulateRunner(self, self.thread_id)
             self.pool.start(runnable)
 
-    @statusbar.module("{processing}", instance="manipulator")
+    @statusbar.module("{processing}")
     def _processing_indicator(self):
         """Print ``processing...`` if manipulations are running."""
         if self.pool.activeThreadCount():
             return "processing..."
         return ""
+
+
+def instance():
+    return objreg.get(Manipulator)
 
 
 class ManipulateRunner(QRunnable):

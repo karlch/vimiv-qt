@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import history, commands, argtypes, runners, search
 from vimiv.config import styles, keybindings
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, modewidget, Modes
 from vimiv.utils import objreg, eventhandler
 
 
@@ -44,7 +44,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     }
     """
 
-    @objreg.register("command")
+    @modewidget(Modes.COMMAND)
+    @objreg.register
     def __init__(self):
         super().__init__()
         self._history = history.History(history.read())
@@ -68,7 +69,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self._history.update(prefix + command)
         # Update command with aliases and wildcards
         mode = modehandler.last()
-        runners.update_command(command, mode)
+        command = runners.update_command(command, mode)
         # Retrieve function to call depending on prefix
         func = get_command_func(prefix, command, mode)
         # Run commands in QTimer so the command line has been left when the
@@ -112,10 +113,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         if new < 1:
             self.setCursorPosition(1)
 
-    @keybindings.add("<ctrl>p", "history next", mode="command")
-    @keybindings.add("<ctrl>n", "history prev", mode="command")
+    @keybindings.add("<ctrl>p", "history next", mode=Modes.COMMAND)
+    @keybindings.add("<ctrl>n", "history prev", mode=Modes.COMMAND)
     @commands.argument("direction", type=argtypes.command_history_direction)
-    @commands.register(instance="command", mode="command")
+    @commands.register(mode=Modes.COMMAND)
     def history(self, direction):
         """Cycle through command history.
 
@@ -126,10 +127,10 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.cycle(direction, self.text()))
 
-    @keybindings.add("<up>", "history-substr-search next", mode="command")
-    @keybindings.add("<down>", "history-substr-search prev", mode="command")
+    @keybindings.add("<up>", "history-substr-search next", mode=Modes.COMMAND)
+    @keybindings.add("<down>", "history-substr-search prev", mode=Modes.COMMAND)
     @commands.argument("direction", type=argtypes.command_history_direction)
-    @commands.register(instance="command", mode="command")
+    @commands.register(mode=Modes.COMMAND)
     def history_substr_search(self, direction):
         """Cycle through command history with substring matching.
 
@@ -147,3 +148,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
+
+
+def instance():
+    return objreg.get(CommandLine)

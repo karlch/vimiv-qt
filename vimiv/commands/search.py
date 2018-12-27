@@ -17,14 +17,14 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, Modes
 from vimiv.utils import pathreceiver
 
 
 def use_incremental():
     """Return True if incremental search should be used."""
     enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
-    if enabled and modehandler.last() in ["library", "thumbnail"]:
+    if enabled and modehandler.last() in [Modes.LIBRARY, Modes.THUMBNAIL]:
         return True
     return False
 

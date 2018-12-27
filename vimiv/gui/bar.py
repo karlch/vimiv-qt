@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import commandline, statusbar
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg
 
 
@@ -25,7 +25,7 @@ class Bar(QWidget):
         _stack: QStackedLayout containing statusbar and commandline.
     """
 
-    @objreg.register("bar")
+    @objreg.register
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
@@ -43,11 +43,11 @@ class Bar(QWidget):
         self.commandline.editingFinished.connect(self._on_editing_finished)
         settings.signals.changed.connect(self._on_settings_changed)
 
-    @keybindings.add("<colon>", "command", mode="manipulate")
+    @keybindings.add("<colon>", "command", mode=Modes.MANIPULATE)
     @keybindings.add("<colon>", "command")
     @commands.argument("text", optional=True, default="")
-    @commands.register(instance="bar", hide=True, mode="manipulate")
-    @commands.register(instance="bar", hide=True)
+    @commands.register(hide=True, mode=Modes.MANIPULATE)
+    @commands.register(hide=True)
     def command(self, text=""):
         """Enter command mode.
 
@@ -61,7 +61,7 @@ class Bar(QWidget):
     @keybindings.add("?", "search --reverse")
     @keybindings.add("/", "search")
     @commands.argument("reverse", optional=True, action="store_true")
-    @commands.register(instance="bar", hide=True)
+    @commands.register(hide=True)
     def search(self, reverse):
         """Start a search.
 
@@ -80,10 +80,10 @@ class Bar(QWidget):
         self.show()
         self._stack.setCurrentWidget(self.commandline)
         self.commandline.setText(text)
-        modehandler.enter("command")
+        modehandler.enter(Modes.COMMAND)
 
-    @keybindings.add("<escape>", "leave-commandline", mode="command")
-    @commands.register(instance="bar", mode="command")
+    @keybindings.add("<escape>", "leave-commandline", mode=Modes.COMMAND)
+    @commands.register(mode=Modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
         self.commandline.editingFinished.emit()
@@ -112,3 +112,7 @@ class Bar(QWidget):
             self.hide()
         else:
             self.show()
+
+
+def instance():
+    return objreg.get(Bar)

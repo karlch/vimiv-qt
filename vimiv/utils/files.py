@@ -181,3 +181,7 @@ def modified():
     mtime = os.path.getmtime(pathreceiver.current())
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")
+
+
+def open_paths(paths, select_mode=True):
+    return True

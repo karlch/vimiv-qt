@@ -15,8 +15,9 @@ import collections
 import inspect
 import logging
 
-from vimiv import modes
 from vimiv.commands import cmdexc
+from vimiv.modes import Modes
+from vimiv.utils import misc
 from vimiv.utils import objreg
 
 
@@ -25,14 +26,14 @@ class Registry(collections.UserDict):
 
     def __init__(self):
         super().__init__()
-        for mode in modes.__names__:
+        for mode in Modes:
             self[mode] = {}
 
 
 registry = Registry()
 
 
-def get(name, mode="global"):
+def get(name, mode=Modes.GLOBAL):
     """Get one command object.
 
     Args:
@@ -42,11 +43,11 @@ def get(name, mode="global"):
         The Command object asserted with name and mode.
     """
     commands = registry[mode]
-    if mode in ["image", "library", "thumbnail"]:
-        commands.update(registry["global"])
+    if mode in [Modes.IMAGE, Modes.LIBRARY, Modes.THUMBNAIL]:
+        commands.update(registry[Modes.GLOBAL])
     if name not in commands:
         raise cmdexc.CommandNotFound(
-            "%s: unknown command for mode %s" % (name, mode))
+            "%s: unknown command for mode %s" % (name, mode.name))
     return commands[name]
 
 
@@ -86,15 +87,12 @@ class Command():
             default and passing other counts is supported by the command.
         description: Description of the command for help.
         hide: Hide command from command line.
-
-        _instance: Object to be passed to func as self argument if any.
     """
 
-    def __init__(self, name, func, instance=None, mode="global", count=None,
-                 description="", hide=False):
+    def __init__(self, name, func, mode=Modes.GLOBAL,
+                 count=None, description="", hide=False):
         self.name = name
         self.func = func
-        self._instance = instance
         self.mode = mode
         self.count = count
         self.description = description
@@ -113,14 +111,8 @@ class Command():
         # Add count for function to deal with
         if parsed_count is not None:
             kwargs["count"] = parsed_count
-        if self._instance:
-            try:
-                obj = objreg.get(self._instance)
-                self.func(obj, **kwargs)
-            except KeyError:
-                logging.error("Object %s does not exist", self._instance)
-        else:
-            self.func(**kwargs)
+        func = self._create_func(self.func)
+        func(**kwargs)
 
     def _parse_count(self, count):
         """Parse given count."""
@@ -132,6 +124,27 @@ class Command():
             return self.count
         # Use count given
         return int(count)
+
+    def __repr__(self):
+        return "Command('%s', '%s')" % (self.name, self.func)
+
+    @misc.cached_method
+    def _create_func(self, func):
+        """Create function to call for a command function.
+
+        This retrieves the instance of a class object for methods and sets it
+        as first argument (the 'self' argument) of a lambda. For standard
+        functions nothing is done.
+
+        Returns:
+            A function to be called with any keyword arguments.
+        """
+        logging.debug("Creating function for command '%s'", func.__name__)
+        if misc.is_method(func):
+            cls = misc.get_class_that_defined_method(func)
+            instance = objreg.get(cls)
+            return lambda **kwargs: func(instance, **kwargs)
+        return func
 
 
 def argument(argname, optional=False, **kwargs):
@@ -149,11 +162,10 @@ def argument(argname, optional=False, **kwargs):
     return decorator
 
 
-def register(instance=None, mode="global", count=None, hide=False):
+def register(mode=Modes.GLOBAL, count=None, hide=False):
     """Decorator to store a command in the registry.
 
     Args:
-        instance: The name of the object in the registry.
         mode: Mode in which the command can be executed.
         count: Associated count. If it is not None, this count will be used as
         default and passing other counts is supported by the command.
@@ -163,8 +175,8 @@ def register(instance=None, mode="global", count=None, hide=False):
         name = _get_command_name(func)
         desc = _get_description(func, name)
         func.vimiv_args = Args(name)
-        cmd = Command(name, func, instance=instance,
-                      mode=mode, count=count, description=desc, hide=hide)
+        cmd = Command(name, func, mode=mode, count=count, description=desc,
+                      hide=hide)
         registry[mode][name] = cmd
         return func
     return decorator
@@ -189,7 +201,3 @@ def _get_description(func, name):
     except AttributeError:
         logging.error("Command %s for %s is missing docstring.", name, func)
     return ""
-
-
-def _is_method(func):
-    return "self" in inspect.signature(func).parameters

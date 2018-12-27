@@ -6,6 +6,8 @@
 
 """Various small functions that don't really fit into an own module."""
 
+import functools
+import inspect
 import re
 
 
@@ -38,3 +40,41 @@ def clamp(value, minimum, maximum):
     if maximum is not None:
         value = min(value, maximum)
     return value
+
+
+def get_class_that_defined_method(method):
+    """Return the class that defined a method.
+
+    This is used by the decorators for statusbar and command, when the class is
+    not yet created.
+    """
+    return getattr(inspect.getmodule(method),
+                   method.__qualname__.split(".")[0])
+
+
+def is_method(func):
+    """Return True if func is a method owned by a class.
+
+    This is used by the decorators for statusbar and command, when the class is
+    not yet created.
+    """
+    return "self" in inspect.signature(func).parameters
+
+
+def cached_method(func):
+    """Decorator to cache the result of a class method."""
+    attr_name = '_lazy_' + func.__name__
+
+    @property
+    @functools.wraps(func)
+    def _lazyprop(self):
+
+        def inner(*args, **kwargs):
+            # Store the result of the function to attr_name in first
+            # evaluation, afterwards return the cached value
+            if not hasattr(self, attr_name):
+                setattr(self, attr_name, func(self, *args, **kwargs))
+            return getattr(self, attr_name)
+        return inner
+
+    return _lazyprop

@@ -17,38 +17,47 @@ import logging
 class Registry(collections.UserDict):
     """Storage class for vimiv components."""
 
+    def store(self, component):
+        key = self._key(component)
+        if key in self:  # Do not allow storing the same type twice
+            logging.error("%s already registered in objreg", str(key))
+        else:
+            self[key] = component
+
+    @staticmethod
+    def _key(obj):
+        return type(obj)
+
 
 # The registry used to store the vimiv components
 _registry = Registry()
 
 
-def register(name):
+def register(component_init):
     """Store a component in the registry.
 
+    Decorator around the __init__ function of the component.
+
     Args:
-        name: Name used to identify the component.
+        component_init: The __init__ function of the component.
     """
-    def decorator(component_init):
-        """Decorator around the __init__ function of the component."""
-        def inside(component, *args, **kwargs):
-            # The first argument is always self and can be used to register the
-            # component
-            if name not in _registry:
-                component_init(component, *args, **kwargs)
-                _registry[name] = component
-                logging.debug("Registered %s in objreg", name)
-            else:
-                logging.error("%s already registered in objreg", name)
-        return inside
-    return decorator
+    def inside(component, *args, **kwargs):
+        """The decorated __init__ function.
+
+        Args:
+            component: Corresponds to self.
+        """
+        component_init(component, *args, **kwargs)
+        _registry.store(component)
+    return inside
 
 
-def register_object(name, obj):
+def register_object(obj):
     """Store an object in the registry."""
-    _registry[name] = obj
+    _registry.store(obj)
 
 
-def get(name):
+def get(obj):
     """Get a component from the registry.
 
     Args:
@@ -56,12 +65,12 @@ def get(name):
     Return:
         The object in the registry.
     """
-    return _registry[name]
+    return _registry[obj]
 
 
-def delete(name):
+def delete(obj):
     """Delete one object from the registry."""
-    del _registry[name]
+    del _registry[obj]
 
 
 def clear():

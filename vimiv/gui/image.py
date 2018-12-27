@@ -14,7 +14,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, modewidget, Modes
 from vimiv.utils import eventhandler, objreg
 
 # We need the check as svg support is optional
@@ -80,7 +80,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     }
     """
 
-    @objreg.register("image")
+    @modewidget(Modes.IMAGE)
+    @objreg.register
     def __init__(self, stack):
         super().__init__()
         self._scale = 1
@@ -117,12 +118,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.scale(self._scale, 1)
         statusbar.update()
 
-    @keybindings.add("k", "scroll up", mode="image")
-    @keybindings.add("j", "scroll down", mode="image")
-    @keybindings.add("l", "scroll right", mode="image")
-    @keybindings.add("h", "scroll left", mode="image")
+    @keybindings.add("k", "scroll up", mode=Modes.IMAGE)
+    @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
+    @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
+    @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="image", mode="image", count=1)
+    @commands.register(mode=Modes.IMAGE, count=1)
     def scroll(self, direction, count):
         """Scroll the image in the given direction.
 
@@ -143,19 +144,19 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             step *= -1
         bar.setValue(bar.value() - step)
 
-    @keybindings.add("M", "center", mode="image")
-    @commands.register(instance="image", mode="image")
+    @keybindings.add("M", "center", mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
             bar.setValue(bar.maximum() // 2)
 
-    @keybindings.add("K", "scroll-edge up", mode="image")
-    @keybindings.add("J", "scroll-edge down", mode="image")
-    @keybindings.add("L", "scroll-edge right", mode="image")
-    @keybindings.add("H", "scroll-edge left", mode="image")
+    @keybindings.add("K", "scroll-edge up", mode=Modes.IMAGE)
+    @keybindings.add("J", "scroll-edge down", mode=Modes.IMAGE)
+    @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
+    @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(instance="image", mode="image")
+    @commands.register(mode=Modes.IMAGE)
     def scroll_edge(self, direction):
         """Scroll the image to one edge.
 
@@ -174,10 +175,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             value = bar.maximum()
         bar.setValue(value)
 
-    @keybindings.add("-", "zoom out", mode="image")
-    @keybindings.add("+", "zoom in", mode="image")
+    @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
+    @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(instance="image", count=1, mode="image")
+    @commands.register(count=1, mode=Modes.IMAGE)
     def zoom(self, direction, count):
         """Zoom the current widget.
 
@@ -196,13 +197,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self._scale = width / self.original().width()
         self.widget().rescale(self._scale)
 
-    @keybindings.add("w", "scale --level=fit", mode="image")
-    @keybindings.add("W", "scale --level=1", mode="image")
-    @keybindings.add("e", "scale --level=fit-width", mode="image")
-    @keybindings.add("E", "scale --level=fit-height", mode="image")
+    @keybindings.add("w", "scale --level=fit", mode=Modes.IMAGE)
+    @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
+    @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
+    @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
     @commands.argument("level", optional=True, type=argtypes.image_scale,
                        default="fit")
-    @commands.register(instance="image", count=1)
+    @commands.register(count=1)
     def scale(self, level, count):
         """Scale the image.
 
@@ -232,8 +233,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level * count)
         self._scale = level
 
-    @keybindings.add("<space>", "play-or-pause", mode="image")
-    @commands.register(instance="image", mode="image")
+    @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         try:
@@ -288,7 +289,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Returh height of the viewport to remove scrollbar height."""
         return self.viewport().height()
 
-    @statusbar.module("{zoomlevel}", instance="image")
+    @statusbar.module("{zoomlevel}")
     def _get_zoom_level(self):
         """Zoom level of the image in percent."""
         if not self.widget():
@@ -296,7 +297,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         level = self.pixmap().width() / self.original().width()
         return "%2.0f%%" % (level * 100)
 
-    @statusbar.module("{image-size}", instance="image")
+    @statusbar.module("{image-size}")
     def _get_image_size(self):
         """Size of the image in pixels in the form WIDTHxHEIGHT."""
         return "%dx%d" % (self.original().width(), self.original().height())
@@ -309,10 +310,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Convenience method to get the widgets original pixmap."""
         return self.widget().original
 
-    @pyqtSlot(str)
-    def _on_enter(self, widget):
-        if widget == "image":
+    @pyqtSlot(Modes)
+    def _on_enter(self, mode):
+        if mode == Modes.IMAGE:
             self._stack.setCurrentWidget(self)
+
+
+def instance():
+    return objreg.get(ScrollableImage)
 
 
 class Image(widgets.ImageLabel):
