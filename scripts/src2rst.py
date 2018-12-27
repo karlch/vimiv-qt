@@ -28,7 +28,7 @@ def generate_statusbar_modules():
         for name in sorted(statusbar._modules.keys()):
             func = statusbar._modules[name]._func
             name = name.strip("{}")
-            desc = inspect.getdoc(func)
+            desc = inspect.getdoc(func).split("\n")[0]
             rows.append((name, desc))
         rstutils.write_table(rows, f, title="Overview of statusbar modules")
 
@@ -49,16 +49,16 @@ def generate_commands():
     with open("docs/documentation/commands_desc.rstsrc", "w") as f:
         rstutils.write_header(f)
         for mode, cmds in commands.registry.items():
-            rstutils.write_subsection(mode.capitalize(), f)
+            rstutils.write_subsection(mode.name.capitalize(), f)
             # Table of command overview
             rows = [("Command", "Description")]
-            title = "Overview of %s commands" % (mode)
+            title = "Overview of %s commands" % (mode.name)
             for name in sorted(cmds.keys()):
                 cmd = cmds[name]
-                link = ":ref:`ref_%s_%s`" % (mode, name)
+                link = ":ref:`ref_%s_%s`" % (mode.name, name)
                 rows.append((link, cmd.description))
             rstutils.write_table(rows, f, title=title)
-            _write_command_description(cmds, mode, f)
+            _write_command_description(cmds, mode.name, f)
 
 
 def generate_settings():
