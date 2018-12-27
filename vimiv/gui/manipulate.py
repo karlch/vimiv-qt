@@ -78,6 +78,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         imsignals.imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.imsignals.svg_loaded.connect(self._on_svg_loaded)
         modehandler.signals.entered.connect(self._on_enter)
+        modehandler.signals.left.connect(self._on_left)
         manipulator = immanipulate.instance()
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
@@ -94,6 +95,11 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             self.raise_()
         if mode != Modes.MANIPULATE:
             self.hide()
+
+    @pyqtSlot(Modes)
+    def _on_left(self, mode):
+        if mode == Modes.MANIPULATE:
+            self._reset()
 
     def _on_edited(self, name, value):
         """Update progressbar value on edit."""
@@ -132,6 +138,11 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     def height(self):
         """Update height to get preferred height of the progress bar."""
         return self._bars["brightness"].sizeHint().height() * 2
+
+    def _reset(self):
+        """Reset values of all widgets to default."""
+        for bar in self._bars.values():
+            bar.setValue(0)
 
 
 def instance():
