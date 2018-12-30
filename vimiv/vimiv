@@ -4,6 +4,7 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import signal
 import sys
 
 from vimiv import app, startup
@@ -12,4 +13,5 @@ from vimiv import app, startup
 if __name__ == "__main__":
     qapp = app.Application()
     startup.run(sys.argv[1:])
+    signal.signal(signal.SIGINT, signal.SIG_DFL)  # ^C
     sys.exit(qapp.exec_())
