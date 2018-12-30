@@ -1,5 +1,5 @@
 coverage
-pytest==3.6
+pytest
 pytest-cov
 pytest-mock
 pytest-qt
