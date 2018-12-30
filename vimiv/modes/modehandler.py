@@ -114,7 +114,7 @@ def current():
     for mode in Modes:
         if mode.active:
             return mode
-    return Modes.IMAGE
+    return None
 
 
 @statusbar.module("{mode}")

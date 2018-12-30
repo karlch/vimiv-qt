@@ -36,7 +36,7 @@ class Mode:
         Mode._ID += 1
 
     def __eq__(self, other):
-        return self._id == other._id
+        return False if other is None else self._id == other._id
 
     def __neq__(self, other):
         return not self.__eq__(other)
