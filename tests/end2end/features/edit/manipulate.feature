@@ -18,3 +18,12 @@ Feature: Manipulate an image.
         And I run brightness --value=10
         And I run discard
         Then The brightness value should be 0
+
+    Scenario: Set brightness value from command line
+        Given I open any image
+        When I enter manipulate mode
+        And I run command
+        And I press brightness --value=14
+        And I activate the command line
+        Then The mode should be manipulate
+        And The brightness value should be 14

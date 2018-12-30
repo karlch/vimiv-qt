@@ -15,13 +15,6 @@ from vimiv.modes import modehandler, Modes
 bdd.scenarios("commandline.feature")
 
 
-@bdd.when("I activate the command line")
-def activate_commandline(qtbot):
-    """Needed as passing return as a string is not possible."""
-    qtbot.keyClick(commandline.instance(), Qt.Key_Return)
-    qtbot.wait(10)
-
-
 @bdd.when("I hit backspace")
 def hit_backspace(qtbot):
     """Needed as passing backspace as a string is not possible."""

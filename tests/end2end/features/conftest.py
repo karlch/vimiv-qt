@@ -8,6 +8,8 @@
 
 import os
 
+from PyQt5.QtCore import Qt
+
 import pytest_bdd as bdd
 
 from vimiv.commands import runners
@@ -31,6 +33,13 @@ def run_command(command):
 def key_press(qtbot, keys):
     mode = modehandler.current()
     qtbot.keyClicks(mode.widget, keys)
+
+
+@bdd.when("I activate the command line")
+def activate_commandline(qtbot):
+    """Needed as passing return as a string is not possible."""
+    qtbot.keyClick(commandline.instance(), Qt.Key_Return)
+    qtbot.wait(10)
 
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))

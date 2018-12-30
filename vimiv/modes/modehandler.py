@@ -64,8 +64,7 @@ def enter(mode):
     if last_mode:
         logging.debug("Leaving mode %s", last_mode.name)
         last_mode.active = False
-        if last_mode not in [Modes.COMMAND, Modes.MANIPULATE]:
-            mode.last = last_mode
+        mode.last = last_mode
     # Enter new mode
     mode.active = True
     mode.widget.show()
