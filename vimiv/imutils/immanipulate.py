@@ -71,7 +71,7 @@ class Manipulator(QObject):
     @commands.register(mode=Modes.MANIPULATE)
     def accept(self):
         """Apply changes to file and leave manipulate."""
-        modehandler.leave("manipulate")
+        modehandler.leave(Modes.MANIPULATE)
         if self.manipulations == {"brightness": 0, "contrast": 0}:
             return
         imloader.set_pixmap(self.pixmap)
@@ -80,7 +80,7 @@ class Manipulator(QObject):
     @commands.register(mode=Modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
-        modehandler.leave("manipulate")
+        modehandler.leave(Modes.MANIPULATE)
         # Show original image
         if self.manipulations != {"brightness": 0, "contrast": 0}:
             imsignals.imsignals.pixmap_updated.emit(self.original)

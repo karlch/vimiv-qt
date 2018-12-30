@@ -15,7 +15,7 @@ import vimiv
 from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler
+from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg, libpaths, files
 
 
@@ -68,10 +68,10 @@ def open_paths(paths, select_mode=True):
         True on success.
     """
     images, directories = files.get_supported(paths)
-    mode = "library"
+    mode = Modes.LIBRARY
     if images:
         imsignals.update_paths.emit(images, 0)
-        mode = "image"
+        mode = Modes.IMAGE
     elif directories:
         libpaths.load(directories[0])
     else:
