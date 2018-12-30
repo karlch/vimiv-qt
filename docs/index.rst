@@ -1,4 +1,4 @@
-.. title:: vimiv
+.. title:: Home
 
 .. image:: _static/vimiv/vimiv_banner_800.png
    :width: 400px
@@ -27,7 +27,6 @@ is a good place to :doc:`get started <documentation/getting_started>`.
 For more information please check out the
 :doc:`documentation <documentation/index>`.
 
-
 Screenshots
 -----------
 
@@ -46,11 +45,6 @@ Dark theme:
 
 .. image:: _static/scrots/command_dark.png
    :width: 300px
-
-Installation
-------------
-
-Brief installation instructions here.
 
 Contents
 --------
