@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
 from vimiv.config import styles
 from vimiv.imutils import imsignals, immanipulate
-from vimiv.modes import modehandler, modewidget, Modes
+from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import eventhandler, objreg
 
 
@@ -77,29 +77,39 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.imsignals.svg_loaded.connect(self._on_svg_loaded)
-        modehandler.signals.entered.connect(self._on_enter)
-        modehandler.signals.left.connect(self._on_left)
+        modehandler.signals.entered.connect(self._on_mode_entered)
+        modehandler.signals.left.connect(self._on_mode_left)
         manipulator = immanipulate.instance()
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
 
         self.hide()
 
-    @pyqtSlot(Modes)
-    def _on_enter(self, mode):
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
+        """Show and hide manipulate widget depending on mode entered.
+
+        Args:
+            mode: The mode entered.
+            last_mode: The mode left.
+        """
         if mode == Modes.MANIPULATE and self._error:
             modehandler.leave(Modes.MANIPULATE)
             # Must wait for every other statusbar update to complete
             QTimer.singleShot(0, lambda: logging.error(self._error))
         elif mode == Modes.MANIPULATE:
             self.raise_()
-        if mode != Modes.MANIPULATE:
-            self.hide()
 
-    @pyqtSlot(Modes)
-    def _on_left(self, mode):
+    @pyqtSlot(Mode)
+    def _on_mode_left(self, mode):
+        """Reset and hide manipulate widget if the manipulate mode is left.
+
+        Args:
+            mode: The mode left.
+        """
         if mode == Modes.MANIPULATE:
             self._reset()
+            self.hide()
 
     def _on_edited(self, name, value):
         """Update progressbar value on edit."""

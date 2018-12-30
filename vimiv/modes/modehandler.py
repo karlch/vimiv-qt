@@ -28,11 +28,12 @@ class Signals(QObject):
     Signals:
         entered: Emitted when a mode is entered.
             arg1: Name of the mode entered.
+            arg2: Name of the mode left.
         left: Emitted when a mode is left.
             arg1: Name of the mode left.
     """
 
-    entered = pyqtSignal(Mode)
+    entered = pyqtSignal(Mode, Mode)
     left = pyqtSignal(Mode)
 
 
@@ -73,7 +74,7 @@ def enter(mode):
         logging.debug("%s widget focused", mode)
     else:
         logging.debug("Could not focus %s widget", mode)
-    signals.entered.emit(mode)
+    signals.entered.emit(mode, last_mode)
     logging.debug("Entered mode %s", mode)
 
 
@@ -120,8 +121,3 @@ def current():
 def get_active_name():
     """Current mode."""
     return current().name.upper()
-
-
-def last():
-    """Return the mode active before the current one."""
-    return current().last_mode

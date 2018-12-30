@@ -14,7 +14,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, modewidget, Modes
+from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import eventhandler, objreg
 
 # We need the check as svg support is optional
@@ -91,7 +91,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setAlignment(Qt.AlignCenter)
         self.setWidgetResizable(True)
 
-        modehandler.signals.entered.connect(self._on_enter)
+        modehandler.signals.entered.connect(self._on_mode_entered)
         imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.svg_loaded.connect(self._on_svg_loaded)
@@ -310,8 +310,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Convenience method to get the widgets original pixmap."""
         return self.widget().original
 
-    @pyqtSlot(Modes)
-    def _on_enter(self, mode):
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
         if mode == Modes.IMAGE:
             self._stack.setCurrentWidget(self)
 

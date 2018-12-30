@@ -83,8 +83,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.signals.loaded.connect(self._on_paths_loaded)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
-        modehandler.signals.entered.connect(self._on_enter)
-        modehandler.signals.left.connect(self._on_leave)
+        modehandler.signals.entered.connect(self._on_mode_entered)
+        modehandler.signals.left.connect(self._on_mode_left)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         trash_manager.signals.path_restored.connect(self._on_path_restored)
         imsignals.maybe_update_library.connect(self._on_maybe_update)
@@ -170,14 +170,25 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if setting == "library.width":
             self.update_width()
 
-    @pyqtSlot(Mode)
-    def _on_enter(self, mode):
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
+        """Show or hide library depending on the mode entered.
+
+        Args:
+            mode: The mode entered.
+            last_mode: The mode left.
+        """
         if mode == Modes.LIBRARY:
             self.show()
             self.update_width()
 
     @pyqtSlot(Mode)
-    def _on_leave(self, mode):
+    def _on_mode_left(self, mode):
+        """Hide library widget if library mode was left.
+
+        Args:
+            mode: The mode left.
+        """
         if mode == Modes.LIBRARY:
             self.hide()
 

@@ -21,10 +21,14 @@ from vimiv.modes import modehandler, Modes
 from vimiv.utils import pathreceiver
 
 
-def use_incremental():
-    """Return True if incremental search should be used."""
+def use_incremental(mode):
+    """Return True if incremental search should be used.
+
+    Args:
+        mode: Mode for which search should be run.
+    """
     enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
-    if enabled and modehandler.last() in [Modes.LIBRARY, Modes.THUMBNAIL]:
+    if enabled and mode in [Modes.LIBRARY, Modes.THUMBNAIL]:
         return True
     return False
 

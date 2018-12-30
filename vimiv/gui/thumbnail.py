@@ -17,7 +17,7 @@ from PyQt5.QtGui import QColor, QPixmap
 from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, modewidget, Modes
+from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.gui import statusbar, image
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
                          thumbnail_manager, trash_manager, misc)
@@ -90,8 +90,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imsignals.path_loaded.connect(self._on_path_loaded)
         imsignals.paths_loaded.connect(self._on_paths_loaded)
-        modehandler.signals.entered.connect(self._on_enter)
-        modehandler.signals.left.connect(self._on_leave)
+        modehandler.signals.entered.connect(self._on_mode_entered)
+        modehandler.signals.left.connect(self._on_mode_left)
         settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
@@ -134,15 +134,27 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         modehandler.enter(Modes.IMAGE)
         imsignals.update_index.emit(index.row() + 1)
 
-    @pyqtSlot(Modes)
-    def _on_enter(self, mode):
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
+        """Set widget to thumbnail or image depending on mode entered.
+
+        Args:
+            mode: The mode entered.
+            last_mode: The mode left.
+        """
         if mode == Modes.THUMBNAIL:
             self._stack.setCurrentWidget(self)
 
-    @pyqtSlot(Modes)
-    def _on_leave(self, mode):
-        # Need this here in addition to _on_enter in image because we may leave
-        # for the library
+    @pyqtSlot(Mode)
+    def _on_mode_left(self, mode):
+        """Set widget to image if thumbnail mode was left.
+
+        This is required in addition to _on_enter in image because it is
+        possible to leave for the library.
+
+        Args:
+            mode: The mode left.
+        """
         if mode == Modes.THUMBNAIL:
             self._stack.setCurrentWidget(image.instance())
 

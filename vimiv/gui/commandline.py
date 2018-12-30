@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QLineEdit
 
 from vimiv.commands import history, commands, argtypes, runners, search
 from vimiv.config import styles, keybindings
-from vimiv.modes import modehandler, modewidget, Modes
+from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import objreg, eventhandler
 
 
@@ -22,7 +22,7 @@ def get_command_func(prefix, command, mode):
     if prefix == ":":
         return lambda: runners.command(command)
     # No need to search again if incsearch is enabled
-    if prefix in "/?" and not search.use_incremental():
+    if prefix in "/?" and not search.use_incremental(mode):
         return lambda: search.search(command, mode, reverse=prefix == "?")
     return lambda: None
 
@@ -31,6 +31,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Attributes:
+        mode: Mode in which the command is run, corresponds to the mode from
+            which the commandline was entered.
+
         _history: History object to store and interact with history.
     """
 
@@ -49,6 +52,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def __init__(self):
         super().__init__()
         self._history = history.History(history.read())
+        self.mode = None
 
         self.returnPressed.connect(self._on_return_pressed)
         self.editingFinished.connect(self._history.reset)
@@ -56,6 +60,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
+        modehandler.signals.entered.connect(self._on_mode_entered)
 
         styles.apply(self)
 
@@ -68,10 +73,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
         # Update command with aliases and wildcards
-        mode = modehandler.last()
-        command = runners.update_command(command, mode)
+        command = runners.update_command(command, self.mode)
         # Retrieve function to call depending on prefix
-        func = get_command_func(prefix, command, mode)
+        func = get_command_func(prefix, command, self.mode)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         QTimer.singleShot(0, func)
@@ -97,12 +101,12 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @pyqtSlot()
     def _incremental_search(self):
         """Run incremental search if enabled."""
-        if not search.use_incremental():
+        if not search.use_incremental(self.mode):
             return
         try:
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
-                search.search(text, modehandler.last(), reverse=prefix == "?",
+                search.search(text, self.mode, reverse=prefix == "?",
                               incremental=True)
         except IndexError:  # Not enough text
             pass
@@ -148,6 +152,17 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
+
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
+        """Store mode from which the command line was entered.
+
+        Args:
+            mode: The mode entered.
+            last_mode: The mode left.
+        """
+        if mode == Modes.COMMAND:
+            self.mode = last_mode
 
 
 def instance():

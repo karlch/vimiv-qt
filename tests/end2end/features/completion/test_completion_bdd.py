@@ -28,7 +28,7 @@ def check_completion_model(model):
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))
 def check_completion_model_mode(mode):
     assert modehandler.current() == Modes.COMMAND  # Sanity check
-    assert modehandler.last() == Modes.get_by_name(mode)
+    assert completer.instance()._cmd.mode == Modes.get_by_name(mode)
 
 
 @bdd.then("no completion should be selected")
