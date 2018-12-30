@@ -27,8 +27,25 @@ def get_command_func(prefix, command, mode):
     return lambda: None
 
 
+class UnknownPrefix(Exception):
+    """Raised if a prefix in the command line is not known."""
+
+    def __init__(self, prefix):
+        """Call the parent with a generated message.
+
+        Args:
+            prefix: The unknown prefix.
+        """
+        message = "Unknown prefix '%s', possible values: %s" % (
+            prefix, ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]))
+        super().__init__(message)
+
+
 class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """Commandline widget in the bar.
+
+    Class Attributes:
+        PREFIXES: Possible prefixes for commands, e.g. ':' or '/'.
 
     Attributes:
         mode: Mode in which the command is run, corresponds to the mode from
@@ -36,6 +53,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
         _history: History object to store and interact with history.
     """
+
+    PREFIXES = ":/?"
 
     STYLESHEET = """
     QLineEdit {
@@ -84,10 +103,12 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """Remove prefix from text for command processing.
 
         Return:
-            prefix: One of ":", "/"
+            prefix: One of PREFIXES.
             command: Rest of the text stripped from whitespace.
         """
         prefix, command = text[0], text[1:]
+        if prefix not in self.PREFIXES:
+            raise UnknownPrefix(prefix)
         command = command.strip()
         return prefix, command
 
