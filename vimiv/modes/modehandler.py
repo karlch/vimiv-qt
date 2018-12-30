@@ -65,7 +65,7 @@ def enter(mode):
         logging.debug("Leaving mode %s", last_mode.name)
         last_mode.active = False
         if last_mode not in [Modes.COMMAND, Modes.MANIPULATE]:
-            mode.last_mode = last_mode
+            mode.last = last_mode
     # Enter new mode
     mode.active = True
     mode.widget.show()
@@ -82,7 +82,7 @@ def leave(mode):
     """Leave the mode 'mode'."""
     if isinstance(mode, str):
         mode = Modes.get_by_name(mode)
-    enter(mode.last_mode)
+    enter(mode.last)
     signals.left.emit(mode)
 
 

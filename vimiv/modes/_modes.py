@@ -15,9 +15,9 @@ class Mode:
 
     Attributes:
         active: True if the mode is currently active.
-        last_mode: Mode that was active before entering this one.
         widget: QWidget associated with this mode.
 
+        _last_mode: Mode that was active before entering this one.
         _name: Name of the mode used for commands which require a string
             representation.
         _id: The unique identifier used to compare modes.
@@ -27,13 +27,22 @@ class Mode:
 
     def __init__(self, name):
         self.active = False
-        self.last_mode = None
         self.widget = None
+
+        self._last_mode = None
         self._name = name
 
         # Store global ID as ID and increase it by one
         self._id = Mode._ID
         Mode._ID += 1
+
+    @property
+    def last(self):
+        return self._last_mode
+
+    @last.setter
+    def last(self, mode):
+        self._last_mode = mode
 
     def __eq__(self, other):
         return False if other is None else self._id == other._id
@@ -90,9 +99,9 @@ class Modes(metaclass=iterable):
 for mode in Modes:
     if mode == Modes.IMAGE:
         mode.active = True # Default mode
-        mode.last_mode = Modes.LIBRARY
+        mode.last = Modes.LIBRARY
     else:
-        mode.last_mode = Modes.IMAGE
+        mode.last = Modes.IMAGE
 
 
 def modewidget(mode):
