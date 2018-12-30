@@ -20,7 +20,7 @@ def get_command_func(prefix, command, mode):
     if prefix == ":" and command.startswith("!"):
         return lambda: runners.external(command[1:])
     if prefix == ":":
-        return lambda: runners.command(command)
+        return lambda: runners.command(command, mode)
     # No need to search again if incsearch is enabled
     if prefix in "/?" and not search.use_incremental(mode):
         return lambda: search.search(command, mode, reverse=prefix == "?")
