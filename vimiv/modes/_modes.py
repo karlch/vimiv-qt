@@ -48,7 +48,13 @@ class Mode(abc.ABC):
         Mode._ID += 1
 
     @property
+    def identifier(self):
+        """Value of _id to compare to other modes as property."""
+        return self._id
+
+    @property
     def last(self):
+        """Value of last mode as property."""
         return self._last
 
     @last.setter
@@ -56,6 +62,10 @@ class Mode(abc.ABC):
         self._set_last(mode)  # To be implemented by the child class
 
     def reset_last(self):
+        """Reset last mode to the fallback value.
+
+        This can be used when the last mode was closed.
+        """
         self._last = self.last_fallback
 
     @abc.abstractmethod
@@ -63,10 +73,9 @@ class Mode(abc.ABC):
         pass
 
     def __eq__(self, other):
-        return False if other is None else self._id == other._id
-
-    def __neq__(self, other):
-        return not self.__eq__(other)
+        if isinstance(other, Mode):
+            return self.identifier == other.identifier
+        return False
 
     def __hash__(self):
         return self._id
@@ -97,18 +106,19 @@ class CommandMode(Mode):
             self._last = mode
 
 
-class iterable(type):
+class Iterable(type):
     """Metaclass to allow iterating over a class."""
 
-    def __iter__(self):
-        return self.classiter()
+    def __iter__(cls):
+        return cls.classiter()  # Defer acual iteration to the class
 
 
-class Modes(metaclass=iterable):
+class Modes(metaclass=Iterable):
     """Storage class for all modes.
 
     The class is iterable to allow `for mode in Modes`.
     """
+
     GLOBAL = MainMode("global")
     IMAGE = MainMode("image")
     LIBRARY = MainMode("library")
@@ -117,6 +127,16 @@ class Modes(metaclass=iterable):
     MANIPULATE = MainMode("manipulate")
 
     _modes = [GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
+
+    @classmethod
+    def init(cls):
+        """Initialize default values for mode."""
+        for mode in cls._modes:
+            if mode == Modes.IMAGE:
+                mode.active = True  # Default mode
+                mode.last = mode.last_fallback = Modes.LIBRARY
+            else:
+                mode.last = mode.last_fallback = Modes.IMAGE
 
     @staticmethod
     def get_by_name(name):
@@ -131,13 +151,7 @@ class Modes(metaclass=iterable):
         return iter(cls._modes)
 
 
-# Initialize default values for modes
-for mode in Modes:
-    if mode == Modes.IMAGE:
-        mode.active = True # Default mode
-        mode.last = mode.last_fallback = Modes.LIBRARY
-    else:
-        mode.last = mode.last_fallback = Modes.IMAGE
+Modes.init()  # Set default values
 
 
 def modewidget(mode):

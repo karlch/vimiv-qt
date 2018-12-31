@@ -28,8 +28,7 @@ def update_command(text, mode):
         text: String passed as command.
         mode: Mode in which the command is supposed to run.
     """
-    command = alias(text, mode)
-    return expand_wildcards(command, mode)
+    return expand_wildcards(alias(text, mode), mode)
 
 
 def command(text, mode=None):
@@ -81,21 +80,21 @@ def _parse(text):
     return count, cmdname, args
 
 
-def expand_wildcards(command, mode):
+def expand_wildcards(text, mode):
     """Expand % and * to the corresponding path and pathlist.
 
     Args:
-        command: The command in which the wildcards are expanded.
+        text: The command in which the wildcards are expanded.
         mode: Mode the command is run in to get correct path(-list).
     """
     # Check first as the re substitutions are rather expensive
-    if "%" in command:
+    if "%" in text:
         current = pathreceiver.current(mode)
-        command = re.sub(r'(?<!\\)%', current, command)
-    if "*" in command:
+        text = re.sub(r'(?<!\\)%', current, text)
+    if "*" in text:
         pathlist = " ".join(pathreceiver.pathlist())
-        command = re.sub(r'(?<!\\)\*', pathlist, command)
-    return command
+        text = re.sub(r'(?<!\\)\*', pathlist, text)
+    return text
 
 
 class ExternalRunner(QObject):
@@ -124,19 +123,19 @@ class ExternalRunner(QObject):
         self._pool.start(runnable)
 
     @pyqtSlot(str, str)
-    def _on_pipe_output_received(self, command, stdout):
+    def _on_pipe_output_received(self, cmd, stdout):
         """Open paths from stdout.
 
         Args:
-            command: Executed shell command.
+            cmd: Executed shell command.
             stdout: String form of stdout of the exited shell command.
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         if paths and app.open_paths(paths):
             statusbar.update()
-            logging.debug("Opened paths from pipe '%s'", command)
+            logging.debug("Opened paths from pipe '%s'", cmd)
         else:
-            logging.warning("%s: No paths from pipe", command)
+            logging.warning("%s: No paths from pipe", cmd)
 
 
 external = ExternalRunner()
@@ -158,7 +157,7 @@ class ShellCommandRunnable(QRunnable):
         super().__init__()
         self._text = text.rstrip("|").strip()
         self._runner = runner
-        self._pipe = True if text.endswith("|") else False
+        self._pipe = bool(text.endswith("|"))
 
     def run(self):
         """Run shell command on QThreadPool.start(self)."""
@@ -182,7 +181,7 @@ def alias(text, mode):
     Return:
         The replaced text if text was an alias else text.
     """
-    command = text.split()[0]
-    if command in aliases.get(mode):
-        return text.replace(command, aliases.get(mode)[command])
+    cmd = text.split()[0]
+    if cmd in aliases.get(mode):
+        return text.replace(cmd, aliases.get(mode)[cmd])
     return text

@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
 from unittest import mock
-mock.patch("vimiv.utils.misc.cached_method", lambda x : x).start()
+mock.patch("vimiv.utils.misc.cached_method", lambda x: x).start()
 
 from vimiv import startup
 from vimiv.utils import objreg

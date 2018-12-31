@@ -85,11 +85,15 @@ class Completer(QObject):
 
     def _maybe_show(self):
         """Show completion widget if the model is not empty."""
+        # We explicitly compare against the empty function here
+        # pylint: disable=comparison-with-callable
         if self._modelfunc != completionmodels.empty:
             self.parent().show()
 
     def _get_modelfunc(self, text):
         """Return the needed model function depending on text."""
+        # This is more or less a switch
+        # pylint: disable=too-many-return-statements
         # Search
         if not text.startswith(":"):
             return completionmodels.empty, ()

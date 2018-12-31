@@ -16,10 +16,11 @@ import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from ._modes import Mode, Modes
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
+
+from ._modes import Mode, Modes
 
 
 class Signals(QObject):

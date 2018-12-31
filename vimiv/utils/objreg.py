@@ -18,6 +18,15 @@ class Registry(collections.UserDict):
     """Storage class for vimiv components."""
 
     def store(self, component):
+        """Store one component in the registry.
+
+        This is used instead of __setitem__ as the key to store the component
+        with can be calculated from the component itself. Calls
+        __setitem__(_key(component), component).
+
+        Args:
+            component: The object to store.
+        """
         key = self._key(component)
         if key in self:  # Do not allow storing the same type twice
             logging.error("%s already registered in objreg", str(key))

@@ -103,7 +103,7 @@ def _add_statusbar_formatters(configsection):
         configsection: STATUSBAR section in the config file.
     """
     positions = ["left", "center", "right"]
-    possible = ["%s_%s" % (p, m.name.lower()) for p in positions for m in Modes]
+    possible = ["%s_%s" % (p, m.name) for p in positions for m in Modes]
     for name, value in configsection.items():
         if name in possible:
             settings.StrSetting("statusbar.%s" % (name), value)

@@ -14,7 +14,7 @@ from vimiv.modes import modehandler, Modes
 @bdd.given("I enter thumbnail mode")
 def enter_thumbnail():
     modehandler.enter(Modes.THUMBNAIL)
-    thumbnail.instance().setFixedWidth(400)  # Make sure the width is as expected
+    thumbnail.instance().setFixedWidth(400)  # Make sure width is as expected
 
 
 @bdd.then(bdd.parsers.parse("the thumbnail number {N} should be selected"))

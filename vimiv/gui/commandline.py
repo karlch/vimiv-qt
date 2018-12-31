@@ -153,7 +153,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.setText(self._history.cycle(direction, self.text()))
 
     @keybindings.add("<up>", "history-substr-search next", mode=Modes.COMMAND)
-    @keybindings.add("<down>", "history-substr-search prev", mode=Modes.COMMAND)
+    @keybindings.add("<down>", "history-substr-search prev",
+                     mode=Modes.COMMAND)
     @commands.argument("direction", type=argtypes.command_history_direction)
     @commands.register(mode=Modes.COMMAND)
     def history_substr_search(self, direction):

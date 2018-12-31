@@ -31,9 +31,10 @@ _paths = []
 _index = 0
 
 
+# We want to use the name next here as it is the best name for the command
 @keybindings.add("n", "next", mode=Modes.IMAGE)
 @commands.register(count=1)
-def next(count):
+def next(count):  # pylint: disable=redefined-builtin
     """Select next image.
 
     **count:** multiplier
@@ -119,8 +120,6 @@ def exif_date_time():
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             pass
     return ""
-
-
 
 
 def pathlist():
