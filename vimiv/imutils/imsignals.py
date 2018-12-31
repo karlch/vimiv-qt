@@ -18,12 +18,11 @@ class ImageSignalHandler(QObject):
     """Store signals for image utilities as class attributes.
 
     Signals:
-        update_index: Emitted when a new index should be opened.
-            arg1: Integer of the new index to select.
-        update_path: Emitted when a new image path should be opened.
-            arg1: Path of the new image.
-        update_paths: Emitted when new paths should be opened.
-            arg1: List of new paths.
+        new_image: Emitted when a new image should be opened.
+            arg1: Path to the new image.
+        new_images: Emitted when a list of new images should be opened.
+            arg1: List of new paths to the images.
+            arg2: The path to be focused.
         path_loaded: Emitted when the imstorage loaded a new path.
             arg1: Path of the new image.
         paths_loaded: Emitted when the imstorage loaded new paths.
@@ -46,9 +45,8 @@ class ImageSignalHandler(QObject):
     """
 
     # Tell the storage to set new things
-    update_index = pyqtSignal(int)
-    update_path = pyqtSignal(str)
-    update_paths = pyqtSignal(list, int)
+    new_image = pyqtSignal(str)
+    new_images = pyqtSignal(list, str)
 
     # Tell the loaders to load new images
     path_loaded = pyqtSignal(str)

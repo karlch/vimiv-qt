@@ -70,12 +70,12 @@ def open_paths(paths, select_mode=True):
     images, directories = files.get_supported(paths)
     mode = Modes.LIBRARY
     if images:
-        imsignals.update_paths.emit(images, 0)
+        imsignals.new_images.emit(images, images[0])
         mode = Modes.IMAGE
     elif directories:
         libpaths.load(directories[0])
     else:
-        return False
+        return False  # No valid paths found
     if select_mode:
         modehandler.enter(mode)
     return True

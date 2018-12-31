@@ -143,9 +143,8 @@ class Storage(QObject):
         sshow.next_im.connect(self._on_slideshow_event)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         trash_manager.signals.path_restored.connect(self._on_path_restored)
-        imsignals.update_index.connect(self._on_update_index)
-        imsignals.update_path.connect(self._on_update_path)
-        imsignals.update_paths.connect(self._on_update_paths)
+        imsignals.new_image.connect(self._on_new_image)
+        imsignals.new_images.connect(self._on_new_images)
 
     @pyqtSlot(int, list, str, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -169,38 +168,31 @@ class Storage(QObject):
     def _on_slideshow_event(self):
         next(1)
 
-    @pyqtSlot(int)
-    def _on_update_index(self, index):
-        goto(index, 0)
-
     @pyqtSlot(str)
-    def _on_update_path(self, path):
-        if path in _paths:
-            goto(_paths.index(path) + 1, 0)
-        else:
-            _load_single(path)
-
-    @pyqtSlot(list, int)
-    def _on_update_paths(self, paths, index):
-        """Load new paths into storage.
+    def _on_new_image(self, path):
+        """Load new image into storage.
 
         Args:
-            paths: List of paths to load.
-            index: Index of the path to display.
+            path: Path to the new image to load.
         """
-        paths = [os.path.abspath(path) for path in paths]
-        directory = os.path.dirname(paths[0])
+        _load_single(path)
+
+    @pyqtSlot(list, str)
+    def _on_new_images(self, paths, focused_path):
+        """Load list of new images into storage.
+
+        Args:
+            paths: List of paths to the new images to load.
+            focused_path: The path to display.
+        """
+        focused_path = os.path.abspath(focused_path)
+        directory = os.path.dirname(focused_path)
         imsignals.maybe_update_library.emit(directory)
         # Populate list of paths in same directory for single path
         if len(paths) == 1:
-            _load_single(paths[0])
+            _load_single(focused_path)
         else:
-            _set_index(index)
-            _set_paths(paths)
-            if settings.get_value(settings.Names.SHUFFLE):
-                shuffle(_paths)
-            imsignals.paths_loaded.emit(_paths)
-            imsignals.path_loaded.emit(current())
+            _load_paths(paths, focused_path)
 
     @pyqtSlot(str)
     def _on_path_removed(self, path):
@@ -250,11 +242,25 @@ def _set_paths(paths):
 
 def _load_single(path):
     """Populate list of paths in same directory for single path."""
-    directory = os.path.dirname(path)
-    paths, _ = files.get_supported(files.ls(directory))
+    if path in _paths:
+        goto(_paths.index(path) + 1, count=0)  # goto is indexed from 1
+    else:
+        directory = os.path.dirname(path)
+        paths, _ = files.get_supported(files.ls(directory))
+        _load_paths(paths, path)
+
+
+def _load_paths(paths, focused_path):
+    """Populate imstorage with a new list of paths.
+
+    Args:
+        paths: List of paths to load.
+        focused_path: The path to display.
+    """
+    paths = [os.path.abspath(path) for path in paths]
     if settings.get_value(settings.Names.SHUFFLE):
-        shuffle(paths)
-    _set_index(paths.index(path))
+        shuffle(_paths)
+    _set_index(paths.index(focused_path))
     _set_paths(paths)  # Must update after index for maybe_write
     imsignals.paths_loaded.emit(_paths)
     imsignals.path_loaded.emit(current())

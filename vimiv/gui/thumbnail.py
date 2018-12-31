@@ -131,8 +131,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
+        imsignals.new_image.emit(self.abspath())
         modehandler.enter(Modes.IMAGE)
-        imsignals.update_index.emit(index.row() + 1)
 
     @pyqtSlot(Mode, Mode)
     def _on_mode_entered(self, mode, last_mode):
