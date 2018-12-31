@@ -88,8 +88,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
-        imsignals.path_loaded.connect(self._on_path_loaded)
-        imsignals.paths_loaded.connect(self._on_paths_loaded)
+        imsignals.new_image_opened.connect(self._on_new_image_opened)
+        imsignals.new_images_opened.connect(self._on_new_images_opened)
         modehandler.signals.entered.connect(self._on_mode_entered)
         modehandler.signals.left.connect(self._on_mode_left)
         settings.signals.changed.connect(self._on_settings_changed)
@@ -102,7 +102,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         styles.apply(self)
 
     @pyqtSlot(list)
-    def _on_paths_loaded(self, paths):
+    def _on_new_images_opened(self, paths):
         """Load new paths into thumbnail widget.
 
         Args:
@@ -120,9 +120,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             self._manager.create_thumbnails_async(paths)
 
     @pyqtSlot(str)
-    def _on_path_loaded(self, path):
-        index = self._paths.index(os.path.abspath(path))
-        self._select_item(index)
+    def _on_new_image_opened(self, path):
+        self._select_item(self._paths.index(path))
 
     @pyqtSlot(QModelIndex)
     def _on_activated(self, index):
@@ -131,8 +130,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
+        imsignals.open_new_image.emit(self.abspath())
         modehandler.enter(Modes.IMAGE)
-        imsignals.update_index.emit(index.row() + 1)
 
     @pyqtSlot(Mode, Mode)
     def _on_mode_entered(self, mode, last_mode):

@@ -18,15 +18,14 @@ class ImageSignalHandler(QObject):
     """Store signals for image utilities as class attributes.
 
     Signals:
-        update_index: Emitted when a new index should be opened.
-            arg1: Integer of the new index to select.
-        update_path: Emitted when a new image path should be opened.
+        open_new_image: Emitted when a new image should be opened.
+            arg1: Path to the new image.
+        open_new_images: Emitted when a list of new images should be opened.
+            arg1: List of new paths to the images.
+            arg2: The path to be focused.
+        new_image_opened: Emitted when the imstorage loaded a new path.
             arg1: Path of the new image.
-        update_paths: Emitted when new paths should be opened.
-            arg1: List of new paths.
-        path_loaded: Emitted when the imstorage loaded a new path.
-            arg1: Path of the new image.
-        paths_loaded: Emitted when the imstorage loaded new paths.
+        new_images_opened: Emitted when the imstorage loaded new paths.
             arg1: List of new paths.
         pixmap_loaded: Emitted when the imloader loaded a new pixmap.
             arg1: The QPixmap loaded.
@@ -45,14 +44,13 @@ class ImageSignalHandler(QObject):
 
     """
 
-    # Tell the storage to set new things
-    update_index = pyqtSignal(int)
-    update_path = pyqtSignal(str)
-    update_paths = pyqtSignal(list, int)
+    # Emited when new image path(s) should be opened
+    open_new_image = pyqtSignal(str)
+    open_new_images = pyqtSignal(list, str)
 
-    # Tell the loaders to load new images
-    path_loaded = pyqtSignal(str)
-    paths_loaded = pyqtSignal(list)
+    # Emited when new image path(s) were opened
+    new_image_opened = pyqtSignal(str)
+    new_images_opened = pyqtSignal(list)
 
     # Tell the image to get a new object to display
     pixmap_loaded = pyqtSignal(QPixmap)

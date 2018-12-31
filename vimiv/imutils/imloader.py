@@ -32,10 +32,10 @@ class ImageLoader(QObject):
     def __init__(self):
         super().__init__()
         self.image = None
-        imsignals.path_loaded.connect(self._on_path_loaded)
+        imsignals.new_image_opened.connect(self._on_new_image_opened)
 
     @pyqtSlot(str)
-    def _on_path_loaded(self, path):
+    def _on_new_image_opened(self, path):
         """Load proper displayable QWidget for a path."""
         reader = QImageReader(path)
         if not reader.canRead():
