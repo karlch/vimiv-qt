@@ -78,11 +78,18 @@ def enter(mode):
 
 
 def leave(mode):
-    """Leave the mode 'mode'."""
+    """Leave the mode 'mode'.
+
+    The difference to entering another mode is that leaving closes the widget
+    which is left.
+    """
     if isinstance(mode, str):
         mode = Modes.get_by_name(mode)
     enter(mode.last)
     signals.left.emit(mode)
+    # Reset the last mode when leaving a specific mode as leaving means closing
+    # the widget and we do not want to re-open a closed widget implicitly
+    mode.last.reset_last()
 
 
 @keybindings.add("tm", "toggle manipulate")

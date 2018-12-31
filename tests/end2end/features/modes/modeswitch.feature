@@ -25,3 +25,12 @@ Feature: Switching between different modes.
         Given I open any image
         When I enter thumbnail mode
         Then the mode should be thumbnail
+
+    Scenario: Do not re-open a closed mode implicitly
+        Given I open any image
+        When I enter thumbnail mode
+        And I enter library mode
+        And I enter thumbnail mode
+        And I toggle thumbnail mode
+        And I toggle library mode
+        Then the mode should be image

@@ -13,7 +13,7 @@ import abc
 class Mode(abc.ABC):
     """Skeleton for a mode as abstract base class.
 
-    The child must implement the _set_last_mode method which defines which
+    The child must implement the _set_last method which defines which
     modes are saved as last mode. This is required as in command mode, any mode
     can be the last mode which is supposed to be focused when leaving the
     command line, but e.g. in library mode when toggling the library we should
@@ -24,9 +24,10 @@ class Mode(abc.ABC):
 
     Attributes:
         active: True if the mode is currently active.
+        last_fallback: Mode to use as _last in case _last was closed.
         widget: QWidget associated with this mode.
 
-        _last_mode: Mode that was active before entering this one.
+        _last: Mode that was active before entering this one.
         _name: Name of the mode used for commands which require a string
             representation.
         _id: The unique identifier used to compare modes.
@@ -36,9 +37,10 @@ class Mode(abc.ABC):
 
     def __init__(self, name):
         self.active = False
+        self.last_fallback = None
         self.widget = None
 
-        self._last_mode = None
+        self._last = None
         self._name = name
 
         # Store global ID as ID and increase it by one
@@ -47,16 +49,18 @@ class Mode(abc.ABC):
 
     @property
     def last(self):
-        return self._last_mode
+        return self._last
 
     @last.setter
     def last(self, mode):
-        self._set_last_mode(mode)  # To be implemented by the child class
+        self._set_last(mode)  # To be implemented by the child class
+
+    def reset_last(self):
+        self._last = self.last_fallback
 
     @abc.abstractmethod
-    def _set_last_mode(self, mode):
+    def _set_last(self, mode):
         pass
-
 
     def __eq__(self, other):
         return False if other is None else self._id == other._id
@@ -78,19 +82,19 @@ class Mode(abc.ABC):
 class MainMode(Mode):
     """Main mode class used for everything but command mode."""
 
-    def _set_last_mode(self, mode):
+    def _set_last(self, mode):
         """Store any mode except for command and manipulate."""
         if mode not in [Modes.COMMAND, Modes.MANIPULATE]:
-            self._last_mode = mode
+            self._last = mode
 
 
 class CommandMode(Mode):
     """Command mode class."""
 
-    def _set_last_mode(self, mode):
+    def _set_last(self, mode):
         """Store any mode except for command."""
         if mode != self:
-            self._last_mode = mode
+            self._last = mode
 
 
 class iterable(type):
@@ -131,9 +135,9 @@ class Modes(metaclass=iterable):
 for mode in Modes:
     if mode == Modes.IMAGE:
         mode.active = True # Default mode
-        mode.last = Modes.LIBRARY
+        mode.last = mode.last_fallback = Modes.LIBRARY
     else:
-        mode.last = Modes.IMAGE
+        mode.last = mode.last_fallback = Modes.IMAGE
 
 
 def modewidget(mode):
