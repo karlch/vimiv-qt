@@ -38,9 +38,6 @@ class ImageSignalHandler(QObject):
         maybe_update_library: Emitted when the working directory may have
                 changed.
             arg1: The new working directory.
-        maybe_write_file: Emitted when the selected image changes and the
-                imwriter might have write changes to disk.
-            arg1: The path to the file that might have to be written to disk.
 
     """
 
@@ -60,8 +57,6 @@ class ImageSignalHandler(QObject):
 
     # Tell the library that it may make sense to update
     maybe_update_library = pyqtSignal(str)
-    # Tell transformation to write to file
-    maybe_write_file = pyqtSignal(str)
 
 
 imsignals = ImageSignalHandler()
