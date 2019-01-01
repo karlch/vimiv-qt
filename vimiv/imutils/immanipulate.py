@@ -14,7 +14,7 @@ from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
-from vimiv.imutils import imsignals, _c_manipulate, imloader
+from vimiv.imutils import _c_manipulate
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg, misc
@@ -34,8 +34,8 @@ class Manipulator(QObject):
         thread_id: ID of the current manipulation thread.
         data: bytes of the edited pixmap. Must be stored as the QPixmap is
             generated directly from the bytes and needs them to stay in memory.
-        original: Original QPixmap to manipulate.
-        pixmap: The manipulated QPixmap.
+
+        _handler: ImageFileHandler used to retrieve and set updated files.
         _current: Name of the manipulation that is currently being edited.
     """
 
@@ -44,24 +44,20 @@ class Manipulator(QObject):
     focused = pyqtSignal(str)
 
     @objreg.register
-    def __init__(self):
+    def __init__(self, handler):
         super().__init__()
+        self._handler = handler
         self.manipulations = collections.OrderedDict([
             ("brightness", 0),
             ("contrast", 0),
         ])
         self.thread_id = 0
         self.data = None
-        self.original = None
-        self.pixmap = None
         self._current = "brightness"
-
-        imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
 
     def set_pixmap(self, pixmap):
         """Set the pixmap to a newly edited version."""
-        self.pixmap = pixmap
-        imsignals.imsignals.pixmap_updated.emit(self.pixmap)
+        self._handler.update_pixmap(pixmap)
 
     def changed(self):
         """Return True if anything was edited."""
@@ -74,7 +70,6 @@ class Manipulator(QObject):
         modehandler.leave(Modes.MANIPULATE)
         if self.manipulations == {"brightness": 0, "contrast": 0}:
             return
-        imloader.set_pixmap(self.pixmap)
 
     @keybindings.add("<escape>", "discard", mode=Modes.MANIPULATE)
     @commands.register(mode=Modes.MANIPULATE)
@@ -82,12 +77,12 @@ class Manipulator(QObject):
         """Discard any changes and leave manipulate."""
         modehandler.leave(Modes.MANIPULATE)
         # Show original image
-        if self.manipulations != {"brightness": 0, "contrast": 0}:
-            imsignals.imsignals.pixmap_updated.emit(self.original)
-        self.manipulations = {
-            "brightness": 0,
-            "contrast": 0
-        }
+        if self.changed():
+            self._handler.update_pixmap(self._handler.transformed)
+            self.manipulations = {
+                "brightness": 0,
+                "contrast": 0
+            }
 
     @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)
@@ -178,10 +173,6 @@ class Manipulator(QObject):
         value = count if count else value
         self._update_manipulation(self._current, value)
 
-    def _on_pixmap_loaded(self, pixmap):
-        """Store original version of the pixmap."""
-        self.original = pixmap
-
     def _update_manipulation(self, name, value):
         """Update the value of one manipulation.
 
@@ -205,6 +196,10 @@ class Manipulator(QObject):
         if self.pool.activeThreadCount():
             return "processing..."
         return ""
+
+    def unmanipulated(self):
+        """Return unmanipulated image data for ManipulateRunner."""
+        return self._handler.transformed.toImage()
 
 
 def instance():
@@ -231,7 +226,7 @@ class ManipulateRunner(QRunnable):
         if self._id != self._manipulator.thread_id:
             return
         # Convert original pixmap to python bytes
-        image = self._manipulator.original.toImage()
+        image = self._manipulator.unmanipulated()
         bits = image.constBits()
         bits.setsize(image.byteCount())
         data = bytes(bits)

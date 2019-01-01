@@ -119,7 +119,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self._last_selected = ""
         # Update image
         else:
-            imsignals.new_image.emit(path)
+            imsignals.open_new_image.emit(path)
             self._last_selected = path
 
     @pyqtSlot(list)

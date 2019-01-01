@@ -18,14 +18,14 @@ class ImageSignalHandler(QObject):
     """Store signals for image utilities as class attributes.
 
     Signals:
-        new_image: Emitted when a new image should be opened.
+        open_new_image: Emitted when a new image should be opened.
             arg1: Path to the new image.
-        new_images: Emitted when a list of new images should be opened.
+        open_new_images: Emitted when a list of new images should be opened.
             arg1: List of new paths to the images.
             arg2: The path to be focused.
-        path_loaded: Emitted when the imstorage loaded a new path.
+        new_image_opened: Emitted when the imstorage loaded a new path.
             arg1: Path of the new image.
-        paths_loaded: Emitted when the imstorage loaded new paths.
+        new_images_opened: Emitted when the imstorage loaded new paths.
             arg1: List of new paths.
         pixmap_loaded: Emitted when the imloader loaded a new pixmap.
             arg1: The QPixmap loaded.
@@ -38,19 +38,16 @@ class ImageSignalHandler(QObject):
         maybe_update_library: Emitted when the working directory may have
                 changed.
             arg1: The new working directory.
-        maybe_write_file: Emitted when the selected image changes and the
-                imwriter might have write changes to disk.
-            arg1: The path to the file that might have to be written to disk.
 
     """
 
-    # Tell the storage to set new things
-    new_image = pyqtSignal(str)
-    new_images = pyqtSignal(list, str)
+    # Emited when new image path(s) should be opened
+    open_new_image = pyqtSignal(str)
+    open_new_images = pyqtSignal(list, str)
 
-    # Tell the loaders to load new images
-    path_loaded = pyqtSignal(str)
-    paths_loaded = pyqtSignal(list)
+    # Emited when new image path(s) were opened
+    new_image_opened = pyqtSignal(str)
+    new_images_opened = pyqtSignal(list)
 
     # Tell the image to get a new object to display
     pixmap_loaded = pyqtSignal(QPixmap)
@@ -60,8 +57,6 @@ class ImageSignalHandler(QObject):
 
     # Tell the library that it may make sense to update
     maybe_update_library = pyqtSignal(str)
-    # Tell transformation to write to file
-    maybe_write_file = pyqtSignal(str)
 
 
 imsignals = ImageSignalHandler()

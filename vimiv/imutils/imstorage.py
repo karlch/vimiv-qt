@@ -41,7 +41,6 @@ def next(count):  # pylint: disable=redefined-builtin
     """
     if _paths:
         _set_index((_index + count) % len(_paths))
-        imsignals.path_loaded.emit(current())
 
 
 @keybindings.add("p", "prev", mode=Modes.IMAGE)
@@ -53,7 +52,6 @@ def prev(count):
     """
     if _paths:
         _set_index((_index - count) % len(_paths))
-        imsignals.path_loaded.emit(current())
 
 
 @keybindings.add("G", "goto -1", mode=Modes.IMAGE)
@@ -74,7 +72,6 @@ def goto(index, count):
     """
     index = count if count else index
     _set_index(index % (len(_paths) + 1) - 1)
-    imsignals.path_loaded.emit(current())
 
 
 @statusbar.module("{abspath}")
@@ -143,8 +140,8 @@ class Storage(QObject):
         sshow.next_im.connect(self._on_slideshow_event)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         trash_manager.signals.path_restored.connect(self._on_path_restored)
-        imsignals.new_image.connect(self._on_new_image)
-        imsignals.new_images.connect(self._on_new_images)
+        imsignals.open_new_image.connect(self._on_open_new_image)
+        imsignals.open_new_images.connect(self._on_open_new_images)
 
     @pyqtSlot(int, list, str, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -162,29 +159,29 @@ class Storage(QObject):
         """
         if _paths and not incremental and mode == "image":
             _set_index(index)
-            imsignals.path_loaded.emit(current())
 
     @pyqtSlot()
     def _on_slideshow_event(self):
         next(1)
 
     @pyqtSlot(str)
-    def _on_new_image(self, path):
+    def _on_open_new_image(self, path):
         """Load new image into storage.
 
         Args:
             path: Path to the new image to load.
         """
-        _load_single(path)
+        _load_single(os.path.abspath(path))
 
     @pyqtSlot(list, str)
-    def _on_new_images(self, paths, focused_path):
+    def _on_open_new_images(self, paths, focused_path):
         """Load list of new images into storage.
 
         Args:
             paths: List of paths to the new images to load.
             focused_path: The path to display.
         """
+        # TODO remove this
         focused_path = os.path.abspath(focused_path)
         directory = os.path.dirname(focused_path)
         imsignals.maybe_update_library.emit(directory)
@@ -208,7 +205,6 @@ class Storage(QObject):
             # Move to next image available if the current path was removed
             elif path == current_path:
                 _set_index(min(path_index, len(_paths) - 1))
-                imsignals.path_loaded.emit(current())
             # Make sure the current image is still selected
             else:
                 _set_index(_paths.index(current_path))
@@ -226,18 +222,16 @@ class Storage(QObject):
 
 def _set_index(index):
     """Set the global _index to index."""
-    try:
-        imsignals.maybe_write_file.emit(current())
-    except IndexError:  # Image has been deleted
-        pass
     global _index
     _index = index
+    imsignals.new_image_opened.emit(current())
 
 
 def _set_paths(paths):
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
+    imsignals.new_images_opened.emit(_paths)
 
 
 def _load_single(path):
@@ -260,7 +254,5 @@ def _load_paths(paths, focused_path):
     paths = [os.path.abspath(path) for path in paths]
     if settings.get_value(settings.Names.SHUFFLE):
         shuffle(_paths)
+    _set_paths(paths)
     _set_index(paths.index(focused_path))
-    _set_paths(paths)  # Must update after index for maybe_write
-    imsignals.paths_loaded.emit(_paths)
-    imsignals.path_loaded.emit(current())

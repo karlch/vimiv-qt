@@ -70,7 +70,7 @@ def open_paths(paths, select_mode=True):
     images, directories = files.get_supported(paths)
     mode = Modes.LIBRARY
     if images:
-        imsignals.new_images.emit(images, images[0])
+        imsignals.open_new_images.emit(images, images[0])
         mode = Modes.IMAGE
     elif directories:
         libpaths.load(directories[0])
