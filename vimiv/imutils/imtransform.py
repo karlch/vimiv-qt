@@ -11,7 +11,6 @@ from PyQt5.QtGui import QTransform
 
 from vimiv.commands import commands
 from vimiv.config import keybindings
-from vimiv.imutils import imsignals, imloader
 from vimiv.modes import Modes
 from vimiv.utils import objreg
 
@@ -23,6 +22,7 @@ class Transform():
     given pixmap.
 
     Attributes:
+        _handler: ImageFileHandler used to retrieve and set updated files.
         _transform: QTransform object used to apply transformations.
         _rotation_angle: Currently applied rotation angle in degrees.
         _flip_horizontal: Flip the image horizontally.
@@ -30,7 +30,8 @@ class Transform():
     """
 
     @objreg.register
-    def __init__(self):
+    def __init__(self, handler):
+        self._handler = handler
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
@@ -50,10 +51,10 @@ class Transform():
         **count:** multiplier
         """
         angle = 90 * count * -1 if counter_clockwise else 90 * count
-        self._rotation_angle += angle
+        self._rotation_angle = (self._rotation_angle + angle) % 360
         self._transform.rotate(angle)
-        pixmap = self.transform_pixmap(imloader.current())
-        imsignals.imsignals.pixmap_updated.emit(pixmap)
+        pixmap = self.transform_pixmap(self._handler.original)
+        self._handler.update_transformed(pixmap)
 
     @keybindings.add("_", "flip --vertical", mode=Modes.IMAGE)
     @keybindings.add("|", "flip", mode=Modes.IMAGE)
@@ -79,13 +80,13 @@ class Transform():
         # Standard horizontal flip
         else:
             self._transform.scale(-1, 1)
-        pixmap = self.transform_pixmap(imloader.current())
+        pixmap = self.transform_pixmap(self._handler.original)
         # Store changes
         if vertical:
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        imsignals.imsignals.pixmap_updated.emit(pixmap)
+        self._handler.update_transformed(pixmap)
 
     def transform_pixmap(self, pm):
         """Apply all transformations to the given pixmap."""
