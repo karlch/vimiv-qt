@@ -54,6 +54,5 @@ class VimivProc():
         QThreadPool.globalInstance().clear()
         # Wait for any running threads to exit safely
         QThreadPool.globalInstance().waitForDone()
-        objreg.clear()
         imstorage._paths = []
         imstorage._index = 0

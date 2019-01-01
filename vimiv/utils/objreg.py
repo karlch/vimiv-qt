@@ -28,10 +28,8 @@ class Registry(collections.UserDict):
             component: The object to store.
         """
         key = self._key(component)
-        if key in self:  # Do not allow storing the same type twice
-            logging.error("%s already registered in objreg", str(key))
-        else:
-            self[key] = component
+        logging.debug("Registering object '%s'", component)
+        self[key] = component
 
     @staticmethod
     def _key(obj):
@@ -75,13 +73,3 @@ def get(obj):
         The object in the registry.
     """
     return _registry[obj]
-
-
-def delete(obj):
-    """Delete one object from the registry."""
-    del _registry[obj]
-
-
-def clear():
-    """Delete all objects from the registry."""
-    _registry.clear()

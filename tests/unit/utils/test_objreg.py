@@ -6,8 +6,6 @@
 
 """Tests for vimiv.utils.objreg."""
 
-import pytest
-
 from vimiv.utils import objreg
 
 
@@ -20,18 +18,12 @@ class DummyObject:
         pass
 
 
-@pytest.fixture
-def setup():
-    yield
-    objreg.clear()
-
-
-def test_register_object_via_decorator(setup):
+def test_register_object_via_decorator():
     dummy = DummyObject()
     assert objreg.get(DummyObject) == dummy
 
 
-def test_register_object_via_function(setup):
+def test_register_object_via_function():
     data = [1, 2, 3, 4, 5]
     objreg.register_object(data)
     assert objreg.get(list) == data
