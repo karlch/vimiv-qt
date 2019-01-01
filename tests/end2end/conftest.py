@@ -54,7 +54,7 @@ def any_directory(qtbot, tmpdir):
 def directory_with_n_paths(qtbot, tmpdir, N):
     path = tmpdir.mkdir("directory")
     for i in range(int(N)):
-        path.mkdir("child_%d" % (i + 1))
+        path.mkdir("child_%02d" % (i + 1))
     vimivprocess.init(qtbot, [str(path)])
     yield
     vimivprocess.exit()
@@ -84,7 +84,7 @@ def any_image_of_size(qtbot, tmpdir, size):
 def n_images(qtbot, tmpdir, N):
     paths = []
     for i in range(1, int(N) + 1):
-        path = str(tmpdir.join("image_%d.jpg" % (i)))
+        path = str(tmpdir.join("image_%02d.jpg" % (i)))
         create_image(path)
         paths.append(path)
     vimivprocess.init(qtbot, paths)

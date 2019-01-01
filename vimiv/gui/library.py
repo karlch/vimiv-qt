@@ -146,7 +146,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if not self.model().rowCount() or directory != os.getcwd():
             libpaths.load(directory)
 
-    @pyqtSlot(int, list, str, bool)
+    @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -156,7 +156,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if mode == "library":
+        if mode == Modes.LIBRARY:
             self._select_row(index)
             self.repaint()
 
@@ -311,7 +311,7 @@ class LibraryModel(QStandardItemModel):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
 
-    @pyqtSlot(int, list, str, bool)
+    @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Store list of indices to highlight on new search.
 
@@ -321,10 +321,11 @@ class LibraryModel(QStandardItemModel):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        self._highlighted = []
-        for i, path in enumerate(self.pathlist()):
-            if os.path.basename(path) in matches:
-                self._highlighted.append(i)
+        if mode == Modes.LIBRARY:
+            self._highlighted = []
+            for i, path in enumerate(self.pathlist()):
+                if os.path.basename(path) in matches:
+                    self._highlighted.append(i)
 
     @pyqtSlot()
     def _on_search_cleared(self):

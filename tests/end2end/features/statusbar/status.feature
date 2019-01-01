@@ -3,7 +3,7 @@ Feature: Display status information in the statusbar
     Scenario: Display image information
         Given I open 3 images
         Then the left status should include 1/3
-        And the left status should include image_1.jpg
+        And the left status should include image_01.jpg
         And the right status should include IMAGE
 
     Scenario: Display library information

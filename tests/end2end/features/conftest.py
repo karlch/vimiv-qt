@@ -13,7 +13,8 @@ from PyQt5.QtCore import Qt
 import pytest_bdd as bdd
 
 from vimiv.commands import runners
-from vimiv.gui import commandline, statusbar, mainwindow
+from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
+from vimiv.imutils import imstorage
 from vimiv.modes import modehandler, Modes
 
 ###############################################################################
@@ -131,3 +132,25 @@ def check_mode(mode, qtbot):
     mode = Modes.get_by_name(mode)
     assert modehandler.current() == mode, \
         "Modehandler did not switch to %s" % (mode.name)
+
+
+@bdd.then(bdd.parsers.parse("the library row should be {row}"))
+def check_row_number(row):
+    assert library.instance().row() + 1 == int(row)
+
+
+@bdd.then(bdd.parsers.parse("the image should have the index {index}"))
+def check_image_index(index):
+    assert imstorage.get_index() == index
+
+
+@bdd.given("I enter thumbnail mode")
+def enter_thumbnail():
+    modehandler.enter(Modes.THUMBNAIL)
+    thumbnail.instance().setFixedWidth(400)  # Make sure width is as expected
+
+
+@bdd.then(bdd.parsers.parse("the thumbnail number {N} should be selected"))
+def check_selected_thumbnail(qtbot, N):
+    thumb = thumbnail.instance()
+    assert thumb.currentRow() + 1 == int(N)

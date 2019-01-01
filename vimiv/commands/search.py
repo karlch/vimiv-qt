@@ -17,7 +17,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
-from vimiv.modes import modehandler, Modes
+from vimiv.modes import modehandler, Mode, Modes
 from vimiv.utils import pathreceiver
 
 
@@ -58,7 +58,7 @@ class Search(QObject):
         self._text = ""
         self._reverse = False
 
-    new_search = pyqtSignal(int, list, str, bool)
+    new_search = pyqtSignal(int, list, Mode, bool)
     cleared = pyqtSignal()
 
     def __call__(self, text, mode, count=0, reverse=False, incremental=False):

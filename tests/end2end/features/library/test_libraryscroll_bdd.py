@@ -6,12 +6,5 @@
 
 import pytest_bdd as bdd
 
-from vimiv.gui import library
-
 
 bdd.scenarios("libraryscroll.feature")
-
-
-@bdd.then(bdd.parsers.parse("the row should be {row}"))
-def check_row_number(row):
-    assert library.instance().row() + 1 == int(row)
