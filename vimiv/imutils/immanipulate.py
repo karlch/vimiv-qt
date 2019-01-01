@@ -226,7 +226,7 @@ class ManipulateRunner(QRunnable):
         if self._id != self._manipulator.thread_id:
             return
         # Convert original pixmap to python bytes
-        image = self._manipulator.unedited()
+        image = self._manipulator.unmanipulated()
         bits = image.constBits()
         bits.setsize(image.byteCount())
         data = bytes(bits)
