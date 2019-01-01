@@ -16,7 +16,7 @@ from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, libpaths, files
+from vimiv.utils import objreg, files, working_directory
 
 
 class Application(QApplication):
@@ -67,13 +67,15 @@ def open_paths(paths, select_mode=True):
     Return:
         True on success.
     """
+    paths = [os.path.abspath(path) for path in paths]
     images, directories = files.get_supported(paths)
     mode = Modes.LIBRARY
     if images:
+        working_directory.handler.chdir(os.path.dirname(images[0]))
         imsignals.open_new_images.emit(images, images[0])
         mode = Modes.IMAGE
     elif directories:
-        libpaths.load(directories[0])
+        working_directory.handler.chdir(directories[0])
     else:
         return False  # No valid paths found
     if select_mode:

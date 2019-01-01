@@ -181,10 +181,6 @@ class Storage(QObject):
             paths: List of paths to the new images to load.
             focused_path: The path to display.
         """
-        # TODO remove this
-        focused_path = os.path.abspath(focused_path)
-        directory = os.path.dirname(focused_path)
-        imsignals.maybe_update_library.emit(directory)
         # Populate list of paths in same directory for single path
         if len(paths) == 1:
             _load_single(focused_path)
@@ -252,6 +248,7 @@ def _load_paths(paths, focused_path):
         focused_path: The path to display.
     """
     paths = [os.path.abspath(path) for path in paths]
+    focused_path = os.path.abspath(focused_path)
     if settings.get_value(settings.Names.SHUFFLE):
         shuffle(_paths)
     _set_paths(paths)

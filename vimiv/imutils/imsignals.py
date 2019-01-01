@@ -35,10 +35,6 @@ class ImageSignalHandler(QObject):
             arg1: The QMovie loaded.
         svg_loaded: Emitted when the imloader loaded a new vector graphic.
             arg1: The path as the VectorGraphic class is constructed directly.
-        maybe_update_library: Emitted when the working directory may have
-                changed.
-            arg1: The new working directory.
-
     """
 
     # Emited when new image path(s) should be opened
@@ -54,9 +50,6 @@ class ImageSignalHandler(QObject):
     movie_loaded = pyqtSignal(QMovie)
     svg_loaded = pyqtSignal(str)
     pixmap_updated = pyqtSignal(QPixmap)
-
-    # Tell the library that it may make sense to update
-    maybe_update_library = pyqtSignal(str)
 
 
 imsignals = ImageSignalHandler()

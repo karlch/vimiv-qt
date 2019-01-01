@@ -4,18 +4,21 @@
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Deals with storing paths for the library."""
+"""Handler to load paths for the library."""
 
 import os
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
 from vimiv.config import settings
-from vimiv.utils import files, misc
+from vimiv.utils import files, misc, working_directory
 
 
-class Signals(QObject):
-    """Class to store the qt signals for the library to connect to.
+class LibraryPathHandler(QObject):
+    """Handler to load paths for the library.
+
+    The handler loads new paths when the working directory has changed and then
+    emits a signal for the library which contains the data of the new paths.
 
     Signals:
         loaded: Emitted when a new list of paths for the library was loaded.
@@ -24,26 +27,33 @@ class Signals(QObject):
 
     loaded = pyqtSignal(list)
 
+    def __init__(self):
+        super().__init__()
+        working_directory.handler.cwd_changed.connect(self._on_cwd_changed)
 
-signals = Signals()
+    @pyqtSlot(str)
+    def _on_cwd_changed(self, directory):
+        """Load paths in new directory when the working directory changed."""
+        self.load(directory)
+
+    def load(self, directory):
+        """Load paths in one directory for the library.
+
+        Gets all supported files in the directory and emits the loaded signal.
+
+        Args:
+            directory: The directory to load.
+        """
+        show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
+        paths = files.ls(directory, show_hidden=show_hidden)
+        images, directories = files.get_supported(paths)
+        data = []
+        _extend_data(data, directories, dirs=True)
+        _extend_data(data, images)
+        self.loaded.emit(data)
 
 
-def load(directory):
-    """Load paths in one directory for the library.
-
-    Gets all supported files in the directory and emits the loaded signal.
-
-    Args:
-        directory: The directory to load.
-    """
-    show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
-    paths = files.ls(directory, show_hidden=show_hidden)
-    images, directories = files.get_supported(paths)
-    data = []
-    _extend_data(data, directories, dirs=True)
-    _extend_data(data, images)
-    os.chdir(directory)
-    signals.loaded.emit(data)
+handler = LibraryPathHandler()
 
 
 def _extend_data(data, paths, dirs=False):

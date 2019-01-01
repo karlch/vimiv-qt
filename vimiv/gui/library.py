@@ -19,7 +19,8 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import objreg, libpaths, eventhandler, misc, trash_manager
+from vimiv.utils import (objreg, libpaths, eventhandler, misc, trash_manager,
+                         working_directory)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -80,14 +81,13 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
-        libpaths.signals.loaded.connect(self._on_paths_loaded)
+        libpaths.handler.loaded.connect(self._on_paths_loaded)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         modehandler.signals.entered.connect(self._on_mode_entered)
         modehandler.signals.left.connect(self._on_mode_left)
         trash_manager.signals.path_removed.connect(self._on_path_removed)
         trash_manager.signals.path_restored.connect(self._on_path_restored)
-        imsignals.maybe_update_library.connect(self._on_maybe_update)
 
         styles.apply(self)
 
@@ -111,7 +111,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         # Open directory in library
         if os.path.isdir(path):
             self._positions[os.getcwd()] = self.row()
-            libpaths.load(path)
+            working_directory.handler.chdir(path)
         # Close library on double selection
         elif path == self._last_selected:
             modehandler.leave(Modes.LIBRARY)
@@ -139,12 +139,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             if os.getcwd() in self._positions \
             else 0
         self._select_row(row)
-
-    @pyqtSlot(str)
-    def _on_maybe_update(self, directory):
-        """Possibly load library for new directory."""
-        if not self.model().rowCount() or directory != os.getcwd():
-            libpaths.load(directory)
 
     @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -222,7 +216,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             # Do not store empty positions
             except IndexError:
                 pass
-            libpaths.load("..")
+            working_directory.handler.chdir("..")
         else:
             try:
                 row = self.row()
@@ -293,7 +287,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Reload library if restored path is in the current directory."""
         if os.path.dirname(path) == os.getcwd():
             self._positions[os.getcwd()] = self.row()
-            libpaths.load(".")
+            # TODO improve this to not reload everything?
+            libpaths.handler.load(".")
 
 
 class LibraryModel(QStandardItemModel):
