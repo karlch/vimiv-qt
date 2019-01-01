@@ -246,8 +246,11 @@ class WriteImageRunner(QRunnable):
         """Copy exif information from src to dest."""
         try:
             piexif.transplant(src, dest)
+            logging.debug("Succesfully wrote exif data for '%s'", dest)
         except piexif.InvalidImageDataError:  # File is not a jpg
-            pass
+            logging.debug("File format for '%s' does not support exif", dest)
+        except ValueError:
+            logging.debug("No exif data in '%s'", dest)
 
 
 class WriteError(Exception):
