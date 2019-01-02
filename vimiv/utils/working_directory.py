@@ -44,7 +44,7 @@ class WorkingDirectoryHandler(QObject):
 
     def __init__(self):
         super().__init__()
-        self._dir = os.path.expanduser("~")
+        self._dir = None
         self._observer = Observer()
         self._event_handler = EventHandler(self)
 
