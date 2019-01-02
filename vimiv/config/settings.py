@@ -363,6 +363,7 @@ class StrSetting(Setting):
 class Names:
     """Simple class which stores the string names of all settings."""
 
+    MONITOR_FS = "monitor_filesystem"
     SHUFFLE = "shuffle"
     STYLE = "style"
 
@@ -390,6 +391,9 @@ class Names:
 def init_defaults():
     """Store default values of all settings."""
     # General
+    BoolSetting(Names.MONITOR_FS, True,
+        desc="Monitor current directory for changes and reload widgets " \
+              "automatically")
     BoolSetting(Names.SHUFFLE, False, desc="Randomly shuffle images")
     StrSetting(Names.STYLE, "default")
 

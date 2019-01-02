@@ -43,7 +43,8 @@ class VimivProc():
     """Process class to start and exit one vimiv process."""
 
     def __init__(self, qtbot, argv=[]):
-        argv.append("--temp-basedir")
+        # Do not monitor filesystem as this slows down the tests significantly
+        argv.extend(["--temp-basedir", "-s", "monitor_filesystem", "false"])
         startup.run(argv)
         for name, widget in objreg._registry.items():
             if isinstance(widget, QWidget):

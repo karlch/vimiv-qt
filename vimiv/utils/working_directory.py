@@ -9,9 +9,11 @@
 import logging
 import os
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+from vimiv.config import settings
 
 
 class WorkingDirectoryHandler(QObject):
@@ -48,6 +50,8 @@ class WorkingDirectoryHandler(QObject):
         self._observer = Observer()
         self._event_handler = EventHandler(self)
 
+        settings.signals.changed.connect(self._on_settings_changed)
+
     def chdir(self, directory):
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
@@ -59,10 +63,26 @@ class WorkingDirectoryHandler(QObject):
 
     def _monitor(self, directory):
         """Monitor directory with watchdog."""
-        self._observer.stop()
+        if not settings.get_value(settings.Names.MONITOR_FS):
+            return
+        logging.debug("Monitoring %s", directory)
+        self._stop_monitoring()
         self._observer = Observer()
         self._observer.schedule(self._event_handler, directory, recursive=False)
         self._observer.start()
+
+    def _stop_monitoring(self):
+        self._observer.stop()
+        self._observer.unschedule_all()
+
+    @pyqtSlot(str, object)
+    def _on_settings_changed(self, setting, new_value):
+        if setting == settings.Names.MONITOR_FS:
+            if new_value:
+                self._monitor(self._dir)
+            else:
+                logging.debug("Turning monitoring off")
+                self._stop_monitoring()
 
 
 class EventHandler(FileSystemEventHandler):
