@@ -19,36 +19,49 @@ import os
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
 
 from vimiv.config import settings
+from vimiv.utils import files
 
 
 class WorkingDirectoryHandler(QFileSystemWatcher):
     """Handler to store and change the current working directory.
 
     Signals:
-        cwd_changed: Emitted when the current working directory has changed.
-            arg1: The new working directory.
+        loaded: Emitted when the content for a new working directory was
+                loaded.
+        changed: Emitted when the content of the working directory has changed.
+            arg1: List of images in the working directory.
+            arg2: List of directories in the working directory.
+        images_changed: Emitted when the images in the working directory have
+                changed.
+            arg1: List of images in the working directory.
 
     Attributes:
         _dir: The current working directory.
+        _images: Images in the current working directory.
+        _directories: Directories in the current working directory.
     """
 
-    cwd_changed = pyqtSignal(str)
+    loaded = pyqtSignal(list, list)
+    changed = pyqtSignal(list, list)
+    images_changed = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
         self._dir = None
+        self._images = None
+        self._directories = None
 
         settings.signals.changed.connect(self._on_settings_changed)
+        self.directoryChanged.connect(self._reload_directory)
 
     def chdir(self, directory):
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
         if directory != self._dir:
             self._unmonitor(self._dir)
-            self._dir = directory
             os.chdir(directory)
+            self._load_directory(directory)
             self._monitor(directory)
-            self.cwd_changed.emit(directory)
 
     def _monitor(self, directory):
         """Monitor the directory by adding it to QFileSystemWatcher."""
@@ -73,6 +86,46 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             else:
                 logging.debug("Turning monitoring off")
                 self._stop_monitoring()
+
+
+    def _load_directory(self, directory):
+        """Load supported files for new directory."""
+        self._dir = directory
+        self._images, self._directories = self._get_content(directory)
+        self.loaded.emit(self._images, self._directories)
+
+    @pyqtSlot(str)
+    def _reload_directory(self, path):
+        """Load new supported files when directory content has changed."""
+        self._emit_changes(*self._get_content(self._dir))
+
+    def _emit_changes(self, images, directories):
+        """Emit changed signals if the content in the directory has changed.
+
+        Args:
+            images: Updated list of images in the working directory.
+            directories: Updated list of directories in the working directory.
+        """
+        # Image filelist has changed, relevant for thumbnail and image mode
+        if images != self._images:
+            self.images_changed.emit(images)
+        # Total filelist has changed, relevant for the library
+        if images != self._images or directories != self._directories:
+            self._images = images
+            self._directories = directories
+            self.changed.emit(images, directories)
+
+    def _get_content(self, directory):
+        """Get supported content of directory.
+
+        Return:
+            images: List of images inside the directory.
+            directories: List of directories inside the directory.
+        """
+        show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
+        paths = files.ls(directory, show_hidden=show_hidden)
+        return files.get_supported(paths)
+
 
 
 handler = None

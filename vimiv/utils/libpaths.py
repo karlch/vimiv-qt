@@ -10,7 +10,6 @@ import os
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
-from vimiv.config import settings
 from vimiv.utils import files, misc, working_directory
 
 
@@ -23,34 +22,45 @@ class LibraryPathHandler(QObject):
     Signals:
         loaded: Emitted when a new list of paths for the library was loaded.
             arg1: The new list of paths.
+        changed: Emitted when the library paths content has changed.
+            arg1: The new list of paths.
     """
 
     loaded = pyqtSignal(list)
+    changed = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
-        working_directory.handler.cwd_changed.connect(self._on_cwd_changed)
+        working_directory.handler.changed.connect(self._on_dir_changed)
+        working_directory.handler.loaded.connect(self._on_dir_loaded)
 
-    @pyqtSlot(str)
-    def _on_cwd_changed(self, directory):
-        """Load paths in new directory when the working directory changed."""
-        self.load(directory)
-
-    def load(self, directory):
-        """Load paths in one directory for the library.
-
-        Gets all supported files in the directory and emits the loaded signal.
+    @pyqtSlot(list, list)
+    def _on_dir_loaded(self, images, directories):
+        """Create data for the library when the directory has changed.
 
         Args:
-            directory: The directory to load.
+            images: Images in the current directory.
+            directories: Directories in the current directory.
         """
-        show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
-        paths = files.ls(directory, show_hidden=show_hidden)
-        images, directories = files.get_supported(paths)
+        self.loaded.emit(self._get_data(images, directories))
+
+    @pyqtSlot(list, list)
+    def _on_dir_changed(self, images, directories):
+        """Create data for the library when the directory has changed.
+
+        Args:
+            images: Images in the current directory.
+            directories: Directories in the current directory.
+        """
+        self.changed.emit(self._get_data(images, directories))
+
+    @staticmethod
+    def _get_data(images, directories):
+        """Create data for images and directories."""
         data = []
         _extend_data(data, directories, dirs=True)
         _extend_data(data, images)
-        self.loaded.emit(data)
+        return data
 
 
 handler = None

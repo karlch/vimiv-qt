@@ -81,11 +81,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.activated.connect(self._on_activated)
         settings.signals.changed.connect(self._on_settings_changed)
         libpaths.handler.loaded.connect(self._on_paths_loaded)
+        libpaths.handler.changed.connect(self._on_paths_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         modehandler.signals.entered.connect(self._on_mode_entered)
         modehandler.signals.left.connect(self._on_mode_left)
-        working_directory.handler.directoryChanged.connect(self._on_dir_changed)
 
         styles.apply(self)
 
@@ -125,16 +125,19 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Fill library with paths when they were loaded.
 
         Args:
-            images: List of images.
-            directories: List of directories.
+            data: List of data defining the content of the library.
         """
-        self.model().remove_all_rows()
-        for i, row in enumerate(data):
-            row = [QStandardItem(elem) for elem in row]
-            row.insert(0, QStandardItem(str(i + 1)))
-            self.model().appendRow(row)
-        row = self._get_stored_position(os.getcwd())
-        self._select_row(row)
+        self._set_content(data)
+
+    @pyqtSlot(list)
+    def _on_paths_changed(self, data):
+        """Reload library with paths when they changed.
+
+        Args:
+            data: List of data defining the content of the library.
+        """
+        self._store_position()
+        self._set_content(data)
 
     @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -182,13 +185,15 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if mode == Modes.LIBRARY:
             self.hide()
 
-    @pyqtSlot(str)
-    def _on_dir_changed(self, path):
-        """Reload library if directory changed."""
-        if path == os.getcwd():
-            self._store_position()
-            # TODO improve this to not reload everything?
-            libpaths.handler.load(".")
+    def _set_content(self, data):
+        """Set content of the library to data."""
+        self.model().remove_all_rows()
+        for i, row in enumerate(data):
+            row = [QStandardItem(elem) for elem in row]
+            row.insert(0, QStandardItem(str(i + 1)))
+            self.model().appendRow(row)
+        row = self._get_stored_position(os.getcwd())
+        self._select_row(row)
 
     @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
     @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
