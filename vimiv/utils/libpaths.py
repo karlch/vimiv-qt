@@ -53,7 +53,12 @@ class LibraryPathHandler(QObject):
         self.loaded.emit(data)
 
 
-handler = LibraryPathHandler()
+handler = None
+
+
+def init():
+    global handler
+    handler = LibraryPathHandler() if handler is None else handler
 
 
 def _extend_data(data, paths, dirs=False):

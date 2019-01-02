@@ -21,7 +21,7 @@ from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
-                         objreg, trash_manager)
+                         objreg, trash_manager, working_directory, libpaths)
 
 
 def run(argv):
@@ -60,6 +60,8 @@ def earlyinit():
     clipboard.init()
     trash_manager.init()
     iminitialize.init()  # imstorage needs slideshow
+    working_directory.init()
+    libpaths.init()
 
 
 def setup_logging(log_level):
