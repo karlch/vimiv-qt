@@ -19,8 +19,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import (objreg, libpaths, eventhandler, misc, trash_manager,
-                         working_directory)
+from vimiv.utils import objreg, libpaths, eventhandler, misc, working_directory
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -86,8 +85,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         search.search.cleared.connect(self._on_search_cleared)
         modehandler.signals.entered.connect(self._on_mode_entered)
         modehandler.signals.left.connect(self._on_mode_left)
-        trash_manager.signals.path_removed.connect(self._on_path_removed)
-        trash_manager.signals.path_restored.connect(self._on_path_restored)
+        working_directory.handler.directoryChanged.connect(self._on_dir_changed)
 
         styles.apply(self)
 
@@ -110,7 +108,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         path = misc.strip_html(path_index.data())
         # Open directory in library
         if os.path.isdir(path):
-            self._positions[os.getcwd()] = self.row()
+            self._store_position()
             working_directory.handler.chdir(path)
         # Close library on double selection
         elif path == self._last_selected:
@@ -135,9 +133,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             row = [QStandardItem(elem) for elem in row]
             row.insert(0, QStandardItem(str(i + 1)))
             self.model().appendRow(row)
-        row = self._positions[os.getcwd()] \
-            if os.getcwd() in self._positions \
-            else 0
+        row = self._get_stored_position(os.getcwd())
         self._select_row(row)
 
     @pyqtSlot(int, list, Mode, bool)
@@ -185,6 +181,14 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         if mode == Modes.LIBRARY:
             self.hide()
+
+    @pyqtSlot(str)
+    def _on_dir_changed(self, path):
+        """Reload library if directory changed."""
+        if path == os.getcwd():
+            self._store_position()
+            # TODO improve this to not reload everything?
+            libpaths.handler.load(".")
 
     @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
     @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
@@ -275,20 +279,16 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Return the list of currently open paths."""
         return self.model().pathlist()
 
-    @pyqtSlot(str)
-    def _on_path_removed(self, path):
-        """Clear path from library on deletion."""
-        if path in self.model().pathlist():
-            row = self.model().pathlist().index(path)
-            self.model().removeRows(row, 1)
-
-    @pyqtSlot(str)
-    def _on_path_restored(self, path):
-        """Reload library if restored path is in the current directory."""
-        if os.path.dirname(path) == os.getcwd():
+    def _store_position(self):
+        """Set the stored position for a directory if possible."""
+        if self.model().rowCount():
             self._positions[os.getcwd()] = self.row()
-            # TODO improve this to not reload everything?
-            libpaths.handler.load(".")
+
+    def _get_stored_position(self, directory):
+        """Return the stored position for a directory if possible."""
+        if directory not in self._positions:
+            return 0
+        return min(self._positions[directory], self.model().rowCount() - 1)
 
 
 class LibraryModel(QStandardItemModel):
