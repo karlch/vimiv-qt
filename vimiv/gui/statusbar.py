@@ -179,6 +179,7 @@ class StatusBar(QWidget):
             severity: levelname of the log record.
             message: message of the log record.
         """
+        self.update()
         self._set_severity_style(severity)
         self["message"].setText(message)
         self["stack"].setCurrentWidget(self["message"])
