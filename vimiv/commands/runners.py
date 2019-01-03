@@ -92,7 +92,7 @@ def expand_wildcards(text, mode):
         current = pathreceiver.current(mode)
         text = re.sub(r'(?<!\\)%', current, text)
     if "*" in text:
-        pathlist = " ".join(pathreceiver.pathlist())
+        pathlist = " ".join(pathreceiver.pathlist(mode))
         text = re.sub(r'(?<!\\)\*', pathlist, text)
     return text
 
