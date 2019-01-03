@@ -86,5 +86,8 @@ def _extend_data(data, paths, dirs=False):
         name = os.path.basename(path)
         if dirs:
             name = misc.add_html("b", name + "/")
-        size = files.get_size(path)
-        data.append((name, size))
+        try:
+            size = files.get_size(path)
+            data.append((name, size))
+        except FileNotFoundError:  # Has been deleted in the meantime
+            pass
