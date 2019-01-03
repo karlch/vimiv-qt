@@ -10,8 +10,6 @@ The functions delete and undeletes images from the user's Trash directory
 in $XDG_DATA_HOME/Trash according to the freedesktop.org trash specification.
 
 Module Attributes:
-    signals: Signals class storing signals emitted when deleting/undeleting.
-
     _files_directory: String path to the directory in which trashed files are
         stored.
     _info_directory: String path to the directory in which info files for
@@ -23,8 +21,6 @@ import os
 import shutil
 import tempfile
 import time
-
-from PyQt5.QtCore import QObject, pyqtSignal
 
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv.commands import commands, cmdexc
@@ -45,23 +41,6 @@ def init():
     os.makedirs(_info_directory, exist_ok=True)
 
 
-class Signals(QObject):
-    """Signals emitted after deleting and undeleting paths.
-
-    Signals:
-        path_removed: Emitted after delete to clear path from filelists.
-            arg1: The path to remove from filelists.
-        path_restored: Emitted after undelete to restore path to filelists.
-            arg1: The path to restore to filelists.
-    """
-
-    path_removed = pyqtSignal(str)
-    path_restored = pyqtSignal(str)
-
-
-signals = Signals()
-
-
 @keybindings.add("x", "delete %")
 @commands.argument("filename")
 @commands.register()
@@ -79,7 +58,6 @@ def delete(filename):
     trash_filename = _get_trash_filename(filename)
     _create_info_file(trash_filename, filename)
     shutil.move(filename, trash_filename)
-    signals.path_removed.emit(filename)
 
 
 @commands.argument("basename")
@@ -102,7 +80,6 @@ def undelete(basename):
         raise cmdexc.CommandError("original directory is not accessible")
     shutil.move(trash_filename, original_filename)
     os.remove(info_filename)
-    signals.path_restored.emit(original_filename)
 
 
 def _get_trash_filename(filename):
