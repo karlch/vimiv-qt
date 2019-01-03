@@ -59,9 +59,9 @@ def earlyinit():
     """Initialize objects needed as early as possible."""
     clipboard.init()
     trash_manager.init()
-    iminitialize.init()  # imstorage needs slideshow
     working_directory.init()
     libpaths.init()
+    iminitialize.init()
 
 
 def setup_logging(log_level):

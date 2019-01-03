@@ -73,6 +73,7 @@ class ImageFileHandler(QObject):
         self._path = ""
 
         imsignals.imsignals.new_image_opened.connect(self._on_new_image_opened)
+        imsignals.imsignals.all_images_cleared.connect(self._on_images_cleared)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     @property
@@ -95,6 +96,12 @@ class ImageFileHandler(QObject):
         """Load proper displayable QWidget for a new image path."""
         self._maybe_write(self._path)
         self._load(path)
+
+    @pyqtSlot()
+    def _on_images_cleared(self):
+        """Reset to default when all images were cleared."""
+        self._path = ""
+        self._set_original(None)
 
     def _maybe_write(self, path):
         """Write image to disk if requested and it has changed.

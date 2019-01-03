@@ -96,6 +96,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.svg_loaded.connect(self._on_svg_loaded)
         imsignals.pixmap_updated.connect(self._on_pixmap_updated)
+        imsignals.all_images_cleared.connect(self.takeWidget)
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):

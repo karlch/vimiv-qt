@@ -6,18 +6,18 @@
 
 """Deals with changing and storing paths to currently loaded images."""
 
+import logging
 import os
 from random import shuffle
 
 from PyQt5.QtCore import pyqtSlot, QObject
 
-from vimiv import app
 from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import Mode, Modes
-from vimiv.utils import objreg, files, slideshow, trash_manager
+from vimiv.utils import objreg, files, slideshow, working_directory
 
 
 # We need the check as exif support is optional
@@ -138,10 +138,10 @@ class Storage(QObject):
         search.search.new_search.connect(self._on_new_search)
         sshow = slideshow.Slideshow()
         sshow.next_im.connect(self._on_slideshow_event)
-        trash_manager.signals.path_removed.connect(self._on_path_removed)
-        trash_manager.signals.path_restored.connect(self._on_path_restored)
         imsignals.open_new_image.connect(self._on_open_new_image)
         imsignals.open_new_images.connect(self._on_open_new_images)
+
+        working_directory.handler.images_changed.connect(self._on_images_changed)
 
     @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -187,40 +187,25 @@ class Storage(QObject):
         else:
             _load_paths(paths, focused_path)
 
-    @pyqtSlot(str)
-    def _on_path_removed(self, path):
-        """Remove path from filelist and reload paths if necessary."""
-        if path in _paths:
-            path_index = _paths.index(path)
-            current_path = current()
-            _paths.remove(path)
-            # Select parent directory in library if no more paths are available
-            if not _paths:
-                # TODO clear the image displayed
-                app.open("..")
-            # Move to next image available if the current path was removed
-            elif path == current_path:
-                _set_index(min(path_index, len(_paths) - 1))
-            # Make sure the current image is still selected
-            else:
-                _set_index(_paths.index(current_path))
-
-    @pyqtSlot(str)
-    def _on_path_restored(self, path):
-        """Restore path to filelist and reload paths if necessary."""
-        if files.is_image(path) and \
-                os.path.dirname(path) == os.path.dirname(current()):
-            current_path = current()
-            _paths.append(path)
-            _paths.sort()
-            _set_index(_paths.index(current_path))
+    @pyqtSlot(list)
+    def _on_images_changed(self, paths):
+        if os.getcwd() != os.path.dirname(current()):
+            return
+        if paths:
+            focused_path = current()
+            _load_paths(paths, focused_path)
+            statusbar.update()
+        else:
+            _clear()
+            logging.warning("No more images to display")
 
 
-def _set_index(index):
+def _set_index(index, previous=None):
     """Set the global _index to index."""
     global _index
     _index = index
-    imsignals.new_image_opened.emit(current())
+    if previous != current():
+        imsignals.new_image_opened.emit(current())
 
 
 def _set_paths(paths):
@@ -251,5 +236,17 @@ def _load_paths(paths, focused_path):
     focused_path = os.path.abspath(focused_path)
     if settings.get_value(settings.Names.SHUFFLE):
         shuffle(_paths)
+    previous = current()
     _set_paths(paths)
-    _set_index(paths.index(focused_path))
+    index = paths.index(focused_path) \
+        if focused_path in paths \
+        else min(len(paths) - 1, _index)
+    _set_index(index, previous)
+
+
+def _clear():
+    """Clear all images from the storage as all paths were removed."""
+    global _paths, _index
+    _paths = []
+    _index = 0
+    imsignals.all_images_cleared.emit()

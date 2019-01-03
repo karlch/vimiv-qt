@@ -7,18 +7,22 @@
 """Handler to take care of the current working directory.
 
 The handler stores the current working directory and provides a method to
-change it. In addition the directory is monitored using QFileSystemWatcher.
+change it. In addition the directory and current image is monitored using
+QFileSystemWatcher.
 
 Module Attributes:
     handler: The initialized WorkingDirectoryHandler object.
 """
 
 import logging
+import time
 import os
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
 
 from vimiv.config import settings
+from vimiv.gui import statusbar
+from vimiv.imutils import imsignals
 from vimiv.utils import files
 
 
@@ -35,6 +39,9 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 changed.
             arg1: List of images in the working directory.
 
+    Class Attributes:
+        WAIT_TIME: Time to wait before emitting *_changed signals.
+
     Attributes:
         _dir: The current working directory.
         _images: Images in the current working directory.
@@ -45,14 +52,19 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     changed = pyqtSignal(list, list)
     images_changed = pyqtSignal(list)
 
+    WAIT_TIME = 0.3
+
     def __init__(self):
         super().__init__()
         self._dir = None
         self._images = None
         self._directories = None
+        self._processing = False
 
         settings.signals.changed.connect(self._on_settings_changed)
         self.directoryChanged.connect(self._reload_directory)
+        self.fileChanged.connect(self._on_file_changed)
+        imsignals.imsignals.new_image_opened.connect(self._on_new_image)
 
     def chdir(self, directory):
         """Change the current working directory to directory."""
@@ -97,7 +109,37 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     @pyqtSlot(str)
     def _reload_directory(self, path):
         """Load new supported files when directory content has changed."""
-        self._emit_changes(*self._get_content(self._dir))
+        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
+
+    @pyqtSlot(str)
+    def _on_new_image(self, path):
+        """Monitor the current image for changes."""
+        if self.files():  # Clear old image
+            self.removePaths(self.files())
+        self.addPath(path)
+
+    @pyqtSlot(str)
+    def _on_file_changed(self, path):
+        """Emit new_image_opened signal to reload the file on changes."""
+        self._process(lambda: imsignals.imsignals.new_image_opened.emit(path))
+
+    def _process(self, func):
+        """Process function after waiting unless another process is running.
+
+        This is required as images may be written in parts and loading every
+        single step is neither possible nor wanted and as tools like mogrify
+        from ImageMagick create temporary files which should not be loaded.
+
+        Args:
+            func: The function to call when processing.
+        """
+        if self._processing:
+            return
+        self._processing = True
+        time.sleep(self.WAIT_TIME)
+        func()
+        self._processing = False
+        statusbar.update()
 
     def _emit_changes(self, images, directories):
         """Emit changed signals if the content in the directory has changed.

@@ -27,6 +27,7 @@ class ImageSignalHandler(QObject):
             arg1: Path of the new image.
         new_images_opened: Emitted when the imstorage loaded new paths.
             arg1: List of new paths.
+        all_images_cleared: Emitted when there are no more paths in imstorage.
         pixmap_loaded: Emitted when the imloader loaded a new pixmap.
             arg1: The QPixmap loaded.
         pixmap_updated: Emitted when the the pixmap was edited.
@@ -44,6 +45,7 @@ class ImageSignalHandler(QObject):
     # Emited when new image path(s) were opened
     new_image_opened = pyqtSignal(str)
     new_images_opened = pyqtSignal(list)
+    all_images_cleared = pyqtSignal()
 
     # Tell the image to get a new object to display
     pixmap_loaded = pyqtSignal(QPixmap)
