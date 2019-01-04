@@ -109,12 +109,18 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         if paths == self._paths:  # Nothing to do
             return
-        self._paths = paths
-        self.clear()
+        # Delete paths that are no longer here
+        for i, path in enumerate(self._paths):
+            if path not in paths:
+                self.takeItem(i)
+        # Add new paths
         for i, path in enumerate(paths):
-            item = QListWidgetItem(self, i)
-            item.setSizeHint(QSize(self.item_size(), self.item_size()))
-            item.setIcon(self._default_icon)
+            if path not in self._paths:
+                item = QListWidgetItem(self, i)
+                item.setSizeHint(QSize(self.item_size(), self.item_size()))
+                item.setIcon(self._default_icon)
+        # Update paths and create thumbnails
+        self._paths = paths
         self._manager.create_thumbnails_async(paths)
 
     @pyqtSlot(str)
