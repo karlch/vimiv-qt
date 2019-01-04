@@ -42,6 +42,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     implemented here. Interaction with the children happens via the
     pixmap(), original(), and rescale() methods.
 
+    Class Attributes:
+        MIN_SIZE_SCALE: Minimum scale to scale an image to.
+        MIN_SIZE_PIXEL: Minimum pixel size to scale an image to.
+        MAX_SIZE_SCALE: Maximum scale to scale an image to.
+
     Attributes:
         _scale: How to scale image on resize.
             One of "overzoom", "fit", "fit-height", "fit-width", float.
@@ -89,6 +94,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         background: none;
     }
     """
+
+    MIN_SIZE_SCALE = 0.01
+    MIN_SIZE_PIXEL = 20
+    MAX_SIZE_SCALE = 256
 
     @modewidget(Modes.IMAGE)
     @objreg.register
@@ -206,7 +215,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         else:
             width /= 1.1**count
         self._scale = width / self.original().width()
-        self.widget().rescale(self._scale)
+        self._scale_to_float(self._scale)
 
     @keybindings.add("w", "scale --level=fit", mode=Modes.IMAGE)
     @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
@@ -270,12 +279,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _scale_to_width(self):
         """Scale image so the width fits the widgets width."""
         scale = self.width() / self.original().width()
-        self.widget().rescale(scale)
+        self._scale_to_float(scale)
 
     def _scale_to_height(self):
         """Scale image so the height fits the widgets width."""
         scale = self.height() / self.original().height()
-        self.widget().rescale(scale)
+        self._scale_to_float(scale)
 
     def _scale_to_float(self, level):
         """Scale image to a defined size.
@@ -283,7 +292,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         Args:
             level: Size to scale to as float. 1 is the original image size.
         """
-        self.widget().rescale(level)
+        self.widget().rescale(self._clamp_scale(level))
 
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
@@ -325,6 +334,24 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_mode_entered(self, mode, last_mode):
         if mode == Modes.IMAGE:
             self._stack.setCurrentWidget(self)
+
+    def _clamp_scale(self, scale):
+        """Clamp scale applying boundaries."""
+        scale = max(scale, self._get_min_scale())
+        return min(scale, self.MAX_SIZE_SCALE)
+
+    def _get_min_scale(self):
+        """Return minimum scale.
+
+        This is either MIN_SIZE_SCALE or the scale which corresponds to
+        MIN_SIZE_PIXEL.
+        """
+        try:
+            widget_size = min(self.widget().original.width(),
+                              self.widget().original.height())
+            return max(self.MIN_SIZE_SCALE, self.MIN_SIZE_PIXEL / widget_size)
+        except AttributeError:
+            return 0.01
 
 
 def instance():
