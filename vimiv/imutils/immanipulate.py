@@ -66,17 +66,11 @@ class Manipulator(QObject):
     @keybindings.add("<return>", "accept", mode=Modes.MANIPULATE)
     @commands.register(mode=Modes.MANIPULATE)
     def accept(self):
-        """Apply changes to file and leave manipulate."""
+        """Leave manipulate keeping the changes."""
         modehandler.leave(Modes.MANIPULATE)
-        if self.manipulations == {"brightness": 0, "contrast": 0}:
-            return
 
-    @keybindings.add("<escape>", "discard", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
-    def discard(self):
-        """Discard any changes and leave manipulate."""
-        modehandler.leave(Modes.MANIPULATE)
-        # Show original image
+    def reset(self):
+        """Reset manipulations to default."""
         if self.changed():
             self._handler.update_pixmap(self._handler.transformed)
             self.manipulations = {

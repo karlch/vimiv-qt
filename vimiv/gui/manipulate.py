@@ -11,7 +11,8 @@ import logging
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
-from vimiv.config import styles
+from vimiv.commands import commands
+from vimiv.config import keybindings, styles
 from vimiv.imutils import imsignals, immanipulate
 from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import eventhandler, objreg
@@ -85,6 +86,14 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
         self.hide()
 
+    @keybindings.add("<escape>", "discard", mode=Modes.MANIPULATE)
+    @commands.register(mode=Modes.MANIPULATE)
+    def discard(self):
+        """Discard any changes and leave manipulate."""
+        modehandler.leave(Modes.MANIPULATE)
+        self._reset()
+        immanipulate.instance().reset()
+
     @pyqtSlot(Mode, Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Show and hide manipulate widget depending on mode entered.
@@ -108,7 +117,6 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             mode: The mode left.
         """
         if mode == Modes.MANIPULATE:
-            self._reset()
             self.hide()
 
     def _on_edited(self, name, value):
