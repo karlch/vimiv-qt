@@ -87,16 +87,18 @@ class Command():
             default and passing other counts is supported by the command.
         description: Description of the command for help.
         hide: Hide command from command line.
+        hook: Function to run before executing the command.
     """
 
     def __init__(self, name, func, mode=Modes.GLOBAL,
-                 count=None, description="", hide=False):
+                 count=None, description="", hide=False, hook=None):
         self.name = name
         self.func = func
         self.mode = mode
         self.count = count
         self.description = description
         self.hide = hide
+        self.hook = hook if hook is not None else lambda *args: None
 
     def __call__(self, args, count):
         """Parse arguments and call func.
@@ -132,9 +134,9 @@ class Command():
     def _create_func(self, func):
         """Create function to call for a command function.
 
-        This retrieves the instance of a class object for methods and sets it
-        as first argument (the 'self' argument) of a lambda. For standard
-        functions nothing is done.
+        This processes hooks and retrieves the instance of a class object for
+        methods and sets it as first argument (the 'self' argument) of a
+        lambda. For standard functions nothing is done.
 
         Returns:
             A function to be called with any keyword arguments.
@@ -143,8 +145,8 @@ class Command():
         if misc.is_method(func):
             cls = misc.get_class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda **kwargs: func(instance, **kwargs)
-        return func
+            return lambda **kwargs: (self.hook(instance), func(instance, **kwargs))
+        return lambda **kwargs: (self.hook(), func(**kwargs))
 
 
 def argument(argname, optional=False, **kwargs):
@@ -162,21 +164,22 @@ def argument(argname, optional=False, **kwargs):
     return decorator
 
 
-def register(mode=Modes.GLOBAL, count=None, hide=False):
+def register(mode=Modes.GLOBAL, count=None, hide=False, hook=None):
     """Decorator to store a command in the registry.
 
     Args:
         mode: Mode in which the command can be executed.
         count: Associated count. If it is not None, this count will be used as
-        default and passing other counts is supported by the command.
+            default and passing other counts is supported by the command.
         hide: Hide command from command line.
+        hook: Function to run before executing the command.
     """
     def decorator(func):
         name = _get_command_name(func)
         desc = _get_description(func, name)
         func.vimiv_args = Args(name)
         cmd = Command(name, func, mode=mode, count=count, description=desc,
-                      hide=hide)
+                      hide=hide, hook=hook)
         registry[mode][name] = cmd
         return func
     return decorator

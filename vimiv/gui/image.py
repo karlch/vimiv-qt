@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv.config import styles, keybindings, settings
-from vimiv.commands import argtypes, commands
+from vimiv.commands import argtypes, commands, cmdexc
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
@@ -22,6 +22,16 @@ try:
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:
     QSvgWidget = None
+
+
+def check_for_widget(scrollable_image):
+    """Check if there is currently a widget.
+
+    Raises:
+        cmdexc.CommandError if there is no widget.
+    """
+    if scrollable_image.widget() is None:
+        raise cmdexc.CommandError("No image")
 
 
 class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
@@ -124,7 +134,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
     @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(mode=Modes.IMAGE, count=1)
+    @commands.register(mode=Modes.IMAGE, count=1, hook=check_for_widget)
     def scroll(self, direction, count):
         """Scroll the image in the given direction.
 
@@ -146,7 +156,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         bar.setValue(bar.value() - step)
 
     @keybindings.add("M", "center", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
@@ -157,7 +167,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
     @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
     def scroll_edge(self, direction):
         """Scroll the image to one edge.
 
@@ -179,7 +189,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
     @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(count=1, mode=Modes.IMAGE)
+    @commands.register(count=1, mode=Modes.IMAGE, hook=check_for_widget)
     def zoom(self, direction, count):
         """Zoom the current widget.
 
@@ -204,7 +214,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
     @commands.argument("level", optional=True, type=argtypes.image_scale,
                        default="fit")
-    @commands.register(count=1)
+    @commands.register(count=1, hook=check_for_widget)
     def scale(self, level, count):
         """Scale the image.
 
@@ -235,7 +245,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self._scale = level
 
     @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         try:
