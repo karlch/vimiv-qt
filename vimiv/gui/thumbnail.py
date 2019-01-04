@@ -358,11 +358,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.scrollTo(self.selectionModel().currentIndex(),
                       hint=self.PositionAtCenter)
 
-    def _on_path_removed(self, path):
-        """Clear path from thumbnails on removal."""
-        if path in self._paths:
-            self.takeItem(self._paths.index(path))
-
 
 class ThumbnailDelegate(QStyledItemDelegate):
     """Delegate used for the thumbnail widget.
