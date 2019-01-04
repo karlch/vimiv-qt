@@ -9,7 +9,8 @@
 import collections
 import os
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex, QRect
+from PyQt5.QtCore import (Qt, QSize, QItemSelectionModel, pyqtSlot,
+                          QModelIndex, QRect)
 from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
                              QStyledItemDelegate)
 from PyQt5.QtGui import QColor, QIcon
@@ -433,7 +434,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
                      option.rect.width() - 2 * self.padding,
                      option.rect.height() - 2 * self.padding)
         # Size the pixmap should take
-        size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio);
+        size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio)
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0

@@ -145,7 +145,8 @@ class Command():
         if misc.is_method(func):
             cls = misc.get_class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda **kwargs: (self.hook(instance), func(instance, **kwargs))
+            return lambda **kwargs: (self.hook(instance),
+                                     func(instance, **kwargs))
         return lambda **kwargs: (self.hook(), func(**kwargs))
 
 

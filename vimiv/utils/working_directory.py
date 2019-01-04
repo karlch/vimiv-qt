@@ -99,7 +99,6 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 logging.debug("Turning monitoring off")
                 self._stop_monitoring()
 
-
     def _load_directory(self, directory):
         """Load supported files for new directory."""
         self._dir = directory
@@ -109,7 +108,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     @pyqtSlot(str)
     def _reload_directory(self, path):
         """Load new supported files when directory content has changed."""
-        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
+        self._process(
+            lambda: self._emit_changes(*self._get_content(self._dir)))
 
     @pyqtSlot(str)
     def _on_new_image(self, path):
@@ -169,7 +169,6 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
         paths = files.ls(directory, show_hidden=show_hidden)
         return files.get_supported(paths)
-
 
 
 handler = None

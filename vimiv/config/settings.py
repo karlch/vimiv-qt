@@ -392,8 +392,8 @@ def init_defaults():
     """Store default values of all settings."""
     # General
     BoolSetting(Names.MONITOR_FS, True,
-        desc="Monitor current directory for changes and reload widgets " \
-              "automatically")
+                desc="Monitor current directory for changes and reload "
+                     "widgets automatically")
     BoolSetting(Names.SHUFFLE, False, desc="Randomly shuffle images")
     StrSetting(Names.STYLE, "default")
 
