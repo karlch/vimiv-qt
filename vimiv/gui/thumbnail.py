@@ -9,10 +9,10 @@
 import collections
 import os
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex
-from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QLabel,
-                             QStyle, QStyledItemDelegate)
-from PyQt5.QtGui import QColor, QPixmap
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex, QRect
+from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
+                             QStyledItemDelegate)
+from PyQt5.QtGui import QColor, QIcon
 
 from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
@@ -20,7 +20,7 @@ from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.gui import statusbar, image
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
-                         thumbnail_manager, trash_manager, misc)
+                         thumbnail_manager, misc)
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -77,7 +77,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._highlighted = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")])
-        self._default_pixmap = pixmap_creater.default_thumbnail()
+        self._default_icon = QIcon(pixmap_creater.default_thumbnail())
         self._manager = thumbnail_manager.ThumbnailManager()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -95,7 +95,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
-        trash_manager.signals.path_removed.connect(self._on_path_removed)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
 
@@ -108,16 +107,15 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             paths: List of new paths to load.
         """
-        if paths != self._paths:
-            self._paths = paths
-            self.clear()
-            for _ in paths:
-                item = QListWidgetItem()
-                item.setSizeHint(QSize(self.item_size(), self.item_size()))
-                self.addItem(item)
-                thumb = Thumbnail(self._default_pixmap)
-                self.setItemWidget(item, thumb)
-            self._manager.create_thumbnails_async(paths)
+        if paths == self._paths:  # Nothing to do
+            return
+        self._paths = paths
+        self.clear()
+        for i, path in enumerate(paths):
+            item = QListWidgetItem(self, i)
+            item.setSizeHint(QSize(self.item_size(), self.item_size()))
+            item.setIcon(self._default_icon)
+        self._manager.create_thumbnails_async(paths)
 
     @pyqtSlot(str)
     def _on_new_image_opened(self, path):
@@ -157,20 +155,15 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if mode == Modes.THUMBNAIL:
             self._stack.setCurrentWidget(image.instance())
 
-    @pyqtSlot(int, QPixmap)
-    def _on_thumbnail_created(self, index, pixmap):
+    @pyqtSlot(int, QIcon)
+    def _on_thumbnail_created(self, index, icon):
         """Insert created thumbnail as soon as manager created it.
 
         Args:
             index: Index of the created thumbnail as integer.
-            pixmap: QPixmap to insert.
+            icon: QIcon to insert.
         """
-        self.takeItem(index)
-        item = QListWidgetItem()
-        item.setSizeHint(QSize(self.item_size(), self.item_size()))
-        self.insertItem(index, item)
-        thumb = Thumbnail(pixmap)
-        self.setItemWidget(item, thumb)
+        self.item(index).setIcon(icon)
 
     @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -371,29 +364,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             self.takeItem(self._paths.index(path))
 
 
-class Thumbnail(QLabel):
-    """Simple class representing one thumbnail.
-
-    Attributes:
-        original: The original thumbnail QPixmap received from the the
-            thumbnail manager.
-    """
-
-    def __init__(self, pixmap):
-        super().__init__()
-        self.original = pixmap
-        self.setPixmap(pixmap)
-        self.setStyleSheet("QLabel { background: none; }")
-
-    def resizeEvent(self, event):
-        """Rescale thumbnail on resize event."""
-        scale = event.size().height() / 256
-        pixmap = self.original.scaledToWidth(
-            self.original.width() * scale, Qt.SmoothTransformation)
-        self.setPixmap(pixmap)
-        super().resizeEvent(event)
-
-
 class ThumbnailDelegate(QStyledItemDelegate):
     """Delegate used for the thumbnail widget.
 
@@ -411,6 +381,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.search_bg = QColor()
         self.search_bg.setNamedColor(
             styles.get("thumbnail.search.highlighted.bg"))
+        self.padding = int(styles.get("thumbnail.padding"))
 
     def paint(self, painter, option, index):
         """Override the QStyledItemDelegate paint function.
@@ -421,6 +392,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
             index: The QModelIndex.
         """
         self._draw_background(painter, option, index)
+        self._draw_pixmap(painter, option, index)
 
     def _draw_background(self, painter, option, index):
         """Draw the background rectangle of the thumbnail.
@@ -438,6 +410,36 @@ class ThumbnailDelegate(QStyledItemDelegate):
         painter.setBrush(color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(option.rect)
+        painter.restore()
+
+    def _draw_pixmap(self, painter, option, index):
+        """Draw the actual pixmap of the thumbnail.
+
+        This calculates the size of the pixmap, applies padding and
+        appropriately centers the image.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            index: The QModelIndex.
+        """
+        painter.save()
+        # Original thumbnail pixmap
+        pixmap = self.parent().item(index.row()).icon().pixmap(256)
+        # Rectangle that can be filled by the pixmap
+        rect = QRect(option.rect.x() + self.padding,
+                     option.rect.y() + self.padding,
+                     option.rect.width() - 2 * self.padding,
+                     option.rect.height() - 2 * self.padding)
+        # Size the pixmap should take
+        size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio);
+        # Coordinates to center the pixmap
+        diff_x = (rect.width() - size.width()) / 2.0
+        diff_y = (rect.height() - size.height()) / 2.0
+        # Draw
+        painter.drawPixmap(option.rect.x() + self.padding + diff_x,
+                           option.rect.y() + self.padding + diff_y,
+                           size.width(), size.height(), pixmap)
         painter.restore()
 
     def _get_background_color(self, index, state):

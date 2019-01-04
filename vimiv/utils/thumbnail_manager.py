@@ -17,7 +17,7 @@ import os
 import tempfile
 
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, Qt
-from PyQt5.QtGui import QPixmap, QImageReader, QImage
+from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
 from vimiv.utils import xdg, pixmap_creater
@@ -48,7 +48,7 @@ class ThumbnailManager(QObject):
         created: Emitted with index and pixmap when a thumbnail was created.
     """
 
-    created = pyqtSignal(int, QPixmap)
+    created = pyqtSignal(int, QIcon)
     pool = QThreadPool.globalInstance()
 
     def __init__(self, large=True):
@@ -128,7 +128,7 @@ class ThumbnailCreator(QRunnable):
                 pixmap = self._create_thumbnail(self._path, thumbnail_path)
                 # Additional safety net
                 pixmap = pixmap if pixmap else self._manager.fail_pixmap
-            self._manager.created.emit(self._index, pixmap)
+            self._manager.created.emit(self._index, QIcon(pixmap))
         except FileNotFoundError:
             pass
 
