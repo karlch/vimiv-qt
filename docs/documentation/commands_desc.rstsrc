@@ -594,7 +594,7 @@ Manipulate
    ================================ ===========
    Command                          Description
    ================================ ===========
-   :ref:`ref_manipulate_accept`     Apply changes to file and leave manipulate.
+   :ref:`ref_manipulate_accept`     Leave manipulate keeping the changes.
    :ref:`ref_manipulate_brightness` Manipulate brightness.
    :ref:`ref_manipulate_command`    Enter command mode.
    :ref:`ref_manipulate_contrast`   Manipulate contrast.
@@ -609,7 +609,7 @@ Manipulate
 accept
 ======
 
-Apply changes to file and leave manipulate.
+Leave manipulate keeping the changes.
 
 
 .. _ref_manipulate_brightness:

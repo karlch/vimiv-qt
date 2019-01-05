@@ -14,6 +14,7 @@
    library.file_check_amount Number of files to check when calculating directory size
    library.show_hidden       Show hidden files in the library
    library.width             Width of the library as fraction of main window size
+   monitor_filesystem        Monitor current directory for changes and reload widgets automatically
    search.ignore_case        Ignore case when searching, i.e. 'A' and 'a' are equal
    search.incremental        Automatically filter search results when typing
    shuffle                   Randomly shuffle images
