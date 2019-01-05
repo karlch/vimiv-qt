@@ -6,6 +6,7 @@
 
 """QMainWindow which groups all the other widgets."""
 
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
 from vimiv.commands import commands
@@ -13,6 +14,7 @@ from vimiv.completion import completer
 from vimiv.config import keybindings, configcommands
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
                        widgets, manipulate)
+from vimiv.modes import modehandler, Mode, Modes
 from vimiv.utils import objreg
 
 
@@ -32,14 +34,9 @@ class MainWindow(QWidget):
         self._overlays = []
 
         grid = widgets.SimpleGrid(self)
-        stack = QStackedLayout()
+        stack = ImageThumbnailLayout()
 
         # Create widgets and add to layout
-        im = image.ScrollableImage(stack)
-        thumb = thumbnail.ThumbnailView(stack)
-        stack.addWidget(im)
-        stack.addWidget(thumb)
-        stack.setCurrentWidget(im)
         lib = library.Library(self)
         grid.addLayout(stack, 0, 1, 1, 1)
         grid.addWidget(lib, 0, 0, 1, 1)
@@ -82,3 +79,47 @@ class MainWindow(QWidget):
 
 def instance():
     return objreg.get(MainWindow)
+
+
+class ImageThumbnailLayout(QStackedLayout):
+    """QStackedLayout to toggle between image and thumbnail mode.
+
+    Attributes:
+        image: The image widget.
+        thumbnail: The thumbnail widget.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.image = image.ScrollableImage()
+        self.thumbnail = thumbnail.ThumbnailView()
+        self.addWidget(self.image)
+        self.addWidget(self.thumbnail)
+        self.setCurrentWidget(self.image)
+
+        self._connect_signals()
+
+    def _connect_signals(self):
+        modehandler.signals.entered.connect(self._on_mode_entered)
+        modehandler.signals.left.connect(self._on_mode_left)
+
+    @pyqtSlot(Mode, Mode)
+    def _on_mode_entered(self, mode, last_mode):
+        """Set current widget to image or thumbnail."""
+        if mode == Modes.IMAGE:
+            self.setCurrentWidget(self.image)
+        elif mode == Modes.THUMBNAIL:
+            self.setCurrentWidget(self.thumbnail)
+
+    @pyqtSlot(Mode)
+    def _on_mode_left(self, mode):
+        """Set widget to image if thumbnail mode was left.
+
+        This is required in addition to _on_enter in image because it is
+        possible to leave for the library.
+
+        Args:
+            mode: The mode left.
+        """
+        if mode == Modes.THUMBNAIL:
+            self.setCurrentWidget(self.image)

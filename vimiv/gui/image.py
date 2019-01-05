@@ -14,7 +14,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands, cmdexc
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, modewidget, Mode, Modes
+from vimiv.modes import modewidget, Modes
 from vimiv.utils import eventhandler, objreg
 
 # We need the check as svg support is optional
@@ -50,8 +50,6 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     Attributes:
         _scale: How to scale image on resize.
             One of "overzoom", "fit", "fit-height", "fit-width", float.
-        _stack: QStackedLayout containing the ScrollableImage and Thumbnail
-            widgets.
     """
 
     STYLESHEET = """
@@ -101,16 +99,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @modewidget(Modes.IMAGE)
     @objreg.register
-    def __init__(self, stack):
+    def __init__(self):
         super().__init__()
         self._scale = 1
-        self._stack = stack
 
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)
         self.setWidgetResizable(True)
 
-        modehandler.signals.entered.connect(self._on_mode_entered)
         imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.svg_loaded.connect(self._on_svg_loaded)
@@ -329,11 +325,6 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def original(self):
         """Convenience method to get the widgets original pixmap."""
         return self.widget().original
-
-    @pyqtSlot(Mode, Mode)
-    def _on_mode_entered(self, mode, last_mode):
-        if mode == Modes.IMAGE:
-            self._stack.setCurrentWidget(self)
 
     def _clamp_scale(self, scale):
         """Clamp scale applying boundaries."""

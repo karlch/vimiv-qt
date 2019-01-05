@@ -20,7 +20,7 @@ from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.gui import statusbar, image
+from vimiv.gui import statusbar
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
                          thumbnail_manager, misc)
 
@@ -29,7 +29,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     """Thumbnail widget.
 
     Attributes:
-        _stack: QStackedLayout containing image and thumbnail.
         _paths: Last paths loaded to avoid duplicate loading.
         _highlighted: List of indices that are highlighted as search results.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
@@ -72,9 +71,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @modewidget(Modes.THUMBNAIL)
     @objreg.register
-    def __init__(self, stack):
+    def __init__(self):
         super().__init__()
-        self._stack = stack
         self._paths = []
         self._highlighted = []
         self._sizes = collections.OrderedDict(
@@ -92,8 +90,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imsignals.new_image_opened.connect(self._on_new_image_opened)
         imsignals.new_images_opened.connect(self._on_new_images_opened)
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
         settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
@@ -141,30 +137,6 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         imsignals.open_new_image.emit(self.abspath())
         modehandler.enter(Modes.IMAGE)
-
-    @pyqtSlot(Mode, Mode)
-    def _on_mode_entered(self, mode, last_mode):
-        """Set widget to thumbnail or image depending on mode entered.
-
-        Args:
-            mode: The mode entered.
-            last_mode: The mode left.
-        """
-        if mode == Modes.THUMBNAIL:
-            self._stack.setCurrentWidget(self)
-
-    @pyqtSlot(Mode)
-    def _on_mode_left(self, mode):
-        """Set widget to image if thumbnail mode was left.
-
-        This is required in addition to _on_enter in image because it is
-        possible to leave for the library.
-
-        Args:
-            mode: The mode left.
-        """
-        if mode == Modes.THUMBNAIL:
-            self._stack.setCurrentWidget(image.instance())
 
     @pyqtSlot(int, QIcon)
     def _on_thumbnail_created(self, index, icon):
