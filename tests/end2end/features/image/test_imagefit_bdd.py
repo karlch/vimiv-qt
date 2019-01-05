@@ -30,29 +30,29 @@ def img():
 
 @bdd.then(bdd.parsers.parse("the pixmap width should be {width}"))
 def check_pixmap_width(img, width):
-    almost_equal(img.pixmap().width(), int(width))
+    almost_equal(img.current_width(), int(width))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should be {height}"))
 def check_pixmap_height(img, height):
-    almost_equal(img.pixmap().height(), int(height))
+    almost_equal(img.current_height(), int(height))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should fit"))
 def check_pixmap_width_fit(img):
-    almost_equal(img.pixmap().width(), img.width())
+    almost_equal(img.current_width(), img.width())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should fit"))
 def check_pixmap_height_fit(img):
-    almost_equal(img.pixmap().height(), img.height())
+    almost_equal(img.current_height(), img.height())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should not fit"))
 def check_pixmap_width_no_fit(img):
-    assert img.width() != img.pixmap().width()
+    assert img.width() != img.current_width()
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should not fit"))
 def check_pixmap_height_no_fit(img):
-    assert img.height() != img.pixmap().height()
+    assert img.height() != img.current_height()

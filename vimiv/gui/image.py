@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv.config import styles, keybindings, settings
-from vimiv.commands import argtypes, commands, cmdexc
+from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modewidget, Modes
@@ -24,23 +24,12 @@ except ImportError:
     QSvgWidget = None
 
 
-def check_for_widget(scrollable_image):
-    """Check if there is currently a widget.
-
-    Raises:
-        cmdexc.CommandError if there is no widget.
-    """
-    if scrollable_image.widget() is None:
-        raise cmdexc.CommandError("No image")
-
-
 class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     """QScrollArea to display Image or Animation.
 
-    Connects to the pixmap_loaded and movie_loaded signals to create the
-    appropriate child widget. All commands used for both children are
-    implemented here. Interaction with the children happens via the
-    pixmap(), original(), and rescale() methods.
+    Connects to the *_loaded signals to create the appropriate child widget.
+    Commands used in image mode are defined here. Interaction with the child
+    widget happens via the methods defined by widgets.ImageLabel.
 
     Class Attributes:
         MIN_SIZE_SCALE: Minimum scale to scale an image to.
@@ -106,12 +95,17 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)
         self.setWidgetResizable(True)
+        self.setWidget(Empty())
 
         imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.svg_loaded.connect(self._on_svg_loaded)
         imsignals.pixmap_updated.connect(self._on_pixmap_updated)
-        imsignals.all_images_cleared.connect(self.takeWidget)
+        imsignals.all_images_cleared.connect(self._bla)
+
+    @pyqtSlot()
+    def _bla(self):
+        self.setWidget(Empty())
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
@@ -139,7 +133,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
     @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(mode=Modes.IMAGE, count=1, hook=check_for_widget)
+    @commands.register(mode=Modes.IMAGE, count=1)
     def scroll(self, direction, count):
         """Scroll the image in the given direction.
 
@@ -161,7 +155,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         bar.setValue(bar.value() - step)
 
     @keybindings.add("M", "center", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
+    @commands.register(mode=Modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
@@ -172,7 +166,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
     @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.scroll_direction)
-    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
+    @commands.register(mode=Modes.IMAGE)
     def scroll_edge(self, direction):
         """Scroll the image to one edge.
 
@@ -194,7 +188,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
     @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
     @commands.argument("direction", type=argtypes.zoom)
-    @commands.register(count=1, mode=Modes.IMAGE, hook=check_for_widget)
+    @commands.register(count=1, mode=Modes.IMAGE)
     def zoom(self, direction, count):
         """Zoom the current widget.
 
@@ -205,12 +199,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
         **count:** multiplier
         """
-        width = self.pixmap().width()
+        width = self.current_width()
         if direction == "in":
             width *= 1.1**count
         else:
             width /= 1.1**count
-        self._scale = width / self.original().width()
+        self._scale = width / self.original_width()
         self._scale_to_float(self._scale)
 
     @keybindings.add("w", "scale --level=fit", mode=Modes.IMAGE)
@@ -219,7 +213,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
     @commands.argument("level", optional=True, type=argtypes.image_scale,
                        default="fit")
-    @commands.register(count=1, hook=check_for_widget)
+    @commands.register(count=1)
     def scale(self, level, count):
         """Scale the image.
 
@@ -250,7 +244,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self._scale = level
 
     @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE, hook=check_for_widget)
+    @commands.register(mode=Modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         try:
@@ -264,8 +258,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         Args:
             limit: Largest scale to apply trying to fit the widget size.
         """
-        w_factor = self.width() / self.original().width()
-        h_factor = self.height() / self.original().height()
+        w_factor = self.width() / self.original_width()
+        h_factor = self.height() / self.original_height()
         scale = min(w_factor, h_factor)
         # Apply overzoom limit
         if limit > 0:
@@ -274,12 +268,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     def _scale_to_width(self):
         """Scale image so the width fits the widgets width."""
-        scale = self.width() / self.original().width()
+        scale = self.width() / self.original_width()
         self._scale_to_float(scale)
 
     def _scale_to_height(self):
         """Scale image so the height fits the widgets width."""
-        scale = self.height() / self.original().height()
+        scale = self.height() / self.original_height()
         self._scale_to_float(scale)
 
     def _scale_to_float(self, level):
@@ -293,8 +287,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
-        if self.widget():
-            self.scale(self._scale, 1)
+        self.scale(self._scale, 1)
         statusbar.update(clear_message=False)  # Zoom level changes
 
     def width(self):
@@ -308,23 +301,29 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @statusbar.module("{zoomlevel}")
     def _get_zoom_level(self):
         """Zoom level of the image in percent."""
-        if not self.widget():
-            return "None"
-        level = self.pixmap().width() / self.original().width()
+        level = self.current_width() / self.original_width()
         return "%2.0f%%" % (level * 100)
 
     @statusbar.module("{image-size}")
     def _get_image_size(self):
         """Size of the image in pixels in the form WIDTHxHEIGHT."""
-        return "%dx%d" % (self.original().width(), self.original().height())
+        return "%dx%d" % (self.original_width(), self.original_height())
 
-    def pixmap(self):
-        """Convenience method to get the widgets current pixmap."""
-        return self.widget().pixmap()
+    def current_width(self):
+        """Convenience method to get the widgets current width."""
+        return self.widget().current_size().width()
 
-    def original(self):
-        """Convenience method to get the widgets original pixmap."""
-        return self.widget().original
+    def current_height(self):
+        """Convenience method to get the widgets current height."""
+        return self.widget().current_size().height()
+
+    def original_width(self):
+        """Convenience method to get the widgets original width."""
+        return self.widget().original_size().width()
+
+    def original_height(self):
+        """Convenience method to get the widgets original height."""
+        return self.widget().original_size().height()
 
     def _clamp_scale(self, scale):
         """Clamp scale applying boundaries."""
@@ -349,27 +348,42 @@ def instance():
     return objreg.get(ScrollableImage)
 
 
+class Empty(widgets.ImageLabel):
+    """Empty QLabel to display if there is no image."""
+
+    def __init__(self):
+        super().__init__()
+
+    def original_size(self):
+        return QSize(1, 1)
+
+    def current_size(self):
+        return QSize(1, 1)
+
+    def rescale(self, scale):
+        pass
+
+
 class Image(widgets.ImageLabel):
     """QLabel to display a QPixmap.
 
     Attributes:
-        original: Pixmap without rescaling.
+        _original: Pixmap without rescaling.
     """
 
     def __init__(self, pixmap):
-        """Create the image object.
-
-        Args:
-            paths: Initial paths given from the command line.
-        """
         super().__init__()
-        self.original = pixmap
+        self._original = pixmap
+
+    def current_size(self):
+        return self.pixmap().size()
+
+    def original_size(self):
+        return self._original.size()
 
     def rescale(self, scale):
-        """Rescale the image to a new scale."""
-        width = self.original.width() * scale
-        pixmap = self.original.scaledToWidth(width,
-                                             mode=Qt.SmoothTransformation)
+        pixmap = self._original.scaledToWidth(self._original.width() * scale,
+                                              mode=Qt.SmoothTransformation)
         self.setPixmap(pixmap)
 
 
@@ -377,26 +391,25 @@ class Animation(widgets.ImageLabel):
     """QLabel to display a QMovie.
 
     Attributes:
-        original: Pixmap of the first frame without rescaling.
+        _original_size: Size of the first frame without rescaling.
     """
 
     def __init__(self, movie):
         super().__init__()
         self.setMovie(movie)
         movie.jumpToFrame(0)
-        self.original = movie.currentPixmap()
+        self._original_size = movie.currentPixmap().size()
         if settings.get_value(settings.Names.IMAGE_AUTOPLAY):
             movie.start()
 
-    def pixmap(self):
-        """Convenience method to get current pixmap."""
-        return self.movie().currentPixmap()
+    def current_size(self):
+        return self.movie().scaledSize()
+
+    def original_size(self):
+        return self._original_size
 
     def rescale(self, scale):
-        """Rescale the movie to a new scale."""
-        width = self.original.width() * scale
-        height = self.original.height() * scale
-        self.movie().setScaledSize(QSize(width, height))
+        self.movie().setScaledSize(self._original_size * scale)
 
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
@@ -422,15 +435,13 @@ if QSvgWidget is not None:
 
         def __init__(self, path):
             super().__init__(path)
-            self.original = self.sizeHint()
             styles.apply(self)
 
-        def pixmap(self):
-            """Return the QSvgWidget for size comparisons."""
-            return super()
+        def current_size(self):
+            return super().size()
+
+        def original_size(self):
+            return self.sizeHint()
 
         def rescale(self, scale):
-            """Rescale the svg to a new scale."""
-            width = self.original.width() * scale
-            height = self.original.height() * scale
-            self.setFixedSize(width, height)
+            self.setFixedSize(self.original_size() * scale)

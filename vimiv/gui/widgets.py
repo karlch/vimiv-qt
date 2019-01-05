@@ -94,3 +94,15 @@ class ImageLabel(QLabel):
         super().__init__()
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)
+
+    def current_size(self):
+        """Return size of the currently displayed image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def original_size(self):
+        """Return size of the original image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def rescale(self, scale):
+        """Rescale the widget to scale."""
+        raise NotImplementedError("Must be implemented by child widget")
