@@ -77,6 +77,8 @@ class Manipulator(QObject):
                 "brightness": 0,
                 "contrast": 0
             }
+            self.edited.emit("brightness", 0)
+            self.edited.emit("contrast", 0)
 
     @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
     @commands.argument("value", optional=True, type=argtypes.manipulate_level)

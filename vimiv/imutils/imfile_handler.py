@@ -146,6 +146,7 @@ class ImageFileHandler(QObject):
 
     def _reset(self):
         self.transform.reset()
+        self.manipulate.reset()
 
     @commands.argument("path", nargs="*")
     @commands.register(mode=Modes.IMAGE)
