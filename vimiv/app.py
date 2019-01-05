@@ -6,9 +6,11 @@
 
 """Main application class using QApplication."""
 
+import logging
 import os
 
 from PyQt5.QtCore import QThreadPool
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
@@ -26,6 +28,7 @@ class Application(QApplication):
     def __init__(self):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
+        self._set_icon()
 
     @keybindings.add("q", "quit")
     @commands.register()
@@ -36,6 +39,14 @@ class Application(QApplication):
         # Wait for any running threads to exit safely
         QThreadPool.globalInstance().waitForDone()
         super().quit()
+
+    def _set_icon(self):
+        """Set window icon of vimiv."""
+        icon = QIcon.fromTheme(vimiv.__name__)
+        if icon is None:
+            logging.error("Failed to load icon")
+        else:
+            self.setWindowIcon(icon)
 
 
 # We want to use the name open here as it is the best name for the command
