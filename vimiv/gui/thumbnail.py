@@ -146,7 +146,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             index: Index of the created thumbnail as integer.
             icon: QIcon to insert.
         """
-        self.item(index).setIcon(icon)
+        item = self.item(index)
+        if item is not None:  # Otherwise it has been deleted in the meanwhile
+            item.setIcon(icon)
 
     @pyqtSlot(int, list, Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
