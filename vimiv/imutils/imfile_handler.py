@@ -127,6 +127,7 @@ class ImageFileHandler(QObject):
         *_loaded signal to tell the image to display a new object.
         """
         reader = QImageReader(path)
+        reader.setAutoTransform(True)  # Automatically apply exif orientation
         if not reader.canRead():
             logging.error("Cannot read image %s", path)
             return
