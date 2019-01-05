@@ -7,6 +7,7 @@
 """Thumbnail widget."""
 
 import collections
+import logging
 import os
 
 from PyQt5.QtCore import (Qt, QSize, QItemSelectionModel, pyqtSlot,
@@ -111,9 +112,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if paths == self._paths:  # Nothing to do
             return
         # Delete paths that are no longer here
-        for i, path in enumerate(self._paths):
+        # We must go in reverse order as otherwise the indexing changes on the
+        # fly
+        for i, path in enumerate(self._paths[::-1]):
             if path not in paths:
-                self.takeItem(i)
+                if not self.takeItem(len(self._paths) - 1 - i):
+                    logging.error("Error removing thumbnail for %s", path)
         # Add new paths
         for i, path in enumerate(paths):
             if path not in self._paths:
