@@ -351,9 +351,6 @@ def instance():
 class Empty(widgets.ImageLabel):
     """Empty QLabel to display if there is no image."""
 
-    def __init__(self):
-        super().__init__()
-
     def original_size(self):
         return QSize(1, 1)
 

@@ -32,6 +32,7 @@ def check_image_not_in_filelist(basename):
     abspath = os.path.abspath(basename)
     assert abspath not in imstorage._paths
 
+
 @bdd.then("the image widget should be empty")
 def check_image_widget_empty():
     assert isinstance(image.instance().widget(), image.Empty)
