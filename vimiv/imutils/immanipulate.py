@@ -9,7 +9,8 @@
 import collections
 import time
 
-from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject
+from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
+                          QObject, QCoreApplication)
 from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv.commands import commands, argtypes
@@ -54,6 +55,7 @@ class Manipulator(QObject):
         self.thread_id = 0
         self.data = None
         self._current = "brightness"
+        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def set_pixmap(self, pixmap):
         """Set the pixmap to a newly edited version."""
@@ -197,6 +199,12 @@ class Manipulator(QObject):
         """Return unmanipulated image data for ManipulateRunner."""
         return self._handler.transformed.toImage()
 
+    @pyqtSlot()
+    def _on_quit(self):
+        """Finish thread pool on quit."""
+        self.pool.clear()
+        self.pool.waitForDone()
+
 
 def instance():
     return objreg.get(Manipulator)
@@ -217,12 +225,13 @@ class ManipulateRunner(QRunnable):
 
     def run(self):
         """Apply manipulations."""
+        # Retrieve current unmanipulated image
+        image = self._manipulator.unmanipulated()
         # Wait for a bit in case user holds down key
         time.sleep(WAIT_TIME)
         if self._id != self._manipulator.thread_id:
             return
         # Convert original pixmap to python bytes
-        image = self._manipulator.unmanipulated()
         bits = image.constBits()
         bits.setsize(image.byteCount())
         data = bytes(bits)

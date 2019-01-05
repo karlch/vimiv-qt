@@ -6,7 +6,7 @@
 
 """Singleton to start one vimiv process for tests."""
 
-from PyQt5.QtCore import QThreadPool
+from PyQt5.QtCore import QThreadPool, QCoreApplication
 from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
@@ -58,3 +58,5 @@ class VimivProc():
         QThreadPool.globalInstance().waitForDone()
         imstorage._paths = []
         imstorage._index = 0
+        # Needed for cleanup
+        QCoreApplication.instance().aboutToQuit.emit()
