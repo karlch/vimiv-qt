@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=vimiv
+GenericName=Image Viewer
+Comment=An image viewer with vim like keybindings
+Icon=vimiv
+Terminal=false
+Exec=vimiv %F
+Categories=Graphics;
+MimeType=image/bmp;image/gif;image/jpeg;image/jp2;image/jpeg2000;image/jpx;image/png;image/svg;image/tiff;
