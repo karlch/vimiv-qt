@@ -3,6 +3,7 @@ Feature: Deleting an image in the current file list
     Scenario: Delete currently selected image
         Given I open 2 images
         When I run delete %
+        And I wait for the working directory handler
         Then the image should have the index 1
         And the filelist should contain 1 images
         And image_01.jpg should not be in the filelist
@@ -10,6 +11,7 @@ Feature: Deleting an image in the current file list
     Scenario: Delete any other image in the filelist
         Given I open 3 images
         When I run delete image_02.jpg
+        And I wait for the working directory handler
         Then the filelist should contain 2 images
         And image_02.jpg should not be in the filelist
 
@@ -17,6 +19,7 @@ Feature: Deleting an image in the current file list
         Given I open 2 images
         When I run goto 2
         And I run delete %
+        And I wait for the working directory handler
         Then the image should have the index 1
         And the filelist should contain 1 images
         And image_02.jpg should not be in the filelist
@@ -24,5 +27,6 @@ Feature: Deleting an image in the current file list
     Scenario: Delete only image in filelist
         Given I open any image
         When I run delete %
+        And I wait for the working directory handler
         Then image_01.jpg should not be in the filelist
-        And the mode should be library
+        And the image widget should be empty
