@@ -28,6 +28,8 @@ class Application(QApplication):
     def __init__(self):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
+        self.setApplicationVersion(vimiv.__version__)
+        self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
 
     @keybindings.add("q", "quit")
