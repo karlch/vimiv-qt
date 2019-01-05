@@ -14,7 +14,7 @@ from unittest import mock
 mock.patch("vimiv.utils.misc.cached_method", lambda x: x).start()
 
 from vimiv import startup
-from vimiv.utils import objreg
+from vimiv.utils import objreg, working_directory
 from vimiv.imutils import imstorage
 
 
@@ -48,6 +48,8 @@ class VimivProc():
         for name, widget in objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)
+        # No crazy stuff should happen here, waiting is not really necessary
+        working_directory.handler.WAIT_TIME = 0.001
 
     def exit(self):
         # Do not start any new threads
