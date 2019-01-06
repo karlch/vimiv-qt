@@ -12,12 +12,14 @@ Global
    Command                       Description
    ============================= ===========
    :ref:`ref_global_alias`       Add an alias for a command.
+   :ref:`ref_global_bind`        Bind keys to a command.
    :ref:`ref_global_command`     Enter command mode.
    :ref:`ref_global_copy-name`   Copy name of current path to system clipboard.
    :ref:`ref_global_delete`      Move a file to the trash directory.
    :ref:`ref_global_enter`       Enter another mode.
    :ref:`ref_global_fullscreen`  Toggle fullscreen mode.
    :ref:`ref_global_next`        Select next image.
+   :ref:`ref_global_nop`         Do nothing.
    :ref:`ref_global_open`        Open a path.
    :ref:`ref_global_paste-name`  Paste path from clipboard to open command.
    :ref:`ref_global_prev`        Select previous image.
@@ -28,6 +30,7 @@ Global
    :ref:`ref_global_search-prev` Continue search to the previous match.
    :ref:`ref_global_set`         Set an option.
    :ref:`ref_global_toggle`      Toggle one mode.
+   :ref:`ref_global_unbind`      Unbind a keybinding.
    :ref:`ref_global_undelete`    Restore a file from the trash directory.
    ============================= ===========
 
@@ -49,6 +52,23 @@ positional arguments:
 
 optional arguments:
     * ``--mode``: Mode in which the alias is valid. Default: ``global``.
+
+
+.. _ref_global_bind:
+
+bind
+====
+
+Bind keys to a command.
+
+**syntax:** ``:bind keybinding command [--mode=MODE]``
+
+positional arguments:
+    * ``keybinding``: The keys to bind.
+    * ``command``: The command to execute with optional arguments.
+
+optional arguments:
+    * ``mode``: The mode to bind the keybinding in. Default: current.
 
 
 .. _ref_global_command:
@@ -120,6 +140,17 @@ next
 Select next image.
 
 **count:** multiplier
+
+
+.. _ref_global_nop:
+
+nop
+===
+
+Do nothing.
+
+This is useful to remove default keybindings by explicitly binding them to
+nop.
 
 
 .. _ref_global_open:
@@ -254,6 +285,22 @@ If the mode is currently visible, leave it. Otherwise enter it.
 
 positional arguments:
     * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
+
+
+.. _ref_global_unbind:
+
+unbind
+======
+
+Unbind a keybinding.
+
+**syntax:** ``:unbind keybinding [--mode=MODE]``
+
+positional arguments:
+    * ``keybinding``: The keybinding to unbind.
+
+optional arguments:
+    * ``mode``: The mode to unbind the keybinding in. Default: current.
 
 
 .. _ref_global_undelete:
@@ -537,6 +584,7 @@ Command
    :ref:`ref_command_history`               Cycle through command history.
    :ref:`ref_command_history-substr-search` Cycle through command history with substring matching.
    :ref:`ref_command_leave-commandline`     Leave command mode.
+   :ref:`ref_command_nop`                   Do nothing.
    ======================================== ===========
 
 .. _ref_command_complete:
@@ -585,6 +633,17 @@ leave-commandline
 
 Leave command mode.
 
+
+.. _ref_command_nop:
+
+nop
+===
+
+Do nothing.
+
+This is useful to remove default keybindings by explicitly binding them to
+nop.
+
 Manipulate
 **********
 
@@ -601,6 +660,7 @@ Manipulate
    :ref:`ref_manipulate_decrease`   Decrease the value of the current manipulation.
    :ref:`ref_manipulate_discard`    Discard any changes and leave manipulate.
    :ref:`ref_manipulate_increase`   Increase the value of the current manipulation.
+   :ref:`ref_manipulate_nop`        Do nothing.
    :ref:`ref_manipulate_set`        Set the value of the current manipulation.
    ================================ ===========
 
@@ -697,6 +757,17 @@ positional arguments:
     * ``value``: The value to increase by.
 
 **count:** multiplier
+
+
+.. _ref_manipulate_nop:
+
+nop
+===
+
+Do nothing.
+
+This is useful to remove default keybindings by explicitly binding them to
+nop.
 
 
 .. _ref_manipulate_set:

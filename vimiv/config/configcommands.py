@@ -67,8 +67,7 @@ def bind(keybinding, command, mode):
         * ``command``: The command to execute with optional arguments.
 
     optional arguments:
-        * ``mode``: The mode to unbind the keybinding in. Default: the current
-                    mode.
+        * ``mode``: The mode to bind the keybinding in. Default: current.
     """
     mode = Modes.get_by_name(mode) if mode else modehandler.current()
     command = " ".join(command)
@@ -87,8 +86,7 @@ def unbind(keybinding, mode):
         * ``keybinding``: The keybinding to unbind.
 
     optional arguments:
-        * ``mode``: The mode to unbind the keybinding in. Default: the current
-                    mode.
+        * ``mode``: The mode to unbind the keybinding in. Default: current.
     """
     mode = Modes.get_by_name(mode) if mode else modehandler.current()
     keybindings.unbind(keybinding, mode)

@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # This file is part of vimiv.
+# Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
+# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
+
+# This file is part of vimiv.
 # Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
@@ -12,7 +16,7 @@ import inspect
 # Used to generate list of commands and statusbar modules
 import vimiv.startup  # pylint: disable=unused-import
 from vimiv.commands import commands
-from vimiv.config import settings
+from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
 
 import rstutils
@@ -76,7 +80,28 @@ def generate_settings():
         rstutils.write_table(rows, f, title="Overview of settings")
 
 
+def generate_keybindings():
+    """Generate table overview of default keybindings."""
+    print("generating keybindings...")
+    filename = "docs/documentation/configuration/keybindings_table.rstsrc"
+    with open(filename, "w") as f:
+        rstutils.write_header(f)
+        for mode, bindings in keybindings.items():
+            rows = _gen_keybinding_rows(bindings)
+            title="Keybindings for %s mode" % (mode.name)
+            rstutils.write_table(rows, f, title=title)
+
+
+def _gen_keybinding_rows(bindings):
+    """Generate rows for keybindings table."""
+    rows = [("Keybinding", "Command")]
+    for binding, command in bindings.items():
+        rows.append(("\%s" % (binding), command))
+    return rows
+
+
 if __name__ == "__main__":
     generate_statusbar_modules()
     generate_commands()
     generate_settings()
+    generate_keybindings()
