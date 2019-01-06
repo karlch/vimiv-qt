@@ -13,7 +13,7 @@ import os
 from vimiv.modes import Modes
 from vimiv.commands import aliases, cmdexc
 from vimiv.config import settings
-from vimiv.utils import xdg
+from vimiv.utils import xdg, strconvert
 
 
 def parse(args):
@@ -94,6 +94,8 @@ def _update_setting(name, parser):
         logging.info("Overriding '%s' with '%s'", setting_name, parser_option)
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         logging.warning("%s in configfile", str(e))
+    except (strconvert.ConversionError, ValueError) as e:
+        logging.error("Error reading setting %s: %s", setting_name, str(e))
 
 
 def _add_statusbar_formatters(configsection):
