@@ -1,26 +1,27 @@
-#### Version 0.1.0 (unreleased)
+<img src="https://karlch.github.io/vimiv-qt/_images/vimiv_banner_800.png" alt="vimiv banner" width="400"/>
+
+#### Version 0.1 (unreleased)
+
+[website](https://karlch.github.io/vimiv-qt/) |
+[docs](https://karlch.github.io/vimiv-qt/documentation/index.html) |
+[install](https://karlch.github.io/vimiv-qt/documentation/install.html) |
+[screenshots](https://karlch.github.io/vimiv-qt/screenshots.html) |
+[changelog](https://karlch.github.io/vimiv-qt/changelog.html) |
+[contributing](https://karlch.github.io/vimiv-qt/documentation/contributing.html)
 
 Vimiv is an image viewer with vim-like keybindings. It is written in python3
-using the Qt5 toolkit. Complete rewrite of the initial Gtk3 version.
+using the Qt5 toolkit and is free software, licensed under the GPL.
 
-## Dependencies
-* python3
-* python-pyqt5
-* python-setuptools (for installation)
-* piexif (optional for EXIF support)
+For much more information on vimiv, please check out the
+[website](https://karlch.github.io/vimiv-qt/) and
+[documentation](https://karlch.github.io/vimiv-qt/documentation/index.html).
+To learn how to get vimiv running, see the
+[installation guide](https://karlch.github.io/vimiv-qt/documentation/install.html).
 
-## Thanks to
-* James Campos, author of [Pim](https://github.com/Narrat/Pim) which was the
-  starting point for the old Gtk3 version of vimiv.
-* Bert Muennich, author of [sxiv](https://github.com/muennich/sxiv) which
-  inspired many of the features of vimiv.
-* Florian Bruhin, author of
-  [qutebrowser](https://github.com/qutebrowser/qutebrowser) whose code has
-  helped me a lot with Qt5.
-* Anyone who has contributed or reported bugs.
+For information on contributing to vimiv, you can take a look at the
+[contributing guidelines](https://karlch.github.io/vimiv-qt/documentation/contributing.html>).
 
-
-## LICENSE
+#### LICENSE
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
