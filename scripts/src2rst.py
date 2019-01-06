@@ -18,6 +18,7 @@ import vimiv.startup  # pylint: disable=unused-import
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
+from vimiv.utils import objreg
 
 import rstutils
 
@@ -100,8 +101,21 @@ def _gen_keybinding_rows(bindings):
     return rows
 
 
+def generate_module(filename, obj):
+    """Generate file from module docstring meant for website documentation."""
+    print("generating module for", obj.__name__)
+    docstr = inspect.getdoc(obj).split("//")[-1]
+    with open(filename, "w") as f:
+        rstutils.write_header(f)
+        f.write(docstr)
+
+
 if __name__ == "__main__":
     generate_statusbar_modules()
     generate_commands()
     generate_settings()
     generate_keybindings()
+    generate_module("docs/documentation/objreg.rstsrc", objreg)
+    generate_module("docs/documentation/commands.rstsrc", commands)
+    generate_module("docs/documentation/keybindings.rstsrc", keybindings)
+    generate_module("docs/documentation/statusbar.rstsrc", statusbar)

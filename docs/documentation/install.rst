@@ -37,6 +37,8 @@ your needs. To uninstall vimiv the standard::
 
 should work.
 
+.. _install_using_tox:
+
 Using Tox
 ^^^^^^^^^
 

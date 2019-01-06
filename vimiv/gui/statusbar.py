@@ -13,6 +13,26 @@ Module Attributes:
         are instances of the _Module class which essentially have a name in the
         form of {module} and a callable function that returns a parsed string
         for the statubar to show.
+
+//
+
+The statusbar displayed at the bottom of the vimiv window is configurable using
+:ref:`statusbar modules<statusbar>`. The statusbar itself as well as the
+utility functions for module generation and evaluation are in
+``vimiv.gui.statusbar``.
+
+New statusbar modules are created using the ``module`` decorator. It takes the
+name of the module as the only argument. The module name must start with the
+'{' character and end with '}' to allow differentiating modules from ordinary
+text. A function used as statusbar module must return a string that can be
+displayed in the statusbar.
+
+As an example let's create a statusbar module that returns the name of the
+current user::
+
+    @statusbar.module("{username}")
+    def username():
+        return os.getenv("USER")
 """
 
 import logging
@@ -30,11 +50,14 @@ _modules = {}
 statusbar = None
 
 
+class InvalidModuleNameError(Exception):
+    """Exception raised if the name of a statusbar module is invalid."""
+
+
 class Module():
     """Class to store function of one statusbar module."""
 
     def __init__(self, func):
-        self._instance = None
         self._initialized = False
         self._func = func
 
@@ -70,10 +93,13 @@ def module(name):
 
     Args:
         name: Name of the module as set in the config file.
-        instance: Name of the class in the objreg for methods or None.
     """
     def decorator(function):
         """Store function executable under module name."""
+        if not name.startswith("{") or not name.endswith("}"):
+            message = "Invalid name '%s' for statusbar module %s" % (
+                name, function.__name__)
+            raise InvalidModuleNameError(message)
         _modules[name] = Module(function)
         def inner(*args):
             """Run the function."""

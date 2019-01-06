@@ -8,6 +8,63 @@
 
 Module Attributes:
     registry: Dictionary to store commands in.
+
+//
+
+The user interacts with vimiv using commands. Utilities to create and store
+commands are implemented in ``vimiv.commands.commands``.
+
+Creating a new command is done using the ``register`` decorator, arguments are
+added using the ``argument`` decorator. The command name is directly infered
+from the function name, the functions docstring is used to document the
+command. To understand this concept, lets add a simple command that prints
+"hello earth" to the terminal::
+
+    @commands.register()
+    def hello_earth():
+        print("hello earth")
+
+This code snippet creates the command ``:hello-earth`` which does not accept
+any arguments. To allow greeting other planets, let's add an argument
+``name`` which defaults to earth::
+
+    @commands.argument("name", optional=True, default="earth")
+    @commands.register()
+    def hello_planet(name="earth"):
+        print("hello", name)
+
+Now the command ``:hello-planet`` is created. When called without arguments, it
+prints "hello earth" as before, but it is also possible to great other planets
+by passing their name: ``:hello-planet --name=venus``.
+
+It is possible for commands to support the special ``count`` argument.
+``count`` is passed by the user either by prepending it to the command like
+``:2next`` or by typing numbers before calling a keybinding. Let's update our
+``:hello-planet`` command to support ``count`` by printing the greeting
+``count`` times::
+
+    @commands.argument("name", optional=True, default="earth")
+    @commands.register(count=1)
+    def hello_planet(name="earth", count=1):
+        for i in range(count):
+            print("hello", name)
+
+Each command is valid for a specific mode, the default being global. To supply
+the mode, add it to the register decorator::
+
+    @commands.register(mode=Modes.IMAGE)
+    def ...
+
+In general commands are usable by keybindings and in the command line. If it
+makes no sense for a command to be visible in the command line, e.g. the
+``:command`` command which enters the command line, the hide option can be
+passed::
+
+    @commands.register(hide=True)
+    def ...
+
+In this case it probably makes sense to define a default keybinding for this
+command.
 """
 
 import argparse

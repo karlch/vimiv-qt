@@ -8,6 +8,32 @@
 
 The components stored here are interfaced in various places all over the code
 and stay alive for a longer period of time.
+
+Module Attributes:
+    _registry: The created Registry object used to store the components.
+
+//
+
+The object registry in ``vimiv.utils.objreg`` is a storage system for
+long-lived objects. These objects are stored and identified using their type.
+Therefore every stored object must be unique in its type and only one instance
+of each type can be stored. It is mainly used by commands as well as statusbar
+modules to retrieve the ``self`` argument for methods that require an instance
+of the class.
+
+To register a new class in the object registry, the ``register`` decorator can
+be used as following::
+
+    class MyLongLivedClass:
+
+        @objreg.register
+        def __init__(self):
+            ...
+
+The class is then stored in the object registry once the first instance was
+created. To retrieve the class, the ``get`` function can be used::
+
+    my_instance = objreg.get(MyLongLivedClass)
 """
 
 import collections
