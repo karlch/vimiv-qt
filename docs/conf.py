@@ -116,6 +116,7 @@ html_theme_options = {
             ("Install", "documentation/install"),
             ("Screenshots", "screenshots"),
             ("Changelog", "changelog"),
+            ("Contributing", "documentation/contributing"),
             ("GitHub", "https://github.com/karlch/vimiv-qt", True),
         ],
         "source_link_position": "footer",
