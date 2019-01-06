@@ -12,6 +12,7 @@ Module Attributes:
 
 import collections
 
+from vimiv.commands import cmdexc
 from vimiv.modes import Modes
 
 
@@ -24,11 +25,33 @@ def add(keybinding, command, mode=Modes.GLOBAL):
         mode: Mode in which the keybinding is valid.
     """
     def decorator(function):
-        _registry[mode][keybinding] = command
+        bind(keybinding, command, mode)
         def inside(*args, **kwargs):
             return function(*args, **kwargs)
         return inside
     return decorator
+
+
+def bind(keybinding, command, mode):
+    """Store keybinding in registry.
+
+    See config/configcommands.bind for the corresponding command.
+    """
+    _registry[mode][keybinding] = command
+
+
+def unbind(keybinding, mode):
+    """Remove keybinding from registry.
+
+    See config/configcommands.unbind for the corresponding command.
+    """
+    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY] \
+            and keybinding in _registry[Modes.GLOBAL]:
+        del _registry[Modes.GLOBAL][keybinding]
+    elif keybinding in _registry[mode]:
+        del _registry[mode][keybinding]
+    else:
+        raise cmdexc.CommandError("No binding found for '%s'" % (keybinding))
 
 
 class Bindings(collections.UserDict):

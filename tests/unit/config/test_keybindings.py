@@ -11,8 +11,15 @@ from vimiv.modes import Modes
 
 
 def test_add_keybinding():
-    @keybindings.add("t", "test")
+    @keybindings.add("t1", "test")
     def test():
         pass
     bindings = keybindings.get(Modes.GLOBAL)
-    assert ("t", "test") in bindings.items()
+    assert ("t1", "test") in bindings.items()
+
+
+def test_bind_unbind_keybinding():
+    keybindings.bind("t2", "test", Modes.IMAGE)
+    assert ("t2", "test") in keybindings.get(Modes.IMAGE).items()
+    keybindings.unbind("t2", Modes.IMAGE)
+    assert ("t2", "test") not in keybindings.get(Modes.IMAGE).items()

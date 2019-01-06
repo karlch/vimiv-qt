@@ -8,7 +8,7 @@
 
 from vimiv.commands import commands, cmdexc
 from vimiv.config import settings, keybindings
-from vimiv.modes import Modes
+from vimiv.modes import modehandler, Modes
 from vimiv.utils import strconvert
 
 
@@ -51,6 +51,47 @@ def set(setting, value=None):  # pylint: disable=redefined-builtin
         raise cmdexc.CommandError(str(e))
     except strconvert.ConversionError as e:
         raise cmdexc.CommandError(str(e))
+
+
+@commands.argument("mode", optional=True, default=None)
+@commands.argument("command", nargs="*")
+@commands.argument("keybinding")
+@commands.register()
+def bind(keybinding, command, mode):
+    """Bind keys to a command.
+
+    **syntax:** ``:bind keybinding command [--mode=MODE]``
+
+    positional arguments:
+        * ``keybinding``: The keys to bind.
+        * ``command``: The command to execute with optional arguments.
+
+    optional arguments:
+        * ``mode``: The mode to unbind the keybinding in. Default: the current
+                    mode.
+    """
+    mode = Modes.get_by_name(mode) if mode else modehandler.current()
+    command = " ".join(command)
+    keybindings.bind(keybinding, command, mode)
+
+
+@commands.argument("mode", optional=True, default=None)
+@commands.argument("keybinding")
+@commands.register()
+def unbind(keybinding, mode):
+    """Unbind a keybinding.
+
+    **syntax:** ``:unbind keybinding [--mode=MODE]``
+
+    positional arguments:
+        * ``keybinding``: The keybinding to unbind.
+
+    optional arguments:
+        * ``mode``: The mode to unbind the keybinding in. Default: the current
+                    mode.
+    """
+    mode = Modes.get_by_name(mode) if mode else modehandler.current()
+    keybindings.unbind(keybinding, mode)
 
 
 def init():
