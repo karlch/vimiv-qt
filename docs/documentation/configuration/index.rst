@@ -1,7 +1,7 @@
 Configuration
 =============
 
-TODO info here
+The following documents are available:
 
 .. toctree::
    :maxdepth: 2
