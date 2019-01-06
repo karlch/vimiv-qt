@@ -15,3 +15,4 @@ docs/_static/scrots
 TODO
 .pytest_cache
 Makefile
+.venv
