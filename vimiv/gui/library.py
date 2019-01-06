@@ -99,26 +99,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         Args:
             index: The QModelIndex activated.
         """
-        try:
-            path_index = self.selectionModel().selectedIndexes()[1]
-        # Path does not exist, do not try to select
-        except IndexError:
-            logging.warning("library: selecting empty path")
-            return
-        path = misc.strip_html(path_index.data())
-        # Open directory in library
-        if os.path.isdir(path):
-            self._store_position()
-            working_directory.handler.chdir(path)
-        # Close library on double selection
-        elif path == self._last_selected:
-            modehandler.leave(Modes.LIBRARY)
-            self.hide()
-            self._last_selected = ""
-        # Update image
-        else:
-            imsignals.open_new_image.emit(path)
-            self._last_selected = path
+        self.open_selected()
 
     @pyqtSlot(list)
     def _on_paths_loaded(self, data):
@@ -184,6 +165,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         if mode == Modes.LIBRARY:
             self.hide()
+            self._last_selected = ""
 
     def _set_content(self, data):
         """Set content of the library to data."""
@@ -194,6 +176,47 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.model().appendRow(row)
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
+
+    @commands.argument("close", optional=True, action="store_true")
+    @commands.register(mode=Modes.LIBRARY)
+    def open_selected(self, close=False):
+        """Open the currently selected path.
+
+        If the path activated is an image, it is opened in image mode. If it is
+        a directory, the library is loaded for this directory.
+
+        **syntax:** ``:open-selected [--close]``
+
+        optional arguments:
+            * ``close``: Close the library if an image was selected.
+        """
+        try:
+            path_index = self.selectionModel().selectedIndexes()[1]
+        # Path does not exist, do not try to select
+        except IndexError:
+            logging.warning("library: selecting empty path")
+            return
+        path = misc.strip_html(path_index.data())
+        if os.path.isdir(path):
+            self._open_directory(path)
+        else:
+            self._open_image(path, close)
+
+    def _open_directory(self, path):
+        """Open a selected directory."""
+        self._store_position()
+        working_directory.handler.chdir(path)
+
+    def _open_image(self, path, close):
+        """Open a selected image."""
+        # Update image if a new image was selected
+        if path != self._last_selected:
+            imsignals.open_new_image.emit(path)
+        # Close library on double selection or if specified
+        close = (close or path == self._last_selected)
+        self._last_selected = path
+        if close:
+            modehandler.leave(Modes.LIBRARY)
 
     @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
     @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)

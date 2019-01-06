@@ -135,8 +135,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         Args:
             index: QModelIndex activated.
         """
-        imsignals.open_new_image.emit(self.abspath())
-        modehandler.enter(Modes.IMAGE)
+        self.open_selected()
 
     @pyqtSlot(int, QIcon)
     def _on_thumbnail_created(self, index, icon):
@@ -177,6 +176,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def is_highlighted(self, index):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
+
+    @commands.register(mode=Modes.THUMBNAIL)
+    def open_selected(self):
+        """Open the currently selected thumbnail in image mode."""
+        imsignals.open_new_image.emit(self.abspath())
+        modehandler.enter(Modes.IMAGE)
 
     @keybindings.add("k", "scroll up", mode=Modes.THUMBNAIL)
     @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)

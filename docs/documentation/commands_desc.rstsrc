@@ -466,12 +466,13 @@ Library
 .. table:: Overview of library commands
    :widths: auto
 
-   ========================= ===========
-   Command                   Description
-   ========================= ===========
-   :ref:`ref_library_goto`   Select specific row in current filelist.
-   :ref:`ref_library_scroll` Scroll the library in the given direction.
-   ========================= ===========
+   ================================ ===========
+   Command                          Description
+   ================================ ===========
+   :ref:`ref_library_goto`          Select specific row in current filelist.
+   :ref:`ref_library_open-selected` Open the currently selected path.
+   :ref:`ref_library_scroll`        Scroll the library in the given direction.
+   ================================ ===========
 
 .. _ref_library_goto:
 
@@ -488,6 +489,22 @@ positional arguments:
 .. hint:: -1 is the last row.
 
 **count:** Select [count]th element instead.
+
+
+.. _ref_library_open-selected:
+
+open-selected
+=============
+
+Open the currently selected path.
+
+If the path activated is an image, it is opened in image mode. If it is
+a directory, the library is loaded for this directory.
+
+**syntax:** ``:open-selected [--close]``
+
+optional arguments:
+    * ``close``: Close the library if an image was selected.
 
 
 .. _ref_library_scroll:
@@ -516,13 +533,14 @@ Thumbnail
 .. table:: Overview of thumbnail commands
    :widths: auto
 
-   =========================== ===========
-   Command                     Description
-   =========================== ===========
-   :ref:`ref_thumbnail_goto`   Select specific thumbnail in current filelist.
-   :ref:`ref_thumbnail_scroll` Scroll to another thumbnail in the given direction.
-   :ref:`ref_thumbnail_zoom`   Zoom the current widget.
-   =========================== ===========
+   ================================== ===========
+   Command                            Description
+   ================================== ===========
+   :ref:`ref_thumbnail_goto`          Select specific thumbnail in current filelist.
+   :ref:`ref_thumbnail_open-selected` Open the currently selected thumbnail in image mode.
+   :ref:`ref_thumbnail_scroll`        Scroll to another thumbnail in the given direction.
+   :ref:`ref_thumbnail_zoom`          Zoom the current widget.
+   ================================== ===========
 
 .. _ref_thumbnail_goto:
 
@@ -540,6 +558,14 @@ positional arguments:
 .. hint:: -1 is the last thumbnail.
 
 **count:** Select [count]th thubnail instead.
+
+
+.. _ref_thumbnail_open-selected:
+
+open-selected
+=============
+
+Open the currently selected thumbnail in image mode.
 
 
 .. _ref_thumbnail_scroll:
