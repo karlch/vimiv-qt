@@ -1,4 +1,4 @@
-*__pycache__*
+**/__pycache__/
 *.egg-info
 *.cache
 *.coverage
@@ -8,7 +8,7 @@ coverage/*
 build*
 dist*
 install_log.txt
-*.so
+**/*.so
 docs/_build
 docs/_static/vimiv
 docs/_static/scrots
