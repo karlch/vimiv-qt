@@ -94,6 +94,18 @@ def unbind(keybinding, mode):
     keybindings.unbind(keybinding, mode)
 
 
+@commands.register(mode=Modes.MANIPULATE)
+@commands.register(mode=Modes.COMMAND)
+@commands.register()
+def nop():
+    """Do nothing.
+
+    This is useful to remove default keybindings by explicitly binding them to
+    nop.
+    """
+    pass
+
+
 def init():
     """Initialize config commands."""
     # Currently does not do anything but the commands need to be registered by
