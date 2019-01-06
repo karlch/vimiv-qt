@@ -169,3 +169,7 @@ from the source code. It must be run from the repository directory using::
     $ scripts/src2rst.py
 
 Once this is completed I can re-build the actual website using ``sphinx``.
+
+In analogy another script is used to re-build the man page::
+
+    $ scripts/gen_manpage.sh

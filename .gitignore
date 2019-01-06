@@ -16,3 +16,4 @@ TODO
 .pytest_cache
 Makefile
 .venv
+**/.doctrees
