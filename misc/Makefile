@@ -29,7 +29,7 @@ help:
 
 install:
 	python3 setup.py install --root=$(DESTDIR) --record=install_log.txt
-	install -Dm644 vimiv.desktop $(APPDIR)/vimiv.desktop
+	install -Dm644 misc/vimiv.desktop $(APPDIR)/vimiv.desktop
 	install -Dm644 LICENSE $(LICENSEDIR)/vimiv/LICENSE
 	$(foreach i,$(ICONSIZES),install -Dm644 icons/vimiv_${i}x${i}.png $(DATADIR)/icons/hicolor/${i}x${i}/apps/vimiv.png;)
 	install -Dm644 icons/vimiv.svg $(DATADIR)/icons/hicolor/scalable/apps/vimiv.svg
