@@ -12,20 +12,6 @@ The following documents are available:
    configuration/index
    contributing
 
-Getting help
-------------
+.. include:: getting_help.rst
 
-You can contact me under `my email address <karlch@protonmail.com>`_ or
-open an `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_ if you
-think the question is of general interest.
-
-Reporting Bugs
---------------
-
-The best way to report bugs is to open an
-`issue on github <https://github.com/karlch/vimiv-qt/issues/>`_. If you do
-not have a github account, feel free to
-`contact me directly <karlch@protonmail.com>`_. If possible, please reproduce
-the bug running ``vimiv --log-level debug`` and include the log file located in
-``$XDG_DATA_HOME/vimiv/vimiv.log`` where ``$XDG_DATA_HOME`` is usually
-``~/.local/share/`` if you have not configured it.
+.. include:: contributing_bugs.rst

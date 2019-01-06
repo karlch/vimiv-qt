@@ -56,6 +56,10 @@ Contents
    changelog
    screenshots
 
+.. include:: documentation/getting_help.rst
+
+.. include:: documentation/contributing_bugs.rst
+
 Thanks to
 ---------
 

@@ -1,4 +1,6 @@
-Contributing
-============
+.. _contributing:
+
+Contributing Guidelines
+=======================
 
 TODO
