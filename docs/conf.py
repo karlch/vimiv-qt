@@ -162,7 +162,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'vimiv', 'vimiv Documentation',
+    ('manpage/vimiv.1', 'vimiv', 'an image viewer with vim-like keybindings',
      [author], 1)
 ]
 

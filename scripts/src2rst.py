@@ -13,8 +13,7 @@
 
 import inspect
 
-# Used to generate list of commands and statusbar modules
-import vimiv.startup  # pylint: disable=unused-import
+from vimiv import startup
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
@@ -101,6 +100,109 @@ def _gen_keybinding_rows(bindings):
     return rows
 
 
+def generate_commandline_options():
+    """Generate file including the command line options."""
+    parser = startup.get_argparser()
+    optionals, positionals, titles = _get_options(parser)
+    # Synopsis
+    filename_synopsis = "docs/manpage/synopsis.rstsrc"
+    with open(filename_synopsis, "w") as f:
+        synopsis_options = ["[%s]" % (title) for title in titles]
+        synopsis = "**vimiv** %s" % (" ".join(synopsis_options))
+        f.write(synopsis)
+    # Options
+    filename_options = "docs/manpage/options.rstsrc"
+    with open(filename_options, "w") as f:
+        rstutils.write_header(f)
+        rstutils.write_section("positional arguments", f)
+        f.write(positionals)
+        rstutils.write_section("optional arguments", f)
+        f.write(optionals)
+
+
+def _get_options(parser):
+    """Retrieve the options from the argument parser.
+
+    Returns:
+        optionals: Formatted string of optional arguments.
+        positionals: Formatted string of positional arguments.
+        titles: List containing all argument titles.
+    """
+    optionals = ""
+    positionals = ""
+    titles = []
+    for action in parser._optionals._actions:
+        if not action.option_strings:
+            positionals += _format_positional(action, titles)
+        else:
+            optionals += _format_optional(action, titles)
+    return optionals, positionals, titles
+
+
+def _format_optional(action, titles):
+    """Format optional argument neatly.
+
+    Args:
+        action: The argparser action.
+        titles: List of titles to update with the title(s) of this argument.
+    Returns:
+        Formatted string of this argument.
+    """
+    _titles = _format_optional_title(action)
+    titles.extend(_titles)
+    title = ", ".join(_titles)
+    desc = action.help
+    return _format_option(title, desc)
+
+
+def _format_positional(action, titles):
+    """Format positional argument neatly.
+
+    Args:
+        action: The argparser action.
+        titles: List of titles to update with the title of this argument.
+    Returns:
+        Formatted string of this argument.
+    """
+    title = "**%s**" % (action.metavar)
+    titles.append(title)
+    desc = action.help
+    return _format_option(title, desc)
+
+
+def _format_option(title, desc):
+    """Format an option neatly.
+
+    Args:
+        title: The title of this option.
+        desc: The help description of this option.
+    """
+    return "%s\n\n    %s\n\n" % (title, desc)
+
+
+def _format_optional_title(action):
+    """Format the title of an optional argument neatly.
+
+    The title depends on the number of arguments this action requires.
+
+    Args:
+        action: The argparser action.
+    Returns:
+        Formatted title string of this argument.
+    """
+    formats = []
+    for option in action.option_strings:
+        if isinstance(action.metavar, str):  # One argument
+            title = "**%s** *%s*" % (option, action.metavar)
+        elif isinstance(action.metavar, tuple): # Multiple arguments
+            elems = ["*%s*" % (elem) for elem in action.metavar]
+            title = "**%s** %s" % (option, " ".join(elems))
+        else: # No arguments
+            title = "**%s**" % (option)
+        formats.append(title)
+    return formats
+
+
 def generate_module(filename, obj):
     """Generate file from module docstring meant for website documentation."""
     print("generating module for", obj.__name__)
@@ -115,6 +217,7 @@ if __name__ == "__main__":
     generate_commands()
     generate_settings()
     generate_keybindings()
+    generate_commandline_options()
     generate_module("docs/documentation/objreg.rstsrc", objreg)
     generate_module("docs/documentation/commands.rstsrc", commands)
     generate_module("docs/documentation/keybindings.rstsrc", keybindings)

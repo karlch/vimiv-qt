@@ -1,0 +1,1 @@
+**vimiv** [**-h**] [**--help**] [**-f**] [**--fullscreen**] [**-v**] [**--version**] [**--slideshow**] [**-g** *WIDTHxHEIGHT*] [**--geometry** *WIDTHxHEIGHT*] [**--temp-basedir**] [**--config** *FILE*] [**--keyfile** *FILE*] [**-s** *OPTION* *VALUE*] [**--set** *OPTION* *VALUE*] [**--log-level** *LEVEL*] [**PATH**]
