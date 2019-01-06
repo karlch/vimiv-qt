@@ -2,24 +2,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Statusbar &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -27,15 +20,14 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Contributing" href="../contributing.html" />
-    <link rel="prev" title="Settings" href="settings.html" />
+    <link rel="next" title="Style" href="style.html" />
+    <link rel="prev" title="Keybindings" href="keybindings.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body>
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -114,24 +106,24 @@
 <p>The content of the statusbar is completely configurable and mode dependent. The
 bar is grouped into three parts: left, center and right. Each part has a
 fallback content and can have a mode-dependent content which overrides the
-default. The content is defined in the <code class="docutils literal"><span class="pre">STATUSBAR</span></code> section of the
-<code class="docutils literal"><span class="pre">vimiv.conf</span></code> configuration file located in <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> where
-<code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal"><span class="pre">~/.config/*</span></code> if you have not configured it.</p>
+default. The content is defined in the <code class="docutils literal notranslate"><span class="pre">STATUSBAR</span></code> section of the
+<code class="docutils literal notranslate"><span class="pre">vimiv.conf</span></code> configuration file located in <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> where
+<code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/*</span></code> if you have not configured it.</p>
 <p>The three default options are defined via:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">left</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">left</span></code></li>
-<li><code class="docutils literal"><span class="pre">center</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">center</span></code></li>
-<li><code class="docutils literal"><span class="pre">right</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">right</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">left</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">left</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">center</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">center</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">right</span> <span class="pre">=</span> <span class="pre">the</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">right</span></code></li>
 </ul>
 <p>And can be extended by adding options in the form of e.g.</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">left_image</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">left</span> <span class="pre">in</span> <span class="pre">image</span> <span class="pre">mode</span></code></li>
-<li><code class="docutils literal"><span class="pre">center_thumbnail</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">center</span> <span class="pre">in</span> <span class="pre">thumbnail</span> <span class="pre">mode</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">left_image</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">on</span> <span class="pre">the</span> <span class="pre">left</span> <span class="pre">in</span> <span class="pre">image</span> <span class="pre">mode</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">center_thumbnail</span> <span class="pre">=</span> <span class="pre">content</span> <span class="pre">to</span> <span class="pre">display</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">center</span> <span class="pre">in</span> <span class="pre">thumbnail</span> <span class="pre">mode</span></code></li>
 </ul>
 <p>Text you enter is displayed <em>as is</em>. Formatting using a subset of the html
 styles is possible. As this is not very useful, vimiv provides a set of so
-called <code class="docutils literal"><span class="pre">modules</span></code> for the statusbar. A module is indicated by surrounding its
-name in curly braces, e.g. <code class="docutils literal"><span class="pre">{pwd}</span></code>. This gets replaced by the output of the
+called <code class="docutils literal notranslate"><span class="pre">modules</span></code> for the statusbar. A module is indicated by surrounding its
+name in curly braces, e.g. <code class="docutils literal notranslate"><span class="pre">{pwd}</span></code>. This gets replaced by the output of the
 module. A list of available modules can be found below.</p>
 <table border="1" class="colwidths-auto docutils" id="id1">
 <caption><span class="caption-text">Overview of statusbar modules</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
@@ -147,52 +139,55 @@ module. A list of available modules can be found below.</p>
 <tr class="row-odd"><td>basename</td>
 <td>Basename of the current image.</td>
 </tr>
-<tr class="row-even"><td>filesize</td>
+<tr class="row-even"><td>exif-date-time</td>
+<td>Exif creation date and time of the current image.</td>
+</tr>
+<tr class="row-odd"><td>filesize</td>
 <td>Size of the current image in bytes.</td>
 </tr>
-<tr class="row-odd"><td>image-size</td>
+<tr class="row-even"><td>image-size</td>
 <td>Size of the image in pixels in the form WIDTHxHEIGHT.</td>
 </tr>
-<tr class="row-even"><td>index</td>
+<tr class="row-odd"><td>index</td>
 <td>Index of the current image.</td>
 </tr>
-<tr class="row-odd"><td>keys</td>
+<tr class="row-even"><td>keys</td>
 <td>Unprocessed keys that were pressed.</td>
 </tr>
-<tr class="row-even"><td>mode</td>
+<tr class="row-odd"><td>mode</td>
 <td>Current mode.</td>
 </tr>
-<tr class="row-odd"><td>modified</td>
+<tr class="row-even"><td>modified</td>
 <td>Modification date of the current image.</td>
 </tr>
-<tr class="row-even"><td>processing</td>
-<td>Print <code class="docutils literal"><span class="pre">processing...</span></code> if manipulations are running.</td>
+<tr class="row-odd"><td>processing</td>
+<td>Print <code class="docutils literal notranslate"><span class="pre">processing...</span></code> if manipulations are running.</td>
 </tr>
-<tr class="row-odd"><td>pwd</td>
+<tr class="row-even"><td>pwd</td>
 <td>Current working directory.</td>
 </tr>
-<tr class="row-even"><td>slideshow-delay</td>
+<tr class="row-odd"><td>slideshow-delay</td>
 <td>Slideshow delay in seconds if the slideshow is running.</td>
 </tr>
-<tr class="row-odd"><td>slideshow-indicator</td>
+<tr class="row-even"><td>slideshow-indicator</td>
 <td>Indicator if slideshow is running.</td>
 </tr>
-<tr class="row-even"><td>thumbnail-index</td>
+<tr class="row-odd"><td>thumbnail-index</td>
 <td>Index of the currently selected thumbnail.</td>
 </tr>
-<tr class="row-odd"><td>thumbnail-name</td>
+<tr class="row-even"><td>thumbnail-name</td>
 <td>Name of the currently selected thumbnail.</td>
 </tr>
-<tr class="row-even"><td>thumbnail-size</td>
+<tr class="row-odd"><td>thumbnail-size</td>
 <td>Current thumbnail size (small/normal/large/x-large).</td>
 </tr>
-<tr class="row-odd"><td>thumbnail-total</td>
+<tr class="row-even"><td>thumbnail-total</td>
 <td>Total number of thumbnails.</td>
 </tr>
-<tr class="row-even"><td>total</td>
+<tr class="row-odd"><td>total</td>
 <td>Total amount of images.</td>
 </tr>
-<tr class="row-odd"><td>zoomlevel</td>
+<tr class="row-even"><td>zoomlevel</td>
 <td>Zoom level of the image in percent.</td>
 </tr>
 </tbody>
@@ -218,8 +213,8 @@ module. A list of available modules can be found below.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+        &copy; Copyright 2018-2019, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

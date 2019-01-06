@@ -2,24 +2,17 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Settings &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../../',
-        VERSION:     '',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -27,15 +20,14 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Statusbar" href="statusbar.html" />
+    <link rel="next" title="Keybindings" href="keybindings.html" />
     <link rel="prev" title="Configuration" href="index.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body>
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -114,10 +106,10 @@
 <p>There are two ways to change a setting:</p>
 <ul class="simple">
 <li>Update the configuration file to change it permanently</li>
-<li>Run the <code class="docutils literal"><span class="pre">:set</span></code> command to change it temporarily</li>
+<li>Run the <code class="docutils literal notranslate"><span class="pre">:set</span></code> command to change it temporarily</li>
 </ul>
-<p>The configuration file is <code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
-<code class="docutils literal"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
+<p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
+<code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
 <p>The following table explains all available settings.</p>
 <table border="1" class="colwidths-auto docutils" id="id1">
 <caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
@@ -145,25 +137,34 @@
 <tr class="row-odd"><td>library.width</td>
 <td>Width of the library as fraction of main window size</td>
 </tr>
-<tr class="row-even"><td>shuffle</td>
+<tr class="row-even"><td>monitor_filesystem</td>
+<td>Monitor current directory for changes and reload widgets automatically</td>
+</tr>
+<tr class="row-odd"><td>search.ignore_case</td>
+<td>Ignore case when searching, i.e. ‘A’ and ‘a’ are equal</td>
+</tr>
+<tr class="row-even"><td>search.incremental</td>
+<td>Automatically filter search results when typing</td>
+</tr>
+<tr class="row-odd"><td>shuffle</td>
 <td>Randomly shuffle images</td>
 </tr>
-<tr class="row-odd"><td>slideshow.delay</td>
+<tr class="row-even"><td>slideshow.delay</td>
 <td>Delay to next image in slideshow</td>
 </tr>
-<tr class="row-even"><td>slideshow.indicator</td>
+<tr class="row-odd"><td>slideshow.indicator</td>
 <td>Text to display in statusbar when slideshow is running</td>
 </tr>
-<tr class="row-odd"><td>statusbar.collapse_home</td>
+<tr class="row-even"><td>statusbar.collapse_home</td>
 <td>Collapse /home/user to ~ in statusbar</td>
 </tr>
-<tr class="row-even"><td>statusbar.message_timeout</td>
+<tr class="row-odd"><td>statusbar.message_timeout</td>
 <td>Time in ms until statusbar messages are removed</td>
 </tr>
-<tr class="row-odd"><td>statusbar.show</td>
+<tr class="row-even"><td>statusbar.show</td>
 <td>Always display the statusbar</td>
 </tr>
-<tr class="row-even"><td>thumbnail.size</td>
+<tr class="row-odd"><td>thumbnail.size</td>
 <td>Size of thumbnails</td>
 </tr>
 </tbody>
@@ -189,8 +190,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.5.<br/>
+        &copy; Copyright 2018-2019, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>
