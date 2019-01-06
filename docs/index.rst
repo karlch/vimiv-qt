@@ -60,7 +60,7 @@ Contents
 
 .. include:: documentation/contributing_bugs.rst
 
-Thanks to
+Thanks To
 ---------
 
 * James Campos, author of `Pim <https://github.com/Narrat/Pim>`_ which was the

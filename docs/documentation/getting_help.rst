@@ -1,4 +1,4 @@
-Getting help
+Getting Help
 ------------
 
 You can contact me under `my email address <karlch@protonmail.com>`_ or

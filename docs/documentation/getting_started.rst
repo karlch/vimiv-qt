@@ -64,7 +64,7 @@ It is also possible to vary the size of the thumbnails with the ``+/-`` keys.
 
 To open the selected thumbnail in image mode, press ``<return>``.
 
-Image editing
+Image Editing
 -------------
 
 Images can be rotated with the ``<`` and ``>``, flipped with the ``|`` and
@@ -80,7 +80,7 @@ between -127 and 127 are valid. To increase the value by 1/10 use ``k/K``, to
 decrease it by 1/10 use ``j/J``. To apply the changes accept with ``<return>``,
 to leave manipulate mode reverting any changes press ``<escape>``.
 
-Command line
+Command Line
 ------------
 
 Similar to many keyboard centric programs, vimiv includes a simple commmand
@@ -119,7 +119,7 @@ count in the command line, prepend ``[count]`` to the command, e.g. ``:5next``.
 Pressing any number appends it to the current ``[count]`` and the next command
 is run with the stored ``[count]``.
 
-What next?
+What Next?
 ----------
 
 You may want to check out how to :doc:`configure <configuration/index>` vimiv

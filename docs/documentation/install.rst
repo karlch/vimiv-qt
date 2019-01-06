@@ -5,7 +5,7 @@ Table of Contents:
 
 .. contents:: :local:
 
-Manual install
+Manual Install
 --------------
 
 First of all get the code by cloning the git repository and switch into the
@@ -17,7 +17,7 @@ repository folder::
 or by downloading one of the snapshots on the
 `releases <https://github.com/karlch/vimiv-qt/releases>`_ page.
 
-System-wide installation
+System-Wide Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Vimiv provides an example Makefile in the ``misc`` directory for convenience.
@@ -37,7 +37,7 @@ your needs. To uninstall vimiv the standard::
 
 should work.
 
-Using tox
+Using Tox
 ^^^^^^^^^
 
 First of all get the code by cloning the git repository and switch into the
@@ -77,7 +77,7 @@ Dependencies
 * `setuptools <https://pypi.python.org/pypi/setuptools/>`_ (for installation)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional for exif support)
 
-Package names for distributions
+Package Names For Distributions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Installing the following packages should pull in all necessary dependencies for

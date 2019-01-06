@@ -1,7 +1,7 @@
 Screenshots
 ===========
 
-Dark theme
+Dark Theme
 ^^^^^^^^^^^
 
 .. image:: _static/scrots/image_dark.png
@@ -16,7 +16,7 @@ Dark theme
 .. image:: _static/scrots/command_dark.png
    :width: 300px
 
-Light theme
+Light Theme
 ^^^^^^^^^^^
 
 .. image:: _static/scrots/image_light.png
