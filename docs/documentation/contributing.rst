@@ -62,18 +62,18 @@ and to
 Running the Development Version
 -------------------------------
 
-If you have the dependencies of vimiv installed system-wide, you can run the
-script in the repository directly::
-
-    $ vimiv/vimiv
-
-Otherwise you can :ref:`install vimiv using tox <install_using_tox>` and use
-the script from the virtual environment::
+The arguably cleanest method is to :ref:`install vimiv using tox
+<install_using_tox>` and use the script from the virtual environment::
 
     $ .venv/bin/vimiv
 
-In both cases you may which to create a wrapper script somewhere in your
-``$PATH``.
+If you have the dependencies installed globally, another option is to install
+vimiv using::
+
+    $ python setup.py develop
+
+This, in contrast to using tox, will replace your global vimiv version and
+remove the option to have both a development and a production executable.
 
 For running on a clean directory, use the ``--temp-basedir`` option. To change
 the log level, use the ``--log-level`` option, e.g. ``--log-level debug`` to
