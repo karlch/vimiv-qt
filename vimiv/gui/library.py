@@ -241,7 +241,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         **count:** multiplier
         """
         if direction == "right":
-            self.activated.emit(self.selectionModel().currentIndex())
+            self.open_selected()
         elif direction == "left":
             try:
                 self._positions[os.getcwd()] = self.row()
