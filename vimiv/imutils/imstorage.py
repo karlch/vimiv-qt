@@ -6,7 +6,6 @@
 
 """Deals with changing and storing paths to currently loaded images."""
 
-import logging
 import os
 from random import shuffle
 
@@ -198,7 +197,6 @@ class Storage(QObject):
             statusbar.update()
         else:
             _clear()
-            logging.warning("No more images to display")
 
 
 def _set_index(index, previous=None):
