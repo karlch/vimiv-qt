@@ -1,13 +1,17 @@
 <img src="https://karlch.github.io/vimiv-qt/_images/vimiv_banner_800.png" alt="vimiv banner" width="400"/>
 
-#### Version 0.1 (unreleased)
-
 [website](https://karlch.github.io/vimiv-qt/) |
 [docs](https://karlch.github.io/vimiv-qt/documentation/index.html) |
 [install](https://karlch.github.io/vimiv-qt/documentation/install.html) |
 [screenshots](https://karlch.github.io/vimiv-qt/screenshots.html) |
 [changelog](https://karlch.github.io/vimiv-qt/changelog.html) |
 [contributing](https://karlch.github.io/vimiv-qt/documentation/contributing.html)
+
+Warning: This is the Qt port of vimiv. It is still very much in development. If
+you want to test this port, awesome! I am looking forward to your feedback,
+testers are heavily needed. If you require a more stable version, please check
+out the
+[gtk version](https://github.com/karlch/vimiv).
 
 Vimiv is an image viewer with vim-like keybindings. It is written in python3
 using the Qt5 toolkit and is free software, licensed under the GPL.
