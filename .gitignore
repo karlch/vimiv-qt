@@ -17,3 +17,5 @@ TODO
 Makefile
 .venv
 **/.doctrees
+**/.mypy_cache
+**/.dmypy.json
