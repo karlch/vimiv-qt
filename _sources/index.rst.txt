@@ -4,11 +4,13 @@
    :width: 400px
    :align: center
 
-.. warning:: This website is WIP.
+.. warning::
 
-   The repository for vimiv-qt is still private as the code is not yet
-   completed. As soon as it goes public, this website will be completed as
-   well. Thank you for your patience.
+    This is the Qt port of vimiv. It is still very much in development. If you
+    want to test this port, awesome! I am looking forward to your feedback,
+    testers are heavily needed. If you require a more stable version, please
+    check out the
+    `gtk version <https://github.com/karlch/vimiv>`_.
 
 .. include:: description.rst
 
