@@ -6,6 +6,8 @@
 
 """Functions, fixtures and bdd-like steps for end2end testing."""
 
+import os
+
 from PyQt5.QtGui import QPixmap
 
 import pytest_bdd as bdd
@@ -35,7 +37,7 @@ def create_image(path, fileformat="jpg", size=(300, 300)):
 
 @bdd.given("I start vimiv")
 def startup(qtbot, tmpdir):
-    # Not really any different from "I open any directory" below but cleaner to
+    # Not really any different from "y open any directory" below but cleaner to
     # read in scenarios where the directory is not explicitly needed
     vimivprocess.init(qtbot, [str(tmpdir)])
     yield
@@ -45,6 +47,15 @@ def startup(qtbot, tmpdir):
 @bdd.given("I open any directory")
 def any_directory(qtbot, tmpdir):
     path = tmpdir.mkdir("directory")
+    vimivprocess.init(qtbot, [str(path)])
+    yield
+    vimivprocess.exit()
+
+
+@bdd.given("I open a directory for which I do not have access permissions")
+def any_directory_without_permission(qtbot, tmpdir):
+    path = tmpdir.mkdir("directory")
+    os.chmod(path, 0o000)
     vimivprocess.init(qtbot, [str(path)])
     yield
     vimivprocess.exit()

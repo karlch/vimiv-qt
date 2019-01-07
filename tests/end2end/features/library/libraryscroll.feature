@@ -32,3 +32,7 @@ Feature: Scrolling the library.
         And I run scroll right
         And I run scroll left
         Then the library row should be 2
+
+    Scenario: Crash when entering directory without permission
+        Given I open a directory for which I do not have access permissions
+        Then no crash should happen

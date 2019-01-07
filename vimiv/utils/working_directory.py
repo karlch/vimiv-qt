@@ -71,9 +71,12 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         directory = os.path.abspath(directory)
         if directory != self._dir:
             self._unmonitor(self._dir)
-            os.chdir(directory)
-            self._load_directory(directory)
-            self._monitor(directory)
+            try:
+                os.chdir(directory)
+                self._load_directory(directory)
+                self._monitor(directory)
+            except PermissionError as e:
+                logging.error("%s: Cannot access '%s'", str(e), directory)
 
     def _monitor(self, directory):
         """Monitor the directory by adding it to QFileSystemWatcher."""
