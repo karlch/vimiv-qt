@@ -187,18 +187,17 @@ and to
 </div>
 <div class="section" id="running-the-development-version">
 <h2><a class="toc-backref" href="#id5">Running the Development Version</a><a class="headerlink" href="#running-the-development-version" title="Permalink to this headline">¶</a></h2>
-<p>If you have the dependencies of vimiv installed system-wide, you can run the
-script in the repository directly:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ vimiv/vimiv
-</pre></div>
-</div>
-<p>Otherwise you can <a class="reference internal" href="install.html#install-using-tox"><span class="std std-ref">install vimiv using tox</span></a> and use
-the script from the virtual environment:</p>
+<p>The arguably cleanest method is to <a class="reference internal" href="install.html#install-using-tox"><span class="std std-ref">install vimiv using tox</span></a> and use the script from the virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
 </pre></div>
 </div>
-<p>In both cases you may which to create a wrapper script somewhere in your
-<code class="docutils literal notranslate"><span class="pre">$PATH</span></code>.</p>
+<p>If you have the dependencies installed globally, another option is to install
+vimiv using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py develop
+</pre></div>
+</div>
+<p>This, in contrast to using tox, will replace your global vimiv version and
+remove the option to have both a development and a production executable.</p>
 <p>For running on a clean directory, use the <code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code> option. To change
 the log level, use the <code class="docutils literal notranslate"><span class="pre">--log-level</span></code> option, e.g. <code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">debug</span></code> to
 enable debugging messages.</p>
@@ -388,6 +387,10 @@ from the source code. It must be run from the repository directory using:</p>
 </pre></div>
 </div>
 <p>Once this is completed I can re-build the actual website using <code class="docutils literal notranslate"><span class="pre">sphinx</span></code>.</p>
+<p>In analogy another script is used to re-build the man page:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ scripts/gen_manpage.sh
+</pre></div>
+</div>
 </div>
 </div>
 
