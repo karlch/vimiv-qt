@@ -112,7 +112,7 @@ class ImageFileHandler(QObject):
         if not settings.get_value(settings.Names.IMAGE_AUTOWRITE):
             self._reset()
         elif self.transform.changed() or self.manipulate.changed():
-            self.write_pixmap(self.current, path)
+            self.write_pixmap(self.current, path, path)
 
     @pyqtSlot()
     def _on_quit(self):
