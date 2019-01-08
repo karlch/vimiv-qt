@@ -16,7 +16,7 @@ from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv.commands import commands
 from vimiv.config import settings
-from vimiv.imutils import imtransform, imstorage, imsignals, immanipulate
+from vimiv.imutils import imtransform, imsignals, immanipulate
 from vimiv.modes import Modes
 from vimiv.utils import objreg, files
 
@@ -159,17 +159,18 @@ class ImageFileHandler(QObject):
             * ``path``: Save to this path instead of the current one.
         """
         assert isinstance(path, list), "Must be list from nargs"
-        path = " ".join(path) if path else imstorage.current()
-        self.write_pixmap(self.current, path)
+        path = " ".join(path) if path else self._path
+        self.write_pixmap(self.current, path, self._path)
 
-    def write_pixmap(self, pixmap, path):
+    def write_pixmap(self, pixmap, path, original_path):
         """Write a pixmap to disk.
 
         Args:
             pixmap: The QPixmap to write.
             path: The path to save the pixmap to.
+            original_path: Original path of the opened pixmap.
         """
-        runner = WriteImageRunner(pixmap, path)
+        runner = WriteImageRunner(pixmap, path, original_path)
         self._pool.start(runner)
         self._reset()
 
@@ -192,15 +193,24 @@ class ImageFileHandler(QObject):
 class WriteImageRunner(QRunnable):
     """Write QPixmap to file in an extra thread.
 
+    This requires both the path to write to and the original path as Exif data
+    may be copied from the original path to the new copy. The procedure is to
+    write the path to a temporary file first, transplant the Exif data to the
+    temporary file if possible and finally rename the temporary file to the
+    final path. The renaming is done as it is an atomic operation and we may be
+    overriding the existing file.
+
     Attributes:
         _pixmap: The QPixmap to write.
         _path: Path to write the pixmap to.
+        _original_path: Original path of the opened pixmap.
     """
 
-    def __init__(self, pixmap, path):
+    def __init__(self, pixmap, path, original_path):
         super().__init__()
         self._pixmap = pixmap
         self._path = path
+        self._original_path = original_path
 
     def run(self):
         """Write image to file."""
@@ -239,9 +249,9 @@ class WriteImageRunner(QRunnable):
         handle, filename = tempfile.mkstemp(dir=os.getcwd(), suffix=ext)
         os.close(handle)
         self._pixmap.save(filename)
-        # Copy exif info from old file to new file
+        # Copy exif info from original file to new file
         if piexif is not None:
-            self._copy_exif(self._path, filename)
+            self._copy_exif(self._original_path, filename)
         os.rename(filename, self._path)
         # Check if valid image was created
         if not os.path.isfile(self._path):
