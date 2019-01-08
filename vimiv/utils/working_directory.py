@@ -70,7 +70,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
         if directory != self._dir:
-            self._unmonitor(self._dir)
+            if self.directories():  # Unmonitor old directories
+                self.removePaths(self.directories())
             try:
                 os.chdir(directory)
                 self._load_directory(directory)
@@ -86,11 +87,6 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             logging.error("Cannot monitor %s", directory)
         else:
             logging.debug("Monitoring %s", directory)
-
-    def _unmonitor(self, directory):
-        """Unmonitor the directory by removing it from QFileSystemWatcher."""
-        if directory is not None:
-            self.removePath(directory)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):
