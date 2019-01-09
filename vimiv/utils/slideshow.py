@@ -49,11 +49,10 @@ class Slideshow(QTimer):
         statusbar.update()
 
     @statusbar.module("{slideshow-delay}")
-    def get_delay(self):
+    def delay(self):
         """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
-            delay = self.interval() / 1000
-            return "%.1fs" % (delay)
+            return "%.1fs" % (self.interval() / 1000)
         return ""
 
     @statusbar.module("{slideshow-indicator}")

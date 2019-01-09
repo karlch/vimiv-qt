@@ -29,29 +29,29 @@ def mock_getenv(monkeypatch):
     monkeypatch.setenv("XDG_DATA_HOME", ".")
 
 
-def test_get_xdg_defaults(unset_xdg_env):
-    expected = {xdg.get_user_cache_dir: "~/.cache",
-                xdg.get_user_config_dir: "~/.config",
-                xdg.get_user_data_dir: "~/.local/share"}
+def test_xdg_defaults(unset_xdg_env):
+    expected = {xdg.user_cache_dir: "~/.cache",
+                xdg.user_config_dir: "~/.config",
+                xdg.user_data_dir: "~/.local/share"}
     for func, expected_retval in expected.items():
         assert func() == os.path.expanduser(expected_retval)
 
 
-def test_get_other_values(mock_getenv):
-    for func in [xdg.get_user_cache_dir,
-                 xdg.get_user_config_dir,
-                 xdg.get_user_data_dir]:
+def test_other_values(mock_getenv):
+    for func in [xdg.user_cache_dir,
+                 xdg.user_config_dir,
+                 xdg.user_data_dir]:
         assert func() == "."
 
 
-def test_get_vimiv_xdg_dirs(mock_getenv):
-    for func in [xdg.get_vimiv_cache_dir,
-                 xdg.get_vimiv_config_dir,
-                 xdg.get_vimiv_data_dir]:
+def test_vimiv_xdg_dirs(mock_getenv):
+    for func in [xdg.vimiv_cache_dir,
+                 xdg.vimiv_config_dir,
+                 xdg.vimiv_data_dir]:
         assert func() == "./vimiv"
 
 
-def test_get_vimiv_xdg_dirs_and_join(mock_getenv):
+def test_join_vimiv_xdg_dirs(mock_getenv):
     for func in [xdg.join_vimiv_cache,
                  xdg.join_vimiv_config,
                  xdg.join_vimiv_data]:

@@ -26,7 +26,7 @@ from vimiv.modes import modehandler, Modes
 def run_command(command):
     mode = modehandler.current()
     command = runners.update_command(command, mode)
-    func = commandline.get_command_func(":", command, mode)
+    func = commandline._command_func(":", command, mode)
     func()
 
 
@@ -141,7 +141,7 @@ def check_row_number(row):
 
 @bdd.then(bdd.parsers.parse("the image should have the index {index}"))
 def check_image_index(index):
-    assert imstorage.get_index() == index
+    assert imstorage.index() == index
 
 
 @bdd.given("I enter thumbnail mode")

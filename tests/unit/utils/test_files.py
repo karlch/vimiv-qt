@@ -42,7 +42,7 @@ def test_listdir_wrapper_show_hidden(mocker):
 def test_directories_supported(mocker):
     mocker.patch("os.path.isdir", return_value=True)
     mocker.patch("os.path.isfile", return_value=False)
-    images, directories = files.get_supported(["a", "b"])
+    images, directories = files.supported(["a", "b"])
     assert not images
     assert directories == ["a", "b"]
 
@@ -51,7 +51,7 @@ def test_images_supported(mocker):
     mocker.patch("os.path.isdir", return_value=False)
     mocker.patch("os.path.isfile", return_value=True)
     mocker.patch("PyQt5.QtGui.QImageReader.canRead", return_value=True)
-    images, directories = files.get_supported(["a", "b"])
+    images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
 

@@ -35,7 +35,7 @@ def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
     return sorted(listdir_wrapper(show_hidden))
 
 
-def get_supported(paths):
+def supported(paths):
     """Get a list of supported images and a list of directories from paths.
 
     Args:

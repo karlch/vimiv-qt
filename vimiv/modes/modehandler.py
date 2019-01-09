@@ -125,6 +125,6 @@ def current():
 
 
 @statusbar.module("{mode}")
-def get_active_name():
+def active_name():
     """Current mode."""
     return current().name.upper()

@@ -11,7 +11,7 @@ import os
 from vimiv.commands import commands, aliases
 from vimiv.completion import completionbasemodel
 from vimiv.config import settings as vimivsettings  # Modelfunc called settings
-from vimiv.utils import files, xdg, trash_manager
+from vimiv.utils import files, trash_manager
 
 
 def empty():
@@ -62,7 +62,7 @@ def paths(text):
         return model
     # Get supported paths
     pathlist = []
-    images, directories = files.get_supported(files.ls(directory))
+    images, directories = files.supported(files.ls(directory))
     pathlist.extend(images)
     pathlist.extend(directories)
     # Format data
@@ -113,11 +113,10 @@ def trash():
     """
     data = []
     model = completionbasemodel.BaseModel((0.4, 0.45, 0.15))
-    trash_dir = os.path.join(xdg.get_user_data_dir(), "Trash", "files")
-    for path in files.ls(trash_dir):
+    for path in files.ls(trash_manager.files_directory()):
         cmd = "undelete %s" % (os.path.basename(path))
         # Get info and format it neatly
-        original, date = trash_manager.get_trash_info(path)
+        original, date = trash_manager.trash_info(path)
         original = original.replace(os.path.expanduser("~"), "~")
         original = os.path.dirname(original)
         date = "%s-%s-%s %s:%s" % (date[2:4], date[4:6], date[6:8], date[9:11],

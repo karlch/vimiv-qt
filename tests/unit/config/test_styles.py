@@ -39,5 +39,5 @@ def test_replace_referenced_variables(mocker, new_style):
 
 
 def test_fail_get_nonexisting_style_option(mocker, new_style):
-    mocker.patch.object(styles, "get_current", return_value=new_style)
+    mocker.patch.object(styles, "current", return_value=new_style)
     assert styles.get("anything") == ""

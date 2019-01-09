@@ -167,7 +167,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
         paths = files.ls(directory, show_hidden=show_hidden)
-        return files.get_supported(paths)
+        return files.supported(paths)
 
 
 handler = None

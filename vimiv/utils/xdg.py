@@ -9,37 +9,37 @@
 import os
 
 
-def get_user_data_dir():
+def user_data_dir():
     return os.getenv("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
 
 
-def get_user_config_dir():
+def user_config_dir():
     return os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
 
 
-def get_user_cache_dir():
+def user_cache_dir():
     return os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
 
 
-def get_vimiv_data_dir():
-    return os.path.join(get_user_data_dir(), "vimiv")
+def vimiv_data_dir():
+    return os.path.join(user_data_dir(), "vimiv")
 
 
-def get_vimiv_cache_dir():
-    return os.path.join(get_user_cache_dir(), "vimiv")
+def vimiv_cache_dir():
+    return os.path.join(user_cache_dir(), "vimiv")
 
 
-def get_vimiv_config_dir():
-    return os.path.join(get_user_config_dir(), "vimiv")
+def vimiv_config_dir():
+    return os.path.join(user_config_dir(), "vimiv")
 
 
 def join_vimiv_data(path):
-    return os.path.join(get_vimiv_data_dir(), path)
+    return os.path.join(vimiv_data_dir(), path)
 
 
 def join_vimiv_cache(path):
-    return os.path.join(get_vimiv_cache_dir(), path)
+    return os.path.join(vimiv_cache_dir(), path)
 
 
 def join_vimiv_config(path):
-    return os.path.join(get_vimiv_config_dir(), path)
+    return os.path.join(vimiv_config_dir(), path)

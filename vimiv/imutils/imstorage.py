@@ -88,7 +88,7 @@ def basename():
 
 
 @statusbar.module("{index}")
-def get_index():
+def index():
     """Index of the current image."""
     if _paths:
         return str(_index + 1).zfill(len(total()))
@@ -218,7 +218,7 @@ def _load_single(path):
         goto(_paths.index(path) + 1, count=0)  # goto is indexed from 1
     else:
         directory = os.path.dirname(path)
-        paths, _ = files.get_supported(files.ls(directory))
+        paths, _ = files.supported(files.ls(directory))
         _load_paths(paths, path)
 
 

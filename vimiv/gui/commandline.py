@@ -15,7 +15,7 @@ from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import objreg, eventhandler, ignore
 
 
-def get_command_func(prefix, command, mode):
+def _command_func(prefix, command, mode):
     """Return callable function for command depending on prefix."""
     if prefix == ":" and command.startswith("!"):
         return lambda: runners.external(command[1:])
@@ -94,7 +94,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         # Update command with aliases and wildcards
         command = runners.update_command(command, self.mode)
         # Retrieve function to call depending on prefix
-        func = get_command_func(prefix, command, self.mode)
+        func = _command_func(prefix, command, self.mode)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         QTimer.singleShot(0, func)

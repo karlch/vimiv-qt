@@ -81,7 +81,7 @@ def open_paths(paths, select_mode=True):
         True on success.
     """
     paths = [os.path.abspath(path) for path in paths]
-    images, directories = files.get_supported(paths)
+    images, directories = files.supported(paths)
     mode = Modes.LIBRARY
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))

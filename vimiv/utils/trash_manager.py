@@ -35,8 +35,8 @@ _info_directory = None
 def init():
     """Create the necessary directories."""
     global _files_directory, _info_directory
-    _files_directory = os.path.join(xdg.get_user_data_dir(), "Trash/files")
-    _info_directory = os.path.join(xdg.get_user_data_dir(), "Trash/info")
+    _files_directory = os.path.join(xdg.user_data_dir(), "Trash/files")
+    _info_directory = os.path.join(xdg.user_data_dir(), "Trash/info")
     os.makedirs(_files_directory, exist_ok=True)
     os.makedirs(_info_directory, exist_ok=True)
 
@@ -75,7 +75,7 @@ def undelete(basename):
     if not os.path.exists(info_filename) \
             or not os.path.exists(trash_filename):
         raise cmdexc.CommandError("file does not exist")
-    original_filename, _ = get_trash_info(basename)
+    original_filename, _ = trash_info(basename)
     if not os.path.isdir(os.path.dirname(original_filename)):
         raise cmdexc.CommandError("original directory is not accessible")
     shutil.move(trash_filename, original_filename)
@@ -127,7 +127,7 @@ def _create_info_file(trash_filename, original_filename):
     shutil.move(temp_path, info_path)
 
 
-def get_trash_info(filename):
+def trash_info(filename):
     """Get information stored in the .trashinfo file.
 
     Args:
@@ -143,3 +143,7 @@ def get_trash_info(filename):
     original_filename = content["Path"]
     deletion_date = content["DeletionDate"]
     return original_filename, deletion_date
+
+
+def files_directory():
+    return _files_directory

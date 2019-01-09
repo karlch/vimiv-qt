@@ -55,7 +55,7 @@ class ThumbnailManager(QObject):
         super().__init__()
         self.large = large
 
-        directory = os.path.join(xdg.get_user_cache_dir(), "thumbnails")
+        directory = os.path.join(xdg.user_cache_dir(), "thumbnails")
         self.directory = os.path.join(directory, "large") if large \
             else os.path.join(directory, "normal")
         self.fail_directory = \

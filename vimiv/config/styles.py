@@ -35,7 +35,7 @@ class Styles(collections.UserDict):
 _styles = Styles()
 
 
-def get_current():
+def current():
     return _styles[_styles.current]
 
 
@@ -98,7 +98,7 @@ def apply(obj, append=""):
         append: Extra string to append to the stylesheet.
     """
     sheet = obj.STYLESHEET + append
-    style = get_current()
+    style = current()
     for option, value in style.items():
         sheet = sheet.replace(option, value)
     obj.setStyleSheet(sheet)
@@ -106,7 +106,7 @@ def apply(obj, append=""):
 
 def get(name):
     """Return style option for a given name."""
-    style = get_current()
+    style = current()
     try:
         return style["{%s}" % (name)]
     except KeyError:
