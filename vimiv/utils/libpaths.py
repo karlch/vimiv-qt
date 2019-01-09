@@ -10,7 +10,7 @@ import os
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 
-from vimiv.utils import add_html, files, working_directory
+from vimiv.utils import add_html, files, working_directory, ignore
 
 
 class LibraryPathHandler(QObject):
@@ -86,8 +86,6 @@ def _extend_data(data, paths, dirs=False):
         name = os.path.basename(path)
         if dirs:
             name = add_html("b", name + "/")
-        try:
+        with ignore(FileNotFoundError):  # Has been deleted in the meantime
             size = files.get_size(path)
             data.append((name, size))
-        except FileNotFoundError:  # Has been deleted in the meantime
-            pass
