@@ -42,7 +42,8 @@ from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
 from vimiv.config import settings, styles
 from vimiv.gui import widgets
-from vimiv.utils import misc, objreg, statusbar_loghandler
+from vimiv.utils import (cached_method, is_method, class_that_defined_method,
+                         objreg, statusbar_loghandler)
 
 
 _modules = {}
@@ -68,7 +69,7 @@ class Module():
     def __repr__(self):
         return "StatusbarModule('%s')" % (self._func.__name__)
 
-    @misc.cached_method
+    @cached_method
     def _create_func(self, func):
         """Create function to call for a statusbar module.
 
@@ -81,8 +82,8 @@ class Module():
         """
         logging.debug("Creating function for statusbar module '%s'",
                       func.__name__)
-        if misc.is_method(func):
-            cls = misc.get_class_that_defined_method(func)
+        if is_method(func):
+            cls = class_that_defined_method(func)
             instance = objreg.get(cls)
             return lambda: func(instance)
         return func

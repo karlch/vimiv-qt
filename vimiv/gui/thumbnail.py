@@ -22,7 +22,7 @@ from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.gui import statusbar
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
-                         thumbnail_manager, misc)
+                         thumbnail_manager, clamp)
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -262,7 +262,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         size = self.iconSize().width()
         size = size // 2 if direction == "out" else size * 2
-        size = misc.clamp(size, 64, 512)
+        size = clamp(size, 64, 512)
         settings.override("thumbnail.size", str(size))
         settings.signals.changed.emit("thumbnail.size", size)
 

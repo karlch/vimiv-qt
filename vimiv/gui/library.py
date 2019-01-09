@@ -19,7 +19,7 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import (objreg, libpaths, eventhandler, misc,
+from vimiv.utils import (objreg, libpaths, eventhandler, strip_html, clamp,
                          working_directory, ignore)
 
 
@@ -197,7 +197,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             logging.warning("library: selecting empty path")
             return
-        path = misc.strip_html(path_index.data())
+        path = strip_html(path_index.data())
         if os.path.isdir(path):
             self._open_directory(path)
         else:
@@ -257,7 +257,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row -= count
             else:
                 row += count
-            self._select_row(misc.clamp(row, 0, self.model().rowCount() - 1))
+            self._select_row(clamp(row, 0, self.model().rowCount() - 1))
 
     @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
     @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
@@ -280,7 +280,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = count if count else row  # Prefer count
         if row > 0:
             row -= 1  # Start indexing at 1
-        row = misc.clamp(row, 0, self.model().rowCount() - 1)
+        row = clamp(row, 0, self.model().rowCount() - 1)
         self._select_row(row)
 
     def update_width(self):
@@ -296,7 +296,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Return absolute path of currently selected path."""
         with ignore(IndexError):
             basename = self.selectionModel().selectedIndexes()[1].data()
-            basename = misc.strip_html(basename)
+            basename = strip_html(basename)
             return os.path.abspath(basename)
         return ""
 
@@ -365,7 +365,7 @@ class LibraryModel(QStandardItemModel):
         pathlist = []
         for i in range(self.rowCount()):
             basename = self.index(i, 1).data()
-            basename = misc.strip_html(basename)
+            basename = strip_html(basename)
             pathlist.append(os.path.abspath(basename))
         return pathlist
 

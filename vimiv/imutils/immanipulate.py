@@ -18,7 +18,7 @@ from vimiv.config import keybindings
 from vimiv.imutils import _c_manipulate
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, misc
+from vimiv.utils import objreg, clamp
 
 
 WAIT_TIME = 0.3
@@ -181,7 +181,7 @@ class Manipulator(QObject):
         self._current = name
         self.focused.emit(name)
         if value is not None:
-            value = misc.clamp(value, -127, 127)
+            value = clamp(value, -127, 127)
             self.edited.emit(name, value)
             self.manipulations[name] = value
             self.thread_id += 1

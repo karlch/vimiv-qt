@@ -74,8 +74,8 @@ import logging
 
 from vimiv.commands import cmdexc
 from vimiv.modes import Modes
-from vimiv.utils import misc
-from vimiv.utils import objreg
+from vimiv.utils import (class_that_defined_method, cached_method, is_method,
+                         objreg)
 
 
 class Registry(collections.UserDict):
@@ -187,7 +187,7 @@ class Command():
     def __repr__(self):
         return "Command('%s', '%s')" % (self.name, self.func)
 
-    @misc.cached_method
+    @cached_method
     def _create_func(self, func):
         """Create function to call for a command function.
 
@@ -199,8 +199,8 @@ class Command():
             A function to be called with any keyword arguments.
         """
         logging.debug("Creating function for command '%s'", func.__name__)
-        if misc.is_method(func):
-            cls = misc.get_class_that_defined_method(func)
+        if is_method(func):
+            cls = class_that_defined_method(func)
             instance = objreg.get(cls)
             return lambda **kwargs: (self.hook(instance),
                                      func(instance, **kwargs))
