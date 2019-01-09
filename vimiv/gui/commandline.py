@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QLineEdit
 from vimiv.commands import history, commands, argtypes, runners, search
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import objreg, eventhandler
+from vimiv.utils import objreg, eventhandler, ignore
 
 
 def get_command_func(prefix, command, mode):
@@ -124,13 +124,11 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """Run incremental search if enabled."""
         if not search.use_incremental(self.mode):
             return
-        try:
+        with ignore(IndexError):  # Not enough text
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
                 search.search(text, self.mode, reverse=prefix == "?",
                               incremental=True)
-        except IndexError:  # Not enough text
-            pass
 
     @pyqtSlot(int, int)
     def _on_cursor_position_changed(self, _old, new):

@@ -19,7 +19,8 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import objreg, libpaths, eventhandler, misc, working_directory
+from vimiv.utils import (objreg, libpaths, eventhandler, misc,
+                         working_directory, ignore)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -243,11 +244,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if direction == "right":
             self.open_selected()
         elif direction == "left":
-            try:
+            with ignore(IndexError):  # Do not store empty positions
                 self._positions[os.getcwd()] = self.row()
-            # Do not store empty positions
-            except IndexError:
-                pass
             working_directory.handler.chdir("..")
         else:
             try:
@@ -296,12 +294,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def current(self):
         """Return absolute path of currently selected path."""
-        try:
+        with ignore(IndexError):
             basename = self.selectionModel().selectedIndexes()[1].data()
             basename = misc.strip_html(basename)
             return os.path.abspath(basename)
-        except IndexError:
-            return ""
+        return ""
 
     def pathlist(self):
         """Return the list of currently open paths."""

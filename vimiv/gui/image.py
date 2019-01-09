@@ -15,7 +15,7 @@ from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modewidget, Modes
-from vimiv.utils import eventhandler, objreg
+from vimiv.utils import eventhandler, objreg, ignore
 
 # We need the check as svg support is optional
 try:
@@ -247,10 +247,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @commands.register(mode=Modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
-        try:
+        with ignore(AttributeError):  # Currently no animation displayed
             self.widget().play_or_pause()
-        except AttributeError:  # Currently no animation displayed
-            pass
 
     def _scale_to_fit(self, limit=-1):
         """Scale image so it fits the widget size.

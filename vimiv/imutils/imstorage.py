@@ -16,7 +16,7 @@ from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import Mode, Modes
-from vimiv.utils import objreg, files, slideshow, working_directory
+from vimiv.utils import objreg, files, slideshow, working_directory, ignore
 
 
 # We need the check as exif support is optional
@@ -110,11 +110,9 @@ def exif_date_time():
     be used as basis to work with.
     """
     if piexif is not None:
-        try:
+        with ignore(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             exif_dict = piexif.load(current())
             return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
-        except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
-            pass
     return ""
 
 

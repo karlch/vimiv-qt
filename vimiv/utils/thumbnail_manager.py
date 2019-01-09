@@ -20,7 +20,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, Qt
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, pixmap_creater
+from vimiv.utils import xdg, pixmap_creater, ignore
 
 
 KEY_URI = 'Thumb::URI'
@@ -121,15 +121,13 @@ class ThumbnailCreator(QRunnable):
     def run(self):
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
-        try:
+        with ignore(FileNotFoundError):
             pmap = self._maybe_recreate_thumbnail(self._path, thumbnail_path) \
                 if os.path.exists(thumbnail_path) \
                 else self._create_thumbnail(self._path, thumbnail_path)
             # Additional safety net
             pmap = pmap if pmap else self._manager.fail_pixmap
             self._manager.created.emit(self._index, QIcon(pmap))
-        except FileNotFoundError:
-            pass
 
     def _get_thumbnail_path(self, path):
         filename = self._get_thumbnail_filename(path)

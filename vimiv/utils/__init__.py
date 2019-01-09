@@ -5,3 +5,25 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Various utility functions."""
+
+from contextlib import contextmanager
+
+
+@contextmanager
+def ignore(*exceptions):
+    """Context manager to ignore given exceptions.
+
+    Usage:
+        with ignore(ValueError):
+            int("hello")
+
+    Behaves like:
+        try:
+            int("hello")
+        except ValueError:
+            pass
+    """
+    try:
+        yield
+    except exceptions:
+        pass
