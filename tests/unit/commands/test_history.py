@@ -7,6 +7,7 @@
 """Tests for commands.history."""
 
 from vimiv.commands import history
+from vimiv.commands.argtypes import HistoryDirection
 
 
 def test_update_history():
@@ -31,28 +32,28 @@ def test_never_exceed_history_max_elements():
 
 def test_cycle_through_history():
     hist = history.History(["first", "second", "third"])
-    assert hist.cycle("next", "temporary") == "first"
-    assert hist.cycle("next", "") == "second"
-    assert hist.cycle("prev", "") == "first"
-    assert hist.cycle("prev", "") == "temporary"
+    assert hist.cycle(HistoryDirection.Next, "temporary") == "first"
+    assert hist.cycle(HistoryDirection.Next, "") == "second"
+    assert hist.cycle(HistoryDirection.Prev, "") == "first"
+    assert hist.cycle(HistoryDirection.Prev, "") == "temporary"
 
 
 def test_do_not_fail_cycle_on_empty_history():
     hist = history.History([])
-    result = hist.cycle("next", "temporary")
+    result = hist.cycle(HistoryDirection.Next, "temporary")
     assert result == ""
 
 
 def test_clear_temporary_history_element():
     hist = history.History(["first"])
-    hist.cycle("next", "temporary")
+    hist.cycle(HistoryDirection.Next, "temporary")
     hist.update("second")
     assert "temporary" not in hist
 
 
 def test_substring_search_history():
     hist = history.History(["first", "final", "useless"])
-    assert hist.substr_cycle("next", "fi") == "first"
-    assert hist.substr_cycle("next", "fi") == "final"
-    assert hist.substr_cycle("next", "fi") == "fi"
-    assert hist.substr_cycle("prev", "fi") == "final"
+    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "first"
+    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "final"
+    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "fi"
+    assert hist.substr_cycle(HistoryDirection.Prev, "fi") == "final"

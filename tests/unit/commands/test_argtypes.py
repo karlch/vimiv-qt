@@ -30,7 +30,7 @@ def test_fail_positive_float():
 def test_geometry():
     text = "300x500"
     parsed_value = argtypes.geometry(text)
-    assert parsed_value == (300, 500)
+    assert parsed_value == argtypes.Geometry(300, 500)
 
 
 def test_fail_geometry():
@@ -71,22 +71,22 @@ def test_fail_existing_path(mocker):
 def test_scroll_direction():
     directions = ["left", "right", "up", "down"]
     for d in directions:
-        assert d == argtypes.scroll_direction(d)
+        assert argtypes.Direction.fromstr(d) == argtypes.scroll_direction(d)
 
 
 def test_fail_scroll_direction():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid scroll"):
+    with pytest.raises(argparse.ArgumentTypeError, match="Invalid Direction"):
         argtypes.scroll_direction("other")
 
 
 def test_zoom():
     zooms = ["in", "out"]
     for z in zooms:
-        assert z == argtypes.zoom(z)
+        assert argtypes.Zoom.fromstr(z) == argtypes.zoom(z)
 
 
 def test_fail_zoom():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid zoom"):
+    with pytest.raises(argparse.ArgumentTypeError, match="Invalid Zoom"):
         argtypes.zoom("other")
 
 
@@ -101,39 +101,27 @@ def test_log_level():
 
 
 def test_fail_log_level():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid loglevel"):
+    with pytest.raises(argparse.ArgumentTypeError, match="Invalid LogLevel"):
         argtypes.loglevel("other")
 
 
 def test_image_scale_text():
     scales = ["fit", "fit-width", "fit-height"]
-    for scale in scales:
-        assert argtypes.image_scale(scale) == scale
+    for s in scales:
+        assert argtypes.image_scale(s) == argtypes.ImageScale.fromstr(s)
 
 
 def test_image_scale_float(mocker):
-    mocker.patch.object(argtypes, "positive_float")
-    argtypes.image_scale("0.5")
-    argtypes.positive_float.assert_called_once_with("0.5")
-
-
-def test_widget():
-    widgets = ["library"]
-    for w in widgets:
-        assert w == argtypes.widget(w)
-
-
-def test_fail_widget():
-    with pytest.raises(argparse.ArgumentTypeError, match="No widget"):
-        argtypes.widget("browser")
+    assert argtypes.image_scale("0.5") == 0.5
 
 
 def test_command_history_direction():
     directions = ["next", "prev"]
     for d in directions:
-        assert d == argtypes.command_history_direction(d)
+        assert argtypes.HistoryDirection.fromstr(d) \
+            == argtypes.command_history_direction(d)
 
 
 def test_fail_command_history_direction():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid history"):
+    with pytest.raises(argparse.ArgumentTypeError, match="Invalid History"):
         argtypes.command_history_direction("other")

@@ -37,8 +37,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         MAX_SIZE_SCALE: Maximum scale to scale an image to.
 
     Attributes:
-        _scale: How to scale image on resize.
-            One of "overzoom", "fit", "fit-height", "fit-width", float.
+        _scale: ImageScale defining how to scale image on resize.
     """
 
     STYLESHEET = """
@@ -90,7 +89,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @objreg.register
     def __init__(self):
         super().__init__()
-        self._scale = 1
+        self._scale = 1.0
 
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)
@@ -110,7 +109,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
         self.setWidget(Image(pixmap))
-        self.scale("overzoom", 1)
+        self.scale(argtypes.ImageScale.Overzoom, 1)
 
     @pyqtSlot(QMovie)
     def _on_movie_loaded(self, movie):
@@ -120,7 +119,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @pyqtSlot(str)
     def _on_svg_loaded(self, path):
         self.setWidget(VectorGraphic(path))
-        self.scale("fit", 1)
+        self.scale(argtypes.ImageScale.Fit, 1)
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_updated(self, pixmap):
@@ -144,13 +143,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
         **count:** multiplier
         """
-        if direction in ["left", "right"]:
+        if direction in [argtypes.Direction.Left, argtypes.Direction.Right]:
             bar = self.horizontalScrollBar()
             step = self.widget().width() * 0.05 * count
         else:
             bar = self.verticalScrollBar()
             step = self.widget().height() * 0.05 * count
-        if direction in ["right", "down"]:
+        if direction in [argtypes.Direction.Right, argtypes.Direction.Down]:
             step *= -1
         bar.setValue(bar.value() - step)
 
@@ -175,11 +174,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         positional arguments:
             * ``direction``: The direction to scroll in (left/right/up/down).
         """
-        if direction in ["left", "right"]:
+        if direction in [argtypes.Direction.Left, argtypes.Direction.Right]:
             bar = self.horizontalScrollBar()
         else:
             bar = self.verticalScrollBar()
-        if direction in ["left", "up"]:
+        if direction in [argtypes.Direction.Left, argtypes.Direction.Up]:
             value = 0
         else:
             value = bar.maximum()
@@ -200,7 +199,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         **count:** multiplier
         """
         width = self.current_width()
-        if direction == "in":
+        if direction == argtypes.Zoom.In:
             width *= 1.1**count
         else:
             width /= 1.1**count
@@ -230,14 +229,14 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             * **overzoom**: Like **fit** but limit to the overzoom setting.
             * **float**: Set scale to arbitrary decimal value.
         """
-        if level == "overzoom":
+        if level == argtypes.ImageScale.Overzoom:
             self._scale_to_fit(
                 limit=settings.get_value(settings.Names.IMAGE_OVERZOOM))
-        elif level == "fit":
+        elif level == argtypes.ImageScale.Fit:
             self._scale_to_fit()
-        elif level == "fit-width":
+        elif level == argtypes.ImageScale.Fit_Width:
             self._scale_to_width()
-        elif level == "fit-height":
+        elif level == argtypes.ImageScale.Fit_Height:
             self._scale_to_height()
         else:
             self._scale_to_float(level * count)

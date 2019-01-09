@@ -241,9 +241,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         **count:** multiplier
         """
-        if direction == "right":
+        if direction == argtypes.Direction.Right:
             self.open_selected()
-        elif direction == "left":
+        elif direction == argtypes.Direction.Left:
             with ignore(IndexError):  # Do not store empty positions
                 self._positions[os.getcwd()] = self.row()
             working_directory.handler.chdir("..")
@@ -253,7 +253,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             # Directory is empty
             except IndexError:
                 raise cmdexc.CommandWarning("Directory is empty")
-            if direction == "up":
+            if direction == argtypes.Direction.Up:
                 row -= count
             else:
                 row += count

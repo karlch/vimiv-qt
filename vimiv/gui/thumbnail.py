@@ -201,13 +201,13 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         current = self.currentRow()
         column = current % self.columns()
-        if direction == "right":
+        if direction == argtypes.Direction.Right:
             current += 1 * count
             current = min(current, self.count() - 1)
-        elif direction == "left":
+        elif direction == argtypes.Direction.Left:
             current -= 1 * count
             current = max(0, current)
-        elif direction == "down":
+        elif direction == argtypes.Direction.Down:
             # Do not jump between columns
             current += self.columns() * count
             elems_in_last_row = self.count() % self.columns()
@@ -261,7 +261,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         **count:** multiplier
         """
         size = self.iconSize().width()
-        size = size // 2 if direction == "out" else size * 2
+        size = size // 2 if direction == argtypes.Zoom.Out else size * 2
         size = clamp(size, 64, 512)
         settings.override("thumbnail.size", str(size))
         settings.signals.changed.emit("thumbnail.size", size)

@@ -18,6 +18,10 @@ Example for parsing vimiv command:
 import argparse
 import logging
 import os
+from enum import Enum
+from collections import namedtuple
+
+from vimiv.utils import ignore
 
 
 def positive_int(value):
@@ -48,6 +52,9 @@ def positive_float(value):
     return fvalue
 
 
+Geometry = namedtuple("Geometry", ["width", "height"])
+
+
 def geometry(value):
     """Check if an argument value is a valid geometry.
 
@@ -62,7 +69,7 @@ def geometry(value):
         raise argparse.ArgumentTypeError("Must be of the form WIDTHxHEIGHT")
     width = positive_int(lvalue[0])
     height = positive_int(lvalue[1])
-    return (width, height)
+    return Geometry(width, height)
 
 
 def existing_file(value):
@@ -93,20 +100,50 @@ def existing_path(value):
     return value
 
 
+class _ArgtypeEnum(Enum):
+    """Enum with additional string functionality to be used by argparsers."""
+
+    @staticmethod
+    def tostr(elem):
+        return elem.name.lower().replace("_", "-")
+
+    @classmethod
+    def allnames(cls):
+        """Return all names neatly formatted."""
+        return ", ".join("'%s'" % (cls.tostr(elem)) for elem in cls)
+
+    @classmethod
+    def fromstr(cls, name):
+        """Create element from string name."""
+        for elem in cls:
+            if cls.tostr(elem) == name.lower():
+                return elem
+        raise argparse.ArgumentTypeError(
+            "Invalid %s '%s'. Must be one of %s" % (
+                cls.__name__, name, cls.allnames()))
+
+
+class Direction(_ArgtypeEnum):
+    Left = 0
+    Right = 1
+    Up = 2
+    Down = 3
+
+
 def scroll_direction(value):
     """Check if an argument value is a valid scroll direction.
 
     Args:
         value: Value given to command option as string.
-    Return:
-        value if the value is valid.
+    Returns:
+        A Direction element if the value is valid.
     """
-    directions = ["left", "right", "up", "down"]
-    if value not in directions:
-        raise argparse.ArgumentTypeError(
-            "Invalid scroll direction '{}'. Must be one of {}.".format(
-                value, ", ".join(directions)))
-    return value
+    return Direction.fromstr(value)
+
+
+class Zoom(_ArgtypeEnum):
+    In = 0
+    Out = 1
 
 
 def zoom(value):
@@ -114,15 +151,18 @@ def zoom(value):
 
     Args:
         value: Value given to command option as string.
-    Return:
-        value if the value is valid.
+    Returns:
+        A Zoom element if the value is valid.
     """
-    zooms = ["in", "out"]
-    if value not in zooms:
-        raise argparse.ArgumentTypeError(
-            "Invalid zoom  '{}'. Must be one of {}.".format(
-                value, ", ".join(zooms)))
-    return value
+    return Zoom.fromstr(value)
+
+
+class LogLevel(_ArgtypeEnum):
+    critical = logging.CRITICAL
+    error = logging.ERROR
+    warning = logging.WARNING
+    info = logging.INFO
+    debug = logging.DEBUG
 
 
 def loglevel(value):
@@ -133,51 +173,39 @@ def loglevel(value):
     Return:
         value as logging level.
     """
-    levels = ["debug", "info", "warning", "error", "critical"]
-    value = value.lower()
-    if value not in levels:
-        raise argparse.ArgumentTypeError("Invalid loglevel  '%s'" % (value))
-    if value == "critical":
-        return logging.CRITICAL
-    if value == "error":
-        return logging.ERROR
-    if value == "warning":
-        return logging.WARNING
-    if value == "info":
-        return logging.INFO
-    return logging.DEBUG
+    return LogLevel.fromstr(value).value
+
+
+class ImageScale(_ArgtypeEnum):
+    Overzoom = 0
+    Fit = 1
+    Fit_Width = 2
+    Fit_Height = 3
+
+    @classmethod
+    def fromstr(cls, name):
+        """Override parent class to allow floats."""
+        with ignore(ValueError):
+            return float(name)
+        return super().fromstr(name)
 
 
 def image_scale(value):
     """Check if value is a valid image scale.
 
-    Allowed: "overzoom", "fit", "fit-width", "fit-height", positive_float.
+    Allowed: "overzoom", "fit", "fit-width", "fit-height", float.
 
     Args:
         value: Value given to command option as string.
     Return:
-        value as image scale.
+        The value as ImageScale.
     """
-    value = value.lower()
-    if value in ["fit", "fit-width", "fit-height", "overzoom"]:
-        return value
-    return positive_float(value)
+    return ImageScale.fromstr(value)
 
 
-def widget(value):
-    """Check if a value is a valid widget.
-
-    Allowed: "library"
-
-    Args:
-        value: Value given to command option as string.
-    Return:
-        The value if it was valid.
-    """
-    value = value.lower()
-    if value in ["library", "thumbnail"]:
-        return value
-    raise argparse.ArgumentTypeError("No widget called '%s'" % (value))
+class HistoryDirection(_ArgtypeEnum):
+    Next = 0
+    Prev = 1
 
 
 def command_history_direction(value):
@@ -188,13 +216,9 @@ def command_history_direction(value):
     Args:
         value: Value given to command option as string.
     Return:
-        The value if it was valid.
+        The value as HistoryDirection.
     """
-    value = value.lower()
-    if value in ["next", "prev"]:
-        return value
-    raise argparse.ArgumentTypeError(
-        "Invalid history direction '%s'" % (value))
+    return HistoryDirection.fromstr(value)
 
 
 def manipulate_level(value):

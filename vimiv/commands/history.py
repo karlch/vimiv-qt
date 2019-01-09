@@ -9,6 +9,7 @@
 import collections
 import os
 
+from vimiv.commands import argtypes
 from vimiv.utils import xdg
 
 
@@ -97,7 +98,7 @@ class History(collections.UserList):
         Called from the command line by the history command.
 
         Args:
-            direction: One of "next", "prev".
+            direction: HistoryDirection element.
             text: Current text in the command line.
         Return:
             The received command string to set in the command line.
@@ -107,7 +108,7 @@ class History(collections.UserList):
         if not self._temporary_element_stored:
             self.insert(text)
             self._temporary_element_stored = True
-        if direction == "next":
+        if direction == argtypes.HistoryDirection.Next:
             self._index = (self._index + 1) % len(self)
         else:
             self._index = (self._index - 1) % len(self)
@@ -119,7 +120,7 @@ class History(collections.UserList):
         Called from the command line by the history-substr-search command.
 
         Args:
-            direction: One of "next", "prev".
+            direction: HistoryDirection element.
             text: Current text in the command line used as substring.
         Return:
             The received command string to set in the command line.
@@ -132,7 +133,7 @@ class History(collections.UserList):
             for command in self:
                 if text in command:
                     self._substr_matches.append(command)
-        if direction == "next":
+        if direction == argtypes.HistoryDirection.Next:
             self._index = (self._index + 1) % len(self._substr_matches)
         else:
             self._index = (self._index - 1) % len(self._substr_matches)
