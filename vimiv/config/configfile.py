@@ -47,7 +47,7 @@ def dump():
         section, option = _get_section_option(name)
         if section not in parser:
             parser.add_section(section)
-        default = str(setting.get_default())
+        default = str(setting.default)
         parser[section][option] = default
     # Write to file
     user_file = xdg.join_vimiv_config("vimiv.conf")

@@ -88,8 +88,8 @@ def settings(text):
         model = completionbasemodel.BaseModel((0.5, 0.5))
         setting = vimivsettings.get(text)
         values = {
-            "default": str(setting.get_default()),
-            "current": str(setting.get_value())
+            "default": str(setting.default),
+            "current": str(setting.value)
         }
         for i, suggestion in enumerate(setting.suggestions()):
             values["suggestion %d" % (i + 1)] = suggestion

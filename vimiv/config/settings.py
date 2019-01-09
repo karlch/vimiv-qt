@@ -65,7 +65,7 @@ def get_value(name):
     Return:
         The value of the setting in its python data type.
     """
-    return _storage[name].get_value()
+    return _storage[name].value
 
 
 def override(name, new_value):
@@ -158,7 +158,7 @@ class Setting(ABC):
     Attributes:
         name: Name of the setting as string.
 
-        _default_value: Default value of the setting stored in its python type.
+        _default: Default value of the setting stored in its python type.
         _value: Value of the setting stored in its python type.
     """
 
@@ -168,28 +168,31 @@ class Setting(ABC):
 
         Args:
             name: Name of the setting to initialize.
-            default_value: Default value of the setting to start with.
             desc: Description of the setting.
             suggestions: List of useful values to show in completion widget.
+
+            _default: Default value of the setting to start with.
         """
         super(Setting, self).__init__()
         self.name = name
-        self._default_value = default_value
+        self._default = default_value
         self._value = default_value
         self.desc = desc
         self._suggestions = suggestions
 
-    def get_default(self):
-        return self._default_value
+    @property
+    def default(self):
+        return self._default
 
-    def get_value(self):
+    @property
+    def value(self):
         return self._value
 
     def is_default(self):
-        return self._value == self._default_value
+        return self.value == self.default
 
     def set_to_default(self):
-        self._value = self._default_value
+        self._value = self.default
 
     @abstractmethod
     def override(self, new_value):
