@@ -7,10 +7,15 @@
 """Handler to load paths for the library."""
 
 import os
+from collections import namedtuple
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QStandardItem
 
 from vimiv.utils import add_html, files, working_directory, ignore
+
+
+LibraryRow = namedtuple("LibraryElement", ["linenumber", "name", "size"])
 
 
 class LibraryPathHandler(QObject):
@@ -74,18 +79,21 @@ def init():
 def _extend_data(data, paths, dirs=False):
     """Extend list with list of data tuples for paths.
 
-    Generates a tuple in the form of (name, size) for each path and adds it to
-    the data list.
+    Generates a LibraryRow for each path and adds it to the data list.
 
     Args:
         data: List to extend.
         paths: List of paths to generate data for.
         dirs: Whether all paths are directories.
     """
-    for path in paths:
+    index = len(data) + 1  # Want to index from 1
+    for i, path in enumerate(paths):
         name = os.path.basename(path)
         if dirs:
             name = add_html("b", name + "/")
         with ignore(FileNotFoundError):  # Has been deleted in the meantime
             size = files.get_size(path)
-            data.append((name, size))
+            row = LibraryRow(QStandardItem(str(index + i)),
+                             QStandardItem(name),
+                             QStandardItem(size))
+            data.append(row)

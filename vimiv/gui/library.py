@@ -11,8 +11,7 @@ import os
 
 from PyQt5.QtCore import Qt, QSize, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
-from PyQt5.QtGui import (QStandardItemModel, QStandardItem, QColor,
-                         QTextDocument)
+from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
 from vimiv.commands import commands, argtypes, cmdexc, search
 from vimiv.config import styles, keybindings, settings
@@ -171,9 +170,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def _set_content(self, data):
         """Set content of the library to data."""
         self.model().remove_all_rows()
-        for i, row in enumerate(data):
-            row = [QStandardItem(elem) for elem in row]
-            row.insert(0, QStandardItem(str(i + 1)))
+        for row in data:
             self.model().appendRow(row)
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
