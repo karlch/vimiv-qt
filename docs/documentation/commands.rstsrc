@@ -7,11 +7,11 @@
 The user interacts with vimiv using commands. Utilities to create and store
 commands are implemented in ``vimiv.commands.commands``.
 
-Creating a new command is done using the ``register`` decorator, arguments are
-added using the ``argument`` decorator. The command name is directly infered
-from the function name, the functions docstring is used to document the
-command. To understand this concept, lets add a simple command that prints
-"hello earth" to the terminal::
+Creating a new command is done using the ``register`` decorator. The command
+name is directly infered from the function name, the functions docstring is
+used to document the command. The arguments supported by the command are also
+deduced by inspecting the arguments the function takes. To understand these
+concepts, lets add a simple command that prints "hello earth" to the terminal::
 
     @commands.register()
     def hello_earth():
@@ -21,14 +21,18 @@ This code snippet creates the command ``:hello-earth`` which does not accept
 any arguments. To allow greeting other planets, let's add an argument
 ``name`` which defaults to earth::
 
-    @commands.argument("name", optional=True, default="earth")
     @commands.register()
-    def hello_planet(name="earth"):
+    def hello_planet(name: str = "earth"):
         print("hello", name)
 
 Now the command ``:hello-planet`` is created. When called without arguments, it
 prints "hello earth" as before, but it is also possible to great other planets
 by passing their name: ``:hello-planet --name=venus``.
+
+.. hint::
+
+    Type annotating the arguments is required as the type annotation is passed
+    to the argument parser as type of the argument.
 
 It is possible for commands to support the special ``count`` argument.
 ``count`` is passed by the user either by prepending it to the command like
@@ -36,9 +40,8 @@ It is possible for commands to support the special ``count`` argument.
 ``:hello-planet`` command to support ``count`` by printing the greeting
 ``count`` times::
 
-    @commands.argument("name", optional=True, default="earth")
-    @commands.register(count=1)
-    def hello_planet(name="earth", count=1):
+    @commands.register()
+    def hello_planet(name: str = "earth", count: int = 1):
         for i in range(count):
             print("hello", name)
 
@@ -56,5 +59,5 @@ passed::
     @commands.register(hide=True)
     def ...
 
-In this case it probably makes sense to define a default keybinding for this
+In this case it probably makes sense to define a default keybinding for the
 command.
