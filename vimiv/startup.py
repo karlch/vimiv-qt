@@ -15,8 +15,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app
-from vimiv.commands import argtypes
+from vimiv import app, parsertypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow, statusbar
 from vimiv.imutils import iminitialize
@@ -103,22 +102,23 @@ def get_argparser():
                         help="Print version information and exit")
     parser.add_argument("--slideshow", action="store_true",
                         help="Start slideshow at start-up")
-    parser.add_argument("-g", "--geometry", type=argtypes.geometry,
+    parser.add_argument("-g", "--geometry", type=parsertypes.geometry,
                         metavar="WIDTHxHEIGHT",
                         help="Set the starting geometry")
     parser.add_argument("--temp-basedir", action="store_true",
                         help="Use a temporary basedir")
-    parser.add_argument("--config", type=argtypes.existing_file,
+    parser.add_argument("--config", type=parsertypes.existing_file,
                         metavar="FILE",
                         help="Use FILE as local configuration file")
-    parser.add_argument("--keyfile", type=argtypes.existing_file,
+    parser.add_argument("--keyfile", type=parsertypes.existing_file,
                         metavar="FILE", help="Use FILE as keybinding file")
     parser.add_argument("-s", "--set", nargs=2, default=[], action="append",
                         dest="cmd_settings", metavar=("OPTION", "VALUE"),
                         help="Set a temporary setting")
-    parser.add_argument("--log-level", type=argtypes.loglevel, metavar="LEVEL",
-                        help="Set log level to LEVEL", default="warning")
-    parser.add_argument("paths", nargs="*", type=argtypes.existing_path,
+    parser.add_argument("--log-level", type=parsertypes.loglevel,
+                        metavar="LEVEL", help="Set log level to LEVEL",
+                        default="warning")
+    parser.add_argument("paths", nargs="*", type=parsertypes.existing_path,
                         metavar="PATH", help="Paths to open")
     return parser
 
@@ -161,8 +161,8 @@ def init_ui(args):
     # Center on screen and apply size
     screen_geometry = QApplication.desktop().screenGeometry()
     geometry = args.geometry if args.geometry \
-        else argtypes.Geometry(screen_geometry.width() / 2,
-                               screen_geometry.height() / 2)
+        else parsertypes.Geometry(screen_geometry.width() / 2,
+                                  screen_geometry.height() / 2)
     x = (screen_geometry.width() - geometry.width) // 2
     y = (screen_geometry.height() - geometry.height) // 2
     mw.setGeometry(x, y, *geometry)
