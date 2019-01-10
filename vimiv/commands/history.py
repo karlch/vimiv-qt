@@ -92,7 +92,7 @@ class History(collections.UserList):
         super().insert(0, command)
         self.data = self.data[:self._max_items]
 
-    def cycle(self, direction, text):
+    def cycle(self, direction: argtypes.HistoryDirection, text: str):
         """Cycle through command history.
 
         Called from the command line by the history command.
@@ -108,13 +108,13 @@ class History(collections.UserList):
         if not self._temporary_element_stored:
             self.insert(text)
             self._temporary_element_stored = True
-        if direction == argtypes.HistoryDirection.Next:
+        if direction == direction.Next:
             self._index = (self._index + 1) % len(self)
         else:
             self._index = (self._index - 1) % len(self)
         return self[self._index]
 
-    def substr_cycle(self, direction, text):
+    def substr_cycle(self, direction: argtypes.HistoryDirection, text: str):
         """Cycle through command history with substring matching.
 
         Called from the command line by the history-substr-search command.
@@ -133,7 +133,7 @@ class History(collections.UserList):
             for command in self:
                 if text in command:
                     self._substr_matches.append(command)
-        if direction == argtypes.HistoryDirection.Next:
+        if direction == direction.Next:
             self._index = (self._index + 1) % len(self._substr_matches)
         else:
             self._index = (self._index - 1) % len(self._substr_matches)

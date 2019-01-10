@@ -132,7 +132,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
     @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
     @commands.register(mode=Modes.IMAGE)
-    def scroll(self, direction: argtypes.scroll_direction, count: int = 1):
+    def scroll(self, direction: argtypes.Direction, count: int = 1):
         """Scroll the image in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -142,13 +142,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
         **count:** multiplier
         """
-        if direction in [argtypes.Direction.Left, argtypes.Direction.Right]:
+        if direction in [direction.Left, direction.Right]:
             bar = self.horizontalScrollBar()
             step = self.widget().width() * 0.05 * count
         else:
             bar = self.verticalScrollBar()
             step = self.widget().height() * 0.05 * count
-        if direction in [argtypes.Direction.Right, argtypes.Direction.Down]:
+        if direction in [direction.Right, direction.Down]:
             step *= -1
         bar.setValue(bar.value() - step)
 
@@ -164,7 +164,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
     @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
     @commands.register(mode=Modes.IMAGE)
-    def scroll_edge(self, direction: argtypes.scroll_direction):
+    def scroll_edge(self, direction: argtypes.Direction):
         """Scroll the image to one edge.
 
         **syntax:** ``:scroll-edge direction``.
@@ -172,11 +172,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         positional arguments:
             * ``direction``: The direction to scroll in (left/right/up/down).
         """
-        if direction in [argtypes.Direction.Left, argtypes.Direction.Right]:
+        if direction in [direction.Left, direction.Right]:
             bar = self.horizontalScrollBar()
         else:
             bar = self.verticalScrollBar()
-        if direction in [argtypes.Direction.Left, argtypes.Direction.Up]:
+        if direction in [direction.Left, direction.Up]:
             value = 0
         else:
             value = bar.maximum()
@@ -185,7 +185,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
     @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
     @commands.register(mode=Modes.IMAGE)
-    def zoom(self, direction: argtypes.zoom, count: int = 1):
+    def zoom(self, direction: argtypes.Zoom, count: int = 1):
         """Zoom the current widget.
 
         **syntax:** ``:zoom direction``
@@ -196,7 +196,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         **count:** multiplier
         """
         width = self.current_width()
-        if direction == argtypes.Zoom.In:
+        if direction == direction.In:
             width *= 1.1**count
         else:
             width /= 1.1**count

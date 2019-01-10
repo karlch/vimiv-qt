@@ -69,25 +69,23 @@ def test_fail_existing_path(mocker):
 
 
 def test_scroll_direction():
-    directions = ["left", "right", "up", "down"]
-    for d in directions:
-        assert argtypes.Direction.fromstr(d) == argtypes.scroll_direction(d)
+    # Would raise exception if a name is invalid
+    [argtypes.Direction(name) for name in ["left", "right", "up", "down"]]
 
 
 def test_fail_scroll_direction():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid Direction"):
-        argtypes.scroll_direction("other")
+    with pytest.raises(ValueError, match="not a valid Direct"):
+        argtypes.Direction("other")
 
 
 def test_zoom():
-    zooms = ["in", "out"]
-    for z in zooms:
-        assert argtypes.Zoom.fromstr(z) == argtypes.zoom(z)
+    # Would raise exception if a name is invalid
+    [argtypes.Zoom(name) for name in ["in", "out"]]
 
 
 def test_fail_zoom():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid Zoom"):
-        argtypes.zoom("other")
+    with pytest.raises(ValueError, match="not a valid Zoom"):
+        argtypes.Zoom("other")
 
 
 def test_log_level():
@@ -116,12 +114,10 @@ def test_image_scale_float(mocker):
 
 
 def test_command_history_direction():
-    directions = ["next", "prev"]
-    for d in directions:
-        assert argtypes.HistoryDirection.fromstr(d) \
-            == argtypes.command_history_direction(d)
+    # Would raise exception if a name is invalid
+    [argtypes.HistoryDirection(name) for name in ["next", "prev"]]
 
 
 def test_fail_command_history_direction():
-    with pytest.raises(argparse.ArgumentTypeError, match="Invalid History"):
-        argtypes.command_history_direction("other")
+    with pytest.raises(ValueError, match="not a valid HistoryDirection"):
+        argtypes.HistoryDirection("other")

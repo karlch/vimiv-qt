@@ -139,7 +139,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @keybindings.add("<ctrl>p", "history next", mode=Modes.COMMAND)
     @keybindings.add("<ctrl>n", "history prev", mode=Modes.COMMAND)
     @commands.register(mode=Modes.COMMAND)
-    def history(self, direction: argtypes.command_history_direction):
+    def history(self, direction: argtypes.HistoryDirection):
         """Cycle through command history.
 
         **syntax:** ``:history direction``
@@ -153,8 +153,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @keybindings.add("<down>", "history-substr-search prev",
                      mode=Modes.COMMAND)
     @commands.register(mode=Modes.COMMAND)
-    def history_substr_search(self,
-                              direction: argtypes.command_history_direction):
+    def history_substr_search(self, direction: argtypes.HistoryDirection):
         """Cycle through command history with substring matching.
 
         **syntax:** ``:history-substr-search direction``

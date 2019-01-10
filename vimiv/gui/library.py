@@ -220,7 +220,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
     @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
     @commands.register(mode=Modes.LIBRARY)
-    def scroll(self, direction: argtypes.scroll_direction, count=1):
+    def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -236,9 +236,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         **count:** multiplier
         """
-        if direction == argtypes.Direction.Right:
+        if direction == direction.Right:
             self.open_selected()
-        elif direction == argtypes.Direction.Left:
+        elif direction == direction.Left:
             with ignore(IndexError):  # Do not store empty positions
                 self._positions[os.getcwd()] = self.row()
             working_directory.handler.chdir("..")
@@ -248,7 +248,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             # Directory is empty
             except IndexError:
                 raise cmdexc.CommandWarning("Directory is empty")
-            if direction == argtypes.Direction.Up:
+            if direction == direction.Up:
                 row -= count
             else:
                 row += count

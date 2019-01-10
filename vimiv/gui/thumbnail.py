@@ -188,7 +188,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
     @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
     @commands.register(mode=Modes.THUMBNAIL)
-    def scroll(self, direction: argtypes.scroll_direction, count=1):
+    def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -247,7 +247,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("-", "zoom out", mode=Modes.THUMBNAIL)
     @keybindings.add("+", "zoom in", mode=Modes.THUMBNAIL)
     @commands.register(mode=Modes.THUMBNAIL)
-    def zoom(self, direction: argtypes.zoom):
+    def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.
 
         **syntax:** ``:zoom direction``
@@ -258,7 +258,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         **count:** multiplier
         """
         size = self.iconSize().width()
-        size = size // 2 if direction == argtypes.Zoom.Out else size * 2
+        size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
         settings.override("thumbnail.size", str(size))
         settings.signals.changed.emit("thumbnail.size", size)

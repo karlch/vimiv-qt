@@ -123,38 +123,16 @@ class _ArgtypeEnum(Enum):
                 cls.__name__, name, cls.allnames()))
 
 
-class Direction(_ArgtypeEnum):
-    Left = 0
-    Right = 1
-    Up = 2
-    Down = 3
+class Direction(Enum):
+    Left = "left"
+    Right = "right"
+    Up = "up"
+    Down = "down"
 
 
-def scroll_direction(value):
-    """Check if an argument value is a valid scroll direction.
-
-    Args:
-        value: Value given to command option as string.
-    Returns:
-        A Direction element if the value is valid.
-    """
-    return Direction.fromstr(value)
-
-
-class Zoom(_ArgtypeEnum):
-    In = 0
-    Out = 1
-
-
-def zoom(value):
-    """Check if an argument value is a valid zoom.
-
-    Args:
-        value: Value given to command option as string.
-    Returns:
-        A Zoom element if the value is valid.
-    """
-    return Zoom.fromstr(value)
+class Zoom(Enum):
+    In = "in"
+    Out = "out"
 
 
 class LogLevel(_ArgtypeEnum):
@@ -204,21 +182,8 @@ def image_scale(value):
 
 
 class HistoryDirection(_ArgtypeEnum):
-    Next = 0
-    Prev = 1
-
-
-def command_history_direction(value):
-    """Check if a value is a valid command history direction.
-
-    Allowed: "next", "prev"
-
-    Args:
-        value: Value given to command option as string.
-    Return:
-        The value as HistoryDirection.
-    """
-    return HistoryDirection.fromstr(value)
+    Next = "next"
+    Prev = "prev"
 
 
 def manipulate_level(value):
