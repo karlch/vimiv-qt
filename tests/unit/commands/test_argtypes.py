@@ -49,3 +49,20 @@ def test_command_history_direction():
 def test_fail_command_history_direction():
     with pytest.raises(ValueError, match="not a valid HistoryDirection"):
         argtypes.HistoryDirection("other")
+
+
+def test_manipulate_level():
+    for num in range(-127, 128):
+        assert argtypes.ManipulateLevel(str(num)) == num
+
+
+def test_fail_manipulate_level_out_of_range():
+    with pytest.raises(ValueError, match="must be between"):
+        argtypes.ManipulateLevel(-128)
+    with pytest.raises(ValueError, match="must be between"):
+        argtypes.ManipulateLevel(128)
+
+
+def test_fail_manipulate_level_non_int():
+    with pytest.raises(ValueError):
+        argtypes.ManipulateLevel("other")
