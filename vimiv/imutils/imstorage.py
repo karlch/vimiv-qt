@@ -32,7 +32,7 @@ _index = 0
 
 # We want to use the name next here as it is the best name for the command
 @keybindings.add("n", "next", mode=Modes.IMAGE)
-@commands.register(count=1)
+@commands.register()
 def next(count: int = 1):  # pylint: disable=redefined-builtin
     """Select next image.
 
@@ -43,7 +43,7 @@ def next(count: int = 1):  # pylint: disable=redefined-builtin
 
 
 @keybindings.add("p", "prev", mode=Modes.IMAGE)
-@commands.register(count=1)
+@commands.register()
 def prev(count: int = 1):
     """Select previous image.
 
@@ -55,7 +55,7 @@ def prev(count: int = 1):
 
 @keybindings.add("G", "goto -1", mode=Modes.IMAGE)
 @keybindings.add("gg", "goto 1", mode=Modes.IMAGE)
-@commands.register(mode=Modes.IMAGE, count=0)
+@commands.register(mode=Modes.IMAGE)
 def goto(index: int, count: int = 0):
     """Select specific image in current filelist.
 
@@ -214,7 +214,7 @@ def _set_paths(paths):
 def _load_single(path):
     """Populate list of paths in same directory for single path."""
     if path in _paths:
-        goto(_paths.index(path) + 1, count=0)  # goto is indexed from 1
+        goto(_paths.index(path) + 1)  # goto is indexed from 1
     else:
         directory = os.path.dirname(path)
         paths, _ = files.supported(files.ls(directory))

@@ -38,7 +38,7 @@ class Transform():
 
     @keybindings.add("<", "rotate --counter-clockwise", mode=Modes.IMAGE)
     @keybindings.add(">", "rotate", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE, count=1)
+    @commands.register(mode=Modes.IMAGE)
     def rotate(self, counter_clockwise: bool = False, count: int = 1):
         """Rotate the image.
 

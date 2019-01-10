@@ -219,7 +219,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
     @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
     @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY, count=1)
+    @commands.register(mode=Modes.LIBRARY)
     def scroll(self, direction: argtypes.scroll_direction, count=1):
         """Scroll the library in the given direction.
 
@@ -256,7 +256,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
     @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY, count=0)
+    @commands.register(mode=Modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.
 

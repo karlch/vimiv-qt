@@ -131,7 +131,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
     @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
     @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE, count=1)
+    @commands.register(mode=Modes.IMAGE)
     def scroll(self, direction: argtypes.scroll_direction, count: int = 1):
         """Scroll the image in the given direction.
 
@@ -184,7 +184,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
     @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
-    @commands.register(count=1, mode=Modes.IMAGE)
+    @commands.register(mode=Modes.IMAGE)
     def zoom(self, direction: argtypes.zoom, count: int = 1):
         """Zoom the current widget.
 
@@ -207,7 +207,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
     @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
     @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
-    @commands.register(count=1)
+    @commands.register()
     def scale(self, level: argtypes.image_scale = 1, count: int = 1):
         """Scale the image.
 

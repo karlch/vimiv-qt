@@ -107,7 +107,7 @@ search = Search()
 
 
 @keybindings.add("N", "search-next")
-@commands.register(count=1, hide=True)
+@commands.register(hide=True)
 def search_next(count: int = 1):
     """Continue search to the next match.
 
@@ -119,7 +119,7 @@ def search_next(count: int = 1):
 
 
 @keybindings.add("P", "search-prev")
-@commands.register(count=1, hide=True)
+@commands.register(hide=True)
 def search_prev(count: int = 1):
     """Continue search to the previous match.
 

@@ -83,7 +83,7 @@ class Manipulator(QObject):
             self.edited.emit("contrast", 0)
 
     @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE, count=0)
+    @commands.register(mode=Modes.MANIPULATE)
     def brightness(self, value: argtypes.manipulate_level = 0, count: int = 0):
         """Manipulate brightness.
 
@@ -101,7 +101,7 @@ class Manipulator(QObject):
         self._update_manipulation("brightness", value)
 
     @keybindings.add("c", "contrast", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE, count=0)
+    @commands.register(mode=Modes.MANIPULATE)
     def contrast(self, value: argtypes.manipulate_level = 0, count: int = 0):
         """Manipulate contrast.
 
@@ -120,7 +120,7 @@ class Manipulator(QObject):
 
     @keybindings.add("K", "increase 10", mode=Modes.MANIPULATE)
     @keybindings.add("k", "increase 1", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE, count=1)
+    @commands.register(mode=Modes.MANIPULATE)
     def increase(self, value: int, count: int = 1):
         """Increase the value of the current manipulation.
 
@@ -136,7 +136,7 @@ class Manipulator(QObject):
 
     @keybindings.add("J", "decrease 10", mode=Modes.MANIPULATE)
     @keybindings.add("j", "decrease 1", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE, count=1)
+    @commands.register(mode=Modes.MANIPULATE)
     def decrease(self, value: int, count: int = 1):
         """Decrease the value of the current manipulation.
 
@@ -152,7 +152,7 @@ class Manipulator(QObject):
 
     @keybindings.add("gg", "set -127", mode=Modes.MANIPULATE)
     @keybindings.add("G", "set 127", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE, count=0)
+    @commands.register(mode=Modes.MANIPULATE)
     def set(self, value: int, count: int = 0):
         """Set the value of the current manipulation.
 

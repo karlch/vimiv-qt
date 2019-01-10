@@ -187,7 +187,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)
     @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
     @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL, count=1)
+    @commands.register(mode=Modes.THUMBNAIL)
     def scroll(self, direction: argtypes.scroll_direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
@@ -224,7 +224,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("gg", "goto 1", mode=Modes.THUMBNAIL)
     @keybindings.add("G", "goto -1", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL, count=0)
+    @commands.register(mode=Modes.THUMBNAIL)
     def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
 

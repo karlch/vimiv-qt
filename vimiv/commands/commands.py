@@ -181,19 +181,16 @@ class Command():
         func: Corresponding executable to call.
         mode: Mode in which the command can be executed.
         name: Name of the command as string.
-        count: Associated count. If it is not None, this count will be used as
-            default and passing other counts is supported by the command.
         description: Description of the command for help.
         hide: Hide command from command line.
         hook: Function to run before executing the command.
     """
 
-    def __init__(self, name, func, mode=Modes.GLOBAL,
-                 count=None, description="", hide=False, hook=None):
+    def __init__(self, name, func, mode=Modes.GLOBAL, description="",
+                 hide=False, hook=None):
         self.name = name
         self.func = func
         self.mode = mode
-        self.count = count
         self.description = description
         self.hide = hide
         self.hook = hook if hook is not None else lambda *args: None
@@ -206,24 +203,15 @@ class Command():
             count: Count passed to the command.
         """
         parsed_args = self.func.vimiv_args.parse_args(args)
-        parsed_count = self._parse_count(count)
         kwargs = vars(parsed_args)
-        # Add count for function to deal with
-        if parsed_count is not None:
-            kwargs["count"] = parsed_count
+        self._parse_count(count, kwargs)
         func = self._create_func(self.func)
         func(**kwargs)
 
-    def _parse_count(self, count):
-        """Parse given count."""
-        # Does not support count
-        if self.count is None:
-            return None
-        # Use default
-        if count == "":
-            return self.count
-        # Use count given
-        return int(count)
+    def _parse_count(self, count: str, kwargs):
+        """Add count to kwargs if supported."""
+        if "count" in kwargs and count:
+            kwargs["count"] = int(count)
 
     def __repr__(self):
         return "Command('%s', '%s')" % (self.name, self.func)
@@ -248,13 +236,11 @@ class Command():
         return lambda **kwargs: (self.hook(), func(**kwargs))
 
 
-def register(mode=Modes.GLOBAL, count=None, hide=False, hook=None):
+def register(mode=Modes.GLOBAL, hide=False, hook=None):
     """Decorator to store a command in the registry.
 
     Args:
         mode: Mode in which the command can be executed.
-        count: Associated count. If it is not None, this count will be used as
-            default and passing other counts is supported by the command.
         hide: Hide command from command line.
         hook: Function to run before executing the command.
     """
@@ -262,8 +248,8 @@ def register(mode=Modes.GLOBAL, count=None, hide=False, hook=None):
         name = _get_command_name(func)
         desc = _get_description(func, name)
         func.vimiv_args = CommandArguments(name, desc, func)
-        cmd = Command(name, func, mode=mode, count=count, description=desc,
-                      hide=hide, hook=hook)
+        cmd = Command(name, func, mode=mode, description=desc, hide=hide,
+                      hook=hook)
         registry[mode][name] = cmd
         return func
     return decorator
