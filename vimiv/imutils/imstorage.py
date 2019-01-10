@@ -33,7 +33,7 @@ _index = 0
 # We want to use the name next here as it is the best name for the command
 @keybindings.add("n", "next", mode=Modes.IMAGE)
 @commands.register(count=1)
-def next(count):  # pylint: disable=redefined-builtin
+def next(count: int = 1):  # pylint: disable=redefined-builtin
     """Select next image.
 
     **count:** multiplier
@@ -44,7 +44,7 @@ def next(count):  # pylint: disable=redefined-builtin
 
 @keybindings.add("p", "prev", mode=Modes.IMAGE)
 @commands.register(count=1)
-def prev(count):
+def prev(count: int = 1):
     """Select previous image.
 
     **count:** multiplier
@@ -55,9 +55,8 @@ def prev(count):
 
 @keybindings.add("G", "goto -1", mode=Modes.IMAGE)
 @keybindings.add("gg", "goto 1", mode=Modes.IMAGE)
-@commands.argument("index", type=int)
 @commands.register(mode=Modes.IMAGE, count=0)
-def goto(index, count):
+def goto(index: int, count: int = 0):
     """Select specific image in current filelist.
 
     **syntax:** ``:goto index``

@@ -33,7 +33,7 @@ class Slideshow(QTimer):
 
     @keybindings.add("s", "slideshow", mode=Modes.IMAGE)
     @commands.register(mode=Modes.IMAGE, count=0)
-    def slideshow(self, count):
+    def slideshow(self, count: int = 0):
         """Toggle slideshow."""
         if count:
             settings.override("slideshow.delay", str(count))

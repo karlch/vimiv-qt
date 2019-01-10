@@ -38,9 +38,8 @@ class Transform():
 
     @keybindings.add("<", "rotate --counter-clockwise", mode=Modes.IMAGE)
     @keybindings.add(">", "rotate", mode=Modes.IMAGE)
-    @commands.argument("counter-clockwise", optional=True, action="store_true")
     @commands.register(mode=Modes.IMAGE, count=1)
-    def rotate(self, counter_clockwise, count):
+    def rotate(self, counter_clockwise: bool = False, count: int = 1):
         """Rotate the image.
 
         **syntax:** ``:rotate [--counter-clockwise]``
@@ -58,9 +57,8 @@ class Transform():
 
     @keybindings.add("_", "flip --vertical", mode=Modes.IMAGE)
     @keybindings.add("|", "flip", mode=Modes.IMAGE)
-    @commands.argument("vertical", optional=True, action="store_true")
     @commands.register(mode=Modes.IMAGE)
-    def flip(self, vertical):
+    def flip(self, vertical: bool = False):
         """Flip the image.
 
         **syntax:** ``:flip [--vertical]``

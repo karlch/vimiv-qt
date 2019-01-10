@@ -175,9 +175,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
 
-    @commands.argument("close", optional=True, action="store_true")
     @commands.register(mode=Modes.LIBRARY)
-    def open_selected(self, close=False):
+    def open_selected(self, close: bool = False):
         """Open the currently selected path.
 
         If the path activated is an image, it is opened in image mode. If it is
@@ -220,9 +219,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
     @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
     @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
-    @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(mode=Modes.LIBRARY, count=1)
-    def scroll(self, direction, count):
+    def scroll(self, direction: argtypes.scroll_direction, count=1):
         """Scroll the library in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -258,9 +256,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
     @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
-    @commands.argument("row", type=int)
     @commands.register(mode=Modes.LIBRARY, count=0)
-    def goto(self, row, count):
+    def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.
 
         **syntax:** ``:goto row``

@@ -14,11 +14,11 @@ Module Attributes:
 The user interacts with vimiv using commands. Utilities to create and store
 commands are implemented in ``vimiv.commands.commands``.
 
-Creating a new command is done using the ``register`` decorator, arguments are
-added using the ``argument`` decorator. The command name is directly infered
-from the function name, the functions docstring is used to document the
-command. To understand this concept, lets add a simple command that prints
-"hello earth" to the terminal::
+Creating a new command is done using the ``register`` decorator. The command
+name is directly infered from the function name, the functions docstring is
+used to document the command. The arguments supported by the command are also
+deduced by inspecting the arguments the function takes. To understand these
+concepts, lets add a simple command that prints "hello earth" to the terminal::
 
     @commands.register()
     def hello_earth():
@@ -28,14 +28,18 @@ This code snippet creates the command ``:hello-earth`` which does not accept
 any arguments. To allow greeting other planets, let's add an argument
 ``name`` which defaults to earth::
 
-    @commands.argument("name", optional=True, default="earth")
     @commands.register()
-    def hello_planet(name="earth"):
+    def hello_planet(name: str = "earth"):
         print("hello", name)
 
 Now the command ``:hello-planet`` is created. When called without arguments, it
 prints "hello earth" as before, but it is also possible to great other planets
 by passing their name: ``:hello-planet --name=venus``.
+
+.. hint::
+
+    Type annotating the arguments is required as the type annotation is passed
+    to the argument parser as type of the argument.
 
 It is possible for commands to support the special ``count`` argument.
 ``count`` is passed by the user either by prepending it to the command like
@@ -43,9 +47,8 @@ It is possible for commands to support the special ``count`` argument.
 ``:hello-planet`` command to support ``count`` by printing the greeting
 ``count`` times::
 
-    @commands.argument("name", optional=True, default="earth")
-    @commands.register(count=1)
-    def hello_planet(name="earth", count=1):
+    @commands.register()
+    def hello_planet(name: str = "earth", count: int = 1):
         for i in range(count):
             print("hello", name)
 
@@ -63,7 +66,7 @@ passed::
     @commands.register(hide=True)
     def ...
 
-In this case it probably makes sense to define a default keybinding for this
+In this case it probably makes sense to define a default keybinding for the
 command.
 """
 
@@ -71,6 +74,7 @@ import argparse
 import collections
 import inspect
 import logging
+from typing import List
 
 from vimiv.commands import cmdexc
 from vimiv.modes import Modes
@@ -108,20 +112,24 @@ def get(name, mode=Modes.GLOBAL):
     return commands[name]
 
 
-class Args(argparse.ArgumentParser):
+class CommandArguments(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
-    def __init__(self, cmdname):
+    def __init__(self, cmdname: str, description: str, function):
         """Create the argparse.ArgumentParser.
 
         Args:
             cmdname: Name of the command for which the arguments are stored.
+            description: Description of the command to print in help
+            function: Function to inspect for arguments.
         """
-        super().__init__(prog=cmdname)
+        super().__init__(prog=cmdname, description=description)
+        for argument in inspect.signature(function).parameters.values():
+            self._add_argument(argument)
 
     def print_help(self):
         """Override help message to display in statusbar."""
-        raise cmdexc.ArgumentError(self.format_usage().rstrip())
+        raise cmdexc.ArgumentError(self.format_help().rstrip())
 
     def error(self, message):
         """Override error to raise an exception instead of calling sys.exit."""
@@ -131,6 +139,39 @@ class Args(argparse.ArgumentParser):
         message = " ".join(message.split())  # Remove multiple whitespace
         message = message.capitalize()
         raise cmdexc.ArgumentError(message)
+
+    def _add_argument(self, argument: inspect.Parameter):
+        """Add an argument to argparse created from an inspect parameter."""
+        optional = argument.default != inspect.Parameter.empty
+        name = self._argument_name(argument, optional)
+        # Dealt with later as we do not have an instance yet
+        if name == "self":
+            return
+        kwargs = self._gen_kwargs(argument, optional)
+        self.add_argument(name, **kwargs)
+
+    @staticmethod
+    def _argument_name(argument: inspect.Parameter, optional: bool):
+        """Create argument name from inspect parameter."""
+        name = argument.name.replace("_", "-")
+        return "--%s" % (name) if optional else name
+
+    @staticmethod
+    def _gen_kwargs(argument: inspect.Parameter, optional: bool):
+        """Create keyword arguments for argparse from inspect parameter.
+
+        This checks for the type and possible default arguments and applies
+        'nargs': '*' if the type is a List.
+        """
+        argtype = argument.annotation
+        if argtype == List[str]:
+            return {"type": str, "nargs": "*"}
+        elif optional and argtype is bool:
+            return {"action": "store_true"}
+        elif optional:
+            return {"type": argtype, "default": argument.default}
+        else:
+            return {"type": argtype}
 
 
 class Command():
@@ -207,21 +248,6 @@ class Command():
         return lambda **kwargs: (self.hook(), func(**kwargs))
 
 
-def argument(argname, optional=False, **kwargs):
-    """Decorator to update command a command argument.
-
-    Args:
-        argname: Name of the argument.
-        optional: True if the argument optional, else it is positional.
-        kwargs: kwargs to be passed to parser.parse_args.
-    """
-    argname = "--%s" % (argname) if optional else argname
-    def decorator(func):
-        func.vimiv_args.add_argument(argname, **kwargs)
-        return func
-    return decorator
-
-
 def register(mode=Modes.GLOBAL, count=None, hide=False, hook=None):
     """Decorator to store a command in the registry.
 
@@ -235,7 +261,7 @@ def register(mode=Modes.GLOBAL, count=None, hide=False, hook=None):
     def decorator(func):
         name = _get_command_name(func)
         desc = _get_description(func, name)
-        func.vimiv_args = Args(name)
+        func.vimiv_args = CommandArguments(name, desc, func)
         cmd = Command(name, func, mode=mode, count=count, description=desc,
                       hide=hide, hook=hook)
         registry[mode][name] = cmd

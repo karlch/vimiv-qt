@@ -9,6 +9,7 @@
 import logging
 import os
 import tempfile
+from typing import List
 
 from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
                           pyqtSlot)
@@ -153,9 +154,8 @@ class ImageFileHandler(QObject):
         self.transform.reset()
         self.manipulate.reset()
 
-    @commands.argument("path", nargs="*")
     @commands.register(mode=Modes.IMAGE)
-    def write(self, path):
+    def write(self, path: List[str]):
         """Save the current image to disk.
 
         **syntax:** ``:write [path]``.

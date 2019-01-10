@@ -131,9 +131,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
     @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
     @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
-    @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(mode=Modes.IMAGE, count=1)
-    def scroll(self, direction, count):
+    def scroll(self, direction: argtypes.scroll_direction, count: int = 1):
         """Scroll the image in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -164,9 +163,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("J", "scroll-edge down", mode=Modes.IMAGE)
     @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
     @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
-    @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(mode=Modes.IMAGE)
-    def scroll_edge(self, direction):
+    def scroll_edge(self, direction: argtypes.scroll_direction):
         """Scroll the image to one edge.
 
         **syntax:** ``:scroll-edge direction``.
@@ -186,9 +184,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
     @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
-    @commands.argument("direction", type=argtypes.zoom)
     @commands.register(count=1, mode=Modes.IMAGE)
-    def zoom(self, direction, count):
+    def zoom(self, direction: argtypes.zoom, count: int = 1):
         """Zoom the current widget.
 
         **syntax:** ``:zoom direction``
@@ -210,10 +207,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
     @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
     @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
-    @commands.argument("level", optional=True, type=argtypes.image_scale,
-                       default="fit")
     @commands.register(count=1)
-    def scale(self, level, count):
+    def scale(self, level: argtypes.image_scale = 1, count: int = 1):
         """Scale the image.
 
         **syntax:** ``:scale [--level=LEVEL]``

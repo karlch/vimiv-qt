@@ -45,9 +45,8 @@ signals = Signals()
 @keybindings.add("gt", "enter thumbnail")
 @keybindings.add("gl", "enter library")
 @keybindings.add("gi", "enter image")
-@commands.argument("mode")
 @commands.register()
-def enter(mode):
+def enter(mode: str):
     """Enter another mode.
 
     **syntax:** ``:enter mode``
@@ -96,9 +95,8 @@ def leave(mode):
 @keybindings.add("tm", "toggle manipulate")
 @keybindings.add("tt", "toggle thumbnail")
 @keybindings.add("tl", "toggle library")
-@commands.argument("mode")
 @commands.register()
-def toggle(mode):
+def toggle(mode: str):
     """Toggle one mode.
 
     **syntax:** ``:toggle mode``.

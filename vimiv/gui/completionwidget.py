@@ -79,9 +79,8 @@ class CompletionView(widgets.FlatTreeView):
 
     @keybindings.add("<shift><tab>", "complete --inverse", mode=Modes.COMMAND)
     @keybindings.add("<tab>", "complete", mode=Modes.COMMAND)
-    @commands.argument("inverse", optional=True, action="store_true")
     @commands.register(mode=Modes.COMMAND)
-    def complete(self, inverse):
+    def complete(self, inverse: bool = False):
         """Invoke command line completion.
 
         **syntax:** ``:complete [--inverse]``

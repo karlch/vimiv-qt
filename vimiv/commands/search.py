@@ -108,7 +108,7 @@ search = Search()
 
 @keybindings.add("N", "search-next")
 @commands.register(count=1, hide=True)
-def search_next(count):
+def search_next(count: int = 1):
     """Continue search to the next match.
 
     **syntax:** ``:search-next``
@@ -120,7 +120,7 @@ def search_next(count):
 
 @keybindings.add("P", "search-prev")
 @commands.register(count=1, hide=True)
-def search_prev(count):
+def search_prev(count: int = 1):
     """Continue search to the previous match.
 
     **syntax:** ``:search-next``

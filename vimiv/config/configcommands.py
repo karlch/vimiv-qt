@@ -6,6 +6,8 @@
 
 """Commands dealing with settings and configuration."""
 
+from typing import List
+
 from vimiv.commands import commands, cmdexc
 from vimiv.config import settings, keybindings
 from vimiv.modes import modehandler, Modes
@@ -17,10 +19,8 @@ from vimiv.utils import strconvert
 @keybindings.add("H", "set library.width -0.05", mode=Modes.LIBRARY)
 @keybindings.add("L", "set library.width +0.05", mode=Modes.LIBRARY)
 @keybindings.add("b", "set statusbar.show!")
-@commands.argument("value", nargs="*")
-@commands.argument("setting")
 @commands.register()
-def set(setting, value=None):  # pylint: disable=redefined-builtin
+def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
 
     **syntax:** ``:set setting [value]``
@@ -53,11 +53,8 @@ def set(setting, value=None):  # pylint: disable=redefined-builtin
         raise cmdexc.CommandError(str(e))
 
 
-@commands.argument("mode", optional=True, default=None)
-@commands.argument("command", nargs="*")
-@commands.argument("keybinding")
 @commands.register()
-def bind(keybinding, command, mode):
+def bind(keybinding: str, command: List[str], mode: str = None):
     """Bind keys to a command.
 
     **syntax:** ``:bind keybinding command [--mode=MODE]``
@@ -74,10 +71,8 @@ def bind(keybinding, command, mode):
     keybindings.bind(keybinding, command, mode)
 
 
-@commands.argument("mode", optional=True, default=None)
-@commands.argument("keybinding")
 @commands.register()
-def unbind(keybinding, mode):
+def unbind(keybinding: str, mode: str = None):
     """Unbind a keybinding.
 
     **syntax:** ``:unbind keybinding [--mode=MODE]``

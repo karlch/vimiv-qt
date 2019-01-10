@@ -11,6 +11,7 @@ Module Attribute:
 """
 
 import collections
+from typing import List
 
 from vimiv.modes import Modes
 from vimiv.commands import commands, cmdexc
@@ -44,11 +45,8 @@ def get(mode):
     return _aliases[mode]
 
 
-@commands.argument("mode", optional=True, default="global")
-@commands.argument("command", nargs="*")
-@commands.argument("name")
 @commands.register()
-def alias(name, command, mode="global"):
+def alias(name: str, command: List[str], mode: str = "global"):
     """Add an alias for a command.
 
     **syntax:** ``:alias name command [--mode=MODE]``

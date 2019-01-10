@@ -45,10 +45,9 @@ class Bar(QWidget):
 
     @keybindings.add("<colon>", "command", mode=Modes.MANIPULATE)
     @keybindings.add("<colon>", "command")
-    @commands.argument("text", optional=True, default="")
     @commands.register(hide=True, mode=Modes.MANIPULATE)
     @commands.register(hide=True)
-    def command(self, text=""):
+    def command(self, text: str = ""):
         """Enter command mode.
 
         **syntax:** ``:command [--text=TEXT]``
@@ -60,9 +59,8 @@ class Bar(QWidget):
 
     @keybindings.add("?", "search --reverse")
     @keybindings.add("/", "search")
-    @commands.argument("reverse", optional=True, action="store_true")
     @commands.register(hide=True)
-    def search(self, reverse):
+    def search(self, reverse: bool = False):
         """Start a search.
 
         **syntax:** ``:search [--reverse]``

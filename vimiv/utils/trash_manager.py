@@ -42,9 +42,8 @@ def init():
 
 
 @keybindings.add("x", "delete %")
-@commands.argument("filename")
 @commands.register()
-def delete(filename):
+def delete(filename: str):
     """Move a file to the trash directory.
 
     **syntax:** ``:delete filename``
@@ -60,9 +59,8 @@ def delete(filename):
     shutil.move(filename, trash_filename)
 
 
-@commands.argument("basename")
 @commands.register()
-def undelete(basename):
+def undelete(basename: str):
     """Restore a file from the trash directory.
 
     **syntax:** ``:undelete basename``

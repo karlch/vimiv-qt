@@ -83,9 +83,8 @@ class Manipulator(QObject):
             self.edited.emit("contrast", 0)
 
     @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
-    @commands.argument("value", optional=True, type=argtypes.manipulate_level)
     @commands.register(mode=Modes.MANIPULATE, count=0)
-    def brightness(self, value, count):
+    def brightness(self, value: argtypes.manipulate_level = 0, count: int = 0):
         """Manipulate brightness.
 
         **syntax:** ``:brightness [value]``
@@ -102,9 +101,8 @@ class Manipulator(QObject):
         self._update_manipulation("brightness", value)
 
     @keybindings.add("c", "contrast", mode=Modes.MANIPULATE)
-    @commands.argument("value", optional=True, type=argtypes.manipulate_level)
     @commands.register(mode=Modes.MANIPULATE, count=0)
-    def contrast(self, value, count):
+    def contrast(self, value: argtypes.manipulate_level = 0, count: int = 0):
         """Manipulate contrast.
 
         **syntax:** ``:contrast [value]``
@@ -122,9 +120,8 @@ class Manipulator(QObject):
 
     @keybindings.add("K", "increase 10", mode=Modes.MANIPULATE)
     @keybindings.add("k", "increase 1", mode=Modes.MANIPULATE)
-    @commands.argument("value", type=int)
     @commands.register(mode=Modes.MANIPULATE, count=1)
-    def increase(self, value, count):
+    def increase(self, value: int, count: int = 1):
         """Increase the value of the current manipulation.
 
         **syntax:** ``:increase value``
@@ -139,9 +136,8 @@ class Manipulator(QObject):
 
     @keybindings.add("J", "decrease 10", mode=Modes.MANIPULATE)
     @keybindings.add("j", "decrease 1", mode=Modes.MANIPULATE)
-    @commands.argument("value", type=int)
     @commands.register(mode=Modes.MANIPULATE, count=1)
-    def decrease(self, value, count):
+    def decrease(self, value: int, count: int = 1):
         """Decrease the value of the current manipulation.
 
         **syntax:** ``:decrease value``
@@ -156,9 +152,8 @@ class Manipulator(QObject):
 
     @keybindings.add("gg", "set -127", mode=Modes.MANIPULATE)
     @keybindings.add("G", "set 127", mode=Modes.MANIPULATE)
-    @commands.argument("value", type=int)
     @commands.register(mode=Modes.MANIPULATE, count=0)
-    def set(self, value, count):
+    def set(self, value: int, count: int = 0):
         """Set the value of the current manipulation.
 
         **syntax:** ``:set value``

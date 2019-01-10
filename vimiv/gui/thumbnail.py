@@ -187,9 +187,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)
     @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
     @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
-    @commands.argument("direction", type=argtypes.scroll_direction)
     @commands.register(mode=Modes.THUMBNAIL, count=1)
-    def scroll(self, direction, count):
+    def scroll(self, direction: argtypes.scroll_direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -225,9 +224,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("gg", "goto 1", mode=Modes.THUMBNAIL)
     @keybindings.add("G", "goto -1", mode=Modes.THUMBNAIL)
-    @commands.argument("index", type=int)
     @commands.register(mode=Modes.THUMBNAIL, count=0)
-    def goto(self, index, count):
+    def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
 
         **syntax:** ``:goto index``
@@ -248,9 +246,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("-", "zoom out", mode=Modes.THUMBNAIL)
     @keybindings.add("+", "zoom in", mode=Modes.THUMBNAIL)
-    @commands.argument("direction", type=argtypes.zoom)
     @commands.register(mode=Modes.THUMBNAIL)
-    def zoom(self, direction):
+    def zoom(self, direction: argtypes.zoom):
         """Zoom the current widget.
 
         **syntax:** ``:zoom direction``

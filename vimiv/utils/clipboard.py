@@ -26,10 +26,8 @@ def init():
 @keybindings.add("yY", "copy-name --primary")
 @keybindings.add("ya", "copy-name --abspath")
 @keybindings.add("yy", "copy-name")
-@commands.argument("primary", optional=True, action="store_true")
-@commands.argument("abspath", optional=True, action="store_true")
 @commands.register()
-def copy_name(abspath, primary):
+def copy_name(abspath: bool = False, primary: bool = False):
     """Copy name of current path to system clipboard.
 
     **syntax:** ``:copy-name [--abspath] [--primary]``
@@ -47,9 +45,8 @@ def copy_name(abspath, primary):
 
 @keybindings.add("PP", "paste-name --primary")
 @keybindings.add("Pp", "paste-name")
-@commands.argument("primary", optional=True, action="store_true")
 @commands.register()
-def paste_name(primary):
+def paste_name(primary: bool = True):
     """Paste path from clipboard to open command.
 
     **syntax:** ``:paste-name [--primary]``
