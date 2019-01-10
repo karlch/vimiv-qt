@@ -234,7 +234,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         elif level == argtypes.ImageScale.FitHeight:
             self._scale_to_height()
         else:
-            self._scale_to_float(level * count)
+            level *= count  # Required so it is stored correctly later
+            self._scale_to_float(level)
         self._scale = level
 
     @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
