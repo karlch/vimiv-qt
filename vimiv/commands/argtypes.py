@@ -11,33 +11,9 @@ Example for scroll direction:
         ...
 """
 
-import argparse
 from enum import Enum
 
 from vimiv.utils import ignore
-
-
-class _ArgtypeEnum(Enum):
-    """Enum with additional string functionality to be used by argparsers."""
-
-    @staticmethod
-    def tostr(elem):
-        return elem.name.lower().replace("_", "-")
-
-    @classmethod
-    def allnames(cls):
-        """Return all names neatly formatted."""
-        return ", ".join("'%s'" % (cls.tostr(elem)) for elem in cls)
-
-    @classmethod
-    def fromstr(cls, name):
-        """Create element from string name."""
-        for elem in cls:
-            if cls.tostr(elem) == name.lower():
-                return elem
-        raise argparse.ArgumentTypeError(
-            "Invalid %s '%s'. Must be one of %s" % (
-                cls.__name__, name, cls.allnames()))
 
 
 class Direction(Enum):
@@ -52,31 +28,22 @@ class Zoom(Enum):
     Out = "out"
 
 
-class ImageScale(_ArgtypeEnum):
-    Overzoom = 0
-    Fit = 1
-    Fit_Width = 2
-    Fit_Height = 3
+class ImageScale(str, Enum):
+    """Valid names for image scaling."""
 
-    @classmethod
-    def fromstr(cls, name):
-        """Override parent class to allow floats."""
+    Overzoom = "overzoom"
+    Fit = "fit"
+    FitWidth = "fit-width"
+    FitHeight = "fit-height"
+
+
+class ImageScaleFloat:
+    """Valid values for image scaling including float and ImageScale."""
+
+    def __new__(cls, value):
         with ignore(ValueError):
-            return float(name)
-        return super().fromstr(name)
-
-
-def image_scale(value):
-    """Check if value is a valid image scale.
-
-    Allowed: "overzoom", "fit", "fit-width", "fit-height", float.
-
-    Args:
-        value: Value given to command option as string.
-    Return:
-        The value as ImageScale.
-    """
-    return ImageScale.fromstr(value)
+            return float(value)
+        return ImageScale(value)
 
 
 class HistoryDirection(Enum):
@@ -84,17 +51,11 @@ class HistoryDirection(Enum):
     Prev = "prev"
 
 
-def manipulate_level(value):
-    """Check if the value is a valid manipulation integer.
+class ManipulateLevel(int):
+    """Valid integer for manipulation (any integer between -127 and 127)."""
 
-    Allowed: Any integer between -127 and 127.
-
-    Args:
-        value: Value given to command option as string.
-    Return:
-        The value if it was valid.
-    """
-    value = int(value)
-    if value < -127 or value > 127:
-        raise argparse.ArgumentTypeError("Value must be between -127 and 127")
-    return value
+    def __new__(cls, value):
+        ivalue = int.__new__(cls, value)
+        if abs(ivalue) > 127:
+            raise ValueError("Value must be between -127 and 127")
+        return ivalue

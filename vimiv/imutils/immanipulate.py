@@ -84,7 +84,7 @@ class Manipulator(QObject):
 
     @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
     @commands.register(mode=Modes.MANIPULATE)
-    def brightness(self, value: argtypes.manipulate_level = 0, count: int = 0):
+    def brightness(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate brightness.
 
         **syntax:** ``:brightness [value]``
@@ -102,7 +102,7 @@ class Manipulator(QObject):
 
     @keybindings.add("c", "contrast", mode=Modes.MANIPULATE)
     @commands.register(mode=Modes.MANIPULATE)
-    def contrast(self, value: argtypes.manipulate_level = 0, count: int = 0):
+    def contrast(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate contrast.
 
         **syntax:** ``:contrast [value]``

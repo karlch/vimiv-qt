@@ -32,13 +32,13 @@ def test_fail_zoom():
 
 
 def test_image_scale_text():
-    scales = ["fit", "fit-width", "fit-height"]
-    for s in scales:
-        assert argtypes.image_scale(s) == argtypes.ImageScale.fromstr(s)
+    # Would raise exception if a name is invalid
+    [argtypes.ImageScaleFloat(name)
+        for name in ["fit", "fit-width", "fit-height"]]
 
 
 def test_image_scale_float(mocker):
-    assert argtypes.image_scale("0.5") == 0.5
+    assert argtypes.ImageScaleFloat("0.5") == 0.5
 
 
 def test_command_history_direction():

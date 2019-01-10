@@ -208,7 +208,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
     @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
     @commands.register()
-    def scale(self, level: argtypes.image_scale = 1, count: int = 1):
+    def scale(self, level: argtypes.ImageScaleFloat = 1, count: int = 1):
         """Scale the image.
 
         **syntax:** ``:scale [--level=LEVEL]``
@@ -229,9 +229,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
                 limit=settings.get_value(settings.Names.IMAGE_OVERZOOM))
         elif level == argtypes.ImageScale.Fit:
             self._scale_to_fit()
-        elif level == argtypes.ImageScale.Fit_Width:
+        elif level == argtypes.ImageScale.FitWidth:
             self._scale_to_width()
-        elif level == argtypes.ImageScale.Fit_Height:
+        elif level == argtypes.ImageScale.FitHeight:
             self._scale_to_height()
         else:
             self._scale_to_float(level * count)
