@@ -50,7 +50,12 @@ class Pixmaps:
 class ImageFileHandler(QObject):
     """Handler to load and write images.
 
-    TODO
+    The handler connects to the new_image_opened signal to retrieve the path of
+    the current image. This path is opened with QImageReader and depending on
+    the type of image one of the loaded signals is emitted with the generated
+    QWidget. In addition to the loading the file handler provides a write
+    command and is able to automatically write changes from transform or
+    manipulate to file if wanted.
 
     Attributes:
         transform: Transform class to get rotate and flip from.
