@@ -1,10 +1,6 @@
 dist: xenial
 sudo: false
 
-branches:
-    only:
-        - travis
-
 language: python
 
 matrix:
