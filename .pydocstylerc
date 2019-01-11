@@ -1,8 +1,8 @@
 [pydocstyle]
 # Disabled:
 # D102-105: Check for docstrings is handled by pylint.
-# D203: No blank lines before class docstrings.
-# D213: Multi-line docstring summary should start at the second line, we use
-#       D212 Muli-line docstring summary should start at the first line
-# D402: First line shuold not be function's "signature", false positives.
-ignore = D102,D103,D104,D105,D203,D213,D402
+# D107: Missing docstring in __init__, not always needed IMHO
+# D402: First line should not be function's "signature", false positives
+# D413: Multi-line docstring summary should start at the second line
+# pep257: D203,D212,D213,D214,D215,D404,D405,D406,D407,D408,D409,D410,D411
+ignore = D102,D103,D105,D105,D107,D203,D212,D213,D214,D215,D401,D402,D404,D405,D406,D407,D408,D409,D410,D411,D413

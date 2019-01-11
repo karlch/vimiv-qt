@@ -96,7 +96,6 @@ def nop():
     This is useful to remove default keybindings by explicitly binding them to
     nop.
     """
-    pass
 
 
 def init():
