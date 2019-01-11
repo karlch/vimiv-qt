@@ -1,2 +1,2 @@
 pyroma==2.4
-check-manifest
+check-manifest==0.37
