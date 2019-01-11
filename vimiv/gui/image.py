@@ -372,8 +372,8 @@ class Image(widgets.ImageLabel):
         return self._original.size()
 
     def rescale(self, scale):
-        pixmap = self._original.scaledToWidth(self._original.width() * scale,
-                                              mode=Qt.SmoothTransformation)
+        pixmap = self._original.scaled(self._original.size() * scale,
+                                       transformMode=Qt.SmoothTransformation)
         self.setPixmap(pixmap)
 
 
