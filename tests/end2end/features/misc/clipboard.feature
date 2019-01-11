@@ -14,7 +14,7 @@ Feature: Interaction with the system clipboard.
         Given I open a directory with 1 paths
         When I run copy-name --abspath
         # /tmp from the directory in which tests are run
-        Then the clipboard should be set to the abspath of child_01
+        Then the absolute path of child_01 should be saved in the clipboard
 
     Scenario: Copy basename from image path to clipboard.
         Given I open any image
