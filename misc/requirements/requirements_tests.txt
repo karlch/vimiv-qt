@@ -4,4 +4,4 @@ pytest-cov==2.6.1
 pytest-mock==1.10.0
 pytest-qt==3.2.2
 pytest-xvfb==1.2.0
-pytest-bdd
+pytest-bdd==3.0.1
