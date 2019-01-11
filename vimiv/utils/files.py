@@ -114,8 +114,7 @@ def get_size_directory(path):
     max_amount = settings.get_value(settings.Names.LIBRARY_FILE_CHECK_AMOUNT)
     if max_amount == 0:  # Check all
         max_amount = None
-    supported = yield_supported(ls(path))
-    size = len(list(itertools.islice(supported, max_amount)))
+    size = len(list(itertools.islice(yield_supported(ls(path)), max_amount)))
     if size == max_amount:
         return ">%d" % (max_amount)
     return str(size)

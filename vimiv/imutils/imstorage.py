@@ -87,7 +87,7 @@ def basename():
 
 
 @statusbar.module("{index}")
-def index():
+def get_index():  # Needs to be called get as we use index as variable often
     """Index of the current image."""
     if _paths:
         return str(_index + 1).zfill(len(total()))

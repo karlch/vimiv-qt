@@ -13,13 +13,15 @@ from vimiv.modes import Modes
 bdd.scenarios("keybindings.feature")
 
 
-@bdd.then(bdd.parsers.parse("the keybinding {binding} should exist for mode {mode}"))
+@bdd.then(bdd.parsers.parse(
+    "the keybinding {binding} should exist for mode {mode}"))
 def keybinding_exists(binding, mode):
     mode = Modes.get_by_name(mode)
     assert binding in keybindings._registry[mode]
 
 
-@bdd.then(bdd.parsers.parse("the keybinding {binding} should not exist for mode {mode}"))
+@bdd.then(bdd.parsers.parse(
+    "the keybinding {binding} should not exist for mode {mode}"))
 def keybinding_not_exists(binding, mode):
     mode = Modes.get_by_name(mode)
     assert binding not in keybindings._registry[mode]

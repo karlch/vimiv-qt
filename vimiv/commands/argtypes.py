@@ -17,6 +17,8 @@ from vimiv.utils import ignore
 
 
 class Direction(Enum):
+    """Valid arguments for directional commands."""
+
     Left = "left"
     Right = "right"
     Up = "up"
@@ -24,12 +26,14 @@ class Direction(Enum):
 
 
 class Zoom(Enum):
+    """Valid arguments for zooming."""
+
     In = "in"
     Out = "out"
 
 
 class ImageScale(str, Enum):
-    """Valid names for image scaling."""
+    """Valid arguments for image scaling."""
 
     Overzoom = "overzoom"
     Fit = "fit"
@@ -38,7 +42,7 @@ class ImageScale(str, Enum):
 
 
 class ImageScaleFloat:
-    """Valid values for image scaling including float and ImageScale."""
+    """Valid arguments for image scaling including float and ImageScale."""
 
     def __new__(cls, value):
         with ignore(ValueError):
@@ -47,6 +51,8 @@ class ImageScaleFloat:
 
 
 class HistoryDirection(Enum):
+    """Valid arguments for the jumping through history."""
+
     Next = "next"
     Prev = "prev"
 

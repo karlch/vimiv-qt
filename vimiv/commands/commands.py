@@ -166,12 +166,11 @@ class CommandArguments(argparse.ArgumentParser):
         argtype = argument.annotation
         if argtype == List[str]:
             return {"type": str, "nargs": "*"}
-        elif optional and argtype is bool:
+        if optional and argtype is bool:
             return {"action": "store_true"}
-        elif optional:
+        if optional:
             return {"type": argtype, "default": argument.default}
-        else:
-            return {"type": argtype}
+        return {"type": argtype}
 
 
 class Command():
