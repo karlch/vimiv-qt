@@ -1,2 +1,2 @@
-pyroma
+pyroma==2.4
 check-manifest
