@@ -1,0 +1,2 @@
+pyroma
+check-manifest
