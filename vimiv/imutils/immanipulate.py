@@ -15,7 +15,7 @@ from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
-from vimiv.imutils import _c_manipulate
+from vimiv.imutils import _c_manipulate  # pylint: ignore=no-name-in-module
 from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg, clamp
