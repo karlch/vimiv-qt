@@ -12,7 +12,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -257,11 +257,11 @@ created. To retrieve the class, the <code class="docutils literal notranslate"><
 <h3><a class="toc-backref" href="#id10">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
 <p>The user interacts with vimiv using commands. Utilities to create and store
 commands are implemented in <code class="docutils literal notranslate"><span class="pre">vimiv.commands.commands</span></code>.</p>
-<p>Creating a new command is done using the <code class="docutils literal notranslate"><span class="pre">register</span></code> decorator, arguments are
-added using the <code class="docutils literal notranslate"><span class="pre">argument</span></code> decorator. The command name is directly infered
-from the function name, the functions docstring is used to document the
-command. To understand this concept, lets add a simple command that prints
-“hello earth” to the terminal:</p>
+<p>Creating a new command is done using the <code class="docutils literal notranslate"><span class="pre">register</span></code> decorator. The command
+name is directly infered from the function name, the functions docstring is
+used to document the command. The arguments supported by the command are also
+deduced by inspecting the arguments the function takes. To understand these
+concepts, lets add a simple command that prints “hello earth” to the terminal:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">hello_earth</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello earth&quot;</span><span class="p">)</span>
@@ -270,23 +270,26 @@ command. To understand this concept, lets add a simple command that prints
 <p>This code snippet creates the command <code class="docutils literal notranslate"><span class="pre">:hello-earth</span></code> which does not accept
 any arguments. To allow greeting other planets, let’s add an argument
 <code class="docutils literal notranslate"><span class="pre">name</span></code> which defaults to earth:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;earth&quot;</span><span class="p">)</span>
-<span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;earth&quot;</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;earth&quot;</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now the command <code class="docutils literal notranslate"><span class="pre">:hello-planet</span></code> is created. When called without arguments, it
 prints “hello earth” as before, but it is also possible to great other planets
 by passing their name: <code class="docutils literal notranslate"><span class="pre">:hello-planet</span> <span class="pre">--name=venus</span></code>.</p>
+<div class="admonition hint">
+<p class="first admonition-title">Hint</p>
+<p class="last">Type annotating the arguments is required as the type annotation is passed
+to the argument parser as type of the argument.</p>
+</div>
 <p>It is possible for commands to support the special <code class="docutils literal notranslate"><span class="pre">count</span></code> argument.
 <code class="docutils literal notranslate"><span class="pre">count</span></code> is passed by the user either by prepending it to the command like
 <code class="docutils literal notranslate"><span class="pre">:2next</span></code> or by typing numbers before calling a keybinding. Let’s update our
 <code class="docutils literal notranslate"><span class="pre">:hello-planet</span></code> command to support <code class="docutils literal notranslate"><span class="pre">count</span></code> by printing the greeting
 <code class="docutils literal notranslate"><span class="pre">count</span></code> times:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">argument</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">optional</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;earth&quot;</span><span class="p">)</span>
-<span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;earth&quot;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </pre></div>
@@ -305,7 +308,7 @@ passed:</p>
 def ...
 </pre></div>
 </div>
-<p>In this case it probably makes sense to define a default keybinding for this
+<p>In this case it probably makes sense to define a default keybinding for the
 command.</p>
 </div>
 <div class="section" id="keybindings">
@@ -414,7 +417,7 @@ from the source code. It must be run from the repository directory using:</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
     </p>
   </div>
 </footer>
