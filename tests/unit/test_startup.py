@@ -6,16 +6,14 @@
 
 """Tests for vimiv.startup."""
 
-import os
-
-from vimiv import startup
+from vimiv import vimiv
 
 
 def test_parser_prog_name():
-    parser = startup.get_argparser()
+    parser = vimiv.get_argparser()
     assert parser.prog == "vimiv"
 
 
 def test_parser_description():
-    parser = startup.get_argparser()
+    parser = vimiv.get_argparser()
     assert "image viewer" in parser.description

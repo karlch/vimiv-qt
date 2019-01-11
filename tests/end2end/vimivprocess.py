@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QWidget
 from unittest import mock
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
-from vimiv import startup
+from vimiv import vimiv
 from vimiv.utils import objreg, working_directory
 from vimiv.imutils import imstorage
 
@@ -44,7 +44,7 @@ class VimivProc():
 
     def __init__(self, qtbot, argv=[]):
         argv.extend(["--temp-basedir"])
-        startup.run(argv)
+        vimiv.startup(argv)
         for name, widget in objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)

@@ -4,12 +4,14 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Functions called at startup before the Qt main loop."""
+"""Main function and startup utilities for vimiv."""
 
 import argparse
 import logging
 import logging.handlers
 import os
+import signal
+import sys
 import tempfile
 
 from PyQt5.QtWidgets import QApplication
@@ -23,7 +25,7 @@ from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
                          objreg, trash_manager, working_directory, libpaths)
 
 
-def run(argv):
+def startup(argv):
     """Run the functions to set up everything.
 
     Args:
@@ -183,3 +185,11 @@ def update_settings(args):
             logging.error("Unknown setting %s", option)
         except strconvert.ConversionError as e:
             logging.error(str(e))
+
+
+def main():
+    """Run startup and the Qt main loop."""
+    qapp = app.Application()
+    startup(sys.argv[1:])
+    signal.signal(signal.SIGINT, signal.SIG_DFL)  # ^C
+    return qapp.exec_()
