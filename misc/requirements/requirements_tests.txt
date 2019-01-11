@@ -2,6 +2,6 @@ coverage==4.5.2
 pytest==4.1.0
 pytest-cov==2.6.1
 pytest-mock==1.10.0
-pytest-qt
+pytest-qt==3.2.2
 pytest-xvfb
 pytest-bdd
