@@ -4,24 +4,65 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-# This file is part of vimiv.
-# Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
-# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
-
+import ast
+import os
+import re
 import setuptools
 
 # C extensions
 manipulate_module = setuptools.Extension("vimiv.imutils._c_manipulate",
                                          sources=["c-extension/manipulate.c"])
 
+
+try:
+    BASEDIR = os.path.dirname(os.path.realpath(__file__))
+except NameError:
+    BASEDIR = None
+
+
+def read_file(filename):
+    """Read content of filename into string and return it."""
+    with open(filename) as f:
+        return f.read()
+
+
+def read_from_init(name):
+    """Read value of a __magic__ value from the __init__.py file."""
+    field_re = re.compile(r'__{}__\s+=\s+(.*)'.format(re.escape(name)))
+    path = os.path.join(BASEDIR, 'vimiv', '__init__.py')
+    line = field_re.search(read_file(path)).group(1)
+    return ast.literal_eval(line)
+
+
 setuptools.setup(
-    name="vimiv",
-    version="0.1",
+    python_requires=">=3.5",
     packages=setuptools.find_packages(),
     ext_modules=[manipulate_module],
-    description="An image viewer with vim-like keybindings",
     entry_points={
         "gui_scripts": ["vimiv = vimiv.vimiv:main"],
     },
-    license="GPLv3",
+    name="vimiv",
+    version=".".join(str(num) for num in read_from_init("version_info")),
+    description=read_from_init("description"),
+    url="https://karlch.github.io/vimiv-qt/",
+    author=read_from_init("author"),
+    author_email=read_from_init("email"),
+    license=read_from_init("license"),
+    keywords=["pyqt", "image viewer", "vim"],
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: X11 Applications :: Qt",
+        "Intended Audience :: End Users/Desktop",
+        "License :: OSI Approved :: GNU General Public License v3 or later "
+            "(GPLv3+)",
+        "Natural Language :: English",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Topic :: Multimedia",
+        "Topic :: Multimedia :: Graphics",
+        "Topic :: Multimedia :: Graphics :: Viewers",
+    ],
 )
