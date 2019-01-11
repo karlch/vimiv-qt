@@ -1,1 +1,22 @@
-graft c-extension/
+graft c-extension
+
+graft icons
+
+include AUTHORS
+include LICENSE
+exclude .*
+exclude pytest.ini
+exclude tox.ini
+
+prune docs
+include docs/description.rst
+
+include misc/Makefile
+include misc/vimiv.1
+include misc/vimiv.desktop
+graft misc/requirements
+
+prune scripts
+prune tests
+
+global-exclude __pycache__ *.pyc *.pyo

@@ -44,11 +44,14 @@ setuptools.setup(
     name="vimiv",
     version=".".join(str(num) for num in read_from_init("version_info")),
     description=read_from_init("description"),
+    long_description=read_file(
+        os.path.join(BASEDIR, "docs", "description.rst")),
     url="https://karlch.github.io/vimiv-qt/",
     author=read_from_init("author"),
     author_email=read_from_init("email"),
     license=read_from_init("license"),
     keywords=["pyqt", "image viewer", "vim"],
+    zip_safe=True,
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Environment :: X11 Applications :: Qt",
