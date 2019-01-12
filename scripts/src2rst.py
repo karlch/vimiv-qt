@@ -13,7 +13,7 @@
 
 import inspect
 
-from vimiv import startup
+from vimiv import vimiv
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
@@ -88,7 +88,7 @@ def generate_keybindings():
         rstutils.write_header(f)
         for mode, bindings in keybindings.items():
             rows = _gen_keybinding_rows(bindings)
-            title="Keybindings for %s mode" % (mode.name)
+            title = "Keybindings for %s mode" % (mode.name)
             rstutils.write_table(rows, f, title=title)
 
 
@@ -102,7 +102,7 @@ def _gen_keybinding_rows(bindings):
 
 def generate_commandline_options():
     """Generate file including the command line options."""
-    parser = startup.get_argparser()
+    parser = vimiv.get_argparser()
     optionals, positionals, titles = _get_options(parser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
@@ -194,10 +194,10 @@ def _format_optional_title(action):
     for option in action.option_strings:
         if isinstance(action.metavar, str):  # One argument
             title = "**%s** *%s*" % (option, action.metavar)
-        elif isinstance(action.metavar, tuple): # Multiple arguments
+        elif isinstance(action.metavar, tuple):  # Multiple arguments
             elems = ["*%s*" % (elem) for elem in action.metavar]
             title = "**%s** %s" % (option, " ".join(elems))
-        else: # No arguments
+        else:  # No arguments
             title = "**%s**" % (option)
         formats.append(title)
     return formats
