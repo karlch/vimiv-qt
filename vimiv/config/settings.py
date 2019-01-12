@@ -369,6 +369,7 @@ class Names:
     MONITOR_FS = "monitor_filesystem"
     SHUFFLE = "shuffle"
     STYLE = "style"
+    STARTUP_LIBRARY = "startup_library"
 
     SEARCH_IGNORE_CASE = "search.ignore_case"
     SEARCH_INCREMENTAL = "search.incremental"
@@ -398,6 +399,8 @@ def init_defaults():
                 desc="Monitor current directory for changes and reload "
                      "widgets automatically")
     BoolSetting(Names.SHUFFLE, False, desc="Randomly shuffle images")
+    BoolSetting(Names.STARTUP_LIBRARY, True,
+                desc="Enter library at startup if there are no images to show")
     StrSetting(Names.STYLE, "default")
 
     # Search

@@ -150,7 +150,9 @@ def init_directories(args):
 
 
 def init_paths(args):
-    if not app.open_paths(args.paths):
+    """Open paths given from commandline or fallback to library if set."""
+    if (not app.open_paths(args.paths)
+            and settings.get_value(settings.Names.STARTUP_LIBRARY)):
         app.open_paths([os.getcwd()])
 
 

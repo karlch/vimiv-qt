@@ -20,6 +20,7 @@
    shuffle                   Randomly shuffle images
    slideshow.delay           Delay to next image in slideshow
    slideshow.indicator       Text to display in statusbar when slideshow is running
+   startup_library           Enter library at startup if there are no images to show
    statusbar.collapse_home   Collapse /home/user to ~ in statusbar
    statusbar.message_timeout Time in ms until statusbar messages are removed
    statusbar.show            Always display the statusbar
