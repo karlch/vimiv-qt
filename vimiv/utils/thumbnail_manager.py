@@ -16,7 +16,8 @@ import hashlib
 import os
 import tempfile
 
-from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, Qt
+from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
+                          QObject, Qt, QCoreApplication)
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
@@ -49,11 +50,13 @@ class ThumbnailManager(QObject):
     """
 
     created = pyqtSignal(int, QIcon)
-    pool = QThreadPool.globalInstance()
+    pool = QThreadPool()
 
     def __init__(self, large=True):
         super().__init__()
         self.large = large
+        # Thumbnail creation should take no longer than 1 s
+        self.pool.setExpiryTimeout(1000)
 
         directory = os.path.join(xdg.user_cache_dir(), "thumbnails")
         self.directory = os.path.join(directory, "large") if large \
@@ -63,6 +66,7 @@ class ThumbnailManager(QObject):
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
         self.fail_pixmap = pixmap_creater.error_thumbnail()
+        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def create_thumbnails_async(self, paths):
         """Start ThumbnailsAsyncCreator to create thumbnails.
@@ -73,6 +77,11 @@ class ThumbnailManager(QObject):
         self.pool.clear()
         async_creator = ThumbnailsAsyncCreator(paths, self)
         self.pool.start(async_creator)
+
+    @pyqtSlot()
+    def _on_quit(self):
+        self.pool.clear()
+        self.pool.waitForDone(1000)
 
 
 class ThumbnailsAsyncCreator(QRunnable):
@@ -86,8 +95,6 @@ class ThumbnailsAsyncCreator(QRunnable):
         _manager: The ThumbnailManager object used for callback.
     """
 
-    _pool = QThreadPool.globalInstance()
-
     def __init__(self, paths, manager):
         super().__init__()
         self._paths = paths
@@ -97,7 +104,7 @@ class ThumbnailsAsyncCreator(QRunnable):
         """Start ThumbnailCreator for each path."""
         for i, path in enumerate(self._paths):
             creator = ThumbnailCreator(i, path, self._manager)
-            self._pool.start(creator)
+            self._manager.pool.start(creator)
 
 
 class ThumbnailCreator(QRunnable):
