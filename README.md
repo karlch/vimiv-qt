@@ -1,5 +1,8 @@
 <img src="https://karlch.github.io/vimiv-qt/_images/vimiv_banner_800.png" alt="vimiv banner" width="400"/>
 
+[![Build Status](https://travis-ci.com/karlch/vimiv-qt.svg?branch=master)](https://travis-ci.com/karlch/vimiv-qt)
+[![Updates](https://pyup.io/repos/github/karlch/vimiv-qt/shield.svg)](https://pyup.io/repos/github/karlch/vimiv-qt/)
+
 [website](https://karlch.github.io/vimiv-qt/) |
 [docs](https://karlch.github.io/vimiv-qt/documentation/index.html) |
 [install](https://karlch.github.io/vimiv-qt/documentation/install.html) |
