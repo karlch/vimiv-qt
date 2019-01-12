@@ -55,6 +55,7 @@ def add(keybinding, command, mode=Modes.GLOBAL):
     """
     def decorator(function):
         bind(keybinding, command, mode)
+
         def inside(*args, **kwargs):
             return function(*args, **kwargs)
         return inside

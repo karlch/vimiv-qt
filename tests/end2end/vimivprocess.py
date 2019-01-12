@@ -13,9 +13,9 @@ from PyQt5.QtWidgets import QWidget
 from unittest import mock
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
-from vimiv import vimiv
-from vimiv.utils import objreg, working_directory
-from vimiv.imutils import imstorage
+from vimiv import vimiv  # noqa
+from vimiv.utils import objreg, working_directory  # noqa
+from vimiv.imutils import imstorage  # noqa
 
 
 _processes = []

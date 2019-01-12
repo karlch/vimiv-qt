@@ -102,10 +102,12 @@ def module(name):
                 name, function.__name__)
             raise InvalidModuleNameError(message)
         _modules[name] = Module(function)
+
         def inner(*args):
             """Run the function."""
             return function(*args)
         return inner
+
     return decorator
 
 
