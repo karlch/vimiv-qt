@@ -124,7 +124,7 @@ class ImageFileHandler(QObject):
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path)
-        self._pool.waitForDone()
+        self._pool.waitForDone(5000)  # Kill writing after 5s
 
     def _load(self, path):
         """Load proper displayable QWidget for a path.

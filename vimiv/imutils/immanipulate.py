@@ -198,7 +198,7 @@ class Manipulator(QObject):
     def _on_quit(self):
         """Finish thread pool on quit."""
         self.pool.clear()
-        self.pool.waitForDone()
+        self.pool.waitForDone(5000)  # Kill manipulate after 5s
 
 
 def instance():

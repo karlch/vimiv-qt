@@ -55,7 +55,7 @@ class VimivProc():
         # Do not start any new threads
         QThreadPool.globalInstance().clear()
         # Wait for any running threads to exit safely
-        QThreadPool.globalInstance().waitForDone()
+        QThreadPool.globalInstance().waitForDone(5000)  # Kill after 5s
         imstorage._paths = []
         imstorage._index = 0
         # Needed for cleanup
