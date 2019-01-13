@@ -12,6 +12,7 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
+from vimiv import api
 from vimiv.commands import runners, search
 from vimiv.config import keybindings
 from vimiv.gui import statusbar
@@ -123,7 +124,7 @@ class KeyHandler():
             statusbar.update()  # Will not be called by command
 
     @staticmethod
-    @statusbar.module("{keys}")
+    @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
         return KeyHandler._partial_handler.get_keys()

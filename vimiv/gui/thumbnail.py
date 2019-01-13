@@ -16,11 +16,11 @@ from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
                              QStyledItemDelegate)
 from PyQt5.QtGui import QColor, QIcon
 
+from vimiv import api
 from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.gui import statusbar
 from vimiv.utils import (objreg, eventhandler, pixmap_creater,
                          thumbnail_manager, clamp)
 
@@ -306,7 +306,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
-    @statusbar.module("{thumbnail-name}")
+    @api.status.module("{thumbnail-name}")
     def current(self):
         """Name of the currently selected thumbnail."""
         try:
@@ -324,17 +324,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    @statusbar.module("{thumbnail-size}")
+    @api.status.module("{thumbnail-size}")
     def size(self):
         """Current thumbnail size (small/normal/large/x-large)."""
         return self._sizes[self.iconSize().width()]
 
-    @statusbar.module("{thumbnail-index}")
+    @api.status.module("{thumbnail-index}")
     def index(self):
         """Index of the currently selected thumbnail."""
         return str(self.currentRow() + 1)
 
-    @statusbar.module("{thumbnail-total}")
+    @api.status.module("{thumbnail-total}")
     def total(self):
         """Total number of thumbnails."""
         return str(self.model().rowCount())

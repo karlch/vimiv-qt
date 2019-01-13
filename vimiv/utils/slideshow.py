@@ -8,6 +8,7 @@
 
 from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.gui import statusbar
@@ -46,16 +47,17 @@ class Slideshow(QTimer):
     def timerEvent(self, event):
         """Emit next_im signal on timer tick."""
         self.next_im.emit()
+        # TODO remove?
         statusbar.update()
 
-    @statusbar.module("{slideshow-delay}")
+    @api.status.module("{slideshow-delay}")
     def delay(self):
         """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
             return "%.1fs" % (self.interval() / 1000)
         return ""
 
-    @statusbar.module("{slideshow-indicator}")
+    @api.status.module("{slideshow-indicator}")
     def running_indicator(self):
         """Indicator if slideshow is running."""
         if self.isActive():

@@ -35,102 +35,16 @@ current user::
         return os.getenv("USER")
 """
 
-import logging
-
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
+from vimiv import api
 from vimiv.config import settings, styles
 from vimiv.gui import widgets
-from vimiv.utils import (cached_method, is_method, class_that_defined_method,
-                         objreg, statusbar_loghandler)
+from vimiv.utils import statusbar_loghandler
 
-
-_modules = {}
 
 statusbar = None
-
-
-class InvalidModuleNameError(Exception):
-    """Exception raised if the name of a statusbar module is invalid."""
-
-
-class Module():
-    """Class to store function of one statusbar module."""
-
-    def __init__(self, func):
-        self._initialized = False
-        self._func = func
-
-    def __call__(self):
-        func = self._create_func(self._func)
-        return func()
-
-    def __repr__(self):
-        return "StatusbarModule('%s')" % (self._func.__name__)
-
-    @cached_method
-    def _create_func(self, func):
-        """Create function to call for a statusbar module.
-
-        This retrieves the instance of a class object for methods and sets it
-        as first argument (the 'self' argument) of a lambda. For standard
-        functions nothing is done.
-
-        Returns:
-            A function to be called without arguments.
-        """
-        logging.debug("Creating function for statusbar module '%s'",
-                      func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            instance = objreg.get(cls)
-            return lambda: func(instance)
-        return func
-
-
-def module(name):
-    """Decorator to register a command as a statusbar module.
-
-    Args:
-        name: Name of the module as set in the config file.
-    """
-    def decorator(function):
-        """Store function executable under module name."""
-        if not name.startswith("{") or not name.endswith("}"):
-            message = "Invalid name '%s' for statusbar module %s" % (
-                name, function.__name__)
-            raise InvalidModuleNameError(message)
-        _modules[name] = Module(function)
-
-        def inner(*args):
-            """Run the function."""
-            return function(*args)
-        return inner
-
-    return decorator
-
-
-def evaluate_modules(text):
-    """Evaluate module and update text accordingly.
-
-    Replaces all occurances of module names with the output of the
-    corresponding function.
-
-    Example:
-        A module called {pwd} is associated with the function os.pwd. Assuming
-        the output of os.pwd() is "/home/foo/bar", the text 'Path: {pwd}'
-        becomes 'Path: /home/foo/bar'.
-
-    Args:
-        text: The text to evaluate.
-    Return:
-        The updated text.
-    """
-    for name, mod in _modules.items():
-        if name in text:
-            text = text.replace(name, mod())
-    return text
 
 
 def update(clear_message=True):
@@ -219,7 +133,7 @@ class StatusBar(QWidget):
         Args:
             clear_message: Additionally clear any pushed messages.
         """
-        mode = evaluate_modules("{mode}").lower()
+        mode = api.status.evaluate("{mode}").lower()
         if clear_message:
             self.clear_message()
         for position in ["left", "center", "right"]:
@@ -248,7 +162,7 @@ class StatusBar(QWidget):
                 "statusbar.%s_%s" % (position, mode))
         except KeyError:
             text = settings.get_value("statusbar.%s" % (position))
-        return evaluate_modules(text)
+        return api.status.evaluate(text)
 
     def _set_severity_style(self, severity):
         """Set the style of the statusbar for a temporary message.

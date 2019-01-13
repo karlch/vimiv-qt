@@ -12,8 +12,8 @@ import os
 
 from PyQt5.QtGui import QImageReader
 
+from vimiv import api
 from vimiv.config import settings
-from vimiv.gui import statusbar
 from vimiv.utils import pathreceiver
 
 
@@ -161,7 +161,7 @@ def edit_supported(filename):
     raise NotImplementedError
 
 
-@statusbar.module("{pwd}")
+@api.status.module("{pwd}")
 def pwd():
     """Current working directory."""
     wd = os.getcwd()
@@ -170,13 +170,13 @@ def pwd():
     return wd
 
 
-@statusbar.module("{filesize}")
+@api.status.module("{filesize}")
 def filesize():
     """Size of the current image in bytes."""
     return get_size(pathreceiver.current())
 
 
-@statusbar.module("{modified}")
+@api.status.module("{modified}")
 def modified():
     """Modification date of the current image."""
     mtime = os.path.getmtime(pathreceiver.current())

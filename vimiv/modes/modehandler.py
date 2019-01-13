@@ -16,9 +16,9 @@ import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import keybindings
-from vimiv.gui import statusbar
 
 from ._modes import Mode, Modes
 
@@ -122,7 +122,7 @@ def current():
     return None
 
 
-@statusbar.module("{mode}")
+@api.status.module("{mode}")
 def active_name():
     """Current mode."""
     return current().name.upper()

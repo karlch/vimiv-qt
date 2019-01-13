@@ -13,10 +13,10 @@ from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
                           QObject, QCoreApplication)
 from PyQt5.QtGui import QPixmap, QImage
 
+from vimiv import api
 from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
 from vimiv.imutils import _c_manipulate  # pylint: disable=no-name-in-module
-from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Modes
 from vimiv.utils import objreg, clamp
 
@@ -183,7 +183,7 @@ class Manipulator(QObject):
             runnable = ManipulateRunner(self, self.thread_id)
             self.pool.start(runnable)
 
-    @statusbar.module("{processing}")
+    @api.status.module("{processing}")
     def _processing_indicator(self):
         """Print ``processing...`` if manipulations are running."""
         if self.pool.activeThreadCount():

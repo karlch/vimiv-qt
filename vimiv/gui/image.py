@@ -10,6 +10,7 @@ from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
+from vimiv import api
 from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import statusbar, widgets
@@ -291,13 +292,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Returh height of the viewport to remove scrollbar height."""
         return self.viewport().height()
 
-    @statusbar.module("{zoomlevel}")
+    @api.status.module("{zoomlevel}")
     def _get_zoom_level(self):
         """Zoom level of the image in percent."""
         level = self.current_width() / self.original_width()
         return "%2.0f%%" % (level * 100)
 
-    @statusbar.module("{image-size}")
+    @api.status.module("{image-size}")
     def _get_image_size(self):
         """Size of the image in pixels in the form WIDTHxHEIGHT."""
         return "%dx%d" % (self.original_width(), self.original_height())

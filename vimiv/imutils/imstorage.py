@@ -11,6 +11,7 @@ from random import shuffle
 
 from PyQt5.QtCore import pyqtSlot, QObject
 
+from vimiv import api
 from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.gui import statusbar
@@ -72,7 +73,7 @@ def goto(index: int, count: int = 0):
     _set_index(index % (len(_paths) + 1) - 1)
 
 
-@statusbar.module("{abspath}")
+@api.status.module("{abspath}")
 def current():
     """Absolute path to the current image."""
     if _paths:
@@ -80,13 +81,13 @@ def current():
     return ""
 
 
-@statusbar.module("{basename}")
+@api.status.module("{basename}")
 def basename():
     """Basename of the current image."""
     return os.path.basename(current())
 
 
-@statusbar.module("{index}")
+@api.status.module("{index}")
 def get_index():  # Needs to be called get as we use index as variable often
     """Index of the current image."""
     if _paths:
@@ -94,17 +95,17 @@ def get_index():  # Needs to be called get as we use index as variable often
     return "0"
 
 
-@statusbar.module("{total}")
+@api.status.module("{total}")
 def total():
     """Total amount of images."""
     return str(len(_paths))
 
 
-@statusbar.module("{exif-date-time}")
+@api.status.module("{exif-date-time}")
 def exif_date_time():
     """Exif creation date and time of the current image.
 
-    This is meant as an example statusbar module to show how to display exif
+    This is meant as an example api.status.module to show how to display exif
     data in the statusbar. If there are any requests/ideas for more, this can
     be used as basis to work with.
     """
