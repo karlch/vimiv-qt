@@ -6,6 +6,8 @@
 
 """Command storage and initialization decorators.
 
+TODO update
+
 Module Attributes:
     registry: Dictionary to store commands in.
 
@@ -78,20 +80,29 @@ from typing import List
 
 from vimiv.utils import class_that_defined_method, cached_method, is_method
 
-
-class Registry(collections.UserDict):
-    """Dictionary to store commands of each mode."""
-
-    def __init__(self):
-        super().__init__()
-        for mode in api.modes.ALL:
-            self[mode] = {}
+from . import modes, objreg
 
 
-registry = Registry()
+def register(mode=modes.GLOBAL, hide=False, hook=None):
+    """Decorator to store a command in the registry.
+
+    Args:
+        mode: Mode in which the command can be executed.
+        hide: Hide command from command line.
+        hook: Function to run before executing the command.
+    """
+    def decorator(func):
+        name = _get_command_name(func)
+        desc = _get_description(func, name)
+        func.vimiv_args = _CommandArguments(name, desc, func)
+        cmd = _Command(name, func, mode=mode, description=desc, hide=hide,
+                       hook=hook)
+        _registry[mode][name] = cmd
+        return func
+    return decorator
 
 
-def get(name, mode=api.modes.GLOBAL):
+def get(name, mode=modes.GLOBAL):
     """Get one command object.
 
     Args:
@@ -100,16 +111,44 @@ def get(name, mode=api.modes.GLOBAL):
     Return:
         The Command object asserted with name and mode.
     """
-    commands = registry[mode]
-    if mode in api.modes.GLOBALS:
-        commands.update(registry[api.modes.GLOBAL])
+    commands = _registry[mode]
+    if mode in modes.GLOBALS:
+        commands.update(_registry[modes.GLOBAL])
     if name not in commands:
-        raise cmdexc.CommandNotFound(
+        raise CommandNotFound(
             "%s: unknown command for mode %s" % (name, mode.name))
     return commands[name]
 
 
-class CommandArguments(argparse.ArgumentParser):
+class ArgumentError(Exception):
+    """Raised if a command was called with wrong arguments."""
+
+
+class CommandError(Exception):
+    """Raised if a command failed to run correctly."""
+
+
+class CommandWarning(Exception):
+    """Raised if a command wants to show the user a warning."""
+
+
+class CommandNotFound(Exception):
+    """Raised if a command does not exist for a specific mode."""
+
+
+class _Registry(collections.UserDict):
+    """Dictionary to store commands of each mode."""
+
+    def __init__(self):
+        super().__init__()
+        for mode in modes.ALL:
+            self[mode] = {}
+
+
+_registry = _Registry()
+
+
+class _CommandArguments(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
     def __init__(self, cmdname: str, description: str, function):
@@ -126,7 +165,7 @@ class CommandArguments(argparse.ArgumentParser):
 
     def print_help(self):
         """Override help message to display in statusbar."""
-        raise cmdexc.ArgumentError(self.format_help().rstrip())
+        raise ArgumentError(self.format_help().rstrip())
 
     def error(self, message):
         """Override error to raise an exception instead of calling sys.exit."""
@@ -135,7 +174,7 @@ class CommandArguments(argparse.ArgumentParser):
         message = message.strip()
         message = " ".join(message.split())  # Remove multiple whitespace
         message = message.capitalize()
-        raise cmdexc.ArgumentError(message)
+        raise ArgumentError(message)
 
     def _add_argument(self, argument: inspect.Parameter):
         """Add an argument to argparse created from an inspect parameter."""
@@ -170,7 +209,7 @@ class CommandArguments(argparse.ArgumentParser):
         return {"type": argtype}
 
 
-class Command():
+class _Command():
     """Skeleton for a command.
 
     Attributes:
@@ -182,7 +221,7 @@ class Command():
         hook: Function to run before executing the command.
     """
 
-    def __init__(self, name, func, mode=api.modes.GLOBAL, description="",
+    def __init__(self, name, func, mode=modes.GLOBAL, description="",
                  hide=False, hook=None):
         self.name = name
         self.func = func
@@ -226,29 +265,10 @@ class Command():
         logging.debug("Creating function for command '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
-            instance = api.objreg.get(cls)
+            instance = objreg.get(cls)
             return lambda **kwargs: (self.hook(instance),
                                      func(instance, **kwargs))
         return lambda **kwargs: (self.hook(), func(**kwargs))
-
-
-def register(mode=api.modes.GLOBAL, hide=False, hook=None):
-    """Decorator to store a command in the registry.
-
-    Args:
-        mode: Mode in which the command can be executed.
-        hide: Hide command from command line.
-        hook: Function to run before executing the command.
-    """
-    def decorator(func):
-        name = _get_command_name(func)
-        desc = _get_description(func, name)
-        func.vimiv_args = CommandArguments(name, desc, func)
-        cmd = Command(name, func, mode=mode, description=desc, hide=hide,
-                      hook=hook)
-        registry[mode][name] = cmd
-        return func
-    return decorator
 
 
 def _get_command_name(func):

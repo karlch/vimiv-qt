@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
 from vimiv import api
-from vimiv.commands import commands, argtypes, cmdexc, search
+from vimiv.commands import argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
@@ -175,7 +175,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
 
-    @commands.register(mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
         """Open the currently selected path.
 
@@ -219,7 +219,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @keybindings.add("j", "scroll down", mode=api.modes.LIBRARY)
     @keybindings.add("h", "scroll left", mode=api.modes.LIBRARY)
     @keybindings.add("l", "scroll right", mode=api.modes.LIBRARY)
-    @commands.register(mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
 
@@ -247,7 +247,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row = self.row()
             # Directory is empty
             except IndexError:
-                raise cmdexc.CommandWarning("Directory is empty")
+                raise api.commands.CommandWarning("Directory is empty")
             if direction == direction.Up:
                 row -= count
             else:
@@ -256,7 +256,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @keybindings.add("gg", "goto 1", mode=api.modes.LIBRARY)
     @keybindings.add("G", "goto -1", mode=api.modes.LIBRARY)
-    @commands.register(mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.
 

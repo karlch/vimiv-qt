@@ -14,7 +14,7 @@ from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
 from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv import api
-from vimiv.commands import commands, argtypes
+from vimiv.commands import argtypes
 from vimiv.config import keybindings
 from vimiv.imutils import _c_manipulate  # pylint: disable=no-name-in-module
 from vimiv.utils import clamp
@@ -65,7 +65,7 @@ class Manipulator(QObject):
         return self.manipulations != {"brightness": 0, "contrast": 0}
 
     @keybindings.add("<return>", "accept", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate keeping the changes."""
         api.modes.leave(api.modes.MANIPULATE)
@@ -82,7 +82,7 @@ class Manipulator(QObject):
             self.edited.emit("contrast", 0)
 
     @keybindings.add("b", "brightness", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def brightness(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate brightness.
 
@@ -100,7 +100,7 @@ class Manipulator(QObject):
         self._update_manipulation("brightness", value)
 
     @keybindings.add("c", "contrast", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def contrast(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate contrast.
 
@@ -119,7 +119,7 @@ class Manipulator(QObject):
 
     @keybindings.add("K", "increase 10", mode=api.modes.MANIPULATE)
     @keybindings.add("k", "increase 1", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def increase(self, value: int, count: int = 1):
         """Increase the value of the current manipulation.
 
@@ -135,7 +135,7 @@ class Manipulator(QObject):
 
     @keybindings.add("J", "decrease 10", mode=api.modes.MANIPULATE)
     @keybindings.add("j", "decrease 1", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def decrease(self, value: int, count: int = 1):
         """Decrease the value of the current manipulation.
 
@@ -151,7 +151,7 @@ class Manipulator(QObject):
 
     @keybindings.add("gg", "set -127", mode=api.modes.MANIPULATE)
     @keybindings.add("G", "set 127", mode=api.modes.MANIPULATE)
-    @commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def set(self, value: int, count: int = 0):
         """Set the value of the current manipulation.
 

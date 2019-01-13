@@ -8,7 +8,8 @@
 
 import os
 
-from vimiv.commands import commands, aliases
+from vimiv import api
+from vimiv.commands import aliases
 from vimiv.completion import completionbasemodel
 from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files, trash_manager
@@ -29,7 +30,7 @@ def command(mode):
     """
     model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
     cmdlist = []
-    for name, cmd in commands.registry[mode].items():
+    for name, cmd in api.commands._registry[mode].items():  # TODO
         if not cmd.hide:
             elem = (name, cmd.description)
             cmdlist.append(elem)

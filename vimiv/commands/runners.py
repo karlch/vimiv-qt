@@ -15,7 +15,7 @@ import subprocess
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 
 from vimiv import app, api
-from vimiv.commands import commands, cmdexc, aliases
+from vimiv.commands import aliases
 from vimiv.utils import pathreceiver
 
 
@@ -44,15 +44,15 @@ def command(text, mode=None):
         mode = api.modes.current()
     count, cmdname, args = _parse(text)
     try:
-        cmd = commands.get(cmdname, mode)
+        cmd = api.commands.get(cmdname, mode)
         cmd(args, count=count)
         api.status.update()
         logging.debug("Ran '%s' succesfully", text)
-    except cmdexc.CommandNotFound as e:
+    except api.commands.CommandNotFound as e:
         logging.error(str(e))
-    except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
+    except (api.commands.ArgumentError, api.commands.CommandError) as e:
         logging.error("%s: %s", cmdname, str(e))
-    except cmdexc.CommandWarning as w:
+    except api.commands.CommandWarning as w:
         logging.warning("%s: %s", cmdname, str(w))
 
 

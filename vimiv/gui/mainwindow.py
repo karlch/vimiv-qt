@@ -10,7 +10,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
 from vimiv import api
-from vimiv.commands import commands
 from vimiv.completion import completer
 from vimiv.config import keybindings, configcommands, settings
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
@@ -52,7 +51,7 @@ class MainWindow(QWidget):
         api.status.signals.update.connect(self._set_title)
 
     @keybindings.add("f", "fullscreen")
-    @commands.register()
+    @api.commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""
         if self.isFullScreen():

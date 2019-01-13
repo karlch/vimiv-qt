@@ -42,7 +42,6 @@ earth with ``ge`` we could use::
 import collections
 
 from vimiv import api
-from vimiv.commands import cmdexc
 
 
 def add(keybinding, command, mode=api.modes.GLOBAL):
@@ -80,7 +79,8 @@ def unbind(keybinding, mode):
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
-        raise cmdexc.CommandError("No binding found for '%s'" % (keybinding))
+        raise api.commands.CommandError(
+            "No binding found for '%s'" % (keybinding))
 
 
 class Bindings(collections.UserDict):

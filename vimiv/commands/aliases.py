@@ -14,7 +14,6 @@ import collections
 from typing import List
 
 from vimiv import api
-from vimiv.commands import commands, cmdexc
 
 
 class Aliases(collections.UserDict):
@@ -45,7 +44,7 @@ def get(mode):
     return _aliases[mode]
 
 
-@commands.register()
+@api.commands.register()
 def alias(name: str, command: List[str], mode: str = "global"):
     """Add an alias for a command.
 
@@ -64,7 +63,7 @@ def alias(name: str, command: List[str], mode: str = "global"):
     assert isinstance(command, list), "Aliases defined as list via nargs='*'"
     command = " ".join(command)
     mode = api.modes.get_by_name(mode)
-    if name in commands.registry[mode]:
-        raise cmdexc.CommandError(
+    if name in api.commands._registry[mode]:  # TODO private accessed
+        raise api.commands.CommandError(
             "Not overriding default command %s" % (name))
     _aliases[mode][name] = command

@@ -10,7 +10,7 @@ from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv import api
-from vimiv.commands import history, commands, argtypes, runners, search
+from vimiv.commands import history, argtypes, runners, search
 from vimiv.config import styles, keybindings
 from vimiv.utils import eventhandler, ignore
 
@@ -138,7 +138,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
     @keybindings.add("<ctrl>p", "history next", mode=api.modes.COMMAND)
     @keybindings.add("<ctrl>n", "history prev", mode=api.modes.COMMAND)
-    @commands.register(mode=api.modes.COMMAND)
+    @api.commands.register(mode=api.modes.COMMAND)
     def history(self, direction: argtypes.HistoryDirection):
         """Cycle through command history.
 
@@ -153,7 +153,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
                      mode=api.modes.COMMAND)
     @keybindings.add("<down>", "history-substr-search prev",
                      mode=api.modes.COMMAND)
-    @commands.register(mode=api.modes.COMMAND)
+    @api.commands.register(mode=api.modes.COMMAND)
     def history_substr_search(self, direction: argtypes.HistoryDirection):
         """Cycle through command history with substring matching.
 

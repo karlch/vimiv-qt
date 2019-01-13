@@ -16,7 +16,6 @@ from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api
-from vimiv.commands import commands
 from vimiv.config import settings
 from vimiv.imutils import imtransform, imsignals, immanipulate
 from vimiv.utils import files
@@ -154,7 +153,7 @@ class ImageFileHandler(QObject):
         self.transform.reset()
         self.manipulate.reset()
 
-    @commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):
         """Save the current image to disk.
 

@@ -16,7 +16,6 @@ from PyQt5.QtWidgets import QApplication
 import vimiv
 from vimiv import api
 from vimiv.config import keybindings
-from vimiv.commands import commands, cmdexc
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, working_directory
 
@@ -33,7 +32,7 @@ class Application(QApplication):
         self._set_icon()
 
     @keybindings.add("q", "quit")
-    @commands.register()
+    @api.commands.register()
     def quit(self):
         """Quit vimiv."""
         # Do not start any new threads
@@ -53,7 +52,7 @@ class Application(QApplication):
 
 # We want to use the name open here as it is the best name for the command
 @keybindings.add("o", "command --text='open '")
-@commands.register()
+@api.commands.register()
 def open(path: str):  # pylint: disable=redefined-builtin
     """Open a path.
 
@@ -67,7 +66,7 @@ def open(path: str):  # pylint: disable=redefined-builtin
     """
     assert isinstance(path, str), "Path must be given as string."
     if not open_paths([os.path.expanduser(path)]):
-        raise cmdexc.CommandError("Cannot open %s" % (path))
+        raise api.commands.CommandError("Cannot open %s" % (path))
 
 
 def open_paths(paths, select_mode=True):

@@ -9,7 +9,6 @@
 from typing import List
 
 from vimiv import api
-from vimiv.commands import commands, cmdexc
 from vimiv.config import settings, keybindings
 from vimiv.utils import strconvert
 
@@ -19,7 +18,7 @@ from vimiv.utils import strconvert
 @keybindings.add("H", "set library.width -0.05", mode=api.modes.LIBRARY)
 @keybindings.add("L", "set library.width +0.05", mode=api.modes.LIBRARY)
 @keybindings.add("b", "set statusbar.show!")
-@commands.register()
+@api.commands.register()
 def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
 
@@ -46,14 +45,14 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
         new_value = settings.get_value(setting)
         settings.signals.changed.emit(setting, new_value)
     except KeyError as e:
-        raise cmdexc.CommandError("unknown setting %s" % (setting))
+        raise api.commands.CommandError("unknown setting %s" % (setting))
     except TypeError as e:
-        raise cmdexc.CommandError(str(e))
+        raise api.commands.CommandError(str(e))
     except strconvert.ConversionError as e:
-        raise cmdexc.CommandError(str(e))
+        raise api.commands.CommandError(str(e))
 
 
-@commands.register()
+@api.commands.register()
 def bind(keybinding: str, command: List[str], mode: str = None):
     """Bind keys to a command.
 
@@ -71,7 +70,7 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     keybindings.bind(keybinding, command, mode)
 
 
-@commands.register()
+@api.commands.register()
 def unbind(keybinding: str, mode: str = None):
     """Unbind a keybinding.
 
@@ -87,9 +86,9 @@ def unbind(keybinding: str, mode: str = None):
     keybindings.unbind(keybinding, mode)
 
 
-@commands.register(mode=api.modes.MANIPULATE)
-@commands.register(mode=api.modes.COMMAND)
-@commands.register()
+@api.commands.register(mode=api.modes.MANIPULATE)
+@api.commands.register(mode=api.modes.COMMAND)
+@api.commands.register()
 def nop():
     """Do nothing.
 

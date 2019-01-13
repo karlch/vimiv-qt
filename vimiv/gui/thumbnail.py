@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
 from PyQt5.QtGui import QColor, QIcon
 
 from vimiv import api
-from vimiv.commands import commands, argtypes, search
+from vimiv.commands import argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
@@ -175,7 +175,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    @commands.register(mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
         imsignals.open_new_image.emit(self.abspath())
@@ -185,7 +185,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @keybindings.add("j", "scroll down", mode=api.modes.THUMBNAIL)
     @keybindings.add("h", "scroll left", mode=api.modes.THUMBNAIL)
     @keybindings.add("l", "scroll right", mode=api.modes.THUMBNAIL)
-    @commands.register(mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
@@ -222,7 +222,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @keybindings.add("G", "goto -1", mode=api.modes.THUMBNAIL)
-    @commands.register(mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
 
@@ -244,7 +244,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @keybindings.add("-", "zoom out", mode=api.modes.THUMBNAIL)
     @keybindings.add("+", "zoom in", mode=api.modes.THUMBNAIL)
-    @commands.register(mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.
 

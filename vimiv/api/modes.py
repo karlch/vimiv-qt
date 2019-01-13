@@ -12,10 +12,9 @@ import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv.commands import commands  # TODO move to API
 from vimiv.config import keybindings  # TODO move to API
 
-from . import status
+from . import commands, status
 
 
 class Mode(abc.ABC):

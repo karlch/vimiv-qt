@@ -15,7 +15,6 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv import api
-from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
 from vimiv.utils import pathreceiver
 
@@ -81,7 +80,7 @@ class Search(QObject):
         reverse = reverse if not self._reverse else not reverse
         mode = api.modes.current()
         if not self._text:
-            raise cmdexc.CommandError("no search performed")
+            raise api.commands.CommandError("no search performed")
         self._run(self._text, mode, count, reverse, False)
 
     def _run(self, text, mode, count, reverse, incremental):
@@ -106,7 +105,7 @@ search = Search()
 
 
 @keybindings.add("N", "search-next")
-@commands.register(hide=True)
+@api.commands.register(hide=True)
 def search_next(count: int = 1):
     """Continue search to the next match.
 
@@ -118,7 +117,7 @@ def search_next(count: int = 1):
 
 
 @keybindings.add("P", "search-prev")
-@commands.register(hide=True)
+@api.commands.register(hide=True)
 def search_prev(count: int = 1):
     """Continue search to the previous match.
 

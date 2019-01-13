@@ -10,7 +10,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv import api
-from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import commandline, statusbar
 
@@ -44,8 +43,8 @@ class Bar(QWidget):
 
     @keybindings.add("<colon>", "command", mode=api.modes.MANIPULATE)
     @keybindings.add("<colon>", "command")
-    @commands.register(hide=True, mode=api.modes.MANIPULATE)
-    @commands.register(hide=True)
+    @api.commands.register(hide=True, mode=api.modes.MANIPULATE)
+    @api.commands.register(hide=True)
     def command(self, text: str = ""):
         """Enter command mode.
 
@@ -58,7 +57,7 @@ class Bar(QWidget):
 
     @keybindings.add("?", "search --reverse")
     @keybindings.add("/", "search")
-    @commands.register(hide=True)
+    @api.commands.register(hide=True)
     def search(self, reverse: bool = False):
         """Start a search.
 
@@ -80,7 +79,7 @@ class Bar(QWidget):
         api.modes.enter(api.modes.COMMAND)
 
     @keybindings.add("<escape>", "leave-commandline", mode=api.modes.COMMAND)
-    @commands.register(mode=api.modes.COMMAND)
+    @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
         self.commandline.editingFinished.emit()

@@ -12,7 +12,7 @@ from random import shuffle
 from PyQt5.QtCore import pyqtSlot, QObject
 
 from vimiv import api
-from vimiv.commands import commands, search
+from vimiv.commands import search
 from vimiv.config import keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, slideshow, working_directory, ignore
@@ -31,7 +31,7 @@ _index = 0
 
 # We want to use the name next here as it is the best name for the command
 @keybindings.add("n", "next", mode=api.modes.IMAGE)
-@commands.register()
+@api.commands.register()
 def next(count: int = 1):  # pylint: disable=redefined-builtin
     """Select next image.
 
@@ -42,7 +42,7 @@ def next(count: int = 1):  # pylint: disable=redefined-builtin
 
 
 @keybindings.add("p", "prev", mode=api.modes.IMAGE)
-@commands.register()
+@api.commands.register()
 def prev(count: int = 1):
     """Select previous image.
 
@@ -54,7 +54,7 @@ def prev(count: int = 1):
 
 @keybindings.add("G", "goto -1", mode=api.modes.IMAGE)
 @keybindings.add("gg", "goto 1", mode=api.modes.IMAGE)
-@commands.register(mode=api.modes.IMAGE)
+@api.commands.register(mode=api.modes.IMAGE)
 def goto(index: int, count: int = 0):
     """Select specific image in current filelist.
 

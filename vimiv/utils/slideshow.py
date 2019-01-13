@@ -9,7 +9,6 @@
 from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
 
 from vimiv import api
-from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 
 
@@ -30,7 +29,7 @@ class Slideshow(QTimer):
         self.setInterval(interval)
 
     @keybindings.add("s", "slideshow", mode=api.modes.IMAGE)
-    @commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def slideshow(self, count: int = 0):
         """Toggle slideshow."""
         if count:
