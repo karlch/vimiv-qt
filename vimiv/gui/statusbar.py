@@ -4,35 +4,14 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Statusbar widget in the bar and functions to interact with it.
+"""Statusbar widget in the bar to display information.
+
+The statusbar is one of the status objects in vimiv. It therefore connects to
+the api.status.signals.update signal and updates its content when this signal
+was emitted.
 
 Module Attributes:
-    statusbar: The actual statusbar widget.
-
-    _modules: Dictionary to store any modules for the statusbar. These modules
-        are instances of the _Module class which essentially have a name in the
-        form of {module} and a callable function that returns a parsed string
-        for the statubar to show.
-
-//
-
-The statusbar displayed at the bottom of the vimiv window is configurable using
-:ref:`statusbar modules<statusbar>`. The statusbar itself as well as the
-utility functions for module generation and evaluation are in
-``vimiv.gui.statusbar``.
-
-New statusbar modules are created using the ``module`` decorator. It takes the
-name of the module as the only argument. The module name must start with the
-'{' character and end with '}' to allow differentiating modules from ordinary
-text. A function used as statusbar module must return a string that can be
-displayed in the statusbar.
-
-As an example let's create a statusbar module that returns the name of the
-current user::
-
-    @statusbar.module("{username}")
-    def username():
-        return os.getenv("USER")
+    statusbar: The statusbar object
 """
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot

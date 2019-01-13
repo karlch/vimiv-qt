@@ -4,7 +4,34 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""TODO"""
+"""
+.. module:: status
+
+Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
+configurable using so called status modules. These are created using the
+:func:`vimiv.api.status.module` decorator.  As an example let's create a module
+that returns the name of the current user::
+
+        from vimiv import api
+
+        @api.status.module("{username}")
+        def username():
+            return os.getenv("USER")
+
+A new module '{username}' is now registered.
+
+Any status object can retrieve the content of statusbar modules by calling
+:func:`vimiv.api.status.evaluate`. To get the content of our new "{username}"
+module prepended by the text "user: " we run::
+
+    updated_text = api.status.evaluate("user: {username}")
+
+The occurance of '{username}' is then replaced by the outcome of the username()
+function defined earlier.
+
+If any other object requires the status to be updated, they should call
+:func:`vimiv.api.status.update`.
+"""
 
 import logging
 
@@ -14,18 +41,17 @@ from vimiv.utils import (objreg, cached_method, is_method,
                          class_that_defined_method)
 
 
-_modules = {}
+_modules = {}  # Dictionary storing all status modules
 
 
 class InvalidModuleNameError(Exception):
-    """Exception raised if the name of a statusbar module is invalid."""
+    """Exception raised if the name of a status module is invalid."""
 
 
-class Module():
-    """Class to store function of one statusbar module."""
+class _Module():
+    """Class to store function of one status module."""
 
     def __init__(self, func):
-        self._initialized = False
         self._func = func
 
     def __call__(self):
@@ -33,20 +59,20 @@ class Module():
         return func()
 
     def __repr__(self):
-        return "StatusbarModule('%s')" % (self._func.__name__)
+        return "StatusModule('%s')" % (self._func.__name__)
 
     @cached_method
     def _create_func(self, func):
-        """Create function to call for a statusbar module.
+        """Create function to call for a status module.
 
         This retrieves the instance of a class object for methods and sets it
         as first argument (the 'self' argument) of a lambda. For standard
         functions nothing is done.
 
-        Returns:
+        Return:
             A function to be called without arguments.
         """
-        logging.debug("Creating function for statusbar module '%s'",
+        logging.debug("Creating function for status module '%s'",
                       func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
@@ -55,19 +81,25 @@ class Module():
         return func
 
 
-def module(name):
-    """Decorator to register a command as a statusbar module.
+def module(name: str):
+    """Decorator to register a function as status module.
+
+    The decorated function must return a string that can be displayed as
+    status. When calling :func:`vimiv.api.status.evaluate`, any occurance of
+    ``name`` will be replaced by the return value of the decorated function.
 
     Args:
-        name: Name of the module as set in the config file.
+        name: Name of the module as set in the config file. Must start with '{'
+            and end with '}' to allow differentiating modules from ordinary
+            text.
     """
     def decorator(function):
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
-            message = "Invalid name '%s' for statusbar module %s" % (
+            message = "Invalid name '%s' for status module %s" % (
                 name, function.__name__)
             raise InvalidModuleNameError(message)
-        _modules[name] = Module(function)
+        _modules[name] = _Module(function)
 
         def inner(*args):
             """Run the function."""
@@ -77,8 +109,8 @@ def module(name):
     return decorator
 
 
-def evaluate(text):
-    """Evaluate modules and update text accordingly.
+def evaluate(text: str) -> str:
+    """Evaluate the status modules and update text accordingly.
 
     Replaces all occurances of module names with the output of the
     corresponding function.
@@ -112,6 +144,10 @@ class _Signals(QObject):
 signals = _Signals()
 
 
-def update():
-    """Update the current status."""
+def update() -> None:
+    """Emit signal to update the current status.
+
+    This function can be called when an update of the status is required. It
+    is, for example, always called after a command was run.
+    """
     signals.update.emit()
