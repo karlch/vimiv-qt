@@ -6,4 +6,4 @@
 
 """TODO"""
 
-from . import commands, modes, objreg, status
+from . import commands, keybindings, modes, objreg, status

@@ -12,7 +12,7 @@ from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
 from vimiv import api
-from vimiv.config import keybindings, styles
+from vimiv.config import styles
 from vimiv.imutils import imsignals, immanipulate
 from vimiv.utils import eventhandler
 
@@ -85,7 +85,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
         self.hide()
 
-    @keybindings.add("<escape>", "discard", mode=api.modes.MANIPULATE)
+    @api.keybindings.add("<escape>", "discard", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""

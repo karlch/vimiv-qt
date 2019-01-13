@@ -6,6 +6,8 @@
 
 """Storage and getter function for keybindings.
 
+TODO update
+
 Module Attributes:
     _registry: Dictionary storing the keybindings for each mode.
 
@@ -41,10 +43,10 @@ earth with ``ge`` we could use::
 
 import collections
 
-from vimiv import api
+from . import commands, modes
 
 
-def add(keybinding, command, mode=api.modes.GLOBAL):
+def add(keybinding, command, mode=modes.GLOBAL):
     """Decorator to add a keybinding.
 
     Args:
@@ -74,16 +76,16 @@ def unbind(keybinding, mode):
 
     See config/configcommands.unbind for the corresponding command.
     """
-    if mode in api.modes.GLOBALS and keybinding in _registry[api.modes.GLOBAL]:
-        del _registry[api.modes.GLOBAL][keybinding]
+    if mode in modes.GLOBALS and keybinding in _registry[modes.GLOBAL]:
+        del _registry[modes.GLOBAL][keybinding]
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
-        raise api.commands.CommandError(
+        raise commands.CommandError(
             "No binding found for '%s'" % (keybinding))
 
 
-class Bindings(collections.UserDict):
+class _Bindings(collections.UserDict):
     """Store keybindings of one mode.
 
     Essentially a simple python dictionary which is stored in the module
@@ -97,7 +99,7 @@ class Bindings(collections.UserDict):
             self.update(startdict)
 
     def __add__(self, other):
-        return Bindings(startdict={**self, **other})
+        return _Bindings(startdict={**self, **other})
 
     def partial_match(self, keys):
         """Check if keys match some of the bindings partially.
@@ -115,13 +117,13 @@ class Bindings(collections.UserDict):
         return False
 
 
-_registry = {mode: Bindings() for mode in api.modes.ALL}
+_registry = {mode: _Bindings() for mode in modes.ALL}
 
 
 def get(mode):
     """Return the keybindings of one specific mode."""
-    if mode in api.modes.GLOBALS:
-        return _registry[mode] + _registry[api.modes.GLOBAL]
+    if mode in modes.GLOBALS:
+        return _registry[mode] + _registry[modes.GLOBAL]
     return _registry[mode]
 
 

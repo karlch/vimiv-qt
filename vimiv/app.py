@@ -15,7 +15,6 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import api
-from vimiv.config import keybindings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, working_directory
 
@@ -31,7 +30,7 @@ class Application(QApplication):
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
 
-    @keybindings.add("q", "quit")
+    @api.keybindings.add("q", "quit")
     @api.commands.register()
     def quit(self):
         """Quit vimiv."""
@@ -51,7 +50,7 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
-@keybindings.add("o", "command --text='open '")
+@api.keybindings.add("o", "command --text='open '")
 @api.commands.register()
 def open(path: str):  # pylint: disable=redefined-builtin
     """Open a path.

@@ -10,7 +10,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv import api
-from vimiv.config import styles, keybindings
+from vimiv.config import styles
 from vimiv.gui import widgets
 
 
@@ -75,9 +75,9 @@ class CompletionView(widgets.FlatTreeView):
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
 
-    @keybindings.add("<shift><tab>", "complete --inverse",
-                     mode=api.modes.COMMAND)
-    @keybindings.add("<tab>", "complete", mode=api.modes.COMMAND)
+    @api.keybindings.add("<shift><tab>", "complete --inverse",
+                         mode=api.modes.COMMAND)
+    @api.keybindings.add("<tab>", "complete", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
     def complete(self, inverse: bool = False):
         """Invoke command line completion.

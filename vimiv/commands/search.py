@@ -15,7 +15,7 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv import api
-from vimiv.config import keybindings, settings
+from vimiv.config import settings
 from vimiv.utils import pathreceiver
 
 
@@ -104,7 +104,7 @@ class Search(QObject):
 search = Search()
 
 
-@keybindings.add("N", "search-next")
+@api.keybindings.add("N", "search-next")
 @api.commands.register(hide=True)
 def search_next(count: int = 1):
     """Continue search to the next match.
@@ -116,7 +116,7 @@ def search_next(count: int = 1):
     search.repeat(count)
 
 
-@keybindings.add("P", "search-prev")
+@api.keybindings.add("P", "search-prev")
 @api.commands.register(hide=True)
 def search_prev(count: int = 1):
     """Continue search to the previous match.

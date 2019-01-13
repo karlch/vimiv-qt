@@ -14,7 +14,6 @@ from PyQt5.QtGui import QKeySequence
 
 from vimiv import api
 from vimiv.commands import runners, search
-from vimiv.config import keybindings
 
 
 class TempKeyStorage(QTimer):
@@ -95,7 +94,7 @@ class KeyHandler():
         mode = api.modes.current()
         stored_keys = self._partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
-        bindings = keybindings.get(mode)
+        bindings = api.keybindings.get(mode)
         # Handle escape separately as it affects multiple widgets
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
             self._partial_handler.clear_keys()

@@ -15,7 +15,7 @@ from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
 from vimiv import api
 from vimiv.commands import argtypes, search
-from vimiv.config import styles, keybindings, settings
+from vimiv.config import styles, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import (libpaths, eventhandler, strip_html, clamp,
@@ -215,10 +215,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if close:
             api.modes.leave(api.modes.LIBRARY)
 
-    @keybindings.add("k", "scroll up", mode=api.modes.LIBRARY)
-    @keybindings.add("j", "scroll down", mode=api.modes.LIBRARY)
-    @keybindings.add("h", "scroll left", mode=api.modes.LIBRARY)
-    @keybindings.add("l", "scroll right", mode=api.modes.LIBRARY)
+    @api.keybindings.add("k", "scroll up", mode=api.modes.LIBRARY)
+    @api.keybindings.add("j", "scroll down", mode=api.modes.LIBRARY)
+    @api.keybindings.add("h", "scroll left", mode=api.modes.LIBRARY)
+    @api.keybindings.add("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
@@ -254,8 +254,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1))
 
-    @keybindings.add("gg", "goto 1", mode=api.modes.LIBRARY)
-    @keybindings.add("G", "goto -1", mode=api.modes.LIBRARY)
+    @api.keybindings.add("gg", "goto 1", mode=api.modes.LIBRARY)
+    @api.keybindings.add("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.

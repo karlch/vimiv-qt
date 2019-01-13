@@ -9,15 +9,15 @@
 from typing import List
 
 from vimiv import api
-from vimiv.config import settings, keybindings
+from vimiv.config import settings
 from vimiv.utils import strconvert
 
 
-@keybindings.add(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
-@keybindings.add(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
-@keybindings.add("H", "set library.width -0.05", mode=api.modes.LIBRARY)
-@keybindings.add("L", "set library.width +0.05", mode=api.modes.LIBRARY)
-@keybindings.add("b", "set statusbar.show!")
+@api.keybindings.add(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
+@api.keybindings.add(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
+@api.keybindings.add("H", "set library.width -0.05", mode=api.modes.LIBRARY)
+@api.keybindings.add("L", "set library.width +0.05", mode=api.modes.LIBRARY)
+@api.keybindings.add("b", "set statusbar.show!")
 @api.commands.register()
 def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
@@ -67,7 +67,7 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     """
     mode = api.modes.get_by_name(mode) if mode else api.modes.current()
     command = " ".join(command)
-    keybindings.bind(keybinding, command, mode)
+    api.keybindings.bind(keybinding, command, mode)
 
 
 @api.commands.register()
@@ -83,7 +83,7 @@ def unbind(keybinding: str, mode: str = None):
         * ``mode``: The mode to unbind the keybinding in. Default: current.
     """
     mode = api.modes.get_by_name(mode) if mode else api.modes.current()
-    keybindings.unbind(keybinding, mode)
+    api.keybindings.unbind(keybinding, mode)
 
 
 @api.commands.register(mode=api.modes.MANIPULATE)

@@ -24,7 +24,6 @@ import time
 
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv import api
-from vimiv.config import keybindings
 from vimiv.utils import xdg
 
 
@@ -41,7 +40,7 @@ def init():
     os.makedirs(_info_directory, exist_ok=True)
 
 
-@keybindings.add("x", "delete %")
+@api.keybindings.add("x", "delete %")
 @api.commands.register()
 def delete(filename: str):
     """Move a file to the trash directory.
