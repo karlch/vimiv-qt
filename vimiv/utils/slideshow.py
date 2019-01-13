@@ -11,7 +11,6 @@ from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
 from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
-from vimiv.gui import statusbar
 from vimiv.modes import Modes
 from vimiv.utils import objreg
 
@@ -47,8 +46,7 @@ class Slideshow(QTimer):
     def timerEvent(self, event):
         """Emit next_im signal on timer tick."""
         self.next_im.emit()
-        # TODO remove?
-        statusbar.update()
+        api.status.update()
 
     @api.status.module("{slideshow-delay}")
     def delay(self):

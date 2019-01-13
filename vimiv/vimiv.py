@@ -17,9 +17,9 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, parsertypes
+from vimiv import app, api, parsertypes
 from vimiv.config import configfile, keyfile, settings, styles
-from vimiv.gui import mainwindow, statusbar
+from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
                          objreg, trash_manager, working_directory, libpaths)
@@ -53,7 +53,7 @@ def startup(argv):
     init_paths(args)
     # Finalize
     logging.info("Startup completed")
-    statusbar.update()
+    api.status.update()
 
 
 def earlyinit():

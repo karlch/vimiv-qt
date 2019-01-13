@@ -14,9 +14,9 @@ import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from vimiv import api
 from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
-from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Mode, Modes
 from vimiv.utils import pathreceiver
 
@@ -94,7 +94,7 @@ class Search(QObject):
         next_match, matches = _get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
         self.new_search.emit(index, matches, mode, incremental)
-        statusbar.update()
+        api.status.update()
 
     def clear(self):
         """Clear search string."""

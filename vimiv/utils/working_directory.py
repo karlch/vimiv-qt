@@ -20,8 +20,8 @@ import os
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
 
+from vimiv import api
 from vimiv.config import settings
-from vimiv.gui import statusbar
 from vimiv.imutils import imsignals
 from vimiv.utils import files
 
@@ -140,7 +140,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         time.sleep(self.WAIT_TIME)
         func()
         self._processing = False
-        statusbar.update()
+        api.status.update()
 
     def _emit_changes(self, images, directories):
         """Emit changed signals if the content in the directory has changed.

@@ -14,9 +14,8 @@ import subprocess
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 
-from vimiv import app
+from vimiv import app, api
 from vimiv.commands import commands, cmdexc, aliases
-from vimiv.gui import statusbar
 from vimiv.modes import modehandler
 from vimiv.utils import pathreceiver
 
@@ -48,7 +47,7 @@ def command(text, mode=None):
     try:
         cmd = commands.get(cmdname, mode)
         cmd(args, count=count)
-        statusbar.update()
+        api.status.update()
         logging.debug("Ran '%s' succesfully", text)
     except cmdexc.CommandNotFound as e:
         logging.error(str(e))
@@ -132,7 +131,7 @@ class ExternalRunner(QObject):
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         if paths and app.open_paths(paths):
-            statusbar.update()
+            api.status.update()
             logging.debug("Opened paths from pipe '%s'", cmd)
         else:
             logging.warning("%s: No paths from pipe", cmd)

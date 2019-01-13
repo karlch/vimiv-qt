@@ -14,7 +14,6 @@ from PyQt5.QtCore import pyqtSlot, QObject
 from vimiv import api
 from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
-from vimiv.gui import statusbar
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import Mode, Modes
 from vimiv.utils import objreg, files, slideshow, working_directory, ignore
@@ -192,7 +191,7 @@ class Storage(QObject):
         if paths:
             focused_path = current()
             _load_paths(paths, focused_path)
-            statusbar.update()
+            api.status.update()
         else:
             _clear()
 

@@ -47,17 +47,6 @@ from vimiv.utils import statusbar_loghandler
 statusbar = None
 
 
-def update(clear_message=True):
-    """Update the statusbar.
-
-    Re-evaluates the assigned modules.
-
-    Args:
-        clear_message: Additionally clear any pushed messages.
-    """
-    statusbar.update(clear_message=clear_message)
-
-
 class StatusBar(QWidget):
     """Statusbar widget to display permanent and temporary messages.
 
@@ -113,6 +102,7 @@ class StatusBar(QWidget):
         styles.apply(self)
 
         statusbar_loghandler.signals.message.connect(self._on_message)
+        api.status.signals.update.connect(self._on_update_status)
 
     @pyqtSlot(str, str)
     def _on_message(self, severity, message):
@@ -127,15 +117,10 @@ class StatusBar(QWidget):
         self["stack"].setCurrentWidget(self["message"])
         self.timer.start()
 
-    def update(self, clear_message=True):
-        """Update the statusbar.
-
-        Args:
-            clear_message: Additionally clear any pushed messages.
-        """
+    @pyqtSlot()
+    def _on_update_status(self):
+        """Update the statusbar."""
         mode = api.status.evaluate("{mode}").lower()
-        if clear_message:
-            self.clear_message()
         for position in ["left", "center", "right"]:
             label = self[position]
             text = self._get_text(position, mode)

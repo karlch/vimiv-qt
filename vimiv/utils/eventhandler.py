@@ -15,7 +15,6 @@ from PyQt5.QtGui import QKeySequence
 from vimiv import api
 from vimiv.commands import runners, search
 from vimiv.config import keybindings
-from vimiv.gui import statusbar
 from vimiv.modes import modehandler, Modes
 
 
@@ -40,7 +39,7 @@ class TempKeyStorage(QTimer):
         if self.isActive():  # Reset timeout
             self.stop()
         self.start()
-        statusbar.update()
+        api.status.update()
 
     def get_text(self):
         """Get text from storage."""
@@ -53,7 +52,7 @@ class TempKeyStorage(QTimer):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
         self.text = ""
-        statusbar.update()
+        api.status.update()
 
 
 class PartialHandler(QObject):
@@ -73,7 +72,7 @@ class PartialHandler(QObject):
         """Clear count and partially matched keys."""
         self.count.clear_text()
         self.keys.clear_text()
-        statusbar.update()
+        api.status.update()
 
     def get_keys(self):
         return self.count.text + self.keys.text
@@ -121,7 +120,7 @@ class KeyHandler():
         else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
-            statusbar.update()  # Will not be called by command
+            api.status.update()  # Will not be called by command
 
     @staticmethod
     @api.status.module("{keys}")

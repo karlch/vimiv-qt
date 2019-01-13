@@ -13,7 +13,7 @@ from PyQt5.QtGui import QMovie, QPixmap
 from vimiv import api
 from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
-from vimiv.gui import statusbar, widgets
+from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modewidget, Modes
 from vimiv.utils import eventhandler, objreg, ignore
@@ -126,7 +126,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_pixmap_updated(self, pixmap):
         self.setWidget(Image(pixmap))
         self.scale(self._scale, 1)
-        statusbar.update()
+        api.status.update()
 
     @keybindings.add("k", "scroll up", mode=Modes.IMAGE)
     @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
@@ -282,7 +282,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
         self.scale(self._scale, 1)
-        statusbar.update(clear_message=False)  # Zoom level changes
+        api.status.update()  # Zoom level changes
 
     def width(self):
         """Return width of the viewport to remove scrollbar width."""

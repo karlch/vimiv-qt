@@ -8,6 +8,8 @@
 
 import logging
 
+from PyQt5.QtCore import pyqtSignal, QObject
+
 from vimiv.utils import (objreg, cached_method, is_method,
                          class_that_defined_method)
 
@@ -95,3 +97,21 @@ def evaluate(text):
         if name in text:
             text = text.replace(name, mod())
     return text
+
+
+class _Signals(QObject):
+    """Simple QObject containing the update signal.
+
+    Signals:
+        update: Emitted when the status should be updated.
+    """
+
+    update = pyqtSignal()
+
+
+signals = _Signals()
+
+
+def update():
+    """Update the current status."""
+    signals.update.emit()

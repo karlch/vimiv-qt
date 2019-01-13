@@ -13,7 +13,6 @@ from vimiv.utils import eventhandler
 
 
 def test_temp_key_storage_add_and_get_text(mocker, qtbot):
-    mocker.patch("vimiv.gui.statusbar.update")
     storage = eventhandler.TempKeyStorage()
     qtbot.addWidget(storage)
     storage.add_text("a")
@@ -22,7 +21,6 @@ def test_temp_key_storage_add_and_get_text(mocker, qtbot):
 
 
 def test_temp_key_storage_clears_text(mocker, qtbot):
-    mocker.patch("vimiv.gui.statusbar.update")
     storage = eventhandler.TempKeyStorage()
     storage.setInterval(1)  # We do not want to wait 2s in test
     qtbot.addWidget(storage)
