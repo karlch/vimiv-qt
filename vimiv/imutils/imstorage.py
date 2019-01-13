@@ -15,7 +15,6 @@ from vimiv import api
 from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import Mode, Modes
 from vimiv.utils import files, slideshow, working_directory, ignore
 
 
@@ -31,7 +30,7 @@ _index = 0
 
 
 # We want to use the name next here as it is the best name for the command
-@keybindings.add("n", "next", mode=Modes.IMAGE)
+@keybindings.add("n", "next", mode=api.modes.IMAGE)
 @commands.register()
 def next(count: int = 1):  # pylint: disable=redefined-builtin
     """Select next image.
@@ -42,7 +41,7 @@ def next(count: int = 1):  # pylint: disable=redefined-builtin
         _set_index((_index + count) % len(_paths))
 
 
-@keybindings.add("p", "prev", mode=Modes.IMAGE)
+@keybindings.add("p", "prev", mode=api.modes.IMAGE)
 @commands.register()
 def prev(count: int = 1):
     """Select previous image.
@@ -53,9 +52,9 @@ def prev(count: int = 1):
         _set_index((_index - count) % len(_paths))
 
 
-@keybindings.add("G", "goto -1", mode=Modes.IMAGE)
-@keybindings.add("gg", "goto 1", mode=Modes.IMAGE)
-@commands.register(mode=Modes.IMAGE)
+@keybindings.add("G", "goto -1", mode=api.modes.IMAGE)
+@keybindings.add("gg", "goto 1", mode=api.modes.IMAGE)
+@commands.register(mode=api.modes.IMAGE)
 def goto(index: int, count: int = 0):
     """Select specific image in current filelist.
 
@@ -140,7 +139,7 @@ class Storage(QObject):
         working_directory.handler.images_changed.connect(
             self._on_images_changed)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -154,7 +153,7 @@ class Storage(QObject):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if _paths and not incremental and mode == Modes.IMAGE:
+        if _paths and not incremental and mode == api.modes.IMAGE:
             _set_index(index)
 
     @pyqtSlot()

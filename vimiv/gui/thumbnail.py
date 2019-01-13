@@ -20,7 +20,6 @@ from vimiv import api
 from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, modewidget, Mode, Modes
 from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
 
 
@@ -68,7 +67,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     }
     """
 
-    @modewidget(Modes.THUMBNAIL)
+    @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
     def __init__(self):
         super().__init__()
@@ -148,7 +147,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -159,7 +158,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             incremental: True if incremental search was performed.
         """
         self._highlighted = []
-        if self._paths and mode == Modes.THUMBNAIL:
+        if self._paths and mode == api.modes.THUMBNAIL:
             self._select_item(index)
             for i, path in enumerate(self._paths):
                 if os.path.basename(path) in matches:
@@ -176,17 +175,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    @commands.register(mode=Modes.THUMBNAIL)
+    @commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
         imsignals.open_new_image.emit(self.abspath())
-        modehandler.enter(Modes.IMAGE)
+        api.modes.enter(api.modes.IMAGE)
 
-    @keybindings.add("k", "scroll up", mode=Modes.THUMBNAIL)
-    @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)
-    @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
-    @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @keybindings.add("k", "scroll up", mode=api.modes.THUMBNAIL)
+    @keybindings.add("j", "scroll down", mode=api.modes.THUMBNAIL)
+    @keybindings.add("h", "scroll left", mode=api.modes.THUMBNAIL)
+    @keybindings.add("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @commands.register(mode=api.modes.THUMBNAIL)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
@@ -221,9 +220,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             current = max(column, current)
         self._select_item(current)
 
-    @keybindings.add("gg", "goto 1", mode=Modes.THUMBNAIL)
-    @keybindings.add("G", "goto -1", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @keybindings.add("gg", "goto 1", mode=api.modes.THUMBNAIL)
+    @keybindings.add("G", "goto -1", mode=api.modes.THUMBNAIL)
+    @commands.register(mode=api.modes.THUMBNAIL)
     def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
 
@@ -243,9 +242,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         index = index % self.count()
         self._select_item(index)
 
-    @keybindings.add("-", "zoom out", mode=Modes.THUMBNAIL)
-    @keybindings.add("+", "zoom in", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @keybindings.add("-", "zoom out", mode=api.modes.THUMBNAIL)
+    @keybindings.add("+", "zoom in", mode=api.modes.THUMBNAIL)
+    @commands.register(mode=api.modes.THUMBNAIL)
     def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.
 

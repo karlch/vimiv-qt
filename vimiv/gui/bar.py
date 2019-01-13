@@ -13,7 +13,6 @@ from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import commandline, statusbar
-from vimiv.modes import modehandler, Modes
 
 
 class Bar(QWidget):
@@ -43,9 +42,9 @@ class Bar(QWidget):
         self.commandline.editingFinished.connect(self._on_editing_finished)
         settings.signals.changed.connect(self._on_settings_changed)
 
-    @keybindings.add("<colon>", "command", mode=Modes.MANIPULATE)
+    @keybindings.add("<colon>", "command", mode=api.modes.MANIPULATE)
     @keybindings.add("<colon>", "command")
-    @commands.register(hide=True, mode=Modes.MANIPULATE)
+    @commands.register(hide=True, mode=api.modes.MANIPULATE)
     @commands.register(hide=True)
     def command(self, text: str = ""):
         """Enter command mode.
@@ -78,10 +77,10 @@ class Bar(QWidget):
         self.show()
         self._stack.setCurrentWidget(self.commandline)
         self.commandline.setText(text)
-        modehandler.enter(Modes.COMMAND)
+        api.modes.enter(api.modes.COMMAND)
 
-    @keybindings.add("<escape>", "leave-commandline", mode=Modes.COMMAND)
-    @commands.register(mode=Modes.COMMAND)
+    @keybindings.add("<escape>", "leave-commandline", mode=api.modes.COMMAND)
+    @commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
         self.commandline.editingFinished.emit()
@@ -92,7 +91,7 @@ class Bar(QWidget):
         self.commandline.setText("")
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
-        modehandler.leave(Modes.COMMAND)
+        api.modes.leave(api.modes.COMMAND)
 
     @pyqtSlot(str, object)
     def _on_settings_changed(self, setting, new_value):

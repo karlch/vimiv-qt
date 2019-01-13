@@ -15,7 +15,6 @@ from vimiv.completion import completer
 from vimiv.config import keybindings, configcommands, settings
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
                        widgets, manipulate)
-from vimiv.modes import modehandler, Mode, Modes
 
 
 class MainWindow(QWidget):
@@ -82,7 +81,7 @@ class MainWindow(QWidget):
     @pyqtSlot()
     def _set_title(self):
         """Update window title depending on mode and settings."""
-        mode = modehandler.current().name
+        mode = api.modes.current().name
         try:  # Prefer mode specific setting
             title = settings.get_value("title.%s" % (mode))
         except KeyError:
@@ -113,18 +112,18 @@ class ImageThumbnailLayout(QStackedLayout):
         self._connect_signals()
 
     def _connect_signals(self):
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
+        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.left.connect(self._on_mode_left)
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Set current widget to image or thumbnail."""
-        if mode == Modes.IMAGE:
+        if mode == api.modes.IMAGE:
             self.setCurrentWidget(self.image)
-        elif mode == Modes.THUMBNAIL:
+        elif mode == api.modes.THUMBNAIL:
             self.setCurrentWidget(self.thumbnail)
 
-    @pyqtSlot(Mode)
+    @pyqtSlot(api.modes.Mode)
     def _on_mode_left(self, mode):
         """Set widget to image if thumbnail mode was left.
 
@@ -134,5 +133,5 @@ class ImageThumbnailLayout(QStackedLayout):
         Args:
             mode: The mode left.
         """
-        if mode == Modes.THUMBNAIL:
+        if mode == api.modes.THUMBNAIL:
             self.setCurrentWidget(self.image)

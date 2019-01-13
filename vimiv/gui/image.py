@@ -15,7 +15,6 @@ from vimiv.config import styles, keybindings, settings
 from vimiv.commands import argtypes, commands
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modewidget, Modes
 from vimiv.utils import eventhandler, ignore
 
 # We need the check as svg support is optional
@@ -86,7 +85,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     MIN_SIZE_PIXEL = 20
     MAX_SIZE_SCALE = 256
 
-    @modewidget(Modes.IMAGE)
+    @api.modes.widget(api.modes.IMAGE)
     @api.objreg.register
     def __init__(self):
         super().__init__()
@@ -128,11 +127,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.scale(self._scale, 1)
         api.status.update()
 
-    @keybindings.add("k", "scroll up", mode=Modes.IMAGE)
-    @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
-    @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
-    @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @keybindings.add("k", "scroll up", mode=api.modes.IMAGE)
+    @keybindings.add("j", "scroll down", mode=api.modes.IMAGE)
+    @keybindings.add("l", "scroll right", mode=api.modes.IMAGE)
+    @keybindings.add("h", "scroll left", mode=api.modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def scroll(self, direction: argtypes.Direction, count: int = 1):
         """Scroll the image in the given direction.
 
@@ -153,18 +152,18 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             step *= -1
         bar.setValue(bar.value() - step)
 
-    @keybindings.add("M", "center", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @keybindings.add("M", "center", mode=api.modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
             bar.setValue(bar.maximum() // 2)
 
-    @keybindings.add("K", "scroll-edge up", mode=Modes.IMAGE)
-    @keybindings.add("J", "scroll-edge down", mode=Modes.IMAGE)
-    @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
-    @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @keybindings.add("K", "scroll-edge up", mode=api.modes.IMAGE)
+    @keybindings.add("J", "scroll-edge down", mode=api.modes.IMAGE)
+    @keybindings.add("L", "scroll-edge right", mode=api.modes.IMAGE)
+    @keybindings.add("H", "scroll-edge left", mode=api.modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def scroll_edge(self, direction: argtypes.Direction):
         """Scroll the image to one edge.
 
@@ -183,9 +182,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             value = bar.maximum()
         bar.setValue(value)
 
-    @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
-    @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @keybindings.add("-", "zoom out", mode=api.modes.IMAGE)
+    @keybindings.add("+", "zoom in", mode=api.modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def zoom(self, direction: argtypes.Zoom, count: int = 1):
         """Zoom the current widget.
 
@@ -204,10 +203,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self._scale = width / self.original_width()
         self._scale_to_float(self._scale)
 
-    @keybindings.add("w", "scale --level=fit", mode=Modes.IMAGE)
-    @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
-    @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
-    @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
+    @keybindings.add("w", "scale --level=fit", mode=api.modes.IMAGE)
+    @keybindings.add("W", "scale --level=1", mode=api.modes.IMAGE)
+    @keybindings.add("e", "scale --level=fit-width", mode=api.modes.IMAGE)
+    @keybindings.add("E", "scale --level=fit-height", mode=api.modes.IMAGE)
     @commands.register()
     def scale(self, level: argtypes.ImageScaleFloat = 1, count: int = 1):
         """Scale the image.
@@ -239,8 +238,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level)
         self._scale = level
 
-    @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @keybindings.add("<space>", "play-or-pause", mode=api.modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         with ignore(AttributeError):  # Currently no animation displayed

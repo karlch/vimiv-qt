@@ -16,7 +16,6 @@ from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 
 from vimiv import app, api
 from vimiv.commands import commands, cmdexc, aliases
-from vimiv.modes import modehandler
 from vimiv.utils import pathreceiver
 
 
@@ -42,7 +41,7 @@ def command(text, mode=None):
         mode: Mode in which the command is supposed to run.
     """
     if mode is None:
-        mode = modehandler.current()
+        mode = api.modes.current()
     count, cmdname, args = _parse(text)
     try:
         cmd = commands.get(cmdname, mode)

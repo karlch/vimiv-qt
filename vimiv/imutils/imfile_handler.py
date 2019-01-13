@@ -19,7 +19,6 @@ from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import settings
 from vimiv.imutils import imtransform, imsignals, immanipulate
-from vimiv.modes import Modes
 from vimiv.utils import files
 
 # We need the check as exif support is optional
@@ -155,7 +154,7 @@ class ImageFileHandler(QObject):
         self.transform.reset()
         self.manipulate.reset()
 
-    @commands.register(mode=Modes.IMAGE)
+    @commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):
         """Save the current image to disk.
 

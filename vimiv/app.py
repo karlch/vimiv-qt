@@ -18,7 +18,6 @@ from vimiv import api
 from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, Modes
 from vimiv.utils import files, working_directory
 
 
@@ -82,17 +81,17 @@ def open_paths(paths, select_mode=True):
     """
     paths = [os.path.abspath(path) for path in paths]
     images, directories = files.supported(paths)
-    mode = Modes.LIBRARY
+    mode = api.modes.LIBRARY
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))
         imsignals.open_new_images.emit(images, images[0])
-        mode = Modes.IMAGE
+        mode = api.modes.IMAGE
     elif directories:
         working_directory.handler.chdir(directories[0])
     else:
         return False  # No valid paths found
     if select_mode:
-        modehandler.enter(mode)
+        api.modes.enter(mode)
     return True
 
 

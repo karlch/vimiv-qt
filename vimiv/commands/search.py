@@ -17,7 +17,6 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv import api
 from vimiv.commands import cmdexc, commands
 from vimiv.config import keybindings, settings
-from vimiv.modes import modehandler, Mode, Modes
 from vimiv.utils import pathreceiver
 
 
@@ -28,7 +27,7 @@ def use_incremental(mode):
         mode: Mode for which search should be run.
     """
     enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
-    if enabled and mode in [Modes.LIBRARY, Modes.THUMBNAIL]:
+    if enabled and mode in [api.modes.LIBRARY, api.modes.THUMBNAIL]:
         return True
     return False
 
@@ -58,7 +57,7 @@ class Search(QObject):
         self._text = ""
         self._reverse = False
 
-    new_search = pyqtSignal(int, list, Mode, bool)
+    new_search = pyqtSignal(int, list, api.modes.Mode, bool)
     cleared = pyqtSignal()
 
     def __call__(self, text, mode, count=0, reverse=False, incremental=False):
@@ -80,7 +79,7 @@ class Search(QObject):
         Used by the search-next and search-prev commands.
         """
         reverse = reverse if not self._reverse else not reverse
-        mode = modehandler.current()
+        mode = api.modes.current()
         if not self._text:
             raise cmdexc.CommandError("no search performed")
         self._run(self._text, mode, count, reverse, False)

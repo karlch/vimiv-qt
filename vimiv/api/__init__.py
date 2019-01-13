@@ -6,4 +6,4 @@
 
 """TODO"""
 
-from . import objreg, status
+from . import modes, objreg, status

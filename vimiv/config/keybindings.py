@@ -41,11 +41,11 @@ earth with ``ge`` we could use::
 
 import collections
 
+from vimiv import api
 from vimiv.commands import cmdexc
-from vimiv.modes import Modes
 
 
-def add(keybinding, command, mode=Modes.GLOBAL):
+def add(keybinding, command, mode=api.modes.GLOBAL):
     """Decorator to add a keybinding.
 
     Args:
@@ -75,9 +75,8 @@ def unbind(keybinding, mode):
 
     See config/configcommands.unbind for the corresponding command.
     """
-    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY] \
-            and keybinding in _registry[Modes.GLOBAL]:
-        del _registry[Modes.GLOBAL][keybinding]
+    if mode in api.modes.GLOBALS and keybinding in _registry[api.modes.GLOBAL]:
+        del _registry[api.modes.GLOBAL][keybinding]
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
@@ -116,13 +115,13 @@ class Bindings(collections.UserDict):
         return False
 
 
-_registry = {mode: Bindings() for mode in Modes}
+_registry = {mode: Bindings() for mode in api.modes.ALL}
 
 
 def get(mode):
     """Return the keybindings of one specific mode."""
-    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY]:
-        return _registry[mode] + _registry[Modes.GLOBAL]
+    if mode in api.modes.GLOBALS:
+        return _registry[mode] + _registry[api.modes.GLOBAL]
     return _registry[mode]
 
 

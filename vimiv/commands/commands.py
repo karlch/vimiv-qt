@@ -78,7 +78,6 @@ from typing import List
 
 from vimiv import api
 from vimiv.commands import cmdexc
-from vimiv.modes import Modes
 from vimiv.utils import class_that_defined_method, cached_method, is_method
 
 
@@ -87,14 +86,14 @@ class Registry(collections.UserDict):
 
     def __init__(self):
         super().__init__()
-        for mode in Modes:
+        for mode in api.modes.ALL:
             self[mode] = {}
 
 
 registry = Registry()
 
 
-def get(name, mode=Modes.GLOBAL):
+def get(name, mode=api.modes.GLOBAL):
     """Get one command object.
 
     Args:
@@ -104,8 +103,8 @@ def get(name, mode=Modes.GLOBAL):
         The Command object asserted with name and mode.
     """
     commands = registry[mode]
-    if mode in [Modes.IMAGE, Modes.LIBRARY, Modes.THUMBNAIL]:
-        commands.update(registry[Modes.GLOBAL])
+    if mode in api.modes.GLOBALS:
+        commands.update(registry[api.modes.GLOBAL])
     if name not in commands:
         raise cmdexc.CommandNotFound(
             "%s: unknown command for mode %s" % (name, mode.name))
@@ -185,7 +184,7 @@ class Command():
         hook: Function to run before executing the command.
     """
 
-    def __init__(self, name, func, mode=Modes.GLOBAL, description="",
+    def __init__(self, name, func, mode=api.modes.GLOBAL, description="",
                  hide=False, hook=None):
         self.name = name
         self.func = func
@@ -235,7 +234,7 @@ class Command():
         return lambda **kwargs: (self.hook(), func(**kwargs))
 
 
-def register(mode=Modes.GLOBAL, hide=False, hook=None):
+def register(mode=api.modes.GLOBAL, hide=False, hook=None):
     """Decorator to store a command in the registry.
 
     Args:

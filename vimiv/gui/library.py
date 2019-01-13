@@ -18,7 +18,6 @@ from vimiv.commands import commands, argtypes, cmdexc, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, Mode, Modes, modewidget
 from vimiv.utils import (libpaths, eventhandler, strip_html, clamp,
                          working_directory, ignore)
 
@@ -65,7 +64,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     }
     """
 
-    @modewidget(Modes.LIBRARY)
+    @api.modes.widget(api.modes.LIBRARY)
     @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
@@ -85,8 +84,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         libpaths.handler.changed.connect(self._on_paths_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
+        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.left.connect(self._on_mode_left)
 
         styles.apply(self)
 
@@ -121,7 +120,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._store_position()
         self._set_content(data)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -131,7 +130,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self._select_row(index)
             self.repaint()
 
@@ -145,7 +144,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if setting == "library.width":
             self.update_width()
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Show or hide library depending on the mode entered.
 
@@ -153,18 +152,18 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             mode: The mode entered.
             last_mode: The mode left.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self.show()
             self.update_width()
 
-    @pyqtSlot(Mode)
+    @pyqtSlot(api.modes.Mode)
     def _on_mode_left(self, mode):
         """Hide library widget if library mode was left.
 
         Args:
             mode: The mode left.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self.hide()
             self._last_selected = ""
 
@@ -176,7 +175,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
 
-    @commands.register(mode=Modes.LIBRARY)
+    @commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
         """Open the currently selected path.
 
@@ -214,13 +213,13 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         close = (close or path == self._last_selected)
         self._last_selected = path
         if close:
-            modehandler.leave(Modes.LIBRARY)
+            api.modes.leave(api.modes.LIBRARY)
 
-    @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
-    @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
-    @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
-    @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY)
+    @keybindings.add("k", "scroll up", mode=api.modes.LIBRARY)
+    @keybindings.add("j", "scroll down", mode=api.modes.LIBRARY)
+    @keybindings.add("h", "scroll left", mode=api.modes.LIBRARY)
+    @keybindings.add("l", "scroll right", mode=api.modes.LIBRARY)
+    @commands.register(mode=api.modes.LIBRARY)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
 
@@ -255,9 +254,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1))
 
-    @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
-    @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY)
+    @keybindings.add("gg", "goto 1", mode=api.modes.LIBRARY)
+    @keybindings.add("G", "goto -1", mode=api.modes.LIBRARY)
+    @commands.register(mode=api.modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.
 
@@ -326,7 +325,7 @@ class LibraryModel(QStandardItemModel):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Store list of indices to highlight on new search.
 
@@ -336,7 +335,7 @@ class LibraryModel(QStandardItemModel):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self._highlighted = []
             for i, path in enumerate(self.pathlist()):
                 if os.path.basename(path) in matches:

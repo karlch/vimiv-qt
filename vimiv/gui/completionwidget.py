@@ -13,7 +13,6 @@ from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import styles, keybindings
 from vimiv.gui import widgets
-from vimiv.modes import Modes
 
 
 class CompletionView(widgets.FlatTreeView):
@@ -77,9 +76,10 @@ class CompletionView(widgets.FlatTreeView):
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
 
-    @keybindings.add("<shift><tab>", "complete --inverse", mode=Modes.COMMAND)
-    @keybindings.add("<tab>", "complete", mode=Modes.COMMAND)
-    @commands.register(mode=Modes.COMMAND)
+    @keybindings.add("<shift><tab>", "complete --inverse",
+                     mode=api.modes.COMMAND)
+    @keybindings.add("<tab>", "complete", mode=api.modes.COMMAND)
+    @commands.register(mode=api.modes.COMMAND)
     def complete(self, inverse: bool = False):
         """Invoke command line completion.
 
