@@ -76,10 +76,10 @@ import inspect
 import logging
 from typing import List
 
+from vimiv import api
 from vimiv.commands import cmdexc
 from vimiv.modes import Modes
-from vimiv.utils import (class_that_defined_method, cached_method, is_method,
-                         objreg)
+from vimiv.utils import class_that_defined_method, cached_method, is_method
 
 
 class Registry(collections.UserDict):
@@ -229,7 +229,7 @@ class Command():
         logging.debug("Creating function for command '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
-            instance = objreg.get(cls)
+            instance = api.objreg.get(cls)
             return lambda **kwargs: (self.hook(instance),
                                      func(instance, **kwargs))
         return lambda **kwargs: (self.hook(), func(**kwargs))

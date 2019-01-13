@@ -6,4 +6,4 @@
 
 """TODO"""
 
-from . import status
+from . import objreg, status

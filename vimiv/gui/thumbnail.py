@@ -21,8 +21,7 @@ from vimiv.commands import commands, argtypes, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import (objreg, eventhandler, pixmap_creater,
-                         thumbnail_manager, clamp)
+from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -70,7 +69,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     """
 
     @modewidget(Modes.THUMBNAIL)
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._paths = []
@@ -441,4 +440,4 @@ class ThumbnailDelegate(QStyledItemDelegate):
 
 
 def instance():
-    return objreg.get(ThumbnailView)
+    return api.objreg.get(ThumbnailView)

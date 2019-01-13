@@ -9,11 +9,11 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import styles, keybindings
 from vimiv.gui import widgets
 from vimiv.modes import Modes
-from vimiv.utils import objreg
 
 
 class CompletionView(widgets.FlatTreeView):
@@ -62,7 +62,7 @@ class CompletionView(widgets.FlatTreeView):
 
     activated = pyqtSignal(str)
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
 
@@ -110,4 +110,4 @@ class CompletionView(widgets.FlatTreeView):
 
 
 def instance():
-    return objreg.get(CompletionView)
+    return api.objreg.get(CompletionView)

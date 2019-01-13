@@ -14,17 +14,18 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
+from vimiv import api
 from vimiv.config import keybindings
 from vimiv.commands import commands, cmdexc
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, files, working_directory
+from vimiv.utils import files, working_directory
 
 
 class Application(QApplication):
     """Main application class."""
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
@@ -96,4 +97,4 @@ def open_paths(paths, select_mode=True):
 
 
 def instance():
-    return objreg.get(Application)
+    return api.objreg.get(Application)

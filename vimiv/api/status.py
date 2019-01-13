@@ -37,8 +37,8 @@ import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv.utils import (objreg, cached_method, is_method,
-                         class_that_defined_method)
+from vimiv.utils import cached_method, is_method, class_that_defined_method
+from . import objreg
 
 
 _modules = {}  # Dictionary storing all status modules

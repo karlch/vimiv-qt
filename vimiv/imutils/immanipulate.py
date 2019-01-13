@@ -18,7 +18,7 @@ from vimiv.commands import commands, argtypes
 from vimiv.config import keybindings
 from vimiv.imutils import _c_manipulate  # pylint: disable=no-name-in-module
 from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, clamp
+from vimiv.utils import clamp
 
 
 WAIT_TIME = 0.3
@@ -44,7 +44,7 @@ class Manipulator(QObject):
     edited = pyqtSignal(str, int)
     focused = pyqtSignal(str)
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, handler):
         super().__init__()
         self._handler = handler
@@ -202,7 +202,7 @@ class Manipulator(QObject):
 
 
 def instance():
-    return objreg.get(Manipulator)
+    return api.objreg.get(Manipulator)
 
 
 class ManipulateRunner(QRunnable):

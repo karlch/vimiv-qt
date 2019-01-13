@@ -15,11 +15,12 @@ from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
                           pyqtSlot)
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import settings
 from vimiv.imutils import imtransform, imsignals, immanipulate
 from vimiv.modes import Modes
-from vimiv.utils import objreg, files
+from vimiv.utils import files
 
 # We need the check as exif support is optional
 try:
@@ -68,7 +69,7 @@ class ImageFileHandler(QObject):
 
     _pool = QThreadPool.globalInstance()
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._pixmaps = Pixmaps()

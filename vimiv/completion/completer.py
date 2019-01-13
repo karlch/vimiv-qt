@@ -8,9 +8,9 @@
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
+from vimiv import api
 from vimiv.completion import completionfilters, completionmodels
 from vimiv.modes import modehandler, Mode, Modes
-from vimiv.utils import objreg
 
 
 class Completer(QObject):
@@ -29,7 +29,7 @@ class Completer(QObject):
             model setting.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__(parent=completion)
         self.proxy_model = completionfilters.TextFilter()
@@ -146,4 +146,4 @@ class Completer(QObject):
 
 
 def instance():
-    return objreg.get(Completer)
+    return api.objreg.get(Completer)

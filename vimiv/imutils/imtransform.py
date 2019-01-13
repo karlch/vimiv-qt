@@ -9,10 +9,10 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTransform
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import keybindings
 from vimiv.modes import Modes
-from vimiv.utils import objreg
 
 
 class Transform():
@@ -29,7 +29,7 @@ class Transform():
         _flip_vertical: Flip the image vertically.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, handler):
         self._handler = handler
         self._transform = QTransform()

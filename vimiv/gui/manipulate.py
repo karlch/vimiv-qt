@@ -11,11 +11,12 @@ import logging
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import keybindings, styles
 from vimiv.imutils import imsignals, immanipulate
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import eventhandler, objreg
+from vimiv.utils import eventhandler
 
 
 class Manipulate(eventhandler.KeyHandler, QWidget):
@@ -46,7 +47,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     """
 
     @modewidget(Modes.MANIPULATE)
-    @objreg.register
+    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -164,4 +165,4 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
 
 def instance():
-    return objreg.get(Manipulate)
+    return api.objreg.get(Manipulate)

@@ -13,12 +13,13 @@ from PyQt5.QtCore import Qt, QSize, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
+from vimiv import api
 from vimiv.commands import commands, argtypes, cmdexc, search
 from vimiv.config import styles, keybindings, settings
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import (objreg, libpaths, eventhandler, strip_html, clamp,
+from vimiv.utils import (libpaths, eventhandler, strip_html, clamp,
                          working_directory, ignore)
 
 
@@ -65,7 +66,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     """
 
     @modewidget(Modes.LIBRARY)
-    @objreg.register
+    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
@@ -494,4 +495,4 @@ class LibraryDelegate(QStyledItemDelegate):
 
 
 def instance():
-    return objreg.get(Library)
+    return api.objreg.get(Library)

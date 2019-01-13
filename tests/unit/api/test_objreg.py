@@ -4,9 +4,9 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Tests for vimiv.utils.objreg."""
+"""Tests for vimiv.api.objreg."""
 
-from vimiv.utils import objreg
+from vimiv.api import objreg
 
 
 class DummyObject:

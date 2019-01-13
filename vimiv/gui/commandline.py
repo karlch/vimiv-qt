@@ -9,10 +9,11 @@
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
+from vimiv import api
 from vimiv.commands import history, commands, argtypes, runners, search
 from vimiv.config import styles, keybindings
 from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import objreg, eventhandler, ignore
+from vimiv.utils import eventhandler, ignore
 
 
 def _command_func(prefix, command, mode):
@@ -67,7 +68,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     """
 
     @modewidget(Modes.COMMAND)
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._history = history.History(history.read())
@@ -184,4 +185,4 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
 
 def instance():
-    return objreg.get(CommandLine)
+    return api.objreg.get(CommandLine)

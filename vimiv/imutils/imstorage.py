@@ -16,7 +16,7 @@ from vimiv.commands import commands, search
 from vimiv.config import keybindings, settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import Mode, Modes
-from vimiv.utils import objreg, files, slideshow, working_directory, ignore
+from vimiv.utils import files, slideshow, working_directory, ignore
 
 
 # We need the check as exif support is optional
@@ -128,7 +128,7 @@ class Storage(QObject):
         _index: Index of the currently displayed image in the _paths list.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)

@@ -9,11 +9,11 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import keybindings, settings
 from vimiv.gui import commandline, statusbar
 from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg
 
 
 class Bar(QWidget):
@@ -25,7 +25,7 @@ class Bar(QWidget):
         _stack: QStackedLayout containing statusbar and commandline.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
@@ -113,4 +113,4 @@ class Bar(QWidget):
 
 
 def instance():
-    return objreg.get(Bar)
+    return api.objreg.get(Bar)

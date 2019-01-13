@@ -12,7 +12,6 @@ from vimiv import api
 from vimiv.commands import commands
 from vimiv.config import settings, keybindings
 from vimiv.modes import Modes
-from vimiv.utils import objreg
 
 
 class Slideshow(QTimer):
@@ -24,7 +23,7 @@ class Slideshow(QTimer):
 
     next_im = pyqtSignal()
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         settings.signals.changed.connect(self._on_settings_changed)
@@ -69,4 +68,4 @@ class Slideshow(QTimer):
 
 
 def instance():
-    return objreg.get(Slideshow)
+    return api.objreg.get(Slideshow)

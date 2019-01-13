@@ -16,7 +16,6 @@ from vimiv.config import keybindings, configcommands, settings
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
                        widgets, manipulate)
 from vimiv.modes import modehandler, Mode, Modes
-from vimiv.utils import objreg
 
 
 class MainWindow(QWidget):
@@ -28,7 +27,7 @@ class MainWindow(QWidget):
         _overlays: List of overlay widgets.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self.bar = bar.Bar()
@@ -92,7 +91,7 @@ class MainWindow(QWidget):
 
 
 def instance():
-    return objreg.get(MainWindow)
+    return api.objreg.get(MainWindow)
 
 
 class ImageThumbnailLayout(QStackedLayout):

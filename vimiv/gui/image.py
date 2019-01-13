@@ -16,7 +16,7 @@ from vimiv.commands import argtypes, commands
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.modes import modewidget, Modes
-from vimiv.utils import eventhandler, objreg, ignore
+from vimiv.utils import eventhandler, ignore
 
 # We need the check as svg support is optional
 try:
@@ -87,7 +87,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     MAX_SIZE_SCALE = 256
 
     @modewidget(Modes.IMAGE)
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._scale = 1.0
@@ -339,7 +339,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
 
 def instance():
-    return objreg.get(ScrollableImage)
+    return api.objreg.get(ScrollableImage)
 
 
 class Empty(widgets.ImageLabel):

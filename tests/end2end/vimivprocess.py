@@ -13,8 +13,8 @@ from PyQt5.QtWidgets import QWidget
 from unittest import mock
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
-from vimiv import vimiv  # noqa
-from vimiv.utils import objreg, working_directory  # noqa
+from vimiv import api, vimiv  # noqa
+from vimiv.utils import working_directory  # noqa
 from vimiv.imutils import imstorage  # noqa
 
 
@@ -45,7 +45,7 @@ class VimivProc():
     def __init__(self, qtbot, argv=[]):
         argv.extend(["--temp-basedir"])
         vimiv.startup(argv)
-        for name, widget in objreg._registry.items():
+        for name, widget in api.objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)
         # No crazy stuff should happen here, waiting is not really necessary
