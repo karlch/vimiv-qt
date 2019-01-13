@@ -31,6 +31,7 @@ If you want to find something to do, check the
 `issue tracker <https://github.com/karlch/vimiv-qt/issues/>`_. Some hints:
 
 * `Issues that are good for newcomers <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22>`_
+* `Issues that require help <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22>`_
 * `Issues that do not involve coding <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3Anot-code>`_
 
 As this is my first larger project, comments and improvements to the existing
