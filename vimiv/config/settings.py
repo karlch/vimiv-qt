@@ -391,6 +391,9 @@ class Names:
     STATUSBAR_SHOW = "statusbar.show"
     STATUSBAR_MESSAGE_TIMEOUT = "statusbar.message_timeout"
 
+    TITLE_FALLBACK = "title.fallback"
+    TITLE_IMAGE = "title.image"
+
 
 def init_defaults():
     """Store default values of all settings."""
@@ -454,6 +457,12 @@ def init_defaults():
                "{thumbnail-size}")
     StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
     StrSetting("statusbar.right", "{keys}  {mode}")
+
+    # Title
+    StrSetting(Names.TITLE_FALLBACK, "vimiv",
+               desc="Default window title if no mode specific options exist")
+    StrSetting(Names.TITLE_IMAGE, "vimiv - {basename}",
+               desc="Window title in image mode")
 
     # Log message
     logging.info("Initialized default settings")

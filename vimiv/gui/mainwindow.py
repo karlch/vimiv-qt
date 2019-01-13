@@ -9,9 +9,10 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
+from vimiv import api
 from vimiv.commands import commands
 from vimiv.completion import completer
-from vimiv.config import keybindings, configcommands
+from vimiv.config import keybindings, configcommands, settings
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
                        widgets, manipulate)
 from vimiv.modes import modehandler, Mode, Modes
@@ -48,6 +49,9 @@ class MainWindow(QWidget):
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
         configcommands.init()
+        self._set_title()
+
+        api.status.signals.update.connect(self._set_title)
 
     @keybindings.add("f", "fullscreen")
     @commands.register()
@@ -75,6 +79,16 @@ class MainWindow(QWidget):
     def focusNextPrevChild(self, next_child):
         """Override to do nothing as focusing is handled by modehandler."""
         return False
+
+    @pyqtSlot()
+    def _set_title(self):
+        """Update window title depending on mode and settings."""
+        mode = modehandler.current().name
+        try:  # Prefer mode specific setting
+            title = settings.get_value("title.%s" % (mode))
+        except KeyError:
+            title = settings.get_value(settings.Names.TITLE_FALLBACK)
+        self.setWindowTitle(api.status.evaluate(title))
 
 
 def instance():
