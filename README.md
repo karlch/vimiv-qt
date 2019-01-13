@@ -10,6 +10,8 @@
 [changelog](https://karlch.github.io/vimiv-qt/changelog.html) |
 [contributing](https://karlch.github.io/vimiv-qt/documentation/contributing.html)
 
+<img src="https://i.postimg.cc/VkcPgcbR/vimiv.gif" alt="vimiv screencast" width="440"/>
+
 Warning: This is the Qt port of vimiv. It is still very much in development. If
 you want to test this port, awesome! I am looking forward to your feedback,
 testers are heavily needed. If you require a more stable version, please check
