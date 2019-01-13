@@ -4,8 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""
-.. module:: status
+"""*Utilities to add status modules and retrieve status text*.
 
 Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
 configurable using so called status modules. These are created using the
