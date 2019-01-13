@@ -21,9 +21,4 @@ class DummyObject:
 def test_register_object_via_decorator():
     dummy = DummyObject()
     assert objreg.get(DummyObject) == dummy
-
-
-def test_register_object_via_function():
-    data = [1, 2, 3, 4, 5]
-    objreg.register_object(data)
-    assert objreg.get(list) == data
+    del objreg._registry[DummyObject]  # Cleanup

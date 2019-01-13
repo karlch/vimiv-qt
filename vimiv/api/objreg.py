@@ -90,8 +90,3 @@ class _Registry(collections.UserDict):
 
 
 _registry = _Registry()  # The registry used to store the vimiv components
-
-
-def register_object(obj):
-    """Store an object in the registry."""
-    _registry.store(obj)

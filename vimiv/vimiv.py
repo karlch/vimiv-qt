@@ -4,7 +4,12 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Main function and startup utilities for vimiv."""
+"""Main function and startup utilities for vimiv.
+
+Module Attributes:
+    _tmpdir: TemporaryDirectory when running with ``--temp-basedir``. The
+        object must exist until vimiv exits.
+"""
 
 import argparse
 import logging
@@ -23,6 +28,9 @@ from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
                          trash_manager, working_directory, libpaths)
+
+
+_tmpdir = None
 
 
 def startup(argv):
@@ -135,10 +143,9 @@ def init_directories(args):
         args: Arguments returned from parser.parse_args().
     """
     if args.temp_basedir:
-        tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
-        # Store the object so the directory stay around until exit
-        api.objreg.register_object(tmpdir)
-        basedir = tmpdir.name
+        global _tmpdir
+        _tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
+        basedir = _tmpdir.name
         os.environ["XDG_CACHE_HOME"] = os.path.join(basedir, "cache")
         os.environ["XDG_CONFIG_HOME"] = os.path.join(basedir, "config")
         os.environ["XDG_DATA_HOME"] = os.path.join(basedir, "data")
