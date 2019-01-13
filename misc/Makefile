@@ -1,5 +1,4 @@
-DESTDIR = /
-PREFIX := $(DESTDIR)usr
+PREFIX := $(DESTDIR)/usr
 DATADIR := $(PREFIX)/share
 MANDIR := $(DATADIR)/man
 APPDIR := $(DATADIR)/applications
@@ -14,7 +13,7 @@ default:
 
 options: help
 	@printf "\nOptions:\n"
-	@printf "DESTDIR = $(DESTDIR)\n"
+	@printf "DESTDIR = $(DESTDIR)/\n"
 	@printf "PREFIX = $(PREFIX)\n"
 	@printf "DATADIR = $(DATADIR)\n"
 	@printf "MANDIR = $(MANDIR)\n"
@@ -28,7 +27,7 @@ help:
 	@printf "make clean: 	        Remove build directories.\n"
 
 install:
-	python3 setup.py install --root=$(DESTDIR) --record=install_log.txt
+	python3 setup.py install --root=$(DESTDIR)/ --record=install_log.txt
 	install -Dm644 misc/vimiv.desktop $(APPDIR)/vimiv.desktop
 	install -Dm644 LICENSE $(LICENSEDIR)/vimiv/LICENSE
 	install -Dm644 misc/vimiv.1 $(MANDIR)/man1/vimiv.1
