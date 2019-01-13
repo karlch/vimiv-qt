@@ -3,6 +3,7 @@ graft c-extension
 graft icons
 
 include AUTHORS
+include CONTRIBUTING.md
 include LICENSE
 exclude .*
 exclude pytest.ini
