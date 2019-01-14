@@ -87,11 +87,11 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         else:
             logging.debug("Monitoring %s", directory)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
         """Start/stop monitoring when the setting changed."""
         if setting == api.settings.MONITOR_FS:
-            if new_value:
+            if setting.value:
                 self._monitor(self._dir)
             else:
                 logging.debug("Turning monitoring off")

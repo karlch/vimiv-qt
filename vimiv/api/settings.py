@@ -20,21 +20,6 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.utils import strconvert, clamp
 
 
-class _Signals(QObject):
-    """Signals for the settings module.
-
-    Signals:
-        changed: Emitted when a setting has changed.
-            arg1: Name of the setting changed.
-            arg2: New value of the changed setting
-    """
-
-    changed = pyqtSignal(str, object)
-
-
-signals = _Signals()
-
-
 class _Storage(collections.UserDict):
     """Stores all settings.
 
@@ -353,6 +338,21 @@ class StrSetting(Setting):
         return "String"
 
 
+class _Signals(QObject):
+    """Signals for the settings module.
+
+    Signals:
+        changed: Emitted when a setting has changed.
+            arg1: The changed setting.
+    """
+
+    changed = pyqtSignal(Setting)
+
+
+signals = _Signals()
+
+
+# Initialize all settings
 MONITOR_FS = BoolSetting(
     "monitor_filesystem",
     True,

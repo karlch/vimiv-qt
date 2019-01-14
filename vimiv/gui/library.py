@@ -139,9 +139,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Force repainting when the search results were cleared."""
         self.repaint()
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "library.width":
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.LIBRARY_WIDTH:
             self.update_width()
 
     @pyqtSlot(api.modes.Mode, api.modes.Mode)

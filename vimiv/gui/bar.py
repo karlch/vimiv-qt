@@ -92,14 +92,14 @@ class Bar(QWidget):
         self._maybe_hide()
         api.modes.leave(api.modes.COMMAND)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
         """React to changed settings."""
-        if setting == "statusbar.show":
-            statusbar.statusbar.setVisible(new_value)
+        if setting == api.settings.STATUSBAR_SHOW:
+            statusbar.statusbar.setVisible(setting.value)
             self._maybe_hide()
-        elif setting == "statusbar.timeout":
-            statusbar.statusbar.timer.setInterval(new_value)
+        elif setting == api.settings.STATUSBAR_MESSAGE_TIMEOUT:
+            statusbar.statusbar.timer.setInterval(setting.value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""

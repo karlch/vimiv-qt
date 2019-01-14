@@ -57,10 +57,10 @@ class Slideshow(QTimer):
             return api.settings.SLIDESHOW_INDICATOR.value
         return ""
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "slideshow.delay":
-            self.setInterval(new_value * 1000)
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.SLIDESHOW_DELAY:
+            self.setInterval(setting.value * 1000)
 
 
 def instance():

@@ -259,7 +259,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
         api.settings.THUMBNAIL_SIZE.override(str(size))
-        api.settings.signals.changed.emit("thumbnail.size", size)
+        api.settings.signals.changed.emit(api.settings.THUMBNAIL_SIZE)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
@@ -288,10 +288,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.selectionModel().setCurrentIndex(index, selmod)
         self.scrollTo(index, hint=self.PositionAtCenter)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "thumbnail.size":
-            self.setIconSize(QSize(new_value, new_value))
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.THUMBNAIL_SIZE:
+            self.setIconSize(QSize(setting.value, setting.value))
             self.rescale_items()
 
     def columns(self):
