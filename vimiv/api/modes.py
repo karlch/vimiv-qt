@@ -12,7 +12,9 @@ import logging
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from . import commands, keybindings, status
+
+class NoModeError(Exception):
+    """Raised when there is no mode to operate on."""
 
 
 class Mode(abc.ABC):
@@ -153,7 +155,7 @@ MANIPULATE = _MainMode("manipulate")
 
 
 # Utility lists to allow iterating
-ALL = [IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
+ALL = [IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE, GLOBAL]
 GLOBALS = [IMAGE, LIBRARY, THUMBNAIL]
 
 
@@ -184,21 +186,15 @@ class _Signals(QObject):
 signals = _Signals()
 
 
-@keybindings.add("gm", "enter manipulate")
-@keybindings.add("gt", "enter thumbnail")
-@keybindings.add("gl", "enter library")
-@keybindings.add("gi", "enter image")
-@commands.register()
-def enter(mode: str):
+def enter(mode: Mode):
     """Enter another mode.
 
-    **syntax:** ``:enter mode``
+    Set the current mode to `mode` and focus the widget which is asigned to
+    `mode`.
 
-    positional arguments:
-        * ``mode``: The mode to enter (image/library/thumbnail/manipulate).
+    Args:
+        mode: The mode to enter.
     """
-    if isinstance(mode, str):
-        mode = get_by_name(mode)
     # Store last mode
     last_mode = current()
     if mode == last_mode:
@@ -220,14 +216,15 @@ def enter(mode: str):
     logging.debug("Entered mode %s", mode)
 
 
-def leave(mode):
-    """Leave the mode 'mode'.
+def leave(mode: Mode) -> None:
+    """Leave the mode `mode`.
 
-    The difference to entering another mode is that leaving closes the widget
-    which is left.
+    Enter the mode which was focused before `mode` and close the widget
+    assigned to `mode`.
+
+    Args:
+        mode: The mode to leave.
     """
-    if isinstance(mode, str):
-        mode = get_by_name(mode)
     enter(mode.last)
     signals.left.emit(mode)
     # Reset the last mode when leaving a specific mode as leaving means closing
@@ -235,37 +232,23 @@ def leave(mode):
     mode.last.reset_last()
 
 
-@keybindings.add("tm", "toggle manipulate")
-@keybindings.add("tt", "toggle thumbnail")
-@keybindings.add("tl", "toggle library")
-@commands.register()
-def toggle(mode: str):
-    """Toggle one mode.
-
-    **syntax:** ``:toggle mode``.
+def toggle(mode: Mode) -> None:
+    """Toggle the mode `mode`.
 
     If the mode is currently visible, leave it. Otherwise enter it.
 
-    positional arguments:
-        * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
+    Args:
+        mode: The mode to leave.
     """
-    if isinstance(mode, str):
-        mode = get_by_name(mode)
     if mode.widget.isVisible():
         leave(mode)
     else:
         enter(mode)
 
 
-def current():
+def current() -> Mode:
     """Return the currently active mode."""
     for mode in ALL:
         if mode.active:
             return mode
-    return None
-
-
-@status.module("{mode}")
-def _active_name():
-    """Current mode."""
-    return current().name.upper()
+    raise NoModeError()

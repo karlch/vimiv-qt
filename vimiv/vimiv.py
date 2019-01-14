@@ -22,7 +22,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, parsertypes
+from vimiv import app, api, apimodules, parsertypes
 from vimiv.config import configfile, keyfile, settings, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
@@ -71,6 +71,7 @@ def earlyinit():
     working_directory.init()
     libpaths.init()
     iminitialize.init()
+    apimodules.init()
 
 
 def setup_logging(log_level):
