@@ -8,8 +8,8 @@ from PyQt5.QtCore import Qt
 
 import pytest_bdd as bdd
 
+from vimiv import api
 from vimiv.gui import commandline
-from vimiv.modes import modehandler, Modes
 
 
 bdd.scenarios("commandline.feature")
@@ -29,4 +29,4 @@ def check_commandline_text(text):
 
 @bdd.then("the mode should not be command")
 def check_commandline_closed():
-    assert modehandler.current() != Modes.COMMAND
+    assert api.modes.current() != api.modes.COMMAND

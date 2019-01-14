@@ -12,10 +12,10 @@ from PyQt5.QtCore import Qt
 
 import pytest_bdd as bdd
 
+from vimiv import api, apimodules
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import imstorage
-from vimiv.modes import modehandler, Modes
 
 ###############################################################################
 #                                    When                                     #
@@ -24,7 +24,7 @@ from vimiv.modes import modehandler, Modes
 
 @bdd.when(bdd.parsers.parse("I run {command}"))
 def run_command(command):
-    mode = modehandler.current()
+    mode = api.modes.current()
     command = runners.update_command(command, mode)
     func = commandline._command_func(":", command, mode)
     func()
@@ -32,7 +32,7 @@ def run_command(command):
 
 @bdd.when(bdd.parsers.parse("I press {keys}"))
 def key_press(qtbot, keys):
-    mode = modehandler.current()
+    mode = api.modes.current()
     qtbot.keyClicks(mode.widget, keys)
 
 
@@ -45,18 +45,17 @@ def activate_commandline(qtbot):
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))
 def enter_mode(mode):
-    modehandler.enter(mode)
+    apimodules.enter(mode)
 
 
 @bdd.when(bdd.parsers.parse("I leave {mode} mode"))
 def leave_mode(mode):
-    mode = Modes.get_by_name(mode)
-    modehandler.leave(mode)
+    api.modes.leave(api.modes.get_by_name(mode))
 
 
 @bdd.when(bdd.parsers.parse("I enter command mode with {text}"))
 def enter_command_with_text(text):
-    modehandler.enter(Modes.COMMAND)
+    api.modes.enter(api.modes.COMMAND)
     commandline.instance().setText(":" + text)
     commandline.instance().textEdited.emit(":" + text)
 
@@ -129,8 +128,8 @@ def check_not_fullscreen():
 
 @bdd.then(bdd.parsers.parse("the mode should be {mode}"))
 def check_mode(mode, qtbot):
-    mode = Modes.get_by_name(mode)
-    assert modehandler.current() == mode, \
+    mode = api.modes.get_by_name(mode)
+    assert api.modes.current() == mode, \
         "Modehandler did not switch to %s" % (mode.name)
 
 
@@ -146,7 +145,7 @@ def check_image_index(index):
 
 @bdd.given("I enter thumbnail mode")
 def enter_thumbnail():
-    modehandler.enter(Modes.THUMBNAIL)
+    api.modes.enter(api.modes.THUMBNAIL)
     thumbnail.instance().setFixedWidth(400)  # Make sure width is as expected
 
 
