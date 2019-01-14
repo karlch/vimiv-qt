@@ -16,7 +16,6 @@ from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api
-from vimiv.config import settings
 from vimiv.imutils import imtransform, imsignals, immanipulate
 from vimiv.utils import files
 
@@ -114,7 +113,7 @@ class ImageFileHandler(QObject):
         Args:
             path: Path to the image file.
         """
-        if not settings.get_value(settings.Names.IMAGE_AUTOWRITE):
+        if not api.settings.IMAGE_AUTOWRITE:
             self._reset()
         elif self.transform.changed() or self.manipulate.changed():
             self.write_pixmap(self.current, path, path)

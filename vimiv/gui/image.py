@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv import api
-from vimiv.config import styles, settings
+from vimiv.config import styles
 from vimiv.commands import argtypes
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
@@ -225,8 +225,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             * **float**: Set scale to arbitrary decimal value.
         """
         if level == argtypes.ImageScale.Overzoom:
-            self._scale_to_fit(
-                limit=settings.get_value(settings.Names.IMAGE_OVERZOOM))
+            self._scale_to_fit(limit=api.settings.IMAGE_OVERZOOM.value)
         elif level == argtypes.ImageScale.Fit:
             self._scale_to_fit()
         elif level == argtypes.ImageScale.FitWidth:
@@ -389,7 +388,7 @@ class Animation(widgets.ImageLabel):
         self.setMovie(movie)
         movie.jumpToFrame(0)
         self._original_size = movie.currentPixmap().size()
-        if settings.get_value(settings.Names.IMAGE_AUTOPLAY):
+        if api.settings.IMAGE_AUTOPLAY:
             movie.start()
 
     def current_size(self):

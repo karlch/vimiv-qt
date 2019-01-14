@@ -13,7 +13,6 @@ from PyQt5.QtCore import pyqtSlot, QObject
 
 from vimiv import api
 from vimiv.commands import search
-from vimiv.config import settings
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, slideshow, working_directory, ignore
 
@@ -229,7 +228,7 @@ def _load_paths(paths, focused_path):
     """
     paths = [os.path.abspath(path) for path in paths]
     focused_path = os.path.abspath(focused_path)
-    if settings.get_value(settings.Names.SHUFFLE):
+    if api.settings.SHUFFLE.value:
         shuffle(_paths)
     previous = current()
     _set_paths(paths)

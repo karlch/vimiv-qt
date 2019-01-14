@@ -13,7 +13,6 @@ import os
 from PyQt5.QtGui import QImageReader
 
 from vimiv import api
-from vimiv.config import settings
 from vimiv.utils import pathreceiver
 
 
@@ -113,7 +112,7 @@ def get_size_directory(path):
     Return:
         Size as formatted string.
     """
-    max_amount = settings.get_value(settings.Names.LIBRARY_FILE_CHECK_AMOUNT)
+    max_amount = api.settings.LIBRARY_FILE_CHECK_AMOUNT.value
     if max_amount == 0:  # Check all
         max_amount = None
     size = len(list(itertools.islice(yield_supported(ls(path)), max_amount)))
@@ -165,7 +164,7 @@ def edit_supported(filename):
 def pwd():
     """Current working directory."""
     wd = os.getcwd()
-    if settings.get_value(settings.Names.STATUSBAR_COLLAPSE_HOME):
+    if api.settings.STATUSBAR_COLLAPSE_HOME.value:
         wd = wd.replace(os.path.expanduser("~"), "~")
     return wd
 

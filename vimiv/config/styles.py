@@ -16,7 +16,7 @@ import configparser
 import logging
 import os
 
-from vimiv.config import settings
+from vimiv import api
 from vimiv.utils import xdg
 
 
@@ -69,7 +69,7 @@ def parse():
     defaults are simply used and the default style file is written to disk for
     reference.
     """
-    name = settings.get_value(settings.Names.STYLE)
+    name = api.settings.STYLE.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
     if name in ["default", "default-dark"]:
         create_default()

@@ -15,7 +15,6 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv import api
-from vimiv.config import settings
 from vimiv.utils import pathreceiver
 
 
@@ -25,7 +24,7 @@ def use_incremental(mode):
     Args:
         mode: Mode for which search should be run.
     """
-    enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
+    enabled = api.settings.SEARCH_INCREMENTAL.value
     if enabled and mode in [api.modes.LIBRARY, api.modes.THUMBNAIL]:
         return True
     return False
@@ -161,6 +160,6 @@ def _get_next_match(text, count, paths):
 
 def _matches(first, second):
     """Check if first string is in second string."""
-    if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
+    if api.settings.SEARCH_IGNORE_CASE.value:
         return first.lower() in second.lower()
     return first in second

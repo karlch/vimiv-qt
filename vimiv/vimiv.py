@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import app, api, apimodules, parsertypes
-from vimiv.config import configfile, keyfile, settings, styles
+from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
 from vimiv.utils import (xdg, clipboard, statusbar_loghandler, strconvert,
@@ -48,7 +48,6 @@ def startup(argv):
     setup_logging(args.log_level)
     logging.info("Start: vimiv %s", " ".join(argv))
     # Parse settings
-    settings.init_defaults()
     configfile.parse(args)
     keyfile.parse(args)
     styles.parse()
@@ -159,8 +158,7 @@ def init_directories(args):
 
 def init_paths(args):
     """Open paths given from commandline or fallback to library if set."""
-    if (not app.open_paths(args.paths)
-            and settings.get_value(settings.Names.STARTUP_LIBRARY)):
+    if not app.open_paths(args.paths) and api.settings.STARTUP_LIBRARY.value:
         app.open_paths([os.getcwd()])
 
 
@@ -190,7 +188,7 @@ def update_settings(args):
         option = pair[0]
         value = pair[1]
         try:
-            settings.override(option, value)
+            api.settings.override(option, value)
         except KeyError:
             logging.error("Unknown setting %s", option)
         except strconvert.ConversionError as e:

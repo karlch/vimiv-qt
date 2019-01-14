@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout
 
 from vimiv import api
 from vimiv.completion import completer
-from vimiv.config import configcommands, settings
+from vimiv.config import configcommands
 from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
                        widgets, manipulate)
 
@@ -82,9 +82,9 @@ class MainWindow(QWidget):
         """Update window title depending on mode and settings."""
         mode = api.modes.current().name
         try:  # Prefer mode specific setting
-            title = settings.get_value("title.%s" % (mode))
+            title = api.settings.get_value("title.%s" % (mode))
         except KeyError:
-            title = settings.get_value(settings.Names.TITLE_FALLBACK)
+            title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))
 
 

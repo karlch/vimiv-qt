@@ -15,7 +15,7 @@ from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
 from vimiv import api
 from vimiv.commands import argtypes, search
-from vimiv.config import styles, settings
+from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import (libpaths, eventhandler, strip_html, clamp,
@@ -79,7 +79,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.hide()
 
         self.activated.connect(self._on_activated)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
         libpaths.handler.loaded.connect(self._on_paths_loaded)
         libpaths.handler.changed.connect(self._on_paths_changed)
         search.search.new_search.connect(self._on_new_search)
@@ -279,8 +279,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def update_width(self):
         """Resize width and columns when main window width changes."""
-        width = self.parent().width() * \
-            settings.get_value(settings.Names.LIBRARY_WIDTH)
+        width = self.parent().width() * api.settings.LIBRARY_WIDTH.value
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
         self.setColumnWidth(1, 0.75 * width)

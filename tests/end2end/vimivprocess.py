@@ -60,3 +60,4 @@ class VimivProc():
         imstorage._index = 0
         # Needed for cleanup
         QCoreApplication.instance().aboutToQuit.emit()
+        api.settings.reset()

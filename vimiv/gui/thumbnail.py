@@ -18,7 +18,7 @@ from PyQt5.QtGui import QColor, QIcon
 
 from vimiv import api
 from vimiv.commands import argtypes, search
-from vimiv.config import styles, settings
+from vimiv.config import styles
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
 
@@ -80,7 +80,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
-        default_size = settings.get_value(settings.Names.THUMBNAIL_SIZE)
+        default_size = api.settings.THUMBNAIL_SIZE.value
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
@@ -88,7 +88,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imsignals.new_image_opened.connect(self._on_new_image_opened)
         imsignals.new_images_opened.connect(self._on_new_images_opened)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -258,8 +258,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
-        settings.override("thumbnail.size", str(size))
-        settings.signals.changed.emit("thumbnail.size", size)
+        api.settings.THUMBNAIL_SIZE.override(str(size))
+        api.settings.signals.changed.emit("thumbnail.size", size)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""

@@ -8,7 +8,7 @@
 
 import pytest
 
-from vimiv.config import settings
+from vimiv.api import settings
 from vimiv.utils import strconvert
 
 

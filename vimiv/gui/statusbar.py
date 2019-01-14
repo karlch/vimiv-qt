@@ -18,7 +18,7 @@ from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
 from vimiv import api
-from vimiv.config import settings, styles
+from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.utils import statusbar_loghandler
 
@@ -55,7 +55,7 @@ class StatusBar(QWidget):
         self.timer = QTimer()
         self._items = {}
 
-        timeout = settings.get_value(settings.Names.STATUSBAR_MESSAGE_TIMEOUT)
+        timeout = api.settings.STATUSBAR_MESSAGE_TIMEOUT.value
         self.timer.setInterval(timeout)
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.clear_message)
@@ -122,10 +122,9 @@ class StatusBar(QWidget):
             mode: Current mode.
         """
         try:  # Prefer mode specific setting
-            text = settings.get_value(
-                "statusbar.%s_%s" % (position, mode))
+            text = api.settings.get_value("statusbar.%s_%s" % (position, mode))
         except KeyError:
-            text = settings.get_value("statusbar.%s" % (position))
+            text = api.settings.get_value("statusbar.%s" % (position))
         return api.status.evaluate(text)
 
     def _set_severity_style(self, severity):

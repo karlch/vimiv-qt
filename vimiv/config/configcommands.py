@@ -9,7 +9,6 @@
 from typing import List
 
 from vimiv import api
-from vimiv.config import settings
 from vimiv.utils import strconvert
 
 
@@ -33,17 +32,17 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
         # Toggle boolean settings
         if setting.endswith("!"):
             setting = setting.rstrip("!")
-            settings.toggle(setting)
+            api.settings.toggle(setting)
         # Add to number settings
         elif value and (value.startswith("+") or value.startswith("-")):
-            settings.add_to(setting, value)
+            api.settings.add_to(setting, value)
         # Set default
         elif value == "":
-            settings.set_to_default(setting)
+            api.settings.set_to_default(setting)
         else:
-            settings.override(setting, value)
-        new_value = settings.get_value(setting)
-        settings.signals.changed.emit(setting, new_value)
+            api.settings.override(setting, value)
+        new_value = api.settings.get_value(setting)
+        api.settings.signals.changed.emit(setting, new_value)
     except KeyError as e:
         raise api.commands.CommandError("unknown setting %s" % (setting))
     except TypeError as e:

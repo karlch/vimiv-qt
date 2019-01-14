@@ -10,7 +10,6 @@ from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv import api
-from vimiv.config import settings
 from vimiv.gui import commandline, statusbar
 
 
@@ -39,7 +38,7 @@ class Bar(QWidget):
         self._maybe_hide()
 
         self.commandline.editingFinished.connect(self._on_editing_finished)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
 
     @api.keybindings.add("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.add("<colon>", "command")
@@ -104,7 +103,7 @@ class Bar(QWidget):
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
-        always_show = settings.get_value(settings.Names.STATUSBAR_SHOW)
+        always_show = api.settings.STATUSBAR_SHOW.value
         if not always_show and not self.commandline.hasFocus():
             self.hide()
         else:

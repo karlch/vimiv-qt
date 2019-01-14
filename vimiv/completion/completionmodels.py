@@ -11,7 +11,6 @@ import os
 from vimiv import api
 from vimiv.commands import aliases
 from vimiv.completion import completionbasemodel
-from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files, trash_manager
 
 
@@ -85,9 +84,9 @@ def settings(text):
     """
     data = []
     # Show valid options for the setting
-    if text in vimivsettings.names():
+    if text in api.settings.names():
         model = completionbasemodel.BaseModel((0.5, 0.5))
-        setting = vimivsettings.get(text)
+        setting = api.settings.get(text)
         values = {
             "default": str(setting.default),
             "current": str(setting.value)
@@ -99,7 +98,7 @@ def settings(text):
     # Show all settings
     else:
         model = completionbasemodel.BaseModel((0.4, 0.1, 0.5))
-        for name, setting in vimivsettings.items():
+        for name, setting in api.settings.items():
             cmd = "set %s" % (name)
             data.append((cmd, str(setting), setting.desc))
     model.set_data(data)
