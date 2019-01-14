@@ -159,15 +159,6 @@ ALL = [IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE, GLOBAL]
 GLOBALS = [IMAGE, LIBRARY, THUMBNAIL]
 
 
-# Initialize default values for each mode
-for mode in ALL:
-    if mode == IMAGE:
-        mode.active = True  # Default mode
-        mode.last = mode.last_fallback = LIBRARY
-    else:
-        mode.last = mode.last_fallback = IMAGE
-
-
 class _Signals(QObject):
     """Simple QObject containing mode related signals.
 
@@ -252,3 +243,16 @@ def current() -> Mode:
         if mode.active:
             return mode
     raise NoModeError()
+
+
+def _init():
+    """Initialize default values for each mode."""
+    for _mode in ALL:
+        if _mode == IMAGE:
+            _mode.active = True  # Default mode
+            _mode.last = _mode.last_fallback = LIBRARY
+        else:
+            _mode.last = _mode.last_fallback = IMAGE
+
+
+_init()

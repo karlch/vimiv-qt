@@ -89,7 +89,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
-        api.modes.leave(api.Modes.MANIPULATE)
+        api.modes.leave(api.modes.MANIPULATE)
         self._reset()
         immanipulate.instance().reset()
 
