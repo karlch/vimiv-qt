@@ -18,22 +18,35 @@ class TextFilter(QSortFilterProxyModel):
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
 
-    def refilter(self, text):
+    def refilter(self, text: str) -> None:
         """Filter completions based on text in command line.
 
         Args:
             text: The current command line text.
         """
-        # Remove trailing ":" or "/"
-        text = text.lstrip(":/")
-        # Do not filter on counts
-        text = text.lstrip(string.digits)
-        # Still allow match inside word for open
-        text = text.replace("open ", "")
-        # Still allow match inside word for set
-        text = text.replace("set ", "")
-        regex = QRegExp(text, Qt.CaseInsensitive)
-        self.setFilterRegExp(regex)
+        text = self._strip_text(text)
+        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive))
 
-    def reset(self):
+    def reset(self) -> None:
         self.setFilterRegExp("")
+
+    @staticmethod
+    def _strip_text(text: str) -> str:
+        """Strip text of characters ignored for filtering."""
+        return (
+            text.lstrip(":/")  # Remove trailing ":" or "/"
+            .lstrip(string.digits)  # Do not filter on counts
+            .replace("open ", "")  # Still allow match inside word for open
+            .replace("set ", "")  # Still allow match inside word for set
+        )
+
+
+class FuzzyFilter(TextFilter):
+    def refilter(self, text: str) -> None:
+        """Fuzzy filter completions based on text in command line.
+
+        Args:
+            text: The current command line text.
+        """
+        text = ".*".join(self._strip_text(text))
+        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive))
