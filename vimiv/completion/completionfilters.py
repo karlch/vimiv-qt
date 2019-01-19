@@ -42,6 +42,8 @@ class TextFilter(QSortFilterProxyModel):
 
 
 class FuzzyFilter(TextFilter):
+    """Simple filter fuzzy matching text in all columns."""
+
     def refilter(self, text: str) -> None:
         """Fuzzy filter completions based on text in command line.
 
