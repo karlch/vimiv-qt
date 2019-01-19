@@ -13,18 +13,18 @@ mainly used by commands as well as statusbar modules to retrieve the ``self``
 argument for methods that require an instance of the class.
 
 To register a new class in the object registry, the
-:func:`vimiv.api.objreg.register` decorator can be used as following::
+:func:`register` decorator can be used as following::
 
-    from vimiv import api
+    from vimiv.api import objreg
 
     class MyLongLivedClass:
 
-        @api.objreg.register
+        @objreg.register
         def __init__(self):
             ...
 
 The class is then stored in the object registry once the first instance was
-created. To retrieve instance of the class, the :func:`vimiv.api.objreg.get`
+created. To retrieve instance of the class, the :func:`get`
 function can be used::
 
     my_instance = objreg.get(MyLongLivedClass)

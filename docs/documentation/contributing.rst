@@ -94,7 +94,6 @@ TODO Write this once the testing routine has stabilized
 
 Source Code Hints
 -----------------
-
 The following paragraphs explain some of the core concepts of the source code
 which may be useful to understand before working on bigger changes.
 
@@ -118,25 +117,43 @@ Three handlers are currently used:
   ``$XDG_DATA_HOME/vimiv/vimiv.log``
 * One to print log messages to the statusbar
 
-The Object Registry
-^^^^^^^^^^^^^^^^^^^
 
-.. include:: objreg.rstsrc
-
-Commands
-^^^^^^^^
-
-.. include:: commands.rstsrc
-
-Keybindings
-^^^^^^^^^^^
-
-.. include:: keybindings.rstsrc
-
-Statusbar Modules
+API Documentation
 ^^^^^^^^^^^^^^^^^
 
-.. include:: statusbar.rstsrc
+.. automodule:: vimiv.api
+
+The following paragraphs provide an overview of the modules available in the
+``api`` and give examples on how to use them.
+
+The Object Registry
+"""""""""""""""""""
+
+.. automodule:: vimiv.api.objreg
+   :members:
+
+Modes
+"""""
+
+.. automodule:: vimiv.api.modes
+   :members: widget, get_by_name, current, enter, leave, toggle
+
+Commands
+""""""""
+
+.. automodule:: vimiv.api.commands
+   :members:
+
+Keybindings
+"""""""""""
+
+.. automodule:: vimiv.api.keybindings
+
+Status Modules
+""""""""""""""
+
+.. automodule:: vimiv.api.status
+   :members:
 
 The Image Loading Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^

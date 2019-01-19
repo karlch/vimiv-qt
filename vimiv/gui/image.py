@@ -127,10 +127,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.scale(self._scale, 1)
         api.status.update()
 
-    @api.keybindings.add("k", "scroll up", mode=api.modes.IMAGE)
-    @api.keybindings.add("j", "scroll down", mode=api.modes.IMAGE)
-    @api.keybindings.add("l", "scroll right", mode=api.modes.IMAGE)
-    @api.keybindings.add("h", "scroll left", mode=api.modes.IMAGE)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.IMAGE)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.IMAGE)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.IMAGE)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def scroll(self, direction: argtypes.Direction, count: int = 1):
         """Scroll the image in the given direction.
@@ -152,17 +152,17 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             step *= -1
         bar.setValue(bar.value() - step)
 
-    @api.keybindings.add("M", "center", mode=api.modes.IMAGE)
+    @api.keybindings.register("M", "center", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
             bar.setValue(bar.maximum() // 2)
 
-    @api.keybindings.add("K", "scroll-edge up", mode=api.modes.IMAGE)
-    @api.keybindings.add("J", "scroll-edge down", mode=api.modes.IMAGE)
-    @api.keybindings.add("L", "scroll-edge right", mode=api.modes.IMAGE)
-    @api.keybindings.add("H", "scroll-edge left", mode=api.modes.IMAGE)
+    @api.keybindings.register("K", "scroll-edge up", mode=api.modes.IMAGE)
+    @api.keybindings.register("J", "scroll-edge down", mode=api.modes.IMAGE)
+    @api.keybindings.register("L", "scroll-edge right", mode=api.modes.IMAGE)
+    @api.keybindings.register("H", "scroll-edge left", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def scroll_edge(self, direction: argtypes.Direction):
         """Scroll the image to one edge.
@@ -182,8 +182,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             value = bar.maximum()
         bar.setValue(value)
 
-    @api.keybindings.add("-", "zoom out", mode=api.modes.IMAGE)
-    @api.keybindings.add("+", "zoom in", mode=api.modes.IMAGE)
+    @api.keybindings.register("-", "zoom out", mode=api.modes.IMAGE)
+    @api.keybindings.register("+", "zoom in", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def zoom(self, direction: argtypes.Zoom, count: int = 1):
         """Zoom the current widget.
@@ -203,10 +203,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self._scale = width / self.original_width()
         self._scale_to_float(self._scale)
 
-    @api.keybindings.add("w", "scale --level=fit", mode=api.modes.IMAGE)
-    @api.keybindings.add("W", "scale --level=1", mode=api.modes.IMAGE)
-    @api.keybindings.add("e", "scale --level=fit-width", mode=api.modes.IMAGE)
-    @api.keybindings.add("E", "scale --level=fit-height", mode=api.modes.IMAGE)
+    @api.keybindings.register("w", "scale --level=fit", mode=api.modes.IMAGE)
+    @api.keybindings.register("W", "scale --level=1", mode=api.modes.IMAGE)
+    @api.keybindings.register("e", "scale --level=fit-width", mode=api.modes.IMAGE)
+    @api.keybindings.register("E", "scale --level=fit-height", mode=api.modes.IMAGE)
     @api.commands.register()
     def scale(self, level: argtypes.ImageScaleFloat = 1, count: int = 1):
         """Scale the image.
@@ -237,7 +237,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level)
         self._scale = level
 
-    @api.keybindings.add("<space>", "play-or-pause", mode=api.modes.IMAGE)
+    @api.keybindings.register("<space>", "play-or-pause", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""

@@ -181,10 +181,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         imsignals.open_new_image.emit(self.abspath())
         api.modes.enter(api.modes.IMAGE)
 
-    @api.keybindings.add("k", "scroll up", mode=api.modes.THUMBNAIL)
-    @api.keybindings.add("j", "scroll down", mode=api.modes.THUMBNAIL)
-    @api.keybindings.add("h", "scroll left", mode=api.modes.THUMBNAIL)
-    @api.keybindings.add("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll to another thumbnail in the given direction.
@@ -220,8 +220,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             current = max(column, current)
         self._select_item(current)
 
-    @api.keybindings.add("gg", "goto 1", mode=api.modes.THUMBNAIL)
-    @api.keybindings.add("G", "goto -1", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
@@ -242,8 +242,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         index = index % self.count()
         self._select_item(index)
 
-    @api.keybindings.add("-", "zoom out", mode=api.modes.THUMBNAIL)
-    @api.keybindings.add("+", "zoom in", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.

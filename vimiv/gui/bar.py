@@ -40,8 +40,8 @@ class Bar(QWidget):
         self.commandline.editingFinished.connect(self._on_editing_finished)
         api.settings.signals.changed.connect(self._on_settings_changed)
 
-    @api.keybindings.add("<colon>", "command", mode=api.modes.MANIPULATE)
-    @api.keybindings.add("<colon>", "command")
+    @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<colon>", "command")
     @api.commands.register(hide=True, mode=api.modes.MANIPULATE)
     @api.commands.register(hide=True)
     def command(self, text: str = ""):
@@ -54,8 +54,8 @@ class Bar(QWidget):
         """
         self._enter_command_mode(":" + text)
 
-    @api.keybindings.add("?", "search --reverse")
-    @api.keybindings.add("/", "search")
+    @api.keybindings.register("?", "search --reverse")
+    @api.keybindings.register("/", "search")
     @api.commands.register(hide=True)
     def search(self, reverse: bool = False):
         """Start a search.
@@ -77,7 +77,7 @@ class Bar(QWidget):
         self.commandline.setText(text)
         api.modes.enter(api.modes.COMMAND)
 
-    @api.keybindings.add("<escape>", "leave-commandline",
+    @api.keybindings.register("<escape>", "leave-commandline",
                          mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):

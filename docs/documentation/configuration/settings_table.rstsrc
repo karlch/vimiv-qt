@@ -25,4 +25,6 @@
    statusbar.message_timeout Time in ms until statusbar messages are removed
    statusbar.show            Always display the statusbar
    thumbnail.size            Size of thumbnails
+   title.fallback            Default window title if no mode specific options exist
+   title.image               Window title in image mode
    ========================= ===========

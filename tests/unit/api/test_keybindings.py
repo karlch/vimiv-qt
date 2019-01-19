@@ -12,7 +12,7 @@ from vimiv import api
 
 
 def test_add_keybinding():
-    @api.keybindings.add("t1", "test")
+    @api.keybindings.register("t1", "test")
     def test():
         pass
     bindings = api.keybindings.get(api.modes.GLOBAL)

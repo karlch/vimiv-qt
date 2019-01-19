@@ -103,7 +103,7 @@ class Search(QObject):
 search = Search()
 
 
-@api.keybindings.add("N", "search-next")
+@api.keybindings.register("N", "search-next")
 @api.commands.register(hide=True)
 def search_next(count: int = 1):
     """Continue search to the next match.
@@ -115,7 +115,7 @@ def search_next(count: int = 1):
     search.repeat(count)
 
 
-@api.keybindings.add("P", "search-prev")
+@api.keybindings.register("P", "search-prev")
 @api.commands.register(hide=True)
 def search_prev(count: int = 1):
     """Continue search to the previous match.

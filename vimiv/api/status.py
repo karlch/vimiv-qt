@@ -8,22 +8,22 @@
 
 Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
 configurable using so called status modules. These are created using the
-:func:`vimiv.api.status.module` decorator.  As an example let's create a module
-that returns the name of the current user::
+:func:`module` decorator.  As an example let's create a module that returns the
+name of the current user::
 
-        from vimiv import api
+        from vimiv.api import status
 
-        @api.status.module("{username}")
+        @status.module("{username}")
         def username():
             return os.getenv("USER")
 
 A new module '{username}' is now registered.
 
 Any status object can retrieve the content of statusbar modules by calling
-:func:`vimiv.api.status.evaluate`. To get the content of our new "{username}"
-module prepended by the text "user: " we run::
+:func:`evaluate`. To get the content of our new "{username}" module prepended
+by the text "user: " we run::
 
-    updated_text = api.status.evaluate("user: {username}")
+    updated_text = status.evaluate("user: {username}")
 
 The occurance of '{username}' is then replaced by the outcome of the username()
 function defined earlier.
@@ -84,8 +84,8 @@ def module(name: str):
     """Decorator to register a function as status module.
 
     The decorated function must return a string that can be displayed as
-    status. When calling :func:`vimiv.api.status.evaluate`, any occurance of
-    ``name`` will be replaced by the return value of the decorated function.
+    status. When calling :func:`evaluate`, any occurance of ``name`` will be
+    replaced by the return value of the decorated function.
 
     Args:
         name: Name of the module as set in the config file. Must start with '{'

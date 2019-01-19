@@ -33,9 +33,9 @@ class Transform():
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
 
-    @api.keybindings.add("<", "rotate --counter-clockwise",
+    @api.keybindings.register("<", "rotate --counter-clockwise",
                          mode=api.modes.IMAGE)
-    @api.keybindings.add(">", "rotate", mode=api.modes.IMAGE)
+    @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def rotate(self, counter_clockwise: bool = False, count: int = 1):
         """Rotate the image.
@@ -53,8 +53,8 @@ class Transform():
         pixmap = self.transform_pixmap(self._handler.original)
         self._handler.update_transformed(pixmap)
 
-    @api.keybindings.add("_", "flip --vertical", mode=api.modes.IMAGE)
-    @api.keybindings.add("|", "flip", mode=api.modes.IMAGE)
+    @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
+    @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def flip(self, vertical: bool = False):
         """Flip the image.

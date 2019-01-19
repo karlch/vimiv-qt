@@ -2,7 +2,7 @@
    The extension .rstsrc is used to avoid sphinx copying this file directly.
    Do not edit by hand.
 
-.. table:: Overview of statusbar modules
+.. table:: Overview of status modules
    :widths: auto
 
    =================== ===========

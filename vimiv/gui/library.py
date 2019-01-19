@@ -215,10 +215,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if close:
             api.modes.leave(api.modes.LIBRARY)
 
-    @api.keybindings.add("k", "scroll up", mode=api.modes.LIBRARY)
-    @api.keybindings.add("j", "scroll down", mode=api.modes.LIBRARY)
-    @api.keybindings.add("h", "scroll left", mode=api.modes.LIBRARY)
-    @api.keybindings.add("l", "scroll right", mode=api.modes.LIBRARY)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.LIBRARY)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
@@ -254,8 +254,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1))
 
-    @api.keybindings.add("gg", "goto 1", mode=api.modes.LIBRARY)
-    @api.keybindings.add("G", "goto -1", mode=api.modes.LIBRARY)
+    @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
+    @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.

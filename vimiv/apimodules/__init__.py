@@ -16,10 +16,10 @@ from vimiv import api
 ###############################################################################
 #                                  Commands                                   #
 ###############################################################################
-@api.keybindings.add("gm", "enter manipulate")
-@api.keybindings.add("gt", "enter thumbnail")
-@api.keybindings.add("gl", "enter library")
-@api.keybindings.add("gi", "enter image")
+@api.keybindings.register("gm", "enter manipulate")
+@api.keybindings.register("gt", "enter thumbnail")
+@api.keybindings.register("gl", "enter library")
+@api.keybindings.register("gi", "enter image")
 @api.commands.register()
 def enter(mode: str):
     """Enter another mode.
@@ -32,9 +32,9 @@ def enter(mode: str):
     api.modes.enter(api.modes.get_by_name(mode))
 
 
-@api.keybindings.add("tm", "toggle manipulate")
-@api.keybindings.add("tt", "toggle thumbnail")
-@api.keybindings.add("tl", "toggle library")
+@api.keybindings.register("tm", "toggle manipulate")
+@api.keybindings.register("tt", "toggle thumbnail")
+@api.keybindings.register("tl", "toggle library")
 @api.commands.register()
 def toggle(mode: str):
     """Toggle one mode.

@@ -8,6 +8,10 @@
    ========== ===========
    Keybinding Command
    ========== ===========
+   \N         search-next
+   \P         search-prev
+   \q         quit
+   \o         command --text='open '
    \gi        enter image
    \gl        enter library
    \gt        enter thumbnail
@@ -15,10 +19,6 @@
    \tl        toggle library
    \tt        toggle thumbnail
    \tm        toggle manipulate
-   \N         search-next
-   \P         search-prev
-   \q         quit
-   \o         command --text='open '
    \x         delete %
    \b         set statusbar.show!
    \<colon>   command

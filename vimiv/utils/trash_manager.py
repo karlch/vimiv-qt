@@ -40,7 +40,7 @@ def init():
     os.makedirs(_info_directory, exist_ok=True)
 
 
-@api.keybindings.add("x", "delete %")
+@api.keybindings.register("x", "delete %")
 @api.commands.register()
 def delete(filename: str):
     """Move a file to the trash directory.

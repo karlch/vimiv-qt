@@ -4,27 +4,20 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Storage and getter function for keybindings.
+"""`Utilities to map commands to a sequence of keys`.
 
-TODO update
-
-Module Attributes:
-    _registry: Dictionary storing the keybindings for each mode.
-
-//
-
-Commands can be mapped to a sequence of keys using the utilities from the
-``vimiv.config.keybindings`` module.
-
-Adding a new default keybinding is done using the ``add`` decorator. This
-decorator requires the sequence of keys to bind to as first argument, the
-command as second argument and, similar to ``commands.register`` supports the
-``mode`` keyword to define the mode in which the keybinding is valid.
+Adding a new default keybinding is done using the :func:`register` decorator.
+This decorator requires the sequence of keys to bind to as first argument, the
+command as second argument and, similar to :func:`vimiv.api.commands.register`
+supports the ``mode`` keyword to define the mode in which the keybinding is
+valid.
 
 As an example, let's bind the ``:hello-earth`` command from before to the key
 sequence ``ge``::
 
-    @keybindings.add("ge", "hello-earth")
+    from vimiv.api import commands, keybindings
+
+    @keybindings.register("ge", "hello-earth")
     @commands.register()
     def hello_earth():
         print("hello earth")
@@ -33,11 +26,10 @@ If the keybinding requires passing any arguments to the command, these must be
 passed as part of the command. For example, to great venus with ``gv`` and
 earth with ``ge`` we could use::
 
-    @keybindings.add("gv", "hello-planet --name=venus")
-    @keybindings.add("ge", "hello-planet")
-    @commands.argument("name", optional=True, default="earth")
+    @keybindings.register("gv", "hello-planet --name=venus")
+    @keybindings.register("ge", "hello-planet")
     @commands.register()
-    def hello_planet(name="earth"):
+    def hello_planet(name: str = "earth"):
         print("hello", name)
 """
 
@@ -46,8 +38,8 @@ import collections
 from . import commands, modes
 
 
-def add(keybinding, command, mode=modes.GLOBAL):
-    """Decorator to add a keybinding.
+def register(keybinding, command, mode=modes.GLOBAL):
+    """Decorator to add a new keybinding.
 
     Args:
         command: Command to bind to.

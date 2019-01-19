@@ -4,7 +4,26 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""TODO"""
+"""`Default modes and utility functions for mode handling`.
+
+Similar to vim, vimiv has the concept of ``modes``. The same command or
+keybinding can perform different actions depending on the mode it is executed
+in. Each mode is assigned to a ``QWidget`` class which is focused when this
+mode is active. To assign a widget to a mode, the :func:`widget` decorator is
+used.
+
+The following modes exist:
+
+    * IMAGE
+    * LIBRARY
+    * THUMBNAIL
+    * COMMAND
+    * MANIPULATE
+
+In addition there is the special ``GLOBAL`` mode which corresponds to
+``IMAGE``, ``LIBRARY`` and ``THUMBNAIL``. When adding commands for this mode,
+they are automatically added for each of these three modes.
+"""
 
 
 import abc
@@ -98,6 +117,9 @@ class Mode(abc.ABC):
 def get_by_name(name: str) -> Mode:
     """Retrieve Mode class by name.
 
+    This can be used in case the python :class:`vimiv.api.modes.Mode` class is
+    not available, for example when running commands.
+
     Args:
         name: Name of the mode to retrieve.
     Return:
@@ -115,6 +137,14 @@ def widget(mode):
     The decorator decorates the __init__ function of a QWidget class storing
     the created component as the widget associated to the mode. This is used
     when entering a mode to focus the widget which is assigned to this mode.
+
+    Example::
+
+        class ImageWidget:
+
+        @modes.widget(modes.IMAGE)
+        def __init__(self):
+            ...
 
     Args:
         mode: The mode to associate the decorated widget with.
@@ -155,7 +185,7 @@ MANIPULATE = _MainMode("manipulate")
 
 
 # Utility lists to allow iterating
-ALL = [IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE, GLOBAL]
+ALL = [GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
 GLOBALS = [IMAGE, LIBRARY, THUMBNAIL]
 
 
@@ -180,8 +210,8 @@ signals = _Signals()
 def enter(mode: Mode):
     """Enter another mode.
 
-    Set the current mode to `mode` and focus the widget which is asigned to
-    `mode`.
+    Set the current mode to ``mode`` and focus the widget which is asigned to
+    ``mode``.
 
     Args:
         mode: The mode to enter.
@@ -208,10 +238,10 @@ def enter(mode: Mode):
 
 
 def leave(mode: Mode) -> None:
-    """Leave the mode `mode`.
+    """Leave the mode ``mode``.
 
-    Enter the mode which was focused before `mode` and close the widget
-    assigned to `mode`.
+    Enter the mode which was focused before ``mode`` and close the widget
+    assigned to ``mode``.
 
     Args:
         mode: The mode to leave.
@@ -224,7 +254,7 @@ def leave(mode: Mode) -> None:
 
 
 def toggle(mode: Mode) -> None:
-    """Toggle the mode `mode`.
+    """Toggle the mode ``mode``.
 
     If the mode is currently visible, leave it. Otherwise enter it.
 

@@ -50,7 +50,7 @@ class MainWindow(QWidget):
 
         api.status.signals.update.connect(self._set_title)
 
-    @api.keybindings.add("f", "fullscreen")
+    @api.keybindings.register("f", "fullscreen")
     @api.commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""

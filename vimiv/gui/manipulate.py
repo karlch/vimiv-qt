@@ -85,7 +85,7 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
         self.hide()
 
-    @api.keybindings.add("<escape>", "discard", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""

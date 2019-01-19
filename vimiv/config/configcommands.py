@@ -12,11 +12,11 @@ from vimiv import api
 from vimiv.utils import strconvert
 
 
-@api.keybindings.add(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
-@api.keybindings.add(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
-@api.keybindings.add("H", "set library.width -0.05", mode=api.modes.LIBRARY)
-@api.keybindings.add("L", "set library.width +0.05", mode=api.modes.LIBRARY)
-@api.keybindings.add("b", "set statusbar.show!")
+@api.keybindings.register(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
+@api.keybindings.register(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
+@api.keybindings.register("H", "set library.width -0.05", mode=api.modes.LIBRARY)
+@api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
+@api.keybindings.register("b", "set statusbar.show!")
 @api.commands.register()
 def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.

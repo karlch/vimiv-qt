@@ -30,7 +30,7 @@ class Application(QApplication):
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
 
-    @api.keybindings.add("q", "quit")
+    @api.keybindings.register("q", "quit")
     @api.commands.register()
     def quit(self):
         """Quit vimiv."""
@@ -50,7 +50,7 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
-@api.keybindings.add("o", "command --text='open '")
+@api.keybindings.register("o", "command --text='open '")
 @api.commands.register()
 def open(path: str):  # pylint: disable=redefined-builtin
     """Open a path.

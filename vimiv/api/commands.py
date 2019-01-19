@@ -4,23 +4,16 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Command storage and initialization decorators.
+"""`Command storage and initialization`.
 
-TODO update
+The user interacts with vimiv using commands. Creating a new command is done
+using the :func:`register` decorator. The command name is directly infered from
+the function name, the functions docstring is used to document the command. The
+arguments supported by the command are also deduced by inspecting the arguments
+the function takes. To understand these concepts, lets add a simple command
+that prints "hello earth" to the terminal::
 
-Module Attributes:
-    registry: Dictionary to store commands in.
-
-//
-
-The user interacts with vimiv using commands. Utilities to create and store
-commands are implemented in ``vimiv.commands.commands``.
-
-Creating a new command is done using the ``register`` decorator. The command
-name is directly infered from the function name, the functions docstring is
-used to document the command. The arguments supported by the command are also
-deduced by inspecting the arguments the function takes. To understand these
-concepts, lets add a simple command that prints "hello earth" to the terminal::
+    from vimiv.api import commands
 
     @commands.register()
     def hello_earth():
@@ -38,7 +31,7 @@ Now the command ``:hello-planet`` is created. When called without arguments, it
 prints "hello earth" as before, but it is also possible to great other planets
 by passing their name: ``:hello-planet --name=venus``.
 
-.. hint::
+Hint:
 
     Type annotating the arguments is required as the type annotation is passed
     to the argument parser as type of the argument.
@@ -68,7 +61,7 @@ passed::
     @commands.register(hide=True)
     def ...
 
-In this case it probably makes sense to define a default keybinding for the
+In this case it is probably smart to define a default keybinding for the
 command.
 """
 
