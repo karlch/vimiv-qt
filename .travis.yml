@@ -15,6 +15,8 @@ matrix:
           env: TOXENV=lint
         - python: 3.7
           env: TOXENV=packaging
+        - python: 3.7
+          env: TOXENV=mypy
 
 install:
     - pip install tox
