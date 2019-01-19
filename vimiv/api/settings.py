@@ -212,8 +212,15 @@ class NumberSetting(Setting, ABC):
         max_value: Maximum value allowed for this setting.
     """
 
-    def __init__(self, name, default_value, desc="", suggestions=None,
-                 min_value=None, max_value=None):
+    def __init__(
+        self,
+        name,
+        default_value,
+        desc="",
+        suggestions=None,
+        min_value=None,
+        max_value=None,
+    ):
         """Additionally allow setting minimum and maximum value."""
         super().__init__(name, default_value, desc, suggestions)
         self.min_value = min_value
@@ -238,8 +245,7 @@ class IntSetting(NumberSetting):
             value: The integer value to add as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value + value, self.min_value, self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -248,8 +254,7 @@ class IntSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value * value, self.min_value, self.max_value)
 
     def __str__(self):
         return "Integer"
@@ -269,8 +274,7 @@ class FloatSetting(NumberSetting):
             value: The float value to add as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value + value, self.min_value, self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -279,8 +283,7 @@ class FloatSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value * value, self.min_value, self.max_value)
 
     def __str__(self):
         return "Float"
@@ -356,53 +359,37 @@ signals = _Signals()
 MONITOR_FS = BoolSetting(
     "monitor_filesystem",
     True,
-    desc="Monitor current directory for changes and reload widgets "
-         "automatically"
+    desc="Monitor current directory for changes and reload widgets " "automatically",
 )
-SHUFFLE = BoolSetting(
-    "shuffle",
-    False,
-    desc="Randomly shuffle images"
-)
+SHUFFLE = BoolSetting("shuffle", False, desc="Randomly shuffle images")
 STARTUP_LIBRARY = BoolSetting(
     "startup_library",
     True,
-    desc="Enter library at startup if there are no images to show"
+    desc="Enter library at startup if there are no images to show",
 )
-STYLE = StrSetting(
-    "style",
-    "default"
-)
+STYLE = StrSetting("style", "default")
 
 # Search
 SEARCH_IGNORE_CASE = BoolSetting(
     "search.ignore_case",
     True,
-    desc="Ignore case when searching, i.e. 'A' and 'a' are equal"
+    desc="Ignore case when searching, i.e. 'A' and 'a' are equal",
 )
 SEARCH_INCREMENTAL = BoolSetting(
-    "search.incremental",
-    True,
-    desc="Automatically filter search results when typing"
+    "search.incremental", True, desc="Automatically filter search results when typing"
 )
 
 # Image
 IMAGE_AUTOPLAY = BoolSetting(
-    "image.autoplay",
-    True,
-    desc="Start playing animations on open"
+    "image.autoplay", True, desc="Start playing animations on open"
 )
-IMAGE_AUTOWRITE = BoolSetting(
-    "image.autowrite",
-    True,
-    desc="Save images on changes"
-)
+IMAGE_AUTOWRITE = BoolSetting("image.autowrite", True, desc="Save images on changes")
 IMAGE_OVERZOOM = FloatSetting(
     "image.overzoom",
     1.0,
     desc="Maximum scale to apply trying to fit image to window",
     suggestions=["1.0", "1.5", "2.0", "5.0"],
-    min_value=1.0
+    min_value=1.0,
 )
 
 # Library
@@ -410,90 +397,60 @@ LIBRARY_WIDTH = FloatSetting(
     "library.width",
     0.3,
     desc="Width of the library as fraction of main window size",
-    suggestions=["0.2", "0.3", "0.4", "0.5"], min_value=0.05,
-    max_value=0.95
+    suggestions=["0.2", "0.3", "0.4", "0.5"],
+    min_value=0.05,
+    max_value=0.95,
 )
 LIBRARY_SHOW_HIDDEN = BoolSetting(
-    "library.show_hidden",
-    False,
-    desc="Show hidden files in the library"
+    "library.show_hidden", False, desc="Show hidden files in the library"
 )
 LIBRARY_FILE_CHECK_AMOUNT = IntSetting(
     "library.file_check_amount",
     30,
     desc="Number of files to check when calculating directory size",
-    suggestions=["10", "30", "100", "0"]
+    suggestions=["10", "30", "100", "0"],
 )
 
 # Thumbnail
-THUMBNAIL_SIZE = ThumbnailSizeSetting(
-    "thumbnail.size",
-    128,
-    desc="Size of thumbnails"
-)
+THUMBNAIL_SIZE = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
 
 # Slideshow
 SLIDESHOW_DELAY = FloatSetting(
-    "slideshow.delay",
-    2.0,
-    desc="Delay to next image in slideshow", min_value=0.5
+    "slideshow.delay", 2.0, desc="Delay to next image in slideshow", min_value=0.5
 )
 SLIDESHOW_INDICATOR = StrSetting(
     "slideshow.indicator",
     "slideshow:",
-    desc="Text to display in statusbar when slideshow is running"
+    desc="Text to display in statusbar when slideshow is running",
 )
 
 # Statusbar
 STATUSBAR_COLLAPSE_HOME = BoolSetting(
-    "statusbar.collapse_home",
-    True,
-    desc="Collapse /home/user to ~ in statusbar"
+    "statusbar.collapse_home", True, desc="Collapse /home/user to ~ in statusbar"
 )
 STATUSBAR_SHOW = BoolSetting(
-    "statusbar.show",
-    True,
-    desc="Always display the statusbar"
+    "statusbar.show", True, desc="Always display the statusbar"
 )
 STATUSBAR_MESSAGE_TIMEOUT = IntSetting(
     "statusbar.message_timeout",
     5000,
     desc="Time in ms until statusbar messages are removed",
-    min_value=500
+    min_value=500,
 )
 # Statusbar module strings, these are not retrieved by their type
+StrSetting("statusbar.left", "{pwd}")
+StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
 StrSetting(
-    "statusbar.left",
-    "{pwd}"
+    "statusbar.left_thumbnail", "{thumbnail-index}/{thumbnail-total} {thumbnail-name}"
 )
-StrSetting(
-    "statusbar.left_image",
-    "{index}/{total} {basename} [{zoomlevel}]"
-)
-StrSetting(
-    "statusbar.left_thumbnail",
-    "{thumbnail-index}/{thumbnail-total} {thumbnail-name}"
-)
-StrSetting(
-    "statusbar.center_thumbnail",
-    "{thumbnail-size}"
-)
-StrSetting(
-    "statusbar.center",
-    "{slideshow-indicator} {slideshow-delay}"
-)
-StrSetting(
-    "statusbar.right", "{keys}  {mode}"
-)
+StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
+StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
+StrSetting("statusbar.right", "{keys}  {mode}")
 
 # Title module strings, these are not retrieved by their type
 StrSetting(
     "title.fallback",
     "vimiv",
-    desc="Default window title if no mode specific options exist"
+    desc="Default window title if no mode specific options exist",
 )
-StrSetting(
-    "title.image",
-    "vimiv - {basename}",
-    desc="Window title in image mode"
-)
+StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")

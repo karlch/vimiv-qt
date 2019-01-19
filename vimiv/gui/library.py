@@ -18,8 +18,14 @@ from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import (libpaths, eventhandler, strip_html, clamp,
-                         working_directory, ignore)
+from vimiv.utils import (
+    libpaths,
+    eventhandler,
+    strip_html,
+    clamp,
+    working_directory,
+    ignore,
+)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -210,7 +216,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if path != self._last_selected:
             imsignals.open_new_image.emit(path)
         # Close library on double selection or if specified
-        close = (close or path == self._last_selected)
+        close = close or path == self._last_selected
         self._last_selected = path
         if close:
             api.modes.leave(api.modes.LIBRARY)
@@ -269,7 +275,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         **count:** Select [count]th element instead.
         """
-        if row == - 1:
+        if row == -1:
             row = self.model().rowCount()
         row = count if count else row  # Prefer count
         if row > 0:
@@ -394,8 +400,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.even_bg.setNamedColor(styles.get("library.even.bg"))
         self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
         self.search_bg = QColor()
-        self.search_bg.setNamedColor(
-            styles.get("library.search.highlighted.bg"))
+        self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
 
     def createEditor(self, *args):
         """Library is not editable by the user."""
@@ -427,8 +432,7 @@ class LibraryDelegate(QStyledItemDelegate):
         text = index.model().data(index)
         painter.save()
         color = self._get_foreground_color(index, text)
-        text = '<span style="color: %s; font: %s;">%s</span>' \
-            % (color, self.font, text)
+        text = '<span style="color: %s; font: %s;">%s</span>' % (color, self.font, text)
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
         painter.translate(option.rect.x(), option.rect.y())

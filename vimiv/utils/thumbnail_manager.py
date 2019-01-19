@@ -16,20 +16,27 @@ import hashlib
 import os
 import tempfile
 
-from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
-                          QObject, Qt, QCoreApplication)
+from PyQt5.QtCore import (
+    QRunnable,
+    QThreadPool,
+    pyqtSignal,
+    pyqtSlot,
+    QObject,
+    Qt,
+    QCoreApplication,
+)
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
 from vimiv.utils import xdg, pixmap_creater, ignore
 
 
-KEY_URI = 'Thumb::URI'
-KEY_MTIME = 'Thumb::MTime'
-KEY_SIZE = 'Thumb::Size'
-KEY_WIDTH = 'Thumb::Image::Width'
-KEY_HEIGHT = 'Thumb::Image::Height'
-KEY_SOFTWARE = 'Software'
+KEY_URI = "Thumb::URI"
+KEY_MTIME = "Thumb::MTime"
+KEY_SIZE = "Thumb::Size"
+KEY_WIDTH = "Thumb::Image::Width"
+KEY_HEIGHT = "Thumb::Image::Height"
+KEY_SOFTWARE = "Software"
 
 
 class ThumbnailManager(QObject):
@@ -59,10 +66,14 @@ class ThumbnailManager(QObject):
         self.pool.setExpiryTimeout(1000)
 
         directory = os.path.join(xdg.user_cache_dir(), "thumbnails")
-        self.directory = os.path.join(directory, "large") if large \
+        self.directory = (
+            os.path.join(directory, "large")
+            if large
             else os.path.join(directory, "normal")
-        self.fail_directory = \
-            os.path.join(directory, "fail", "vimiv-%s" % (vimiv.__version__))
+        )
+        self.fail_directory = os.path.join(
+            directory, "fail", "vimiv-%s" % (vimiv.__version__)
+        )
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
         self.fail_pixmap = pixmap_creater.error_thumbnail()
@@ -129,9 +140,11 @@ class ThumbnailCreator(QRunnable):
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
         with ignore(FileNotFoundError):
-            pmap = self._maybe_recreate_thumbnail(self._path, thumbnail_path) \
-                if os.path.exists(thumbnail_path) \
+            pmap = (
+                self._maybe_recreate_thumbnail(self._path, thumbnail_path)
+                if os.path.exists(thumbnail_path)
                 else self._create_thumbnail(self._path, thumbnail_path)
+            )
             # Additional safety net
             pmap = pmap if pmap else self._manager.fail_pixmap
             self._manager.created.emit(self._index, QIcon(pmap))
@@ -181,8 +194,7 @@ class ThumbnailCreator(QRunnable):
             # First create temporary file and then move it. This avoids
             # problems with concurrent access of the thumbnail cache, since
             # "move" is an atomic operation
-            handle, tmp_filename = \
-                tempfile.mkstemp(dir=self._manager.directory)
+            handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
             os.close(handle)
             os.chmod(tmp_filename, 0o600)
             image.save(tmp_filename, format="png")

@@ -140,7 +140,9 @@ class StatusBar(QWidget):
         QLabel {
             border-top: {statusbar.message_border} {statusbar.%s};
         }
-        """ % (severity)
+        """ % (
+            severity
+        )
         styles.apply(self, append)
 
     def _clear_severity_style(self):

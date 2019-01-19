@@ -51,8 +51,7 @@ def delete(filename: str):
         * ``filename``: The name of the file to delete.
     """
     if not os.path.exists(filename):
-        raise api.commands.CommandError(
-            "path '%s' does not exist" % (filename))
+        raise api.commands.CommandError("path '%s' does not exist" % (filename))
     filename = os.path.abspath(filename)
     trash_filename = _get_trash_filename(filename)
     _create_info_file(trash_filename, filename)
@@ -70,8 +69,7 @@ def undelete(basename: str):
     """
     trash_filename = os.path.join(_files_directory, basename)
     info_filename = _get_info_filename(basename)
-    if not os.path.exists(info_filename) \
-            or not os.path.exists(trash_filename):
+    if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
         raise api.commands.CommandError("file does not exist")
     original_filename, _ = trash_info(basename)
     if not os.path.isdir(os.path.dirname(original_filename)):

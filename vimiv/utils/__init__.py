@@ -50,8 +50,8 @@ def strip_html(text):
     Return:
         The stripped text.
     """
-    stripper = re.compile('<.*?>')
-    return re.sub(stripper, '', text)
+    stripper = re.compile("<.*?>")
+    return re.sub(stripper, "", text)
 
 
 def clamp(value, minimum, maximum):
@@ -69,8 +69,7 @@ def class_that_defined_method(method):
     This is used by the decorators for statusbar and command, when the class is
     not yet created.
     """
-    return getattr(inspect.getmodule(method),
-                   method.__qualname__.split(".")[0])
+    return getattr(inspect.getmodule(method), method.__qualname__.split(".")[0])
 
 
 def is_method(func):
@@ -84,18 +83,18 @@ def is_method(func):
 
 def cached_method(func):
     """Decorator to cache the result of a class method."""
-    attr_name = '_lazy_' + func.__name__
+    attr_name = "_lazy_" + func.__name__
 
     @property
     @functools.wraps(func)
     def _lazyprop(self):
-
         def inner(*args, **kwargs):
             # Store the result of the function to attr_name in first
             # evaluation, afterwards return the cached value
             if not hasattr(self, attr_name):
                 setattr(self, attr_name, func(self, *args, **kwargs))
             return getattr(self, attr_name)
+
         return inner
 
     return _lazyprop

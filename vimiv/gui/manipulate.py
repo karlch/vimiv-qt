@@ -132,11 +132,11 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         fg_focused = styles.get("manipulate.focused.fg")
         for manipulation, label in self._labels.items():
             if manipulation == name:
-                label.setText("<span style='color: %s;'>%s</span>"
-                              % (fg_focused, manipulation))
+                label.setText(
+                    "<span style='color: %s;'>%s</span>" % (fg_focused, manipulation)
+                )
             else:
-                label.setText("<span style='color: %s;'>%s</span>"
-                              % (fg, manipulation))
+                label.setText("<span style='color: %s;'>%s</span>" % (fg, manipulation))
 
     def _on_pixmap_loaded(self, pixmap):
         self._error = None

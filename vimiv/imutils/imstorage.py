@@ -135,8 +135,7 @@ class Storage(QObject):
         imsignals.open_new_image.connect(self._on_open_new_image)
         imsignals.open_new_images.connect(self._on_open_new_images)
 
-        working_directory.handler.images_changed.connect(
-            self._on_images_changed)
+        working_directory.handler.images_changed.connect(self._on_images_changed)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
@@ -232,9 +231,11 @@ def _load_paths(paths, focused_path):
         shuffle(_paths)
     previous = current()
     _set_paths(paths)
-    index = paths.index(focused_path) \
-        if focused_path in paths \
+    index = (
+        paths.index(focused_path)
+        if focused_path in paths
         else min(len(paths) - 1, _index)
+    )
     _set_index(index, previous)
 
 

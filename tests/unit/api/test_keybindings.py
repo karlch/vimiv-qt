@@ -15,6 +15,7 @@ def test_add_keybinding():
     @api.keybindings.register("t1", "test")
     def test():
         pass
+
     bindings = api.keybindings.get(api.modes.GLOBAL)
     assert ("t1", "test") in bindings.items()
 

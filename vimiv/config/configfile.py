@@ -104,8 +104,7 @@ def _add_statusbar_formatters(configsection):
         configsection: STATUSBAR section in the config file.
     """
     positions = ["left", "center", "right"]
-    possible = ["%s_%s" % (p, m.name)
-                for p in positions for m in api.modes.ALL]
+    possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:
             api.settings.StrSetting("statusbar.%s" % (name), value)

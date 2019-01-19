@@ -149,11 +149,14 @@ def widget(mode):
     Args:
         mode: The mode to associate the decorated widget with.
     """
+
     def decorator(component_init):
         def inner(component, *args, **kwargs):
             mode.widget = component
             component_init(component, *args, **kwargs)
+
         return inner
+
     return decorator
 
 

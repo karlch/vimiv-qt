@@ -88,10 +88,10 @@ def expand_wildcards(text, mode):
     # Check first as the re substitutions are rather expensive
     if "%" in text:
         current = pathreceiver.current(mode)
-        text = re.sub(r'(?<!\\)%', current, text)
+        text = re.sub(r"(?<!\\)%", current, text)
     if "*" in text:
         pathlist = " ".join(pathreceiver.pathlist(mode))
-        text = re.sub(r'(?<!\\)\*', pathlist, text)
+        text = re.sub(r"(?<!\\)\*", pathlist, text)
     return text
 
 
@@ -160,12 +160,17 @@ class ShellCommandRunnable(QRunnable):
     def run(self):
         """Run shell command on QThreadPool.start(self)."""
         try:
-            pargs = subprocess.run(self._text, shell=True, check=True,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+            pargs = subprocess.run(
+                self._text,
+                shell=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
             if self._pipe:
-                self._runner.pipe_output_received.emit(self._text,
-                                                       pargs.stdout.decode())
+                self._runner.pipe_output_received.emit(
+                    self._text, pargs.stdout.decode()
+                )
             else:
                 logging.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:

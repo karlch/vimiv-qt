@@ -10,10 +10,8 @@ import collections
 import logging
 import os
 
-from PyQt5.QtCore import (Qt, QSize, QItemSelectionModel, pyqtSlot,
-                          QModelIndex, QRect)
-from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
-                             QStyledItemDelegate)
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex, QRect
+from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
 from vimiv import api
@@ -74,7 +72,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._paths = []
         self._highlighted = []
         self._sizes = collections.OrderedDict(
-            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")])
+            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
+        )
         self._default_icon = QIcon(pixmap_creater.default_thumbnail())
         self._manager = thumbnail_manager.ThumbnailManager()
 
@@ -211,8 +210,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             if not elems_in_last_row:
                 elems_in_last_row = self.columns()
             if column < elems_in_last_row:
-                current = min(self.count() - (elems_in_last_row - column),
-                              current)
+                current = min(self.count() - (elems_in_last_row - column), current)
             else:
                 current = min(self.count() - 1, current)
         else:
@@ -266,8 +264,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         for i in range(self.count()):
             item = self.item(i)
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
-        self.scrollTo(self.selectionModel().currentIndex(),
-                      hint=self.PositionAtCenter)
+        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
     def _select_item(self, index):
         """Select specific item in the ListWidget.
@@ -340,8 +337,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def resizeEvent(self, event):
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
-        self.scrollTo(self.selectionModel().currentIndex(),
-                      hint=self.PositionAtCenter)
+        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):
@@ -359,8 +355,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.selection_bg = QColor()
         self.selection_bg.setNamedColor(styles.get("thumbnail.selected.bg"))
         self.search_bg = QColor()
-        self.search_bg.setNamedColor(
-            styles.get("thumbnail.search.highlighted.bg"))
+        self.search_bg.setNamedColor(styles.get("thumbnail.search.highlighted.bg"))
         self.padding = int(styles.get("thumbnail.padding"))
 
     def paint(self, painter, option, index):
@@ -407,19 +402,25 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Original thumbnail pixmap
         pixmap = self.parent().item(index.row()).icon().pixmap(256)
         # Rectangle that can be filled by the pixmap
-        rect = QRect(option.rect.x() + self.padding,
-                     option.rect.y() + self.padding,
-                     option.rect.width() - 2 * self.padding,
-                     option.rect.height() - 2 * self.padding)
+        rect = QRect(
+            option.rect.x() + self.padding,
+            option.rect.y() + self.padding,
+            option.rect.width() - 2 * self.padding,
+            option.rect.height() - 2 * self.padding,
+        )
         # Size the pixmap should take
         size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio)
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
         # Draw
-        painter.drawPixmap(option.rect.x() + self.padding + diff_x,
-                           option.rect.y() + self.padding + diff_y,
-                           size.width(), size.height(), pixmap)
+        painter.drawPixmap(
+            option.rect.x() + self.padding + diff_x,
+            option.rect.y() + self.padding + diff_y,
+            size.width(),
+            size.height(),
+            pixmap,
+        )
         painter.restore()
 
     def _get_background_color(self, index, state):

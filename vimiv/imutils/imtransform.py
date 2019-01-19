@@ -12,7 +12,7 @@ from PyQt5.QtGui import QTransform
 from vimiv import api
 
 
-class Transform():
+class Transform:
     """Apply transformations to an image.
 
     Provides the :rotate and :flip commands and applies transformations to a
@@ -33,8 +33,7 @@ class Transform():
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
 
-    @api.keybindings.register("<", "rotate --counter-clockwise",
-                         mode=api.modes.IMAGE)
+    @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
     @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def rotate(self, counter_clockwise: bool = False, count: int = 1):
@@ -90,8 +89,7 @@ class Transform():
 
     def changed(self):
         """Return True if transformations have been applied."""
-        if self._rotation_angle or self._flip_horizontal \
-                or self._flip_vertical:
+        if self._rotation_angle or self._flip_horizontal or self._flip_vertical:
             return True
         return False
 

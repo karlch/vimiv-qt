@@ -129,8 +129,7 @@ def check_not_fullscreen():
 @bdd.then(bdd.parsers.parse("the mode should be {mode}"))
 def check_mode(mode, qtbot):
     mode = api.modes.get_by_name(mode)
-    assert api.modes.current() == mode, \
-        "Modehandler did not switch to %s" % (mode.name)
+    assert api.modes.current() == mode, "Modehandler did not switch to %s" % (mode.name)
 
 
 @bdd.then(bdd.parsers.parse("the library row should be {row}"))

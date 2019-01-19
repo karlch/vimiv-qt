@@ -47,7 +47,7 @@ class InvalidModuleNameError(Exception):
     """Exception raised if the name of a status module is invalid."""
 
 
-class _Module():
+class _Module:
     """Class to store function of one status module."""
 
     def __init__(self, func):
@@ -71,8 +71,7 @@ class _Module():
         Return:
             A function to be called without arguments.
         """
-        logging.debug("Creating function for status module '%s'",
-                      func.__name__)
+        logging.debug("Creating function for status module '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
@@ -92,17 +91,21 @@ def module(name: str):
             and end with '}' to allow differentiating modules from ordinary
             text.
     """
+
     def decorator(function):
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
             message = "Invalid name '%s' for status module %s" % (
-                name, function.__name__)
+                name,
+                function.__name__,
+            )
             raise InvalidModuleNameError(message)
         _modules[name] = _Module(function)
 
         def inner(*args):
             """Run the function."""
             return function(*args)
+
         return inner
 
     return decorator

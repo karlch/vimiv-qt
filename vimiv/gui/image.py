@@ -197,9 +197,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """
         width = self.current_width()
         if direction == direction.In:
-            width *= 1.1**count
+            width *= 1.1 ** count
         else:
-            width /= 1.1**count
+            width /= 1.1 ** count
         self._scale = width / self.original_width()
         self._scale_to_float(self._scale)
 
@@ -329,8 +329,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         MIN_SIZE_PIXEL.
         """
         try:
-            widget_size = min(self.widget().original.width(),
-                              self.widget().original.height())
+            widget_size = min(
+                self.widget().original.width(), self.widget().original.height()
+            )
             return max(self.MIN_SIZE_SCALE, self.MIN_SIZE_PIXEL / widget_size)
         except AttributeError:
             return 0.01
@@ -371,8 +372,9 @@ class Image(widgets.ImageLabel):
         return self._original.size()
 
     def rescale(self, scale):
-        pixmap = self._original.scaled(self._original.size() * scale,
-                                       transformMode=Qt.SmoothTransformation)
+        pixmap = self._original.scaled(
+            self._original.size() * scale, transformMode=Qt.SmoothTransformation
+        )
         self.setPixmap(pixmap)
 
 
@@ -409,6 +411,7 @@ class Animation(widgets.ImageLabel):
 
 
 if QSvgWidget is not None:
+
     class VectorGraphic(QSvgWidget):
         """Widget to display a vector graphic.
 

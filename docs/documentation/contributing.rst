@@ -92,6 +92,25 @@ Tests and Checkers
 TODO Write this once the testing routine has stabilized
 
 
+Style and Formatting
+--------------------
+
+Vimiv uses the `black code formatter <https://github.com/ambv/black>`_ to
+automatically format the source code. To install black, run::
+
+   pip install black
+
+or use the package manager of your OS if applicable. Formatting the source code
+is done using::
+
+   black vimiv tests
+
+For more information on the formatter as well as a few useful tips, visit
+`the project's github page <https://github.com/ambv/black>`_.
+
+TODO docstrings
+
+
 Source Code Hints
 -----------------
 The following paragraphs explain some of the core concepts of the source code

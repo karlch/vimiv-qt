@@ -15,12 +15,14 @@ def test_add_status_module():
     @status.module("{dummy}")
     def dummy_method():
         return "dummy"
+
     assert status.evaluate("Dummy: {dummy}") == "Dummy: dummy"
     del status._modules["{dummy}"]  # Cleanup
 
 
 def test_fail_add_status_module():
     with pytest.raises(status.InvalidModuleNameError):
+
         @status.module("wrong")
         def wrong():
             return "wrong"

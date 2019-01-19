@@ -11,8 +11,7 @@ import os
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
-                          pyqtSlot)
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api
@@ -189,8 +188,9 @@ class ImageFileHandler(QObject):
 
     def _set_original(self, pixmap):
         """Set the original pixmap."""
-        self._pixmaps.original = self._pixmaps.transformed \
-            = self._pixmaps.current = pixmap
+        self._pixmaps.original = (
+            self._pixmaps.transformed
+        ) = self._pixmaps.current = pixmap
 
 
 class WriteImageRunner(QRunnable):
@@ -241,8 +241,7 @@ class WriteImageRunner(QRunnable):
         elif os.path.exists(self._path):
             reader = QImageReader(self._path)
             if not reader.canRead():
-                raise WriteError(
-                    "Path '%s' exists and is not an image" % (self._path))
+                raise WriteError("Path '%s' exists and is not an image" % (self._path))
 
     def _write(self):
         """Write pixmap to disk."""

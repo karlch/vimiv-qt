@@ -106,8 +106,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     @pyqtSlot(str)
     def _reload_directory(self, path):
         """Load new supported files when directory content has changed."""
-        self._process(
-            lambda: self._emit_changes(*self._get_content(self._dir)))
+        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
 
     @pyqtSlot(str)
     def _on_new_image(self, path):
@@ -120,8 +119,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _on_file_changed(self, path):
         """Emit new_image_opened signal to reload the file on changes."""
         if os.path.exists(path):  # Otherwise the path was deleted
-            self._process(
-                lambda: imsignals.imsignals.new_image_opened.emit(path))
+            self._process(lambda: imsignals.imsignals.new_image_opened.emit(path))
 
     def _process(self, func):
         """Process function after waiting unless another process is running.

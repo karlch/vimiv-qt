@@ -75,8 +75,9 @@ class CompletionView(widgets.FlatTreeView):
         y = window_height - self.height()
         self.setGeometry(0, y, window_width, self.height())
 
-    @api.keybindings.register("<shift><tab>", "complete --inverse",
-                         mode=api.modes.COMMAND)
+    @api.keybindings.register(
+        "<shift><tab>", "complete --inverse", mode=api.modes.COMMAND
+    )
     @api.keybindings.register("<tab>", "complete", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
     def complete(self, inverse: bool = False):

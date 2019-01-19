@@ -77,8 +77,7 @@ class Bar(QWidget):
         self.commandline.setText(text)
         api.modes.enter(api.modes.COMMAND)
 
-    @api.keybindings.register("<escape>", "leave-commandline",
-                         mode=api.modes.COMMAND)
+    @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""

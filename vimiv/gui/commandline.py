@@ -37,7 +37,9 @@ class UnknownPrefix(Exception):
             prefix: The unknown prefix.
         """
         message = "Unknown prefix '%s', possible values: %s" % (
-            prefix, ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]))
+            prefix,
+            ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]),
+        )
         super().__init__(message)
 
 
@@ -127,8 +129,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         with ignore(IndexError):  # Not enough text
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
-                search.search(text, self.mode, reverse=prefix == "?",
-                              incremental=True)
+                search.search(text, self.mode, reverse=prefix == "?", incremental=True)
 
     @pyqtSlot(int, int)
     def _on_cursor_position_changed(self, _old, new):
@@ -149,10 +150,12 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.cycle(direction, self.text()))
 
-    @api.keybindings.register("<up>", "history-substr-search next",
-                         mode=api.modes.COMMAND)
-    @api.keybindings.register("<down>", "history-substr-search prev",
-                         mode=api.modes.COMMAND)
+    @api.keybindings.register(
+        "<up>", "history-substr-search next", mode=api.modes.COMMAND
+    )
+    @api.keybindings.register(
+        "<down>", "history-substr-search prev", mode=api.modes.COMMAND
+    )
     @api.commands.register(mode=api.modes.COMMAND)
     def history_substr_search(self, direction: argtypes.HistoryDirection):
         """Cycle through command history with substring matching.

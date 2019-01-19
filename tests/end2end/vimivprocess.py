@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
 from unittest import mock
+
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
 from vimiv import api, vimiv  # noqa
@@ -39,7 +40,7 @@ def exit():
     del _processes[0]
 
 
-class VimivProc():
+class VimivProc:
     """Process class to start and exit one vimiv process."""
 
     def __init__(self, qtbot, argv=[]):

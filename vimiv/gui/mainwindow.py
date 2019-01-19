@@ -12,8 +12,15 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout
 from vimiv import api
 from vimiv.completion import completer
 from vimiv.config import configcommands
-from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
-                       widgets, manipulate)
+from vimiv.gui import (
+    image,
+    bar,
+    library,
+    completionwidget,
+    thumbnail,
+    widgets,
+    manipulate,
+)
 
 
 class MainWindow(QWidget):

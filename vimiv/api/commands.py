@@ -84,14 +84,15 @@ def register(mode=modes.GLOBAL, hide=False, hook=None):
         hide: Hide command from command line.
         hook: Function to run before executing the command.
     """
+
     def decorator(func):
         name = _get_command_name(func)
         desc = _get_description(func, name)
         func.vimiv_args = _CommandArguments(name, desc, func)
-        cmd = _Command(name, func, mode=mode, description=desc, hide=hide,
-                       hook=hook)
+        cmd = _Command(name, func, mode=mode, description=desc, hide=hide, hook=hook)
         _registry[mode][name] = cmd
         return func
+
     return decorator
 
 
@@ -108,8 +109,7 @@ def get(name, mode=modes.GLOBAL):
     if mode in modes.GLOBALS:
         commands.update(_registry[modes.GLOBAL])
     if name not in commands:
-        raise CommandNotFound(
-            "%s: unknown command for mode %s" % (name, mode.name))
+        raise CommandNotFound("%s: unknown command for mode %s" % (name, mode.name))
     return commands[name]
 
 
@@ -224,7 +224,7 @@ class _CommandArguments(argparse.ArgumentParser):
         return {"type": argtype}
 
 
-class _Command():
+class _Command:
     """Skeleton for a command.
 
     Attributes:
@@ -236,8 +236,9 @@ class _Command():
         hook: Function to run before executing the command.
     """
 
-    def __init__(self, name, func, mode=modes.GLOBAL, description="",
-                 hide=False, hook=None):
+    def __init__(
+        self, name, func, mode=modes.GLOBAL, description="", hide=False, hook=None
+    ):
         self.name = name
         self.func = func
         self.mode = mode
@@ -281,8 +282,7 @@ class _Command():
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda **kwargs: (self.hook(instance),
-                                     func(instance, **kwargs))
+            return lambda **kwargs: (self.hook(instance), func(instance, **kwargs))
         return lambda **kwargs: (self.hook(), func(**kwargs))
 
 

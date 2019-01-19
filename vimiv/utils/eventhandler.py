@@ -76,7 +76,7 @@ class PartialHandler(QObject):
         return self.count.text + self.keys.text
 
 
-class KeyHandler():
+class KeyHandler:
     """Deal with keyPressEvent events for gui widgets.
 
     This class is used by gui classes as first parent, second being some
@@ -141,14 +141,26 @@ def keyevent_to_string(event):
         Name of the key pressed as meaningful string.
     """
     # Parse modifiers
-    modmask2str = collections.OrderedDict([
-        (Qt.ControlModifier, "<ctrl>"),
-        (Qt.AltModifier, "<alt>"),
-        (Qt.MetaModifier, "<meta>"),
-    ])
-    modifiers = (Qt.Key_Control, Qt.Key_Alt, Qt.Key_Shift, Qt.Key_Meta,
-                 Qt.Key_AltGr, Qt.Key_Super_L, Qt.Key_Super_R, Qt.Key_Hyper_L,
-                 Qt.Key_Hyper_R, Qt.Key_Direction_L, Qt.Key_Direction_R)
+    modmask2str = collections.OrderedDict(
+        [
+            (Qt.ControlModifier, "<ctrl>"),
+            (Qt.AltModifier, "<alt>"),
+            (Qt.MetaModifier, "<meta>"),
+        ]
+    )
+    modifiers = (
+        Qt.Key_Control,
+        Qt.Key_Alt,
+        Qt.Key_Shift,
+        Qt.Key_Meta,
+        Qt.Key_AltGr,
+        Qt.Key_Super_L,
+        Qt.Key_Super_R,
+        Qt.Key_Hyper_L,
+        Qt.Key_Hyper_R,
+        Qt.Key_Direction_L,
+        Qt.Key_Direction_R,
+    )
     if event.key() in modifiers:
         # Only modifier pressed
         return ""

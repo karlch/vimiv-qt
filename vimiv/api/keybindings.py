@@ -46,12 +46,15 @@ def register(keybinding, command, mode=modes.GLOBAL):
         keybinding: Key to bind.
         mode: Mode in which the keybinding is valid.
     """
+
     def decorator(function):
         bind(keybinding, command, mode)
 
         def inside(*args, **kwargs):
             return function(*args, **kwargs)
+
         return inside
+
     return decorator
 
 
@@ -73,8 +76,7 @@ def unbind(keybinding, mode):
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
-        raise commands.CommandError(
-            "No binding found for '%s'" % (keybinding))
+        raise commands.CommandError("No binding found for '%s'" % (keybinding))
 
 
 class _Bindings(collections.UserDict):

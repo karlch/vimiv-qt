@@ -9,8 +9,14 @@
 import collections
 import time
 
-from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
-                          QObject, QCoreApplication)
+from PyQt5.QtCore import (
+    QRunnable,
+    QThreadPool,
+    pyqtSignal,
+    pyqtSlot,
+    QObject,
+    QCoreApplication,
+)
 from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv import api
@@ -46,10 +52,9 @@ class Manipulator(QObject):
     def __init__(self, handler):
         super().__init__()
         self._handler = handler
-        self.manipulations = collections.OrderedDict([
-            ("brightness", 0),
-            ("contrast", 0),
-        ])
+        self.manipulations = collections.OrderedDict(
+            [("brightness", 0), ("contrast", 0)]
+        )
         self.thread_id = 0
         self.data = None
         self._current = "brightness"
@@ -73,10 +78,7 @@ class Manipulator(QObject):
         """Reset manipulations to default."""
         if self.changed():
             self._handler.update_pixmap(self._handler.transformed)
-            self.manipulations = {
-                "brightness": 0,
-                "contrast": 0
-            }
+            self.manipulations = {"brightness": 0, "contrast": 0}
             self.edited.emit("brightness", 0)
             self.edited.emit("contrast", 0)
 
@@ -231,10 +233,15 @@ class ManipulateRunner(QRunnable):
         # Run C function
         bri = self._manipulator.manipulations["brightness"] / 255
         con = self._manipulator.manipulations["contrast"] / 255
-        self._manipulator.data = \
-            _c_manipulate.manipulate(data, image.hasAlphaChannel(), bri, con)
+        self._manipulator.data = _c_manipulate.manipulate(
+            data, image.hasAlphaChannel(), bri, con
+        )
         # Convert bytes to QPixmap and set the manipulator pixmap
-        new_image = QImage(self._manipulator.data, image.width(),
-                           image.height(), image.bytesPerLine(),
-                           image.format())
+        new_image = QImage(
+            self._manipulator.data,
+            image.width(),
+            image.height(),
+            image.bytesPerLine(),
+            image.format(),
+        )
         self._manipulator.set_pixmap(QPixmap(new_image))

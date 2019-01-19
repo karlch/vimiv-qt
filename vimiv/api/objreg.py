@@ -44,6 +44,7 @@ def register(component_init):
     Args:
         component_init: The ``__init__`` function of the component.
     """
+
     def inside(component, *args, **kwargs):
         """The decorated ``__init__`` function.
 
@@ -52,6 +53,7 @@ def register(component_init):
         """
         component_init(component, *args, **kwargs)
         _registry.store(component)
+
     return inside
 
 

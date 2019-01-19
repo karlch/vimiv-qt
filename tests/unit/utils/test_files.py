@@ -54,6 +54,8 @@ def test_images_supported(mocker):
     images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
+
+
 #
 #
 # def test_pwd_no_collapse_home(mocker):
