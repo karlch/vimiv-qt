@@ -11,15 +11,12 @@ import os
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import (QObject, QRunnable, QThreadPool, QCoreApplication,
-                          pyqtSlot)
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication, pyqtSlot
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
-from vimiv.commands import commands
-from vimiv.config import settings
+from vimiv import api
 from vimiv.imutils import imtransform, imsignals, immanipulate
-from vimiv.modes import Modes
-from vimiv.utils import objreg, files
+from vimiv.utils import files
 
 # We need the check as exif support is optional
 try:
@@ -68,7 +65,7 @@ class ImageFileHandler(QObject):
 
     _pool = QThreadPool.globalInstance()
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._pixmaps = Pixmaps()
@@ -115,7 +112,7 @@ class ImageFileHandler(QObject):
         Args:
             path: Path to the image file.
         """
-        if not settings.get_value(settings.Names.IMAGE_AUTOWRITE):
+        if not api.settings.IMAGE_AUTOWRITE:
             self._reset()
         elif self.transform.changed() or self.manipulate.changed():
             self.write_pixmap(self.current, path, path)
@@ -154,7 +151,7 @@ class ImageFileHandler(QObject):
         self.transform.reset()
         self.manipulate.reset()
 
-    @commands.register(mode=Modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):
         """Save the current image to disk.
 
@@ -191,8 +188,9 @@ class ImageFileHandler(QObject):
 
     def _set_original(self, pixmap):
         """Set the original pixmap."""
-        self._pixmaps.original = self._pixmaps.transformed \
-            = self._pixmaps.current = pixmap
+        self._pixmaps.original = (
+            self._pixmaps.transformed
+        ) = self._pixmaps.current = pixmap
 
 
 class WriteImageRunner(QRunnable):
@@ -243,8 +241,7 @@ class WriteImageRunner(QRunnable):
         elif os.path.exists(self._path):
             reader = QImageReader(self._path)
             if not reader.canRead():
-                raise WriteError(
-                    "Path '%s' exists and is not an image" % (self._path))
+                raise WriteError("Path '%s' exists and is not an image" % (self._path))
 
     def _write(self):
         """Write pixmap to disk."""

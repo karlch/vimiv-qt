@@ -20,6 +20,7 @@ disable=no-self-use,
         unused-argument,
         arguments-differ,
         duplicate-code,
+        bad-continuation,
 
 [BASIC]
 function-rgx=[a-z_][a-z0-9_]{2,50}$
@@ -32,7 +33,7 @@ docstring-min-length=3
 no-docstring-rgx=(^__|^main$|^test_|decorator|inside|^_on)
 
 [FORMAT]
-max-line-length=79
+max-line-length=88
 max-module-lines=1000
 ignore-long-lines=(<?https?://|^# Copyright 201\d|# (pylint|flake8): disable=)
 expected-line-ending-format=LF

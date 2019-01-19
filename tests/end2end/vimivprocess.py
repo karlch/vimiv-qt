@@ -11,10 +11,11 @@ from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
 from unittest import mock
+
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
-from vimiv import vimiv  # noqa
-from vimiv.utils import objreg, working_directory  # noqa
+from vimiv import api, vimiv  # noqa
+from vimiv.utils import working_directory  # noqa
 from vimiv.imutils import imstorage  # noqa
 
 
@@ -39,13 +40,13 @@ def exit():
     del _processes[0]
 
 
-class VimivProc():
+class VimivProc:
     """Process class to start and exit one vimiv process."""
 
     def __init__(self, qtbot, argv=[]):
         argv.extend(["--temp-basedir"])
         vimiv.startup(argv)
-        for name, widget in objreg._registry.items():
+        for name, widget in api.objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)
         # No crazy stuff should happen here, waiting is not really necessary
@@ -60,3 +61,4 @@ class VimivProc():
         imstorage._index = 0
         # Needed for cleanup
         QCoreApplication.instance().aboutToQuit.emit()
+        api.settings.reset()

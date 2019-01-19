@@ -30,4 +30,4 @@ called ``modules`` for the statusbar. A module is indicated by surrounding its
 name in curly braces, e.g. ``{pwd}``. This gets replaced by the output of the
 module. A list of available modules can be found below.
 
-.. include:: statusbar_modules.rstsrc
+.. include:: status_modules.rstsrc

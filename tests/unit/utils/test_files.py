@@ -56,55 +56,57 @@ def test_images_supported(mocker):
     assert not directories
 
 
-def test_pwd_no_collapse_home(mocker):
-    mocker.patch("os.getcwd", return_value="/home/foo/dir")
-    mocker.patch("os.path.expanduser", return_value="/home/foo")
-    mocker.patch("vimiv.config.settings.get_value", return_value=False)
-    assert files.pwd() == "/home/foo/dir"
-
-
-def test_pwd_collapse_home(mocker):
-    mocker.patch("os.getcwd", return_value="/home/foo/dir")
-    mocker.patch("os.path.expanduser", return_value="/home/foo")
-    mocker.patch("vimiv.config.settings.get_value", return_value=True)
-    assert files.pwd() == "~/dir"
-
-
-def test_sizeof_fmt():
-    assert files.sizeof_fmt(2048) == "2.0K"
-
-
-def test_sizeof_fmt_small_file():
-    assert files.sizeof_fmt(510) == "510B"
-
-
-def test_get_size_directory_with_directories(mocker):
-    mocker.patch("vimiv.config.settings.get_value", return_value=30)
-    paths = [str(i) for i in range(15)]
-    mocker.patch.object(files, "ls", return_value=paths)
-    mocker.patch("os.path.isdir", return_value=True)
-    mocker.patch("os.path.isfile", return_value=False)
-    assert files.get_size_directory("any") == "15"
-
-
-def test_get_size_directory_with_images(mocker):
-    mocker.patch("vimiv.config.settings.get_value", return_value=30)
-    paths = [str(i) for i in range(10)]
-    mocker.patch.object(files, "ls", return_value=paths)
-    mocker.patch("os.path.isdir", return_value=False)
-    mocker.patch.object(files, "is_image", return_value=True)
-    assert files.get_size_directory("any") == "10"
-
-
-def test_get_size_directory_cuts_at_max_amount(mocker):
-    mocker.patch("vimiv.config.settings.get_value", return_value=10)
-    paths = [str(i) for i in range(20)]
-    mocker.patch.object(files, "ls", return_value=paths)
-    mocker.patch("os.path.isdir", return_value=True)
-    mocker.patch("os.path.isfile", return_value=False)
-    assert files.get_size_directory("any") == ">10"
-
-
-def test_get_size_with_permission_error(mocker):
-    mocker.patch("os.path.isfile", side_effect=PermissionError)
-    assert files.get_size("any") == "N/A"
+#
+#
+# def test_pwd_no_collapse_home(mocker):
+#     mocker.patch("os.getcwd", return_value="/home/foo/dir")
+#     mocker.patch("os.path.expanduser", return_value="/home/foo")
+#     mocker.patch("vimiv.config.settings.get_value", return_value=False)
+#     assert files.pwd() == "/home/foo/dir"
+#
+#
+# def test_pwd_collapse_home(mocker):
+#     mocker.patch("os.getcwd", return_value="/home/foo/dir")
+#     mocker.patch("os.path.expanduser", return_value="/home/foo")
+#     mocker.patch("vimiv.config.settings.get_value", return_value=True)
+#     assert files.pwd() == "~/dir"
+#
+#
+# def test_sizeof_fmt():
+#     assert files.sizeof_fmt(2048) == "2.0K"
+#
+#
+# def test_sizeof_fmt_small_file():
+#     assert files.sizeof_fmt(510) == "510B"
+#
+#
+# def test_get_size_directory_with_directories(mocker):
+#     mocker.patch("vimiv.config.settings.get_value", return_value=30)
+#     paths = [str(i) for i in range(15)]
+#     mocker.patch.object(files, "ls", return_value=paths)
+#     mocker.patch("os.path.isdir", return_value=True)
+#     mocker.patch("os.path.isfile", return_value=False)
+#     assert files.get_size_directory("any") == "15"
+#
+#
+# def test_get_size_directory_with_images(mocker):
+#     mocker.patch("vimiv.config.settings.get_value", return_value=30)
+#     paths = [str(i) for i in range(10)]
+#     mocker.patch.object(files, "ls", return_value=paths)
+#     mocker.patch("os.path.isdir", return_value=False)
+#     mocker.patch.object(files, "is_image", return_value=True)
+#     assert files.get_size_directory("any") == "10"
+#
+#
+# def test_get_size_directory_cuts_at_max_amount(mocker):
+#     mocker.patch("vimiv.config.settings.get_value", return_value=10)
+#     paths = [str(i) for i in range(20)]
+#     mocker.patch.object(files, "ls", return_value=paths)
+#     mocker.patch("os.path.isdir", return_value=True)
+#     mocker.patch("os.path.isfile", return_value=False)
+#     assert files.get_size_directory("any") == ">10"
+#
+#
+# def test_get_size_with_permission_error(mocker):
+#     mocker.patch("os.path.isfile", side_effect=PermissionError)
+#     assert files.get_size("any") == "N/A"

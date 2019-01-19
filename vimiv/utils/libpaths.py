@@ -93,7 +93,7 @@ def _extend_data(data, paths, dirs=False):
             name = add_html("b", name + "/")
         with ignore(FileNotFoundError):  # Has been deleted in the meantime
             size = files.get_size(path)
-            row = LibraryRow(QStandardItem(str(index + i)),
-                             QStandardItem(name),
-                             QStandardItem(size))
+            row = LibraryRow(
+                QStandardItem(str(index + i)), QStandardItem(name), QStandardItem(size)
+            )
             data.append(row)

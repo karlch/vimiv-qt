@@ -10,9 +10,7 @@ import os
 
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
-from vimiv import app
-from vimiv.commands import commands
-from vimiv.config import keybindings
+from vimiv import app, api
 from vimiv.utils import pathreceiver
 
 
@@ -22,11 +20,11 @@ def init():
     # an import. May become useful in the future.
 
 
-@keybindings.add("yA", "copy-name --abspath --primary")
-@keybindings.add("yY", "copy-name --primary")
-@keybindings.add("ya", "copy-name --abspath")
-@keybindings.add("yy", "copy-name")
-@commands.register()
+@api.keybindings.register("yA", "copy-name --abspath --primary")
+@api.keybindings.register("yY", "copy-name --primary")
+@api.keybindings.register("ya", "copy-name --abspath")
+@api.keybindings.register("yy", "copy-name")
+@api.commands.register()
 def copy_name(abspath: bool = False, primary: bool = False):
     """Copy name of current path to system clipboard.
 
@@ -43,9 +41,9 @@ def copy_name(abspath: bool = False, primary: bool = False):
     clipboard.setText(name, mode=mode)
 
 
-@keybindings.add("PP", "paste-name --primary")
-@keybindings.add("Pp", "paste-name")
-@commands.register()
+@api.keybindings.register("PP", "paste-name --primary")
+@api.keybindings.register("Pp", "paste-name")
+@api.commands.register()
 def paste_name(primary: bool = True):
     """Paste path from clipboard to open command.
 

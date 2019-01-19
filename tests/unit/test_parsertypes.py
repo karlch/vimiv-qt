@@ -69,11 +69,13 @@ def test_fail_existing_path(mocker):
 
 
 def test_log_level():
-    level_dict = {"critical": logging.CRITICAL,
-                  "error": logging.ERROR,
-                  "warning": logging.WARNING,
-                  "info": logging.INFO,
-                  "debug": logging.DEBUG}
+    level_dict = {
+        "critical": logging.CRITICAL,
+        "error": logging.ERROR,
+        "warning": logging.WARNING,
+        "info": logging.INFO,
+        "debug": logging.DEBUG,
+    }
     for name, level in level_dict.items():
         assert parsertypes.loglevel(name) == level
 

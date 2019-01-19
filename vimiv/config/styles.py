@@ -16,7 +16,7 @@ import configparser
 import logging
 import os
 
-from vimiv.config import settings
+from vimiv import api
 from vimiv.utils import xdg
 
 
@@ -69,7 +69,7 @@ def parse():
     defaults are simply used and the default style file is written to disk for
     reference.
     """
-    name = settings.get_value(settings.Names.STYLE)
+    name = api.settings.STYLE.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
     if name in ["default", "default-dark"]:
         create_default()
@@ -110,8 +110,7 @@ def get(name):
     try:
         return style["{%s}" % (name)]
     except KeyError:
-        logging.error("Style option '%s' not found, falling back to default",
-                      name)
+        logging.error("Style option '%s' not found, falling back to default", name)
         return ""
 
 
@@ -208,8 +207,7 @@ def _insert_values(style):
     style["thumbnail.bg"] = "{image.bg}"
     style["thumbnail.padding"] = "20"
     style["thumbnail.selected.bg"] = "{library.selected.bg}"
-    style["thumbnail.search.highlighted.bg"] = \
-        "{library.search.highlighted.bg}"
+    style["thumbnail.search.highlighted.bg"] = "{library.search.highlighted.bg}"
     style["thumbnail.default.bg"] = "{statusbar.info}"
     style["thumbnail.error.bg"] = "{statusbar.error}"
     style["thumbnail.frame.fg"] = "{thumbnail.fg}"
@@ -267,9 +265,11 @@ def dump(name):
         option = option.strip("{}")
         parser["STYLE"][option] = value
     with open(filename, "w") as f:
-        f.write("; This file is a reference for creating own styles."
-                " It will never be read.\n"
-                "; To change values, copy this file using a new name and"
-                " set the style setting\n; in vimiv.conf to that name.\n")
+        f.write(
+            "; This file is a reference for creating own styles."
+            " It will never be read.\n"
+            "; To change values, copy this file using a new name and"
+            " set the style setting\n; in vimiv.conf to that name.\n"
+        )
         parser.write(f)
         f.write("; vim:ft=dosini")

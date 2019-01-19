@@ -6,12 +6,13 @@
 
 import pytest_bdd as bdd
 
-from vimiv import apimodules
+from vimiv.imutils import imstorage
+from vimiv.gui import mainwindow
 
 
-bdd.scenarios("modeswitch.feature")
+bdd.scenarios("imagetitle.feature")
 
 
-@bdd.when(bdd.parsers.parse("I toggle {mode} mode"))
-def toggle_mode(mode):
-    apimodules.toggle(mode)
+@bdd.then("the image name should be in the window title")
+def image_name_in_title():
+    assert imstorage.basename() in mainwindow.instance().windowTitle()

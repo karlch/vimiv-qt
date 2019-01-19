@@ -8,11 +8,7 @@
 
 from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
 
-from vimiv.commands import commands
-from vimiv.config import settings, keybindings
-from vimiv.gui import statusbar
-from vimiv.modes import Modes
-from vimiv.utils import objreg
+from vimiv import api
 
 
 class Slideshow(QTimer):
@@ -24,19 +20,18 @@ class Slideshow(QTimer):
 
     next_im = pyqtSignal()
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
-        settings.signals.changed.connect(self._on_settings_changed)
-        interval = settings.get_value(settings.Names.SLIDESHOW_DELAY) * 1000
-        self.setInterval(interval)
+        api.settings.signals.changed.connect(self._on_settings_changed)
+        self.setInterval(api.settings.SLIDESHOW_DELAY.value * 1000)
 
-    @keybindings.add("s", "slideshow", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("s", "slideshow", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def slideshow(self, count: int = 0):
         """Toggle slideshow."""
         if count:
-            settings.override("slideshow.delay", str(count))
+            api.settings.SLIDESHOW_DELAY.override(str(count))
             self.setInterval(1000 * count)
         elif self.isActive():
             self.stop()
@@ -46,27 +41,27 @@ class Slideshow(QTimer):
     def timerEvent(self, event):
         """Emit next_im signal on timer tick."""
         self.next_im.emit()
-        statusbar.update()
+        api.status.update()
 
-    @statusbar.module("{slideshow-delay}")
+    @api.status.module("{slideshow-delay}")
     def delay(self):
         """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
             return "%.1fs" % (self.interval() / 1000)
         return ""
 
-    @statusbar.module("{slideshow-indicator}")
+    @api.status.module("{slideshow-indicator}")
     def running_indicator(self):
         """Indicator if slideshow is running."""
         if self.isActive():
-            return settings.get_value(settings.Names.SLIDESHOW_INDICATOR)
+            return api.settings.SLIDESHOW_INDICATOR.value
         return ""
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "slideshow.delay":
-            self.setInterval(new_value * 1000)
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.SLIDESHOW_DELAY:
+            self.setInterval(setting.value * 1000)
 
 
 def instance():
-    return objreg.get(Slideshow)
+    return api.objreg.get(Slideshow)

@@ -7,9 +7,9 @@
 import pytest
 import pytest_bdd as bdd
 
+from vimiv import api
 from vimiv.completion import completionmodels, completer
 from vimiv.gui import completionwidget
-from vimiv.modes import modehandler, Modes
 
 
 bdd.scenarios("completion.feature")
@@ -17,18 +17,20 @@ bdd.scenarios("completion.feature")
 
 @bdd.then(bdd.parsers.parse("the completion model should be {model}"))
 def check_completion_model(model):
-    models = {"command": completionmodels.command,
-              "path": completionmodels.paths,
-              "external": completionmodels.external,
-              "settings": completionmodels.settings,
-              "trash": completionmodels.trash}
+    models = {
+        "command": completionmodels.command,
+        "path": completionmodels.paths,
+        "external": completionmodels.external,
+        "settings": completionmodels.settings,
+        "trash": completionmodels.trash,
+    }
     assert completer.instance()._modelfunc == models[model]
 
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))
 def check_completion_model_mode(mode):
-    assert modehandler.current() == Modes.COMMAND  # Sanity check
-    assert completer.instance()._cmd.mode == Modes.get_by_name(mode)
+    assert api.modes.current() == api.modes.COMMAND  # Sanity check
+    assert completer.instance()._cmd.mode == api.modes.get_by_name(mode)
 
 
 @bdd.then("no completion should be selected")

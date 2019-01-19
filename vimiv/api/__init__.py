@@ -4,6 +4,6 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Functions to enter, leave and get current mode."""
+"""`Utilities to interact with the application`."""
 
-from ._modes import Mode, Modes, modewidget
+from . import commands, keybindings, modes, objreg, settings, status

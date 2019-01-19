@@ -90,7 +90,7 @@ class History(collections.UserList):
             command: New command to be inserted.
         """
         super().insert(0, command)
-        self.data = self.data[:self._max_items]
+        self.data = self.data[: self._max_items]
 
     def cycle(self, direction: argtypes.HistoryDirection, text: str):
         """Cycle through command history.

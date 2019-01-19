@@ -7,7 +7,7 @@
 import pytest
 import pytest_bdd as bdd
 
-from vimiv.config import settings
+from vimiv import api
 from vimiv.utils import slideshow
 
 
@@ -39,6 +39,6 @@ def check_slideshow_not_playing(sshow):
 def check_slideshow_delay(sshow, delay):
     delay = float(delay)
     # Check setting
-    assert settings.get_value("slideshow.delay") == delay
+    assert api.settings.SLIDESHOW_DELAY.value == delay
     # Check actual value
     assert sshow.interval() == delay * 1000

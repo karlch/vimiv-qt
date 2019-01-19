@@ -9,13 +9,18 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
-from vimiv.commands import commands
+from vimiv import api
 from vimiv.completion import completer
-from vimiv.config import keybindings, configcommands
-from vimiv.gui import (image, bar, library, completionwidget, thumbnail,
-                       widgets, manipulate)
-from vimiv.modes import modehandler, Mode, Modes
-from vimiv.utils import objreg
+from vimiv.config import configcommands
+from vimiv.gui import (
+    image,
+    bar,
+    library,
+    completionwidget,
+    thumbnail,
+    widgets,
+    manipulate,
+)
 
 
 class MainWindow(QWidget):
@@ -27,7 +32,7 @@ class MainWindow(QWidget):
         _overlays: List of overlay widgets.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self.bar = bar.Bar()
@@ -48,9 +53,12 @@ class MainWindow(QWidget):
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)
         configcommands.init()
+        self._set_title()
 
-    @keybindings.add("f", "fullscreen")
-    @commands.register()
+        api.status.signals.update.connect(self._set_title)
+
+    @api.keybindings.register("f", "fullscreen")
+    @api.commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""
         if self.isFullScreen():
@@ -76,9 +84,19 @@ class MainWindow(QWidget):
         """Override to do nothing as focusing is handled by modehandler."""
         return False
 
+    @pyqtSlot()
+    def _set_title(self):
+        """Update window title depending on mode and settings."""
+        mode = api.modes.current().name
+        try:  # Prefer mode specific setting
+            title = api.settings.get_value("title.%s" % (mode))
+        except KeyError:
+            title = api.settings.get_value("title.fallback")
+        self.setWindowTitle(api.status.evaluate(title))
+
 
 def instance():
-    return objreg.get(MainWindow)
+    return api.objreg.get(MainWindow)
 
 
 class ImageThumbnailLayout(QStackedLayout):
@@ -100,18 +118,18 @@ class ImageThumbnailLayout(QStackedLayout):
         self._connect_signals()
 
     def _connect_signals(self):
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
+        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.left.connect(self._on_mode_left)
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Set current widget to image or thumbnail."""
-        if mode == Modes.IMAGE:
+        if mode == api.modes.IMAGE:
             self.setCurrentWidget(self.image)
-        elif mode == Modes.THUMBNAIL:
+        elif mode == api.modes.THUMBNAIL:
             self.setCurrentWidget(self.thumbnail)
 
-    @pyqtSlot(Mode)
+    @pyqtSlot(api.modes.Mode)
     def _on_mode_left(self, mode):
         """Set widget to image if thumbnail mode was left.
 
@@ -121,5 +139,5 @@ class ImageThumbnailLayout(QStackedLayout):
         Args:
             mode: The mode left.
         """
-        if mode == Modes.THUMBNAIL:
+        if mode == api.modes.THUMBNAIL:
             self.setCurrentWidget(self.image)

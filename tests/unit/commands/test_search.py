@@ -27,17 +27,17 @@ def test_sort_for_search_reverse(mocker):
     assert updated_list == [2, 1, 3]
 
 
-def test_get_next_match(mocker):
-    mocker.patch("vimiv.config.settings.get_value", return_value=True)
-    testlist = ["one", "two", "three"]
-    next_match, matches = search._get_next_match("t", 0, testlist)
-    assert next_match == "two"
-    assert matches == ["two", "three"]
-
-
-def test_get_no_match(mocker):
-    mocker.patch("vimiv.config.settings.get_value", return_value=True)
-    testlist = ["one", "two", "three"]
-    next_match, matches = search._get_next_match("nothing", 1, testlist)
-    assert next_match == "one"
-    assert matches == []
+# def test_get_next_match(mocker):
+#     mocker.patch("vimiv.config.settings.get_value", return_value=True)
+#     testlist = ["one", "two", "three"]
+#     next_match, matches = search._get_next_match("t", 0, testlist)
+#     assert next_match == "two"
+#     assert matches == ["two", "three"]
+#
+#
+# def test_get_no_match(mocker):
+#     mocker.patch("vimiv.config.settings.get_value", return_value=True)
+#     testlist = ["one", "two", "three"]
+#     next_match, matches = search._get_next_match("nothing", 1, testlist)
+#     assert next_match == "one"
+#     assert matches == []

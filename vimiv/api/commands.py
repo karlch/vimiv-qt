@@ -4,21 +4,16 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Command storage and initialization decorators.
+"""`Command storage and initialization`.
 
-Module Attributes:
-    registry: Dictionary to store commands in.
+The user interacts with vimiv using commands. Creating a new command is done
+using the :func:`register` decorator. The command name is directly infered from
+the function name, the functions docstring is used to document the command. The
+arguments supported by the command are also deduced by inspecting the arguments
+the function takes. To understand these concepts, lets add a simple command
+that prints "hello earth" to the terminal::
 
-//
-
-The user interacts with vimiv using commands. Utilities to create and store
-commands are implemented in ``vimiv.commands.commands``.
-
-Creating a new command is done using the ``register`` decorator. The command
-name is directly infered from the function name, the functions docstring is
-used to document the command. The arguments supported by the command are also
-deduced by inspecting the arguments the function takes. To understand these
-concepts, lets add a simple command that prints "hello earth" to the terminal::
+    from vimiv.api import commands
 
     @commands.register()
     def hello_earth():
@@ -36,7 +31,7 @@ Now the command ``:hello-planet`` is created. When called without arguments, it
 prints "hello earth" as before, but it is also possible to great other planets
 by passing their name: ``:hello-planet --name=venus``.
 
-.. hint::
+Hint:
 
     Type annotating the arguments is required as the type annotation is passed
     to the argument parser as type of the argument.
@@ -66,7 +61,7 @@ passed::
     @commands.register(hide=True)
     def ...
 
-In this case it probably makes sense to define a default keybinding for the
+In this case it is probably smart to define a default keybinding for the
 command.
 """
 
@@ -76,25 +71,32 @@ import inspect
 import logging
 from typing import List
 
-from vimiv.commands import cmdexc
-from vimiv.modes import Modes
-from vimiv.utils import (class_that_defined_method, cached_method, is_method,
-                         objreg)
+from vimiv.utils import class_that_defined_method, cached_method, is_method
+
+from . import modes, objreg
 
 
-class Registry(collections.UserDict):
-    """Dictionary to store commands of each mode."""
+def register(mode=modes.GLOBAL, hide=False, hook=None):
+    """Decorator to store a command in the registry.
 
-    def __init__(self):
-        super().__init__()
-        for mode in Modes:
-            self[mode] = {}
+    Args:
+        mode: Mode in which the command can be executed.
+        hide: Hide command from command line.
+        hook: Function to run before executing the command.
+    """
+
+    def decorator(func):
+        name = _get_command_name(func)
+        desc = _get_description(func, name)
+        func.vimiv_args = _CommandArguments(name, desc, func)
+        cmd = _Command(name, func, mode=mode, description=desc, hide=hide, hook=hook)
+        _registry[mode][name] = cmd
+        return func
+
+    return decorator
 
 
-registry = Registry()
-
-
-def get(name, mode=Modes.GLOBAL):
+def get(name, mode=modes.GLOBAL):
     """Get one command object.
 
     Args:
@@ -103,16 +105,65 @@ def get(name, mode=Modes.GLOBAL):
     Return:
         The Command object asserted with name and mode.
     """
-    commands = registry[mode]
-    if mode in [Modes.IMAGE, Modes.LIBRARY, Modes.THUMBNAIL]:
-        commands.update(registry[Modes.GLOBAL])
+    commands = _registry[mode]
+    if mode in modes.GLOBALS:
+        commands.update(_registry[modes.GLOBAL])
     if name not in commands:
-        raise cmdexc.CommandNotFound(
-            "%s: unknown command for mode %s" % (name, mode.name))
+        raise CommandNotFound("%s: unknown command for mode %s" % (name, mode.name))
     return commands[name]
 
 
-class CommandArguments(argparse.ArgumentParser):
+class ArgumentError(Exception):
+    """Raised if a command was called with wrong arguments."""
+
+
+class CommandError(Exception):
+    """Raised if a command failed to run correctly."""
+
+
+class CommandWarning(Exception):
+    """Raised if a command wants to show the user a warning."""
+
+
+class CommandNotFound(Exception):
+    """Raised if a command does not exist for a specific mode."""
+
+
+class _Registry(collections.UserDict):
+    """Dictionary to store commands of each mode."""
+
+    def __init__(self):
+        super().__init__()
+        for mode in modes.ALL:
+            self[mode] = {}
+
+
+_registry = _Registry()
+
+
+def items(mode):
+    """Retrieve all items in the commands registry for iteration.
+
+    Args:
+        mode: The mode for which the commands are valid.
+    Return:
+        ItemsView allowing iteration over items.
+    """
+    return _registry[mode].items()
+
+
+def names(mode):
+    """Retrieve names of all commands in the registry for iteration.
+
+    Args:
+        mode: The mode for which the commands are valid.
+    Return:
+        KeysView allowing iteration over names which are the registry keys.
+    """
+    return _registry[mode].keys()
+
+
+class _CommandArguments(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
     def __init__(self, cmdname: str, description: str, function):
@@ -129,7 +180,7 @@ class CommandArguments(argparse.ArgumentParser):
 
     def print_help(self):
         """Override help message to display in statusbar."""
-        raise cmdexc.ArgumentError(self.format_help().rstrip())
+        raise ArgumentError(self.format_help().rstrip())
 
     def error(self, message):
         """Override error to raise an exception instead of calling sys.exit."""
@@ -138,7 +189,7 @@ class CommandArguments(argparse.ArgumentParser):
         message = message.strip()
         message = " ".join(message.split())  # Remove multiple whitespace
         message = message.capitalize()
-        raise cmdexc.ArgumentError(message)
+        raise ArgumentError(message)
 
     def _add_argument(self, argument: inspect.Parameter):
         """Add an argument to argparse created from an inspect parameter."""
@@ -173,7 +224,7 @@ class CommandArguments(argparse.ArgumentParser):
         return {"type": argtype}
 
 
-class Command():
+class _Command:
     """Skeleton for a command.
 
     Attributes:
@@ -185,8 +236,9 @@ class Command():
         hook: Function to run before executing the command.
     """
 
-    def __init__(self, name, func, mode=Modes.GLOBAL, description="",
-                 hide=False, hook=None):
+    def __init__(
+        self, name, func, mode=modes.GLOBAL, description="", hide=False, hook=None
+    ):
         self.name = name
         self.func = func
         self.mode = mode
@@ -230,28 +282,8 @@ class Command():
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda **kwargs: (self.hook(instance),
-                                     func(instance, **kwargs))
+            return lambda **kwargs: (self.hook(instance), func(instance, **kwargs))
         return lambda **kwargs: (self.hook(), func(**kwargs))
-
-
-def register(mode=Modes.GLOBAL, hide=False, hook=None):
-    """Decorator to store a command in the registry.
-
-    Args:
-        mode: Mode in which the command can be executed.
-        hide: Hide command from command line.
-        hook: Function to run before executing the command.
-    """
-    def decorator(func):
-        name = _get_command_name(func)
-        desc = _get_description(func, name)
-        func.vimiv_args = CommandArguments(name, desc, func)
-        cmd = Command(name, func, mode=mode, description=desc, hide=hide,
-                      hook=hook)
-        registry[mode][name] = cmd
-        return func
-    return decorator
 
 
 def _get_command_name(func):

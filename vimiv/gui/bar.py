@@ -9,11 +9,8 @@
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
-from vimiv.commands import commands
-from vimiv.config import keybindings, settings
+from vimiv import api
 from vimiv.gui import commandline, statusbar
-from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg
 
 
 class Bar(QWidget):
@@ -25,7 +22,7 @@ class Bar(QWidget):
         _stack: QStackedLayout containing statusbar and commandline.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
@@ -41,12 +38,12 @@ class Bar(QWidget):
         self._maybe_hide()
 
         self.commandline.editingFinished.connect(self._on_editing_finished)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
 
-    @keybindings.add("<colon>", "command", mode=Modes.MANIPULATE)
-    @keybindings.add("<colon>", "command")
-    @commands.register(hide=True, mode=Modes.MANIPULATE)
-    @commands.register(hide=True)
+    @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<colon>", "command")
+    @api.commands.register(hide=True, mode=api.modes.MANIPULATE)
+    @api.commands.register(hide=True)
     def command(self, text: str = ""):
         """Enter command mode.
 
@@ -57,9 +54,9 @@ class Bar(QWidget):
         """
         self._enter_command_mode(":" + text)
 
-    @keybindings.add("?", "search --reverse")
-    @keybindings.add("/", "search")
-    @commands.register(hide=True)
+    @api.keybindings.register("?", "search --reverse")
+    @api.keybindings.register("/", "search")
+    @api.commands.register(hide=True)
     def search(self, reverse: bool = False):
         """Start a search.
 
@@ -78,10 +75,10 @@ class Bar(QWidget):
         self.show()
         self._stack.setCurrentWidget(self.commandline)
         self.commandline.setText(text)
-        modehandler.enter(Modes.COMMAND)
+        api.modes.enter(api.modes.COMMAND)
 
-    @keybindings.add("<escape>", "leave-commandline", mode=Modes.COMMAND)
-    @commands.register(mode=Modes.COMMAND)
+    @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
+    @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
         self.commandline.editingFinished.emit()
@@ -92,20 +89,20 @@ class Bar(QWidget):
         self.commandline.setText("")
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
-        modehandler.leave(Modes.COMMAND)
+        api.modes.leave(api.modes.COMMAND)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
         """React to changed settings."""
-        if setting == "statusbar.show":
-            statusbar.statusbar.setVisible(new_value)
+        if setting == api.settings.STATUSBAR_SHOW:
+            statusbar.statusbar.setVisible(setting.value)
             self._maybe_hide()
-        elif setting == "statusbar.timeout":
-            statusbar.statusbar.timer.setInterval(new_value)
+        elif setting == api.settings.STATUSBAR_MESSAGE_TIMEOUT:
+            statusbar.statusbar.timer.setInterval(setting.value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
-        always_show = settings.get_value(settings.Names.STATUSBAR_SHOW)
+        always_show = api.settings.STATUSBAR_SHOW.value
         if not always_show and not self.commandline.hasFocus():
             self.hide()
         else:
@@ -113,4 +110,4 @@ class Bar(QWidget):
 
 
 def instance():
-    return objreg.get(Bar)
+    return api.objreg.get(Bar)

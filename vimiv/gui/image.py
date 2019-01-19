@@ -10,12 +10,12 @@ from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
-from vimiv.config import styles, keybindings, settings
-from vimiv.commands import argtypes, commands
-from vimiv.gui import statusbar, widgets
+from vimiv import api
+from vimiv.config import styles
+from vimiv.commands import argtypes
+from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modewidget, Modes
-from vimiv.utils import eventhandler, objreg, ignore
+from vimiv.utils import eventhandler, ignore
 
 # We need the check as svg support is optional
 try:
@@ -85,8 +85,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     MIN_SIZE_PIXEL = 20
     MAX_SIZE_SCALE = 256
 
-    @modewidget(Modes.IMAGE)
-    @objreg.register
+    @api.modes.widget(api.modes.IMAGE)
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._scale = 1.0
@@ -125,13 +125,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     def _on_pixmap_updated(self, pixmap):
         self.setWidget(Image(pixmap))
         self.scale(self._scale, 1)
-        statusbar.update()
+        api.status.update()
 
-    @keybindings.add("k", "scroll up", mode=Modes.IMAGE)
-    @keybindings.add("j", "scroll down", mode=Modes.IMAGE)
-    @keybindings.add("l", "scroll right", mode=Modes.IMAGE)
-    @keybindings.add("h", "scroll left", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.IMAGE)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.IMAGE)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.IMAGE)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def scroll(self, direction: argtypes.Direction, count: int = 1):
         """Scroll the image in the given direction.
 
@@ -152,18 +152,18 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             step *= -1
         bar.setValue(bar.value() - step)
 
-    @keybindings.add("M", "center", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("M", "center", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
         for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
             bar.setValue(bar.maximum() // 2)
 
-    @keybindings.add("K", "scroll-edge up", mode=Modes.IMAGE)
-    @keybindings.add("J", "scroll-edge down", mode=Modes.IMAGE)
-    @keybindings.add("L", "scroll-edge right", mode=Modes.IMAGE)
-    @keybindings.add("H", "scroll-edge left", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("K", "scroll-edge up", mode=api.modes.IMAGE)
+    @api.keybindings.register("J", "scroll-edge down", mode=api.modes.IMAGE)
+    @api.keybindings.register("L", "scroll-edge right", mode=api.modes.IMAGE)
+    @api.keybindings.register("H", "scroll-edge left", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def scroll_edge(self, direction: argtypes.Direction):
         """Scroll the image to one edge.
 
@@ -182,9 +182,9 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             value = bar.maximum()
         bar.setValue(value)
 
-    @keybindings.add("-", "zoom out", mode=Modes.IMAGE)
-    @keybindings.add("+", "zoom in", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("-", "zoom out", mode=api.modes.IMAGE)
+    @api.keybindings.register("+", "zoom in", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def zoom(self, direction: argtypes.Zoom, count: int = 1):
         """Zoom the current widget.
 
@@ -197,17 +197,17 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """
         width = self.current_width()
         if direction == direction.In:
-            width *= 1.1**count
+            width *= 1.1 ** count
         else:
-            width /= 1.1**count
+            width /= 1.1 ** count
         self._scale = width / self.original_width()
         self._scale_to_float(self._scale)
 
-    @keybindings.add("w", "scale --level=fit", mode=Modes.IMAGE)
-    @keybindings.add("W", "scale --level=1", mode=Modes.IMAGE)
-    @keybindings.add("e", "scale --level=fit-width", mode=Modes.IMAGE)
-    @keybindings.add("E", "scale --level=fit-height", mode=Modes.IMAGE)
-    @commands.register()
+    @api.keybindings.register("w", "scale --level=fit", mode=api.modes.IMAGE)
+    @api.keybindings.register("W", "scale --level=1", mode=api.modes.IMAGE)
+    @api.keybindings.register("e", "scale --level=fit-width", mode=api.modes.IMAGE)
+    @api.keybindings.register("E", "scale --level=fit-height", mode=api.modes.IMAGE)
+    @api.commands.register()
     def scale(self, level: argtypes.ImageScaleFloat = 1, count: int = 1):
         """Scale the image.
 
@@ -225,8 +225,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             * **float**: Set scale to arbitrary decimal value.
         """
         if level == argtypes.ImageScale.Overzoom:
-            self._scale_to_fit(
-                limit=settings.get_value(settings.Names.IMAGE_OVERZOOM))
+            self._scale_to_fit(limit=api.settings.IMAGE_OVERZOOM.value)
         elif level == argtypes.ImageScale.Fit:
             self._scale_to_fit()
         elif level == argtypes.ImageScale.FitWidth:
@@ -238,8 +237,8 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             self._scale_to_float(level)
         self._scale = level
 
-    @keybindings.add("<space>", "play-or-pause", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("<space>", "play-or-pause", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
         with ignore(AttributeError):  # Currently no animation displayed
@@ -281,7 +280,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
         self.scale(self._scale, 1)
-        statusbar.update(clear_message=False)  # Zoom level changes
+        api.status.update()  # Zoom level changes
 
     def width(self):
         """Return width of the viewport to remove scrollbar width."""
@@ -291,13 +290,13 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Returh height of the viewport to remove scrollbar height."""
         return self.viewport().height()
 
-    @statusbar.module("{zoomlevel}")
+    @api.status.module("{zoomlevel}")
     def _get_zoom_level(self):
         """Zoom level of the image in percent."""
         level = self.current_width() / self.original_width()
         return "%2.0f%%" % (level * 100)
 
-    @statusbar.module("{image-size}")
+    @api.status.module("{image-size}")
     def _get_image_size(self):
         """Size of the image in pixels in the form WIDTHxHEIGHT."""
         return "%dx%d" % (self.original_width(), self.original_height())
@@ -330,15 +329,16 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         MIN_SIZE_PIXEL.
         """
         try:
-            widget_size = min(self.widget().original.width(),
-                              self.widget().original.height())
+            widget_size = min(
+                self.widget().original.width(), self.widget().original.height()
+            )
             return max(self.MIN_SIZE_SCALE, self.MIN_SIZE_PIXEL / widget_size)
         except AttributeError:
             return 0.01
 
 
 def instance():
-    return objreg.get(ScrollableImage)
+    return api.objreg.get(ScrollableImage)
 
 
 class Empty(widgets.ImageLabel):
@@ -372,8 +372,9 @@ class Image(widgets.ImageLabel):
         return self._original.size()
 
     def rescale(self, scale):
-        pixmap = self._original.scaled(self._original.size() * scale,
-                                       transformMode=Qt.SmoothTransformation)
+        pixmap = self._original.scaled(
+            self._original.size() * scale, transformMode=Qt.SmoothTransformation
+        )
         self.setPixmap(pixmap)
 
 
@@ -389,7 +390,7 @@ class Animation(widgets.ImageLabel):
         self.setMovie(movie)
         movie.jumpToFrame(0)
         self._original_size = movie.currentPixmap().size()
-        if settings.get_value(settings.Names.IMAGE_AUTOPLAY):
+        if api.settings.IMAGE_AUTOPLAY:
             movie.start()
 
     def current_size(self):
@@ -410,6 +411,7 @@ class Animation(widgets.ImageLabel):
 
 
 if QSvgWidget is not None:
+
     class VectorGraphic(QSvgWidget):
         """Widget to display a vector graphic.
 

@@ -12,10 +12,8 @@ import string
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSlot
 from PyQt5.QtGui import QKeySequence
 
+from vimiv import api
 from vimiv.commands import runners, search
-from vimiv.config import keybindings
-from vimiv.gui import statusbar
-from vimiv.modes import modehandler, Modes
 
 
 class TempKeyStorage(QTimer):
@@ -39,7 +37,7 @@ class TempKeyStorage(QTimer):
         if self.isActive():  # Reset timeout
             self.stop()
         self.start()
-        statusbar.update()
+        api.status.update()
 
     def get_text(self):
         """Get text from storage."""
@@ -52,7 +50,7 @@ class TempKeyStorage(QTimer):
         """Clear storage."""
         self.stop()  # Can be called from get_text on keyPressEvent
         self.text = ""
-        statusbar.update()
+        api.status.update()
 
 
 class PartialHandler(QObject):
@@ -72,13 +70,13 @@ class PartialHandler(QObject):
         """Clear count and partially matched keys."""
         self.count.clear_text()
         self.keys.clear_text()
-        statusbar.update()
+        api.status.update()
 
     def get_keys(self):
         return self.count.text + self.keys.text
 
 
-class KeyHandler():
+class KeyHandler:
     """Deal with keyPressEvent events for gui widgets.
 
     This class is used by gui classes as first parent, second being some
@@ -93,19 +91,18 @@ class KeyHandler():
         Args:
             event: QKeyEvent that activated the keyPressEvent.
         """
-        mode = modehandler.current()
+        mode = api.modes.current()
         stored_keys = self._partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
-        bindings = keybindings.get(mode)
+        bindings = api.keybindings.get(mode)
         # Handle escape separately as it affects multiple widgets
-        if keyname == "<escape>" and mode in [Modes.IMAGE, Modes.LIBRARY,
-                                              Modes.THUMBNAIL]:
+        if keyname == "<escape>" and mode in api.modes.GLOBALS:
             self._partial_handler.clear_keys()
             search.search.clear()
             return
         keyname = stored_keys + keyname
         # Count
-        if keyname and keyname in string.digits and mode != Modes.COMMAND:
+        if keyname and keyname in string.digits and mode != api.modes.COMMAND:
             self._partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
@@ -120,10 +117,10 @@ class KeyHandler():
         else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
-            statusbar.update()  # Will not be called by command
+            api.status.update()  # Will not be called by command
 
     @staticmethod
-    @statusbar.module("{keys}")
+    @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
         return KeyHandler._partial_handler.get_keys()
@@ -144,14 +141,26 @@ def keyevent_to_string(event):
         Name of the key pressed as meaningful string.
     """
     # Parse modifiers
-    modmask2str = collections.OrderedDict([
-        (Qt.ControlModifier, "<ctrl>"),
-        (Qt.AltModifier, "<alt>"),
-        (Qt.MetaModifier, "<meta>"),
-    ])
-    modifiers = (Qt.Key_Control, Qt.Key_Alt, Qt.Key_Shift, Qt.Key_Meta,
-                 Qt.Key_AltGr, Qt.Key_Super_L, Qt.Key_Super_R, Qt.Key_Hyper_L,
-                 Qt.Key_Hyper_R, Qt.Key_Direction_L, Qt.Key_Direction_R)
+    modmask2str = collections.OrderedDict(
+        [
+            (Qt.ControlModifier, "<ctrl>"),
+            (Qt.AltModifier, "<alt>"),
+            (Qt.MetaModifier, "<meta>"),
+        ]
+    )
+    modifiers = (
+        Qt.Key_Control,
+        Qt.Key_Alt,
+        Qt.Key_Shift,
+        Qt.Key_Meta,
+        Qt.Key_AltGr,
+        Qt.Key_Super_L,
+        Qt.Key_Super_R,
+        Qt.Key_Hyper_L,
+        Qt.Key_Hyper_R,
+        Qt.Key_Direction_L,
+        Qt.Key_Direction_R,
+    )
     if event.key() in modifiers:
         # Only modifier pressed
         return ""

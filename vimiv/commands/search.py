@@ -14,10 +14,7 @@ import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.commands import cmdexc, commands
-from vimiv.config import keybindings, settings
-from vimiv.gui import statusbar
-from vimiv.modes import modehandler, Mode, Modes
+from vimiv import api
 from vimiv.utils import pathreceiver
 
 
@@ -27,8 +24,8 @@ def use_incremental(mode):
     Args:
         mode: Mode for which search should be run.
     """
-    enabled = settings.get_value(settings.Names.SEARCH_INCREMENTAL)
-    if enabled and mode in [Modes.LIBRARY, Modes.THUMBNAIL]:
+    enabled = api.settings.SEARCH_INCREMENTAL.value
+    if enabled and mode in [api.modes.LIBRARY, api.modes.THUMBNAIL]:
         return True
     return False
 
@@ -58,7 +55,7 @@ class Search(QObject):
         self._text = ""
         self._reverse = False
 
-    new_search = pyqtSignal(int, list, Mode, bool)
+    new_search = pyqtSignal(int, list, api.modes.Mode, bool)
     cleared = pyqtSignal()
 
     def __call__(self, text, mode, count=0, reverse=False, incremental=False):
@@ -80,9 +77,9 @@ class Search(QObject):
         Used by the search-next and search-prev commands.
         """
         reverse = reverse if not self._reverse else not reverse
-        mode = modehandler.current()
+        mode = api.modes.current()
         if not self._text:
-            raise cmdexc.CommandError("no search performed")
+            raise api.commands.CommandError("no search performed")
         self._run(self._text, mode, count, reverse, False)
 
     def _run(self, text, mode, count, reverse, incremental):
@@ -94,7 +91,7 @@ class Search(QObject):
         next_match, matches = _get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
         self.new_search.emit(index, matches, mode, incremental)
-        statusbar.update()
+        api.status.update()
 
     def clear(self):
         """Clear search string."""
@@ -106,8 +103,8 @@ class Search(QObject):
 search = Search()
 
 
-@keybindings.add("N", "search-next")
-@commands.register(hide=True)
+@api.keybindings.register("N", "search-next")
+@api.commands.register(hide=True)
 def search_next(count: int = 1):
     """Continue search to the next match.
 
@@ -118,8 +115,8 @@ def search_next(count: int = 1):
     search.repeat(count)
 
 
-@keybindings.add("P", "search-prev")
-@commands.register(hide=True)
+@api.keybindings.register("P", "search-prev")
+@api.commands.register(hide=True)
 def search_prev(count: int = 1):
     """Continue search to the previous match.
 
@@ -163,6 +160,6 @@ def _get_next_match(text, count, paths):
 
 def _matches(first, second):
     """Check if first string is in second string."""
-    if settings.get_value(settings.Names.SEARCH_IGNORE_CASE):
+    if api.settings.SEARCH_IGNORE_CASE.value:
         return first.lower() in second.lower()
     return first in second

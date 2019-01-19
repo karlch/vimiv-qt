@@ -14,17 +14,15 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv.config import keybindings
-from vimiv.commands import commands, cmdexc
+from vimiv import api
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, files, working_directory
+from vimiv.utils import files, working_directory
 
 
 class Application(QApplication):
     """Main application class."""
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
@@ -32,8 +30,8 @@ class Application(QApplication):
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
 
-    @keybindings.add("q", "quit")
-    @commands.register()
+    @api.keybindings.register("q", "quit")
+    @api.commands.register()
     def quit(self):
         """Quit vimiv."""
         # Do not start any new threads
@@ -52,8 +50,8 @@ class Application(QApplication):
 
 
 # We want to use the name open here as it is the best name for the command
-@keybindings.add("o", "command --text='open '")
-@commands.register()
+@api.keybindings.register("o", "command --text='open '")
+@api.commands.register()
 def open(path: str):  # pylint: disable=redefined-builtin
     """Open a path.
 
@@ -67,7 +65,7 @@ def open(path: str):  # pylint: disable=redefined-builtin
     """
     assert isinstance(path, str), "Path must be given as string."
     if not open_paths([os.path.expanduser(path)]):
-        raise cmdexc.CommandError("Cannot open %s" % (path))
+        raise api.commands.CommandError("Cannot open %s" % (path))
 
 
 def open_paths(paths, select_mode=True):
@@ -81,19 +79,19 @@ def open_paths(paths, select_mode=True):
     """
     paths = [os.path.abspath(path) for path in paths]
     images, directories = files.supported(paths)
-    mode = Modes.LIBRARY
+    mode = api.modes.LIBRARY
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))
         imsignals.open_new_images.emit(images, images[0])
-        mode = Modes.IMAGE
+        mode = api.modes.IMAGE
     elif directories:
         working_directory.handler.chdir(directories[0])
     else:
         return False  # No valid paths found
     if select_mode:
-        modehandler.enter(mode)
+        api.modes.enter(mode)
     return True
 
 
 def instance():
-    return objreg.get(Application)
+    return api.objreg.get(Application)

@@ -4,9 +4,9 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Tests for vimiv.utils.objreg."""
+"""Tests for vimiv.api.objreg."""
 
-from vimiv.utils import objreg
+from vimiv.api import objreg
 
 
 class DummyObject:
@@ -21,9 +21,4 @@ class DummyObject:
 def test_register_object_via_decorator():
     dummy = DummyObject()
     assert objreg.get(DummyObject) == dummy
-
-
-def test_register_object_via_function():
-    data = [1, 2, 3, 4, 5]
-    objreg.register_object(data)
-    assert objreg.get(list) == data
+    del objreg._registry[DummyObject]  # Cleanup

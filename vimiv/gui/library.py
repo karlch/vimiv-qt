@@ -13,13 +13,19 @@ from PyQt5.QtCore import Qt, QSize, pyqtSlot, QModelIndex
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
-from vimiv.commands import commands, argtypes, cmdexc, search
-from vimiv.config import styles, keybindings, settings
+from vimiv import api
+from vimiv.commands import argtypes, search
+from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, Mode, Modes, modewidget
-from vimiv.utils import (objreg, libpaths, eventhandler, strip_html, clamp,
-                         working_directory, ignore)
+from vimiv.utils import (
+    libpaths,
+    eventhandler,
+    strip_html,
+    clamp,
+    working_directory,
+    ignore,
+)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -64,8 +70,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     }
     """
 
-    @modewidget(Modes.LIBRARY)
-    @objreg.register
+    @api.modes.widget(api.modes.LIBRARY)
+    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
@@ -79,13 +85,13 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.hide()
 
         self.activated.connect(self._on_activated)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
         libpaths.handler.loaded.connect(self._on_paths_loaded)
         libpaths.handler.changed.connect(self._on_paths_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
+        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.left.connect(self._on_mode_left)
 
         styles.apply(self)
 
@@ -120,7 +126,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._store_position()
         self._set_content(data)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -130,7 +136,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self._select_row(index)
             self.repaint()
 
@@ -139,12 +145,12 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Force repainting when the search results were cleared."""
         self.repaint()
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "library.width":
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.LIBRARY_WIDTH:
             self.update_width()
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Show or hide library depending on the mode entered.
 
@@ -152,18 +158,18 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             mode: The mode entered.
             last_mode: The mode left.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self.show()
             self.update_width()
 
-    @pyqtSlot(Mode)
+    @pyqtSlot(api.modes.Mode)
     def _on_mode_left(self, mode):
         """Hide library widget if library mode was left.
 
         Args:
             mode: The mode left.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self.hide()
             self._last_selected = ""
 
@@ -175,7 +181,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         row = self._get_stored_position(os.getcwd())
         self._select_row(row)
 
-    @commands.register(mode=Modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
         """Open the currently selected path.
 
@@ -210,16 +216,16 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if path != self._last_selected:
             imsignals.open_new_image.emit(path)
         # Close library on double selection or if specified
-        close = (close or path == self._last_selected)
+        close = close or path == self._last_selected
         self._last_selected = path
         if close:
-            modehandler.leave(Modes.LIBRARY)
+            api.modes.leave(api.modes.LIBRARY)
 
-    @keybindings.add("k", "scroll up", mode=Modes.LIBRARY)
-    @keybindings.add("j", "scroll down", mode=Modes.LIBRARY)
-    @keybindings.add("h", "scroll left", mode=Modes.LIBRARY)
-    @keybindings.add("l", "scroll right", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.LIBRARY)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll the library in the given direction.
 
@@ -247,16 +253,16 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
                 row = self.row()
             # Directory is empty
             except IndexError:
-                raise cmdexc.CommandWarning("Directory is empty")
+                raise api.commands.CommandWarning("Directory is empty")
             if direction == direction.Up:
                 row -= count
             else:
                 row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1))
 
-    @keybindings.add("gg", "goto 1", mode=Modes.LIBRARY)
-    @keybindings.add("G", "goto -1", mode=Modes.LIBRARY)
-    @commands.register(mode=Modes.LIBRARY)
+    @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
+    @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
     def goto(self, row: int, count: int = 0):
         """Select specific row in current filelist.
 
@@ -269,7 +275,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         **count:** Select [count]th element instead.
         """
-        if row == - 1:
+        if row == -1:
             row = self.model().rowCount()
         row = count if count else row  # Prefer count
         if row > 0:
@@ -279,8 +285,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def update_width(self):
         """Resize width and columns when main window width changes."""
-        width = self.parent().width() * \
-            settings.get_value(settings.Names.LIBRARY_WIDTH)
+        width = self.parent().width() * api.settings.LIBRARY_WIDTH.value
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
         self.setColumnWidth(1, 0.75 * width)
@@ -325,7 +330,7 @@ class LibraryModel(QStandardItemModel):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Store list of indices to highlight on new search.
 
@@ -335,7 +340,7 @@ class LibraryModel(QStandardItemModel):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if mode == Modes.LIBRARY:
+        if mode == api.modes.LIBRARY:
             self._highlighted = []
             for i, path in enumerate(self.pathlist()):
                 if os.path.basename(path) in matches:
@@ -395,8 +400,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.even_bg.setNamedColor(styles.get("library.even.bg"))
         self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
         self.search_bg = QColor()
-        self.search_bg.setNamedColor(
-            styles.get("library.search.highlighted.bg"))
+        self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
 
     def createEditor(self, *args):
         """Library is not editable by the user."""
@@ -428,8 +432,7 @@ class LibraryDelegate(QStyledItemDelegate):
         text = index.model().data(index)
         painter.save()
         color = self._get_foreground_color(index, text)
-        text = '<span style="color: %s; font: %s;">%s</span>' \
-            % (color, self.font, text)
+        text = '<span style="color: %s; font: %s;">%s</span>' % (color, self.font, text)
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
         painter.translate(option.rect.x(), option.rect.y())
@@ -494,4 +497,4 @@ class LibraryDelegate(QStyledItemDelegate):
 
 
 def instance():
-    return objreg.get(Library)
+    return api.objreg.get(Library)

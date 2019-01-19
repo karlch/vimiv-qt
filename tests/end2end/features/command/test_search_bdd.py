@@ -6,8 +6,8 @@
 
 import pytest_bdd as bdd
 
+from vimiv import api
 from vimiv.commands import search
-from vimiv.modes import modehandler
 
 
 bdd.scenarios("search.feature")
@@ -15,9 +15,9 @@ bdd.scenarios("search.feature")
 
 @bdd.when(bdd.parsers.parse("I search for {text}"))
 def run_search(text):
-    search.search(text, modehandler.current())
+    search.search(text, api.modes.current())
 
 
 @bdd.when(bdd.parsers.parse("I search in reverse for {text}"))
 def run_search_reverse(text):
-    search.search(text, modehandler.current(), reverse=True)
+    search.search(text, api.modes.current(), reverse=True)

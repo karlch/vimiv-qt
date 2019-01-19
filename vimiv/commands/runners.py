@@ -14,10 +14,8 @@ import subprocess
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
 
-from vimiv import app
-from vimiv.commands import commands, cmdexc, aliases
-from vimiv.gui import statusbar
-from vimiv.modes import modehandler
+from vimiv import app, api
+from vimiv.commands import aliases
 from vimiv.utils import pathreceiver
 
 
@@ -43,18 +41,18 @@ def command(text, mode=None):
         mode: Mode in which the command is supposed to run.
     """
     if mode is None:
-        mode = modehandler.current()
+        mode = api.modes.current()
     count, cmdname, args = _parse(text)
     try:
-        cmd = commands.get(cmdname, mode)
+        cmd = api.commands.get(cmdname, mode)
         cmd(args, count=count)
-        statusbar.update()
+        api.status.update()
         logging.debug("Ran '%s' succesfully", text)
-    except cmdexc.CommandNotFound as e:
+    except api.commands.CommandNotFound as e:
         logging.error(str(e))
-    except (cmdexc.ArgumentError, cmdexc.CommandError) as e:
+    except (api.commands.ArgumentError, api.commands.CommandError) as e:
         logging.error("%s: %s", cmdname, str(e))
-    except cmdexc.CommandWarning as w:
+    except api.commands.CommandWarning as w:
         logging.warning("%s: %s", cmdname, str(w))
 
 
@@ -90,10 +88,10 @@ def expand_wildcards(text, mode):
     # Check first as the re substitutions are rather expensive
     if "%" in text:
         current = pathreceiver.current(mode)
-        text = re.sub(r'(?<!\\)%', current, text)
+        text = re.sub(r"(?<!\\)%", current, text)
     if "*" in text:
         pathlist = " ".join(pathreceiver.pathlist(mode))
-        text = re.sub(r'(?<!\\)\*', pathlist, text)
+        text = re.sub(r"(?<!\\)\*", pathlist, text)
     return text
 
 
@@ -132,7 +130,7 @@ class ExternalRunner(QObject):
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         if paths and app.open_paths(paths):
-            statusbar.update()
+            api.status.update()
             logging.debug("Opened paths from pipe '%s'", cmd)
         else:
             logging.warning("%s: No paths from pipe", cmd)
@@ -162,12 +160,17 @@ class ShellCommandRunnable(QRunnable):
     def run(self):
         """Run shell command on QThreadPool.start(self)."""
         try:
-            pargs = subprocess.run(self._text, shell=True, check=True,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
+            pargs = subprocess.run(
+                self._text,
+                shell=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
             if self._pipe:
-                self._runner.pipe_output_received.emit(self._text,
-                                                       pargs.stdout.decode())
+                self._runner.pipe_output_received.emit(
+                    self._text, pargs.stdout.decode()
+                )
             else:
                 logging.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:

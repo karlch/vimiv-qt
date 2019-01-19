@@ -10,19 +10,15 @@ import collections
 import logging
 import os
 
-from PyQt5.QtCore import (Qt, QSize, QItemSelectionModel, pyqtSlot,
-                          QModelIndex, QRect)
-from PyQt5.QtWidgets import (QListWidget, QListWidgetItem, QStyle,
-                             QStyledItemDelegate)
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex, QRect
+from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
-from vimiv.commands import commands, argtypes, search
-from vimiv.config import styles, keybindings, settings
+from vimiv import api
+from vimiv.commands import argtypes, search
+from vimiv.config import styles
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.gui import statusbar
-from vimiv.utils import (objreg, eventhandler, pixmap_creater,
-                         thumbnail_manager, clamp)
+from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
 
 
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
@@ -69,20 +65,21 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     }
     """
 
-    @modewidget(Modes.THUMBNAIL)
-    @objreg.register
+    @api.modes.widget(api.modes.THUMBNAIL)
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._paths = []
         self._highlighted = []
         self._sizes = collections.OrderedDict(
-            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")])
+            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
+        )
         self._default_icon = QIcon(pixmap_creater.default_thumbnail())
         self._manager = thumbnail_manager.ThumbnailManager()
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
-        default_size = settings.get_value(settings.Names.THUMBNAIL_SIZE)
+        default_size = api.settings.THUMBNAIL_SIZE.value
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
@@ -90,7 +87,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imsignals.new_image_opened.connect(self._on_new_image_opened)
         imsignals.new_images_opened.connect(self._on_new_images_opened)
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -149,7 +146,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -160,7 +157,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             incremental: True if incremental search was performed.
         """
         self._highlighted = []
-        if self._paths and mode == Modes.THUMBNAIL:
+        if self._paths and mode == api.modes.THUMBNAIL:
             self._select_item(index)
             for i, path in enumerate(self._paths):
                 if os.path.basename(path) in matches:
@@ -177,17 +174,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    @commands.register(mode=Modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
         imsignals.open_new_image.emit(self.abspath())
-        modehandler.enter(Modes.IMAGE)
+        api.modes.enter(api.modes.IMAGE)
 
-    @keybindings.add("k", "scroll up", mode=Modes.THUMBNAIL)
-    @keybindings.add("j", "scroll down", mode=Modes.THUMBNAIL)
-    @keybindings.add("h", "scroll left", mode=Modes.THUMBNAIL)
-    @keybindings.add("l", "scroll right", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(self, direction: argtypes.Direction, count=1):
         """Scroll to another thumbnail in the given direction.
 
@@ -213,8 +210,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             if not elems_in_last_row:
                 elems_in_last_row = self.columns()
             if column < elems_in_last_row:
-                current = min(self.count() - (elems_in_last_row - column),
-                              current)
+                current = min(self.count() - (elems_in_last_row - column), current)
             else:
                 current = min(self.count() - 1, current)
         else:
@@ -222,9 +218,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             current = max(column, current)
         self._select_item(current)
 
-    @keybindings.add("gg", "goto 1", mode=Modes.THUMBNAIL)
-    @keybindings.add("G", "goto -1", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def goto(self, index: int, count: int = 0):
         """Select specific thumbnail in current filelist.
 
@@ -244,9 +240,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         index = index % self.count()
         self._select_item(index)
 
-    @keybindings.add("-", "zoom out", mode=Modes.THUMBNAIL)
-    @keybindings.add("+", "zoom in", mode=Modes.THUMBNAIL)
-    @commands.register(mode=Modes.THUMBNAIL)
+    @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
     def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.
 
@@ -260,16 +256,15 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
-        settings.override("thumbnail.size", str(size))
-        settings.signals.changed.emit("thumbnail.size", size)
+        api.settings.THUMBNAIL_SIZE.override(str(size))
+        api.settings.signals.changed.emit(api.settings.THUMBNAIL_SIZE)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
         for i in range(self.count()):
             item = self.item(i)
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
-        self.scrollTo(self.selectionModel().currentIndex(),
-                      hint=self.PositionAtCenter)
+        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
     def _select_item(self, index):
         """Select specific item in the ListWidget.
@@ -290,10 +285,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.selectionModel().setCurrentIndex(index, selmod)
         self.scrollTo(index, hint=self.PositionAtCenter)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
-        if setting == "thumbnail.size":
-            self.setIconSize(QSize(new_value, new_value))
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
+        if setting == api.settings.THUMBNAIL_SIZE:
+            self.setIconSize(QSize(setting.value, setting.value))
             self.rescale_items()
 
     def columns(self):
@@ -306,7 +301,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
-    @statusbar.module("{thumbnail-name}")
+    @api.status.module("{thumbnail-name}")
     def current(self):
         """Name of the currently selected thumbnail."""
         try:
@@ -324,17 +319,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    @statusbar.module("{thumbnail-size}")
+    @api.status.module("{thumbnail-size}")
     def size(self):
         """Current thumbnail size (small/normal/large/x-large)."""
         return self._sizes[self.iconSize().width()]
 
-    @statusbar.module("{thumbnail-index}")
+    @api.status.module("{thumbnail-index}")
     def index(self):
         """Index of the currently selected thumbnail."""
         return str(self.currentRow() + 1)
 
-    @statusbar.module("{thumbnail-total}")
+    @api.status.module("{thumbnail-total}")
     def total(self):
         """Total number of thumbnails."""
         return str(self.model().rowCount())
@@ -342,8 +337,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def resizeEvent(self, event):
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
-        self.scrollTo(self.selectionModel().currentIndex(),
-                      hint=self.PositionAtCenter)
+        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):
@@ -361,8 +355,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.selection_bg = QColor()
         self.selection_bg.setNamedColor(styles.get("thumbnail.selected.bg"))
         self.search_bg = QColor()
-        self.search_bg.setNamedColor(
-            styles.get("thumbnail.search.highlighted.bg"))
+        self.search_bg.setNamedColor(styles.get("thumbnail.search.highlighted.bg"))
         self.padding = int(styles.get("thumbnail.padding"))
 
     def paint(self, painter, option, index):
@@ -409,19 +402,25 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Original thumbnail pixmap
         pixmap = self.parent().item(index.row()).icon().pixmap(256)
         # Rectangle that can be filled by the pixmap
-        rect = QRect(option.rect.x() + self.padding,
-                     option.rect.y() + self.padding,
-                     option.rect.width() - 2 * self.padding,
-                     option.rect.height() - 2 * self.padding)
+        rect = QRect(
+            option.rect.x() + self.padding,
+            option.rect.y() + self.padding,
+            option.rect.width() - 2 * self.padding,
+            option.rect.height() - 2 * self.padding,
+        )
         # Size the pixmap should take
         size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio)
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
         # Draw
-        painter.drawPixmap(option.rect.x() + self.padding + diff_x,
-                           option.rect.y() + self.padding + diff_y,
-                           size.width(), size.height(), pixmap)
+        painter.drawPixmap(
+            option.rect.x() + self.padding + diff_x,
+            option.rect.y() + self.padding + diff_y,
+            size.width(),
+            size.height(),
+            pixmap,
+        )
         painter.restore()
 
     def _get_background_color(self, index, state):
@@ -441,4 +440,4 @@ class ThumbnailDelegate(QStyledItemDelegate):
 
 
 def instance():
-    return objreg.get(ThumbnailView)
+    return api.objreg.get(ThumbnailView)

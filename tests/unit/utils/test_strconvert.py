@@ -11,14 +11,12 @@ import pytest
 from vimiv.utils import strconvert
 
 
-@pytest.mark.parametrize("text", [
-    "YES", "YeS", "yes", "TRUE", "True", "true", "1"])
+@pytest.mark.parametrize("text", ["YES", "YeS", "yes", "TRUE", "True", "true", "1"])
 def test_to_true_bool(text):
     assert strconvert.to_bool(text) is True
 
 
-@pytest.mark.parametrize("text", [
-    "NO", "No", "no", "FALSE", "False", "false", "0"])
+@pytest.mark.parametrize("text", ["NO", "No", "no", "FALSE", "False", "false", "0"])
 def test_to_false_bool(text):
     assert strconvert.to_bool(text) is False
 

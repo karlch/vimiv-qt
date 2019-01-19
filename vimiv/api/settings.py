@@ -13,7 +13,6 @@ Module attributes:
 """
 
 import collections
-import logging
 from abc import ABC, abstractmethod
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -21,29 +20,14 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.utils import strconvert, clamp
 
 
-class Signals(QObject):
-    """Signals for the settings module.
-
-    Signals:
-        changed: Emitted when a setting has changed.
-            arg1: Name of the setting changed.
-            arg2: New value of the changed setting
-    """
-
-    changed = pyqtSignal(str, object)
-
-
-signals = Signals()
-
-
-class Storage(collections.UserDict):
+class _Storage(collections.UserDict):
     """Stores all settings.
 
     Currently a plain dictionary but may become fancier in the future.
     """
 
 
-_storage = Storage()
+_storage = _Storage()
 
 
 def get(name):
@@ -132,15 +116,6 @@ def set_to_default(name):
     _storage[name].set_to_default()
 
 
-def store(init):
-    """Decorator to store a setting as soon as it is initialized."""
-    def setting_init(setting, name, default_value, desc="", suggestions=None):
-        """Initialize the setting and store it."""
-        init(setting, name, default_value, desc, suggestions)
-        _storage[name] = setting
-    return setting_init
-
-
 def items():
     return _storage.items()
 
@@ -162,7 +137,6 @@ class Setting(ABC):
         _value: Value of the setting stored in its python type.
     """
 
-    @store
     def __init__(self, name, default_value, desc="", suggestions=None):
         """Initialize attributes with default values.
 
@@ -179,6 +153,7 @@ class Setting(ABC):
         self._value = default_value
         self.desc = desc
         self._suggestions = suggestions
+        _storage[name] = self  # Store setting in storage
 
     @property
     def default(self):
@@ -237,8 +212,15 @@ class NumberSetting(Setting, ABC):
         max_value: Maximum value allowed for this setting.
     """
 
-    def __init__(self, name, default_value, desc="", suggestions=None,
-                 min_value=None, max_value=None):
+    def __init__(
+        self,
+        name,
+        default_value,
+        desc="",
+        suggestions=None,
+        min_value=None,
+        max_value=None,
+    ):
         """Additionally allow setting minimum and maximum value."""
         super().__init__(name, default_value, desc, suggestions)
         self.min_value = min_value
@@ -263,8 +245,7 @@ class IntSetting(NumberSetting):
             value: The integer value to add as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value + value, self.min_value, self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -273,8 +254,7 @@ class IntSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value * value, self.min_value, self.max_value)
 
     def __str__(self):
         return "Integer"
@@ -294,8 +274,7 @@ class FloatSetting(NumberSetting):
             value: The float value to add as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value + value, self.min_value, self.max_value)
 
     def multiply(self, value):
         """Multiply the currently stored integer with a value.
@@ -304,8 +283,7 @@ class FloatSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value,
-                            self.max_value)
+        self._value = clamp(self._value * value, self.min_value, self.max_value)
 
     def __str__(self):
         return "Float"
@@ -318,7 +296,7 @@ class ThumbnailSizeSetting(Setting):
     512.
     """
 
-    ALLOWED_VALUES = [64, 128, 256, 512]
+    ALLOWED_VALUES = 64, 128, 256, 512
 
     def override(self, new_value):
         """Override the setting with a new thumbnail size.
@@ -363,97 +341,116 @@ class StrSetting(Setting):
         return "String"
 
 
-class Names:
-    """Simple class which stores the string names of all settings."""
+class _Signals(QObject):
+    """Signals for the settings module.
 
-    MONITOR_FS = "monitor_filesystem"
-    SHUFFLE = "shuffle"
-    STYLE = "style"
-    STARTUP_LIBRARY = "startup_library"
+    Signals:
+        changed: Emitted when a setting has changed.
+            arg1: The changed setting.
+    """
 
-    SEARCH_IGNORE_CASE = "search.ignore_case"
-    SEARCH_INCREMENTAL = "search.incremental"
-
-    IMAGE_AUTOPLAY = "image.autoplay"
-    IMAGE_AUTOWRITE = "image.autowrite"
-    IMAGE_OVERZOOM = "image.overzoom"
-
-    LIBRARY_WIDTH = "library.width"
-    LIBRARY_SHOW_HIDDEN = "library.show_hidden"
-    LIBRARY_FILE_CHECK_AMOUNT = "library.file_check_amount"
-
-    THUMBNAIL_SIZE = "thumbnail.size"
-
-    SLIDESHOW_DELAY = "slideshow.delay"
-    SLIDESHOW_INDICATOR = "slideshow.indicator"
-
-    STATUSBAR_COLLAPSE_HOME = "statusbar.collapse_home"
-    STATUSBAR_SHOW = "statusbar.show"
-    STATUSBAR_MESSAGE_TIMEOUT = "statusbar.message_timeout"
+    changed = pyqtSignal(Setting)
 
 
-def init_defaults():
-    """Store default values of all settings."""
-    # General
-    BoolSetting(Names.MONITOR_FS, True,
-                desc="Monitor current directory for changes and reload "
-                     "widgets automatically")
-    BoolSetting(Names.SHUFFLE, False, desc="Randomly shuffle images")
-    BoolSetting(Names.STARTUP_LIBRARY, True,
-                desc="Enter library at startup if there are no images to show")
-    StrSetting(Names.STYLE, "default")
+signals = _Signals()
 
-    # Search
-    BoolSetting(Names.SEARCH_IGNORE_CASE, True,
-                desc="Ignore case when searching, i.e. 'A' and 'a' are equal")
-    BoolSetting(Names.SEARCH_INCREMENTAL, True,
-                desc="Automatically filter search results when typing")
 
-    # Image
-    BoolSetting(Names.IMAGE_AUTOPLAY, True,
-                desc="Start playing animations on open")
-    BoolSetting(Names.IMAGE_AUTOWRITE, True, desc="Save images on changes")
-    FloatSetting(Names.IMAGE_OVERZOOM, 1.0,
-                 desc="Maximum scale to apply trying to fit image to window",
-                 suggestions=["1.0", "1.5", "2.0", "5.0"],
-                 min_value=1.0)
+# Initialize all settings
+MONITOR_FS = BoolSetting(
+    "monitor_filesystem",
+    True,
+    desc="Monitor current directory for changes and reload widgets " "automatically",
+)
+SHUFFLE = BoolSetting("shuffle", False, desc="Randomly shuffle images")
+STARTUP_LIBRARY = BoolSetting(
+    "startup_library",
+    True,
+    desc="Enter library at startup if there are no images to show",
+)
+STYLE = StrSetting("style", "default")
 
-    # Library
-    FloatSetting("library.width", 0.3,
-                 desc="Width of the library as fraction of main window size",
-                 suggestions=["0.2", "0.3", "0.4", "0.5"], min_value=0.05,
-                 max_value=0.95)
-    BoolSetting("library.show_hidden", False,
-                desc="Show hidden files in the library")
-    IntSetting("library.file_check_amount", 30,
-               desc="Number of files to check when calculating directory size",
-               suggestions=["10", "30", "100", "0"])
+# Search
+SEARCH_IGNORE_CASE = BoolSetting(
+    "search.ignore_case",
+    True,
+    desc="Ignore case when searching, i.e. 'A' and 'a' are equal",
+)
+SEARCH_INCREMENTAL = BoolSetting(
+    "search.incremental", True, desc="Automatically filter search results when typing"
+)
 
-    # Thumbnail
-    ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
+# Image
+IMAGE_AUTOPLAY = BoolSetting(
+    "image.autoplay", True, desc="Start playing animations on open"
+)
+IMAGE_AUTOWRITE = BoolSetting("image.autowrite", True, desc="Save images on changes")
+IMAGE_OVERZOOM = FloatSetting(
+    "image.overzoom",
+    1.0,
+    desc="Maximum scale to apply trying to fit image to window",
+    suggestions=["1.0", "1.5", "2.0", "5.0"],
+    min_value=1.0,
+)
 
-    # Slideshow
-    FloatSetting("slideshow.delay", 2.0,
-                 desc="Delay to next image in slideshow", min_value=0.5)
-    StrSetting("slideshow.indicator", "slideshow:",
-               desc="Text to display in statusbar when slideshow is running")
+# Library
+LIBRARY_WIDTH = FloatSetting(
+    "library.width",
+    0.3,
+    desc="Width of the library as fraction of main window size",
+    suggestions=["0.2", "0.3", "0.4", "0.5"],
+    min_value=0.05,
+    max_value=0.95,
+)
+LIBRARY_SHOW_HIDDEN = BoolSetting(
+    "library.show_hidden", False, desc="Show hidden files in the library"
+)
+LIBRARY_FILE_CHECK_AMOUNT = IntSetting(
+    "library.file_check_amount",
+    30,
+    desc="Number of files to check when calculating directory size",
+    suggestions=["10", "30", "100", "0"],
+)
 
-    # Statusbar
-    BoolSetting("statusbar.collapse_home", True,
-                desc="Collapse /home/user to ~ in statusbar")
-    BoolSetting("statusbar.show", True, desc="Always display the statusbar")
-    IntSetting("statusbar.message_timeout", 5000,
-               desc="Time in ms until statusbar messages are removed",
-               min_value=500)
-    StrSetting("statusbar.left", "{pwd}")
-    StrSetting("statusbar.left_image",
-               "{index}/{total} {basename} [{zoomlevel}]")
-    StrSetting("statusbar.left_thumbnail",
-               "{thumbnail-index}/{thumbnail-total} {thumbnail-name}")
-    StrSetting("statusbar.center_thumbnail",
-               "{thumbnail-size}")
-    StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
-    StrSetting("statusbar.right", "{keys}  {mode}")
+# Thumbnail
+THUMBNAIL_SIZE = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
 
-    # Log message
-    logging.info("Initialized default settings")
+# Slideshow
+SLIDESHOW_DELAY = FloatSetting(
+    "slideshow.delay", 2.0, desc="Delay to next image in slideshow", min_value=0.5
+)
+SLIDESHOW_INDICATOR = StrSetting(
+    "slideshow.indicator",
+    "slideshow:",
+    desc="Text to display in statusbar when slideshow is running",
+)
+
+# Statusbar
+STATUSBAR_COLLAPSE_HOME = BoolSetting(
+    "statusbar.collapse_home", True, desc="Collapse /home/user to ~ in statusbar"
+)
+STATUSBAR_SHOW = BoolSetting(
+    "statusbar.show", True, desc="Always display the statusbar"
+)
+STATUSBAR_MESSAGE_TIMEOUT = IntSetting(
+    "statusbar.message_timeout",
+    5000,
+    desc="Time in ms until statusbar messages are removed",
+    min_value=500,
+)
+# Statusbar module strings, these are not retrieved by their type
+StrSetting("statusbar.left", "{pwd}")
+StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
+StrSetting(
+    "statusbar.left_thumbnail", "{thumbnail-index}/{thumbnail-total} {thumbnail-name}"
+)
+StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
+StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
+StrSetting("statusbar.right", "{keys}  {mode}")
+
+# Title module strings, these are not retrieved by their type
+StrSetting(
+    "title.fallback",
+    "vimiv",
+    desc="Default window title if no mode specific options exist",
+)
+StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")

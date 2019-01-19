@@ -11,11 +11,10 @@ import logging
 from PyQt5.QtCore import QTimer, Qt, pyqtSlot
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
-from vimiv.commands import commands
-from vimiv.config import keybindings, styles
+from vimiv import api
+from vimiv.config import styles
 from vimiv.imutils import imsignals, immanipulate
-from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import eventhandler, objreg
+from vimiv.utils import eventhandler
 
 
 class Manipulate(eventhandler.KeyHandler, QWidget):
@@ -45,8 +44,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     }
     """
 
-    @modewidget(Modes.MANIPULATE)
-    @objreg.register
+    @api.modes.widget(api.modes.MANIPULATE)
+    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -78,23 +77,23 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
         imsignals.imsignals.movie_loaded.connect(self._on_movie_loaded)
         imsignals.imsignals.svg_loaded.connect(self._on_svg_loaded)
-        modehandler.signals.entered.connect(self._on_mode_entered)
-        modehandler.signals.left.connect(self._on_mode_left)
+        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.left.connect(self._on_mode_left)
         manipulator = immanipulate.instance()
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
 
         self.hide()
 
-    @keybindings.add("<escape>", "discard", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
-        modehandler.leave(Modes.MANIPULATE)
+        api.modes.leave(api.modes.MANIPULATE)
         self._reset()
         immanipulate.instance().reset()
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Show and hide manipulate widget depending on mode entered.
 
@@ -102,21 +101,21 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             mode: The mode entered.
             last_mode: The mode left.
         """
-        if mode == Modes.MANIPULATE and self._error:
-            modehandler.leave(Modes.MANIPULATE)
+        if mode == api.modes.MANIPULATE and self._error:
+            api.modes.leave(api.modes.MANIPULATE)
             # Must wait for every other statusbar update to complete
             QTimer.singleShot(0, lambda: logging.error(self._error))
-        elif mode == Modes.MANIPULATE:
+        elif mode == api.modes.MANIPULATE:
             self.raise_()
 
-    @pyqtSlot(Mode)
+    @pyqtSlot(api.modes.Mode)
     def _on_mode_left(self, mode):
         """Reset and hide manipulate widget if the manipulate mode is left.
 
         Args:
             mode: The mode left.
         """
-        if mode == Modes.MANIPULATE:
+        if mode == api.modes.MANIPULATE:
             self.hide()
 
     def _on_edited(self, name, value):
@@ -133,11 +132,11 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         fg_focused = styles.get("manipulate.focused.fg")
         for manipulation, label in self._labels.items():
             if manipulation == name:
-                label.setText("<span style='color: %s;'>%s</span>"
-                              % (fg_focused, manipulation))
+                label.setText(
+                    "<span style='color: %s;'>%s</span>" % (fg_focused, manipulation)
+                )
             else:
-                label.setText("<span style='color: %s;'>%s</span>"
-                              % (fg, manipulation))
+                label.setText("<span style='color: %s;'>%s</span>" % (fg, manipulation))
 
     def _on_pixmap_loaded(self, pixmap):
         self._error = None
@@ -164,4 +163,4 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
 
 def instance():
-    return objreg.get(Manipulate)
+    return api.objreg.get(Manipulate)

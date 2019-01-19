@@ -9,13 +9,10 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTransform
 
-from vimiv.commands import commands
-from vimiv.config import keybindings
-from vimiv.modes import Modes
-from vimiv.utils import objreg
+from vimiv import api
 
 
-class Transform():
+class Transform:
     """Apply transformations to an image.
 
     Provides the :rotate and :flip commands and applies transformations to a
@@ -29,16 +26,16 @@ class Transform():
         _flip_vertical: Flip the image vertically.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, handler):
         self._handler = handler
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
 
-    @keybindings.add("<", "rotate --counter-clockwise", mode=Modes.IMAGE)
-    @keybindings.add(">", "rotate", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
+    @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def rotate(self, counter_clockwise: bool = False, count: int = 1):
         """Rotate the image.
 
@@ -55,9 +52,9 @@ class Transform():
         pixmap = self.transform_pixmap(self._handler.original)
         self._handler.update_transformed(pixmap)
 
-    @keybindings.add("_", "flip --vertical", mode=Modes.IMAGE)
-    @keybindings.add("|", "flip", mode=Modes.IMAGE)
-    @commands.register(mode=Modes.IMAGE)
+    @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
+    @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE)
     def flip(self, vertical: bool = False):
         """Flip the image.
 
@@ -92,8 +89,7 @@ class Transform():
 
     def changed(self):
         """Return True if transformations have been applied."""
-        if self._rotation_angle or self._flip_horizontal \
-                or self._flip_vertical:
+        if self._rotation_angle or self._flip_horizontal or self._flip_vertical:
             return True
         return False
 

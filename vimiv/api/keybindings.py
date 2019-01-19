@@ -4,25 +4,20 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Storage and getter function for keybindings.
+"""`Utilities to map commands to a sequence of keys`.
 
-Module Attributes:
-    _registry: Dictionary storing the keybindings for each mode.
-
-//
-
-Commands can be mapped to a sequence of keys using the utilities from the
-``vimiv.config.keybindings`` module.
-
-Adding a new default keybinding is done using the ``add`` decorator. This
-decorator requires the sequence of keys to bind to as first argument, the
-command as second argument and, similar to ``commands.register`` supports the
-``mode`` keyword to define the mode in which the keybinding is valid.
+Adding a new default keybinding is done using the :func:`register` decorator.
+This decorator requires the sequence of keys to bind to as first argument, the
+command as second argument and, similar to :func:`vimiv.api.commands.register`
+supports the ``mode`` keyword to define the mode in which the keybinding is
+valid.
 
 As an example, let's bind the ``:hello-earth`` command from before to the key
 sequence ``ge``::
 
-    @keybindings.add("ge", "hello-earth")
+    from vimiv.api import commands, keybindings
+
+    @keybindings.register("ge", "hello-earth")
     @commands.register()
     def hello_earth():
         print("hello earth")
@@ -31,34 +26,35 @@ If the keybinding requires passing any arguments to the command, these must be
 passed as part of the command. For example, to great venus with ``gv`` and
 earth with ``ge`` we could use::
 
-    @keybindings.add("gv", "hello-planet --name=venus")
-    @keybindings.add("ge", "hello-planet")
-    @commands.argument("name", optional=True, default="earth")
+    @keybindings.register("gv", "hello-planet --name=venus")
+    @keybindings.register("ge", "hello-planet")
     @commands.register()
-    def hello_planet(name="earth"):
+    def hello_planet(name: str = "earth"):
         print("hello", name)
 """
 
 import collections
 
-from vimiv.commands import cmdexc
-from vimiv.modes import Modes
+from . import commands, modes
 
 
-def add(keybinding, command, mode=Modes.GLOBAL):
-    """Decorator to add a keybinding.
+def register(keybinding, command, mode=modes.GLOBAL):
+    """Decorator to add a new keybinding.
 
     Args:
         command: Command to bind to.
         keybinding: Key to bind.
         mode: Mode in which the keybinding is valid.
     """
+
     def decorator(function):
         bind(keybinding, command, mode)
 
         def inside(*args, **kwargs):
             return function(*args, **kwargs)
+
         return inside
+
     return decorator
 
 
@@ -75,16 +71,15 @@ def unbind(keybinding, mode):
 
     See config/configcommands.unbind for the corresponding command.
     """
-    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY] \
-            and keybinding in _registry[Modes.GLOBAL]:
-        del _registry[Modes.GLOBAL][keybinding]
+    if mode in modes.GLOBALS and keybinding in _registry[modes.GLOBAL]:
+        del _registry[modes.GLOBAL][keybinding]
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
-        raise cmdexc.CommandError("No binding found for '%s'" % (keybinding))
+        raise commands.CommandError("No binding found for '%s'" % (keybinding))
 
 
-class Bindings(collections.UserDict):
+class _Bindings(collections.UserDict):
     """Store keybindings of one mode.
 
     Essentially a simple python dictionary which is stored in the module
@@ -98,7 +93,7 @@ class Bindings(collections.UserDict):
             self.update(startdict)
 
     def __add__(self, other):
-        return Bindings(startdict={**self, **other})
+        return _Bindings(startdict={**self, **other})
 
     def partial_match(self, keys):
         """Check if keys match some of the bindings partially.
@@ -116,13 +111,13 @@ class Bindings(collections.UserDict):
         return False
 
 
-_registry = {mode: Bindings() for mode in Modes}
+_registry = {mode: _Bindings() for mode in modes.ALL}
 
 
 def get(mode):
     """Return the keybindings of one specific mode."""
-    if mode in [Modes.IMAGE, Modes.THUMBNAIL, Modes.LIBRARY]:
-        return _registry[mode] + _registry[Modes.GLOBAL]
+    if mode in modes.GLOBALS:
+        return _registry[mode] + _registry[modes.GLOBAL]
     return _registry[mode]
 
 

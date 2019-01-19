@@ -30,10 +30,13 @@ def check_primary(clipboard, text):
     assert clipboard.text(mode=QClipboard.Selection) == text
 
 
-@bdd.then(bdd.parsers.parse(
-    # Need a slightly different wording so it cannot overlap with the previous
-    # versions
-    "the absolute path of {text} should be saved in the clipboard"))
+@bdd.then(
+    bdd.parsers.parse(
+        # Need a slightly different wording so it cannot overlap with the previous
+        # versions
+        "the absolute path of {text} should be saved in the clipboard"
+    )
+)
 def check_clipboard_abspath(clipboard, text):
     text = os.path.abspath(text)
     assert clipboard.text(mode=QClipboard.Clipboard) == text

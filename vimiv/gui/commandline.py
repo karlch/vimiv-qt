@@ -9,10 +9,10 @@
 from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLineEdit
 
-from vimiv.commands import history, commands, argtypes, runners, search
-from vimiv.config import styles, keybindings
-from vimiv.modes import modehandler, modewidget, Mode, Modes
-from vimiv.utils import objreg, eventhandler, ignore
+from vimiv import api
+from vimiv.commands import history, argtypes, runners, search
+from vimiv.config import styles
+from vimiv.utils import eventhandler, ignore
 
 
 def _command_func(prefix, command, mode):
@@ -37,7 +37,9 @@ class UnknownPrefix(Exception):
             prefix: The unknown prefix.
         """
         message = "Unknown prefix '%s', possible values: %s" % (
-            prefix, ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]))
+            prefix,
+            ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]),
+        )
         super().__init__(message)
 
 
@@ -66,8 +68,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     }
     """
 
-    @modewidget(Modes.COMMAND)
-    @objreg.register
+    @api.modes.widget(api.modes.COMMAND)
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._history = history.History(history.read())
@@ -79,7 +81,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
-        modehandler.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.entered.connect(self._on_mode_entered)
 
         styles.apply(self)
 
@@ -127,8 +129,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         with ignore(IndexError):  # Not enough text
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
-                search.search(text, self.mode, reverse=prefix == "?",
-                              incremental=True)
+                search.search(text, self.mode, reverse=prefix == "?", incremental=True)
 
     @pyqtSlot(int, int)
     def _on_cursor_position_changed(self, _old, new):
@@ -136,9 +137,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         if new < 1:
             self.setCursorPosition(1)
 
-    @keybindings.add("<ctrl>p", "history next", mode=Modes.COMMAND)
-    @keybindings.add("<ctrl>n", "history prev", mode=Modes.COMMAND)
-    @commands.register(mode=Modes.COMMAND)
+    @api.keybindings.register("<ctrl>p", "history next", mode=api.modes.COMMAND)
+    @api.keybindings.register("<ctrl>n", "history prev", mode=api.modes.COMMAND)
+    @api.commands.register(mode=api.modes.COMMAND)
     def history(self, direction: argtypes.HistoryDirection):
         """Cycle through command history.
 
@@ -149,10 +150,13 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.cycle(direction, self.text()))
 
-    @keybindings.add("<up>", "history-substr-search next", mode=Modes.COMMAND)
-    @keybindings.add("<down>", "history-substr-search prev",
-                     mode=Modes.COMMAND)
-    @commands.register(mode=Modes.COMMAND)
+    @api.keybindings.register(
+        "<up>", "history-substr-search next", mode=api.modes.COMMAND
+    )
+    @api.keybindings.register(
+        "<down>", "history-substr-search prev", mode=api.modes.COMMAND
+    )
+    @api.commands.register(mode=api.modes.COMMAND)
     def history_substr_search(self, direction: argtypes.HistoryDirection):
         """Cycle through command history with substring matching.
 
@@ -171,7 +175,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
 
-    @pyqtSlot(Mode, Mode)
+    @pyqtSlot(api.modes.Mode, api.modes.Mode)
     def _on_mode_entered(self, mode, last_mode):
         """Store mode from which the command line was entered.
 
@@ -179,9 +183,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             mode: The mode entered.
             last_mode: The mode left.
         """
-        if mode == Modes.COMMAND:
+        if mode == api.modes.COMMAND:
             self.mode = last_mode
 
 
 def instance():
-    return objreg.get(CommandLine)
+    return api.objreg.get(CommandLine)

@@ -13,28 +13,24 @@
 
 import inspect
 
-from vimiv import vimiv
-from vimiv.commands import commands
-from vimiv.config import settings, keybindings
-from vimiv.gui import statusbar
-from vimiv.utils import objreg
+from vimiv import vimiv, api
 
 import rstutils
 
 
-def generate_statusbar_modules():
-    """Generate table overview of statusbar modules."""
+def generate_status_modules():
+    """Generate table overview of status modules."""
     print("generating statusbar modules...")
-    filename = "docs/documentation/configuration/statusbar_modules.rstsrc"
+    filename = "docs/documentation/configuration/status_modules.rstsrc"
     with open(filename, "w") as f:
         rstutils.write_header(f)
         rows = [("Module", "Description")]
-        for name in sorted(statusbar._modules.keys()):
-            func = statusbar._modules[name]._func
+        for name in sorted(api.status._modules.keys()):
+            func = api.status._modules[name]._func
             name = name.strip("{}")
             desc = inspect.getdoc(func).split("\n")[0]
             rows.append((name, desc))
-        rstutils.write_table(rows, f, title="Overview of statusbar modules")
+        rstutils.write_table(rows, f, title="Overview of status modules")
 
 
 def _write_command_description(cmds, mode, f):
@@ -52,7 +48,7 @@ def generate_commands():
     print("generating commands...")
     with open("docs/documentation/commands_desc.rstsrc", "w") as f:
         rstutils.write_header(f)
-        for mode, cmds in commands.registry.items():
+        for mode, cmds in api.commands._registry.items():
             rstutils.write_subsection(mode.name.capitalize(), f)
             # Table of command overview
             rows = [("Command", "Description")]
@@ -68,13 +64,12 @@ def generate_commands():
 def generate_settings():
     """Generate table overview of all settings."""
     print("generating settings...")
-    settings.init_defaults()
     filename = "docs/documentation/configuration/settings_table.rstsrc"
     with open(filename, "w") as f:
         rstutils.write_header(f)
         rows = [("Setting", "Description")]
-        for name in sorted(settings._storage.keys()):
-            setting = settings._storage[name]
+        for name in sorted(api.settings._storage.keys()):
+            setting = api.settings._storage[name]
             if setting.desc:  # Otherwise the setting is meant to be hidden
                 rows.append((name, setting.desc))
         rstutils.write_table(rows, f, title="Overview of settings")
@@ -86,7 +81,7 @@ def generate_keybindings():
     filename = "docs/documentation/configuration/keybindings_table.rstsrc"
     with open(filename, "w") as f:
         rstutils.write_header(f)
-        for mode, bindings in keybindings.items():
+        for mode, bindings in api.keybindings.items():
             rows = _gen_keybinding_rows(bindings)
             title = "Keybindings for %s mode" % (mode.name)
             rstutils.write_table(rows, f, title=title)
@@ -96,7 +91,7 @@ def _gen_keybinding_rows(bindings):
     """Generate rows for keybindings table."""
     rows = [("Keybinding", "Command")]
     for binding, command in bindings.items():
-        rows.append(("\%s" % (binding), command))
+        rows.append(("\\%s" % (binding), command))
     return rows
 
 
@@ -203,22 +198,9 @@ def _format_optional_title(action):
     return formats
 
 
-def generate_module(filename, obj):
-    """Generate file from module docstring meant for website documentation."""
-    print("generating module for", obj.__name__)
-    docstr = inspect.getdoc(obj).split("//")[-1]
-    with open(filename, "w") as f:
-        rstutils.write_header(f)
-        f.write(docstr)
-
-
 if __name__ == "__main__":
-    generate_statusbar_modules()
+    generate_status_modules()
     generate_commands()
     generate_settings()
     generate_keybindings()
     generate_commandline_options()
-    generate_module("docs/documentation/objreg.rstsrc", objreg)
-    generate_module("docs/documentation/commands.rstsrc", commands)
-    generate_module("docs/documentation/keybindings.rstsrc", keybindings)
-    generate_module("docs/documentation/statusbar.rstsrc", statusbar)

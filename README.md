@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/karlch/vimiv-qt.svg?branch=master)](https://travis-ci.com/karlch/vimiv-qt)
 [![Updates](https://pyup.io/repos/github/karlch/vimiv-qt/shield.svg)](https://pyup.io/repos/github/karlch/vimiv-qt/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 [website](https://karlch.github.io/vimiv-qt/) |
 [docs](https://karlch.github.io/vimiv-qt/documentation/index.html) |

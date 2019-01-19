@@ -23,6 +23,7 @@ class ConversionError(Exception):
 
 def is_str(function):
     """Simple decorator to check if the argument passed is of type str."""
+
     def inner(text, *args, **kwargs):
         """Decorated function.
 
@@ -32,6 +33,7 @@ def is_str(function):
         message = "Must be converting str, not %s" % (type(text))
         assert isinstance(text, str), message
         return function(text, *args, **kwargs)
+
     return inner
 
 

@@ -20,8 +20,7 @@ import os
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
 
-from vimiv.config import settings
-from vimiv.gui import statusbar
+from vimiv import api
 from vimiv.imutils import imsignals
 from vimiv.utils import files
 
@@ -61,7 +60,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories = None
         self._processing = False
 
-        settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.signals.changed.connect(self._on_settings_changed)
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
         imsignals.imsignals.new_image_opened.connect(self._on_new_image)
@@ -81,18 +80,18 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     def _monitor(self, directory):
         """Monitor the directory by adding it to QFileSystemWatcher."""
-        if not settings.get_value(settings.Names.MONITOR_FS):
+        if not api.settings.MONITOR_FS.value:
             return
         if not self.addPath(directory):
             logging.error("Cannot monitor %s", directory)
         else:
             logging.debug("Monitoring %s", directory)
 
-    @pyqtSlot(str, object)
-    def _on_settings_changed(self, setting, new_value):
+    @pyqtSlot(api.settings.Setting)
+    def _on_settings_changed(self, setting):
         """Start/stop monitoring when the setting changed."""
-        if setting == settings.Names.MONITOR_FS:
-            if new_value:
+        if setting == api.settings.MONITOR_FS:
+            if setting.value:
                 self._monitor(self._dir)
             else:
                 logging.debug("Turning monitoring off")
@@ -107,8 +106,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     @pyqtSlot(str)
     def _reload_directory(self, path):
         """Load new supported files when directory content has changed."""
-        self._process(
-            lambda: self._emit_changes(*self._get_content(self._dir)))
+        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
 
     @pyqtSlot(str)
     def _on_new_image(self, path):
@@ -121,8 +119,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _on_file_changed(self, path):
         """Emit new_image_opened signal to reload the file on changes."""
         if os.path.exists(path):  # Otherwise the path was deleted
-            self._process(
-                lambda: imsignals.imsignals.new_image_opened.emit(path))
+            self._process(lambda: imsignals.imsignals.new_image_opened.emit(path))
 
     def _process(self, func):
         """Process function after waiting unless another process is running.
@@ -140,7 +137,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         time.sleep(self.WAIT_TIME)
         func()
         self._processing = False
-        statusbar.update()
+        api.status.update()
 
     def _emit_changes(self, images, directories):
         """Emit changed signals if the content in the directory has changed.
@@ -165,7 +162,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             images: List of images inside the directory.
             directories: List of directories inside the directory.
         """
-        show_hidden = settings.get_value(settings.Names.LIBRARY_SHOW_HIDDEN)
+        show_hidden = api.settings.LIBRARY_SHOW_HIDDEN.value
         paths = files.ls(directory, show_hidden=show_hidden)
         return files.supported(paths)
 

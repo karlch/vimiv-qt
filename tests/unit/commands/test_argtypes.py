@@ -33,8 +33,7 @@ def test_fail_zoom():
 
 def test_image_scale_text():
     # Would raise exception if a name is invalid
-    [argtypes.ImageScaleFloat(name)
-        for name in ["fit", "fit-width", "fit-height"]]
+    [argtypes.ImageScaleFloat(name) for name in ["fit", "fit-width", "fit-height"]]
 
 
 def test_image_scale_float(mocker):

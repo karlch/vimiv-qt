@@ -23,8 +23,7 @@ import tempfile
 import time
 
 # from vimiv.utils.exceptions import TrashUndeleteError
-from vimiv.commands import commands, cmdexc
-from vimiv.config import keybindings
+from vimiv import api
 from vimiv.utils import xdg
 
 
@@ -41,8 +40,8 @@ def init():
     os.makedirs(_info_directory, exist_ok=True)
 
 
-@keybindings.add("x", "delete %")
-@commands.register()
+@api.keybindings.register("x", "delete %")
+@api.commands.register()
 def delete(filename: str):
     """Move a file to the trash directory.
 
@@ -52,14 +51,14 @@ def delete(filename: str):
         * ``filename``: The name of the file to delete.
     """
     if not os.path.exists(filename):
-        raise cmdexc.CommandError("path '%s' does not exist" % (filename))
+        raise api.commands.CommandError("path '%s' does not exist" % (filename))
     filename = os.path.abspath(filename)
     trash_filename = _get_trash_filename(filename)
     _create_info_file(trash_filename, filename)
     shutil.move(filename, trash_filename)
 
 
-@commands.register()
+@api.commands.register()
 def undelete(basename: str):
     """Restore a file from the trash directory.
 
@@ -70,12 +69,11 @@ def undelete(basename: str):
     """
     trash_filename = os.path.join(_files_directory, basename)
     info_filename = _get_info_filename(basename)
-    if not os.path.exists(info_filename) \
-            or not os.path.exists(trash_filename):
-        raise cmdexc.CommandError("file does not exist")
+    if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
+        raise api.commands.CommandError("file does not exist")
     original_filename, _ = trash_info(basename)
     if not os.path.isdir(os.path.dirname(original_filename)):
-        raise cmdexc.CommandError("original directory is not accessible")
+        raise api.commands.CommandError("original directory is not accessible")
     shutil.move(trash_filename, original_filename)
     os.remove(info_filename)
 

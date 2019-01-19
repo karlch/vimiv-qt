@@ -9,16 +9,20 @@
 import collections
 import time
 
-from PyQt5.QtCore import (QRunnable, QThreadPool, pyqtSignal, pyqtSlot,
-                          QObject, QCoreApplication)
+from PyQt5.QtCore import (
+    QRunnable,
+    QThreadPool,
+    pyqtSignal,
+    pyqtSlot,
+    QObject,
+    QCoreApplication,
+)
 from PyQt5.QtGui import QPixmap, QImage
 
-from vimiv.commands import commands, argtypes
-from vimiv.config import keybindings
+from vimiv import api
+from vimiv.commands import argtypes
 from vimiv.imutils import _c_manipulate  # pylint: disable=no-name-in-module
-from vimiv.gui import statusbar
-from vimiv.modes import modehandler, Modes
-from vimiv.utils import objreg, clamp
+from vimiv.utils import clamp
 
 
 WAIT_TIME = 0.3
@@ -44,14 +48,13 @@ class Manipulator(QObject):
     edited = pyqtSignal(str, int)
     focused = pyqtSignal(str)
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self, handler):
         super().__init__()
         self._handler = handler
-        self.manipulations = collections.OrderedDict([
-            ("brightness", 0),
-            ("contrast", 0),
-        ])
+        self.manipulations = collections.OrderedDict(
+            [("brightness", 0), ("contrast", 0)]
+        )
         self.thread_id = 0
         self.data = None
         self._current = "brightness"
@@ -65,25 +68,22 @@ class Manipulator(QObject):
         """Return True if anything was edited."""
         return self.manipulations != {"brightness": 0, "contrast": 0}
 
-    @keybindings.add("<return>", "accept", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate keeping the changes."""
-        modehandler.leave(Modes.MANIPULATE)
+        api.modes.leave(api.modes.MANIPULATE)
 
     def reset(self):
         """Reset manipulations to default."""
         if self.changed():
             self._handler.update_pixmap(self._handler.transformed)
-            self.manipulations = {
-                "brightness": 0,
-                "contrast": 0
-            }
+            self.manipulations = {"brightness": 0, "contrast": 0}
             self.edited.emit("brightness", 0)
             self.edited.emit("contrast", 0)
 
-    @keybindings.add("b", "brightness", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def brightness(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate brightness.
 
@@ -100,8 +100,8 @@ class Manipulator(QObject):
         value = count if count else value
         self._update_manipulation("brightness", value)
 
-    @keybindings.add("c", "contrast", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def contrast(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
         """Manipulate contrast.
 
@@ -118,9 +118,9 @@ class Manipulator(QObject):
         value = count if count else value
         self._update_manipulation("contrast", value)
 
-    @keybindings.add("K", "increase 10", mode=Modes.MANIPULATE)
-    @keybindings.add("k", "increase 1", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("K", "increase 10", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("k", "increase 1", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def increase(self, value: int, count: int = 1):
         """Increase the value of the current manipulation.
 
@@ -134,9 +134,9 @@ class Manipulator(QObject):
         value = self.manipulations[self._current] + value * count
         self._update_manipulation(self._current, value)
 
-    @keybindings.add("J", "decrease 10", mode=Modes.MANIPULATE)
-    @keybindings.add("j", "decrease 1", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("J", "decrease 10", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("j", "decrease 1", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def decrease(self, value: int, count: int = 1):
         """Decrease the value of the current manipulation.
 
@@ -150,9 +150,9 @@ class Manipulator(QObject):
         value = self.manipulations[self._current] - value * count
         self._update_manipulation(self._current, value)
 
-    @keybindings.add("gg", "set -127", mode=Modes.MANIPULATE)
-    @keybindings.add("G", "set 127", mode=Modes.MANIPULATE)
-    @commands.register(mode=Modes.MANIPULATE)
+    @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
     def set(self, value: int, count: int = 0):
         """Set the value of the current manipulation.
 
@@ -183,7 +183,7 @@ class Manipulator(QObject):
             runnable = ManipulateRunner(self, self.thread_id)
             self.pool.start(runnable)
 
-    @statusbar.module("{processing}")
+    @api.status.module("{processing}")
     def _processing_indicator(self):
         """Print ``processing...`` if manipulations are running."""
         if self.pool.activeThreadCount():
@@ -202,7 +202,7 @@ class Manipulator(QObject):
 
 
 def instance():
-    return objreg.get(Manipulator)
+    return api.objreg.get(Manipulator)
 
 
 class ManipulateRunner(QRunnable):
@@ -233,10 +233,15 @@ class ManipulateRunner(QRunnable):
         # Run C function
         bri = self._manipulator.manipulations["brightness"] / 255
         con = self._manipulator.manipulations["contrast"] / 255
-        self._manipulator.data = \
-            _c_manipulate.manipulate(data, image.hasAlphaChannel(), bri, con)
+        self._manipulator.data = _c_manipulate.manipulate(
+            data, image.hasAlphaChannel(), bri, con
+        )
         # Convert bytes to QPixmap and set the manipulator pixmap
-        new_image = QImage(self._manipulator.data, image.width(),
-                           image.height(), image.bytesPerLine(),
-                           image.format())
+        new_image = QImage(
+            self._manipulator.data,
+            image.width(),
+            image.height(),
+            image.bytesPerLine(),
+            image.format(),
+        )
         self._manipulator.set_pixmap(QPixmap(new_image))

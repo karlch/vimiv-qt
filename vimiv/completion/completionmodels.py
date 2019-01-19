@@ -8,9 +8,9 @@
 
 import os
 
-from vimiv.commands import commands, aliases
+from vimiv import api
+from vimiv.commands import aliases
 from vimiv.completion import completionbasemodel
-from vimiv.config import settings as vimivsettings  # Modelfunc called settings
 from vimiv.utils import files, trash_manager
 
 
@@ -29,7 +29,7 @@ def command(mode):
     """
     model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
     cmdlist = []
-    for name, cmd in commands.registry[mode].items():
+    for name, cmd in api.commands.items(mode):
         if not cmd.hide:
             elem = (name, cmd.description)
             cmdlist.append(elem)
@@ -84,13 +84,10 @@ def settings(text):
     """
     data = []
     # Show valid options for the setting
-    if text in vimivsettings.names():
+    if text in api.settings.names():
         model = completionbasemodel.BaseModel((0.5, 0.5))
-        setting = vimivsettings.get(text)
-        values = {
-            "default": str(setting.default),
-            "current": str(setting.value)
-        }
+        setting = api.settings.get(text)
+        values = {"default": str(setting.default), "current": str(setting.value)}
         for i, suggestion in enumerate(setting.suggestions()):
             values["suggestion %d" % (i + 1)] = suggestion
         for name, value in values.items():
@@ -98,7 +95,7 @@ def settings(text):
     # Show all settings
     else:
         model = completionbasemodel.BaseModel((0.4, 0.1, 0.5))
-        for name, setting in vimivsettings.items():
+        for name, setting in api.settings.items():
             cmd = "set %s" % (name)
             data.append((cmd, str(setting), setting.desc))
     model.set_data(data)
@@ -119,8 +116,13 @@ def trash():
         original, date = trash_manager.trash_info(path)
         original = original.replace(os.path.expanduser("~"), "~")
         original = os.path.dirname(original)
-        date = "%s-%s-%s %s:%s" % (date[2:4], date[4:6], date[6:8], date[9:11],
-                                   date[11:13])
+        date = "%s-%s-%s %s:%s" % (
+            date[2:4],
+            date[4:6],
+            date[6:8],
+            date[9:11],
+            date[11:13],
+        )
         # Append data in column form
         data.append((cmd, original, date))
     model.set_data(data)
@@ -137,9 +139,7 @@ class ExternalCommandModel(completionbasemodel.BaseModel):
     def __init__(self):
         super().__init__()
         executables = self._get_executables()
-        data = [["!%s" % (cmd)]
-                for cmd in executables
-                if not cmd.startswith(".")]
+        data = [["!%s" % (cmd)] for cmd in executables if not cmd.startswith(".")]
         self.set_data(data)
 
     def _get_executables(self):
@@ -148,7 +148,7 @@ class ExternalCommandModel(completionbasemodel.BaseModel):
         Thanks to aszlig https://github.com/aszlig who wrote the initial
         version of this for the Gtk version of vimiv.
         """
-        pathenv = os.environ.get('PATH')
+        pathenv = os.environ.get("PATH")
         if pathenv is not None:
             pathdirs = [d for d in pathenv.split(":") if os.path.isdir(d)]
             executables = set()

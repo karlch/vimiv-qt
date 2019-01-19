@@ -10,9 +10,8 @@ import configparser
 import logging
 import os
 
-from vimiv.modes import Modes
-from vimiv.commands import aliases, cmdexc
-from vimiv.config import settings
+from vimiv import api
+from vimiv.commands import aliases
 from vimiv.utils import xdg, strconvert
 
 
@@ -43,7 +42,7 @@ def dump():
     """Write default configurations to config file."""
     parser = configparser.ConfigParser()
     # Add default options
-    for name, setting in settings.items():
+    for name, setting in api.settings.items():
         section, option = _get_section_option(name)
         if section not in parser:
             parser.add_section(section)
@@ -68,7 +67,7 @@ def _read(files):
     parser = _setup_parser()
     parser.read(files)
     # Try to update every single setting
-    for name, _ in settings.items():
+    for name, _ in api.settings.items():
         _update_setting(name, parser)
     # Read additional statusbar formatters
     if "STATUSBAR" in parser:
@@ -90,7 +89,7 @@ def _update_setting(name, parser):
         parser_option = parser.get(section, option)
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
-        settings.override(setting_name, parser_option)
+        api.settings.override(setting_name, parser_option)
         logging.info("Overriding '%s' with '%s'", setting_name, parser_option)
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         logging.warning("%s in configfile", str(e))
@@ -105,10 +104,10 @@ def _add_statusbar_formatters(configsection):
         configsection: STATUSBAR section in the config file.
     """
     positions = ["left", "center", "right"]
-    possible = ["%s_%s" % (p, m.name) for p in positions for m in Modes]
+    possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:
-            settings.StrSetting("statusbar.%s" % (name), value)
+            api.settings.StrSetting("statusbar.%s" % (name), value)
 
 
 def _setup_parser():
@@ -143,5 +142,5 @@ def _add_aliases(configsection):
     for name, command in configsection.items():
         try:
             aliases.alias(name, [command], "global")
-        except cmdexc.CommandError as e:
+        except api.commands.CommandError as e:
             logging.error("Reading aliases from config: %s", str(e))

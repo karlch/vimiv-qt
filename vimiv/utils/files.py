@@ -12,8 +12,7 @@ import os
 
 from PyQt5.QtGui import QImageReader
 
-from vimiv.config import settings
-from vimiv.gui import statusbar
+from vimiv import api
 from vimiv.utils import pathreceiver
 
 
@@ -113,7 +112,7 @@ def get_size_directory(path):
     Return:
         Size as formatted string.
     """
-    max_amount = settings.get_value(settings.Names.LIBRARY_FILE_CHECK_AMOUNT)
+    max_amount = api.settings.LIBRARY_FILE_CHECK_AMOUNT.value
     if max_amount == 0:  # Check all
         max_amount = None
     size = len(list(itertools.islice(yield_supported(ls(path)), max_amount)))
@@ -161,22 +160,22 @@ def edit_supported(filename):
     raise NotImplementedError
 
 
-@statusbar.module("{pwd}")
+@api.status.module("{pwd}")
 def pwd():
     """Current working directory."""
     wd = os.getcwd()
-    if settings.get_value(settings.Names.STATUSBAR_COLLAPSE_HOME):
+    if api.settings.STATUSBAR_COLLAPSE_HOME.value:
         wd = wd.replace(os.path.expanduser("~"), "~")
     return wd
 
 
-@statusbar.module("{filesize}")
+@api.status.module("{filesize}")
 def filesize():
     """Size of the current image in bytes."""
     return get_size(pathreceiver.current())
 
 
-@statusbar.module("{modified}")
+@api.status.module("{modified}")
 def modified():
     """Modification date of the current image."""
     mtime = os.path.getmtime(pathreceiver.current())

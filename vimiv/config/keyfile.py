@@ -10,7 +10,7 @@ import configparser
 import logging
 import os
 
-from vimiv.config import keybindings
+from vimiv import api
 from vimiv.utils import xdg
 
 
@@ -44,7 +44,7 @@ def dump():
     parser.add_section("MANIPULATE")
     parser.add_section("COMMAND")
     # Add default bindings
-    for mode, bindings in keybindings.items():
+    for mode, bindings in api.keybindings.items():
         for binding, command in bindings.items():
             parser[mode.name.upper()][binding] = command.replace("%", "%%")
     # Write to file
@@ -62,7 +62,7 @@ def _read(filename):
     """
     parser = KeyfileParser()
     parser.read(filename)
-    for mode, bindings in keybindings.items():
+    for mode, bindings in api.keybindings.items():
         section = parser[mode.name.upper()]
         _update_bindings(bindings, section)
     logging.info("Read keybindings from '%s'", filename)

@@ -4,144 +4,26 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Statusbar widget in the bar and functions to interact with it.
+"""Statusbar widget in the bar to display information.
+
+The statusbar is one of the status objects in vimiv. It therefore connects to
+the api.status.signals.update signal and updates its content when this signal
+was emitted.
 
 Module Attributes:
-    statusbar: The actual statusbar widget.
-
-    _modules: Dictionary to store any modules for the statusbar. These modules
-        are instances of the _Module class which essentially have a name in the
-        form of {module} and a callable function that returns a parsed string
-        for the statubar to show.
-
-//
-
-The statusbar displayed at the bottom of the vimiv window is configurable using
-:ref:`statusbar modules<statusbar>`. The statusbar itself as well as the
-utility functions for module generation and evaluation are in
-``vimiv.gui.statusbar``.
-
-New statusbar modules are created using the ``module`` decorator. It takes the
-name of the module as the only argument. The module name must start with the
-'{' character and end with '}' to allow differentiating modules from ordinary
-text. A function used as statusbar module must return a string that can be
-displayed in the statusbar.
-
-As an example let's create a statusbar module that returns the name of the
-current user::
-
-    @statusbar.module("{username}")
-    def username():
-        return os.getenv("USER")
+    statusbar: The statusbar object
 """
-
-import logging
 
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
-from vimiv.config import settings, styles
+from vimiv import api
+from vimiv.config import styles
 from vimiv.gui import widgets
-from vimiv.utils import (cached_method, is_method, class_that_defined_method,
-                         objreg, statusbar_loghandler)
+from vimiv.utils import statusbar_loghandler
 
-
-_modules = {}
 
 statusbar = None
-
-
-class InvalidModuleNameError(Exception):
-    """Exception raised if the name of a statusbar module is invalid."""
-
-
-class Module():
-    """Class to store function of one statusbar module."""
-
-    def __init__(self, func):
-        self._initialized = False
-        self._func = func
-
-    def __call__(self):
-        func = self._create_func(self._func)
-        return func()
-
-    def __repr__(self):
-        return "StatusbarModule('%s')" % (self._func.__name__)
-
-    @cached_method
-    def _create_func(self, func):
-        """Create function to call for a statusbar module.
-
-        This retrieves the instance of a class object for methods and sets it
-        as first argument (the 'self' argument) of a lambda. For standard
-        functions nothing is done.
-
-        Returns:
-            A function to be called without arguments.
-        """
-        logging.debug("Creating function for statusbar module '%s'",
-                      func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            instance = objreg.get(cls)
-            return lambda: func(instance)
-        return func
-
-
-def module(name):
-    """Decorator to register a command as a statusbar module.
-
-    Args:
-        name: Name of the module as set in the config file.
-    """
-    def decorator(function):
-        """Store function executable under module name."""
-        if not name.startswith("{") or not name.endswith("}"):
-            message = "Invalid name '%s' for statusbar module %s" % (
-                name, function.__name__)
-            raise InvalidModuleNameError(message)
-        _modules[name] = Module(function)
-
-        def inner(*args):
-            """Run the function."""
-            return function(*args)
-        return inner
-
-    return decorator
-
-
-def evaluate_modules(text):
-    """Evaluate module and update text accordingly.
-
-    Replaces all occurances of module names with the output of the
-    corresponding function.
-
-    Example:
-        A module called {pwd} is associated with the function os.pwd. Assuming
-        the output of os.pwd() is "/home/foo/bar", the text 'Path: {pwd}'
-        becomes 'Path: /home/foo/bar'.
-
-    Args:
-        text: The text to evaluate.
-    Return:
-        The updated text.
-    """
-    for name, mod in _modules.items():
-        if name in text:
-            text = text.replace(name, mod())
-    return text
-
-
-def update(clear_message=True):
-    """Update the statusbar.
-
-    Re-evaluates the assigned modules.
-
-    Args:
-        clear_message: Additionally clear any pushed messages.
-    """
-    statusbar.update(clear_message=clear_message)
 
 
 class StatusBar(QWidget):
@@ -173,7 +55,7 @@ class StatusBar(QWidget):
         self.timer = QTimer()
         self._items = {}
 
-        timeout = settings.get_value(settings.Names.STATUSBAR_MESSAGE_TIMEOUT)
+        timeout = api.settings.STATUSBAR_MESSAGE_TIMEOUT.value
         self.timer.setInterval(timeout)
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.clear_message)
@@ -199,6 +81,7 @@ class StatusBar(QWidget):
         styles.apply(self)
 
         statusbar_loghandler.signals.message.connect(self._on_message)
+        api.status.signals.update.connect(self._on_update_status)
 
     @pyqtSlot(str, str)
     def _on_message(self, severity, message):
@@ -213,15 +96,10 @@ class StatusBar(QWidget):
         self["stack"].setCurrentWidget(self["message"])
         self.timer.start()
 
-    def update(self, clear_message=True):
-        """Update the statusbar.
-
-        Args:
-            clear_message: Additionally clear any pushed messages.
-        """
-        mode = evaluate_modules("{mode}").lower()
-        if clear_message:
-            self.clear_message()
+    @pyqtSlot()
+    def _on_update_status(self):
+        """Update the statusbar."""
+        mode = api.status.evaluate("{mode}").lower()
         for position in ["left", "center", "right"]:
             label = self[position]
             text = self._get_text(position, mode)
@@ -244,11 +122,10 @@ class StatusBar(QWidget):
             mode: Current mode.
         """
         try:  # Prefer mode specific setting
-            text = settings.get_value(
-                "statusbar.%s_%s" % (position, mode))
+            text = api.settings.get_value("statusbar.%s_%s" % (position, mode))
         except KeyError:
-            text = settings.get_value("statusbar.%s" % (position))
-        return evaluate_modules(text)
+            text = api.settings.get_value("statusbar.%s" % (position))
+        return api.status.evaluate(text)
 
     def _set_severity_style(self, severity):
         """Set the style of the statusbar for a temporary message.
@@ -263,7 +140,9 @@ class StatusBar(QWidget):
         QLabel {
             border-top: {statusbar.message_border} {statusbar.%s};
         }
-        """ % (severity)
+        """ % (
+            severity
+        )
         styles.apply(self, append)
 
     def _clear_severity_style(self):

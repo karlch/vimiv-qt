@@ -11,12 +11,10 @@ from random import shuffle
 
 from PyQt5.QtCore import pyqtSlot, QObject
 
-from vimiv.commands import commands, search
-from vimiv.config import keybindings, settings
-from vimiv.gui import statusbar
+from vimiv import api
+from vimiv.commands import search
 from vimiv.imutils.imsignals import imsignals
-from vimiv.modes import Mode, Modes
-from vimiv.utils import objreg, files, slideshow, working_directory, ignore
+from vimiv.utils import files, slideshow, working_directory, ignore
 
 
 # We need the check as exif support is optional
@@ -31,8 +29,8 @@ _index = 0
 
 
 # We want to use the name next here as it is the best name for the command
-@keybindings.add("n", "next", mode=Modes.IMAGE)
-@commands.register()
+@api.keybindings.register("n", "next", mode=api.modes.IMAGE)
+@api.commands.register()
 def next(count: int = 1):  # pylint: disable=redefined-builtin
     """Select next image.
 
@@ -42,8 +40,8 @@ def next(count: int = 1):  # pylint: disable=redefined-builtin
         _set_index((_index + count) % len(_paths))
 
 
-@keybindings.add("p", "prev", mode=Modes.IMAGE)
-@commands.register()
+@api.keybindings.register("p", "prev", mode=api.modes.IMAGE)
+@api.commands.register()
 def prev(count: int = 1):
     """Select previous image.
 
@@ -53,9 +51,9 @@ def prev(count: int = 1):
         _set_index((_index - count) % len(_paths))
 
 
-@keybindings.add("G", "goto -1", mode=Modes.IMAGE)
-@keybindings.add("gg", "goto 1", mode=Modes.IMAGE)
-@commands.register(mode=Modes.IMAGE)
+@api.keybindings.register("G", "goto -1", mode=api.modes.IMAGE)
+@api.keybindings.register("gg", "goto 1", mode=api.modes.IMAGE)
+@api.commands.register(mode=api.modes.IMAGE)
 def goto(index: int, count: int = 0):
     """Select specific image in current filelist.
 
@@ -72,7 +70,7 @@ def goto(index: int, count: int = 0):
     _set_index(index % (len(_paths) + 1) - 1)
 
 
-@statusbar.module("{abspath}")
+@api.status.module("{abspath}")
 def current():
     """Absolute path to the current image."""
     if _paths:
@@ -80,13 +78,13 @@ def current():
     return ""
 
 
-@statusbar.module("{basename}")
+@api.status.module("{basename}")
 def basename():
     """Basename of the current image."""
     return os.path.basename(current())
 
 
-@statusbar.module("{index}")
+@api.status.module("{index}")
 def get_index():  # Needs to be called get as we use index as variable often
     """Index of the current image."""
     if _paths:
@@ -94,17 +92,17 @@ def get_index():  # Needs to be called get as we use index as variable often
     return "0"
 
 
-@statusbar.module("{total}")
+@api.status.module("{total}")
 def total():
     """Total amount of images."""
     return str(len(_paths))
 
 
-@statusbar.module("{exif-date-time}")
+@api.status.module("{exif-date-time}")
 def exif_date_time():
     """Exif creation date and time of the current image.
 
-    This is meant as an example statusbar module to show how to display exif
+    This is meant as an example api.status.module to show how to display exif
     data in the statusbar. If there are any requests/ideas for more, this can
     be used as basis to work with.
     """
@@ -128,7 +126,7 @@ class Storage(QObject):
         _index: Index of the currently displayed image in the _paths list.
     """
 
-    @objreg.register
+    @api.objreg.register
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)
@@ -137,10 +135,9 @@ class Storage(QObject):
         imsignals.open_new_image.connect(self._on_open_new_image)
         imsignals.open_new_images.connect(self._on_open_new_images)
 
-        working_directory.handler.images_changed.connect(
-            self._on_images_changed)
+        working_directory.handler.images_changed.connect(self._on_images_changed)
 
-    @pyqtSlot(int, list, Mode, bool)
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(self, index, matches, mode, incremental):
         """Select search result after new search.
 
@@ -154,7 +151,7 @@ class Storage(QObject):
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """
-        if _paths and not incremental and mode == Modes.IMAGE:
+        if _paths and not incremental and mode == api.modes.IMAGE:
             _set_index(index)
 
     @pyqtSlot()
@@ -191,7 +188,7 @@ class Storage(QObject):
         if paths:
             focused_path = current()
             _load_paths(paths, focused_path)
-            statusbar.update()
+            api.status.update()
         else:
             _clear()
 
@@ -230,13 +227,15 @@ def _load_paths(paths, focused_path):
     """
     paths = [os.path.abspath(path) for path in paths]
     focused_path = os.path.abspath(focused_path)
-    if settings.get_value(settings.Names.SHUFFLE):
+    if api.settings.SHUFFLE.value:
         shuffle(_paths)
     previous = current()
     _set_paths(paths)
-    index = paths.index(focused_path) \
-        if focused_path in paths \
+    index = (
+        paths.index(focused_path)
+        if focused_path in paths
         else min(len(paths) - 1, _index)
+    )
     _set_index(index, previous)
 
 

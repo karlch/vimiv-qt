@@ -7,8 +7,14 @@
 """Simple base QtWidgets to inherit from."""
 
 from PyQt5.QtCore import QItemSelectionModel, QMargins, Qt
-from PyQt5.QtWidgets import (QVBoxLayout, QHBoxLayout, QGridLayout, QTreeView,
-                             QAbstractItemView, QLabel)
+from PyQt5.QtWidgets import (
+    QVBoxLayout,
+    QHBoxLayout,
+    QGridLayout,
+    QTreeView,
+    QAbstractItemView,
+    QLabel,
+)
 
 from vimiv.config import styles
 

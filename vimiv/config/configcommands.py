@@ -8,18 +8,16 @@
 
 from typing import List
 
-from vimiv.commands import commands, cmdexc
-from vimiv.config import settings, keybindings
-from vimiv.modes import modehandler, Modes
+from vimiv import api
 from vimiv.utils import strconvert
 
 
-@keybindings.add(".", "set slideshow.delay +0.5", mode=Modes.IMAGE)
-@keybindings.add(",", "set slideshow.delay -0.5", mode=Modes.IMAGE)
-@keybindings.add("H", "set library.width -0.05", mode=Modes.LIBRARY)
-@keybindings.add("L", "set library.width +0.05", mode=Modes.LIBRARY)
-@keybindings.add("b", "set statusbar.show!")
-@commands.register()
+@api.keybindings.register(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
+@api.keybindings.register(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
+@api.keybindings.register("H", "set library.width -0.05", mode=api.modes.LIBRARY)
+@api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
+@api.keybindings.register("b", "set statusbar.show!")
+@api.commands.register()
 def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
 
@@ -34,26 +32,25 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
         # Toggle boolean settings
         if setting.endswith("!"):
             setting = setting.rstrip("!")
-            settings.toggle(setting)
+            api.settings.toggle(setting)
         # Add to number settings
         elif value and (value.startswith("+") or value.startswith("-")):
-            settings.add_to(setting, value)
+            api.settings.add_to(setting, value)
         # Set default
         elif value == "":
-            settings.set_to_default(setting)
+            api.settings.set_to_default(setting)
         else:
-            settings.override(setting, value)
-        new_value = settings.get_value(setting)
-        settings.signals.changed.emit(setting, new_value)
+            api.settings.override(setting, value)
+        api.settings.signals.changed.emit(api.settings.get(setting))
     except KeyError as e:
-        raise cmdexc.CommandError("unknown setting %s" % (setting))
+        raise api.commands.CommandError("unknown setting %s" % (setting))
     except TypeError as e:
-        raise cmdexc.CommandError(str(e))
+        raise api.commands.CommandError(str(e))
     except strconvert.ConversionError as e:
-        raise cmdexc.CommandError(str(e))
+        raise api.commands.CommandError(str(e))
 
 
-@commands.register()
+@api.commands.register()
 def bind(keybinding: str, command: List[str], mode: str = None):
     """Bind keys to a command.
 
@@ -66,12 +63,12 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     optional arguments:
         * ``mode``: The mode to bind the keybinding in. Default: current.
     """
-    mode = Modes.get_by_name(mode) if mode else modehandler.current()
+    mode = api.modes.get_by_name(mode) if mode else api.modes.current()
     command = " ".join(command)
-    keybindings.bind(keybinding, command, mode)
+    api.keybindings.bind(keybinding, command, mode)
 
 
-@commands.register()
+@api.commands.register()
 def unbind(keybinding: str, mode: str = None):
     """Unbind a keybinding.
 
@@ -83,13 +80,13 @@ def unbind(keybinding: str, mode: str = None):
     optional arguments:
         * ``mode``: The mode to unbind the keybinding in. Default: current.
     """
-    mode = Modes.get_by_name(mode) if mode else modehandler.current()
-    keybindings.unbind(keybinding, mode)
+    mode = api.modes.get_by_name(mode) if mode else api.modes.current()
+    api.keybindings.unbind(keybinding, mode)
 
 
-@commands.register(mode=Modes.MANIPULATE)
-@commands.register(mode=Modes.COMMAND)
-@commands.register()
+@api.commands.register(mode=api.modes.MANIPULATE)
+@api.commands.register(mode=api.modes.COMMAND)
+@api.commands.register()
 def nop():
     """Do nothing.
 
