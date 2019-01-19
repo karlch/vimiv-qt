@@ -29,7 +29,7 @@ def command(mode):
     """
     model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
     cmdlist = []
-    for name, cmd in api.commands._registry[mode].items():  # TODO
+    for name, cmd in api.commands.items(mode):
         if not cmd.hide:
             elem = (name, cmd.description)
             cmdlist.append(elem)

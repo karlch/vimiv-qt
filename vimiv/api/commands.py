@@ -148,6 +148,28 @@ class _Registry(collections.UserDict):
 _registry = _Registry()
 
 
+def items(mode):
+    """Retrieve all items in the commands registry for iteration.
+
+    Args:
+        mode: The mode for which the commands are valid.
+    Return:
+        ItemsView allowing iteration over items.
+    """
+    return _registry[mode].items()
+
+
+def names(mode):
+    """Retrieve names of all commands in the registry for iteration.
+
+    Args:
+        mode: The mode for which the commands are valid.
+    Return:
+        KeysView allowing iteration over names which are the registry keys.
+    """
+    return _registry[mode].keys()
+
+
 class _CommandArguments(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
