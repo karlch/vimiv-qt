@@ -21,6 +21,8 @@ import os
 import shutil
 import tempfile
 import time
+from functools import lru_cache
+from typing import Tuple
 
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv import api
@@ -123,8 +125,12 @@ def _create_info_file(trash_filename, original_filename):
     shutil.move(temp_path, info_path)
 
 
-def trash_info(filename):
+@lru_cache(None)
+def trash_info(filename: str) -> Tuple[str, str]:
     """Get information stored in the .trashinfo file.
+
+    Uses the lru_cache from functools as opening the files and reading information from
+    them is rather expensive.
 
     Args:
         filename: Name of the file to get info on.
