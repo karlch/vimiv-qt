@@ -144,12 +144,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """
         if direction in [direction.Left, direction.Right]:
             bar = self.horizontalScrollBar()
-            step = self.widget().width() * 0.05 * count
+            step = int(self.widget().width() * 0.05 * count)
         else:
             bar = self.verticalScrollBar()
-            step = self.widget().height() * 0.05 * count
+            step = int(self.widget().height() * 0.05 * count)
         if direction in [direction.Right, direction.Down]:
-            step *= -1
+            step *= int(-1)
         bar.setValue(bar.value() - step)
 
     @api.keybindings.register("M", "center", mode=api.modes.IMAGE)

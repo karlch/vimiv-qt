@@ -22,18 +22,18 @@ import shutil
 import tempfile
 import time
 from functools import lru_cache
-from typing import Tuple
+from typing import cast, Tuple
 
 # from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv import api
 from vimiv.utils import xdg
 
 
-_files_directory = None
-_info_directory = None
+_files_directory = cast(str, None)
+_info_directory = cast(str, None)
 
 
-def init():
+def init() -> None:
     """Create the necessary directories."""
     global _files_directory, _info_directory
     _files_directory = os.path.join(xdg.user_data_dir(), "Trash/files")
@@ -44,7 +44,7 @@ def init():
 
 @api.keybindings.register("x", "delete %")
 @api.commands.register()
-def delete(filename: str):
+def delete(filename: str) -> None:
     """Move a file to the trash directory.
 
     **syntax:** ``:delete filename``
@@ -61,7 +61,7 @@ def delete(filename: str):
 
 
 @api.commands.register()
-def undelete(basename: str):
+def undelete(basename: str) -> None:
     """Restore a file from the trash directory.
 
     **syntax:** ``:undelete basename``
@@ -80,7 +80,7 @@ def undelete(basename: str):
     os.remove(info_filename)
 
 
-def _get_trash_filename(filename):
+def _get_trash_filename(filename: str) -> str:
     """Return the name of the file in self.files_directory.
 
     Args:
@@ -96,12 +96,12 @@ def _get_trash_filename(filename):
     return path
 
 
-def _get_info_filename(filename):
+def _get_info_filename(filename: str) -> str:
     basename = os.path.basename(filename)
     return os.path.join(_info_directory, basename + ".trashinfo")
 
 
-def _create_info_file(trash_filename, original_filename):
+def _create_info_file(trash_filename: str, original_filename: str) -> None:
     """Create file with information as specified by the standard.
 
     Args:
