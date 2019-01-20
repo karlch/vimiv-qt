@@ -20,7 +20,8 @@ from PyQt5.QtCore import QObject, pyqtSignal
 from vimiv.utils import strconvert, clamp
 
 
-SettingType = Union[bool, float, int, str]  # Possible options for setting values
+SettingType = Union[bool, float, int, str]  # Possible options for Setting values
+NumberType = Union[float, int]  # Possible options for NumberSetting values
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -216,12 +217,12 @@ class NumberSetting(Setting, ABC):
 
     def __init__(
         self,
-        name,
-        default_value,
-        desc="",
-        suggestions=None,
-        min_value=None,
-        max_value=None,
+        name: str,
+        default_value: NumberType,
+        desc: str = "",
+        suggestions: List[str] = None,
+        min_value: NumberType = None,
+        max_value: NumberType = None,
     ):
         """Additionally allow setting minimum and maximum value."""
         super().__init__(name, default_value, desc, suggestions)
@@ -336,7 +337,7 @@ class ThumbnailSizeSetting(Setting):
     def suggestions(self) -> List[str]:
         return [str(value) for value in self.ALLOWED_VALUES]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "ThumbSize"
 
 

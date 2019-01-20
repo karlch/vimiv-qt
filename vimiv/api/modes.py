@@ -28,9 +28,10 @@ they are automatically added for each of these three modes.
 
 import abc
 import logging
-from typing import Any, Callable
+from typing import cast, Any, Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QWidget
 
 
 class NoModeError(Exception):
@@ -62,12 +63,12 @@ class Mode(abc.ABC):
 
     _ID = 0
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.active = False
-        self.last_fallback = None
-        self.widget = None
+        self.last_fallback = cast(Mode, None)  # Initialized to a mode in _init()
+        self.widget = cast(QWidget, None)  # Initialized to a QWidget using @widget
 
-        self._last = None
+        self._last = cast(Mode, None)  # Initialized to a mode in _init()
         self._name = name
 
         # Store global ID as ID and increase it by one
@@ -151,8 +152,8 @@ def widget(mode: Mode) -> Callable:
         mode: The mode to associate the decorated widget with.
     """
 
-    def decorator(component_init):
-        def inner(component, *args, **kwargs):
+    def decorator(component_init: Callable) -> Callable:
+        def inner(component: Any, *args: Any, **kwargs: Any) -> None:
             mode.widget = component
             component_init(component, *args, **kwargs)
 

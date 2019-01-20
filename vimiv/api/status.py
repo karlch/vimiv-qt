@@ -32,12 +32,18 @@ If any other object requires the status to be updated, they should call
 :func:`vimiv.api.status.update`.
 """
 
+import functools
 import logging
+from typing import Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.utils import cached_method, is_method, class_that_defined_method
 from . import objreg
+
+
+# module function is either a function with no arguments or a method which takes self
+Module = Callable[..., str]
 
 
 _modules = {}  # Dictionary storing all status modules
@@ -50,18 +56,18 @@ class InvalidModuleNameError(Exception):
 class _Module:
     """Class to store function of one status module."""
 
-    def __init__(self, func):
+    def __init__(self, func: Module):
         self._func = func
 
-    def __call__(self):
+    def __call__(self) -> str:
         func = self._create_func(self._func)
         return func()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "StatusModule('%s')" % (self._func.__name__)
 
     @cached_method
-    def _create_func(self, func):
+    def _create_func(self, func: Module) -> Module:
         """Create function to call for a status module.
 
         This retrieves the instance of a class object for methods and sets it
@@ -75,11 +81,11 @@ class _Module:
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda: func(instance)
+            return functools.partial(func, instance)
         return func
 
 
-def module(name: str):
+def module(name: str) -> Callable[[Module], Module]:
     """Decorator to register a function as status module.
 
     The decorated function must return a string that can be displayed as
@@ -92,7 +98,7 @@ def module(name: str):
             text.
     """
 
-    def decorator(function):
+    def decorator(function: Module) -> Module:
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
             message = "Invalid name '%s' for status module %s" % (
@@ -101,12 +107,7 @@ def module(name: str):
             )
             raise InvalidModuleNameError(message)
         _modules[name] = _Module(function)
-
-        def inner(*args):
-            """Run the function."""
-            return function(*args)
-
-        return inner
+        return function
 
     return decorator
 

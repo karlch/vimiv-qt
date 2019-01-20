@@ -32,13 +32,13 @@ function can be used::
 
 import collections
 import logging
-from typing import Type, TypeVar
+from typing import Any, Callable, Type, TypeVar
 
 
 RegisterObject = TypeVar("RegisterObject")
 
 
-def register(component_init):
+def register(component_init: Callable) -> Callable:
     """Decorator to store a component in the object registry.
 
     This decorates the ``__init__`` function of the component to register. The
@@ -48,7 +48,7 @@ def register(component_init):
         component_init: The ``__init__`` function of the component.
     """
 
-    def inside(component: RegisterObject, *args, **kwargs) -> None:
+    def inside(component: RegisterObject, *args: Any, **kwargs: Any) -> None:
         """The decorated ``__init__`` function.
 
         Args:
