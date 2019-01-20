@@ -21,7 +21,9 @@ from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv import api
 from vimiv.commands.argtypes import ManipulateLevel
-from vimiv.imutils import _c_manipulate  # type: ignore # noqa
+from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
+    _c_manipulate,
+)
 from vimiv.utils import clamp
 
 
