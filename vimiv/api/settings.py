@@ -13,15 +13,14 @@ Module attributes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, ItemsView, KeysView, List, Union
+from typing import Any, Dict, ItemsView, KeysView, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import strconvert, clamp
 
 
-SettingType = Union[bool, float, int, str]  # Possible options for Setting values
-NumberType = Union[float, int]  # Possible options for NumberSetting values
+Number = Union[int, float]
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -38,7 +37,7 @@ def get(name: str) -> "Setting":
     return _storage[name]
 
 
-def get_value(name: str) -> SettingType:
+def get_value(name: str) -> Any:
     """Get the current value of a setting.
 
     Args:
@@ -137,7 +136,7 @@ class Setting(ABC):
     def __init__(
         self,
         name: str,
-        default_value: SettingType,
+        default_value: Any,
         desc: str = "",
         suggestions: List[str] = None,
     ):
@@ -159,11 +158,11 @@ class Setting(ABC):
         _storage[name] = self  # Store setting in storage
 
     @property
-    def default(self) -> SettingType:
+    def default(self) -> Any:
         return self._default
 
     @property
-    def value(self) -> SettingType:
+    def value(self) -> Any:
         return self._value
 
     def is_default(self) -> bool:
@@ -218,11 +217,11 @@ class NumberSetting(Setting, ABC):
     def __init__(
         self,
         name: str,
-        default_value: NumberType,
+        default_value: Number,
         desc: str = "",
         suggestions: List[str] = None,
-        min_value: NumberType = None,
-        max_value: NumberType = None,
+        min_value: Number = None,
+        max_value: Number = None,
     ):
         """Additionally allow setting minimum and maximum value."""
         super().__init__(name, default_value, desc, suggestions)
