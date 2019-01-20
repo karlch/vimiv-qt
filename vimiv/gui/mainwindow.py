@@ -8,8 +8,7 @@
 
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
-from vimiv import api, utils
-from vimiv.completion import completer
+from vimiv import api, apimodules, utils
 from vimiv.config import configcommands
 from vimiv.gui import (
     image,
@@ -50,7 +49,7 @@ class MainWindow(QWidget):
         self._overlays.append(compwidget)
         grid.addWidget(self.bar, 1, 0, 1, 2)
         # Initialize completer and config commands
-        completer.Completer(self.bar.commandline, compwidget)
+        apimodules.Completer(self.bar.commandline, compwidget)
         configcommands.init()
         self._set_title()
 

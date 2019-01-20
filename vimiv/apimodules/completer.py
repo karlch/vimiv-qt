@@ -9,7 +9,7 @@
 from PyQt5.QtCore import QObject
 
 from vimiv import api, utils
-from vimiv.completion import completionfilters, completionmodels
+from vimiv.completion import completionmodels
 
 
 class Completer(QObject):
@@ -31,7 +31,7 @@ class Completer(QObject):
     @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__(parent=completion)
-        self.proxy_model = completionfilters.TextFilter()
+        self.proxy_model = api.completion.TextFilter()
         self._cmd = commandline
         self._modelfunc = None
         self._modelargs = None

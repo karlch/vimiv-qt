@@ -11,6 +11,7 @@ infrastructure and not define any actual implementations.
 """
 
 from vimiv import api
+from .completer import Completer
 
 
 ###############################################################################

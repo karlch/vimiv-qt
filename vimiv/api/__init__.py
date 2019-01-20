@@ -6,4 +6,4 @@
 
 """`Utilities to interact with the application`."""
 
-from . import commands, keybindings, modes, objreg, settings, status
+from . import commands, completion, keybindings, modes, objreg, settings, status

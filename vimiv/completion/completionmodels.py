@@ -10,13 +10,12 @@ import os
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.completion import completionbasemodel
 from vimiv.utils import files, trash_manager
 
 
 def empty():
     """Empty completion model when no completions should be shown."""
-    return completionbasemodel.BaseModel()
+    return api.completion.BaseModel()
 
 
 def command(mode):
@@ -27,7 +26,7 @@ def command(mode):
     Return:
         The generated completion model.
     """
-    model = completionbasemodel.BaseModel(column_widths=(0.3, 0.7))
+    model = api.completion.BaseModel(column_widths=(0.3, 0.7))
     cmdlist = []
     for name, cmd in api.commands.items(mode):
         if not cmd.hide:
@@ -49,7 +48,7 @@ def paths(text):
     Return:
         The generated completion model.
     """
-    model = completionbasemodel.BaseModel()
+    model = api.completion.BaseModel()
     # Get directory
     if not text:
         directory = "."
@@ -85,7 +84,7 @@ def settings(text):
     data = []
     # Show valid options for the setting
     if text in api.settings.names():
-        model = completionbasemodel.BaseModel((0.5, 0.5))
+        model = api.completion.BaseModel((0.5, 0.5))
         setting = api.settings.get(text)
         values = {"default": str(setting.default), "current": str(setting.value)}
         for i, suggestion in enumerate(setting.suggestions()):
@@ -94,7 +93,7 @@ def settings(text):
             data.append(("set %s %s" % (text, value), name))
     # Show all settings
     else:
-        model = completionbasemodel.BaseModel((0.4, 0.1, 0.5))
+        model = api.completion.BaseModel((0.4, 0.1, 0.5))
         for name, setting in api.settings.items():
             cmd = "set %s" % (name)
             data.append((cmd, str(setting), setting.desc))
@@ -109,7 +108,7 @@ def trash():
         The generated completion model.
     """
     data = []
-    model = completionbasemodel.BaseModel((0.4, 0.45, 0.15))
+    model = api.completion.BaseModel((0.4, 0.45, 0.15))
     for path in files.listdir(trash_manager.files_directory()):
         cmd = "undelete %s" % (os.path.basename(path))
         # Get info and format it neatly
@@ -129,7 +128,7 @@ def trash():
     return model
 
 
-class ExternalCommandModel(completionbasemodel.BaseModel):
+class ExternalCommandModel(api.completion.BaseModel):
     """Completion model filled with shell executables for :!.
 
     Implemented as a class so the external commands must only be found once not
