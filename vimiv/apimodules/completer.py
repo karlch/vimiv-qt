@@ -136,10 +136,9 @@ class Completer(QObject):
         cmdtext = self._cmd.text()
         prefix, cmdtext = cmdtext[0], cmdtext[1:]
         digits = ""
-        if cmdtext:
-            while cmdtext[0].isdigit():
-                digits += cmdtext[0]
-                cmdtext = cmdtext[1:]
+        while cmdtext and cmdtext[0].isdigit():
+            digits += cmdtext[0]
+            cmdtext = cmdtext[1:]
         # Set text in commandline
         self._cmd.setText(prefix + digits + text)
 

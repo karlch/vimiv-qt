@@ -38,3 +38,9 @@ Feature: Using completion.
         And I run complete
         And I run leave-commandline
         Then no completion should be selected
+
+    Scenario: Crash when completing on entered number
+        Given I open any directory
+        When I enter command mode with 2
+        And I run complete
+        Then no crash should happen
