@@ -12,25 +12,21 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
-import collections
 from abc import ABC, abstractmethod
+from typing import Dict, ItemsView, KeysView, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import strconvert, clamp
 
 
-class _Storage(collections.UserDict):
-    """Stores all settings.
-
-    Currently a plain dictionary but may become fancier in the future.
-    """
+SettingType = Union[bool, float, int, str]  # Possible options for setting values
 
 
-_storage = _Storage()
+_storage: Dict[str, "Setting"] = {}
 
 
-def get(name):
+def get(name: str) -> "Setting":
     """Get a Setting object from the storage.
 
     Args:
@@ -41,7 +37,7 @@ def get(name):
     return _storage[name]
 
 
-def get_value(name):
+def get_value(name: str) -> SettingType:
     """Get the current value of a setting.
 
     Args:
@@ -52,7 +48,7 @@ def get_value(name):
     return _storage[name].value
 
 
-def override(name, new_value):
+def override(name: str, new_value: str) -> None:
     """Override the value of a setting.
 
     Args:
@@ -63,7 +59,7 @@ def override(name, new_value):
     setting.override(new_value)
 
 
-def toggle(name):
+def toggle(name: str) -> None:
     """Toggle the value of a setting.
 
     Args:
@@ -75,7 +71,7 @@ def toggle(name):
     setting.toggle()
 
 
-def add_to(name, value):
+def add_to(name: str, value: str) -> None:
     """Add a value to a setting.
 
     Args:
@@ -88,7 +84,7 @@ def add_to(name, value):
     setting.add(value)
 
 
-def multiply_with(name, value):
+def multiply_with(name: str, value: str) -> None:
     """Multiply a setting with a value.
 
     Args:
@@ -101,13 +97,13 @@ def multiply_with(name, value):
     setting.multiply(value)
 
 
-def reset():
+def reset() -> None:
     """Reset all settings to their default value."""
     for setting in _storage.values():
         setting.set_to_default()
 
 
-def set_to_default(name):
+def set_to_default(name: str) -> None:
     """Set one setting back to default.
 
     Args:
@@ -116,11 +112,11 @@ def set_to_default(name):
     _storage[name].set_to_default()
 
 
-def items():
+def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
 
 
-def names():
+def names() -> KeysView[str]:
     return _storage.keys()
 
 
@@ -137,7 +133,13 @@ class Setting(ABC):
         _value: Value of the setting stored in its python type.
     """
 
-    def __init__(self, name, default_value, desc="", suggestions=None):
+    def __init__(
+        self,
+        name: str,
+        default_value: SettingType,
+        desc: str = "",
+        suggestions: List[str] = None,
+    ):
         """Initialize attributes with default values.
 
         Args:
@@ -156,28 +158,28 @@ class Setting(ABC):
         _storage[name] = self  # Store setting in storage
 
     @property
-    def default(self):
+    def default(self) -> SettingType:
         return self._default
 
     @property
-    def value(self):
+    def value(self) -> SettingType:
         return self._value
 
-    def is_default(self):
+    def is_default(self) -> bool:
         return self.value == self.default
 
-    def set_to_default(self):
+    def set_to_default(self) -> None:
         self._value = self.default
 
     @abstractmethod
-    def override(self, new_value):
+    def override(self, new_value: str) -> None:
         """Override the stored value with a new value.
 
         Must be implemented by the child class as this fails or succeeds
         depending on the type of value.
         """
 
-    def suggestions(self):
+    def suggestions(self) -> List[str]:
         """Return a list of valid or useful suggestions for the setting.
 
         Used by the completion widget.
@@ -188,16 +190,16 @@ class Setting(ABC):
 class BoolSetting(Setting):
     """Stores a boolean setting."""
 
-    def override(self, new_value):
+    def override(self, new_value: str) -> None:
         self._value = strconvert.to_bool(new_value)
 
-    def toggle(self):
+    def toggle(self) -> None:
         self._value = not self._value
 
-    def suggestions(self):
+    def suggestions(self) -> List[str]:
         return ["True", "False"]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Bool"
 
 
@@ -227,65 +229,73 @@ class NumberSetting(Setting, ABC):
         self.max_value = max_value
 
     @abstractmethod
-    def override(self, new_value):
+    def override(self, new_value: str) -> None:
         """Must still be overridden."""
+
+    @abstractmethod
+    def add(self, new_value: str) -> None:
+        """Must be implemented by child."""
+
+    @abstractmethod
+    def multiply(self, new_value: str) -> None:
+        """Must be implemented by child."""
 
 
 class IntSetting(NumberSetting):
     """Stores an integer setting."""
 
-    def override(self, new_value):
-        value = strconvert.to_int(new_value, allow_sign=True)
-        self._value = clamp(value, self.min_value, self.max_value)
+    def override(self, new_value: str) -> None:
+        ivalue = strconvert.to_int(new_value, allow_sign=True)
+        self._value = clamp(ivalue, self.min_value, self.max_value)
 
-    def add(self, value):
+    def add(self, value: str) -> None:
         """Add a value to the currently stored integer.
 
         Args:
             value: The integer value to add as string.
         """
-        value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value, self.max_value)
+        ivalue = strconvert.to_int(value, allow_sign=True)
+        self._value = clamp(self._value + ivalue, self.min_value, self.max_value)
 
-    def multiply(self, value):
+    def multiply(self, value: str) -> None:
         """Multiply the currently stored integer with a value.
 
         Args:
             value: The value to multiply with as string.
         """
-        value = strconvert.to_int(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value, self.max_value)
+        ivalue = strconvert.to_int(value, allow_sign=True)
+        self._value = clamp(self._value * ivalue, self.min_value, self.max_value)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Integer"
 
 
 class FloatSetting(NumberSetting):
     """Stores a float setting."""
 
-    def override(self, new_value):
-        value = strconvert.to_float(new_value, allow_sign=True)
-        self._value = clamp(value, self.min_value, self.max_value)
+    def override(self, new_value: str) -> None:
+        fvalue = strconvert.to_float(new_value, allow_sign=True)
+        self._value = clamp(fvalue, self.min_value, self.max_value)
 
-    def add(self, value):
+    def add(self, value: str) -> None:
         """Add a value to the currently stored float.
 
         Args:
             value: The float value to add as string.
         """
-        value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value + value, self.min_value, self.max_value)
+        fvalue = strconvert.to_float(value, allow_sign=True)
+        self._value = clamp(self._value + fvalue, self.min_value, self.max_value)
 
-    def multiply(self, value):
+    def multiply(self, value: str) -> None:
         """Multiply the currently stored integer with a value.
 
         Args:
             value: The value to multiply with as string.
         """
-        value = strconvert.to_float(value, allow_sign=True)
-        self._value = clamp(self._value * value, self.min_value, self.max_value)
+        fvalue = strconvert.to_float(value, allow_sign=True)
+        self._value = clamp(self._value * fvalue, self.min_value, self.max_value)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Float"
 
 
@@ -298,33 +308,33 @@ class ThumbnailSizeSetting(Setting):
 
     ALLOWED_VALUES = 64, 128, 256, 512
 
-    def override(self, new_value):
+    def override(self, new_value: str) -> None:
         """Override the setting with a new thumbnail size.
 
         Args:
             new_value: String containing.
         """
-        new_value = strconvert.to_int(new_value)
-        if new_value not in self.ALLOWED_VALUES:
+        ivalue = strconvert.to_int(new_value)
+        if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
-        self._value = new_value
+        self._value = ivalue
 
-    def increase(self):
+    def increase(self) -> None:
         """Increase thumbnail size."""
         index = self.ALLOWED_VALUES.index(self._value)
         index += 1
         index = min(index, len(self.ALLOWED_VALUES) - 1)
         self._value = self.ALLOWED_VALUES[index]
 
-    def decrease(self):
+    def decrease(self) -> None:
         """Decrease thumbnail size."""
         index = self.ALLOWED_VALUES.index(self._value)
         index -= 1
         index = max(index, 0)
         self._value = self.ALLOWED_VALUES[index]
 
-    def suggestions(self):
-        return self.ALLOWED_VALUES
+    def suggestions(self) -> List[str]:
+        return [str(value) for value in self.ALLOWED_VALUES]
 
     def __str__(self):
         return "ThumbSize"
@@ -333,11 +343,11 @@ class ThumbnailSizeSetting(Setting):
 class StrSetting(Setting):
     """Stores a string setting."""
 
-    def override(self, new_value):
+    def override(self, new_value: str) -> None:
         assert isinstance(new_value, str), "Type of StrSetting must be str"
         self._value = new_value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "String"
 
 

@@ -32,7 +32,10 @@ function can be used::
 
 import collections
 import logging
-from typing import Any
+from typing import Type, TypeVar
+
+
+RegisterObject = TypeVar("RegisterObject")
 
 
 def register(component_init):
@@ -45,7 +48,7 @@ def register(component_init):
         component_init: The ``__init__`` function of the component.
     """
 
-    def inside(component, *args, **kwargs):
+    def inside(component: RegisterObject, *args, **kwargs) -> None:
         """The decorated ``__init__`` function.
 
         Args:
@@ -57,7 +60,7 @@ def register(component_init):
     return inside
 
 
-def get(obj_type: type) -> Any:
+def get(obj_type: Type[RegisterObject]) -> RegisterObject:
     """Retrieve a component from the registry.
 
     Args:
@@ -71,7 +74,7 @@ def get(obj_type: type) -> Any:
 class _Registry(collections.UserDict):
     """Storage class for vimiv components."""
 
-    def store(self, component):
+    def store(self, component: RegisterObject) -> None:
         """Store one component in the registry.
 
         This is used instead of __setitem__ as the key to store the component
@@ -86,7 +89,7 @@ class _Registry(collections.UserDict):
         self[key] = component
 
     @staticmethod
-    def _key(obj):
+    def _key(obj: RegisterObject) -> type:
         """Use object type as unique key to store the object intance."""
         return type(obj)
 
