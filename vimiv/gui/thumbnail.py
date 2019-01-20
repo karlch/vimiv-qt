@@ -11,7 +11,7 @@ import logging
 import os
 from typing import List
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
@@ -96,7 +96,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         styles.apply(self)
 
-    @utils.slot
+    @pyqtSlot(list)
     def _on_new_images_opened(self, paths: List[str]):
         """Load new paths into thumbnail widget.
 
@@ -147,7 +147,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
 
-    @utils.slot
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
     ):

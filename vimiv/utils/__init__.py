@@ -136,10 +136,7 @@ def _slot_args(function):
         if not has_annotation:
             raise NoAnnotationError(argument, function)
         annotation = argspec.annotations[argument]
-        if not isinstance(annotation, type):  # Comes from typing._GenericAlias
-            slot_args.append(annotation.__origin__)
-        else:
-            slot_args.append(annotation)
+        slot_args.append(annotation)
     return slot_args, slot_kwargs
 
 

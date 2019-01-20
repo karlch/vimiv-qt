@@ -10,7 +10,7 @@ import logging
 import os
 from typing import List
 
-from PyQt5.QtCore import Qt, QSize, QModelIndex
+from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
@@ -108,7 +108,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         self.open_selected()
 
-    @utils.slot
+    @pyqtSlot(list)
     def _on_paths_loaded(self, data: List[libpaths.LibraryRow]):
         """Fill library with paths when they were loaded.
 
@@ -117,7 +117,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         self._set_content(data)
 
-    @utils.slot
+    @pyqtSlot(list)
     def _on_paths_changed(self, data: List[libpaths.LibraryRow]):
         """Reload library with paths when they changed.
 
@@ -127,7 +127,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._store_position()
         self._set_content(data)
 
-    @utils.slot
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
     ):
@@ -333,7 +333,7 @@ class LibraryModel(QStandardItemModel):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
 
-    @utils.slot
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
     ):

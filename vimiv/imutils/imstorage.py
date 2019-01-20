@@ -10,7 +10,7 @@ import os
 from random import shuffle
 from typing import List
 
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils
 from vimiv.commands import search
@@ -138,7 +138,7 @@ class Storage(QObject):
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
-    @utils.slot
+    @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
     ):
@@ -170,7 +170,7 @@ class Storage(QObject):
         """
         _load_single(os.path.abspath(path))
 
-    @utils.slot
+    @pyqtSlot(list, str)
     def _on_open_new_images(self, paths: List[str], focused_path: str):
         """Load list of new images into storage.
 
@@ -184,7 +184,7 @@ class Storage(QObject):
         else:
             _load_paths(paths, focused_path)
 
-    @utils.slot
+    @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):
         if os.getcwd() != os.path.dirname(current()):
             return
