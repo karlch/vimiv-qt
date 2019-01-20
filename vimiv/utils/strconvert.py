@@ -38,7 +38,7 @@ def is_str(function):
 
 
 @is_str
-def to_bool(text):
+def to_bool(text: str) -> bool:
     """Convert text to bool."""
     text = text.lower()
     if text in ["yes", "true", "1"]:
@@ -49,7 +49,7 @@ def to_bool(text):
 
 
 @is_str
-def to_int(text, allow_sign=False):
+def to_int(text: str, allow_sign: bool = False) -> int:
     """Convert text to int."""
     try:
         int_val = int(text)
@@ -61,7 +61,7 @@ def to_int(text, allow_sign=False):
 
 
 @is_str
-def to_float(text, allow_sign=False):
+def to_float(text: str, allow_sign: bool = False) -> float:
     """Convert text to float."""
     try:
         float_val = float(text)
