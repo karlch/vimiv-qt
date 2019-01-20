@@ -164,7 +164,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             directories: List of directories inside the directory.
         """
         show_hidden = api.settings.LIBRARY_SHOW_HIDDEN.value
-        paths = files.ls(directory, show_hidden=show_hidden)
+        paths = files.listdir(directory, show_hidden=show_hidden)
         return files.supported(paths)
 
 

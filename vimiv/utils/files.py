@@ -17,9 +17,7 @@ from vimiv import api
 from vimiv.utils import pathreceiver
 
 
-def ls(
-    directory: str, show_hidden: bool = False
-) -> List[str]:  # pylint: disable=invalid-name
+def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
 
     Args:
@@ -118,7 +116,7 @@ def get_size_directory(path: str) -> str:
     max_amount = api.settings.LIBRARY_FILE_CHECK_AMOUNT.value
     if max_amount == 0:  # Check all
         max_amount = None
-    size = len(list(itertools.islice(yield_supported(ls(path)), max_amount)))
+    size = len(list(itertools.islice(yield_supported(listdir(path)), max_amount)))
     if size == max_amount:
         return ">%d" % (max_amount)
     return str(size)

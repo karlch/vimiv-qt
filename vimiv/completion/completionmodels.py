@@ -62,7 +62,7 @@ def paths(text):
         return model
     # Get supported paths
     pathlist = []
-    images, directories = files.supported(files.ls(directory))
+    images, directories = files.supported(files.listdir(directory))
     pathlist.extend(images)
     pathlist.extend(directories)
     # Format data
@@ -110,7 +110,7 @@ def trash():
     """
     data = []
     model = completionbasemodel.BaseModel((0.4, 0.45, 0.15))
-    for path in files.ls(trash_manager.files_directory()):
+    for path in files.listdir(trash_manager.files_directory()):
         cmd = "undelete %s" % (os.path.basename(path))
         # Get info and format it neatly
         original, date = trash_manager.trash_info(path)

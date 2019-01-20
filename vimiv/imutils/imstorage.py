@@ -215,7 +215,7 @@ def _load_single(path: str) -> None:
         goto(_paths.index(path) + 1)  # goto is indexed from 1
     else:
         directory = os.path.dirname(path)
-        paths, _ = files.supported(files.ls(directory))
+        paths, _ = files.supported(files.listdir(directory))
         _load_paths(paths, path)
 
 
