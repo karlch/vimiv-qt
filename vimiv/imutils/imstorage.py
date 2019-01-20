@@ -8,6 +8,7 @@
 
 import os
 from random import shuffle
+from typing import List
 
 from PyQt5.QtCore import pyqtSlot, QObject
 
@@ -24,14 +25,14 @@ except ImportError:
     piexif = None
 
 
-_paths = []
+_paths: List[str] = []
 _index = 0
 
 
 # We want to use the name next here as it is the best name for the command
 @api.keybindings.register("n", "next", mode=api.modes.IMAGE)
 @api.commands.register()
-def next(count: int = 1):  # pylint: disable=redefined-builtin
+def next(count: int = 1) -> None:  # pylint: disable=redefined-builtin
     """Select next image.
 
     **count:** multiplier
@@ -42,7 +43,7 @@ def next(count: int = 1):  # pylint: disable=redefined-builtin
 
 @api.keybindings.register("p", "prev", mode=api.modes.IMAGE)
 @api.commands.register()
-def prev(count: int = 1):
+def prev(count: int = 1) -> None:
     """Select previous image.
 
     **count:** multiplier
@@ -54,7 +55,7 @@ def prev(count: int = 1):
 @api.keybindings.register("G", "goto -1", mode=api.modes.IMAGE)
 @api.keybindings.register("gg", "goto 1", mode=api.modes.IMAGE)
 @api.commands.register(mode=api.modes.IMAGE)
-def goto(index: int, count: int = 0):
+def goto(index: int, count: int = 0) -> None:
     """Select specific image in current filelist.
 
     **syntax:** ``:goto index``
@@ -71,7 +72,7 @@ def goto(index: int, count: int = 0):
 
 
 @api.status.module("{abspath}")
-def current():
+def current() -> str:
     """Absolute path to the current image."""
     if _paths:
         return _paths[_index]
@@ -79,13 +80,13 @@ def current():
 
 
 @api.status.module("{basename}")
-def basename():
+def basename() -> str:
     """Basename of the current image."""
     return os.path.basename(current())
 
 
 @api.status.module("{index}")
-def get_index():  # Needs to be called get as we use index as variable often
+def get_index() -> str:  # Needs to be called get as we use index as variable often
     """Index of the current image."""
     if _paths:
         return str(_index + 1).zfill(len(total()))
@@ -93,13 +94,13 @@ def get_index():  # Needs to be called get as we use index as variable often
 
 
 @api.status.module("{total}")
-def total():
+def total() -> str:
     """Total amount of images."""
     return str(len(_paths))
 
 
 @api.status.module("{exif-date-time}")
-def exif_date_time():
+def exif_date_time() -> str:
     """Exif creation date and time of the current image.
 
     This is meant as an example api.status.module to show how to display exif
@@ -113,7 +114,7 @@ def exif_date_time():
     return ""
 
 
-def pathlist():
+def pathlist() -> List[str]:
     """Return the currently loaded list of paths."""
     return _paths
 
@@ -193,7 +194,7 @@ class Storage(QObject):
             _clear()
 
 
-def _set_index(index, previous=None):
+def _set_index(index: int, previous: str = None) -> None:
     """Set the global _index to index."""
     global _index
     _index = index
@@ -201,14 +202,14 @@ def _set_index(index, previous=None):
         imsignals.new_image_opened.emit(current())
 
 
-def _set_paths(paths):
+def _set_paths(paths: List[str]) -> None:
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
     imsignals.new_images_opened.emit(_paths)
 
 
-def _load_single(path):
+def _load_single(path: str) -> None:
     """Populate list of paths in same directory for single path."""
     if path in _paths:
         goto(_paths.index(path) + 1)  # goto is indexed from 1
@@ -218,7 +219,7 @@ def _load_single(path):
         _load_paths(paths, path)
 
 
-def _load_paths(paths, focused_path):
+def _load_paths(paths: List[str], focused_path: str) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
@@ -239,7 +240,7 @@ def _load_paths(paths, focused_path):
     _set_index(index, previous)
 
 
-def _clear():
+def _clear() -> None:
     """Clear all images from the storage as all paths were removed."""
     global _paths, _index
     _paths = []

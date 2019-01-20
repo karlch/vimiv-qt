@@ -34,7 +34,7 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
             setting = setting.rstrip("!")
             api.settings.toggle(setting)
         # Add to number settings
-        elif strvalue and (strvalue.startswith("+") or value.startswith("-")):
+        elif strvalue and (strvalue.startswith("+") or strvalue.startswith("-")):
             api.settings.add_to(setting, strvalue)
         # Set default
         elif strvalue == "":
@@ -64,8 +64,7 @@ def bind(keybinding: str, command: List[str], mode: str = None):
         * ``mode``: The mode to bind the keybinding in. Default: current.
     """
     modeobj = api.modes.get_by_name(mode) if mode else api.modes.current()
-    command = " ".join(command)
-    api.keybindings.bind(keybinding, command, modeobj)
+    api.keybindings.bind(keybinding, " ".join(command), modeobj)
 
 
 @api.commands.register()
