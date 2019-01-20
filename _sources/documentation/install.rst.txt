@@ -74,7 +74,7 @@ e.g.  ``/usr/bin/vimiv`` or ``~/bin/vimiv``::
 Dependencies
 ------------
 
-* `Python <http://www.python.org/>`_ 3.5 or newer
+* `Python <http://www.python.org/>`_ 3.6 or newer
 * `Qt <http://qt.io/>`_   5.7.1 or newer
     - QtCore / qtbase
     - QtSvg (optional for svg support)

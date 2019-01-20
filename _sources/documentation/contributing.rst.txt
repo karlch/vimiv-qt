@@ -31,6 +31,7 @@ If you want to find something to do, check the
 `issue tracker <https://github.com/karlch/vimiv-qt/issues/>`_. Some hints:
 
 * `Issues that are good for newcomers <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22>`_
+* `Issues that require help <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22>`_
 * `Issues that do not involve coding <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3Anot-code>`_
 
 As this is my first larger project, comments and improvements to the existing
@@ -67,13 +68,18 @@ The arguably cleanest method is to :ref:`install vimiv using tox
 
     $ .venv/bin/vimiv
 
-If you have the dependencies installed globally, another option is to install
-vimiv using::
+If you have the dependencies installed globally, you have two options:
+Install vimiv globally using::
 
     $ python setup.py develop
 
-This, in contrast to using tox, will replace your global vimiv version and
-remove the option to have both a development and a production executable.
+or run the vimiv module directly from the repository directory::
+
+    $ python -m vimiv
+
+The first option, in contrast to the other two, will replace your global vimiv
+version and remove the option to have both a development and a production
+executable.
 
 For running on a clean directory, use the ``--temp-basedir`` option. To change
 the log level, use the ``--log-level`` option, e.g. ``--log-level debug`` to
@@ -86,9 +92,27 @@ Tests and Checkers
 TODO Write this once the testing routine has stabilized
 
 
+Style and Formatting
+--------------------
+
+Vimiv uses the `black code formatter <https://github.com/ambv/black>`_ to
+automatically format the source code. To install black, run::
+
+   pip install black
+
+or use the package manager of your OS if applicable. Formatting the source code
+is done using::
+
+   black vimiv tests
+
+For more information on the formatter as well as a few useful tips, visit
+`the project's github page <https://github.com/ambv/black>`_.
+
+TODO docstrings
+
+
 Source Code Hints
 -----------------
-
 The following paragraphs explain some of the core concepts of the source code
 which may be useful to understand before working on bigger changes.
 
@@ -112,25 +136,43 @@ Three handlers are currently used:
   ``$XDG_DATA_HOME/vimiv/vimiv.log``
 * One to print log messages to the statusbar
 
-The Object Registry
-^^^^^^^^^^^^^^^^^^^
 
-.. include:: objreg.rstsrc
-
-Commands
-^^^^^^^^
-
-.. include:: commands.rstsrc
-
-Keybindings
-^^^^^^^^^^^
-
-.. include:: keybindings.rstsrc
-
-Statusbar Modules
+API Documentation
 ^^^^^^^^^^^^^^^^^
 
-.. include:: statusbar.rstsrc
+.. automodule:: vimiv.api
+
+The following paragraphs provide an overview of the modules available in the
+``api`` and give examples on how to use them.
+
+The Object Registry
+"""""""""""""""""""
+
+.. automodule:: vimiv.api.objreg
+   :members:
+
+Modes
+"""""
+
+.. automodule:: vimiv.api.modes
+   :members: widget, get_by_name, current, enter, leave, toggle
+
+Commands
+""""""""
+
+.. automodule:: vimiv.api.commands
+   :members:
+
+Keybindings
+"""""""""""
+
+.. automodule:: vimiv.api.keybindings
+
+Status Modules
+""""""""""""""
+
+.. automodule:: vimiv.api.status
+   :members:
 
 The Image Loading Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^
