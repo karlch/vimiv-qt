@@ -42,7 +42,7 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
         else:
             api.settings.override(setting, strvalue)
         api.settings.signals.changed.emit(api.settings.get(setting))
-    except KeyError as e:
+    except KeyError:
         raise api.commands.CommandError("unknown setting %s" % (setting))
     except TypeError as e:
         raise api.commands.CommandError(str(e))
