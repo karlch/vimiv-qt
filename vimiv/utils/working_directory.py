@@ -19,9 +19,9 @@ import time
 import os
 from typing import cast, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
+from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.imutils import imsignals
 from vimiv.utils import files
 
@@ -88,8 +88,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         else:
             logging.debug("Monitoring %s", directory)
 
-    @pyqtSlot(api.settings.Setting)
-    def _on_settings_changed(self, setting):
+    @utils.slot
+    def _on_settings_changed(self, setting: api.settings.Setting):
         """Start/stop monitoring when the setting changed."""
         if setting == api.settings.MONITOR_FS:
             if setting.value:
@@ -104,20 +104,20 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._images, self._directories = self._get_content(directory)
         self.loaded.emit(self._images, self._directories)
 
-    @pyqtSlot(str)
-    def _reload_directory(self, path):
+    @utils.slot
+    def _reload_directory(self, path: str):
         """Load new supported files when directory content has changed."""
         self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
 
-    @pyqtSlot(str)
-    def _on_new_image(self, path):
+    @utils.slot
+    def _on_new_image(self, path: str):
         """Monitor the current image for changes."""
         if self.files():  # Clear old image
             self.removePaths(self.files())
         self.addPath(path)
 
-    @pyqtSlot(str)
-    def _on_file_changed(self, path):
+    @utils.slot
+    def _on_file_changed(self, path: str):
         """Emit new_image_opened signal to reload the file on changes."""
         if os.path.exists(path):  # Otherwise the path was deleted
             self._process(lambda: imsignals.imsignals.new_image_opened.emit(path))

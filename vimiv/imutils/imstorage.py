@@ -10,9 +10,9 @@ import os
 from random import shuffle
 from typing import List
 
-from PyQt5.QtCore import pyqtSlot, QObject
+from PyQt5.QtCore import QObject
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.commands import search
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, slideshow, working_directory, ignore
@@ -138,8 +138,10 @@ class Storage(QObject):
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
-    def _on_new_search(self, index, matches, mode, incremental):
+    @utils.slot
+    def _on_new_search(
+        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+    ):
         """Select search result after new search.
 
         Incremental search is ignored for images as highlighting the results is
@@ -155,12 +157,12 @@ class Storage(QObject):
         if _paths and not incremental and mode == api.modes.IMAGE:
             _set_index(index)
 
-    @pyqtSlot()
+    @utils.slot
     def _on_slideshow_event(self):
         next(1)
 
-    @pyqtSlot(str)
-    def _on_open_new_image(self, path):
+    @utils.slot
+    def _on_open_new_image(self, path: str):
         """Load new image into storage.
 
         Args:
@@ -168,8 +170,8 @@ class Storage(QObject):
         """
         _load_single(os.path.abspath(path))
 
-    @pyqtSlot(list, str)
-    def _on_open_new_images(self, paths, focused_path):
+    @utils.slot
+    def _on_open_new_images(self, paths: List[str], focused_path: str):
         """Load list of new images into storage.
 
         Args:
@@ -182,8 +184,8 @@ class Storage(QObject):
         else:
             _load_paths(paths, focused_path)
 
-    @pyqtSlot(list)
-    def _on_images_changed(self, paths):
+    @utils.slot
+    def _on_images_changed(self, paths: List[str]):
         if os.getcwd() != os.path.dirname(current()):
             return
         if paths:

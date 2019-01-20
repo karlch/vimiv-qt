@@ -6,10 +6,9 @@
 
 """QMainWindow which groups all the other widgets."""
 
-from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QWidget, QStackedLayout
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.completion import completer
 from vimiv.config import configcommands
 from vimiv.gui import (
@@ -84,7 +83,7 @@ class MainWindow(QWidget):
         """Override to do nothing as focusing is handled by modehandler."""
         return False
 
-    @pyqtSlot()
+    @utils.slot
     def _set_title(self):
         """Update window title depending on mode and settings."""
         mode = api.modes.current().name
@@ -121,16 +120,16 @@ class ImageThumbnailLayout(QStackedLayout):
         api.modes.signals.entered.connect(self._on_mode_entered)
         api.modes.signals.left.connect(self._on_mode_left)
 
-    @pyqtSlot(api.modes.Mode, api.modes.Mode)
-    def _on_mode_entered(self, mode, last_mode):
+    @utils.slot
+    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
         """Set current widget to image or thumbnail."""
         if mode == api.modes.IMAGE:
             self.setCurrentWidget(self.image)
         elif mode == api.modes.THUMBNAIL:
             self.setCurrentWidget(self.thumbnail)
 
-    @pyqtSlot(api.modes.Mode)
-    def _on_mode_left(self, mode):
+    @utils.slot
+    def _on_mode_left(self, mode: api.modes.Mode):
         """Set widget to image if thumbnail mode was left.
 
         This is required in addition to _on_enter in image because it is

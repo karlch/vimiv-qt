@@ -8,12 +8,13 @@
 
 import logging
 import os
+from typing import List
 
-from PyQt5.QtCore import Qt, QSize, pyqtSlot, QModelIndex
+from PyQt5.QtCore import Qt, QSize, QModelIndex
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
@@ -95,8 +96,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
         styles.apply(self)
 
-    @pyqtSlot(QModelIndex)
-    def _on_activated(self, index):
+    @utils.slot
+    def _on_activated(self, index: QModelIndex):
         """Open path correctly on activate.
 
         If the path activated is an image, it is opened in image mode. If it is
@@ -107,8 +108,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         self.open_selected()
 
-    @pyqtSlot(list)
-    def _on_paths_loaded(self, data):
+    @utils.slot
+    def _on_paths_loaded(self, data: List[libpaths.LibraryRow]):
         """Fill library with paths when they were loaded.
 
         Args:
@@ -116,8 +117,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         self._set_content(data)
 
-    @pyqtSlot(list)
-    def _on_paths_changed(self, data):
+    @utils.slot
+    def _on_paths_changed(self, data: List[libpaths.LibraryRow]):
         """Reload library with paths when they changed.
 
         Args:
@@ -126,8 +127,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._store_position()
         self._set_content(data)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
-    def _on_new_search(self, index, matches, mode, incremental):
+    @utils.slot
+    def _on_new_search(
+        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+    ):
         """Select search result after new search.
 
         Args:
@@ -140,18 +143,18 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self._select_row(index)
             self.repaint()
 
-    @pyqtSlot()
+    @utils.slot
     def _on_search_cleared(self):
         """Force repainting when the search results were cleared."""
         self.repaint()
 
-    @pyqtSlot(api.settings.Setting)
-    def _on_settings_changed(self, setting):
+    @utils.slot
+    def _on_settings_changed(self, setting: api.settings.Setting):
         if setting == api.settings.LIBRARY_WIDTH:
             self.update_width()
 
-    @pyqtSlot(api.modes.Mode, api.modes.Mode)
-    def _on_mode_entered(self, mode, last_mode):
+    @utils.slot
+    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
         """Show or hide library depending on the mode entered.
 
         Args:
@@ -162,8 +165,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.show()
             self.update_width()
 
-    @pyqtSlot(api.modes.Mode)
-    def _on_mode_left(self, mode):
+    @utils.slot
+    def _on_mode_left(self, mode: api.modes.Mode):
         """Hide library widget if library mode was left.
 
         Args:
@@ -330,8 +333,10 @@ class LibraryModel(QStandardItemModel):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
-    def _on_new_search(self, index, matches, mode, incremental):
+    @utils.slot
+    def _on_new_search(
+        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+    ):
         """Store list of indices to highlight on new search.
 
         Args:
@@ -346,7 +351,7 @@ class LibraryModel(QStandardItemModel):
                 if os.path.basename(path) in matches:
                     self._highlighted.append(i)
 
-    @pyqtSlot()
+    @utils.slot
     def _on_search_cleared(self):
         """Reset highlighted when the search results were cleared."""
         self._highlighted = []

@@ -10,7 +10,9 @@ import functools
 import inspect
 import re
 from contextlib import contextmanager
-from typing import Optional, TypeVar
+from typing import Callable, Optional, TypeVar
+
+from PyQt5.QtCore import pyqtSlot
 
 
 Number = TypeVar("Number", int, float)
@@ -104,3 +106,54 @@ def cached_method(func):
         return inner
 
     return _lazyprop
+
+
+class NoAnnotationError(Exception):
+    """Raised if a there is no type annotation to use."""
+
+    def __init__(self, name: str, function: Callable):
+        message = "Missing type annotation for parameter '%s' in function '%s'" % (
+            name,
+            function.__qualname__,
+        )
+        super().__init__(message)
+
+
+def _slot_args(function):
+    """Create arguments and keyword arguments for pyqtSlot from function parameters."""
+    slot_args, slot_kwargs = [], {}
+    argspec = inspect.getfullargspec(function)
+    # Add return type if it exists
+    with ignore(KeyError):
+        return_type = argspec.annotations["return"]
+        if return_type is not None:
+            slot_kwargs["result"] = return_type
+    # Create arguments from parameters
+    for i, argument in enumerate(argspec.args):
+        has_annotation = argument in argspec.annotations
+        if i == 0 and argument == "self" and not has_annotation:
+            continue
+        if not has_annotation:
+            raise NoAnnotationError(argument, function)
+        annotation = argspec.annotations[argument]
+        if not isinstance(annotation, type):  # Comes from typing._GenericAlias
+            slot_args.append(annotation.__origin__)
+        else:
+            slot_args.append(annotation)
+    return slot_args, slot_kwargs
+
+
+def slot(function):
+    """Annotation based slot decorator using pyqtSlot.
+
+    Syntactic sugar for pyqtSlot so the parameter types do not have to be repeated when
+    there are type annotations.
+
+    Example:
+        @slot
+        def function(self, x: int, y: int) -> None:
+        ...
+    """
+    slot_args, slot_kwargs = _slot_args(function)
+    pyqtSlot(*slot_args, **slot_kwargs)(function)
+    return function

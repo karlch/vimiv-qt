@@ -6,10 +6,10 @@
 
 """CommandLine widget in the bar."""
 
-from PyQt5.QtCore import QCoreApplication, QTimer, pyqtSlot
+from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.commands import history, argtypes, runners, search
 from vimiv.config import styles
 from vimiv.utils import eventhandler, ignore
@@ -85,8 +85,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
 
         styles.apply(self)
 
-    @pyqtSlot()
-    def _on_return_pressed(self):
+    @utils.slot
+    def _on_return_pressed(self) -> None:
         """Run command and store history on return."""
         prefix, command = self._split_prefix(self.text())
         if not command:  # Only prefix entered
@@ -114,15 +114,15 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         command = command.strip()
         return prefix, command
 
-    @pyqtSlot(str)
-    def _on_text_edited(self, text):
+    @utils.slot
+    def _on_text_edited(self, text: str) -> None:
         if not text:
             self.editingFinished.emit()
         else:
             self._history.reset()
 
-    @pyqtSlot()
-    def _incremental_search(self):
+    @utils.slot
+    def _incremental_search(self) -> None:
         """Run incremental search if enabled."""
         if not search.use_incremental(self.mode):
             return
@@ -131,8 +131,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             if prefix in "/?" and text:
                 search.search(text, self.mode, reverse=prefix == "?", incremental=True)
 
-    @pyqtSlot(int, int)
-    def _on_cursor_position_changed(self, _old, new):
+    @utils.slot
+    def _on_cursor_position_changed(self, _old: int, new: int):
         """Prevent the cursor from moving before the prefix."""
         if new < 1:
             self.setCursorPosition(1)
@@ -167,7 +167,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """
         self.setText(self._history.substr_cycle(direction, self.text()))
 
-    @pyqtSlot()
+    @utils.slot
     def _on_app_quit(self):
         """Write command history to file on quit."""
         history.write(self._history)
@@ -175,8 +175,8 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
 
-    @pyqtSlot(api.modes.Mode, api.modes.Mode)
-    def _on_mode_entered(self, mode, last_mode):
+    @utils.slot
+    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
         """Store mode from which the command line was entered.
 
         Args:

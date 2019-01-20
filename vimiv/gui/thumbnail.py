@@ -9,12 +9,13 @@
 import collections
 import logging
 import os
+from typing import List
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, pyqtSlot, QModelIndex, QRect
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.imutils.imsignals import imsignals
@@ -95,8 +96,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         styles.apply(self)
 
-    @pyqtSlot(list)
-    def _on_new_images_opened(self, paths):
+    @utils.slot
+    def _on_new_images_opened(self, paths: List[str]):
         """Load new paths into thumbnail widget.
 
         Args:
@@ -121,12 +122,12 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
 
-    @pyqtSlot(str)
-    def _on_new_image_opened(self, path):
+    @utils.slot
+    def _on_new_image_opened(self, path: str):
         self._select_item(self._paths.index(path))
 
-    @pyqtSlot(QModelIndex)
-    def _on_activated(self, index):
+    @utils.slot
+    def _on_activated(self, index: QModelIndex):
         """Emit signal to update image index on activated.
 
         Args:
@@ -134,8 +135,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """
         self.open_selected()
 
-    @pyqtSlot(int, QIcon)
-    def _on_thumbnail_created(self, index, icon):
+    @utils.slot
+    def _on_thumbnail_created(self, index: int, icon: QIcon):
         """Insert created thumbnail as soon as manager created it.
 
         Args:
@@ -146,8 +147,10 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
-    def _on_new_search(self, index, matches, mode, incremental):
+    @utils.slot
+    def _on_new_search(
+        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+    ):
         """Select search result after new search.
 
         Args:
@@ -164,7 +167,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
                     self._highlighted.append(i)
             self.repaint()
 
-    @pyqtSlot()
+    @utils.slot
     def _on_search_cleared(self):
         """Reset highlighted and force repaint when search results cleared."""
         self._highlighted = []
@@ -285,8 +288,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.selectionModel().setCurrentIndex(index, selmod)
         self.scrollTo(index, hint=self.PositionAtCenter)
 
-    @pyqtSlot(api.settings.Setting)
-    def _on_settings_changed(self, setting):
+    @utils.slot
+    def _on_settings_changed(self, setting: api.settings.Setting):
         if setting == api.settings.THUMBNAIL_SIZE:
             self.setIconSize(QSize(setting.value, setting.value))
             self.rescale_items()

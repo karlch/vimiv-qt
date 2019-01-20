@@ -14,16 +14,18 @@ Module Attributes:
     statusbar: The statusbar object
 """
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from typing import cast
+
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.utils import statusbar_loghandler
 
 
-statusbar = None
+statusbar = cast("StatusBar", None)
 
 
 class StatusBar(QWidget):
@@ -83,8 +85,8 @@ class StatusBar(QWidget):
         statusbar_loghandler.signals.message.connect(self._on_message)
         api.status.signals.update.connect(self._on_update_status)
 
-    @pyqtSlot(str, str)
-    def _on_message(self, severity, message):
+    @utils.slot
+    def _on_message(self, severity: str, message: str):
         """Display log message when logging was called.
 
         Args:
@@ -96,7 +98,7 @@ class StatusBar(QWidget):
         self["stack"].setCurrentWidget(self["message"])
         self.timer.start()
 
-    @pyqtSlot()
+    @utils.slot
     def _on_update_status(self):
         """Update the statusbar."""
         mode = api.status.evaluate("{mode}").lower()
@@ -105,7 +107,7 @@ class StatusBar(QWidget):
             text = self._get_text(position, mode)
             label.setText(text)
 
-    @pyqtSlot()
+    @utils.slot
     def clear_message(self):
         """Remove a temporary message from the statusbar."""
         if self.timer.isActive():

@@ -12,9 +12,9 @@ import re
 import shlex
 import subprocess
 
-from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
-from vimiv import app, api
+from vimiv import app, api, utils
 from vimiv.commands import aliases
 from vimiv.utils import pathreceiver
 
@@ -120,8 +120,8 @@ class ExternalRunner(QObject):
         runnable = ShellCommandRunnable(text, self)
         self._pool.start(runnable)
 
-    @pyqtSlot(str, str)
-    def _on_pipe_output_received(self, cmd, stdout):
+    @utils.slot
+    def _on_pipe_output_received(self, cmd: str, stdout: str):
         """Open paths from stdout.
 
         Args:

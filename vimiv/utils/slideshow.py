@@ -6,9 +6,9 @@
 
 """Class to play a slideshow."""
 
-from PyQt5.QtCore import QTimer, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QTimer, pyqtSignal
 
-from vimiv import api
+from vimiv import api, utils
 
 
 class Slideshow(QTimer):
@@ -57,8 +57,8 @@ class Slideshow(QTimer):
             return api.settings.SLIDESHOW_INDICATOR.value
         return ""
 
-    @pyqtSlot(api.settings.Setting)
-    def _on_settings_changed(self, setting):
+    @utils.slot
+    def _on_settings_changed(self, setting: api.settings.Setting):
         if setting == api.settings.SLIDESHOW_DELAY:
             self.setInterval(setting.value * 1000)
 

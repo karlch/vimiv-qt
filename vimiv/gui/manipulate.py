@@ -8,10 +8,10 @@
 
 import logging
 
-from PyQt5.QtCore import QTimer, Qt, pyqtSlot
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.config import styles
 from vimiv.imutils import imsignals, immanipulate
 from vimiv.utils import eventhandler
@@ -93,8 +93,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         self._reset()
         immanipulate.instance().reset()
 
-    @pyqtSlot(api.modes.Mode, api.modes.Mode)
-    def _on_mode_entered(self, mode, last_mode):
+    @utils.slot
+    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
         """Show and hide manipulate widget depending on mode entered.
 
         Args:
@@ -108,8 +108,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         elif mode == api.modes.MANIPULATE:
             self.raise_()
 
-    @pyqtSlot(api.modes.Mode)
-    def _on_mode_left(self, mode):
+    @utils.slot
+    def _on_mode_left(self, mode: api.modes.Mode):
         """Reset and hide manipulate widget if the manipulate mode is left.
 
         Args:

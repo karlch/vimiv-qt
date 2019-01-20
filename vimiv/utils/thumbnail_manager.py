@@ -21,7 +21,6 @@ from PyQt5.QtCore import (
     QRunnable,
     QThreadPool,
     pyqtSignal,
-    pyqtSlot,
     QObject,
     Qt,
     QCoreApplication,
@@ -29,7 +28,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, pixmap_creater, ignore
+from vimiv.utils import xdg, pixmap_creater, ignore, slot
 
 
 KEY_URI = "Thumb::URI"
@@ -92,7 +91,7 @@ class ThumbnailManager(QObject):
         async_creator = ThumbnailsAsyncCreator(paths, self)
         self.pool.start(async_creator)
 
-    @pyqtSlot()
+    @slot
     def _on_quit(self):
         self.pool.clear()
         self.pool.waitForDone(1000)

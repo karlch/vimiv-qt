@@ -9,17 +9,10 @@
 import collections
 import time
 
-from PyQt5.QtCore import (
-    QRunnable,
-    QThreadPool,
-    pyqtSignal,
-    pyqtSlot,
-    QObject,
-    QCoreApplication,
-)
+from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImage
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.commands.argtypes import ManipulateLevel
 from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
@@ -202,7 +195,7 @@ class Manipulator(QObject):
         """Return unmanipulated image data for ManipulateRunner."""
         return self._handler.transformed.toImage()
 
-    @pyqtSlot()
+    @utils.slot
     def _on_quit(self):
         """Finish thread pool on quit."""
         self.pool.clear()

@@ -6,6 +6,9 @@
 
 """Tests for vimiv.utils"""
 
+import pytest
+from PyQt5.QtCore import pyqtSignal, QObject
+
 from vimiv import utils
 
 
@@ -46,3 +49,47 @@ def test_clamp_with_min():
 
 def test_clamp_with_none():
     assert utils.clamp(2, None, None) == 2
+
+
+def test_slot():
+    class Dummy(QObject):
+
+        signal = pyqtSignal(int)
+
+        def __init__(self):
+            super().__init__()
+            self.value = 0
+
+    dummy = Dummy()
+
+    @utils.slot
+    def test(x: int):
+        dummy.value = x
+
+    dummy.signal.connect(test)
+    dummy.signal.emit(42)
+    assert dummy.value == 42
+
+
+def test_slot_ignore_self():
+    def test(self, name: str):
+        ...
+
+    slot_args, _ = utils._slot_args(test)
+    assert slot_args == [str]
+
+
+def test_slot_add_returntype():
+    def test(self, name: str) -> str:
+        ...
+
+    _, slot_kwargs = utils._slot_args(test)
+    assert slot_kwargs == {"result": str}
+
+
+def test_slot_fails_without_type_annotations():
+    with pytest.raises(utils.NoAnnotationError):
+
+        @utils.slot
+        def test(x):
+            ...

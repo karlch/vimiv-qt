@@ -10,10 +10,10 @@ import os
 from collections import namedtuple
 from typing import cast, List
 
-from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QStandardItem
 
-from vimiv.utils import add_html, files, working_directory, ignore
+from vimiv.utils import add_html, files, working_directory, ignore, slot
 
 
 LibraryRow = namedtuple("LibraryElement", ["linenumber", "name", "size"])
@@ -40,7 +40,7 @@ class LibraryPathHandler(QObject):
         working_directory.handler.changed.connect(self._on_dir_changed)
         working_directory.handler.loaded.connect(self._on_dir_loaded)
 
-    @pyqtSlot(list, list)
+    @slot
     def _on_dir_loaded(self, images: List[str], directories: List[str]):
         """Create data for the library when the directory has changed.
 
@@ -50,7 +50,7 @@ class LibraryPathHandler(QObject):
         """
         self.loaded.emit(self._get_data(images, directories))
 
-    @pyqtSlot(list, list)
+    @slot
     def _on_dir_changed(self, images: List[str], directories: List[str]):
         """Create data for the library when the directory has changed.
 

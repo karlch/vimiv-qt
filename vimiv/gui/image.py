@@ -6,11 +6,11 @@
 
 """QtWidgets for IMAGE mode."""
 
-from PyQt5.QtCore import Qt, QSize, pyqtSlot
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.gui import widgets
@@ -102,27 +102,27 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         imsignals.pixmap_updated.connect(self._on_pixmap_updated)
         imsignals.all_images_cleared.connect(self._on_images_cleared)
 
-    @pyqtSlot()
-    def _on_images_cleared(self):
+    @utils.slot
+    def _on_images_cleared(self) -> None:
         self.setWidget(Empty())
 
-    @pyqtSlot(QPixmap)
-    def _on_pixmap_loaded(self, pixmap):
+    @utils.slot
+    def _on_pixmap_loaded(self, pixmap: QPixmap) -> None:
         self.setWidget(Image(pixmap))
         self.scale(ImageScale.Overzoom, 1)
 
-    @pyqtSlot(QMovie)
-    def _on_movie_loaded(self, movie):
+    @utils.slot
+    def _on_movie_loaded(self, movie: QMovie) -> None:
         self.setWidget(Animation(movie))
         self.scale(1, 1)
 
-    @pyqtSlot(str)
-    def _on_svg_loaded(self, path):
+    @utils.slot
+    def _on_svg_loaded(self, path: str) -> None:
         self.setWidget(VectorGraphic(path))
         self.scale(ImageScale.Fit, 1)
 
-    @pyqtSlot(QPixmap)
-    def _on_pixmap_updated(self, pixmap):
+    @utils.slot
+    def _on_pixmap_updated(self, pixmap: QPixmap) -> None:
         self.setWidget(Image(pixmap))
         self.scale(self._scale, 1)
         api.status.update()

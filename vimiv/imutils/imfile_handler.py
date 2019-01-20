@@ -11,10 +11,10 @@ import os
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication, pyqtSlot
+from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.imutils import imtransform, imsignals, immanipulate
 from vimiv.utils import files
 
@@ -94,13 +94,13 @@ class ImageFileHandler(QObject):
         """Transformed pixmap as property to disallow setting."""
         return self._pixmaps.transformed
 
-    @pyqtSlot(str)
-    def _on_new_image_opened(self, path):
+    @utils.slot
+    def _on_new_image_opened(self, path: str):
         """Load proper displayable QWidget for a new image path."""
         self._maybe_write(self._path)
         self._load(path)
 
-    @pyqtSlot()
+    @utils.slot
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
@@ -117,7 +117,7 @@ class ImageFileHandler(QObject):
         elif self.transform.changed() or self.manipulate.changed():
             self.write_pixmap(self.current, path, path)
 
-    @pyqtSlot()
+    @utils.slot
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path)
