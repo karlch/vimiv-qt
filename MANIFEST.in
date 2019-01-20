@@ -8,6 +8,7 @@ include LICENSE
 exclude .*
 exclude pytest.ini
 exclude tox.ini
+exclude mypy.ini
 
 prune docs
 include docs/description.rst
