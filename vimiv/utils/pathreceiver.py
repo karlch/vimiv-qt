@@ -5,12 +5,14 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 """Functions to get the current path and pathlist."""
 
+from typing import List
+
 from vimiv import api
 from vimiv.imutils import imstorage
 from vimiv.gui import library, thumbnail
 
 
-def current(mode=None):
+def current(mode: api.modes.Mode = None) -> str:
     """Get the currently selected path.
 
     Args:
@@ -28,7 +30,7 @@ def current(mode=None):
     return ""
 
 
-def pathlist(mode=None):
+def pathlist(mode: api.modes.Mode = None) -> List[str]:
     """Get the list of all currently open paths.
 
     Args:

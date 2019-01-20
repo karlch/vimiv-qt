@@ -44,14 +44,14 @@ class Slideshow(QTimer):
         api.status.update()
 
     @api.status.module("{slideshow-delay}")
-    def delay(self):
+    def delay(self) -> str:
         """Slideshow delay in seconds if the slideshow is running."""
         if self.isActive():
             return "%.1fs" % (self.interval() / 1000)
         return ""
 
     @api.status.module("{slideshow-indicator}")
-    def running_indicator(self):
+    def running_indicator(self) -> str:
         """Indicator if slideshow is running."""
         if self.isActive():
             return api.settings.SLIDESHOW_INDICATOR.value
@@ -63,5 +63,5 @@ class Slideshow(QTimer):
             self.setInterval(setting.value * 1000)
 
 
-def instance():
+def instance() -> Slideshow:
     return api.objreg.get(Slideshow)

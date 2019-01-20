@@ -15,6 +15,7 @@ widget to update.
 import hashlib
 import os
 import tempfile
+from typing import Dict, List
 
 from PyQt5.QtCore import (
     QRunnable,
@@ -59,7 +60,7 @@ class ThumbnailManager(QObject):
     created = pyqtSignal(int, QIcon)
     pool = QThreadPool()
 
-    def __init__(self, large=True):
+    def __init__(self, large: bool = True):
         super().__init__()
         self.large = large
         # Thumbnail creation should take no longer than 1 s
@@ -77,9 +78,11 @@ class ThumbnailManager(QObject):
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
         self.fail_pixmap = pixmap_creater.error_thumbnail()
-        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
+        # The signature is Callable[[], None] but this is actually a signal
+        # Issue opened: https://github.com/stlehmann/PyQt5-stubs/issues/4
+        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)  # type: ignore
 
-    def create_thumbnails_async(self, paths):
+    def create_thumbnails_async(self, paths: List[str]) -> None:
         """Start ThumbnailsAsyncCreator to create thumbnails.
 
         Args:
@@ -106,12 +109,12 @@ class ThumbnailsAsyncCreator(QRunnable):
         _manager: The ThumbnailManager object used for callback.
     """
 
-    def __init__(self, paths, manager):
+    def __init__(self, paths: List[str], manager: ThumbnailManager):
         super().__init__()
         self._paths = paths
         self._manager = manager
 
-    def run(self):
+    def run(self) -> None:
         """Start ThumbnailCreator for each path."""
         for i, path in enumerate(self._paths):
             creator = ThumbnailCreator(i, path, self._manager)
@@ -130,13 +133,13 @@ class ThumbnailCreator(QRunnable):
         _manager: The ThumbnailManager object used for callback.
     """
 
-    def __init__(self, index, path, manager):
+    def __init__(self, index: int, path: str, manager: ThumbnailManager):
         super().__init__()
         self._index = index
         self._path = path
         self._manager = manager
 
-    def run(self):
+    def run(self) -> None:
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
         with ignore(FileNotFoundError):
@@ -149,23 +152,23 @@ class ThumbnailCreator(QRunnable):
             pmap = pmap if pmap else self._manager.fail_pixmap
             self._manager.created.emit(self._index, QIcon(pmap))
 
-    def _get_thumbnail_path(self, path):
+    def _get_thumbnail_path(self, path: str) -> str:
         filename = self._get_thumbnail_filename(path)
         return os.path.join(self._manager.directory, filename)
 
     @staticmethod
-    def _get_source_uri(path):
+    def _get_source_uri(path: str) -> str:
         return "file://" + os.path.abspath(os.path.expanduser(path))
 
-    def _get_thumbnail_filename(self, path):
+    def _get_thumbnail_filename(self, path: str) -> str:
         uri = self._get_source_uri(path)
         return hashlib.md5(bytes(uri, "UTF-8")).hexdigest() + ".png"
 
     @staticmethod
-    def _get_source_mtime(path):
+    def _get_source_mtime(path: str) -> int:
         return int(os.path.getmtime(path))
 
-    def _create_thumbnail(self, path, thumbnail_path):
+    def _create_thumbnail(self, path: str, thumbnail_path: str) -> QPixmap:
         """Create thumbnail for an image.
 
         Args:
@@ -174,9 +177,9 @@ class ThumbnailCreator(QRunnable):
         Return:
             The created QPixmap.
         """
-        # Cannot access source; create neither thumbnail nor fail file
+        # Cannot access source
         if not os.access(path, os.R_OK):
-            return False
+            return self._manager.fail_pixmap
         size = 256 if self._manager.large else 128
         reader = QImageReader(path)
         if reader.canRead():
@@ -202,7 +205,7 @@ class ThumbnailCreator(QRunnable):
             return QPixmap(image)
         return self._manager.fail_pixmap
 
-    def _get_thumbnail_attributes(self, path, image):
+    def _get_thumbnail_attributes(self, path: str, image: QImage) -> Dict[str, str]:
         """Return a dictionary filled with thumbnail attributes.
 
         Args:
@@ -220,7 +223,7 @@ class ThumbnailCreator(QRunnable):
             KEY_SOFTWARE: "vimiv-%s" % (vimiv.__version__),
         }
 
-    def _maybe_recreate_thumbnail(self, path, thumbnail_path):
+    def _maybe_recreate_thumbnail(self, path: str, thumbnail_path: str) -> QPixmap:
         """Recreate thumbnail if image has been changed since creation.
 
         Args:

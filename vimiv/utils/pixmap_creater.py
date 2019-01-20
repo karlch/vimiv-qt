@@ -12,19 +12,19 @@ from PyQt5.QtGui import QPixmap, QColor, QPainter
 from vimiv.config import styles
 
 
-def default_thumbnail():
-    """Return QIcon to display for default thumbnails."""
+def default_thumbnail() -> QPixmap:
+    """Return thumbnail to display for default thumbnails."""
     color = styles.get("thumbnail.default.bg")
     return thumbnail(color)
 
 
-def error_thumbnail():
-    """Return QIcon to display for failed thumbnails."""
+def error_thumbnail() -> QPixmap:
+    """Return thumbnail to display for failed thumbnails."""
     color = styles.get("thumbnail.error.bg")
     return thumbnail(color)
 
 
-def thumbnail(colorname):
+def thumbnail(colorname: str) -> QPixmap:
     """Return QIcon of size 256 filled with one color and a frame.
 
     Args:
@@ -36,7 +36,9 @@ def thumbnail(colorname):
     return pixmap
 
 
-def _draw(pixmap, colorname, frame_size, frame_colorname):
+def _draw(
+    pixmap: QPixmap, colorname: str, frame_size: int, frame_colorname: str
+) -> None:
     """Draw pixmap with frame and inner color.
 
     Args:

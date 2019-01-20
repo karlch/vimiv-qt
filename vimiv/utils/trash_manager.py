@@ -147,5 +147,5 @@ def trash_info(filename: str) -> Tuple[str, str]:
     return original_filename, deletion_date
 
 
-def files_directory():
+def files_directory() -> str:
     return _files_directory

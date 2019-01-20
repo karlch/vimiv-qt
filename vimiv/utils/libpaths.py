@@ -8,6 +8,7 @@
 
 import os
 from collections import namedtuple
+from typing import cast, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QStandardItem
@@ -40,7 +41,7 @@ class LibraryPathHandler(QObject):
         working_directory.handler.loaded.connect(self._on_dir_loaded)
 
     @pyqtSlot(list, list)
-    def _on_dir_loaded(self, images, directories):
+    def _on_dir_loaded(self, images: List[str], directories: List[str]):
         """Create data for the library when the directory has changed.
 
         Args:
@@ -50,7 +51,7 @@ class LibraryPathHandler(QObject):
         self.loaded.emit(self._get_data(images, directories))
 
     @pyqtSlot(list, list)
-    def _on_dir_changed(self, images, directories):
+    def _on_dir_changed(self, images: List[str], directories: List[str]):
         """Create data for the library when the directory has changed.
 
         Args:
@@ -60,23 +61,23 @@ class LibraryPathHandler(QObject):
         self.changed.emit(self._get_data(images, directories))
 
     @staticmethod
-    def _get_data(images, directories):
+    def _get_data(images: List[str], directories: List[str]) -> List[LibraryRow]:
         """Create data for images and directories."""
-        data = []
+        data: List[LibraryRow] = []
         _extend_data(data, directories, dirs=True)
         _extend_data(data, images)
         return data
 
 
-handler = None
+handler = cast(LibraryPathHandler, None)  # Done early in init()
 
 
-def init():
+def init() -> None:
     global handler
     handler = LibraryPathHandler() if handler is None else handler
 
 
-def _extend_data(data, paths, dirs=False):
+def _extend_data(data: List[LibraryRow], paths: List[str], dirs: bool = False) -> None:
     """Extend list with list of data tuples for paths.
 
     Generates a LibraryRow for each path and adds it to the data list.

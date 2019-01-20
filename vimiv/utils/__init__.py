@@ -10,6 +10,10 @@ import functools
 import inspect
 import re
 from contextlib import contextmanager
+from typing import Optional, TypeVar
+
+
+Number = TypeVar("Number", int, float)
 
 
 @contextmanager
@@ -32,7 +36,7 @@ def ignore(*exceptions):
         pass
 
 
-def add_html(tag, text):
+def add_html(tag: str, text: str) -> str:
     """Surround text in a html tag.
 
     Args:
@@ -42,7 +46,7 @@ def add_html(tag, text):
     return "<%s>%s</%s>" % (tag, text, tag)
 
 
-def strip_html(text):
+def strip_html(text: str) -> str:
     """Strip all html tags from text.
 
     strip("<b>hello</b>") = "hello"
@@ -54,7 +58,9 @@ def strip_html(text):
     return re.sub(stripper, "", text)
 
 
-def clamp(value, minimum, maximum):
+def clamp(
+    value: Number, minimum: Optional[Number], maximum: Optional[Number]
+) -> Number:
     """Clamp a value so it does not exceed boundaries."""
     if minimum is not None:
         value = max(value, minimum)
