@@ -12,7 +12,7 @@ from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv import api
 from vimiv.config import styles
-from vimiv.commands import argtypes
+from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import eventhandler, ignore
@@ -109,7 +109,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @pyqtSlot(QPixmap)
     def _on_pixmap_loaded(self, pixmap):
         self.setWidget(Image(pixmap))
-        self.scale(argtypes.ImageScale.Overzoom, 1)
+        self.scale(ImageScale.Overzoom, 1)
 
     @pyqtSlot(QMovie)
     def _on_movie_loaded(self, movie):
@@ -119,7 +119,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @pyqtSlot(str)
     def _on_svg_loaded(self, path):
         self.setWidget(VectorGraphic(path))
-        self.scale(argtypes.ImageScale.Fit, 1)
+        self.scale(ImageScale.Fit, 1)
 
     @pyqtSlot(QPixmap)
     def _on_pixmap_updated(self, pixmap):
@@ -132,7 +132,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @api.keybindings.register("l", "scroll right", mode=api.modes.IMAGE)
     @api.keybindings.register("h", "scroll left", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
-    def scroll(self, direction: argtypes.Direction, count: int = 1):
+    def scroll(self, direction: Direction, count: int = 1):
         """Scroll the image in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -144,12 +144,12 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """
         if direction in [direction.Left, direction.Right]:
             bar = self.horizontalScrollBar()
-            step = self.widget().width() * 0.05 * count
+            step = int(self.widget().width() * 0.05 * count)
         else:
             bar = self.verticalScrollBar()
-            step = self.widget().height() * 0.05 * count
+            step = int(self.widget().height() * 0.05 * count)
         if direction in [direction.Right, direction.Down]:
-            step *= -1
+            step *= int(-1)
         bar.setValue(bar.value() - step)
 
     @api.keybindings.register("M", "center", mode=api.modes.IMAGE)
@@ -164,7 +164,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @api.keybindings.register("L", "scroll-edge right", mode=api.modes.IMAGE)
     @api.keybindings.register("H", "scroll-edge left", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
-    def scroll_edge(self, direction: argtypes.Direction):
+    def scroll_edge(self, direction: Direction):
         """Scroll the image to one edge.
 
         **syntax:** ``:scroll-edge direction``.
@@ -172,11 +172,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         positional arguments:
             * ``direction``: The direction to scroll in (left/right/up/down).
         """
-        if direction in [direction.Left, direction.Right]:
+        if direction in [Direction.Left, Direction.Right]:
             bar = self.horizontalScrollBar()
         else:
             bar = self.verticalScrollBar()
-        if direction in [direction.Left, direction.Up]:
+        if direction in [Direction.Left, Direction.Up]:
             value = 0
         else:
             value = bar.maximum()
@@ -185,7 +185,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @api.keybindings.register("-", "zoom out", mode=api.modes.IMAGE)
     @api.keybindings.register("+", "zoom in", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
-    def zoom(self, direction: argtypes.Zoom, count: int = 1):
+    def zoom(self, direction: Zoom, count: int = 1):
         """Zoom the current widget.
 
         **syntax:** ``:zoom direction``
@@ -196,7 +196,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         **count:** multiplier
         """
         width = self.current_width()
-        if direction == direction.In:
+        if direction == Zoom.In:
             width *= 1.1 ** count
         else:
             width /= 1.1 ** count
@@ -208,7 +208,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @api.keybindings.register("e", "scale --level=fit-width", mode=api.modes.IMAGE)
     @api.keybindings.register("E", "scale --level=fit-height", mode=api.modes.IMAGE)
     @api.commands.register()
-    def scale(self, level: argtypes.ImageScaleFloat = 1, count: int = 1):
+    def scale(self, level: ImageScaleFloat = ImageScaleFloat(1), count: int = 1):
         """Scale the image.
 
         **syntax:** ``:scale [--level=LEVEL]``
@@ -224,15 +224,15 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             * **overzoom**: Like **fit** but limit to the overzoom setting.
             * **float**: Set scale to arbitrary decimal value.
         """
-        if level == argtypes.ImageScale.Overzoom:
+        if level == ImageScale.Overzoom:
             self._scale_to_fit(limit=api.settings.IMAGE_OVERZOOM.value)
-        elif level == argtypes.ImageScale.Fit:
+        elif level == ImageScale.Fit:
             self._scale_to_fit()
-        elif level == argtypes.ImageScale.FitWidth:
+        elif level == ImageScale.FitWidth:
             self._scale_to_width()
-        elif level == argtypes.ImageScale.FitHeight:
+        elif level == ImageScale.FitHeight:
             self._scale_to_height()
-        else:
+        elif isinstance(level, float):
             level *= count  # Required so it is stored correctly later
             self._scale_to_float(level)
         self._scale = level

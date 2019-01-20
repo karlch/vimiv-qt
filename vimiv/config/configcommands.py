@@ -27,20 +27,20 @@ def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
         * ``setting``: Name of the setting to set.
         * ``value``: Value to set the setting to. If not given, set to default.
     """
-    value = " ".join(value)  # List comes from nargs='*'
+    strvalue = " ".join(value)  # List comes from nargs='*'
     try:
         # Toggle boolean settings
         if setting.endswith("!"):
             setting = setting.rstrip("!")
             api.settings.toggle(setting)
         # Add to number settings
-        elif value and (value.startswith("+") or value.startswith("-")):
-            api.settings.add_to(setting, value)
+        elif strvalue and (strvalue.startswith("+") or strvalue.startswith("-")):
+            api.settings.add_to(setting, strvalue)
         # Set default
-        elif value == "":
+        elif strvalue == "":
             api.settings.set_to_default(setting)
         else:
-            api.settings.override(setting, value)
+            api.settings.override(setting, strvalue)
         api.settings.signals.changed.emit(api.settings.get(setting))
     except KeyError as e:
         raise api.commands.CommandError("unknown setting %s" % (setting))
@@ -63,9 +63,8 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     optional arguments:
         * ``mode``: The mode to bind the keybinding in. Default: current.
     """
-    mode = api.modes.get_by_name(mode) if mode else api.modes.current()
-    command = " ".join(command)
-    api.keybindings.bind(keybinding, command, mode)
+    modeobj = api.modes.get_by_name(mode) if mode else api.modes.current()
+    api.keybindings.bind(keybinding, " ".join(command), modeobj)
 
 
 @api.commands.register()
@@ -80,8 +79,8 @@ def unbind(keybinding: str, mode: str = None):
     optional arguments:
         * ``mode``: The mode to unbind the keybinding in. Default: current.
     """
-    mode = api.modes.get_by_name(mode) if mode else api.modes.current()
-    api.keybindings.unbind(keybinding, mode)
+    modeobj = api.modes.get_by_name(mode) if mode else api.modes.current()
+    api.keybindings.unbind(keybinding, modeobj)
 
 
 @api.commands.register(mode=api.modes.MANIPULATE)

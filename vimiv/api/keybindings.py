@@ -34,23 +34,26 @@ earth with ``ge`` we could use::
 """
 
 import collections
+from typing import Any, Callable, ItemsView
 
 from . import commands, modes
 
 
-def register(keybinding, command, mode=modes.GLOBAL):
+def register(
+    keybinding: str, command: str, mode: modes.Mode = modes.GLOBAL
+) -> Callable:
     """Decorator to add a new keybinding.
 
     Args:
+        keybinding: Key sequence to bind.
         command: Command to bind to.
-        keybinding: Key to bind.
         mode: Mode in which the keybinding is valid.
     """
 
-    def decorator(function):
+    def decorator(function: Callable) -> Callable:
         bind(keybinding, command, mode)
 
-        def inside(*args, **kwargs):
+        def inside(*args: Any, **kwargs: Any) -> None:
             return function(*args, **kwargs)
 
         return inside
@@ -58,7 +61,7 @@ def register(keybinding, command, mode=modes.GLOBAL):
     return decorator
 
 
-def bind(keybinding, command, mode):
+def bind(keybinding: str, command: str, mode: modes.Mode) -> None:
     """Store keybinding in registry.
 
     See config/configcommands.bind for the corresponding command.
@@ -66,7 +69,7 @@ def bind(keybinding, command, mode):
     _registry[mode][keybinding] = command
 
 
-def unbind(keybinding, mode):
+def unbind(keybinding: str, mode: modes.Mode) -> None:
     """Remove keybinding from registry.
 
     See config/configcommands.unbind for the corresponding command.
@@ -87,15 +90,15 @@ class _Bindings(collections.UserDict):
     get(mode) function.
     """
 
-    def __init__(self, startdict=None):
-        super().__init__()
-        if startdict:
-            self.update(startdict)
+    def __add__(self, other: "_Bindings") -> "_Bindings":
+        if not isinstance(other, _Bindings):
+            raise ValueError(
+                "Cannot add type '%s' to '%s'"
+                % (other.__name__, self.__class__.__qualname__)
+            )
+        return _Bindings({**self, **other})
 
-    def __add__(self, other):
-        return _Bindings(startdict={**self, **other})
-
-    def partial_match(self, keys):
+    def partial_match(self, keys: str) -> bool:
         """Check if keys match some of the bindings partially.
 
         Args:
@@ -114,18 +117,18 @@ class _Bindings(collections.UserDict):
 _registry = {mode: _Bindings() for mode in modes.ALL}
 
 
-def get(mode):
+def get(mode: modes.Mode) -> _Bindings:
     """Return the keybindings of one specific mode."""
     if mode in modes.GLOBALS:
         return _registry[mode] + _registry[modes.GLOBAL]
     return _registry[mode]
 
 
-def items():
+def items() -> ItemsView[modes.Mode, _Bindings]:
     return _registry.items()
 
 
-def clear():
+def clear() -> None:
     """Clear all keybindings."""
     for bindings in _registry.values():
         bindings.clear()

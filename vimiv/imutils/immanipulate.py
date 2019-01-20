@@ -20,8 +20,10 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QPixmap, QImage
 
 from vimiv import api
-from vimiv.commands import argtypes
-from vimiv.imutils import _c_manipulate  # pylint: disable=no-name-in-module
+from vimiv.commands.argtypes import ManipulateLevel
+from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
+    _c_manipulate,
+)
 from vimiv.utils import clamp
 
 
@@ -84,7 +86,7 @@ class Manipulator(QObject):
 
     @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def brightness(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
+    def brightness(self, value: ManipulateLevel = ManipulateLevel(0), count: int = 0):
         """Manipulate brightness.
 
         **syntax:** ``:brightness [value]``
@@ -97,12 +99,15 @@ class Manipulator(QObject):
 
         **count:** Set brightness to [count].
         """
-        value = count if count else value
-        self._update_manipulation("brightness", value)
+        try:
+            value = ManipulateLevel(count) if count else value
+            self._update_manipulation("brightness", value)
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
 
     @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def contrast(self, value: argtypes.ManipulateLevel = 0, count: int = 0):
+    def contrast(self, value: ManipulateLevel = ManipulateLevel(0), count: int = 0):
         """Manipulate contrast.
 
         **syntax:** ``:contrast [value]``
@@ -115,8 +120,11 @@ class Manipulator(QObject):
 
         **count:** Set contrast to [count].
         """
-        value = count if count else value
-        self._update_manipulation("contrast", value)
+        try:
+            value = ManipulateLevel(count) if count else value
+            self._update_manipulation("contrast", value)
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
 
     @api.keybindings.register("K", "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register("k", "increase 1", mode=api.modes.MANIPULATE)

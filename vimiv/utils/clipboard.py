@@ -14,7 +14,7 @@ from vimiv import app, api
 from vimiv.utils import pathreceiver
 
 
-def init():
+def init() -> None:
     """Initialize clipboard commands."""
     # Currently does not do anything but the commands need to be registered by
     # an import. May become useful in the future.
@@ -25,7 +25,7 @@ def init():
 @api.keybindings.register("ya", "copy-name --abspath")
 @api.keybindings.register("yy", "copy-name")
 @api.commands.register()
-def copy_name(abspath: bool = False, primary: bool = False):
+def copy_name(abspath: bool = False, primary: bool = False) -> None:
     """Copy name of current path to system clipboard.
 
     **syntax:** ``:copy-name [--abspath] [--primary]``
@@ -44,7 +44,7 @@ def copy_name(abspath: bool = False, primary: bool = False):
 @api.keybindings.register("PP", "paste-name --primary")
 @api.keybindings.register("Pp", "paste-name")
 @api.commands.register()
-def paste_name(primary: bool = True):
+def paste_name(primary: bool = True) -> None:
     """Paste path from clipboard to open command.
 
     **syntax:** ``:paste-name [--primary]``

@@ -69,14 +69,22 @@ import argparse
 import collections
 import inspect
 import logging
-from typing import List
+import typing
 
 from vimiv.utils import class_that_defined_method, cached_method, is_method
 
 from . import modes, objreg
 
 
-def register(mode=modes.GLOBAL, hide=False, hook=None):
+# hook function is either a function with no arguments or a method which takes self
+HookFunction = typing.Callable[[], None]
+HookMethod = typing.Callable[[typing.Any], None]
+Hook = typing.Union[HookFunction, HookMethod]
+
+
+def register(
+    mode: modes.Mode = modes.GLOBAL, hide: bool = False, hook: Hook = None
+) -> typing.Callable:
     """Decorator to store a command in the registry.
 
     Args:
@@ -85,18 +93,20 @@ def register(mode=modes.GLOBAL, hide=False, hook=None):
         hook: Function to run before executing the command.
     """
 
-    def decorator(func):
+    def decorator(func: typing.Callable) -> typing.Callable:
         name = _get_command_name(func)
         desc = _get_description(func, name)
-        func.vimiv_args = _CommandArguments(name, desc, func)
-        cmd = _Command(name, func, mode=mode, description=desc, hide=hide, hook=hook)
+        arguments = _CommandArguments(name, desc, func)
+        cmd = _Command(
+            name, func, arguments, mode=mode, description=desc, hide=hide, hook=hook
+        )
         _registry[mode][name] = cmd
         return func
 
     return decorator
 
 
-def get(name, mode=modes.GLOBAL):
+def get(name: str, mode: modes.Mode = modes.GLOBAL) -> "_Command":
     """Get one command object.
 
     Args:
@@ -132,7 +142,7 @@ class CommandNotFound(Exception):
 class _Registry(collections.UserDict):
     """Dictionary to store commands of each mode."""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         super().__init__()
         for mode in modes.ALL:
             self[mode] = {}
@@ -141,24 +151,24 @@ class _Registry(collections.UserDict):
 _registry = _Registry()
 
 
-def items(mode):
+def items(mode: modes.Mode) -> typing.ItemsView[str, str]:
     """Retrieve all items in the commands registry for iteration.
 
     Args:
         mode: The mode for which the commands are valid.
     Return:
-        ItemsView allowing iteration over items.
+        typing.ItemsView allowing iteration over items.
     """
     return _registry[mode].items()
 
 
-def names(mode):
+def names(mode: modes.Mode) -> typing.KeysView[str]:
     """Retrieve names of all commands in the registry for iteration.
 
     Args:
         mode: The mode for which the commands are valid.
     Return:
-        KeysView allowing iteration over names which are the registry keys.
+        typing.KeysView allowing iteration over names which are the registry keys.
     """
     return _registry[mode].keys()
 
@@ -166,7 +176,7 @@ def names(mode):
 class _CommandArguments(argparse.ArgumentParser):
     """Store and parse command arguments using argparse."""
 
-    def __init__(self, cmdname: str, description: str, function):
+    def __init__(self, cmdname: str, description: str, function: typing.Callable):
         """Create the argparse.ArgumentParser.
 
         Args:
@@ -178,11 +188,11 @@ class _CommandArguments(argparse.ArgumentParser):
         for argument in inspect.signature(function).parameters.values():
             self._add_argument(argument)
 
-    def print_help(self):
+    def print_help(self, _file: typing.IO = None) -> typing.NoReturn:
         """Override help message to display in statusbar."""
         raise ArgumentError(self.format_help().rstrip())
 
-    def error(self, message):
+    def error(self, message: str) -> typing.NoReturn:
         """Override error to raise an exception instead of calling sys.exit."""
         if message.startswith("argument"):  # Remove argument argname:
             message = " ".join(message.split(":")[1:])
@@ -191,7 +201,7 @@ class _CommandArguments(argparse.ArgumentParser):
         message = message.capitalize()
         raise ArgumentError(message)
 
-    def _add_argument(self, argument: inspect.Parameter):
+    def _add_argument(self, argument: inspect.Parameter) -> None:
         """Add an argument to argparse created from an inspect parameter."""
         optional = argument.default != inspect.Parameter.empty
         name = self._argument_name(argument, optional)
@@ -202,20 +212,22 @@ class _CommandArguments(argparse.ArgumentParser):
         self.add_argument(name, **kwargs)
 
     @staticmethod
-    def _argument_name(argument: inspect.Parameter, optional: bool):
+    def _argument_name(argument: inspect.Parameter, optional: bool) -> str:
         """Create argument name from inspect parameter."""
         name = argument.name.replace("_", "-")
         return "--%s" % (name) if optional else name
 
     @staticmethod
-    def _gen_kwargs(argument: inspect.Parameter, optional: bool):
+    def _gen_kwargs(
+        argument: inspect.Parameter, optional: bool
+    ) -> typing.Dict[str, typing.Any]:
         """Create keyword arguments for argparse from inspect parameter.
 
         This checks for the type and possible default arguments and applies
         'nargs': '*' if the type is a List.
         """
         argtype = argument.annotation
-        if argtype == List[str]:
+        if argtype == typing.List[str]:
             return {"type": str, "nargs": "*"}
         if optional and argtype is bool:
             return {"action": "store_true"}
@@ -228,6 +240,7 @@ class _Command:
     """Skeleton for a command.
 
     Attributes:
+        arguments: _CommandArguments argument parser.
         func: Corresponding executable to call.
         mode: Mode in which the command can be executed.
         name: Name of the command as string.
@@ -237,38 +250,46 @@ class _Command:
     """
 
     def __init__(
-        self, name, func, mode=modes.GLOBAL, description="", hide=False, hook=None
+        self,
+        name: str,
+        func: typing.Callable,
+        arguments: _CommandArguments,
+        mode: modes.Mode = modes.GLOBAL,
+        description: str = "",
+        hide: bool = False,
+        hook: Hook = None,
     ):
         self.name = name
         self.func = func
+        self.arguments = arguments
         self.mode = mode
         self.description = description
         self.hide = hide
         self.hook = hook if hook is not None else lambda *args: None
 
-    def __call__(self, args, count):
+    def __call__(self, args: typing.List[str], count: str) -> None:
         """Parse arguments and call func.
 
         Args:
             args: List of arguments for argparser to parse.
             count: Count passed to the command.
         """
-        parsed_args = self.func.vimiv_args.parse_args(args)
+        parsed_args = self.arguments.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
         func = self._create_func(self.func)
         func(**kwargs)
 
-    def _parse_count(self, count: str, kwargs):
+    def _parse_count(self, count: str, kwargs: typing.Dict[str, typing.Any]) -> None:
         """Add count to kwargs if supported."""
         if "count" in kwargs and count:
             kwargs["count"] = int(count)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Command('%s', '%s')" % (self.name, self.func)
 
     @cached_method
-    def _create_func(self, func):
+    def _create_func(self, func: typing.Callable) -> typing.Callable:
         """Create function to call for a command function.
 
         This processes hooks and retrieves the instance of a class object for
@@ -282,16 +303,18 @@ class _Command:
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
-            return lambda **kwargs: (self.hook(instance), func(instance, **kwargs))
-        return lambda **kwargs: (self.hook(), func(**kwargs))
+            hook_method = typing.cast(HookMethod, self.hook)  # Takes self as argument
+            return lambda **kwargs: (hook_method(instance), func(instance, **kwargs))
+        hook_function = typing.cast(HookFunction, self.hook)  # Takes no arguments
+        return lambda **kwargs: (hook_function(), func(**kwargs))
 
 
-def _get_command_name(func):
+def _get_command_name(func: typing.Callable) -> str:
     """Retrieve command name from name of function object."""
     return func.__name__.lower().replace("_", "-")
 
 
-def _get_description(func, name):
+def _get_description(func: typing.Callable, name: str) -> str:
     """Retrive the command description from function docstring.
 
     Args:

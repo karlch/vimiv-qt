@@ -12,31 +12,31 @@ from vimiv.utils import files
 def test_listdir_wrapper(mocker):
     mocker.patch("os.listdir", return_value=["a.txt", "b.txt"])
     mocker.patch("os.path.abspath", return_value="")
-    assert files.ls("directory") == ["a.txt", "b.txt"]
+    assert files.listdir("directory") == ["a.txt", "b.txt"]
 
 
 def test_listdir_wrapper_returns_abspath(mocker):
     mocker.patch("os.listdir", return_value=["a.txt", "b.txt"])
     mocker.patch("os.path.abspath", return_value="dir")
-    assert files.ls("directory") == ["dir/a.txt", "dir/b.txt"]
+    assert files.listdir("directory") == ["dir/a.txt", "dir/b.txt"]
 
 
 def test_listdir_wrapper_sort(mocker):
     mocker.patch("os.listdir", return_value=["b.txt", "a.txt"])
     mocker.patch("os.path.abspath", return_value="")
-    assert files.ls("directory") == ["a.txt", "b.txt"]
+    assert files.listdir("directory") == ["a.txt", "b.txt"]
 
 
 def test_listdir_wrapper_remove_hidden(mocker):
     mocker.patch("os.listdir", return_value=[".dotfile.txt", "a.txt"])
     mocker.patch("os.path.abspath", return_value="")
-    assert files.ls("directory") == ["a.txt"]
+    assert files.listdir("directory") == ["a.txt"]
 
 
 def test_listdir_wrapper_show_hidden(mocker):
     mocker.patch("os.listdir", return_value=[".dotfile.txt", "a.txt"])
     mocker.patch("os.path.abspath", return_value="")
-    assert files.ls("directory", show_hidden=True) == [".dotfile.txt", "a.txt"]
+    assert files.listdir("directory", show_hidden=True) == [".dotfile.txt", "a.txt"]
 
 
 def test_directories_supported(mocker):

@@ -9,6 +9,7 @@
 import datetime
 import itertools
 import os
+from typing import Generator, List, Tuple
 
 from PyQt5.QtGui import QImageReader
 
@@ -16,7 +17,7 @@ from vimiv import api
 from vimiv.utils import pathreceiver
 
 
-def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
+def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
 
     Args:
@@ -36,7 +37,7 @@ def ls(directory, show_hidden=False):  # pylint: disable=invalid-name
     return sorted(listdir_wrapper(show_hidden))
 
 
-def supported(paths):
+def supported(paths: List[str]) -> Tuple[List[str], List[str]]:
     """Get a list of supported images and a list of directories from paths.
 
     Args:
@@ -55,7 +56,7 @@ def supported(paths):
     return images, directories
 
 
-def get_size(path):
+def get_size(path: str) -> str:
     """Get the size of a path in human readable format.
 
     If the path is an image, the filesize is returned in the form of 2.3M. If
@@ -73,8 +74,8 @@ def get_size(path):
         return "N/A"
 
 
-def sizeof_fmt(num):
-    """Print size of a byte number in human-readable format.
+def sizeof_fmt(num: float) -> str:
+    """Retrieve size of a byte number in human-readable format.
 
     Args:
         num: Filesize in bytes.
@@ -91,7 +92,7 @@ def sizeof_fmt(num):
     return "%.1f%s" % (num, "Y")
 
 
-def yield_supported(paths):
+def yield_supported(paths: List[str]) -> Generator[str, None, None]:
     """Generator to yield supported paths.
 
     Args:
@@ -104,7 +105,7 @@ def yield_supported(paths):
             yield path
 
 
-def get_size_directory(path):
+def get_size_directory(path: str) -> str:
     """Get size of directory by checking amount of supported paths.
 
     Args:
@@ -115,13 +116,13 @@ def get_size_directory(path):
     max_amount = api.settings.LIBRARY_FILE_CHECK_AMOUNT.value
     if max_amount == 0:  # Check all
         max_amount = None
-    size = len(list(itertools.islice(yield_supported(ls(path)), max_amount)))
+    size = len(list(itertools.islice(yield_supported(listdir(path)), max_amount)))
     if size == max_amount:
         return ">%d" % (max_amount)
     return str(size)
 
 
-def is_image(filename):
+def is_image(filename: str) -> bool:
     """Check whether a file is an image.
 
     Args:
@@ -133,35 +134,8 @@ def is_image(filename):
     return reader.canRead()
 
 
-def is_animation(filename):
-    """Check whether a file is an animated image.
-
-    Args:
-        filename: Name of file to check.
-    """
-    raise NotImplementedError
-
-
-def is_svg(filename):
-    """Check whether a file is a vector graphic.
-
-    Args:
-        filename: Name of file to check.
-    """
-    raise NotImplementedError
-
-
-def edit_supported(filename):
-    """Check whether a file is editable for vimiv.
-
-    Args:
-        filename: Name of file to check.
-    """
-    raise NotImplementedError
-
-
 @api.status.module("{pwd}")
-def pwd():
+def pwd() -> str:
     """Current working directory."""
     wd = os.getcwd()
     if api.settings.STATUSBAR_COLLAPSE_HOME.value:
@@ -170,18 +144,14 @@ def pwd():
 
 
 @api.status.module("{filesize}")
-def filesize():
+def filesize() -> str:
     """Size of the current image in bytes."""
     return get_size(pathreceiver.current())
 
 
 @api.status.module("{modified}")
-def modified():
+def modified() -> str:
     """Modification date of the current image."""
     mtime = os.path.getmtime(pathreceiver.current())
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")
-
-
-def open_paths(paths, select_mode=True):
-    return True

@@ -17,6 +17,7 @@ Module Attributes:
 import logging
 import time
 import os
+from typing import cast, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QFileSystemWatcher
 
@@ -65,7 +66,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self.fileChanged.connect(self._on_file_changed)
         imsignals.imsignals.new_image_opened.connect(self._on_new_image)
 
-    def chdir(self, directory):
+    def chdir(self, directory: str) -> None:
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
         if directory != self._dir:
@@ -78,7 +79,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             except PermissionError as e:
                 logging.error("%s: Cannot access '%s'", str(e), directory)
 
-    def _monitor(self, directory):
+    def _monitor(self, directory: str) -> None:
         """Monitor the directory by adding it to QFileSystemWatcher."""
         if not api.settings.MONITOR_FS.value:
             return
@@ -97,7 +98,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 logging.debug("Turning monitoring off")
                 self._stop_monitoring()
 
-    def _load_directory(self, directory):
+    def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""
         self._dir = directory
         self._images, self._directories = self._get_content(directory)
@@ -139,7 +140,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._processing = False
         api.status.update()
 
-    def _emit_changes(self, images, directories):
+    def _emit_changes(self, images: List[str], directories: List[str]) -> None:
         """Emit changed signals if the content in the directory has changed.
 
         Args:
@@ -155,7 +156,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             self._directories = directories
             self.changed.emit(images, directories)
 
-    def _get_content(self, directory):
+    def _get_content(self, directory: str) -> Tuple[List[str], List[str]]:
         """Get supported content of directory.
 
         Return:
@@ -163,11 +164,11 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             directories: List of directories inside the directory.
         """
         show_hidden = api.settings.LIBRARY_SHOW_HIDDEN.value
-        paths = files.ls(directory, show_hidden=show_hidden)
+        paths = files.listdir(directory, show_hidden=show_hidden)
         return files.supported(paths)
 
 
-handler = None
+handler = cast(WorkingDirectoryHandler, None)
 
 
 def init():

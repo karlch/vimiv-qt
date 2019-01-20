@@ -28,8 +28,10 @@ they are automatically added for each of these three modes.
 
 import abc
 import logging
+from typing import cast, Any, Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QWidget
 
 
 class NoModeError(Exception):
@@ -61,12 +63,12 @@ class Mode(abc.ABC):
 
     _ID = 0
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.active = False
-        self.last_fallback = None
-        self.widget = None
+        self.last_fallback = cast(Mode, None)  # Initialized to a mode in _init()
+        self.widget = cast(QWidget, None)  # Initialized to a QWidget using @widget
 
-        self._last = None
+        self._last = cast(Mode, None)  # Initialized to a mode in _init()
         self._name = name
 
         # Store global ID as ID and increase it by one
@@ -74,20 +76,20 @@ class Mode(abc.ABC):
         Mode._ID += 1
 
     @property
-    def identifier(self):
+    def identifier(self) -> int:
         """Value of _id to compare to other modes as property."""
         return self._id
 
     @property
-    def last(self):
+    def last(self) -> "Mode":
         """Value of last mode as property."""
         return self._last
 
     @last.setter
-    def last(self, mode):
+    def last(self, mode: "Mode") -> None:
         self._set_last(mode)  # To be implemented by the child class
 
-    def reset_last(self):
+    def reset_last(self) -> None:
         """Reset last mode to the fallback value.
 
         This can be used when the last mode was closed.
@@ -95,22 +97,22 @@ class Mode(abc.ABC):
         self._last = self.last_fallback
 
     @abc.abstractmethod
-    def _set_last(self, mode):
+    def _set_last(self, mode: "Mode") -> None:
         pass
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mode):
             return self.identifier == other.identifier
         return False
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return self._id
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self._name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Mode.%s" % (self.name.upper())
 
 
@@ -131,7 +133,7 @@ def get_by_name(name: str) -> Mode:
     raise KeyError("'%s' is not a valid mode" % (name.upper()))
 
 
-def widget(mode):
+def widget(mode: Mode) -> Callable:
     """Decorator to assign a widget to a mode.
 
     The decorator decorates the __init__ function of a QWidget class storing
@@ -150,8 +152,8 @@ def widget(mode):
         mode: The mode to associate the decorated widget with.
     """
 
-    def decorator(component_init):
-        def inner(component, *args, **kwargs):
+    def decorator(component_init: Callable) -> Callable:
+        def inner(component: Any, *args: Any, **kwargs: Any) -> None:
             mode.widget = component
             component_init(component, *args, **kwargs)
 
@@ -163,7 +165,7 @@ def widget(mode):
 class _MainMode(Mode):
     """Main mode class used for everything but command mode."""
 
-    def _set_last(self, mode):
+    def _set_last(self, mode: Mode) -> None:
         """Store any mode except for command and manipulate."""
         if mode not in [COMMAND, MANIPULATE]:
             self._last = mode
@@ -172,7 +174,7 @@ class _MainMode(Mode):
 class _CommandMode(Mode):
     """Command mode class."""
 
-    def _set_last(self, mode):
+    def _set_last(self, mode: Mode) -> None:
         """Store any mode except for command."""
         if mode != self:
             self._last = mode
@@ -210,7 +212,7 @@ class _Signals(QObject):
 signals = _Signals()
 
 
-def enter(mode: Mode):
+def enter(mode: Mode) -> None:
     """Enter another mode.
 
     Set the current mode to ``mode`` and focus the widget which is asigned to
@@ -278,7 +280,7 @@ def current() -> Mode:
     raise NoModeError()
 
 
-def _init():
+def _init() -> None:
     """Initialize default values for each mode."""
     for _mode in ALL:
         if _mode == IMAGE:
