@@ -10,8 +10,9 @@ import re
 import setuptools
 
 # C extensions
-manipulate_module = setuptools.Extension("vimiv.imutils._c_manipulate",
-                                         sources=["c-extension/manipulate.c"])
+manipulate_module = setuptools.Extension(
+    "vimiv.imutils._c_manipulate", sources=["c-extension/manipulate.c"]
+)
 
 
 try:
@@ -28,24 +29,21 @@ def read_file(filename):
 
 def read_from_init(name):
     """Read value of a __magic__ value from the __init__.py file."""
-    field_re = re.compile(r'__{}__\s+=\s+(.*)'.format(re.escape(name)))
-    path = os.path.join(BASEDIR, 'vimiv', '__init__.py')
+    field_re = re.compile(r"__{}__\s+=\s+(.*)".format(re.escape(name)))
+    path = os.path.join(BASEDIR, "vimiv", "__init__.py")
     line = field_re.search(read_file(path)).group(1)
     return ast.literal_eval(line)
 
 
 setuptools.setup(
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     packages=setuptools.find_packages(),
     ext_modules=[manipulate_module],
-    entry_points={
-        "gui_scripts": ["vimiv = vimiv.vimiv:main"],
-    },
+    entry_points={"gui_scripts": ["vimiv = vimiv.vimiv:main"]},
     name="vimiv",
     version=".".join(str(num) for num in read_from_init("version_info")),
     description=read_from_init("description"),
-    long_description=read_file(
-        os.path.join(BASEDIR, "docs", "description.rst")),
+    long_description=read_file(os.path.join(BASEDIR, "docs", "description.rst")),
     url="https://karlch.github.io/vimiv-qt/",
     author=read_from_init("author"),
     author_email=read_from_init("email"),
@@ -56,8 +54,7 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Environment :: X11 Applications :: Qt",
         "Intended Audience :: End Users/Desktop",
-        "License :: OSI Approved :: GNU General Public License v3 or later "
-            "(GPLv3+)",
+        "License :: OSI Approved :: GNU General Public License v3 or later " "(GPLv3+)",
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
