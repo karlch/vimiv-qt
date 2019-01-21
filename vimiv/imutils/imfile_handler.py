@@ -143,7 +143,7 @@ class ImageFileHandler(QObject):
             self._set_original(QMovie(path))
             imsignals.imsignals.movie_loaded.emit(self.current)
         else:
-            self._set_original(QPixmap(path))
+            self._set_original(QPixmap.fromImageReader(reader))
             imsignals.imsignals.pixmap_loaded.emit(self.current)
         self._path = path
 
