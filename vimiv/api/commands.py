@@ -151,7 +151,7 @@ class _Registry(collections.UserDict):
 _registry = _Registry()
 
 
-def items(mode: modes.Mode) -> typing.ItemsView[str, str]:
+def items(mode: modes.Mode) -> typing.ItemsView[str, "_Command"]:
     """Retrieve all items in the commands registry for iteration.
 
     Args:

@@ -23,25 +23,29 @@ class Completer(QObject):
         proxy_model: completionfilters.TextFilter.
 
         _cmd: CommandLine object.
-        _modelfunc: Current model function to avoid duplicate model setting.
-        _modelargs: Current arguments for model function to avoid duplicate
-            model setting.
+        _completion: CompletionWidget object.
     """
 
     @api.objreg.register
     def __init__(self, commandline, completion):
-        super().__init__(parent=completion)
-        self.proxy_model = api.completion.TextFilter()
+        super().__init__()
+        self._proxy_model = None
         self._cmd = commandline
-        self._modelfunc = None
-        self._modelargs = None
+        self._completion = completion
 
-        self.parent().setModel(self.proxy_model)
-
-        self.parent().activated.connect(self._on_completion)
+        self._completion.activated.connect(self._on_completion)
         api.modes.signals.entered.connect(self._on_mode_entered)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
+
+    @property
+    def proxy_model(self):
+        return self._proxy_model
+
+    @proxy_model.setter
+    def proxy_model(self, proxy_model: api.completion.BaseFilter):
+        self._proxy_model = proxy_model
+        self._completion.setModel(proxy_model)
 
     @utils.slot
     def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
@@ -55,75 +59,44 @@ class Completer(QObject):
             # Set model according to text, defaults are not possible as
             # :command accepts arbitrary text as argument
             self._maybe_update_model(self._cmd.text())
+            self.proxy_model.sourceModel().on_enter(
+                self.proxy_model.strip_text(self._cmd.text()), last_mode
+            )
             # Show if the model is not empty
             self._maybe_show()
-            self.parent().raise_()
+            self._completion.raise_()
 
     @utils.slot
     def _on_text_changed(self, text: str):
         """Update completions when text changed."""
         # Clear selection
-        self.parent().selectionModel().clear()
+        self._completion.selectionModel().clear()
         # Update model
         self._maybe_update_model(text)
+        self.proxy_model.sourceModel().on_text_changed(
+            self.proxy_model.strip_text(text)
+        )
         # Refilter
         self.proxy_model.refilter(text)
 
     @utils.slot
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
-        self.parent().selectionModel().clear()
+        self._completion.selectionModel().clear()
         self.proxy_model.reset()
-        self.parent().hide()
+        self._completion.hide()
 
     def _maybe_update_model(self, text):
         """Update model depending on text."""
-        modelfunc, args = self._get_modelfunc(text)
-        if modelfunc != self._modelfunc or args != self._modelargs:
-            self._set_model(modelfunc, *args)
+        module = api.completion.get_module(text)
+        self.proxy_model = module.Filter
+        self.proxy_model.setSourceModel(module.Model)
+        self._completion.update_column_widths()
 
     def _maybe_show(self):
         """Show completion widget if the model is not empty."""
-        # We explicitly compare against the empty function here
-        # pylint: disable=comparison-with-callable
-        if self._modelfunc != completionmodels.empty:
-            self.parent().show()
-
-    def _get_modelfunc(self, text):
-        """Return the needed model function depending on text."""
-        # This is more or less a switch
-        # pylint: disable=too-many-return-statements
-        # Search
-        if not text.startswith(":"):
-            return completionmodels.empty, ()
-        text = text.lstrip(":").lstrip()
-        # Path completion
-        if text.startswith("open"):
-            return completionmodels.paths, (text.lstrip("open").lstrip(),)
-        # Setting completion
-        if text.startswith("set"):
-            setting = text.lstrip("set").lstrip().split()
-            if setting:
-                return completionmodels.settings, (setting[0],)
-            return completionmodels.settings, ("",)
-        # Undelete completion
-        if text.startswith("undelete"):
-            return completionmodels.trash, ()
-        if text.startswith("!"):
-            return completionmodels.external, ()
-        # Default: command completion
-        return completionmodels.command, (self._cmd.mode,)
-
-    def _set_model(self, modelfunc, *args):
-        """Set the source model of the proxy model.
-
-        Args:
-            modelfunc: Function which returns the model to set.
-            args: List of arguments to pass to modelfunc.
-        """
-        self._modelfunc = modelfunc
-        self._modelargs = args
-        self.proxy_model.setSourceModel(modelfunc(*args))
+        if not isinstance(self.proxy_model.sourceModel(), completionmodels.Empty):
+            self._completion.show()
 
     @utils.slot
     def _on_completion(self, text: str):
