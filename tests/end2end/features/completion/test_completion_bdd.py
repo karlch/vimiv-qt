@@ -8,8 +8,7 @@ import pytest
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.apimodules import completer
-from vimiv.completion import completionmodels
+from vimiv.completion import completionmodels, completer
 from vimiv.gui import completionwidget
 
 
