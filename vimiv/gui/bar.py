@@ -41,8 +41,8 @@ class Bar(QWidget):
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")
-    @api.commands.register(hide=True, mode=api.modes.MANIPULATE)
-    @api.commands.register(hide=True)
+    @api.commands.register(hide=True, store=False, mode=api.modes.MANIPULATE)
+    @api.commands.register(hide=True, store=False)
     def command(self, text: str = ""):
         """Enter command mode.
 
@@ -55,7 +55,7 @@ class Bar(QWidget):
 
     @api.keybindings.register("?", "search --reverse")
     @api.keybindings.register("/", "search")
-    @api.commands.register(hide=True)
+    @api.commands.register(hide=True, store=False)
     def search(self, reverse: bool = False):
         """Start a search.
 

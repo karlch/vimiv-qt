@@ -4,19 +4,37 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Classes and functions to run commands."""
+"""Classes and functions to run commands.
+
+Module Attributes:
+    external: ExternalRunner instance to run shell commands.
+
+    _last_command: Dictionary storing the last command for each mode.
+"""
 
 import logging
 import os
 import re
 import shlex
 import subprocess
+from typing import Dict, List, NamedTuple
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
 from vimiv import app, api, utils
 from vimiv.commands import aliases
 from vimiv.utils import pathreceiver
+
+
+_last_command: Dict[api.modes.Mode, "LastCommand"] = {}
+
+
+class LastCommand(NamedTuple):
+    """Simple class storing command text, arguments and count."""
+
+    Count: int
+    Command: str
+    Arguments: List[str]
 
 
 def update_command(text, mode):
@@ -43,11 +61,37 @@ def command(text, mode=None):
     if mode is None:
         mode = api.modes.current()
     count, cmdname, args = _parse(text)
+    _run_command(count, cmdname, args, mode)
+    logging.debug("Ran '%s' succesfully", text)
+
+
+@api.keybindings.register(".", "repeat-command")
+@api.commands.register(store=False)
+def repeat_command(count: int = 0):
+    """Repeat the last command."""
+    mode = api.modes.current()
+    if mode not in _last_command:
+        raise api.commands.CommandError("No command to repeat")
+    stored_count, cmdname, args = _last_command[mode]
+    count = count if count else stored_count  # Prefer entered count over stored count
+    _run_command(count, cmdname, args, mode)
+
+
+def _run_command(count, cmdname, args, mode):
+    """Run a given command.
+
+    Args:
+        count: Count to use for the command.
+        cmdname: Name of the command passed.
+        args: Arguments passed.
+        mode: Mode to run the command in.
+    """
     try:
         cmd = api.commands.get(cmdname, mode)
+        if cmd.store:
+            _last_command[mode] = LastCommand(count, cmdname, args)
         cmd(args, count=count)
         api.status.update()
-        logging.debug("Ran '%s' succesfully", text)
     except api.commands.CommandNotFound as e:
         logging.error(str(e))
     except (api.commands.ArgumentError, api.commands.CommandError) as e:

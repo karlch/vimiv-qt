@@ -83,7 +83,10 @@ Hook = typing.Union[HookFunction, HookMethod]
 
 
 def register(
-    mode: modes.Mode = modes.GLOBAL, hide: bool = False, hook: Hook = None
+    mode: modes.Mode = modes.GLOBAL,
+    hide: bool = False,
+    hook: Hook = None,
+    store: bool = True,
 ) -> typing.Callable:
     """Decorator to store a command in the registry.
 
@@ -91,6 +94,7 @@ def register(
         mode: Mode in which the command can be executed.
         hide: Hide command from command line.
         hook: Function to run before executing the command.
+        store: Save command to allow repeating with '.'.
     """
 
     def decorator(func: typing.Callable) -> typing.Callable:
@@ -98,7 +102,14 @@ def register(
         desc = _get_description(func, name)
         arguments = _CommandArguments(name, desc, func)
         cmd = _Command(
-            name, func, arguments, mode=mode, description=desc, hide=hide, hook=hook
+            name,
+            func,
+            arguments,
+            mode=mode,
+            description=desc,
+            hide=hide,
+            hook=hook,
+            store=store,
         )
         _registry[mode][name] = cmd
         return func
@@ -236,7 +247,8 @@ class _CommandArguments(argparse.ArgumentParser):
         return {"type": argtype}
 
 
-class _Command:
+# The class is still rather simple but many things need to be stored for various places
+class _Command:  # pylint: disable=too-many-instance-attributes
     """Skeleton for a command.
 
     Attributes:
@@ -247,6 +259,7 @@ class _Command:
         description: Description of the command for help.
         hide: Hide command from command line.
         hook: Function to run before executing the command.
+        store: Save command to allow repeating with '.'.
     """
 
     def __init__(
@@ -258,6 +271,7 @@ class _Command:
         description: str = "",
         hide: bool = False,
         hook: Hook = None,
+        store: bool = True,
     ):
         self.name = name
         self.func = func
@@ -266,6 +280,7 @@ class _Command:
         self.description = description
         self.hide = hide
         self.hook = hook if hook is not None else lambda *args: None
+        self.store = store
 
     def __call__(self, args: typing.List[str], count: str) -> None:
         """Parse arguments and call func.
