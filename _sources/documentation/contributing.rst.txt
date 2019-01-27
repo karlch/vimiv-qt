@@ -174,6 +174,12 @@ Status Modules
 .. automodule:: vimiv.api.status
    :members:
 
+Completion
+""""""""""
+
+.. automodule:: vimiv.api.completion
+   :members:
+
 The Image Loading Process
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

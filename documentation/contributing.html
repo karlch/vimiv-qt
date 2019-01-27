@@ -96,6 +96,7 @@
 <li><a class="reference internal" href="#module-vimiv.api.commands">Commands</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.keybindings">Keybindings</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.status">Status Modules</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.completion">Completion</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#the-image-loading-process">The Image Loading Process</a></li>
@@ -153,12 +154,13 @@ and to keep everything consistent.</p>
 <li><a class="reference internal" href="#module-vimiv.api.commands" id="id13">Commands</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.keybindings" id="id14">Keybindings</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.status" id="id15">Status Modules</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.completion" id="id16">Completion</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#the-image-loading-process" id="id16">The Image Loading Process</a></li>
+<li><a class="reference internal" href="#the-image-loading-process" id="id17">The Image Loading Process</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#updating-the-documentation" id="id17">Updating the Documentation</a></li>
+<li><a class="reference internal" href="#updating-the-documentation" id="id18">Updating the Documentation</a></li>
 </ul>
 </div>
 <div class="section" id="finding-something-to-do">
@@ -549,7 +551,7 @@ command.</p>
 
 <dl class="function">
 <dt id="vimiv.api.commands.items">
-<code class="descclassname">vimiv.api.commands.</code><code class="descname">items</code><span class="sig-paren">(</span><em>mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; ItemsView[str, str]<a class="headerlink" href="#vimiv.api.commands.items" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vimiv.api.commands.</code><code class="descname">items</code><span class="sig-paren">(</span><em>mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; ItemsView[str, vimiv.api.commands._Command]<a class="headerlink" href="#vimiv.api.commands.items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve all items in the commands registry for iteration.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -581,7 +583,7 @@ command.</p>
 
 <dl class="function">
 <dt id="vimiv.api.commands.register">
-<code class="descclassname">vimiv.api.commands.</code><code class="descname">register</code><span class="sig-paren">(</span><em>mode: vimiv.api.modes.Mode = Mode.GLOBAL, hide: bool = False, hook: Union[Callable[[], None], Callable[[Any], None]] = None</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">vimiv.api.commands.</code><code class="descname">register</code><span class="sig-paren">(</span><em>mode: vimiv.api.modes.Mode = Mode.GLOBAL, hide: bool = False, hook: Union[Callable[[], None], Callable[[Any], None]] = None, store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to store a command in the registry.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -591,6 +593,7 @@ command.</p>
 <li><strong>mode</strong> – Mode in which the command can be executed.</li>
 <li><strong>hide</strong> – Hide command from command line.</li>
 <li><strong>hook</strong> – Function to run before executing the command.</li>
+<li><strong>store</strong> – Save command to allow repeating with ‘.’.</li>
 </ul>
 </td>
 </tr>
@@ -709,9 +712,234 @@ is, for example, always called after a command was run.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-vimiv.api.completion">
+<span id="completion"></span><h4><a class="toc-backref" href="#id16">Completion</a><a class="headerlink" href="#module-vimiv.api.completion" title="Permalink to this headline">¶</a></h4>
+<p><em>Utilities to work with completion modules</em>.</p>
+<p>A completion module offers a model with options for command line completion and a filter
+that decides which results are filtered depending on the text in the command line. All
+completion models inherit from the <a class="reference internal" href="#vimiv.api.completion.BaseModel" title="vimiv.api.completion.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a> class while the filters inherit
+from <a class="reference internal" href="#vimiv.api.completion.BaseFilter" title="vimiv.api.completion.BaseFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFilter</span></code></a>.</p>
+<p>A completion module must define for which command line text it is valid. In addition, it
+can provide a custom filter as well as custom column widths for the results shown. By
+default there is only a single column which gets the complete width. Let’s start with a
+simple example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="k">import</span> <span class="n">completion</span>
+
+<span class="k">class</span> <span class="nc">UselessModel</span><span class="p">(</span><span class="n">completion</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;:useless&quot;</span><span class="p">)</span>  <span class="c1"># Gets triggered when the command line text</span>
+                                      <span class="c1"># starts with &quot;:useless&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;useless </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">),)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model defined offers the completions “useless 0”, “useless 1” and “useless 2” if the
+command line text starts with “:useless”.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The data which was set is a sequence of tuples. The tuples are required as it is
+possible to have multiple columns in the completion widget.</p>
+</div>
+<p>To include additional information on the provided completion, further columns can be
+added:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UselessModel</span><span class="p">(</span><span class="n">completion</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;:useless&quot;</span><span class="p">,</span> <span class="n">column_widths</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;useless </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;Integer&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The offered completions now provide and additional description (which is always
+“Integer”) that is shown in a second column next to the actual completion. The
+description column is set up to take 30 % of the total width while the completion takes
+70 %.</p>
+<p>For an overview of implemented models, feel free to take a look at the ones defined in
+<code class="docutils literal notranslate"><span class="pre">vimiv.completion.completionmodels</span></code>.</p>
+<dl class="class">
+<dt id="vimiv.api.completion.BaseFilter">
+<em class="property">class </em><code class="descclassname">vimiv.api.completion.</code><code class="descname">BaseFilter</code><a class="headerlink" href="#vimiv.api.completion.BaseFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base filter used for completion filters.</p>
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.refilter">
+<code class="descname">refilter</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseFilter.refilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter completions based on text in the command line.</p>
+<p>Must be implemented by the child classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current command line text.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.strip_text">
+<code class="descname">strip_text</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.completion.BaseFilter.strip_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Strip text of characters ignored for filtering.</p>
+<p>This default implementation strips command line prefixes and leading digits. If
+the child class requires additional intelligence it should override this
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current command line text.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The stripped text used as completion filter.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vimiv.api.completion.BaseModel">
+<em class="property">class </em><code class="descclassname">vimiv.api.completion.</code><code class="descname">BaseModel</code><span class="sig-paren">(</span><em>text: str</em>, <em>text_filter: vimiv.api.completion.BaseFilter = &lt;vimiv.api.completion.TextFilter object&gt;</em>, <em>column_widths: Tuple[float</em>, <em>...] = (1</em>, <em>)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base model used for completion models.</p>
+<dl class="attribute">
+<dt id="vimiv.api.completion.BaseModel.column_widths">
+<code class="descname">column_widths</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.column_widths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of floats [0..1] defining the width of each column.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.api.completion.BaseModel.text_filter">
+<code class="descname">text_filter</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.text_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter class used to filter valid completions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.on_enter">
+<code class="descname">on_enter</code><span class="sig-paren">(</span><em>text: str</em>, <em>mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the completer when the commandline is entered.</p>
+<p>This allows models to change their content accordingly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> – The current text in the comand line.</li>
+<li><strong>mode</strong> – Mode from which the commandline was entered.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.on_text_changed">
+<code class="descname">on_text_changed</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_text_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the completer when the commandline text has changed.</p>
+<p>This allows models to change their content accordingly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current text in the comand line.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.set_data">
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>data: Sequence[Tuple]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add rows to the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – List of tuples containing the data for each row.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vimiv.api.completion.CompletionModule">
+<em class="property">class </em><code class="descclassname">vimiv.api.completion.</code><code class="descname">CompletionModule</code><span class="sig-paren">(</span><em>Model</em>, <em>Filter</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.CompletionModule" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="vimiv.api.completion.CompletionModule.Filter">
+<code class="descname">Filter</code><a class="headerlink" href="#vimiv.api.completion.CompletionModule.Filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.api.completion.CompletionModule.Model">
+<code class="descname">Model</code><a class="headerlink" href="#vimiv.api.completion.CompletionModule.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vimiv.api.completion.FuzzyFilter">
+<em class="property">class </em><code class="descclassname">vimiv.api.completion.</code><code class="descname">FuzzyFilter</code><a class="headerlink" href="#vimiv.api.completion.FuzzyFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple filter fuzzy matching text in all columns.</p>
+<dl class="method">
+<dt id="vimiv.api.completion.FuzzyFilter.refilter">
+<code class="descname">refilter</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.FuzzyFilter.refilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fuzzy filter completions based on text in command line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current command line text.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vimiv.api.completion.TextFilter">
+<em class="property">class </em><code class="descclassname">vimiv.api.completion.</code><code class="descname">TextFilter</code><a class="headerlink" href="#vimiv.api.completion.TextFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple filter matching text in all columns.</p>
+<dl class="method">
+<dt id="vimiv.api.completion.TextFilter.refilter">
+<code class="descname">refilter</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.TextFilter.refilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter completions based on text in command line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current command line text.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.completion.get_module">
+<code class="descclassname">vimiv.api.completion.</code><code class="descname">get_module</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.CompletionModule<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the completion module which is valid for a given command line text.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> – The current command line text.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A completion model providing completion options.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="the-image-loading-process">
-<h3><a class="toc-backref" href="#id16">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h3>
 <p>Images are loaded using a chain of signals defined in
 <code class="docutils literal notranslate"><span class="pre">vimiv.imutils.imsignals</span></code>.</p>
 <p>In a first step, the path to a new image is determined and communicated using
@@ -735,7 +963,7 @@ the appropriate Qt widget.</p>
 </div>
 </div>
 <div class="section" id="updating-the-documentation">
-<h2><a class="toc-backref" href="#id17">Updating the Documentation</a><a class="headerlink" href="#updating-the-documentation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">Updating the Documentation</a><a class="headerlink" href="#updating-the-documentation" title="Permalink to this headline">¶</a></h2>
 <p>There is a script which builds the website’s reST documentation automatically
 from the source code. It must be run from the repository directory using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ scripts/src2rst.py
