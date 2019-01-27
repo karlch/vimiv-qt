@@ -8,31 +8,32 @@ Global
 .. table:: Overview of global commands
    :widths: auto
 
-   ============================= ===========
-   Command                       Description
-   ============================= ===========
-   :ref:`ref_global_alias`       Add an alias for a command.
-   :ref:`ref_global_bind`        Bind keys to a command.
-   :ref:`ref_global_command`     Enter command mode.
-   :ref:`ref_global_copy-name`   Copy name of current path to system clipboard.
-   :ref:`ref_global_delete`      Move a file to the trash directory.
-   :ref:`ref_global_enter`       Enter another mode.
-   :ref:`ref_global_fullscreen`  Toggle fullscreen mode.
-   :ref:`ref_global_next`        Select next image.
-   :ref:`ref_global_nop`         Do nothing.
-   :ref:`ref_global_open`        Open a path.
-   :ref:`ref_global_paste-name`  Paste path from clipboard to open command.
-   :ref:`ref_global_prev`        Select previous image.
-   :ref:`ref_global_quit`        Quit vimiv.
-   :ref:`ref_global_scale`       Scale the image.
-   :ref:`ref_global_search`      Start a search.
-   :ref:`ref_global_search-next` Continue search to the next match.
-   :ref:`ref_global_search-prev` Continue search to the previous match.
-   :ref:`ref_global_set`         Set an option.
-   :ref:`ref_global_toggle`      Toggle one mode.
-   :ref:`ref_global_unbind`      Unbind a keybinding.
-   :ref:`ref_global_undelete`    Restore a file from the trash directory.
-   ============================= ===========
+   ================================ ===========
+   Command                          Description
+   ================================ ===========
+   :ref:`ref_global_alias`          Add an alias for a command.
+   :ref:`ref_global_bind`           Bind keys to a command.
+   :ref:`ref_global_command`        Enter command mode.
+   :ref:`ref_global_copy-name`      Copy name of current path to system clipboard.
+   :ref:`ref_global_delete`         Move a file to the trash directory.
+   :ref:`ref_global_enter`          Enter another mode.
+   :ref:`ref_global_fullscreen`     Toggle fullscreen mode.
+   :ref:`ref_global_next`           Select next image.
+   :ref:`ref_global_nop`            Do nothing.
+   :ref:`ref_global_open`           Open a path.
+   :ref:`ref_global_paste-name`     Paste path from clipboard to open command.
+   :ref:`ref_global_prev`           Select previous image.
+   :ref:`ref_global_quit`           Quit vimiv.
+   :ref:`ref_global_repeat-command` Repeat the last command.
+   :ref:`ref_global_scale`          Scale the image.
+   :ref:`ref_global_search`         Start a search.
+   :ref:`ref_global_search-next`    Continue search to the next match.
+   :ref:`ref_global_search-prev`    Continue search to the previous match.
+   :ref:`ref_global_set`            Set an option.
+   :ref:`ref_global_toggle`         Toggle one mode.
+   :ref:`ref_global_unbind`         Unbind a keybinding.
+   :ref:`ref_global_undelete`       Restore a file from the trash directory.
+   ================================ ===========
 
 .. _ref_global_alias:
 
@@ -198,6 +199,14 @@ quit
 ====
 
 Quit vimiv.
+
+
+.. _ref_global_repeat-command:
+
+repeat-command
+==============
+
+Repeat the last command.
 
 
 .. _ref_global_scale:
