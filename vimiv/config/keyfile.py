@@ -63,8 +63,11 @@ def _read(filename):
     parser = KeyfileParser()
     parser.read(filename)
     for mode, bindings in api.keybindings.items():
-        section = parser[mode.name.upper()]
-        _update_bindings(bindings, section)
+        try:
+            section = parser[mode.name.upper()]
+            _update_bindings(bindings, section)
+        except KeyError:
+            logging.warning("Missing section '%s' in keys.conf" % (mode.name.upper()))
     logging.info("Read keybindings from '%s'", filename)
 
 
