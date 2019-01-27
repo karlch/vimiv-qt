@@ -18,13 +18,14 @@ bdd.scenarios("completion.feature")
 @bdd.then(bdd.parsers.parse("the completion model should be {model}"))
 def check_completion_model(model):
     models = {
-        "command": completionmodels.command,
-        "path": completionmodels.paths,
-        "external": completionmodels.external,
-        "settings": completionmodels.settings,
-        "trash": completionmodels.trash,
+        "command": completionmodels.CommandModel,
+        "path": completionmodels.PathModel,
+        "external": completionmodels.ExternalCommandModel,
+        "settings": completionmodels.SettingsModel,
+        "settings_option": completionmodels.SettingsOptionModel,
+        "trash": completionmodels.TrashModel,
     }
-    assert completer.instance()._modelfunc == models[model]
+    assert isinstance(completer.instance().proxy_model.sourceModel(), models[model])
 
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))

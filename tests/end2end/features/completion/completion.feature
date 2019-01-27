@@ -22,6 +22,11 @@ Feature: Using completion.
         When I enter command mode with set
         Then the completion model should be settings
 
+    Scenario: Using setting option completion.
+        Given I open any directory
+        When I enter command mode with set shuffle
+        Then the completion model should be settings_option
+
     Scenario: Using trash completion.
         Given I open any directory
         When I enter command mode with undelete
@@ -38,3 +43,9 @@ Feature: Using completion.
         And I run complete
         And I run leave-commandline
         Then no completion should be selected
+
+    Scenario: Crash when completing on entered number
+        Given I open any directory
+        When I enter command mode with 2
+        And I run complete
+        Then no crash should happen

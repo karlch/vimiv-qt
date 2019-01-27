@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import QApplication
 
 import vimiv
 from vimiv import app, api, apimodules, parsertypes
+from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
 from vimiv.imutils import iminitialize
@@ -78,6 +79,7 @@ def earlyinit():
     libpaths.init()
     iminitialize.init()
     apimodules.init()
+    completionmodels.init()
 
 
 def setup_logging(log_level):
