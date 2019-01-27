@@ -67,7 +67,7 @@ def _read(filename):
             section = parser[mode.name.upper()]
             _update_bindings(bindings, section)
         except KeyError:
-            logging.warning("Missing section '%s' in keys.conf" % (mode.name.upper()))
+            logging.warning("Missing section '%s' in keys.conf", mode.name.upper())
     logging.info("Read keybindings from '%s'", filename)
 
 
