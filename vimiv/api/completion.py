@@ -131,14 +131,6 @@ class TextFilter(BaseFilter):
     def reset(self) -> None:
         self.setFilterRegExp("")
 
-    # def strip_text(self, text: str) -> str:
-    #     """Strip text of characters ignored for filtering."""
-    #     return (
-    #         super().strip_text(text)
-    #         .replace("open ", "")  # Still allow match inside word for open
-    #         .replace("set ", "")  # Still allow match inside word for set
-    #     )
-
 
 class FuzzyFilter(TextFilter):
     """Simple filter fuzzy matching text in all columns."""
