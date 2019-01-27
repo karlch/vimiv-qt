@@ -120,7 +120,7 @@ _registry = {mode: _Bindings() for mode in modes.ALL}
 def get(mode: modes.Mode) -> _Bindings:
     """Return the keybindings of one specific mode."""
     if mode in modes.GLOBALS:
-        return _registry[mode] + _registry[modes.GLOBAL]
+        return _registry[modes.GLOBAL] + _registry[mode]
     return _registry[mode]
 
 
