@@ -53,7 +53,7 @@ def leave_mode(mode):
     api.modes.leave(api.modes.get_by_name(mode))
 
 
-@bdd.when(bdd.parsers.parse("I enter command mode with {text}"))
+@bdd.when(bdd.parsers.parse('I enter command mode with "{text}"'))
 def enter_command_with_text(text):
     api.modes.enter(api.modes.COMMAND)
     commandline.instance().setText(":" + text)

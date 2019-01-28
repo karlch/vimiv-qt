@@ -89,7 +89,7 @@ class PathModel(api.completion.BaseModel):
     """
 
     def __init__(self):
-        super().__init__(":open", text_filter=OpenFilter())
+        super().__init__(":open ", text_filter=OpenFilter())
         self._last_directory = ""
 
     def on_enter(self, text: str, mode: api.modes.Mode) -> None:
@@ -147,7 +147,7 @@ class SettingsModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(
-            ":set", text_filter=SettingFilter(), column_widths=(0.4, 0.1, 0.5)
+            ":set ", text_filter=SettingFilter(), column_widths=(0.4, 0.1, 0.5)
         )
         data = []
         # Show all settings
@@ -184,7 +184,7 @@ class TrashModel(api.completion.BaseModel):
     """
 
     def __init__(self):
-        super().__init__(":undelete", column_widths=(0.4, 0.45, 0.15))
+        super().__init__(":undelete ", column_widths=(0.4, 0.45, 0.15))
         self._initialized = False
 
     def on_entered(self, text: str, mode: api.modes.Mode) -> None:
