@@ -15,17 +15,19 @@ from vimiv.commands import aliases
 def test_add_alias():
     aliases.alias("test", ["quit"])
     assert aliases.get(api.modes.GLOBAL)["test"] == "quit"
+    del aliases._aliases[api.modes.GLOBAL]["test"]
 
 
 def test_fail_add_alias_no_list():
     with pytest.raises(AssertionError, match="defined as list"):
-        aliases.alias("test2", "any")
+        aliases.alias("test", "any")
 
 
 def test_add_alias_for_different_mode():
-    aliases.alias("test3", ["quit"], mode="image")
+    aliases.alias("test", ["quit"], mode="image")
     assert aliases.get(api.modes.IMAGE)["test"] == "quit"
-    assert "test3" not in aliases.get(api.modes.GLOBAL)
+    assert "test" not in aliases.get(api.modes.GLOBAL)
+    del aliases._aliases[api.modes.IMAGE]["test"]
 
 
 def test_get_global_alias_from_image_mode():
