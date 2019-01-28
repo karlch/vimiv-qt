@@ -26,5 +26,5 @@ Feature: Play a slideshow.
         Given I open 5 images
         And I forcefully set the slideshow delay to 50ms
         When I run slideshow
-        And I wait for 120ms
+        And I let the slideshow run 2 times
         Then the image should have the index 3

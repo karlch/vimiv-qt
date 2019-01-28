@@ -42,3 +42,11 @@ def check_slideshow_delay(sshow, delay):
     assert api.settings.SLIDESHOW_DELAY.value == delay
     # Check actual value
     assert sshow.interval() == delay * 1000
+
+
+@bdd.when(bdd.parsers.parse("I let the slideshow run {N:d} times"))
+def wait_slideshow_signal(qtbot, sshow, N):
+    for i in range(N):
+        # Wait for slideshow delay and give it a small buffer
+        with qtbot.waitSignal(sshow.next_im, timeout=sshow.interval() * 1.2):
+            pass
