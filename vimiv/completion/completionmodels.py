@@ -162,6 +162,7 @@ class SettingsOptionModel(api.completion.BaseModel):
         super().__init__(
             ":set %s" % (name), text_filter=SettingFilter(), column_widths=(0.5, 0.5)
         )
+        self.setSortRole(3)
         data = []
         values = {"default": str(setting.default), "current": str(setting.value)}
         for i, suggestion in enumerate(setting.suggestions()):
