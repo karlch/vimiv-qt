@@ -234,9 +234,7 @@ def update_settings(args):
     Args:
         args: Arguments returned from parser.parse_args().
     """
-    for pair in args.cmd_settings:
-        option = pair[0]
-        value = pair[1]
+    for option, value in args.cmd_settings:
         try:
             api.settings.override(option, value)
         except KeyError:
