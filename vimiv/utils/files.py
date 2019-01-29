@@ -27,14 +27,11 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
         Sorted list of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
-
-    def listdir_wrapper(show_hidden):
-        """Wrapper around os.listdir to possible hide dotfiles."""
-        for path in os.listdir(directory):
-            if not path.startswith(".") or show_hidden:
-                yield os.path.join(directory, path)
-
-    return sorted(listdir_wrapper(show_hidden))
+    return sorted(
+        os.path.join(directory, path)
+        for path in os.listdir(directory)
+        if show_hidden or not path.startswith(".")
+    )
 
 
 def supported(paths: List[str]) -> Tuple[List[str], List[str]]:
