@@ -13,7 +13,7 @@ Module attributes:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, ItemsView, KeysView, List, Union
+from typing import Any, Dict, ItemsView, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -114,10 +114,6 @@ def set_to_default(name: str) -> None:
 
 def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
-
-
-def names() -> KeysView[str]:
-    return _storage.keys()
 
 
 class Setting(ABC):

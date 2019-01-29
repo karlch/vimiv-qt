@@ -173,15 +173,16 @@ def items(mode: modes.Mode) -> typing.ItemsView[str, "_Command"]:
     return _registry[mode].items()
 
 
-def names(mode: modes.Mode) -> typing.KeysView[str]:
-    """Retrieve names of all commands in the registry for iteration.
+def exists(name: str, mode: modes.Mode) -> bool:
+    """Check if a command exists in the registry.
 
     Args:
-        mode: The mode for which the commands are valid.
+        name: Name of the command to check for.
+        mode: The mode for which the command is valid.
     Return:
-        typing.KeysView allowing iteration over names which are the registry keys.
+        True if the command exists.
     """
-    return _registry[mode].keys()
+    return name in _registry[mode]
 
 
 class _CommandArguments(argparse.ArgumentParser):

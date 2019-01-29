@@ -63,6 +63,6 @@ def alias(name: str, command: List[str], mode: str = "global"):
     assert isinstance(command, list), "Aliases defined as list via nargs='*'"
     commandstr = " ".join(command)
     modeobj = api.modes.get_by_name(mode)
-    if name in api.commands.names(modeobj):
+    if api.commands.exists(name, modeobj):
         raise api.commands.CommandError("Not overriding default command %s" % (name))
     _aliases[modeobj][name] = commandstr
