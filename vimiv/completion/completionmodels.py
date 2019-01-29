@@ -63,10 +63,8 @@ class ExternalCommandModel(api.completion.BaseModel):
             executables: Set[str] = set()
             for bindir in pathdirs:
                 executables |= set(os.listdir(bindir))
-            external_commands = sorted(list(executables))
-        else:
-            external_commands = []
-        return external_commands
+            return sorted(executables)
+        return []
 
 
 class OpenFilter(api.completion.TextFilter):
