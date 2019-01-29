@@ -129,9 +129,10 @@ def get(name: str, mode: modes.Mode = modes.GLOBAL) -> "_Command":
     commands = _registry[mode]
     if mode in modes.GLOBALS:
         commands.update(_registry[modes.GLOBAL])
-    if name not in commands:
+    try:
+        return commands[name]
+    except KeyError:
         raise CommandNotFound("%s: unknown command for mode %s" % (name, mode.name))
-    return commands[name]
 
 
 class ArgumentError(Exception):
