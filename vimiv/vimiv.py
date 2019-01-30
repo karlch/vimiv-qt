@@ -34,7 +34,6 @@ from vimiv.utils import (
     strconvert,
     trash_manager,
     working_directory,
-    libpaths,
 )
 
 
@@ -76,7 +75,6 @@ def earlyinit():
     clipboard.init()
     trash_manager.init()
     working_directory.init()
-    libpaths.init()
     iminitialize.init()
     completionmodels.init()
 

@@ -13,14 +13,14 @@ from typing import List
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
-from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument
+from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import libpaths, eventhandler, strip_html, clamp, working_directory
+from vimiv.utils import files, eventhandler, strip_html, clamp, working_directory
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -75,14 +75,12 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
 
-        self.setModel(LibraryModel())
+        self.setModel(LibraryModel(self))
         self.setItemDelegate(LibraryDelegate())
         self.hide()
 
         self.activated.connect(self._on_activated)
         api.settings.signals.changed.connect(self._on_settings_changed)
-        libpaths.handler.loaded.connect(self._on_paths_loaded)
-        libpaths.handler.changed.connect(self._on_paths_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.modes.signals.entered.connect(self._on_mode_entered)
@@ -101,25 +99,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             index: The QModelIndex activated.
         """
         self.open_selected()
-
-    @pyqtSlot(list)
-    def _on_paths_loaded(self, data: List[libpaths.LibraryRow]):
-        """Fill library with paths when they were loaded.
-
-        Args:
-            data: List of data defining the content of the library.
-        """
-        self._set_content(data)
-
-    @pyqtSlot(list)
-    def _on_paths_changed(self, data: List[libpaths.LibraryRow]):
-        """Reload library with paths when they changed.
-
-        Args:
-            data: List of data defining the content of the library.
-        """
-        self._store_position()
-        self._set_content(data)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -170,14 +149,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.hide()
             self._last_selected = ""
 
-    def _set_content(self, data):
-        """Set content of the library to data."""
-        self.model().remove_all_rows()
-        for row in data:
-            self.model().appendRow(row)
-        row = self._get_stored_position(os.getcwd())
-        self._select_row(row)
-
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
         """Open the currently selected path.
@@ -204,7 +175,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def _open_directory(self, path):
         """Open a selected directory."""
-        self._store_position()
+        self.store_position()
         working_directory.handler.chdir(path)
 
     def _open_image(self, path, close):
@@ -242,8 +213,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if direction == direction.Right:
             self.open_selected()
         elif direction == direction.Left:
-            with suppress(IndexError):  # Do not store empty positions
-                self._positions[os.getcwd()] = self.row()
+            self.store_position()
             working_directory.handler.chdir("..")
         else:
             try:
@@ -300,32 +270,62 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Return the list of currently open paths."""
         return self.model().pathlist()
 
-    def _store_position(self):
+    def store_position(self):
         """Set the stored position for a directory if possible."""
-        if self.model().rowCount():
+        with suppress(IndexError):
             self._positions[os.getcwd()] = self.row()
 
-    def _get_stored_position(self, directory):
-        """Return the stored position for a directory if possible."""
-        if directory not in self._positions:
-            return 0
-        return min(self._positions[directory], self.model().rowCount() - 1)
+    def select_stored_position(self):
+        """Select the stored position for a directory if possible."""
+        directory = os.getcwd()
+        row = (
+            min(self._positions[directory], self.model().rowCount() - 1)
+            if directory in self._positions
+            else 0
+        )  # Fallback to selecting the first row
+        self._select_row(row)
 
 
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
 
-    The model stores the rows.
+    The model stores the rows and populates the row content when the working directory
+    has changed.
 
     Attributes:
         _highlighted: List of indices that are highlighted as search results.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent):
+        super().__init__(parent=parent)
         self._highlighted = []
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
+        working_directory.handler.changed.connect(self._on_directory_changed)
+        working_directory.handler.loaded.connect(self._update_content)
+
+    @pyqtSlot(list, list)
+    def _update_content(self, images: List[str], directories: List[str]):
+        """Update library content with new images and directories.
+
+        Args:
+            images: Images in the current directory.
+            directories: Directories in the current directory.
+        """
+        self.remove_all_rows()
+        self._add_rows(directories, are_directories=True)
+        self._add_rows(images, are_directories=False)
+        self.parent()._select_row(0)
+        self.parent().select_stored_position()
+
+    @pyqtSlot(list, list)
+    def _on_directory_changed(self, images: List[str], directories: List[str]):
+        """Reload library when directory content has changed.
+
+        In addition to _update_content() the position is stored.
+        """
+        self.parent().store_position()
+        self._update_content(images, directories)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -370,6 +370,28 @@ class LibraryModel(QStandardItemModel):
     def is_highlighted(self, index):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
+
+    def _add_rows(self, paths: List[str], are_directories: bool = False):
+        """Generate a library row for each path and add it to the model.
+
+        Args:
+            paths: List of paths to create a library row for.
+            dirs: Whether all paths are directories.
+        """
+        starting_index = self.rowCount() + 1  # Want to index from 1
+        for i, path in enumerate(paths):
+            name = os.path.basename(path)
+            if are_directories:
+                name = utils.add_html("b", name + "/")
+            with suppress(FileNotFoundError):  # Has been deleted in the meantime
+                size = files.get_size(path)
+                self.appendRow(
+                    (
+                        QStandardItem(str(starting_index + i)),
+                        QStandardItem(name),
+                        QStandardItem(size),
+                    )
+                )
 
 
 class LibraryDelegate(QStyledItemDelegate):
