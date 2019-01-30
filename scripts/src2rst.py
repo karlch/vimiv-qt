@@ -92,7 +92,7 @@ def _gen_keybinding_rows(bindings):
     rows = [("Keybinding", "Command")]
     for binding, command in bindings.items():
         rows.append(("\\%s" % (binding), command))
-    return rows
+    return sorted(rows, key=lambda row: row[1])
 
 
 def generate_commandline_options():

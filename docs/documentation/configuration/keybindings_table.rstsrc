@@ -8,30 +8,30 @@
    ========== ===========
    Keybinding Command
    ========== ===========
-   \N         search-next
-   \P         search-prev
-   \.         repeat-command
-   \q         quit
-   \o         command --text='open '
-   \gi        enter image
-   \gl        enter library
-   \gt        enter thumbnail
-   \gm        enter manipulate
-   \tl        toggle library
-   \tt        toggle thumbnail
-   \tm        toggle manipulate
-   \x         delete %
-   \b         set statusbar.show!
    \<colon>   command
-   \/         search
-   \?         search --reverse
-   \f         fullscreen
+   \o         command --text='open '
    \yy        copy-name
    \ya        copy-name --abspath
-   \yY        copy-name --primary
    \yA        copy-name --abspath --primary
+   \yY        copy-name --primary
+   \x         delete %
+   \gi        enter image
+   \gl        enter library
+   \gm        enter manipulate
+   \gt        enter thumbnail
+   \f         fullscreen
    \Pp        paste-name
    \PP        paste-name --primary
+   \q         quit
+   \.         repeat-command
+   \/         search
+   \?         search --reverse
+   \N         search-next
+   \P         search-prev
+   \b         set statusbar.show!
+   \tl        toggle library
+   \tm        toggle manipulate
+   \tt        toggle thumbnail
    ========== ===========
 .. table:: Keybindings for image mode
    :widths: auto
@@ -39,33 +39,33 @@
    ========== ===========
    Keybinding Command
    ========== ===========
-   \s         slideshow
-   \n         next
-   \p         prev
-   \gg        goto 1
-   \G         goto -1
-   \,         set slideshow.delay -0.5
-   \.         set slideshow.delay +0.5
-   \h         scroll left
-   \l         scroll right
-   \j         scroll down
-   \k         scroll up
    \M         center
-   \H         scroll-edge left
-   \L         scroll-edge right
-   \J         scroll-edge down
-   \K         scroll-edge up
-   \+         zoom in
-   \-         zoom out
-   \E         scale --level=fit-height
-   \e         scale --level=fit-width
-   \W         scale --level=1
-   \w         scale --level=fit
-   \<space>   play-or-pause
-   \>         rotate
-   \<         rotate --counter-clockwise
    \|         flip
    \_         flip --vertical
+   \G         goto -1
+   \gg        goto 1
+   \n         next
+   \<space>   play-or-pause
+   \p         prev
+   \>         rotate
+   \<         rotate --counter-clockwise
+   \W         scale --level=1
+   \w         scale --level=fit
+   \E         scale --level=fit-height
+   \e         scale --level=fit-width
+   \j         scroll down
+   \h         scroll left
+   \l         scroll right
+   \k         scroll up
+   \J         scroll-edge down
+   \H         scroll-edge left
+   \L         scroll-edge right
+   \K         scroll-edge up
+   \.         set slideshow.delay +0.5
+   \,         set slideshow.delay -0.5
+   \s         slideshow
+   \+         zoom in
+   \-         zoom out
    ========== ===========
 .. table:: Keybindings for library mode
    :widths: auto
@@ -73,12 +73,12 @@
    ========== ===========
    Keybinding Command
    ========== ===========
-   \l         scroll right
-   \h         scroll left
-   \j         scroll down
-   \k         scroll up
    \G         goto -1
    \gg        goto 1
+   \j         scroll down
+   \h         scroll left
+   \l         scroll right
+   \k         scroll up
    \L         set library.width +0.05
    \H         set library.width -0.05
    ========== ===========
@@ -88,12 +88,12 @@
    ========== ===========
    Keybinding Command
    ========== ===========
-   \l         scroll right
-   \h         scroll left
-   \j         scroll down
-   \k         scroll up
    \G         goto -1
    \gg        goto 1
+   \j         scroll down
+   \h         scroll left
+   \l         scroll right
+   \k         scroll up
    \+         zoom in
    \-         zoom out
    ========== ===========
@@ -103,13 +103,13 @@
    ============= ===========
    Keybinding    Command
    ============= ===========
-   \<ctrl>n      history prev
-   \<ctrl>p      history next
-   \<down>       history-substr-search prev
-   \<up>         history-substr-search next
-   \<escape>     leave-commandline
    \<tab>        complete
    \<shift><tab> complete --inverse
+   \<ctrl>p      history next
+   \<ctrl>n      history prev
+   \<up>         history-substr-search next
+   \<down>       history-substr-search prev
+   \<escape>     leave-commandline
    ============= ===========
 .. table:: Keybindings for manipulate mode
    :widths: auto
@@ -117,15 +117,15 @@
    ========== ===========
    Keybinding Command
    ========== ===========
-   \<colon>   command
    \<return>  accept
    \b         brightness
+   \<colon>   command
    \c         contrast
-   \k         increase 1
-   \K         increase 10
    \j         decrease 1
    \J         decrease 10
-   \G         set 127
-   \gg        set -127
    \<escape>  discard
+   \k         increase 1
+   \K         increase 10
+   \gg        set -127
+   \G         set 127
    ========== ===========
