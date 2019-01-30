@@ -6,6 +6,8 @@
 
 """QtWidgets for IMAGE mode."""
 
+from contextlib import suppress
+
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
@@ -15,7 +17,7 @@ from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import eventhandler, ignore
+from vimiv.utils import eventhandler
 
 # We need the check as svg support is optional
 try:
@@ -241,7 +243,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
     @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
-        with ignore(AttributeError):  # Currently no animation displayed
+        with suppress(AttributeError):  # Currently no animation displayed
             self.widget().play_or_pause()
 
     def _scale_to_fit(self, limit=-1):

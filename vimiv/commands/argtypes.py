@@ -11,9 +11,8 @@ Example for scroll direction:
         ...
 """
 
+from contextlib import suppress
 from enum import Enum
-
-from vimiv.utils import ignore
 
 
 class Direction(Enum):
@@ -45,7 +44,7 @@ class ImageScaleFloat:
     """Valid arguments for image scaling including float and ImageScale."""
 
     def __new__(cls, value):
-        with ignore(ValueError):
+        with suppress(ValueError):
             return float(value)
         return ImageScale(value)
 

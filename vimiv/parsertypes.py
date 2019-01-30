@@ -14,9 +14,8 @@ Example for parsing commandline arguments:
 import argparse
 import logging
 import os
+from contextlib import suppress
 from collections import namedtuple
-
-from vimiv.utils import ignore
 
 
 def positive_int(value):
@@ -110,6 +109,6 @@ def loglevel(value):
         "error": logging.ERROR,
         "critical": logging.CRITICAL,
     }
-    with ignore(KeyError):
+    with suppress(KeyError):
         return log_levels[value.lower()]
     raise argparse.ArgumentTypeError("Invalid log level '%s'" % (value))

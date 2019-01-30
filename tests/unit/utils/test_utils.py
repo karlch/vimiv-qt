@@ -12,17 +12,6 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from vimiv import utils
 
 
-def test_ignore_single_exception():
-    with utils.ignore(ValueError):
-        int("32")
-
-
-def test_ignore_multiple_exceptions():
-    with utils.ignore(ValueError, IndexError):
-        int("32")
-        [][1]
-
-
 def test_add_html():
     assert utils.add_html("b", "hello") == "<b>hello</b>"
 

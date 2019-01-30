@@ -8,12 +8,13 @@
 
 import os
 from collections import namedtuple
+from contextlib import suppress
 from typing import cast, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QStandardItem
 
-from vimiv.utils import add_html, files, working_directory, ignore
+from vimiv.utils import add_html, files, working_directory
 
 
 LibraryRow = namedtuple("LibraryElement", ["linenumber", "name", "size"])
@@ -92,7 +93,7 @@ def _extend_data(data: List[LibraryRow], paths: List[str], dirs: bool = False) -
         name = os.path.basename(path)
         if dirs:
             name = add_html("b", name + "/")
-        with ignore(FileNotFoundError):  # Has been deleted in the meantime
+        with suppress(FileNotFoundError):  # Has been deleted in the meantime
             size = files.get_size(path)
             row = LibraryRow(
                 QStandardItem(str(index + i)), QStandardItem(name), QStandardItem(size)

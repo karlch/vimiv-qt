@@ -8,6 +8,7 @@
 
 import logging
 import os
+from contextlib import suppress
 from typing import List
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
@@ -19,14 +20,7 @@ from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import (
-    libpaths,
-    eventhandler,
-    strip_html,
-    clamp,
-    working_directory,
-    ignore,
-)
+from vimiv.utils import libpaths, eventhandler, strip_html, clamp, working_directory
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -248,7 +242,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         if direction == direction.Right:
             self.open_selected()
         elif direction == direction.Left:
-            with ignore(IndexError):  # Do not store empty positions
+            with suppress(IndexError):  # Do not store empty positions
                 self._positions[os.getcwd()] = self.row()
             working_directory.handler.chdir("..")
         else:
@@ -296,7 +290,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def current(self):
         """Return absolute path of currently selected path."""
-        with ignore(IndexError):
+        with suppress(IndexError):  # No path selected
             basename = self.selectionModel().selectedIndexes()[1].data()
             basename = strip_html(basename)
             return os.path.abspath(basename)

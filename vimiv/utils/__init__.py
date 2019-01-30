@@ -9,33 +9,13 @@
 import functools
 import inspect
 import re
-from contextlib import contextmanager
+from contextlib import suppress
 from typing import Callable, Optional, TypeVar
 
 from PyQt5.QtCore import pyqtSlot
 
 
 Number = TypeVar("Number", int, float)
-
-
-@contextmanager
-def ignore(*exceptions):
-    """Context manager to ignore given exceptions.
-
-    Usage:
-        with ignore(ValueError):
-            int("hello")
-
-    Behaves like:
-        try:
-            int("hello")
-        except ValueError:
-            pass
-    """
-    try:
-        yield
-    except exceptions:
-        pass
 
 
 def add_html(tag: str, text: str) -> str:
@@ -124,7 +104,7 @@ def _slot_args(function):
     slot_args, slot_kwargs = [], {}
     argspec = inspect.getfullargspec(function)
     # Add return type if it exists
-    with ignore(KeyError):
+    with suppress(KeyError):
         return_type = argspec.annotations["return"]
         if return_type is not None:
             slot_kwargs["result"] = return_type

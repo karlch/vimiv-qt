@@ -7,6 +7,7 @@
 """Deals with changing and storing paths to currently loaded images."""
 
 import os
+from contextlib import suppress
 from random import shuffle
 from typing import List
 
@@ -15,7 +16,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 from vimiv import api, utils
 from vimiv.commands import search
 from vimiv.imutils.imsignals import imsignals
-from vimiv.utils import files, slideshow, working_directory, ignore
+from vimiv.utils import files, slideshow, working_directory
 
 
 # We need the check as exif support is optional
@@ -108,7 +109,7 @@ def exif_date_time() -> str:
     be used as basis to work with.
     """
     if piexif is not None:
-        with ignore(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+        with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             exif_dict = piexif.load(current())
             return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
     return ""

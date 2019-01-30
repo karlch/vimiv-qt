@@ -15,6 +15,7 @@ widget to update.
 import hashlib
 import os
 import tempfile
+from contextlib import suppress
 from typing import Dict, List
 
 from PyQt5.QtCore import (
@@ -28,7 +29,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, pixmap_creater, ignore, slot
+from vimiv.utils import xdg, pixmap_creater, slot
 
 
 KEY_URI = "Thumb::URI"
@@ -141,7 +142,7 @@ class ThumbnailCreator(QRunnable):
     def run(self) -> None:
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
-        with ignore(FileNotFoundError):
+        with suppress(FileNotFoundError):
             pmap = (
                 self._maybe_recreate_thumbnail(self._path, thumbnail_path)
                 if os.path.exists(thumbnail_path)
