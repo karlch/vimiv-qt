@@ -15,22 +15,21 @@ import inspect
 
 from vimiv import vimiv, api
 
-import rstutils
+from rstutils import RSTFile
 
 
 def generate_status_modules():
     """Generate table overview of status modules."""
     print("generating statusbar modules...")
     filename = "docs/documentation/configuration/status_modules.rstsrc"
-    with open(filename, "w") as f:
-        rstutils.write_header(f)
+    with RSTFile(filename) as f:
         rows = [("Module", "Description")]
         for name in sorted(api.status._modules.keys()):
             func = api.status._modules[name]._func
             name = name.strip("{}")
             desc = inspect.getdoc(func).split("\n")[0]
             rows.append((name, desc))
-        rstutils.write_table(rows, f, title="Overview of status modules")
+        f.write_table(rows, title="Overview of status modules")
 
 
 def _write_command_description(cmds, mode, f):
@@ -38,7 +37,7 @@ def _write_command_description(cmds, mode, f):
     for name in sorted(cmds.keys()):
         cmd = cmds[name]
         f.write("\n.. _ref_%s_%s:\n\n" % (mode, name))
-        rstutils.write_subsubsection(name, f)
+        f.write_subsubsection(name)
         doc = inspect.getdoc(cmd.func)
         f.write("%s\n\n" % (doc))
 
@@ -46,10 +45,9 @@ def _write_command_description(cmds, mode, f):
 def generate_commands():
     """Generate table overview and description of the commands."""
     print("generating commands...")
-    with open("docs/documentation/commands_desc.rstsrc", "w") as f:
-        rstutils.write_header(f)
+    with RSTFile("docs/documentation/commands_desc.rstsrc") as f:
         for mode, cmds in api.commands._registry.items():
-            rstutils.write_subsection(mode.name.capitalize(), f)
+            f.write_subsection(mode.name.capitalize())
             # Table of command overview
             rows = [("Command", "Description")]
             title = "Overview of %s commands" % (mode.name)
@@ -57,7 +55,7 @@ def generate_commands():
                 cmd = cmds[name]
                 link = ":ref:`ref_%s_%s`" % (mode.name, name)
                 rows.append((link, cmd.description))
-            rstutils.write_table(rows, f, title=title)
+            f.write_table(rows, title=title)
             _write_command_description(cmds, mode.name, f)
 
 
@@ -65,26 +63,24 @@ def generate_settings():
     """Generate table overview of all settings."""
     print("generating settings...")
     filename = "docs/documentation/configuration/settings_table.rstsrc"
-    with open(filename, "w") as f:
-        rstutils.write_header(f)
+    with RSTFile(filename) as f:
         rows = [("Setting", "Description")]
         for name in sorted(api.settings._storage.keys()):
             setting = api.settings._storage[name]
             if setting.desc:  # Otherwise the setting is meant to be hidden
                 rows.append((name, setting.desc))
-        rstutils.write_table(rows, f, title="Overview of settings")
+        f.write_table(rows, title="Overview of settings")
 
 
 def generate_keybindings():
     """Generate table overview of default keybindings."""
     print("generating keybindings...")
     filename = "docs/documentation/configuration/keybindings_table.rstsrc"
-    with open(filename, "w") as f:
-        rstutils.write_header(f)
+    with RSTFile(filename) as f:
         for mode, bindings in api.keybindings.items():
             rows = _gen_keybinding_rows(bindings)
             title = "Keybindings for %s mode" % (mode.name)
-            rstutils.write_table(rows, f, title=title)
+            f.write_table(rows, title=title)
 
 
 def _gen_keybinding_rows(bindings):
@@ -107,11 +103,10 @@ def generate_commandline_options():
         f.write(synopsis)
     # Options
     filename_options = "docs/manpage/options.rstsrc"
-    with open(filename_options, "w") as f:
-        rstutils.write_header(f)
-        rstutils.write_section("positional arguments", f)
+    with RSTFile(filename_options) as f:
+        f.write_section("positional arguments")
         f.write(positionals)
-        rstutils.write_section("optional arguments", f)
+        f.write_section("optional arguments")
         f.write(optionals)
 
 
