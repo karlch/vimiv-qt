@@ -35,7 +35,7 @@ def parse(args):
         files.append(args.config)
     if files:
         _read(files)
-        logging.info("Read configuration from %s", ", ".join(files))
+        logging.debug("Read configuration from %s", ", ".join(files))
 
 
 def dump():
@@ -53,7 +53,7 @@ def dump():
     with open(user_file, "w") as f:
         parser.write(f)
         f.write("; vim:ft=dosini")
-    logging.info("Created default config file %s", user_file)
+    logging.debug("Created default config file %s", user_file)
 
 
 def _read(files):
@@ -90,9 +90,9 @@ def _update_setting(name, parser):
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
         api.settings.override(setting_name, parser_option)
-        logging.info("Overriding '%s' with '%s'", setting_name, parser_option)
+        logging.debug("Overriding '%s' with '%s'", setting_name, parser_option)
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
-        logging.warning("%s in configfile", str(e))
+        logging.info("%s in configfile", str(e))
     except (strconvert.ConversionError, ValueError) as e:
         logging.error("Error reading setting %s: %s", setting_name, str(e))
 

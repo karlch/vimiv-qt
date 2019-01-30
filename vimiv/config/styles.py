@@ -60,7 +60,7 @@ def parse():
         _style = read(name, filename)
     else:
         logging.error("style file '%s' does not exist", filename)
-        logging.info("falling back to default style")
+        logging.debug("falling back to default style")
         _style = create_default()
 
 

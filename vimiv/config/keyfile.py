@@ -51,7 +51,7 @@ def dump():
     user_file = xdg.join_vimiv_config("keys.conf")
     with open(user_file, "w") as f:
         parser.write(f)
-    logging.info("Created default keys file %s", user_file)
+    logging.debug("Created default keys file %s", user_file)
 
 
 def _read(filename):
@@ -67,8 +67,8 @@ def _read(filename):
             section = parser[mode.name.upper()]
             _update_bindings(bindings, section)
         except KeyError:
-            logging.warning("Missing section '%s' in keys.conf", mode.name.upper())
-    logging.info("Read keybindings from '%s'", filename)
+            logging.info("Missing section '%s' in keys.conf", mode.name.upper())
+    logging.debug("Read keybindings from '%s'", filename)
 
 
 class KeyfileParser(configparser.ConfigParser):
