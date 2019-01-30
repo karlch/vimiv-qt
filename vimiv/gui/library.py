@@ -315,7 +315,6 @@ class LibraryModel(QStandardItemModel):
         self.remove_all_rows()
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
-        self.parent()._select_row(0)
         self.parent().select_stored_position()
 
     @pyqtSlot(list, list)
