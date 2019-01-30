@@ -6,6 +6,7 @@
 
 """Tests for vimiv.utils"""
 
+import inspect
 import pytest
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -64,7 +65,7 @@ def test_slot_ignore_self():
     def test(self, name: str):
         ...
 
-    slot_args, _ = utils._slot_args(test)
+    slot_args = utils._slot_args(inspect.getfullargspec(test), test)
     assert slot_args == [str]
 
 
@@ -72,7 +73,7 @@ def test_slot_add_returntype():
     def test(self, name: str) -> str:
         ...
 
-    _, slot_kwargs = utils._slot_args(test)
+    slot_kwargs = utils._slot_kwargs(inspect.getfullargspec(test))
     assert slot_kwargs == {"result": str}
 
 
