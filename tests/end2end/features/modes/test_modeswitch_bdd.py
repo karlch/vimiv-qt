@@ -6,7 +6,7 @@
 
 import pytest_bdd as bdd
 
-from vimiv import apimodules
+from vimiv import api
 
 
 bdd.scenarios("modeswitch.feature")
@@ -14,4 +14,4 @@ bdd.scenarios("modeswitch.feature")
 
 @bdd.when(bdd.parsers.parse("I toggle {mode} mode"))
 def toggle_mode(mode):
-    apimodules.toggle(mode)
+    api.modes.toggle(api.modes.get_by_name(mode))

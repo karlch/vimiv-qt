@@ -12,7 +12,7 @@ from PyQt5.QtCore import Qt
 
 import pytest_bdd as bdd
 
-from vimiv import api, apimodules
+from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import imstorage
@@ -45,7 +45,7 @@ def activate_commandline(qtbot):
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))
 def enter_mode(mode):
-    apimodules.enter(mode)
+    api.modes.enter(api.modes.get_by_name(mode))
 
 
 @bdd.when(bdd.parsers.parse("I leave {mode} mode"))
