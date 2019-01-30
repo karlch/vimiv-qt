@@ -4,10 +4,10 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Definition of commands and status objects only using the api.
+"""Commands and status modules using the api.
 
-This is in its own module as the api itself should only provide the
-infrastructure and not define any actual implementations.
+These should not be used anywhere else and are only imported to register the
+corresponding objects.
 """
 
 from vimiv import api
@@ -53,14 +53,6 @@ def toggle(mode: str):
 #                               Status Modules                                #
 ###############################################################################
 @api.status.module("{mode}")
-def _active_name():
+def active_name():
     """Current mode."""
     return api.modes.current().name.upper()
-
-
-def init():
-    """Initialize the api modules.
-
-    Currently does not do anything but this module must be imported so the
-    decorators register all the modules.
-    """

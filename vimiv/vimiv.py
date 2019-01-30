@@ -22,7 +22,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, apimodules, parsertypes
+from vimiv import app, api, parsertypes
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
@@ -78,7 +78,6 @@ def earlyinit():
     working_directory.init()
     libpaths.init()
     iminitialize.init()
-    apimodules.init()
     completionmodels.init()
 
 
