@@ -151,7 +151,7 @@ def get_argparser():
         type=parsertypes.loglevel,
         metavar="LEVEL",
         help="Set log level to LEVEL",
-        default="warning",
+        default="info",
     )
     parser.add_argument(
         "paths",
