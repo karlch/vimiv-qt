@@ -143,14 +143,12 @@ class ThumbnailCreator(QRunnable):
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
         with suppress(FileNotFoundError):
-            pmap = (
+            pixmap = (
                 self._maybe_recreate_thumbnail(self._path, thumbnail_path)
                 if os.path.exists(thumbnail_path)
                 else self._create_thumbnail(self._path, thumbnail_path)
             )
-            # Additional safety net
-            pmap = pmap if pmap else self._manager.fail_pixmap
-            self._manager.created.emit(self._index, QIcon(pmap))
+            self._manager.created.emit(self._index, QIcon(pixmap))
 
     def _get_thumbnail_path(self, path: str) -> str:
         filename = self._get_thumbnail_filename(path)
