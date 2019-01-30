@@ -99,25 +99,34 @@ class NoAnnotationError(Exception):
         super().__init__(message)
 
 
-def _slot_args(function):
-    """Create arguments and keyword arguments for pyqtSlot from function parameters."""
-    slot_args, slot_kwargs = [], {}
-    argspec = inspect.getfullargspec(function)
-    # Add return type if it exists
-    with suppress(KeyError):
-        return_type = argspec.annotations["return"]
-        if return_type is not None:
-            slot_kwargs["result"] = return_type
-    # Create arguments from parameters
-    for i, argument in enumerate(argspec.args):
+def _slot_args(argspec, function):
+    """Create arguments for pyqtSlot from function arguments.
+
+    Args:
+        argspec: Function arguments retrieved via inspect.
+        function: The python function for which the arguments are created.
+    Return:
+        List of types of the function arguments as arguments for pyqtSlot.
+    """
+    slot_args = []
+    for argument in argspec.args:
         has_annotation = argument in argspec.annotations
-        if i == 0 and argument == "self" and not has_annotation:
+        if argument == "self" and not has_annotation:
             continue
         if not has_annotation:
             raise NoAnnotationError(argument, function)
         annotation = argspec.annotations[argument]
         slot_args.append(annotation)
-    return slot_args, slot_kwargs
+    return slot_args
+
+
+def _slot_kwargs(argspec):
+    """Add return type to slot kwargs if it exists."""
+    with suppress(KeyError):
+        return_type = argspec.annotations["return"]
+        if return_type is not None:
+            return {"result": return_type}
+    return {}
 
 
 def slot(function):
@@ -131,6 +140,7 @@ def slot(function):
         def function(self, x: int, y: int) -> None:
         ...
     """
-    slot_args, slot_kwargs = _slot_args(function)
+    argspec = inspect.getfullargspec(function)
+    slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
     pyqtSlot(*slot_args, **slot_kwargs)(function)
     return function
