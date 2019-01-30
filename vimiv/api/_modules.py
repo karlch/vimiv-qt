@@ -21,7 +21,7 @@ from vimiv import api
 @api.keybindings.register("gl", "enter library")
 @api.keybindings.register("gi", "enter image")
 @api.commands.register()
-def enter(mode: str):
+def enter(mode: str) -> None:
     """Enter another mode.
 
     **syntax:** ``:enter mode``
@@ -36,7 +36,7 @@ def enter(mode: str):
 @api.keybindings.register("tt", "toggle thumbnail")
 @api.keybindings.register("tl", "toggle library")
 @api.commands.register()
-def toggle(mode: str):
+def toggle(mode: str) -> None:
     """Toggle one mode.
 
     **syntax:** ``:toggle mode``.
@@ -53,6 +53,6 @@ def toggle(mode: str):
 #                               Status Modules                                #
 ###############################################################################
 @api.status.module("{mode}")
-def active_name():
+def active_name() -> str:
     """Current mode."""
     return api.modes.current().name.upper()

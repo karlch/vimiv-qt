@@ -324,7 +324,8 @@ class LibraryModel(QStandardItemModel):
         In addition to _update_content() the position is stored.
         """
         self.parent().store_position()
-        self._update_content(images, directories)
+        # This is tricky as we are calling a slot
+        self._update_content(images, directories)  # type: ignore
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
