@@ -3,7 +3,7 @@
    Do not edit by hand.
 
 .. table:: Keybindings for global mode
-   :widths: auto
+   :widths: 20 80
 
    ========== ===========
    Keybinding Command
@@ -34,7 +34,7 @@
    \tt        toggle thumbnail
    ========== ===========
 .. table:: Keybindings for image mode
-   :widths: auto
+   :widths: 20 80
 
    ========== ===========
    Keybinding Command
@@ -68,7 +68,7 @@
    \-         zoom out
    ========== ===========
 .. table:: Keybindings for library mode
-   :widths: auto
+   :widths: 20 80
 
    ========== ===========
    Keybinding Command
@@ -83,7 +83,7 @@
    \H         set library.width -0.05
    ========== ===========
 .. table:: Keybindings for thumbnail mode
-   :widths: auto
+   :widths: 20 80
 
    ========== ===========
    Keybinding Command
@@ -98,7 +98,7 @@
    \-         zoom out
    ========== ===========
 .. table:: Keybindings for command mode
-   :widths: auto
+   :widths: 20 80
 
    ============= ===========
    Keybinding    Command
@@ -112,7 +112,7 @@
    \<escape>     leave-commandline
    ============= ===========
 .. table:: Keybindings for manipulate mode
-   :widths: auto
+   :widths: 20 80
 
    ========== ===========
    Keybinding Command

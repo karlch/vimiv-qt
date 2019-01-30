@@ -44,7 +44,7 @@ class RSTFile:
         self.write(title + "\n")
         self.write("=" * len(title) + "\n\n")
 
-    def write_table(self, rows, title=""):
+    def write_table(self, rows, title="", widths="auto"):
         """Write reST table to file.
 
         Currently only tables with 2 columns are supported.
@@ -56,7 +56,7 @@ class RSTFile:
         # Find out size of first column
         length = max([len(elem[0]) for elem in rows])
         # Header
-        self.write(".. table:: %s\n   :widths: auto\n\n" % (title))
+        self.write(".. table:: %s\n   :widths: %s\n\n" % (title, widths))
         self.write("   %s ===========\n" % (length * "="))
         self.write("   %-*s %s\n" % (length, rows[0][0], rows[0][1]))
         self.write("   %s ===========\n" % (length * "="))

@@ -29,7 +29,7 @@ def generate_status_modules():
             name = name.strip("{}")
             desc = inspect.getdoc(func).split("\n")[0]
             rows.append((name, desc))
-        f.write_table(rows, title="Overview of status modules")
+        f.write_table(rows, title="Overview of status modules", widths="30 70")
 
 
 def _write_command_description(cmds, mode, f):
@@ -55,7 +55,7 @@ def generate_commands():
                 cmd = cmds[name]
                 link = ":ref:`ref_%s_%s`" % (mode.name, name)
                 rows.append((link, cmd.description))
-            f.write_table(rows, title=title)
+            f.write_table(rows, title=title, widths="25 75")
             _write_command_description(cmds, mode.name, f)
 
 
@@ -69,7 +69,7 @@ def generate_settings():
             setting = api.settings._storage[name]
             if setting.desc:  # Otherwise the setting is meant to be hidden
                 rows.append((name, setting.desc))
-        f.write_table(rows, title="Overview of settings")
+        f.write_table(rows, title="Overview of settings", widths="30 70")
 
 
 def generate_keybindings():
@@ -80,7 +80,7 @@ def generate_keybindings():
         for mode, bindings in api.keybindings.items():
             rows = _gen_keybinding_rows(bindings)
             title = "Keybindings for %s mode" % (mode.name)
-            f.write_table(rows, title=title)
+            f.write_table(rows, title=title, widths="20 80")
 
 
 def _gen_keybinding_rows(bindings):

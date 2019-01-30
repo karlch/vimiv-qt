@@ -6,7 +6,7 @@ Global
 ******
 
 .. table:: Overview of global commands
-   :widths: auto
+   :widths: 25 75
 
    ================================ ===========
    Command                          Description
@@ -328,7 +328,7 @@ Image
 *****
 
 .. table:: Overview of image commands
-   :widths: auto
+   :widths: 25 75
 
    ============================== ===========
    Command                        Description
@@ -473,7 +473,7 @@ Library
 *******
 
 .. table:: Overview of library commands
-   :widths: auto
+   :widths: 25 75
 
    ================================ ===========
    Command                          Description
@@ -540,7 +540,7 @@ Thumbnail
 *********
 
 .. table:: Overview of thumbnail commands
-   :widths: auto
+   :widths: 25 75
 
    ================================== ===========
    Command                            Description
@@ -610,7 +610,7 @@ Command
 *******
 
 .. table:: Overview of command commands
-   :widths: auto
+   :widths: 25 75
 
    ======================================== ===========
    Command                                  Description
@@ -683,7 +683,7 @@ Manipulate
 **********
 
 .. table:: Overview of manipulate commands
-   :widths: auto
+   :widths: 25 75
 
    ================================ ===========
    Command                          Description
