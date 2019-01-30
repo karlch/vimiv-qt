@@ -46,32 +46,21 @@ def startup(argv):
     Args:
         argv: sys.argv[1:] from the executable.
     """
-    # Parse args
-    parser = get_argparser()
-    args = parser.parse_args(argv)
-    # Setup directories
+    args = get_argparser().parse_args(argv)
     init_directories(args)
-    # Setup logging
     setup_logging(args.log_level)
-    logging.info("Start: vimiv %s", " ".join(argv))
-    # Parse settings
-    configfile.parse(args)
-    keyfile.parse(args)
-    styles.parse()
+    logging.debug("Start: vimiv %s", " ".join(argv))
     update_settings(args)
-    # Objects needed before UI
     earlyinit()
-    # Set up UI
     init_ui(args)
-    # Open paths
     init_paths(args)
-    # Finalize
-    logging.info("Startup completed")
+    logging.debug("Startup completed")
     api.status.update()
 
 
 def earlyinit():
     """Initialize objects needed as early as possible."""
+    logging.debug("Initializing early objects")
     clipboard.init()
     trash_manager.init()
     working_directory.init()
@@ -201,12 +190,14 @@ def init_directories(args):
 
 def init_paths(args):
     """Open paths given from commandline or fallback to library if set."""
+    logging.debug("Opening paths")
     if not app.open_paths(args.paths) and api.settings.STARTUP_LIBRARY.value:
         app.open_paths([os.getcwd()])
 
 
 def init_ui(args):
     """Initialize the Qt UI."""
+    logging.debug("Initializing UI")
     mw = mainwindow.MainWindow()
     mw.show()
     if args.fullscreen:
@@ -226,11 +217,14 @@ def init_ui(args):
 
 
 def update_settings(args):
-    """Update settings in storage with arguments from command line.
+    """Update default settings with command line arguments and configfiles.
 
     Args:
         args: Arguments returned from parser.parse_args().
     """
+    configfile.parse(args)
+    keyfile.parse(args)
+    styles.parse()
     for option, value in args.cmd_settings:
         try:
             api.settings.override(option, value)
