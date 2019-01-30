@@ -529,6 +529,27 @@ command.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="vimiv.api.commands.exists">
+<code class="descclassname">vimiv.api.commands.</code><code class="descname">exists</code><span class="sig-paren">(</span><em>name: str</em>, <em>mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#vimiv.api.commands.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a command exists in the registry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> – Name of the command to check for.</li>
+<li><strong>mode</strong> – The mode for which the command is valid.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the command exists.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="vimiv.api.commands.get">
 <code class="descclassname">vimiv.api.commands.</code><code class="descname">get</code><span class="sig-paren">(</span><em>name: str</em>, <em>mode: vimiv.api.modes.Mode = Mode.GLOBAL</em><span class="sig-paren">)</span> &#x2192; vimiv.api.commands._Command<a class="headerlink" href="#vimiv.api.commands.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get one command object.</p>
@@ -560,22 +581,6 @@ command.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> – The mode for which the commands are valid.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">typing.ItemsView allowing iteration over items.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="vimiv.api.commands.names">
-<code class="descclassname">vimiv.api.commands.</code><code class="descname">names</code><span class="sig-paren">(</span><em>mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; KeysView[str]<a class="headerlink" href="#vimiv.api.commands.names" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve names of all commands in the registry for iteration.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mode</strong> – The mode for which the commands are valid.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">typing.KeysView allowing iteration over names which are the registry keys.</td>
 </tr>
 </tbody>
 </table>

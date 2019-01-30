@@ -122,68 +122,32 @@ to change it permanently</li>
 overrides it. For example to replace the <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">:</span> <span class="pre">fullscreen</span></code> binding with flip,
 bind <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">:</span> <span class="pre">flip</span></code>. To remove a default keybinding, map the key to the special
 <code class="docutils literal notranslate"><span class="pre">nop</span></code> command that does nothing.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When binding a command including the “%” wildcard which stands for the current file,
+it must be escaped as “%%” as “%” is treated specially by the python ConfigParser.
+See
+<a class="reference external" href="https://docs.python.org/3/library/configparser.html#interpolation-of-values">the python documentation</a>
+for details.</p>
+</div>
 <p>The following table lists all default keybindings.</p>
-<table border="1" class="colwidths-auto docutils" id="id1">
+<table border="1" class="colwidths-given docutils" id="id1">
 <caption><span class="caption-text">Keybindings for global mode</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>N</td>
-<td>search-next</td>
-</tr>
-<tr class="row-odd"><td>P</td>
-<td>search-prev</td>
-</tr>
-<tr class="row-even"><td>.</td>
-<td>repeat-command</td>
-</tr>
-<tr class="row-odd"><td>q</td>
-<td>quit</td>
-</tr>
-<tr class="row-even"><td>o</td>
-<td>command –text=’open ‘</td>
-</tr>
-<tr class="row-odd"><td>gi</td>
-<td>enter image</td>
-</tr>
-<tr class="row-even"><td>gl</td>
-<td>enter library</td>
-</tr>
-<tr class="row-odd"><td>gt</td>
-<td>enter thumbnail</td>
-</tr>
-<tr class="row-even"><td>gm</td>
-<td>enter manipulate</td>
-</tr>
-<tr class="row-odd"><td>tl</td>
-<td>toggle library</td>
-</tr>
-<tr class="row-even"><td>tt</td>
-<td>toggle thumbnail</td>
-</tr>
-<tr class="row-odd"><td>tm</td>
-<td>toggle manipulate</td>
-</tr>
-<tr class="row-even"><td>x</td>
-<td>delete %</td>
-</tr>
-<tr class="row-odd"><td>b</td>
-<td>set statusbar.show!</td>
-</tr>
 <tr class="row-even"><td>&lt;colon&gt;</td>
 <td>command</td>
 </tr>
-<tr class="row-odd"><td>/</td>
-<td>search</td>
-</tr>
-<tr class="row-even"><td>?</td>
-<td>search –reverse</td>
-</tr>
-<tr class="row-odd"><td>f</td>
-<td>fullscreen</td>
+<tr class="row-odd"><td>o</td>
+<td>command –text=’open ‘</td>
 </tr>
 <tr class="row-even"><td>yy</td>
 <td>copy-name</td>
@@ -191,11 +155,29 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 <tr class="row-odd"><td>ya</td>
 <td>copy-name –abspath</td>
 </tr>
-<tr class="row-even"><td>yY</td>
+<tr class="row-even"><td>yA</td>
+<td>copy-name –abspath –primary</td>
+</tr>
+<tr class="row-odd"><td>yY</td>
 <td>copy-name –primary</td>
 </tr>
-<tr class="row-odd"><td>yA</td>
-<td>copy-name –abspath –primary</td>
+<tr class="row-even"><td>x</td>
+<td>delete %</td>
+</tr>
+<tr class="row-odd"><td>gi</td>
+<td>enter image</td>
+</tr>
+<tr class="row-even"><td>gl</td>
+<td>enter library</td>
+</tr>
+<tr class="row-odd"><td>gm</td>
+<td>enter manipulate</td>
+</tr>
+<tr class="row-even"><td>gt</td>
+<td>enter thumbnail</td>
+</tr>
+<tr class="row-odd"><td>f</td>
+<td>fullscreen</td>
 </tr>
 <tr class="row-even"><td>Pp</td>
 <td>paste-name</td>
@@ -203,90 +185,52 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 <tr class="row-odd"><td>PP</td>
 <td>paste-name –primary</td>
 </tr>
+<tr class="row-even"><td>q</td>
+<td>quit</td>
+</tr>
+<tr class="row-odd"><td>.</td>
+<td>repeat-command</td>
+</tr>
+<tr class="row-even"><td>/</td>
+<td>search</td>
+</tr>
+<tr class="row-odd"><td>?</td>
+<td>search –reverse</td>
+</tr>
+<tr class="row-even"><td>N</td>
+<td>search-next</td>
+</tr>
+<tr class="row-odd"><td>P</td>
+<td>search-prev</td>
+</tr>
+<tr class="row-even"><td>b</td>
+<td>set statusbar.show!</td>
+</tr>
+<tr class="row-odd"><td>tl</td>
+<td>toggle library</td>
+</tr>
+<tr class="row-even"><td>tm</td>
+<td>toggle manipulate</td>
+</tr>
+<tr class="row-odd"><td>tt</td>
+<td>toggle thumbnail</td>
+</tr>
 </tbody>
 </table>
-<table border="1" class="colwidths-auto docutils" id="id2">
+<table border="1" class="colwidths-given docutils" id="id2">
 <caption><span class="caption-text">Keybindings for image mode</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>s</td>
-<td>slideshow</td>
-</tr>
-<tr class="row-odd"><td>n</td>
-<td>next</td>
-</tr>
-<tr class="row-even"><td>p</td>
-<td>prev</td>
-</tr>
-<tr class="row-odd"><td>gg</td>
-<td>goto 1</td>
-</tr>
-<tr class="row-even"><td>G</td>
-<td>goto -1</td>
-</tr>
-<tr class="row-odd"><td>,</td>
-<td>set slideshow.delay -0.5</td>
-</tr>
-<tr class="row-even"><td>.</td>
-<td>set slideshow.delay +0.5</td>
-</tr>
-<tr class="row-odd"><td>h</td>
-<td>scroll left</td>
-</tr>
-<tr class="row-even"><td>l</td>
-<td>scroll right</td>
-</tr>
-<tr class="row-odd"><td>j</td>
-<td>scroll down</td>
-</tr>
-<tr class="row-even"><td>k</td>
-<td>scroll up</td>
-</tr>
-<tr class="row-odd"><td>M</td>
+<tr class="row-even"><td>M</td>
 <td>center</td>
-</tr>
-<tr class="row-even"><td>H</td>
-<td>scroll-edge left</td>
-</tr>
-<tr class="row-odd"><td>L</td>
-<td>scroll-edge right</td>
-</tr>
-<tr class="row-even"><td>J</td>
-<td>scroll-edge down</td>
-</tr>
-<tr class="row-odd"><td>K</td>
-<td>scroll-edge up</td>
-</tr>
-<tr class="row-even"><td>+</td>
-<td>zoom in</td>
-</tr>
-<tr class="row-odd"><td>-</td>
-<td>zoom out</td>
-</tr>
-<tr class="row-even"><td>E</td>
-<td>scale –level=fit-height</td>
-</tr>
-<tr class="row-odd"><td>e</td>
-<td>scale –level=fit-width</td>
-</tr>
-<tr class="row-even"><td>W</td>
-<td>scale –level=1</td>
-</tr>
-<tr class="row-odd"><td>w</td>
-<td>scale –level=fit</td>
-</tr>
-<tr class="row-even"><td>&lt;space&gt;</td>
-<td>play-or-pause</td>
-</tr>
-<tr class="row-odd"><td>&gt;</td>
-<td>rotate</td>
-</tr>
-<tr class="row-even"><td>&lt;</td>
-<td>rotate –counter-clockwise</td>
 </tr>
 <tr class="row-odd"><td>|</td>
 <td>flip</td>
@@ -294,33 +238,109 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 <tr class="row-even"><td>_</td>
 <td>flip –vertical</td>
 </tr>
+<tr class="row-odd"><td>G</td>
+<td>goto -1</td>
+</tr>
+<tr class="row-even"><td>gg</td>
+<td>goto 1</td>
+</tr>
+<tr class="row-odd"><td>n</td>
+<td>next</td>
+</tr>
+<tr class="row-even"><td>&lt;space&gt;</td>
+<td>play-or-pause</td>
+</tr>
+<tr class="row-odd"><td>p</td>
+<td>prev</td>
+</tr>
+<tr class="row-even"><td>&gt;</td>
+<td>rotate</td>
+</tr>
+<tr class="row-odd"><td>&lt;</td>
+<td>rotate –counter-clockwise</td>
+</tr>
+<tr class="row-even"><td>W</td>
+<td>scale –level=1</td>
+</tr>
+<tr class="row-odd"><td>w</td>
+<td>scale –level=fit</td>
+</tr>
+<tr class="row-even"><td>E</td>
+<td>scale –level=fit-height</td>
+</tr>
+<tr class="row-odd"><td>e</td>
+<td>scale –level=fit-width</td>
+</tr>
+<tr class="row-even"><td>j</td>
+<td>scroll down</td>
+</tr>
+<tr class="row-odd"><td>h</td>
+<td>scroll left</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>scroll right</td>
+</tr>
+<tr class="row-odd"><td>k</td>
+<td>scroll up</td>
+</tr>
+<tr class="row-even"><td>J</td>
+<td>scroll-edge down</td>
+</tr>
+<tr class="row-odd"><td>H</td>
+<td>scroll-edge left</td>
+</tr>
+<tr class="row-even"><td>L</td>
+<td>scroll-edge right</td>
+</tr>
+<tr class="row-odd"><td>K</td>
+<td>scroll-edge up</td>
+</tr>
+<tr class="row-even"><td>.</td>
+<td>set slideshow.delay +0.5</td>
+</tr>
+<tr class="row-odd"><td>,</td>
+<td>set slideshow.delay -0.5</td>
+</tr>
+<tr class="row-even"><td>s</td>
+<td>slideshow</td>
+</tr>
+<tr class="row-odd"><td>+</td>
+<td>zoom in</td>
+</tr>
+<tr class="row-even"><td>-</td>
+<td>zoom out</td>
+</tr>
 </tbody>
 </table>
-<table border="1" class="colwidths-auto docutils" id="id3">
+<table border="1" class="colwidths-given docutils" id="id3">
 <caption><span class="caption-text">Keybindings for library mode</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>l</td>
-<td>scroll right</td>
-</tr>
-<tr class="row-odd"><td>h</td>
-<td>scroll left</td>
-</tr>
-<tr class="row-even"><td>j</td>
-<td>scroll down</td>
-</tr>
-<tr class="row-odd"><td>k</td>
-<td>scroll up</td>
-</tr>
 <tr class="row-even"><td>G</td>
 <td>goto -1</td>
 </tr>
 <tr class="row-odd"><td>gg</td>
 <td>goto 1</td>
+</tr>
+<tr class="row-even"><td>j</td>
+<td>scroll down</td>
+</tr>
+<tr class="row-odd"><td>h</td>
+<td>scroll left</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>scroll right</td>
+</tr>
+<tr class="row-odd"><td>k</td>
+<td>scroll up</td>
 </tr>
 <tr class="row-even"><td>L</td>
 <td>set library.width +0.05</td>
@@ -330,31 +350,35 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 </tr>
 </tbody>
 </table>
-<table border="1" class="colwidths-auto docutils" id="id4">
+<table border="1" class="colwidths-given docutils" id="id4">
 <caption><span class="caption-text">Keybindings for thumbnail mode</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>l</td>
-<td>scroll right</td>
-</tr>
-<tr class="row-odd"><td>h</td>
-<td>scroll left</td>
-</tr>
-<tr class="row-even"><td>j</td>
-<td>scroll down</td>
-</tr>
-<tr class="row-odd"><td>k</td>
-<td>scroll up</td>
-</tr>
 <tr class="row-even"><td>G</td>
 <td>goto -1</td>
 </tr>
 <tr class="row-odd"><td>gg</td>
 <td>goto 1</td>
+</tr>
+<tr class="row-even"><td>j</td>
+<td>scroll down</td>
+</tr>
+<tr class="row-odd"><td>h</td>
+<td>scroll left</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>scroll right</td>
+</tr>
+<tr class="row-odd"><td>k</td>
+<td>scroll up</td>
 </tr>
 <tr class="row-even"><td>+</td>
 <td>zoom in</td>
@@ -364,62 +388,64 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 </tr>
 </tbody>
 </table>
-<table border="1" class="colwidths-auto docutils" id="id5">
+<table border="1" class="colwidths-given docutils" id="id5">
 <caption><span class="caption-text">Keybindings for command mode</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>&lt;ctrl&gt;n</td>
-<td>history prev</td>
+<tr class="row-even"><td>&lt;tab&gt;</td>
+<td>complete</td>
 </tr>
-<tr class="row-odd"><td>&lt;ctrl&gt;p</td>
+<tr class="row-odd"><td>&lt;shift&gt;&lt;tab&gt;</td>
+<td>complete –inverse</td>
+</tr>
+<tr class="row-even"><td>&lt;ctrl&gt;p</td>
 <td>history next</td>
 </tr>
-<tr class="row-even"><td>&lt;down&gt;</td>
-<td>history-substr-search prev</td>
+<tr class="row-odd"><td>&lt;ctrl&gt;n</td>
+<td>history prev</td>
 </tr>
-<tr class="row-odd"><td>&lt;up&gt;</td>
+<tr class="row-even"><td>&lt;up&gt;</td>
 <td>history-substr-search next</td>
+</tr>
+<tr class="row-odd"><td>&lt;down&gt;</td>
+<td>history-substr-search prev</td>
 </tr>
 <tr class="row-even"><td>&lt;escape&gt;</td>
 <td>leave-commandline</td>
 </tr>
-<tr class="row-odd"><td>&lt;tab&gt;</td>
-<td>complete</td>
-</tr>
-<tr class="row-even"><td>&lt;shift&gt;&lt;tab&gt;</td>
-<td>complete –inverse</td>
-</tr>
 </tbody>
 </table>
-<table border="1" class="colwidths-auto docutils" id="id6">
+<table border="1" class="colwidths-given docutils" id="id6">
 <caption><span class="caption-text">Keybindings for manipulate mode</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Keybinding</th>
 <th class="head">Command</th>
 </tr>
 </thead>
 <tbody valign="top">
+<tr class="row-even"><td>&lt;return&gt;</td>
+<td>accept</td>
+</tr>
+<tr class="row-odd"><td>b</td>
+<td>brightness</td>
+</tr>
 <tr class="row-even"><td>&lt;colon&gt;</td>
 <td>command</td>
 </tr>
-<tr class="row-odd"><td>&lt;return&gt;</td>
-<td>accept</td>
-</tr>
-<tr class="row-even"><td>b</td>
-<td>brightness</td>
-</tr>
 <tr class="row-odd"><td>c</td>
 <td>contrast</td>
-</tr>
-<tr class="row-even"><td>k</td>
-<td>increase 1</td>
-</tr>
-<tr class="row-odd"><td>K</td>
-<td>increase 10</td>
 </tr>
 <tr class="row-even"><td>j</td>
 <td>decrease 1</td>
@@ -427,14 +453,20 @@ bind <code class="docutils literal notranslate"><span class="pre">f</span> <span
 <tr class="row-odd"><td>J</td>
 <td>decrease 10</td>
 </tr>
-<tr class="row-even"><td>G</td>
-<td>set 127</td>
+<tr class="row-even"><td>&lt;escape&gt;</td>
+<td>discard</td>
+</tr>
+<tr class="row-odd"><td>k</td>
+<td>increase 1</td>
+</tr>
+<tr class="row-even"><td>K</td>
+<td>increase 10</td>
 </tr>
 <tr class="row-odd"><td>gg</td>
 <td>set -127</td>
 </tr>
-<tr class="row-even"><td>&lt;escape&gt;</td>
-<td>discard</td>
+<tr class="row-even"><td>G</td>
+<td>set 127</td>
 </tr>
 </tbody>
 </table>

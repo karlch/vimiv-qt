@@ -24,6 +24,14 @@ overrides it. For example to replace the ``f : fullscreen`` binding with flip,
 bind ``f : flip``. To remove a default keybinding, map the key to the special
 ``nop`` command that does nothing.
 
+.. note::
+
+   When binding a command including the "%" wildcard which stands for the current file,
+   it must be escaped as "%%" as "%" is treated specially by the python ConfigParser.
+   See
+   `the python documentation <https://docs.python.org/3/library/configparser.html#interpolation-of-values>`_
+   for details.
+
 The following table lists all default keybindings.
 
 .. include:: keybindings_table.rstsrc
