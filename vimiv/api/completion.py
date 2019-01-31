@@ -128,9 +128,6 @@ class TextFilter(BaseFilter):
         text = self.strip_text(text)
         self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive))
 
-    def reset(self) -> None:
-        self.setFilterRegExp("")
-
 
 class FuzzyFilter(TextFilter):
     """Simple filter fuzzy matching text in all columns."""
