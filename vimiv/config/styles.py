@@ -7,8 +7,8 @@
 """Functions dealing with the stylesheet of the Qt widgets.
 
 Module Attributes:
-    _styles: Dictionary saving the style settings from the config file, form:
-        _styles["image.bg"] = "#000000"
+    _style: Dictionary saving the style settings from the config file, form:
+        _style["image.bg"] = "#000000"
 """
 
 import collections
@@ -20,23 +20,7 @@ from vimiv import api
 from vimiv.utils import xdg
 
 
-class Styles(collections.UserDict):
-    """Class to store all styles.
-
-    Attributes:
-        current: Name of the currently used style.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.current = "default"
-
-
-_styles = Styles()
-
-
-def current():
-    return _styles[_styles.current]
+_style = None
 
 
 class Style(collections.OrderedDict):
@@ -45,10 +29,6 @@ class Style(collections.OrderedDict):
     A python dictionary with a name and overridden __setitem__ for convenience.
     Ordered so referencing and dereferencing variables is well defined.
     """
-
-    def __init__(self, name):
-        super().__init__()
-        _styles[name] = self
 
     def __setitem__(self, name, item):
         """Store item automatically surrounding the name with {} if needed."""
@@ -69,25 +49,19 @@ def parse():
     defaults are simply used and the default style file is written to disk for
     reference.
     """
+    global _style
     name = api.settings.STYLE.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
-    if name in ["default", "default-dark"]:
-        create_default()
-        create_default_dark()
+    if name == "default":
+        _style = create_default()
+    elif name == "default-dark":
+        _style = create_default_dark()
     elif os.path.exists(filename):
-        read(name, filename)
+        _style = read(name, filename)
     else:
         logging.error("style file '%s' does not exist", filename)
         logging.info("falling back to default style")
-        name = "default"
-        create_default()
-    _styles.current = name
-
-
-def store(configsection):
-    """Store all styles defined in the STYLES section of the config file."""
-    for option, value in configsection.items():
-        _styles["{%s}" % (option)] = value
+        _style = create_default()
 
 
 def apply(obj, append=""):
@@ -98,17 +72,15 @@ def apply(obj, append=""):
         append: Extra string to append to the stylesheet.
     """
     sheet = obj.STYLESHEET + append
-    style = current()
-    for option, value in style.items():
+    for option, value in _style.items():
         sheet = sheet.replace(option, value)
     obj.setStyleSheet(sheet)
 
 
 def get(name):
     """Return style option for a given name."""
-    style = current()
     try:
-        return style["{%s}" % (name)]
+        return _style["{%s}" % (name)]
     except KeyError:
         logging.error("Style option '%s' not found, falling back to default", name)
         return ""
@@ -116,7 +88,7 @@ def get(name):
 
 def create_default():
     """Create the default style."""
-    default = Style("default")
+    default = Style()
     # Color definitions
     # Uses base16 tomorrow
     # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
@@ -140,12 +112,13 @@ def create_default():
     _insert_values(default)
     # Dump
     if not os.path.isfile(xdg.join_vimiv_config("styles/default")):
-        dump("default")
+        dump("default", default)
+    return default
 
 
 def create_default_dark():
     """Create the default dark style."""
-    default_dark = Style("default-dark")
+    default_dark = Style()
     # Color definitions
     # Uses base16 tomorrow-night
     # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
@@ -169,7 +142,8 @@ def create_default_dark():
     _insert_values(default_dark)
     # Dump
     if not os.path.isfile(xdg.join_vimiv_config("styles/default-dark")):
-        dump("default-dark")
+        dump("default-dark", default_dark)
+    return default_dark
 
 
 def _insert_values(style):
@@ -249,18 +223,17 @@ def read(name, filename):
     """
     parser = configparser.ConfigParser()
     parser.read(filename)
-    style = Style(name)
+    style = Style()
     for option, value in parser["STYLE"].items():
         style[option] = value
-    _styles[name] = style
+    return style
 
 
-def dump(name):
+def dump(name, style):
     """Dump style to styles file."""
     filename = xdg.join_vimiv_config("styles/%s" % (name))
     parser = configparser.ConfigParser()
     parser.add_section("STYLE")
-    style = _styles[name]
     for option, value in style.items():
         option = option.strip("{}")
         parser["STYLE"][option] = value

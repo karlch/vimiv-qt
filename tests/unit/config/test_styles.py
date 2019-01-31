@@ -12,7 +12,7 @@ from vimiv.config import styles
 
 @pytest.fixture
 def new_style():
-    new_style = styles.Style("new_style")
+    new_style = styles.Style()
     yield new_style
     del new_style
 
@@ -39,5 +39,6 @@ def test_replace_referenced_variables(mocker, new_style):
 
 
 def test_fail_get_nonexisting_style_option(mocker, new_style):
-    mocker.patch.object(styles, "current", return_value=new_style)
+    styles._style = new_style
     assert styles.get("anything") == ""
+    styles._style = None
