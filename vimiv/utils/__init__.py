@@ -88,7 +88,7 @@ def cached_method(func):
     return _lazyprop
 
 
-class NoAnnotationError(Exception):
+class AnnotationNotFound(Exception):
     """Raised if a there is no type annotation to use."""
 
     def __init__(self, name: str, function: Callable):
@@ -114,7 +114,7 @@ def _slot_args(argspec, function):
         if argument == "self" and not has_annotation:
             continue
         if not has_annotation:
-            raise NoAnnotationError(argument, function)
+            raise AnnotationNotFound(argument, function)
         annotation = argspec.annotations[argument]
         slot_args.append(annotation)
     return slot_args

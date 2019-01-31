@@ -49,7 +49,7 @@ Module = Callable[..., str]
 _modules = {}  # Dictionary storing all status modules
 
 
-class InvalidModuleNameError(Exception):
+class InvalidModuleName(Exception):
     """Exception raised if the name of a status module is invalid."""
 
 
@@ -105,7 +105,7 @@ def module(name: str) -> Callable[[Module], Module]:
                 name,
                 function.__name__,
             )
-            raise InvalidModuleNameError(message)
+            raise InvalidModuleName(message)
         _modules[name] = _Module(function)
         return function
 

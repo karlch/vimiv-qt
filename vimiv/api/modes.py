@@ -34,7 +34,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
 
-class NoModeError(Exception):
+class NoMode(Exception):
     """Raised when there is no mode to operate on."""
 
 
@@ -277,7 +277,7 @@ def current() -> Mode:
     for mode in ALL:
         if mode.active:
             return mode
-    raise NoModeError()
+    raise NoMode()
 
 
 def _init() -> None:

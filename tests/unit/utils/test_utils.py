@@ -78,7 +78,7 @@ def test_slot_add_returntype():
 
 
 def test_slot_fails_without_type_annotations():
-    with pytest.raises(utils.NoAnnotationError):
+    with pytest.raises(utils.AnnotationNotFound):
 
         @utils.slot
         def test(x):
