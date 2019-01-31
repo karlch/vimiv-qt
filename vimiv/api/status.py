@@ -139,9 +139,11 @@ class _Signals(QObject):
 
     Signals:
         update: Emitted when the status should be updated.
+        clear: Emitted when any messages should be cleared.
     """
 
     update = pyqtSignal()
+    clear = pyqtSignal()
 
 
 signals = _Signals()
@@ -154,3 +156,11 @@ def update() -> None:
     is, for example, always called after a command was run.
     """
     signals.update.emit()
+
+
+def clear() -> None:
+    """Emit signal to clear messages.
+
+    This function can be called when any temporary logging messages should be cleared.
+    """
+    signals.clear.emit()

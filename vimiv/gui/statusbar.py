@@ -61,6 +61,7 @@ class StatusBar(QWidget):
         self.timer.setInterval(timeout)
         self.timer.setSingleShot(True)
         self.timer.timeout.connect(self.clear_message)
+        api.status.signals.clear.connect(self.clear_message)
 
         self["stack"] = QStackedLayout(self)
 
