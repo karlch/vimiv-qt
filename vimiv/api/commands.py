@@ -66,7 +66,6 @@ command.
 """
 
 import argparse
-import collections
 import inspect
 import logging
 import typing
@@ -151,16 +150,8 @@ class CommandNotFound(Exception):
     """Raised if a command does not exist for a specific mode."""
 
 
-class _Registry(collections.UserDict):
-    """Dictionary to store commands of each mode."""
-
-    def __init__(self):  # type: ignore
-        super().__init__()
-        for mode in modes.ALL:
-            self[mode] = {}
-
-
-_registry = _Registry()
+# Dictionary storing the command dictionary for each mode
+_registry = {mode: {} for mode in modes.ALL}
 
 
 def items(mode: modes.Mode) -> typing.ItemsView[str, "_Command"]:
