@@ -151,7 +151,9 @@ class CommandNotFound(Exception):
 
 
 # Dictionary storing the command dictionary for each mode
-_registry = {mode: {} for mode in modes.ALL}
+_registry: typing.Dict[modes.Mode, typing.Dict[str, "_Command"]] = {
+    mode: {} for mode in modes.ALL
+}
 
 
 def items(mode: modes.Mode) -> typing.ItemsView[str, "_Command"]:
