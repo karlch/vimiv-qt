@@ -33,13 +33,13 @@ def vimiv_config_dir() -> str:
     return os.path.join(user_config_dir(), "vimiv")
 
 
-def join_vimiv_data(path) -> str:
-    return os.path.join(vimiv_data_dir(), path)
+def join_vimiv_data(*paths) -> str:
+    return os.path.join(vimiv_data_dir(), *paths)
 
 
-def join_vimiv_cache(path) -> str:
-    return os.path.join(vimiv_cache_dir(), path)
+def join_vimiv_cache(*paths) -> str:
+    return os.path.join(vimiv_cache_dir(), *paths)
 
 
-def join_vimiv_config(path) -> str:
-    return os.path.join(vimiv_config_dir(), path)
+def join_vimiv_config(*paths) -> str:
+    return os.path.join(vimiv_config_dir(), *paths)
