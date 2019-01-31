@@ -24,7 +24,6 @@ import time
 from functools import lru_cache
 from typing import cast, Tuple
 
-# from vimiv.utils.exceptions import TrashUndeleteError
 from vimiv import api
 from vimiv.utils import xdg
 
