@@ -3,6 +3,7 @@ DATADIR := $(PREFIX)/share
 MANDIR := $(DATADIR)/man
 APPDIR := $(DATADIR)/applications
 LICENSEDIR := $(DATADIR)/licenses
+METAINFODIR := $(DATADIR)/metainfo
 
 ICONSIZES := 16 32 64 128 256 512
 
@@ -18,6 +19,7 @@ options: help
 	@printf "DATADIR = $(DATADIR)\n"
 	@printf "MANDIR = $(MANDIR)\n"
 	@printf "LICENSEDIR = $(LICENSEDIR)\n"
+	@printf "METAINFODIR = $(METAINFODIR)\n"
 
 help:
 	@printf "make help:              Print help.\n"
@@ -29,6 +31,7 @@ help:
 install:
 	python3 setup.py install --root=$(DESTDIR)/ --record=install_log.txt
 	install -Dm644 misc/vimiv.desktop $(APPDIR)/vimiv.desktop
+	install -Dm644 misc/vimiv.appdata.xml $(METAINFODIR)/vimiv.appdata.xml
 	install -Dm644 LICENSE $(LICENSEDIR)/vimiv/LICENSE
 	install -Dm644 misc/vimiv.1 $(MANDIR)/man1/vimiv.1
 	gzip -n -9 -f  $(MANDIR)/man1/vimiv.1
@@ -38,6 +41,7 @@ install:
 uninstall:
 	scripts/uninstall_pythonpkg.sh
 	rm $(APPDIR)/vimiv.desktop
+	rm $(METAINFODIR)/vimiv.appdata.xml
 	rm -r $(LICENSEDIR)/vimiv
 	rm $(MANDIR)/man1/vimiv.1.gz
 	$(foreach i,$(ICONSIZES),rm $(DATADIR)/icons/hicolor/${i}x${i}/apps/vimiv.png;)
