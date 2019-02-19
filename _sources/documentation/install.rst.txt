@@ -57,6 +57,12 @@ You can now launch vimiv by running::
 
     $ .venv/bin/vimiv
 
+.. note::
+
+   To compile the C extension, the python header files for python module development are
+   required. In some distributions, e.g. Ubuntu, these are not included in the default
+   python installation but another package (python-dev for Ubuntu) must be installed.
+
 You can create a wrapper script to start vimiv somewhere in your ``$PATH``,
 e.g.  ``/usr/bin/vimiv`` or ``~/bin/vimiv``::
 
@@ -74,7 +80,7 @@ e.g.  ``/usr/bin/vimiv`` or ``~/bin/vimiv``::
 Dependencies
 ------------
 
-* `Python <http://www.python.org/>`_ 3.6 or newer
+* `Python <http://www.python.org/>`_ 3.6 or newer with development extension
 * `Qt <http://qt.io/>`_   5.7.1 or newer
     - QtCore / qtbase
     - QtSvg (optional for svg support)

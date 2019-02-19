@@ -662,9 +662,16 @@ function defined earlier.</p>
 <p>If any other object requires the status to be updated, they should call
 <a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a>.</p>
 <dl class="exception">
-<dt id="vimiv.api.status.InvalidModuleNameError">
-<em class="property">exception </em><code class="descclassname">vimiv.api.status.</code><code class="descname">InvalidModuleNameError</code><a class="headerlink" href="#vimiv.api.status.InvalidModuleNameError" title="Permalink to this definition">¶</a></dt>
+<dt id="vimiv.api.status.InvalidModuleName">
+<em class="property">exception </em><code class="descclassname">vimiv.api.status.</code><code class="descname">InvalidModuleName</code><a class="headerlink" href="#vimiv.api.status.InvalidModuleName" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised if the name of a status module is invalid.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.status.clear">
+<code class="descclassname">vimiv.api.status.</code><code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit signal to clear messages.</p>
+<p>This function can be called when any temporary logging messages should be cleared.</p>
 </dd></dl>
 
 <dl class="function">
@@ -1002,7 +1009,7 @@ from the source code. It must be run from the repository directory using:</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.<br/>
     </p>
   </div>
 </footer>
