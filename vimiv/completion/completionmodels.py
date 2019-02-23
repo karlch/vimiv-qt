@@ -173,14 +173,14 @@ class TrashModel(api.completion.BaseModel):
     """Completion model filled with valid paths for the :undelete command.
 
     Attributes:
-        _initialized: Bool to allow only re-creating the completion options on_entered.
+        _initialized: Bool to allow only re-creating the completion options on_enter.
     """
 
     def __init__(self):
         super().__init__(":undelete ", column_widths=(0.4, 0.45, 0.15))
         self._initialized = False
 
-    def on_entered(self, text: str, mode: api.modes.Mode) -> None:
+    def on_enter(self, text: str, mode: api.modes.Mode) -> None:
         """Update trash model on enter."""
         self._initialized = False
         self.on_text_changed(text)
@@ -188,7 +188,7 @@ class TrashModel(api.completion.BaseModel):
     def on_text_changed(self, text: str) -> None:
         """Update trash model the once when text changed.
 
-        This is required in addition to on_entered as it is very likely to enter trash
+        This is required in addition to on_enter as it is very likely to enter trash
         completion by typing :undelete.
         """
         if self._initialized:
