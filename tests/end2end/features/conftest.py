@@ -98,9 +98,15 @@ def check_left_status(qtbot, position, text):
 
 
 @bdd.then("a message should be displayed")
-def check_a_statusbar_message():
+def check_a_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    assert bar["message"].text() != ""
+    # This is required as this is threaded and may take a while
+    iteration = 0
+    max_iterations = 100
+    while bar["message"].text() == "" and iteration < max_iterations:
+        qtbot.wait(10)
+        iteration += 1
+    assert iteration != max_iterations, "Message display timed out"
     assert bar["stack"].currentWidget() == bar["message"]
 
 
