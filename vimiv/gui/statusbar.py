@@ -102,7 +102,7 @@ class StatusBar(QWidget):
     @utils.slot
     def _on_update_status(self):
         """Update the statusbar."""
-        mode = api.status.evaluate("{mode}").lower()
+        mode = api.modes.current().name.lower()
         for position in ["left", "center", "right"]:
             label = self[position]
             text = self._get_text(position, mode)
