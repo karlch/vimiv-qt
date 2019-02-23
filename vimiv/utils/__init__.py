@@ -8,8 +8,10 @@
 
 import functools
 import inspect
+import logging
 import re
 from contextlib import suppress
+from datetime import datetime
 from typing import Callable, Optional, TypeVar
 
 from PyQt5.QtCore import pyqtSlot
@@ -144,3 +146,17 @@ def slot(function):
     slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
     pyqtSlot(*slot_args, **slot_kwargs)(function)
     return function
+
+
+def timed(function):
+    """Decorator to time a function and log evaluation time."""
+
+    def inner(*args, **kwargs):
+        """Wrap decorated function and add timing."""
+        start = datetime.now()
+        return_value = function(*args, **kwargs)
+        elapsed_in_ms = (datetime.now() - start).total_seconds() * 1000
+        logging.debug("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
+        return return_value
+
+    return inner
