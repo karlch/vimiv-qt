@@ -84,36 +84,30 @@ def no_crash(qtbot):
 
 
 @bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
-def check_statusbar_message(message):
+def check_statusbar_message(qtbot, message):
     bar = statusbar.statusbar
+    _check_status(qtbot, lambda: message == bar["message"].text())
     assert bar["stack"].currentWidget() == bar["message"]
-    assert message == bar["message"].text()
 
 
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
 def check_left_status(qtbot, position, text):
     bar = statusbar.statusbar
+    _check_status(qtbot, lambda: text in bar[position].text())
     assert bar["stack"].currentWidget() == bar["status"]
-    assert text in bar[position].text()
 
 
 @bdd.then("a message should be displayed")
 def check_a_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    # This is required as this is threaded and may take a while
-    iteration = 0
-    max_iterations = 100
-    while bar["message"].text() == "" and iteration < max_iterations:
-        qtbot.wait(10)
-        iteration += 1
-    assert iteration != max_iterations, "Message display timed out"
+    _check_status(qtbot, lambda: bar["message"].text() != "")
     assert bar["stack"].currentWidget() == bar["message"]
 
 
 @bdd.then("no message should be displayed")
-def check_no_statusbar_message():
+def check_no_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    assert bar["message"].text() == ""
+    _check_status(qtbot, lambda: bar["message"].text() == "")
     assert bar["stack"].currentWidget() == bar["status"]
 
 
@@ -158,3 +152,13 @@ def enter_thumbnail():
 def check_selected_thumbnail(qtbot, N):
     thumb = thumbnail.instance()
     assert thumb.currentRow() + 1 == int(N)
+
+
+def _check_status(qtbot, assertion):
+    """Check statusbar repeatedly as this is threaded and may take a while."""
+    iteration = 0
+    max_iterations = 100
+    while not assertion() and iteration < max_iterations:
+        qtbot.wait(10)
+        iteration += 1
+    assert iteration != max_iterations, "Statusbar check timed out"
