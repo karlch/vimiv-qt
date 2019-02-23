@@ -20,10 +20,9 @@ class Completer(QObject):
     command line.
 
     Attributes:
-        proxy_model: completionfilters.TextFilter.
-
         _cmd: CommandLine object.
         _completion: CompletionWidget object.
+        _proxy_model: The completion filter used.
     """
 
     @api.objreg.register
