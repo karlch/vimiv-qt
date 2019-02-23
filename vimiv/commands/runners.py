@@ -131,10 +131,10 @@ def expand_wildcards(text, mode):
     """
     # Check first as the re substitutions are rather expensive
     if "%" in text:
-        current = pathreceiver.current(mode)
+        current = shlex.quote(pathreceiver.current(mode))
         text = re.sub(r"(?<!\\)%", current, text)
     if "*" in text:
-        pathlist = " ".join(pathreceiver.pathlist(mode))
+        pathlist = " ".join([shlex.quote(path) for path in pathreceiver.pathlist(mode)])
         text = re.sub(r"(?<!\\)\*", pathlist, text)
     return text
 
