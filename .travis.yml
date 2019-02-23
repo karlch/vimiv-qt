@@ -6,9 +6,9 @@ language: python
 matrix:
     include:
         - python: 3.6
-          env: TOXENV=py36-pyqt511
+          env: TOXENV=py36-pyqt59,py36-pyqt510,py36-pyqt511,py36-pyqt512
         - python: 3.7
-          env: TOXENV=py37-pyqt511-cov
+          env: TOXENV=py37-pyqt59,py37-pyqt510,py37-pyqt511,py37-pyqt512
         - python: 3.7
           env: TOXENV=lint
         - python: 3.7
