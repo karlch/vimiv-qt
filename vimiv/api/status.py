@@ -34,6 +34,7 @@ If any other object requires the status to be updated, they should call
 
 import functools
 import logging
+import re
 from typing import Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -47,6 +48,7 @@ Module = Callable[..., str]
 
 
 _modules = {}  # Dictionary storing all status modules
+_module_expression = re.compile(r"\{.*?\}")  # Expression to match all status modules
 
 
 class InvalidModuleName(Exception):
@@ -128,10 +130,27 @@ def evaluate(text: str) -> str:
     Return:
         The updated text.
     """
-    for name, mod in _modules.items():
-        if name in text:
-            text = text.replace(name, mod())
+    modules = _module_expression.findall(text)
+    for module_name in modules:
+        try:
+            text = text.replace(module_name, _modules[module_name]())
+        except KeyError:
+            text = text.replace(module_name, "")
+            _log_unknown_module(module_name)
     return text
+
+
+@functools.lru_cache(None)
+def _log_unknown_module(module_name: str) -> None:
+    """Display log warning for unknown module.
+
+    The lru_cache is used so each module is only logged once, not on every evaluation of
+    the status text.
+
+    Args:
+        module_name: Module string that is unknown.
+    """
+    logging.warning("Disabling unknown statusbar module '%s'", module_name)
 
 
 class _Signals(QObject):

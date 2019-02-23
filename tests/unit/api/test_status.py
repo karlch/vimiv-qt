@@ -26,3 +26,9 @@ def test_fail_add_status_module():
         @status.module("wrong")
         def wrong():
             return "wrong"
+
+
+def test_log_unknown_module(mocker):
+    mocker.patch.object(status, "_log_unknown_module")
+    assert status.evaluate("Dummy: {unknown}") == "Dummy: "
+    assert status._log_unknown_module.call_count == 1
