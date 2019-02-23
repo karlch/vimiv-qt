@@ -29,7 +29,7 @@ class TempKeyStorage(QTimer):
 
         self.setSingleShot(True)
         self.setInterval(2000)
-        self.timeout.connect(self.clear_text)
+        self.timeout.connect(self.on_timeout)
 
     def add_text(self, text):
         """Add text to storage."""
@@ -45,11 +45,15 @@ class TempKeyStorage(QTimer):
         self.clear_text()
         return text
 
-    @utils.slot
     def clear_text(self):
         """Clear storage."""
-        self.stop()  # Can be called from get_text on keyPressEvent
+        self.stop()
         self.text = ""
+
+    @utils.slot
+    def on_timeout(self):
+        """Clear text and update status to remove partial keys from statusbar."""
+        self.clear_text()
         api.status.update()
 
 
