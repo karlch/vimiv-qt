@@ -107,15 +107,12 @@ class PathModel(api.completion.BaseModel):
         if not os.path.isdir(os.path.expanduser(directory)):
             return
         # Retrieve supported paths
-        pathlist = []
         images, directories = files.supported(files.listdir(directory))
-        pathlist.extend(images)
-        pathlist.extend(directories)
         # Format data
-        data = []
-        for path in pathlist:
-            path = os.path.join(directory, os.path.basename(path))
-            data.append(("open %s" % (path),))
+        data = [
+            ("open {0}".format(os.path.join(directory, os.path.basename(path))),)
+            for path in images + directories
+        ]
         self.set_data(data)
 
     @staticmethod
