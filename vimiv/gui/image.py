@@ -392,7 +392,7 @@ class Animation(widgets.ImageLabel):
         self.setMovie(movie)
         movie.jumpToFrame(0)
         self._original_size = movie.currentPixmap().size()
-        if api.settings.IMAGE_AUTOPLAY:
+        if api.settings.IMAGE_AUTOPLAY.value:
             movie.start()
 
     def current_size(self):
