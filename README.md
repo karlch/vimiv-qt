@@ -29,7 +29,7 @@ To learn how to get vimiv running, see the
 [installation guide](https://karlch.github.io/vimiv-qt/documentation/install.html).
 
 For information on contributing to vimiv, you can take a look at the
-[contributing guidelines](https://karlch.github.io/vimiv-qt/documentation/contributing.html>).
+[contributing guidelines](https://karlch.github.io/vimiv-qt/documentation/contributing.html).
 
 #### LICENSE
 
