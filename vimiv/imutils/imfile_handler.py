@@ -237,8 +237,7 @@ class WriteImageRunner(QRunnable):
         """
         if not isinstance(self._pixmap, QPixmap):
             raise WriteError("Cannot write animations")
-        # Override current path
-        elif os.path.exists(self._path):
+        if os.path.exists(self._path):  # Override current path
             reader = QImageReader(self._path)
             if not reader.canRead():
                 raise WriteError("Path '%s' exists and is not an image" % (self._path))
@@ -258,7 +257,7 @@ class WriteImageRunner(QRunnable):
         # Check if valid image was created
         if not os.path.isfile(self._path):
             raise WriteError("File not written, unknown exception")
-        elif not files.is_image(self._path):
+        if not files.is_image(self._path):
             os.remove(self._path)
             raise WriteError("No valid image written. Is the extention valid?")
 
