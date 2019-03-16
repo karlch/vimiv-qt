@@ -31,6 +31,7 @@ _index = 0
 
 
 # We want to use the name next here as it is the best name for the command
+@api.keybindings.register("<page-down>", "next", mode=api.modes.IMAGE)
 @api.keybindings.register("n", "next", mode=api.modes.IMAGE)
 @api.commands.register()
 def next(count: int = 1) -> None:  # pylint: disable=redefined-builtin
@@ -42,6 +43,7 @@ def next(count: int = 1) -> None:  # pylint: disable=redefined-builtin
         _set_index((_index + count) % len(_paths))
 
 
+@api.keybindings.register("<page-up>", "prev", mode=api.modes.IMAGE)
 @api.keybindings.register("p", "prev", mode=api.modes.IMAGE)
 @api.commands.register()
 def prev(count: int = 1) -> None:
@@ -53,6 +55,8 @@ def prev(count: int = 1) -> None:
         _set_index((_index - count) % len(_paths))
 
 
+@api.keybindings.register("<end>", "goto -1", mode=api.modes.IMAGE)
+@api.keybindings.register("<home>", "goto 1", mode=api.modes.IMAGE)
 @api.keybindings.register("G", "goto -1", mode=api.modes.IMAGE)
 @api.keybindings.register("gg", "goto 1", mode=api.modes.IMAGE)
 @api.commands.register(mode=api.modes.IMAGE)

@@ -204,6 +204,10 @@ def _get_keyname(event):
         Qt.Key_Down: "<down>",
         Qt.Key_Home: "<home>",
         Qt.Key_End: "<end>",
+        Qt.Key_PageUp: "<page-up>",
+        Qt.Key_PageDown: "<page-down>",
+        Qt.Key_Home: "<home>",
+        Qt.Key_End: "<end>",
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
