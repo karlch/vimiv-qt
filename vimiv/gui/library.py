@@ -38,6 +38,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         background-color: {library.even.bg};
         alternate-background-color: {library.odd.bg};
         outline: 0;
+        padding: {library.padding};
         border: 0px solid;
         border-right: {library.border};
     }

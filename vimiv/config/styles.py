@@ -163,6 +163,7 @@ def _insert_values(style):
     # Library
     style["library.font"] = "10pt Monospace"
     style["library.fg"] = "{base06}"
+    style["library.padding"] = "2px"
     style["library.directory.fg"] = "{base07}"
     style["library.even.bg"] = "{base01}"
     style["library.odd.bg"] = "{base01}"
