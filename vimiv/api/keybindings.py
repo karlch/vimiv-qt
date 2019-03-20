@@ -34,24 +34,28 @@ earth with ``ge`` we could use::
 """
 
 import collections
-from typing import Any, Callable, ItemsView
+from typing import Any, Callable, ItemsView, List, Union
 
 from . import commands, modes
 
 
 def register(
-    keybinding: str, command: str, mode: modes.Mode = modes.GLOBAL
+    keybinding: Union[str, List[str]], command: str, mode: modes.Mode = modes.GLOBAL
 ) -> Callable:
     """Decorator to add a new keybinding.
 
     Args:
-        keybinding: Key sequence to bind.
+        keybinding: Key sequence(s) to bind as string (List of strings).
         command: Command to bind to.
         mode: Mode in which the keybinding is valid.
     """
 
     def decorator(function: Callable) -> Callable:
-        bind(keybinding, command, mode)
+        if isinstance(keybinding, str):
+            bind(keybinding, command, mode)
+        else:
+            for binding in keybinding:
+                bind(binding, command, mode)
 
         def inside(*args: Any, **kwargs: Any) -> None:
             return function(*args, **kwargs)

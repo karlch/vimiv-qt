@@ -18,6 +18,19 @@ def test_add_keybinding():
 
     bindings = api.keybindings.get(api.modes.GLOBAL)
     assert ("t1", "test") in bindings.items()
+    del bindings["t1"]
+
+
+def test_add_multiple_keybindings():
+    @api.keybindings.register(["t1", "t2"], "test")
+    def test():
+        pass
+
+    bindings = api.keybindings.get(api.modes.GLOBAL)
+    assert ("t1", "test") in bindings.items()
+    assert ("t2", "test") in bindings.items()
+    del bindings["t1"]
+    del bindings["t2"]
 
 
 def test_bind_unbind_keybinding():
