@@ -55,6 +55,7 @@ class MainWindow(QWidget):
         self._set_title()
 
         api.status.signals.update.connect(self._set_title)
+        api.modes.signals.entered.connect(self._on_mode_entered)
 
     @api.keybindings.register("f", "fullscreen")
     @api.commands.register()
@@ -72,12 +73,16 @@ class MainWindow(QWidget):
             event: The QResizeEvent.
         """
         super().resizeEvent(event)
+        self._update_overlay_geometry()
+        library.instance().update_width()
+
+    def _update_overlay_geometry(self):
+        """Update geometry of all overlay widgets according to current layout."""
         bottom = self.height()
         if self.bar.isVisible():
             bottom -= self.bar.height()
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
-        library.instance().update_width()
 
     def focusNextPrevChild(self, next_child):
         """Override to do nothing as focusing is handled by modehandler."""
@@ -92,6 +97,16 @@ class MainWindow(QWidget):
         except KeyError:
             title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))
+
+    @utils.slot
+    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
+        """Update overlay geometry when entering command mode.
+
+        This is required as the possibly hidden bar is now certainly visible and the
+        location of the completion widget must be adjusted.
+        """
+        if mode == api.modes.COMMAND:
+            self._update_overlay_geometry()
 
 
 def instance():
