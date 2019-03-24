@@ -41,8 +41,6 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     clipboard.setText(name, mode=mode)
 
 
-@api.keybindings.register("PP", "paste-name --primary")
-@api.keybindings.register("Pp", "paste-name")
 @api.commands.register()
 def paste_name(primary: bool = True) -> None:
     """Paste path from clipboard to open command.
