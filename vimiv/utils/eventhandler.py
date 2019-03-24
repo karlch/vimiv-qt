@@ -116,7 +116,7 @@ class KeyHandler:
             cmd = runners.update_command(cmd, mode)
             runners.command(count + cmd, mode)
         # Partial match => store keys
-        elif bindings.partial_match(keyname):
+        elif bindings.partial_matches(keyname):
             self._partial_handler.keys.add_text(keyname)
         # Nothing => run default Qt bindings of parent object
         else:
