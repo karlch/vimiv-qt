@@ -19,7 +19,7 @@ from vimiv.gui import (
     thumbnail,
     widgets,
     manipulate,
-    partial_overlay,
+    keyhint_widget,
 )
 
 
@@ -49,7 +49,7 @@ class MainWindow(QWidget):
         self._overlays.append(manwidget)
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
-        self._overlays.append(partial_overlay.PartialOverlay(self))
+        self._overlays.append(keyhint_widget.KeyhintWidget(self))
         grid.addWidget(self.bar, 1, 0, 1, 2)
         # Initialize completer and config commands
         completer.Completer(self.bar.commandline, compwidget)

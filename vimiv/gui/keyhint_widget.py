@@ -16,7 +16,7 @@ from vimiv.config import styles
 from vimiv.utils import eventhandler, slot
 
 
-class PartialOverlay(QLabel):
+class KeyhintWidget(QLabel):
     """Widget to display partial matches above the statusbar.
 
     The widget is shown when there are partial keybinding matches, e.g. on 'g'. It is
@@ -109,5 +109,5 @@ class PartialOverlay(QLabel):
             self._show_timer.setInterval(setting.value)
 
 
-def instance() -> PartialOverlay:
-    return api.objreg.get(PartialOverlay)
+def instance() -> KeyhintWidget:
+    return api.objreg.get(KeyhintWidget)
