@@ -20,8 +20,6 @@
    \gm        enter manipulate
    \gt        enter thumbnail
    \f         fullscreen
-   \Pp        paste-name
-   \PP        paste-name --primary
    \q         quit
    \.         repeat-command
    \/         search
@@ -36,37 +34,41 @@
 .. table:: Keybindings for image mode
    :widths: 20 80
 
-   ========== ===========
-   Keybinding Command
-   ========== ===========
-   \M         center
-   \|         flip
-   \_         flip --vertical
-   \G         goto -1
-   \gg        goto 1
-   \n         next
-   \<space>   play-or-pause
-   \p         prev
-   \>         rotate
-   \<         rotate --counter-clockwise
-   \W         scale --level=1
-   \w         scale --level=fit
-   \E         scale --level=fit-height
-   \e         scale --level=fit-width
-   \j         scroll down
-   \h         scroll left
-   \l         scroll right
-   \k         scroll up
-   \J         scroll-edge down
-   \H         scroll-edge left
-   \L         scroll-edge right
-   \K         scroll-edge up
-   \.         set slideshow.delay +0.5
-   \,         set slideshow.delay -0.5
-   \s         slideshow
-   \+         zoom in
-   \-         zoom out
-   ========== ===========
+   ============ ===========
+   Keybinding   Command
+   ============ ===========
+   \M           center
+   \|           flip
+   \_           flip --vertical
+   \G           goto -1
+   \<end>       goto -1
+   \gg          goto 1
+   \<home>      goto 1
+   \n           next
+   \<page-down> next
+   \<space>     play-or-pause
+   \p           prev
+   \<page-up>   prev
+   \>           rotate
+   \<           rotate --counter-clockwise
+   \W           scale --level=1
+   \w           scale --level=fit
+   \E           scale --level=fit-height
+   \e           scale --level=fit-width
+   \j           scroll down
+   \h           scroll left
+   \l           scroll right
+   \k           scroll up
+   \J           scroll-edge down
+   \H           scroll-edge left
+   \L           scroll-edge right
+   \K           scroll-edge up
+   \sl          set slideshow.delay +0.5
+   \sh          set slideshow.delay -0.5
+   \ss          slideshow
+   \+           zoom in
+   \-           zoom out
+   ============ ===========
 .. table:: Keybindings for library mode
    :widths: 20 80
 
