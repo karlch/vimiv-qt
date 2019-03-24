@@ -12,8 +12,8 @@ from vimiv import api
 from vimiv.utils import strconvert
 
 
-@api.keybindings.register(".", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
-@api.keybindings.register(",", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
+@api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
+@api.keybindings.register("sh", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("H", "set library.width -0.05", mode=api.modes.LIBRARY)
 @api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
 @api.keybindings.register("b", "set statusbar.show!")

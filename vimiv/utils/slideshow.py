@@ -26,7 +26,7 @@ class Slideshow(QTimer):
         api.settings.signals.changed.connect(self._on_settings_changed)
         self.setInterval(api.settings.SLIDESHOW_DELAY.value * 1000)
 
-    @api.keybindings.register("s", "slideshow", mode=api.modes.IMAGE)
+    @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def slideshow(self, count: int = 0):
         """Toggle slideshow."""
