@@ -34,6 +34,7 @@ earth with ``ge`` we could use::
 """
 
 import collections
+from contextlib import suppress
 from typing import Any, Callable, ItemsView, List, Union
 
 from . import commands, modes
@@ -70,6 +71,7 @@ def bind(keybinding: str, command: str, mode: modes.Mode) -> None:
 
     See config/configcommands.bind for the corresponding command.
     """
+    _check_duplicate_binding(keybinding, command, mode)
     _registry[mode][keybinding] = command
 
 
@@ -84,6 +86,24 @@ def unbind(keybinding: str, mode: modes.Mode) -> None:
         del _registry[mode][keybinding]
     else:
         raise commands.CommandError("No binding found for '%s'" % (keybinding))
+
+
+def _check_duplicate_binding(keybinding: str, command: str, mode: modes.Mode) -> None:
+    """Check if a keybinding would override an existing keybinding.
+
+    If an identical keybinding is found, a ValueError is raised.
+    """
+    existing_command = None
+    with suppress(KeyError):
+        existing_command = _registry[mode][keybinding]
+    if mode in modes.GLOBALS:
+        with suppress(KeyError):
+            existing_command = _registry[modes.GLOBAL][keybinding]
+    if existing_command is not None:
+        raise ValueError(
+            f"Duplicate keybinding for '{keybinding}', "
+            f"'{command}' overrides '{existing_command}'"
+        )
 
 
 class _Bindings(collections.UserDict):
