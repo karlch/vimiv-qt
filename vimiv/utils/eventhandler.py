@@ -7,6 +7,7 @@
 """Handles key and mouse events."""
 
 import collections
+import logging
 import string
 
 from PyQt5.QtCore import Qt, QTimer, QObject
@@ -97,26 +98,35 @@ class KeyHandler:
         """
         api.status.clear()
         mode = api.modes.current()
-        stored_keys = self._partial_handler.keys.get_text()
         keyname = keyevent_to_string(event)
+        logging.debug("KeyPressEvent: handling %s for mode %s", keyname, mode.name)
         bindings = api.keybindings.get(mode)
-        # Handle escape separately as it affects multiple widgets
+        # Handle escape separately as it affects multiple widgets and must clear partial
+        # matches instead of checking for them
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
+            logging.debug("KeyPressEvent: handling <escape> key specially")
             self._partial_handler.clear_keys()
             search.search.clear()
             return
+        stored_keys = self._partial_handler.keys.get_text()
         keyname = stored_keys + keyname
+        partial_matches = bindings.partial_matches(keyname)
         # Count
         if keyname and keyname in string.digits and mode != api.modes.COMMAND:
+            logging.debug("KeyPressEvent: adding digits")
             self._partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
+            logging.debug("KeyPressEvent: found command")
             count = self._partial_handler.count.get_text()
             cmd = bindings[keyname]
             cmd = runners.update_command(cmd, mode)
             runners.command(count + cmd, mode)
         # Partial match => store keys
-        elif bindings.partial_matches(keyname):
+        elif partial_matches:
+            logging.debug(
+                "KeyPressEvent: partial matches '%s'", ", ".join(partial_matches)
+            )
             self._partial_handler.keys.add_text(keyname)
         # Nothing => run default Qt bindings of parent object
         else:
