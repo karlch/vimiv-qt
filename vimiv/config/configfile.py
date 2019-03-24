@@ -90,6 +90,7 @@ def _update_setting(name, parser):
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
         api.settings.override(setting_name, parser_option)
+        api.settings.signals.changed.emit(api.settings.get(setting_name))
         logging.debug("Overriding '%s' with '%s'", setting_name, parser_option)
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         logging.info("%s in configfile", str(e))
