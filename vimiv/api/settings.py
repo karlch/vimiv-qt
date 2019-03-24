@@ -453,12 +453,18 @@ StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
 StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
 StrSetting("statusbar.right", "{keys}  {mode}")
 
-# Keyhint widget
+# Keyhint widget and related settings
 KEYHINT_DELAY = IntSetting(
     "keyhint.delay",
     500,
-    desc="Delay until the keyhint widget is displayed",
+    desc="Delay (in ms) until the keyhint widget is displayed",
     min_value=0,
+)
+KEYHINT_TIMEOUT = IntSetting(
+    "keyhint.timeout",
+    5000,
+    desc="Time (in ms) after which partially typed keybindings are cleared",
+    min_value=500,
 )
 
 # Title module strings, these are not retrieved by their type
