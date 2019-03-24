@@ -464,7 +464,7 @@ KEYHINT_TIMEOUT = IntSetting(
     "keyhint.timeout",
     5000,
     desc="Time (in ms) after which partially typed keybindings are cleared",
-    min_value=500,
+    min_value=100,
 )
 
 # Title module strings, these are not retrieved by their type
