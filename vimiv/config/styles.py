@@ -206,6 +206,10 @@ def _insert_values(style):
     style["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
     style["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
     style["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
+    # Keyhint
+    style["keyhint.padding"] = "2px"
+    style["keyhint.border_radius"] = "10px"
+    style["keyhint.suffix_color"] = "{base0c}"
     # Manipulate
     style["manipulate.fg"] = "{statusbar.fg}"
     style["manipulate.focused.fg"] = "{base0c}"

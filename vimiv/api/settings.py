@@ -453,6 +453,14 @@ StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
 StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
 StrSetting("statusbar.right", "{keys}  {mode}")
 
+# Keyhint widget
+KEYHINT_DELAY = IntSetting(
+    "keyhint.delay",
+    500,
+    desc="Delay until the keyhint widget is displayed",
+    min_value=0,
+)
+
 # Title module strings, these are not retrieved by their type
 StrSetting(
     "title.fallback",

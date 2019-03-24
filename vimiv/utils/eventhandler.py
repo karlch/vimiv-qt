@@ -10,7 +10,7 @@ import collections
 import logging
 import string
 
-from PyQt5.QtCore import Qt, QTimer, QObject
+from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QKeySequence
 
 from vimiv import api, utils
@@ -64,18 +64,29 @@ class PartialHandler(QObject):
     Attributes:
         count: TempKeyStorage for counts.
         keys: TempKeyStorage for partially matched keys.
+
+    Signals:
+        partial_matches: Emitted when there are partial matches for a keybinding.
+            arg1: Prefix for which partial matches exist.
+            arg2: List of partial matches.
+        partial_cleared: Emitted when the partial matches are cleared.
     """
+
+    partial_matches = pyqtSignal(str, list)
+    partial_cleared = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.count = TempKeyStorage()
         self.keys = TempKeyStorage()
+        self.keys.timeout.connect(self.partial_cleared.emit)
 
     def clear_keys(self):
         """Clear count and partially matched keys."""
         self.count.clear_text()
         self.keys.clear_text()
         api.status.update()
+        self.partial_cleared.emit()
 
     def get_keys(self):
         return self.count.text + self.keys.text
@@ -88,7 +99,7 @@ class KeyHandler:
     QWidget, to handle the keyPressEvent slot.
     """
 
-    _partial_handler = PartialHandler()
+    partial_handler = PartialHandler()
 
     def keyPressEvent(self, event):
         """Handle key press event for the widget.
@@ -105,40 +116,40 @@ class KeyHandler:
         # matches instead of checking for them
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
             logging.debug("KeyPressEvent: handling <escape> key specially")
-            self._partial_handler.clear_keys()
+            self.partial_handler.clear_keys()
             search.search.clear()
             return
-        stored_keys = self._partial_handler.keys.get_text()
+        stored_keys = self.partial_handler.keys.get_text()
         keyname = stored_keys + keyname
         partial_matches = bindings.partial_matches(keyname)
         # Count
         if keyname and keyname in string.digits and mode != api.modes.COMMAND:
             logging.debug("KeyPressEvent: adding digits")
-            self._partial_handler.count.add_text(keyname)
+            self.partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
             logging.debug("KeyPressEvent: found command")
-            count = self._partial_handler.count.get_text()
+            count = self.partial_handler.count.get_text()
             cmd = bindings[keyname]
             cmd = runners.update_command(cmd, mode)
             runners.command(count + cmd, mode)
+            self.partial_handler.clear_keys()
         # Partial match => store keys
         elif partial_matches:
-            logging.debug(
-                "KeyPressEvent: partial matches '%s'", ", ".join(partial_matches)
-            )
-            self._partial_handler.keys.add_text(keyname)
+            self.partial_handler.keys.add_text(keyname)
+            self.partial_handler.partial_matches.emit(keyname, partial_matches)
         # Nothing => run default Qt bindings of parent object
         else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # pylint: disable=no-member
             api.status.update()  # Will not be called by command
+            self.partial_handler.clear_keys()
 
     @staticmethod
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return KeyHandler._partial_handler.get_keys()
+        return KeyHandler.partial_handler.get_keys()
 
 
 def on_mouse_click(event):
