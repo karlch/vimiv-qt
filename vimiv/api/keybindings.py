@@ -35,7 +35,7 @@ earth with ``ge`` we could use::
 
 import collections
 from contextlib import suppress
-from typing import Any, Callable, ItemsView, List, Union
+from typing import Any, Callable, ItemsView, List, Union, Tuple
 
 from . import commands, modes
 
@@ -122,20 +122,17 @@ class _Bindings(collections.UserDict):
             )
         return _Bindings({**self, **other})
 
-    def partial_match(self, keys: str) -> bool:
+    def partial_matches(self, keys: str) -> List[Tuple[str, str]]:
         """Check if keys match some of the bindings partially.
 
         Args:
             keys: String containing the keynames to check, e.g. "g".
         Return:
-            True for match.
+            List of partial matches.
         """
         if not keys:
-            return False
-        for binding in self:
-            if binding.startswith(keys):
-                return True
-        return False
+            return []
+        return [binding for binding in self.items() if binding[0].startswith(keys)]
 
 
 _registry = {mode: _Bindings() for mode in modes.ALL}
