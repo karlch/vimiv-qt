@@ -180,6 +180,7 @@ class ThumbnailCreator(QRunnable):
             return self._manager.fail_pixmap
         size = 256 if self._manager.large else 128
         reader = QImageReader(path)
+        reader.setAutoTransform(True)  # Automatically apply exif orientation
         if reader.canRead():
             qsize = reader.size()
             qsize.scale(size, size, Qt.KeepAspectRatio)
