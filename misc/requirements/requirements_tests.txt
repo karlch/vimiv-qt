@@ -1,5 +1,5 @@
-pytest==4.4.0
-pytest-mock==1.10.3
+pytest==4.4.1
+pytest-mock==1.10.4
 pytest-qt==3.2.2
 pytest-xvfb==1.2.0
 pytest-bdd==3.1.0
