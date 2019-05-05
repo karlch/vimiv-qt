@@ -11,9 +11,9 @@ import logging
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.config import styles
-from vimiv.imutils import imsignals, immanipulate
+from vimiv.imutils import immanipulate
 from vimiv.utils import eventhandler
 
 
@@ -74,9 +74,9 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         layout.addStretch()
         self.setLayout(layout)
 
-        imsignals.imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imsignals.imsignals.movie_loaded.connect(self._on_movie_loaded)
-        imsignals.imsignals.svg_loaded.connect(self._on_svg_loaded)
+        imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
+        imutils.movie_loaded.connect(self._on_movie_loaded)
+        imutils.svg_loaded.connect(self._on_svg_loaded)
         api.modes.signals.entered.connect(self._on_mode_entered)
         api.modes.signals.left.connect(self._on_mode_left)
         manipulator = immanipulate.instance()

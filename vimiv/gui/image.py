@@ -12,11 +12,10 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtGui import QMovie, QPixmap
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.gui import widgets
-from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import eventhandler
 
 # We need the check as svg support is optional
@@ -98,11 +97,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(Empty())
 
-        imsignals.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imsignals.movie_loaded.connect(self._on_movie_loaded)
-        imsignals.svg_loaded.connect(self._on_svg_loaded)
-        imsignals.pixmap_updated.connect(self._on_pixmap_updated)
-        imsignals.all_images_cleared.connect(self._on_images_cleared)
+        imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
+        imutils.movie_loaded.connect(self._on_movie_loaded)
+        imutils.svg_loaded.connect(self._on_svg_loaded)
+        imutils.pixmap_updated.connect(self._on_pixmap_updated)
+        imutils.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
     def _on_images_cleared(self) -> None:

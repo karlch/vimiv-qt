@@ -4,18 +4,22 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Deals with changing and storing paths to currently loaded images."""
+"""Filelist of images.
 
+The module provides methods to navigate and update the current image filelist. Once a
+new image in the filelist is selected, it is passed on to the file handler to open it.
+"""
+
+import logging
 import os
 from contextlib import suppress
 from random import shuffle
-from typing import List
+from typing import List, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, slideshow, working_directory
 
 
@@ -28,6 +32,27 @@ except ImportError:
 
 _paths: List[str] = []
 _index = 0
+
+
+def load(*paths: str) -> None:
+    """Load new paths into the filelist.
+
+    This function is used from outside to interact with the filelist. For example by the
+    library to update the current selection or by the app to open image paths. In case
+    multiple paths are passed, the first element of the list is selected and opened, the
+    others are loaded into the list.
+
+    Args:
+        paths: List of paths to load into filelist.
+    """
+    if paths is None:
+        logging.debug("Image filelist: no paths to load")
+    elif len(paths) == 1:
+        logging.debug("Image filelist: loading single path %s", paths[0])
+        _load_single(*paths)
+    else:
+        logging.debug("Image filelist: loading %d paths", len(paths))
+        _load_paths(paths, paths[0])
 
 
 # We want to use the name next here as it is the best name for the command
@@ -120,22 +145,22 @@ def pathlist() -> List[str]:
     return _paths
 
 
-class Storage(QObject):
-    """Store and move between paths to images.
+class SignalHandler(QObject):
+    """Class required to interact with Qt signals.
 
-    Attributes:
-        _paths: List of image paths.
-        _index: Index of the currently displayed image in the _paths list.
+    It updates the filelist when:
+        * new search results came in
+        * an update from the slideshow is expected
+        * the working directory changed.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)
-        sshow = slideshow.Slideshow()
-        sshow.next_im.connect(self._on_slideshow_event)
-        imsignals.open_new_image.connect(self._on_open_new_image)
-        imsignals.open_new_images.connect(self._on_open_new_images)
+        # The slideshow object is created here as it is not required by anything else
+        # It stays around as it is part of the global object registry
+        slideshow.Slideshow().next_im.connect(self._on_slideshow_event)
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
@@ -162,38 +187,16 @@ class Storage(QObject):
     def _on_slideshow_event(self):
         next(1)
 
-    @utils.slot
-    def _on_open_new_image(self, path: str):
-        """Load new image into storage.
-
-        Args:
-            path: Path to the new image to load.
-        """
-        _load_single(os.path.abspath(path))
-
-    @pyqtSlot(list, str)
-    def _on_open_new_images(self, paths: List[str], focused_path: str):
-        """Load list of new images into storage.
-
-        Args:
-            paths: List of paths to the new images to load.
-            focused_path: The path to display.
-        """
-        # Populate list of paths in same directory for single path
-        if len(paths) == 1:
-            _load_single(focused_path)
-        else:
-            _load_paths(paths, focused_path)
-
     @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):
-        if os.getcwd() != os.path.dirname(current()):
+        """React when images were changed by another process."""
+        if os.getcwd() != os.path.dirname(current()):  # Images not in filelist
             return
-        if paths:
+        if paths:  # Some images on disk changed, reload all for safety
             focused_path = current()
             _load_paths(paths, focused_path)
             api.status.update()
-        else:
+        else:  # No more images in the current filelist
             _clear()
 
 
@@ -202,14 +205,14 @@ def _set_index(index: int, previous: str = None) -> None:
     global _index
     _index = index
     if previous != current():
-        imsignals.new_image_opened.emit(current())
+        imutils.new_image_opened.emit(current())
 
 
 def _set_paths(paths: List[str]) -> None:
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
-    imsignals.new_images_opened.emit(_paths)
+    imutils.new_images_opened.emit(_paths)
 
 
 def _load_single(path: str) -> None:
@@ -222,7 +225,7 @@ def _load_single(path: str) -> None:
         _load_paths(paths, path)
 
 
-def _load_paths(paths: List[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
@@ -248,4 +251,4 @@ def _clear() -> None:
     global _paths, _index
     _paths = []
     _index = 0
-    imsignals.all_images_cleared.emit()
+    imutils.all_images_cleared.emit()

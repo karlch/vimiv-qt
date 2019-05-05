@@ -22,11 +22,10 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, parsertypes
+from vimiv import app, api, parsertypes, imutils
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
-from vimiv.imutils import iminitialize
 from vimiv.utils import (
     xdg,
     clipboard,
@@ -64,7 +63,7 @@ def earlyinit():
     clipboard.init()
     trash_manager.init()
     working_directory.init()
-    iminitialize.init()
+    imutils.init()
     completionmodels.init()
 
 

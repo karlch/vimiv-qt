@@ -8,7 +8,7 @@ import os
 
 import pytest_bdd as bdd
 
-from vimiv.imutils import imstorage
+from vimiv.imutils import filelist
 from vimiv.gui import image
 from vimiv.utils import working_directory
 
@@ -24,13 +24,13 @@ def wait_for_working_directory_handler(qtbot):
 
 @bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
 def check_filelist_length(number):
-    assert imstorage.total() == number
+    assert filelist.total() == number
 
 
 @bdd.then(bdd.parsers.parse("{basename} should not be in the filelist"))
 def check_image_not_in_filelist(basename):
     abspath = os.path.abspath(basename)
-    assert abspath not in imstorage._paths
+    assert abspath not in filelist._paths
 
 
 @bdd.then("the image widget should be empty")

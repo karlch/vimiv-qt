@@ -7,8 +7,7 @@
 
 from typing import List
 
-from vimiv import api
-from vimiv.imutils import imstorage
+from vimiv import api, imutils
 from vimiv.gui import library, thumbnail
 
 
@@ -24,7 +23,7 @@ def current(mode: api.modes.Mode = None) -> str:
     if mode == api.modes.LIBRARY:
         return library.instance().current()
     if mode in [api.modes.IMAGE, api.modes.MANIPULATE]:
-        return imstorage.current()
+        return imutils.current()
     if mode == api.modes.THUMBNAIL:
         return thumbnail.instance().abspath()
     return ""
@@ -42,5 +41,5 @@ def pathlist(mode: api.modes.Mode = None) -> List[str]:
     if mode == api.modes.LIBRARY:
         return library.instance().pathlist()
     if mode in [api.modes.IMAGE, api.modes.THUMBNAIL]:
-        return imstorage.pathlist()
+        return imutils.pathlist()
     return []

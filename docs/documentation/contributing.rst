@@ -180,32 +180,10 @@ Completion
 .. automodule:: vimiv.api.completion
    :members:
 
-The Image Loading Process
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Imutils Module
+""""""""""""""
 
-Images are loaded using a chain of signals defined in
-``vimiv.imutils.imsignals``.
-
-In a first step, the path to a new image is determined and communicated using
-the ``open_new_image`` signal which says that a new image is supposed to be
-opened. This can be done by the library, the thumbnail widget as well as using
-the ``:open`` command.
-
-The ``vimiv.imutils.imstorage`` module connects to this signal, processes the
-path (as well as all other paths in the same directory for convenience), and
-then emits the ``new_image_opened`` signal.
-
-This signal is accepted by the file handler in ``vimiv.imutils.imfile_handler``
-which then loads the actual image using ``QImageReader``. Once the format of
-the image has been determined, and a displayable Qt widget has been created,
-the file handler emits one of:
-
-* ``pixmap_loaded`` for standard images
-* ``movie_loaded`` for animated Gifs
-* ``svg_loaded`` for vector graphics
-
-The image widget in ``vimiv.gui.image`` connects to these signals and displays
-the appropriate Qt widget.
+.. automodule:: vimiv.imutils
 
 
 Updating the Documentation

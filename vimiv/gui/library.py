@@ -15,11 +15,10 @@ from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
-from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, eventhandler, strip_html, clamp, working_directory
 
 
@@ -183,7 +182,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Open a selected image."""
         # Update image if a new image was selected
         if path != self._last_selected:
-            imsignals.open_new_image.emit(path)
+            imutils.load(path)
         # Close library on double selection or if specified
         close = close or path == self._last_selected
         self._last_selected = path

@@ -14,8 +14,8 @@ from typing import List
 from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
-from vimiv import api, utils
-from vimiv.imutils import imtransform, imsignals, immanipulate
+from vimiv import api, utils, imutils
+from vimiv.imutils import imtransform, immanipulate
 from vimiv.utils import files
 
 # We need the check as exif support is optional
@@ -75,8 +75,8 @@ class ImageFileHandler(QObject):
 
         self._path = ""
 
-        imsignals.imsignals.new_image_opened.connect(self._on_new_image_opened)
-        imsignals.imsignals.all_images_cleared.connect(self._on_images_cleared)
+        imutils.new_image_opened.connect(self._on_new_image_opened)
+        imutils.all_images_cleared.connect(self._on_images_cleared)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     @property
@@ -138,13 +138,13 @@ class ImageFileHandler(QObject):
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self._set_original(None)
-            imsignals.imsignals.svg_loaded.emit(path)
+            imutils.svg_loaded.emit(path)
         elif reader.supportsAnimation():
             self._set_original(QMovie(path))
-            imsignals.imsignals.movie_loaded.emit(self.current)
+            imutils.movie_loaded.emit(self.current)
         else:
             self._set_original(QPixmap.fromImageReader(reader))
-            imsignals.imsignals.pixmap_loaded.emit(self.current)
+            imutils.pixmap_loaded.emit(self.current)
         self._path = path
 
     def _reset(self):
@@ -179,7 +179,7 @@ class ImageFileHandler(QObject):
     def update_pixmap(self, pixmap):
         """Set the current pixmap and emit signal to update image shown."""
         self._pixmaps.current = pixmap
-        imsignals.imsignals.pixmap_updated.emit(pixmap)
+        imutils.pixmap_updated.emit(pixmap)
 
     def update_transformed(self, pixmap):
         """Set the transformed and current pixmap."""
