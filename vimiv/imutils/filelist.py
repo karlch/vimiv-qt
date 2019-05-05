@@ -155,8 +155,9 @@ class _SignalHandler(QObject):
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)
-        sshow = slideshow.Slideshow()
-        sshow.next_im.connect(self._on_slideshow_event)
+        # The slideshow object is created here as it is not required by anything else
+        # It stays around as it is part of the global object registry
+        slideshow.Slideshow().next_im.connect(self._on_slideshow_event)
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
