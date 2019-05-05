@@ -4,7 +4,20 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Plugin utilities and default plugins."""
+"""`Interface to load and initialize plugins`.
+
+Plugins are python modules that are either in ``vimiv/plugins/`` (app plugins) or
+``$XDG_DATA_HOME/vimiv/plugins/`` (user plugins). A simple example to get an idea of the
+plugin structure is realized in the demo plugin ``vimiv/plugins/demo.py``.
+
+There are three main components a plugin can make use of to interact with vimiv:
+
+* The application api imported via ``from vimiv import api``
+* The ``init`` function of the plugin which gets called as soon as the plugin is
+  loaded
+* The ``cleanup`` function of the plugin which gets called when the vimiv application
+  exits.
+"""
 
 import importlib
 import logging
