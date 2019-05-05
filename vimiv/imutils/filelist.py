@@ -186,13 +186,14 @@ class _SignalHandler(QObject):
 
     @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):
-        if os.getcwd() != os.path.dirname(current()):
+        """React when images were changed by another process."""
+        if os.getcwd() != os.path.dirname(current()):  # Images not in filelist
             return
-        if paths:
+        if paths:  # Some images on disk changed, reload all for safety
             focused_path = current()
             _load_paths(paths, focused_path)
             api.status.update()
-        else:
+        else:  # No more images in the current filelist
             _clear()
 
 
