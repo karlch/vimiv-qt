@@ -4,7 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""`Utilities to load, edit, navigate and save images.`
+"""`Utilities to load, edit, navigate and save images`.
 
 The image loading process:
     The image loading process is started by calling the :func:`load` function. It is for
