@@ -11,7 +11,7 @@ from PyQt5.QtGui import QPixmap, QMovie
 
 from .filelist import load, current, pathlist
 from .filelist import SignalHandler as _FilelistSignalHandler
-from .imfile_handler import ImageFileHandler as _ImageFileHandler
+from ._file_handler import ImageFileHandler as _ImageFileHandler
 
 
 def init():
