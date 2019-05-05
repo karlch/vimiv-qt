@@ -11,5 +11,5 @@ from . import imfile_handler, filelist
 
 def init():
     """Initialize the classes needed for imutils."""
-    filelist._SignalHandler()
+    filelist.SignalHandler()
     imfile_handler.ImageFileHandler()

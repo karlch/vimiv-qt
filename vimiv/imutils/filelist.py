@@ -145,7 +145,7 @@ def pathlist() -> List[str]:
     return _paths
 
 
-class _SignalHandler(QObject):
+class SignalHandler(QObject):
     """Class required to interact with Qt signals.
 
     It updates the filelist when:
