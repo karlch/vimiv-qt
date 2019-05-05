@@ -17,9 +17,8 @@ from typing import List
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import files, slideshow, working_directory
 
 
@@ -201,14 +200,14 @@ def _set_index(index: int, previous: str = None) -> None:
     global _index
     _index = index
     if previous != current():
-        imsignals.new_image_opened.emit(current())
+        imutils.new_image_opened.emit(current())
 
 
 def _set_paths(paths: List[str]) -> None:
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
-    imsignals.new_images_opened.emit(_paths)
+    imutils.new_images_opened.emit(_paths)
 
 
 def _load_single(path: str) -> None:
@@ -247,4 +246,4 @@ def _clear() -> None:
     global _paths, _index
     _paths = []
     _index = 0
-    imsignals.all_images_cleared.emit()
+    imutils.all_images_cleared.emit()

@@ -18,7 +18,6 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.imutils.imsignals import imsignals
 from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
 
 
@@ -86,8 +85,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
-        imsignals.new_image_opened.connect(self._on_new_image_opened)
-        imsignals.new_images_opened.connect(self._on_new_images_opened)
+        imutils.new_image_opened.connect(self._on_new_image_opened)
+        imutils.new_images_opened.connect(self._on_new_images_opened)
         api.settings.signals.changed.connect(self._on_settings_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
