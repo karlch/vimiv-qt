@@ -10,6 +10,7 @@ The module provides methods to navigate and update the current image filelist. O
 new image in the filelist is selected, it is passed on to the file handler to open it.
 """
 
+import logging
 import os
 from contextlib import suppress
 from random import shuffle
@@ -45,10 +46,12 @@ def load(*paths) -> None:
         paths: List of paths to load into filelist.
     """
     if paths is None:
-        return
+        logging.debug("Image filelist: no paths to load")
     elif len(paths) == 1:
+        logging.debug("Image filelist: loading single path %s", paths[0])
         _load_single(*paths)
     else:
+        logging.debug("Image filelist: loading %d paths", len(paths))
         _load_paths(paths, paths[0])
 
 
