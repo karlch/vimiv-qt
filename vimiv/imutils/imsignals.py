@@ -18,11 +18,6 @@ class ImageSignalHandler(QObject):
     """Store signals for image utilities as class attributes.
 
     Signals:
-        open_new_image: Emitted when a new image should be opened.
-            arg1: Path to the new image.
-        open_new_images: Emitted when a list of new images should be opened.
-            arg1: List of new paths to the images.
-            arg2: The path to be focused.
         new_image_opened: Emitted when the imstorage loaded a new path.
             arg1: Path of the new image.
         new_images_opened: Emitted when the imstorage loaded new paths.
@@ -37,10 +32,6 @@ class ImageSignalHandler(QObject):
         svg_loaded: Emitted when the imloader loaded a new vector graphic.
             arg1: The path as the VectorGraphic class is constructed directly.
     """
-
-    # Emited when new image path(s) should be opened
-    open_new_image = pyqtSignal(str)
-    open_new_images = pyqtSignal(list, str)
 
     # Emited when new image path(s) were opened
     new_image_opened = pyqtSignal(str)

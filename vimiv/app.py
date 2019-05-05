@@ -14,8 +14,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import api
-from vimiv.imutils.imsignals import imsignals
+from vimiv import api, imutils
 from vimiv.utils import files, working_directory
 
 
@@ -82,7 +81,7 @@ def open_paths(paths, select_mode=True):
     mode = api.modes.LIBRARY
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))
-        imsignals.open_new_images.emit(images, images[0])
+        imutils.load(*images)
         mode = api.modes.IMAGE
     elif directories:
         working_directory.handler.chdir(directories[0])

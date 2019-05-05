@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyq
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
-from vimiv import api, utils
+from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.imutils.imsignals import imsignals
@@ -180,7 +180,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
-        imsignals.open_new_image.emit(self.abspath())
+        imutils.load(self.abspath())
         api.modes.enter(api.modes.IMAGE)
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)

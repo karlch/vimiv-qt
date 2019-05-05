@@ -34,6 +34,25 @@ _paths: List[str] = []
 _index = 0
 
 
+def load(*paths) -> None:
+    """Load new paths into the filelist.
+
+    This function is used from outside to interact with the filelist. For example by the
+    library to update the current selection or by the app to open image paths. In case
+    multiple paths are passed, the first element of the list is selected and opened, the
+    others are loaded into the list.
+
+    Args:
+        paths: List of paths to load into filelist.
+    """
+    if paths is None:
+        return
+    elif len(paths) == 1:
+        _load_single(*paths)
+    else:
+        _load_paths(paths, paths[0])
+
+
 # We want to use the name next here as it is the best name for the command
 @api.keybindings.register(["n", "<page-down>"], "next", mode=api.modes.IMAGE)
 @api.commands.register()
@@ -139,8 +158,6 @@ class _SignalHandler(QObject):
         search.search.new_search.connect(self._on_new_search)
         sshow = slideshow.Slideshow()
         sshow.next_im.connect(self._on_slideshow_event)
-        imsignals.open_new_image.connect(self._on_open_new_image)
-        imsignals.open_new_images.connect(self._on_open_new_images)
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
@@ -166,29 +183,6 @@ class _SignalHandler(QObject):
     @utils.slot
     def _on_slideshow_event(self):
         next(1)
-
-    @utils.slot
-    def _on_open_new_image(self, path: str):
-        """Load new image into storage.
-
-        Args:
-            path: Path to the new image to load.
-        """
-        _load_single(os.path.abspath(path))
-
-    @pyqtSlot(list, str)
-    def _on_open_new_images(self, paths: List[str], focused_path: str):
-        """Load list of new images into storage.
-
-        Args:
-            paths: List of paths to the new images to load.
-            focused_path: The path to display.
-        """
-        # Populate list of paths in same directory for single path
-        if len(paths) == 1:
-            _load_single(focused_path)
-        else:
-            _load_paths(paths, focused_path)
 
     @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):

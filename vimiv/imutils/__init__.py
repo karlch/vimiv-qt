@@ -6,4 +6,4 @@
 
 """Various utilities to work with in image mode."""
 
-from .filelist import current, pathlist
+from .filelist import load, current, pathlist
