@@ -16,3 +16,6 @@ from . import (
     status,
     _modules,
 )
+
+# This is required to happen after importing locally due to cyclic import issues
+from vimiv import imutils  # pylint: disable=wrong-import-order
