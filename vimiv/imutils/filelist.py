@@ -4,7 +4,11 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Deals with changing and storing paths to currently loaded images."""
+"""Filelist of images.
+
+The module provides methods to navigate and update the current image filelist. Once a
+new image in the filelist is selected, it is passed on to the file handler to open it.
+"""
 
 import os
 from contextlib import suppress
@@ -120,12 +124,13 @@ def pathlist() -> List[str]:
     return _paths
 
 
-class Storage(QObject):
-    """Store and move between paths to images.
+class _SignalHandler(QObject):
+    """Class required to interact with Qt signals.
 
-    Attributes:
-        _paths: List of image paths.
-        _index: Index of the currently displayed image in the _paths list.
+    It updates the filelist when:
+        * new search results came in
+        * an update from the slideshow is expected
+        * the working directory changed.
     """
 
     @api.objreg.register

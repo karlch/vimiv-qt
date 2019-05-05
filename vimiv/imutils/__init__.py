@@ -5,3 +5,5 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Various utilities to work with in image mode."""
+
+from .filelist import current, pathlist
