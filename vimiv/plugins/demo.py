@@ -16,7 +16,7 @@ from vimiv import api
 
 @api.commands.register()
 def hello_world():
-    """Simple dummy function printing 'Hello world.'"""
+    """Simple dummy function printing 'Hello world'."""
     print("Hello world")
 
 
