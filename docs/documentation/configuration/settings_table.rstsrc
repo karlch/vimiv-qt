@@ -11,6 +11,8 @@
    image.autoplay            Start playing animations on open
    image.autowrite           Save images on changes
    image.overzoom            Maximum scale to apply trying to fit image to window
+   keyhint.delay             Delay (in ms) until the keyhint widget is displayed
+   keyhint.timeout           Time (in ms) after which partially typed keybindings are cleared
    library.file_check_amount Number of files to check when calculating directory size
    library.show_hidden       Show hidden files in the library
    library.width             Width of the library as fraction of main window size
