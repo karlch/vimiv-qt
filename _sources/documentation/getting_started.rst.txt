@@ -41,8 +41,8 @@ Scrolling the image is done with ``hjkl``. The next image is selected with
 Zooming in and out is done with ``+/-``. To fit the image to the current window
 size use ``w``. ``e/E`` fit horizontally/vertically.
 
-To start playing a slideshow use ``s``. The delay can be decreased/increased
-using ``,/.``.
+To start playing a slideshow use ``ss``. The delay can be decreased/increased
+using ``sh/sl``.
 
 Library
 -------

@@ -2,8 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
     <title>Settings &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -106,80 +105,86 @@
 <p>Vimiv provides configurable settings.</p>
 <p>There are two ways to change a setting:</p>
 <ul class="simple">
-<li>Update the configuration file to change it permanently</li>
-<li>Run the <code class="docutils literal notranslate"><span class="pre">:set</span></code> command to change it temporarily</li>
+<li><p>Update the configuration file to change it permanently</p></li>
+<li><p>Run the <code class="docutils literal notranslate"><span class="pre">:set</span></code> command to change it temporarily</p></li>
 </ul>
 <p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
 <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
 <p>The following table explains all available settings.</p>
-<table border="1" class="colwidths-given docutils" id="id1">
+<table class="colwidths-given docutils align-center" id="id1">
 <caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="30%" />
-<col width="70%" />
+<col style="width: 30%" />
+<col style="width: 70%" />
 </colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Setting</th>
-<th class="head">Description</th>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Description</p></th>
 </tr>
 </thead>
-<tbody valign="top">
-<tr class="row-even"><td>image.autoplay</td>
-<td>Start playing animations on open</td>
+<tbody>
+<tr class="row-even"><td><p>image.autoplay</p></td>
+<td><p>Start playing animations on open</p></td>
 </tr>
-<tr class="row-odd"><td>image.autowrite</td>
-<td>Save images on changes</td>
+<tr class="row-odd"><td><p>image.autowrite</p></td>
+<td><p>Save images on changes</p></td>
 </tr>
-<tr class="row-even"><td>image.overzoom</td>
-<td>Maximum scale to apply trying to fit image to window</td>
+<tr class="row-even"><td><p>image.overzoom</p></td>
+<td><p>Maximum scale to apply trying to fit image to window</p></td>
 </tr>
-<tr class="row-odd"><td>library.file_check_amount</td>
-<td>Number of files to check when calculating directory size</td>
+<tr class="row-odd"><td><p>keyhint.delay</p></td>
+<td><p>Delay (in ms) until the keyhint widget is displayed</p></td>
 </tr>
-<tr class="row-even"><td>library.show_hidden</td>
-<td>Show hidden files in the library</td>
+<tr class="row-even"><td><p>keyhint.timeout</p></td>
+<td><p>Time (in ms) after which partially typed keybindings are cleared</p></td>
 </tr>
-<tr class="row-odd"><td>library.width</td>
-<td>Width of the library as fraction of main window size</td>
+<tr class="row-odd"><td><p>library.file_check_amount</p></td>
+<td><p>Number of files to check when calculating directory size</p></td>
 </tr>
-<tr class="row-even"><td>monitor_filesystem</td>
-<td>Monitor current directory for changes and reload widgets automatically</td>
+<tr class="row-even"><td><p>library.show_hidden</p></td>
+<td><p>Show hidden files in the library</p></td>
 </tr>
-<tr class="row-odd"><td>search.ignore_case</td>
-<td>Ignore case when searching, i.e. ‘A’ and ‘a’ are equal</td>
+<tr class="row-odd"><td><p>library.width</p></td>
+<td><p>Width of the library as fraction of main window size</p></td>
 </tr>
-<tr class="row-even"><td>search.incremental</td>
-<td>Automatically filter search results when typing</td>
+<tr class="row-even"><td><p>monitor_filesystem</p></td>
+<td><p>Monitor current directory for changes and reload widgets automatically</p></td>
 </tr>
-<tr class="row-odd"><td>shuffle</td>
-<td>Randomly shuffle images</td>
+<tr class="row-odd"><td><p>search.ignore_case</p></td>
+<td><p>Ignore case when searching, i.e. ‘A’ and ‘a’ are equal</p></td>
 </tr>
-<tr class="row-even"><td>slideshow.delay</td>
-<td>Delay to next image in slideshow</td>
+<tr class="row-even"><td><p>search.incremental</p></td>
+<td><p>Automatically filter search results when typing</p></td>
 </tr>
-<tr class="row-odd"><td>slideshow.indicator</td>
-<td>Text to display in statusbar when slideshow is running</td>
+<tr class="row-odd"><td><p>shuffle</p></td>
+<td><p>Randomly shuffle images</p></td>
 </tr>
-<tr class="row-even"><td>startup_library</td>
-<td>Enter library at startup if there are no images to show</td>
+<tr class="row-even"><td><p>slideshow.delay</p></td>
+<td><p>Delay to next image in slideshow</p></td>
 </tr>
-<tr class="row-odd"><td>statusbar.collapse_home</td>
-<td>Collapse /home/user to ~ in statusbar</td>
+<tr class="row-odd"><td><p>slideshow.indicator</p></td>
+<td><p>Text to display in statusbar when slideshow is running</p></td>
 </tr>
-<tr class="row-even"><td>statusbar.message_timeout</td>
-<td>Time in ms until statusbar messages are removed</td>
+<tr class="row-even"><td><p>startup_library</p></td>
+<td><p>Enter library at startup if there are no images to show</p></td>
 </tr>
-<tr class="row-odd"><td>statusbar.show</td>
-<td>Always display the statusbar</td>
+<tr class="row-odd"><td><p>statusbar.collapse_home</p></td>
+<td><p>Collapse /home/user to ~ in statusbar</p></td>
 </tr>
-<tr class="row-even"><td>thumbnail.size</td>
-<td>Size of thumbnails</td>
+<tr class="row-even"><td><p>statusbar.message_timeout</p></td>
+<td><p>Time in ms until statusbar messages are removed</p></td>
 </tr>
-<tr class="row-odd"><td>title.fallback</td>
-<td>Default window title if no mode specific options exist</td>
+<tr class="row-odd"><td><p>statusbar.show</p></td>
+<td><p>Always display the statusbar</p></td>
 </tr>
-<tr class="row-even"><td>title.image</td>
-<td>Window title in image mode</td>
+<tr class="row-even"><td><p>thumbnail.size</p></td>
+<td><p>Size of thumbnails</p></td>
+</tr>
+<tr class="row-odd"><td><p>title.fallback</p></td>
+<td><p>Default window title if no mode specific options exist</p></td>
+</tr>
+<tr class="row-even"><td><p>title.image</p></td>
+<td><p>Window title in image mode</p></td>
 </tr>
 </tbody>
 </table>
@@ -205,7 +210,7 @@
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>
