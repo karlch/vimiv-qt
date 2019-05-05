@@ -17,7 +17,7 @@ mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 from vimiv import api, vimiv  # noqa
 from vimiv.commands import runners  # noqa
 from vimiv.utils import working_directory  # noqa
-from vimiv.imutils import imstorage  # noqa
+from vimiv.imutils import filelist  # noqa
 
 
 _processes = []
@@ -59,8 +59,8 @@ class VimivProc:
         # Wait for any running threads to exit safely
         QThreadPool.globalInstance().waitForDone(5000)  # Kill after 5s
         runners._last_command.clear()
-        imstorage._paths = []
-        imstorage._index = 0
+        filelist._paths = []
+        filelist._index = 0
         # Needed for cleanup
         QCoreApplication.instance().aboutToQuit.emit()
         api.settings.reset()

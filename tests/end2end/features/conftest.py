@@ -15,7 +15,7 @@ import pytest_bdd as bdd
 from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
-from vimiv.imutils import imstorage
+from vimiv.imutils import filelist
 
 ###############################################################################
 #                                    When                                     #
@@ -139,7 +139,7 @@ def check_row_number(row):
 
 @bdd.then(bdd.parsers.parse("the image should have the index {index}"))
 def check_image_index(index):
-    assert imstorage.get_index() == index
+    assert filelist.get_index() == index
 
 
 @bdd.given("I enter thumbnail mode")
