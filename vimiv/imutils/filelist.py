@@ -14,7 +14,7 @@ import logging
 import os
 from contextlib import suppress
 from random import shuffle
-from typing import List
+from typing import List, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
@@ -34,7 +34,7 @@ _paths: List[str] = []
 _index = 0
 
 
-def load(*paths) -> None:
+def load(*paths: str) -> None:
     """Load new paths into the filelist.
 
     This function is used from outside to interact with the filelist. For example by the
@@ -225,7 +225,7 @@ def _load_single(path: str) -> None:
         _load_paths(paths, path)
 
 
-def _load_paths(paths: List[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
