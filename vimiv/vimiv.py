@@ -22,7 +22,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, parsertypes, imutils
+from vimiv import app, api, parsertypes, imutils, plugins
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
@@ -52,6 +52,7 @@ def startup(argv):
     update_settings(args)
     earlyinit()
     init_ui(args)
+    plugins.load()
     init_paths(args)
     logging.debug("Startup completed")
     api.status.update()
@@ -238,4 +239,6 @@ def main():
     qapp = app.Application()
     startup(sys.argv[1:])
     signal.signal(signal.SIGINT, signal.SIG_DFL)  # ^C
-    return qapp.exec_()
+    returncode = qapp.exec_()
+    plugins.cleanup()
+    return returncode

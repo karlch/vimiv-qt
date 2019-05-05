@@ -10,7 +10,7 @@ import configparser
 import logging
 import os
 
-from vimiv import api
+from vimiv import api, plugins
 from vimiv.commands import aliases
 from vimiv.utils import xdg, strconvert
 
@@ -75,6 +75,9 @@ def _read(files):
     # Read aliases
     if "ALIASES" in parser:
         _add_aliases(parser["ALIASES"])
+    # Read plugins
+    if "PLUGINS" in parser:
+        _get_active_plugins(parser["PLUGINS"])
 
 
 def _update_setting(name, parser):
@@ -145,3 +148,28 @@ def _add_aliases(configsection):
             aliases.alias(name, [command], "global")
         except api.commands.CommandError as e:
             logging.error("Reading aliases from config: %s", str(e))
+
+
+def _get_active_plugins(pluginsection):
+    """Retrieve list of active plugins defined in the plugin section.
+
+    Args:
+        pluginsection: PLUGINS section in the config file.
+    """
+
+    def is_active(activated: str) -> bool:
+        """Return true if the activated string corresponds to a true bool."""
+        try:
+            return strconvert.to_bool(activated)
+        except strconvert.ConversionError:
+            logging.error(
+                "Invalid boolean string '%s' encountered in plugin section", activated
+            )
+            return False
+
+    logging.debug("Retrieving active plugins from config file")
+    active_plugins = [
+        name for name, activated in pluginsection.items() if is_active(activated)
+    ]
+    logging.debug("Active plugins: %s", ", ".join(active_plugins))
+    plugins.set_active_plugins(active_plugins)
