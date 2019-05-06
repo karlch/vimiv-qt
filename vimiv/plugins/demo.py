@@ -15,14 +15,14 @@ from vimiv import api
 
 
 @api.commands.register()
-def hello_world():
+def hello_world() -> None:
     """Simple dummy function printing 'Hello world'."""
     print("Hello world")
 
 
-def init():
+def init() -> None:
     print("Initializing demo plugin")
 
 
-def cleanup():
+def cleanup() -> None:
     print("Cleaning up demo plugin")
