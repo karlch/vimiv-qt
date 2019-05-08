@@ -82,6 +82,11 @@ def add_plugins(**plugins: str) -> None:
     _plugins.update(plugins)
 
 
+def get_plugins() -> Dict[str, str]:
+    """Retrieve dictionary containing active plugin names and additional information."""
+    return dict(_plugins)
+
+
 def _load_plugin(name: str, directory: str) -> None:
     """Load a single plugin.
 

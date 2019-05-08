@@ -48,6 +48,9 @@ def dump():
             parser.add_section(section)
         default = str(setting.default)
         parser[section][option] = default
+    # Add default plugins
+    parser.add_section("PLUGINS")
+    parser["PLUGINS"] = plugins.get_plugins()
     # Write to file
     user_file = xdg.join_vimiv_config("vimiv.conf")
     with open(user_file, "w") as f:
