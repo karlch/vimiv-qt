@@ -31,8 +31,8 @@ from vimiv.utils import xdg
 
 _app_plugin_directory = os.path.dirname(__file__)
 _user_plugin_directory = xdg.join_vimiv_data("plugins")
-_active_plugins: List[str] = []
-_loaded_plugins: Dict[str, ModuleType] = {}
+_plugins: Dict[str, str] = {}  # key: name, value: additional information
+_loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
 
 
 def load() -> None:
@@ -44,18 +44,18 @@ def load() -> None:
     logging.debug("Available app plugins: %s", ", ".join(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
     logging.debug("Available user plugins: %s", ", ".join(user_plugins))
-    for plugin in _active_plugins:
+    for plugin in _plugins:
         if plugin in app_plugins:
             _load_plugin(plugin, _app_plugin_directory)
         elif plugin in user_plugins:
             _load_plugin(plugin, _user_plugin_directory)
         else:
-            logging.error("Unable to find plugin '%s'", plugin)
+            logging.debug("Unable to find plugin '%s', ignoring", plugin)
     logging.debug("Plugin loading completed")
 
 
 def cleanup() -> None:
-    """Clean up all active plugins.
+    """Clean up all loaded plugins.
 
     This calls the cleanup function for all loaded plugins and is called before vimiv is
     closed.
@@ -71,9 +71,13 @@ def cleanup() -> None:
             logging.debug("Plugin '%s' does not define cleanup()", name)
 
 
-def set_active_plugins(plugins: List[str]) -> None:
-    """Set the list of active plugins."""
-    _active_plugins.extend(plugins)
+def add_plugins(**plugins: str) -> None:
+    """Add plugins to the dictionary of plugins.
+
+    Args:
+        plugins: Dictionary of plugin names with metadata to add to plugins.
+    """
+    _plugins.update(plugins)
 
 
 def _load_plugin(name: str, directory: str) -> None:

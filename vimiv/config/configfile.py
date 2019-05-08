@@ -77,7 +77,7 @@ def _read(files):
         _add_aliases(parser["ALIASES"])
     # Read plugins
     if "PLUGINS" in parser:
-        _get_active_plugins(parser["PLUGINS"])
+        _read_plugins(parser["PLUGINS"])
 
 
 def _update_setting(name, parser):
@@ -150,26 +150,11 @@ def _add_aliases(configsection):
             logging.error("Reading aliases from config: %s", str(e))
 
 
-def _get_active_plugins(pluginsection):
-    """Retrieve list of active plugins defined in the plugin section.
+def _read_plugins(pluginsection):
+    """Set plugins from configuration file as requested plugins.
 
     Args:
         pluginsection: PLUGINS section in the config file.
     """
-
-    def is_active(activated: str) -> bool:
-        """Return true if the activated string corresponds to a true bool."""
-        try:
-            return strconvert.to_bool(activated)
-        except strconvert.ConversionError:
-            logging.error(
-                "Invalid boolean string '%s' encountered in plugin section", activated
-            )
-            return False
-
-    logging.debug("Retrieving active plugins from config file")
-    active_plugins = [
-        name for name, activated in pluginsection.items() if is_active(activated)
-    ]
-    logging.debug("Active plugins: %s", ", ".join(active_plugins))
-    plugins.set_active_plugins(active_plugins)
+    logging.debug("Plugins in config: %s", ", ".join(pluginsection))
+    plugins.add_plugins(**pluginsection)
