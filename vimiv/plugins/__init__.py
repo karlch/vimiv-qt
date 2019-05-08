@@ -31,7 +31,9 @@ from vimiv.utils import xdg
 
 _app_plugin_directory = os.path.dirname(__file__)
 _user_plugin_directory = xdg.join_vimiv_data("plugins")
-_plugins: Dict[str, str] = {}  # key: name, value: additional information
+_plugins: Dict[str, str] = {
+    "print": "system"
+}  # key: name, value: additional information
 _loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
 
 
