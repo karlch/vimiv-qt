@@ -25,6 +25,7 @@ import os
 import sys
 
 import sphinx_bootstrap_theme
+from sphinx.ext import autodoc
 
 sys.path.insert(0, os.path.abspath('..'))
 
@@ -181,3 +182,6 @@ texinfo_documents = [
 
 def setup(app):
     app.add_stylesheet("custom.css")
+    ignore_separator = "^" + 88 * "-" + "$"
+    app.connect(
+        'autodoc-process-docstring', autodoc.between(ignore_separator, exclude=True))
