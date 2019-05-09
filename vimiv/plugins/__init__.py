@@ -7,8 +7,11 @@
 """`Interface to load and initialize plugins`.
 
 Plugins are python modules that are either in ``vimiv/plugins/`` (app plugins) or
-``$XDG_DATA_HOME/vimiv/plugins/`` (user plugins). A simple example to get an idea of the
-plugin structure is realized in the demo plugin ``vimiv/plugins/demo.py``.
+``$XDG_DATA_HOME/vimiv/plugins/`` (user plugins). A possible path is to write a plugin
+in its own git repository and let the user to clone that repository into
+``$XDG_DATA_HOME/vimiv/plugins/``. It can then be activated in the configuration file.
+A simple example to get an idea of the plugin structure is realized in the demo plugin
+``vimiv/plugins/demo.py``.
 
 There are three main components a plugin can make use of to interact with vimiv:
 
@@ -17,6 +20,25 @@ There are three main components a plugin can make use of to interact with vimiv:
   loaded
 * The ``cleanup`` function of the plugin which gets called when the vimiv application
   exits.
+
+The plugin loading process can be summarized by the following steps:
+
+#. The 'PLUGINS' section of the configuration file is iterated over. Keys defined are
+   the names of the plugins that should be loaded later, values can be arbitrary
+   additional information.
+#. After setting up the main application, the defined plugins are loaded by the
+   :func:`load` function. During loading the ``init`` function of the plugin is called.
+#. Before the application is quit, the ``cleanup`` function of all loaded plugins is
+   called.
+
+----------------------------------------------------------------------------------------
+
+Module Attributes:
+    _app_plugin_directory: Directory in which plugins shipped with vimiv are located.
+    _user_plugin_directory: Directory in which user-installed plugins are located.
+    _plugins: Dictionary mapping plugin names to additional information as defined in
+        the configuration file.
+    _loaded_plugins: Dictionary mapping loaded plugin names to the loaded python module.
 """
 
 import importlib

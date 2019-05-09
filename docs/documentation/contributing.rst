@@ -37,6 +37,9 @@ If you want to find something to do, check the
 As this is my first larger project, comments and improvements to the existing
 code base are more than welcome.
 
+`Writing plugins`_ is also a great option without having to work with the vimiv
+codebase.
+
 If you prefer C over python, you may be interested in implementing
 `additional manipulations in the C extension <https://github.com/karlch/vimiv-qt/issues/7>`_.
 
@@ -109,6 +112,18 @@ For more information on the formatter as well as a few useful tips, visit
 `the project's github page <https://github.com/ambv/black>`_.
 
 TODO docstrings
+
+
+Writing Plugins
+---------------
+
+A great way to contribute to vimiv without having to work with the main source code is
+to write plugins. If you end up writing a plugin, please `let me know
+<karlch@protonmail.com>`_ so I can advertise it. Some hints on the plugin infrastructure
+are given in the ``vimiv.plugins`` module:
+
+.. automodule:: vimiv.plugins
+   :members: load, get_plugins
 
 
 Source Code Hints
