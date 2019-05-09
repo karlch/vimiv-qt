@@ -10,3 +10,4 @@ The following documents are available:
    keybindings
    statusbar
    style
+   plugins
