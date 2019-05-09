@@ -37,8 +37,15 @@ _plugins: Dict[str, str] = {
 _loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
 
 
-def load() -> None:
-    """Load all active plugins."""
+def load(*plugins: str) -> None:
+    """Load plugins defined.
+
+    If no plugins are passed to the function all active plugins are loaded.
+
+    Args:
+        plugins: Plugin names to load.
+    """
+    plugins = plugins if plugins else _plugins
     logging.debug("Loading plugins...")
     sys.path.insert(0, _app_plugin_directory)
     sys.path.insert(0, _user_plugin_directory)
