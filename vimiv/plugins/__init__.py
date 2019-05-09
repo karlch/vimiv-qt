@@ -67,7 +67,6 @@ def load(*plugins: str) -> None:
     Args:
         plugins: Plugin names to load.
     """
-    plugins = plugins if plugins else _plugins
     logging.debug("Loading plugins...")
     sys.path.insert(0, _app_plugin_directory)
     sys.path.insert(0, _user_plugin_directory)
@@ -75,7 +74,7 @@ def load(*plugins: str) -> None:
     logging.debug("Available app plugins: %s", ", ".join(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
     logging.debug("Available user plugins: %s", ", ".join(user_plugins))
-    for plugin in _plugins:
+    for plugin in plugins if plugins else _plugins:
         if plugin in app_plugins:
             _load_plugin(plugin, _app_plugin_directory)
         elif plugin in user_plugins:
