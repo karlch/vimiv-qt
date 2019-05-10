@@ -34,7 +34,8 @@ As this is my first larger project, comments and improvements to the existing
 code base are more than welcome.
 
 `Writing plugins`_ is also a great option without having to work with the vimiv
-codebase.
+codebase. For some inspiration you could take a look at
+`issues that could be realized using plugins <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin>`_.
 
 If you prefer C over python, you may be interested in implementing
 `additional manipulations in the C extension <https://github.com/karlch/vimiv-qt/issues/7>`_.
