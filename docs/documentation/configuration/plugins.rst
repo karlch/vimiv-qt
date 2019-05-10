@@ -1,3 +1,5 @@
+.. _plugins:
+
 #######
 Plugins
 #######
@@ -13,6 +15,9 @@ a new plugin:
 Currently the following user plugins are available:
 
 * None, waiting for your plugin :)
+
+If you would like to write a plugin, some of the information on :ref:`writing_plugins`
+may be helpful to get started.
 
 In addition to plugins that can be added by the user, vimiv ships with a few default
 plugins that can be activated:

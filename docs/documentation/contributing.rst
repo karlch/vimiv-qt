@@ -113,14 +113,16 @@ For more information on the formatter as well as a few useful tips, visit
 
 TODO docstrings
 
+.. _writing_plugins:
 
 Writing Plugins
 ---------------
 
 A great way to contribute to vimiv without having to work with the main source code is
 to write plugins. If you end up writing a plugin, please `let me know
-<karlch@protonmail.com>`_ so I can advertise it. Some hints on the plugin infrastructure
-are given in the ``vimiv.plugins`` module:
+<karlch@protonmail.com>`_ so I can advertise it on the :ref:`plugins` page. The basic
+usage of plugins on described in the :ref:`plugins` page as well, some hints on the
+plugin infrastructure are given in the ``vimiv.plugins`` module:
 
 .. automodule:: vimiv.plugins
    :members: load, get_plugins
