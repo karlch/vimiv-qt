@@ -21,6 +21,19 @@ There are three main components a plugin can make use of to interact with vimiv:
 * The ``cleanup`` function of the plugin which gets called when the vimiv application
   exits.
 
+.. note::
+
+    Using any other imports from vimiv besides the api module is not considered stable
+    and may break at any point without warning. If you require functionality that is not
+    within the api, please open an issue to discuss this. This helps the api grow and
+    keeps plugins stable.
+
+.. warning::
+
+    Before the release of version 1.0 there may be changes to the api although it is
+    tried to keep them as minimial as possible. Any breaking changes will be announced
+    in advance to allow plugins to adapt.
+
 The plugin loading process can be summarized by the following steps:
 
 #. The 'PLUGINS' section of the configuration file is iterated over. Keys defined are
