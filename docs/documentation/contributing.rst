@@ -12,10 +12,6 @@ please ignore them and contribute anyway. The chances are that I will fix
 upcoming issues for you. The guidelines are simply meant to ease work for me
 and to keep everything consistent.
 
-Table of Contents:
-
-.. contents:: :local:
-
 
 Finding Something to Do
 ----------------------------

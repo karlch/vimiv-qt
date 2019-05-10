@@ -93,7 +93,7 @@ todo_include_todos = False
 #
 html_theme = "bootstrap"
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-html_sidebars = {"**": []}
+html_sidebars = {"**contributing**": ["localtoc.html"]}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
