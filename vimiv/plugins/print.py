@@ -54,8 +54,7 @@ class PrintHandler(QObject):
             * ``preview``: Show preview dialog before printing.
         """
         if self._widget is None:
-            logging.error("No widget to print")
-            return
+            raise api.commands.CommandError("No widget to print")
 
         logging.debug("Starting print dialog")
 
