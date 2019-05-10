@@ -19,3 +19,4 @@ Makefile
 **/.doctrees
 **/.mypy_cache
 **/.dmypy.json
+**/*.rstsrc

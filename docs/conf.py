@@ -25,8 +25,9 @@ import os
 import sys
 
 import sphinx_bootstrap_theme
+from sphinx.ext import autodoc
 
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- General configuration ------------------------------------------------
@@ -38,23 +39,23 @@ sys.path.insert(0, os.path.abspath('..'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon']
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon"]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
-project = 'vimiv'
-copyright = '2018-2019, Christian Karl'
-author = 'Christian Karl'
+project = "vimiv"
+copyright = "2018-2019, Christian Karl"
+author = "Christian Karl"
 html_favicon = "_static/favicon.ico"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -76,10 +77,10 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -90,16 +91,14 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'bootstrap'
+html_theme = "bootstrap"
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
-html_sidebars = {
-        "**": [],
-}
+html_sidebars = {"**contributing**": ["localtoc.html"]}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -107,25 +106,25 @@ html_static_path = ['_static']
 #
 html_logo = "_static/vimiv/vimiv.png"
 html_theme_options = {
-        "bootswatch_theme": "cosmo",
-        "navbar_title": "vimiv",
-        "navbar_pagenav": True,
-        "navbar_sidebarrel": False,
-        "navbar_links": [
-            ("Docs", "documentation/index"),
-            ("Install", "documentation/install"),
-            ("Screenshots", "screenshots"),
-            ("Changelog", "changelog"),
-            ("Contributing", "documentation/contributing"),
-            ("GitHub", "https://github.com/karlch/vimiv-qt", True),
-        ],
-        "source_link_position": "footer",
+    "bootswatch_theme": "cosmo",
+    "navbar_title": "vimiv",
+    "navbar_pagenav": True,
+    "navbar_sidebarrel": False,
+    "navbar_links": [
+        ("Docs", "documentation/index"),
+        ("Install", "documentation/install"),
+        ("Screenshots", "screenshots"),
+        ("Changelog", "changelog"),
+        ("Contributing", "documentation/contributing"),
+        ("GitHub", "https://github.com/karlch/vimiv-qt", True),
+    ],
+    "source_link_position": "footer",
 }
 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'vimivdoc'
+htmlhelp_basename = "vimivdoc"
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -134,15 +133,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -152,8 +148,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'vimiv.tex', 'vimiv Documentation',
-     'Christian Karl', 'manual'),
+    (master_doc, "vimiv.tex", "vimiv Documentation", "Christian Karl", "manual")
 ]
 
 
@@ -162,8 +157,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('manpage/vimiv.1', 'vimiv', 'an image viewer with vim-like keybindings',
-     [author], 1)
+    (
+        "manpage/vimiv.1",
+        "vimiv",
+        "an image viewer with vim-like keybindings",
+        [author],
+        1,
+    )
 ]
 
 
@@ -173,11 +173,21 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'vimiv', 'vimiv Documentation',
-     author, 'vimiv', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "vimiv",
+        "vimiv Documentation",
+        author,
+        "vimiv",
+        "One line description of project.",
+        "Miscellaneous",
+    )
 ]
 
 
 def setup(app):
     app.add_stylesheet("custom.css")
+    ignore_separator = "^" + 88 * "-" + "$"
+    app.connect(
+        "autodoc-process-docstring", autodoc.between(ignore_separator, exclude=True)
+    )

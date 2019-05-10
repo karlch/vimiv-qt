@@ -10,7 +10,7 @@ import configparser
 import logging
 import os
 
-from vimiv import api
+from vimiv import api, plugins
 from vimiv.commands import aliases
 from vimiv.utils import xdg, strconvert
 
@@ -48,6 +48,9 @@ def dump():
             parser.add_section(section)
         default = str(setting.default)
         parser[section][option] = default
+    # Add default plugins
+    parser.add_section("PLUGINS")
+    parser["PLUGINS"] = plugins.get_plugins()
     # Write to file
     user_file = xdg.join_vimiv_config("vimiv.conf")
     with open(user_file, "w") as f:
@@ -75,6 +78,9 @@ def _read(files):
     # Read aliases
     if "ALIASES" in parser:
         _add_aliases(parser["ALIASES"])
+    # Read plugins
+    if "PLUGINS" in parser:
+        _read_plugins(parser["PLUGINS"])
 
 
 def _update_setting(name, parser):
@@ -145,3 +151,13 @@ def _add_aliases(configsection):
             aliases.alias(name, [command], "global")
         except api.commands.CommandError as e:
             logging.error("Reading aliases from config: %s", str(e))
+
+
+def _read_plugins(pluginsection):
+    """Set plugins from configuration file as requested plugins.
+
+    Args:
+        pluginsection: PLUGINS section in the config file.
+    """
+    logging.debug("Plugins in config: %s", ", ".join(pluginsection))
+    plugins.add_plugins(**pluginsection)

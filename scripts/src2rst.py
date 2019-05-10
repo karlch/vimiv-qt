@@ -12,6 +12,9 @@
 """Generate reST documentation from source code docstrings."""
 
 import inspect
+import importlib
+import os
+import sys
 
 from vimiv import vimiv, api
 
@@ -193,9 +196,39 @@ def _format_optional_title(action):
     return formats
 
 
+def generate_plugins():
+    """Generate overview table of default plugins."""
+    print("generating default plugins...")
+
+    filename = "docs/documentation/configuration/default_plugins.rstsrc"
+    plugins_directory = "vimiv/plugins"
+    sys.path.insert(0, plugins_directory)
+
+    plugin_names = sorted(
+        [
+            filename.replace(".py", "")
+            for filename in os.listdir(plugins_directory)
+            if not filename.startswith("_") and filename.endswith(".py")
+        ]
+    )
+
+    def get_plugin_description(name):
+        module = importlib.import_module(name, plugins_directory)
+        docstring = inspect.getdoc(module)
+        return docstring.split("\n")[0].strip(" .")
+
+    rows = [("Name", "Description")]
+    for name in plugin_names:
+        rows.append((name, get_plugin_description(name)))
+
+    with RSTFile(filename) as f:
+        f.write_table(rows, title="Overview of default plugins", widths="20 80")
+
+
 if __name__ == "__main__":
     generate_status_modules()
     generate_commands()
     generate_settings()
     generate_keybindings()
     generate_commandline_options()
+    generate_plugins()
