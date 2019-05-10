@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Settings &#8212; vimiv  documentation</title>
+    <title>Plugins &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
@@ -19,8 +19,8 @@
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Keybindings" href="keybindings.html" />
-    <link rel="prev" title="Configuration" href="index.html" />
+    <link rel="next" title="Contributing Guidelines" href="../contributing.html" />
+    <link rel="prev" title="Style" href="style.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
@@ -78,7 +78,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Settings</a></li>
+<li><a class="reference internal" href="#">Plugins</a></li>
 </ul>
 </ul>
 </li>
@@ -100,91 +100,41 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="settings">
-<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h1>
-<p>Vimiv provides configurable settings.</p>
-<p>There are two ways to change a setting:</p>
+  <div class="section" id="plugins">
+<span id="id1"></span><h1>Plugins<a class="headerlink" href="#plugins" title="Permalink to this headline">¶</a></h1>
+<p>Vimiv provides the option to extend its functionality with python module plugins. To add
+a new plugin:</p>
+<ol class="arabic simple">
+<li><p>Put the python module into the plugins folder <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/plugins/</span></code>.</p></li>
+<li><p>Activate it in the <code class="docutils literal notranslate"><span class="pre">PLUGINS</span></code> section of the configuration file by adding:
+<code class="docutils literal notranslate"><span class="pre">plugin_name</span> <span class="pre">=</span> <span class="pre">any</span> <span class="pre">additional</span> <span class="pre">information</span></code> where <code class="docutils literal notranslate"><span class="pre">plugin_name</span></code> is the name of the
+python module added.</p></li>
+</ol>
+<p>Currently the following user plugins are available:</p>
 <ul class="simple">
-<li><p>Update the configuration file to change it permanently</p></li>
-<li><p>Run the <code class="docutils literal notranslate"><span class="pre">:set</span></code> command to change it temporarily</p></li>
+<li><p>None, waiting for your plugin :)</p></li>
 </ul>
-<p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
-<code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
-<p>The following table explains all available settings.</p>
-<table class="colwidths-given docutils align-center" id="id1">
-<caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<p>If you would like to write a plugin, some of the information on <a class="reference internal" href="../contributing.html#writing-plugins"><span class="std std-ref">Writing Plugins</span></a>
+may be helpful to get started.</p>
+<p>In addition to plugins that can be added by the user, vimiv ships with a few default
+plugins that can be activated:</p>
+<table class="colwidths-given docutils align-center" id="id2">
+<caption><span class="caption-text">Overview of default plugins</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
+<col style="width: 20%" />
+<col style="width: 80%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>image.autoplay</p></td>
-<td><p>Start playing animations on open</p></td>
+<tr class="row-even"><td><p>demo</p></td>
+<td><p>Simple hello world greeting as example plugin</p></td>
 </tr>
-<tr class="row-odd"><td><p>image.autowrite</p></td>
-<td><p>Save images on changes</p></td>
-</tr>
-<tr class="row-even"><td><p>image.overzoom</p></td>
-<td><p>Maximum scale to apply trying to fit image to window</p></td>
-</tr>
-<tr class="row-odd"><td><p>keyhint.delay</p></td>
-<td><p>Delay (in ms) until the keyhint widget is displayed</p></td>
-</tr>
-<tr class="row-even"><td><p>keyhint.timeout</p></td>
-<td><p>Time (in ms) after which partially typed keybindings are cleared</p></td>
-</tr>
-<tr class="row-odd"><td><p>library.file_check_amount</p></td>
-<td><p>Number of files to check when calculating directory size</p></td>
-</tr>
-<tr class="row-even"><td><p>library.show_hidden</p></td>
-<td><p>Show hidden files in the library</p></td>
-</tr>
-<tr class="row-odd"><td><p>library.width</p></td>
-<td><p>Width of the library as fraction of main window size</p></td>
-</tr>
-<tr class="row-even"><td><p>monitor_filesystem</p></td>
-<td><p>Monitor current directory for changes and reload widgets automatically</p></td>
-</tr>
-<tr class="row-odd"><td><p>search.ignore_case</p></td>
-<td><p>Ignore case when searching, i.e. ‘A’ and ‘a’ are equal</p></td>
-</tr>
-<tr class="row-even"><td><p>search.incremental</p></td>
-<td><p>Automatically filter search results when typing</p></td>
-</tr>
-<tr class="row-odd"><td><p>shuffle</p></td>
-<td><p>Randomly shuffle images</p></td>
-</tr>
-<tr class="row-even"><td><p>slideshow.delay</p></td>
-<td><p>Delay to next image in slideshow</p></td>
-</tr>
-<tr class="row-odd"><td><p>slideshow.indicator</p></td>
-<td><p>Text to display in statusbar when slideshow is running</p></td>
-</tr>
-<tr class="row-even"><td><p>startup_library</p></td>
-<td><p>Enter library at startup if there are no images to show</p></td>
-</tr>
-<tr class="row-odd"><td><p>statusbar.collapse_home</p></td>
-<td><p>Collapse /home/user to ~ in statusbar</p></td>
-</tr>
-<tr class="row-even"><td><p>statusbar.message_timeout</p></td>
-<td><p>Time in ms until statusbar messages are removed</p></td>
-</tr>
-<tr class="row-odd"><td><p>statusbar.show</p></td>
-<td><p>Always display the statusbar</p></td>
-</tr>
-<tr class="row-even"><td><p>thumbnail.size</p></td>
-<td><p>Size of thumbnails</p></td>
-</tr>
-<tr class="row-odd"><td><p>title.fallback</p></td>
-<td><p>Default window title if no mode specific options exist</p></td>
-</tr>
-<tr class="row-even"><td><p>title.image</p></td>
-<td><p>Window title in image mode</p></td>
+<tr class="row-odd"><td><p>print</p></td>
+<td><p>Plugin enabling print support</p></td>
 </tr>
 </tbody>
 </table>
@@ -199,14 +149,14 @@
   <div class="container">
     <p class="pull-right">
       
-      <a href="index.html" title="Previous Chapter: Configuration"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Configuration</span>
+      <a href="style.html" title="Previous Chapter: Style"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Style</span>
       </a>
       &nbsp;
       &nbsp;
       <a href="#">Back to top</a>
       &nbsp;
       &nbsp;
-      <a href="keybindings.html" title="Next Chapter: Keybindings"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Keybindings &raquo;</span>
+      <a href="../contributing.html" title="Next Chapter: Contributing Guidelines"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Contributing ... &raquo;</span>
       </a>
       
 
@@ -215,7 +165,7 @@
         <br/>
         
 <div id="sourcelink">
-  <a href="../../_sources/documentation/configuration/settings.rst.txt"
+  <a href="../../_sources/documentation/configuration/plugins.rst.txt"
      rel="nofollow">Source</a>
 </div>
       
