@@ -20,7 +20,7 @@ try:
 except ImportError:
     QSvgWidget = None
 
-from vimiv import api, utils
+from vimiv import api
 
 
 class PrintHandler(QObject):
@@ -76,15 +76,15 @@ class PrintHandler(QObject):
 
         dialog.open(handle_print)
 
-    @utils.slot
+    @api.utils.slot
     def _on_pixmap_loaded(self, pixmap: QPixmap) -> None:
         self._widget = PrintPixmap(pixmap)
 
-    @utils.slot
+    @api.utils.slot
     def _on_svg_loaded(self, path: str) -> None:
         self._widget = PrintSvg(QSvgWidget(path))
 
-    @utils.slot
+    @api.utils.slot
     def _on_movie_loaded(self, movie: QMovie) -> None:
         self._widget = PrintMovie(movie)
 
