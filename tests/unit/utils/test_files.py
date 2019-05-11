@@ -6,6 +6,9 @@
 
 """Tests for vimiv.utils.files."""
 
+import os
+import tarfile
+
 from vimiv.utils import files
 
 
@@ -50,10 +53,23 @@ def test_directories_supported(mocker):
 def test_images_supported(mocker):
     mocker.patch("os.path.isdir", return_value=False)
     mocker.patch("os.path.isfile", return_value=True)
-    mocker.patch("PyQt5.QtGui.QImageReader.canRead", return_value=True)
+    mocker.patch("imghdr.what", return_value=True)
     images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
+
+
+def test_tar_gz_not_an_image(tmpdir):
+    """Test if is_image for a tar.gz returns False.
+
+    The default implementation of QImageReader.canRead returns True which is not
+    correct.
+    """
+    outfile = str(tmpdir.join("dummy.tar.gz"))
+    indirectory = str(tmpdir.mkdir("indir"))
+    with tarfile.open(outfile, mode="w:gz") as tar:
+        tar.add(indirectory, arcname=os.path.basename(indirectory))
+    assert files.is_image(outfile) is False
 
 
 #
