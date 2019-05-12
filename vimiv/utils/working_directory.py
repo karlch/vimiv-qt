@@ -65,10 +65,10 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self.fileChanged.connect(self._on_file_changed)
         imutils.new_image_opened.connect(self._on_new_image)
 
-    def chdir(self, directory: str) -> None:
+    def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
-        if directory != self._dir:
+        if directory != self._dir or reload_current:
             if self.directories():  # Unmonitor old directories
                 self.removePaths(self.directories())
             try:

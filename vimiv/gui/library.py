@@ -125,6 +125,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def _on_settings_changed(self, setting: api.settings.Setting):
         if setting == api.settings.LIBRARY_WIDTH:
             self.update_width()
+        elif setting == api.settings.LIBRARY_SHOW_HIDDEN:
+            self._open_directory(".", reload_current=True)
 
     @utils.slot
     def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
@@ -173,10 +175,10 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         else:
             self._open_image(path, close)
 
-    def _open_directory(self, path):
+    def _open_directory(self, path, reload_current=False):
         """Open a selected directory."""
         self.store_position()
-        working_directory.handler.chdir(path)
+        working_directory.handler.chdir(path, reload_current)
 
     def _open_image(self, path, close):
         """Open a selected image."""
