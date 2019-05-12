@@ -8,7 +8,6 @@
 
 import datetime
 import imghdr
-import itertools
 import os
 from typing import Generator, List, Tuple, Optional
 
@@ -109,13 +108,7 @@ def get_size_directory(path: str) -> str:
     Return:
         Size as formatted string.
     """
-    max_amount = api.settings.LIBRARY_FILE_CHECK_AMOUNT.value
-    if max_amount == 0:  # Check all
-        max_amount = None
-    size = len(list(itertools.islice(yield_supported(listdir(path)), max_amount)))
-    if size == max_amount:
-        return ">%d" % (max_amount)
-    return str(size)
+    return str(len(os.listdir(path)))
 
 
 def is_image(filename: str) -> bool:
