@@ -7,11 +7,10 @@
 """Functions dealing with files and paths."""
 
 import datetime
+import imghdr
 import itertools
 import os
-from typing import Generator, List, Tuple
-
-from PyQt5.QtGui import QImageReader
+from typing import Generator, List, Tuple, Optional
 
 from vimiv import api
 from vimiv.utils import pathreceiver
@@ -125,10 +124,10 @@ def is_image(filename: str) -> bool:
     Args:
         filename: Name of file to check.
     """
-    if not os.path.isfile(filename):
+    try:
+        return imghdr.what(filename) is not None
+    except (FileNotFoundError, OSError, PermissionError):
         return False
-    reader = QImageReader(filename)
-    return reader.canRead()
 
 
 @api.status.module("{pwd}")
@@ -152,3 +151,15 @@ def modified() -> str:
     mtime = os.path.getmtime(pathreceiver.current())
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")
+
+
+def _test_svg(first_bytes: bytes, _reader) -> Optional[str]:
+    """Check if an opened file is a svg.
+
+    Appended to imghdr.tests to detect vector graphics.
+    """
+    return "svg" if _svg_encoding in first_bytes else None
+
+
+_svg_encoding = "<?xml".encode("utf-8")
+imghdr.tests.append(_test_svg)

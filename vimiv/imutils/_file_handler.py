@@ -129,21 +129,35 @@ class ImageFileHandler(QObject):
         This reads the image using QImageReader and then emits the appropriate
         *_loaded signal to tell the image to display a new object.
         """
-        reader = QImageReader(path)
+        # Pass file format explicitly as imghdr does a much better job at this than the
+        # file name based approach of QImageReader
+        file_format = files.imghdr.what(path).encode("utf-8")
+        reader = QImageReader(path, file_format)
         reader.setAutoTransform(True)  # Automatically apply exif orientation
         if not reader.canRead():
             logging.error("Cannot read image %s", path)
             return
-        if reader.format().data().decode() == "svg" and QSvgWidget:
+        # SVG
+        if file_format == "svg" and QSvgWidget:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self._set_original(None)
             imutils.svg_loaded.emit(path)
+        # Gif
         elif reader.supportsAnimation():
-            self._set_original(QMovie(path))
+            movie = QMovie(path)
+            if not movie.isValid() or movie.frameCount() == 0:
+                logging.error("Error reading animation %s: invalid data", path)
+                return
+            self._set_original(movie)
             imutils.movie_loaded.emit(self.current)
+        # Regular image
         else:
-            self._set_original(QPixmap.fromImageReader(reader))
+            pixmap = QPixmap.fromImageReader(reader)
+            if reader.error():
+                logging.error("Error reading image %s: %s", path, reader.errorString())
+                return
+            self._set_original(pixmap)
             imutils.pixmap_loaded.emit(self.current)
         self._path = path
 
