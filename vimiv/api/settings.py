@@ -410,12 +410,6 @@ LIBRARY_WIDTH = FloatSetting(
 LIBRARY_SHOW_HIDDEN = BoolSetting(
     "library.show_hidden", False, desc="Show hidden files in the library"
 )
-LIBRARY_FILE_CHECK_AMOUNT = IntSetting(
-    "library.file_check_amount",
-    30,
-    desc="Number of files to check when calculating directory size",
-    suggestions=["10", "30", "100", "0"],
-)
 
 # Thumbnail
 THUMBNAIL_SIZE = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
