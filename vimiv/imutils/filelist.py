@@ -12,7 +12,6 @@ new image in the filelist is selected, it is passed on to the file handler to op
 
 import logging
 import os
-from contextlib import suppress
 from random import shuffle
 from typing import List, Iterable
 
@@ -21,13 +20,6 @@ from PyQt5.QtCore import QObject, pyqtSlot
 from vimiv import api, utils, imutils
 from vimiv.commands import search
 from vimiv.utils import files, slideshow, working_directory
-
-
-# We need the check as exif support is optional
-try:
-    import piexif
-except ImportError:
-    piexif = None
 
 
 _paths: List[str] = []
@@ -133,11 +125,7 @@ def exif_date_time() -> str:
     data in the statusbar. If there are any requests/ideas for more, this can
     be used as basis to work with.
     """
-    if piexif is not None:
-        with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
-            exif_dict = piexif.load(current())
-            return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
-    return ""
+    return imutils.exif.exif_date_time(current())
 
 
 def pathlist() -> List[str]:

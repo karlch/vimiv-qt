@@ -45,6 +45,15 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
         logging.debug("No exif data in '%s'", dest)
 
 
+def exif_date_time(filename) -> str:
+    """Exif creation date and time of filename."""
+    if piexif is not None:
+        with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+            exif_dict = piexif.load(filename)
+            return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
+    return ""
+
+
 class ExifOrientation:
     """Namespace for exif orientation tags.
 
