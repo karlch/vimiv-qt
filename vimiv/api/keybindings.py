@@ -35,7 +35,7 @@ earth with ``ge`` we could use::
 
 import collections
 from contextlib import suppress
-from typing import Any, Callable, ItemsView, List, Union, Tuple
+from typing import Callable, ItemsView, List, Union, Tuple
 
 from . import commands, modes
 
@@ -57,11 +57,7 @@ def register(
         else:
             for binding in keybinding:
                 bind(binding, command, mode)
-
-        def inside(*args: Any, **kwargs: Any) -> None:
-            return function(*args, **kwargs)
-
-        return inside
+        return function
 
     return decorator
 
