@@ -44,6 +44,7 @@ Image manipulation:
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie
 
+from . import exif
 from .filelist import load, current, pathlist
 from .filelist import SignalHandler as _FilelistSignalHandler
 from ._file_handler import ImageFileHandler as _ImageFileHandler

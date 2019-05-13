@@ -18,12 +18,6 @@ from vimiv import api, utils, imutils
 from vimiv.imutils import imtransform, immanipulate
 from vimiv.utils import files
 
-# We need the check as exif support is optional
-try:
-    import piexif
-except ImportError:
-    piexif = None
-
 # We need the check as svg support is optional
 try:
     from PyQt5.QtSvg import QSvgWidget
@@ -265,8 +259,7 @@ class WriteImageRunner(QRunnable):
         os.close(handle)
         self._pixmap.save(filename)
         # Copy exif info from original file to new file
-        if piexif is not None:
-            self._copy_exif(self._original_path, filename)
+        imutils.exif.copy_exif(self._original_path, filename)
         os.rename(filename, self._path)
         # Check if valid image was created
         if not os.path.isfile(self._path):
@@ -274,17 +267,6 @@ class WriteImageRunner(QRunnable):
         if not files.is_image(self._path):
             os.remove(self._path)
             raise WriteError("No valid image written. Is the extention valid?")
-
-    @staticmethod
-    def _copy_exif(src, dest):
-        """Copy exif information from src to dest."""
-        try:
-            piexif.transplant(src, dest)
-            logging.debug("Succesfully wrote exif data for '%s'", dest)
-        except piexif.InvalidImageDataError:  # File is not a jpg
-            logging.debug("File format for '%s' does not support exif", dest)
-        except ValueError:
-            logging.debug("No exif data in '%s'", dest)
 
 
 class WriteError(Exception):
