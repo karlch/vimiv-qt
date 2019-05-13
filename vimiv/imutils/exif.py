@@ -20,6 +20,32 @@ except ImportError:
     piexif = None
 
 
+def check_piexif(return_value=None):
+    """Decorator for functions that require the optional piexif module.
+
+    If piexif is not available, return_value is returned and a debug log message is
+    logged. It it is availabel, the function is called as usual.
+
+    Args:
+        return_value: Value to return if piexif is not available.
+    """
+
+    def decorator(func):
+        def stub(*args, **kwargs):
+            """Dummy function to call if piexif is not available."""
+            logging.debug(
+                "Cannot call '%s', piexif is required for exif support", func.__name__
+            )
+            return return_value
+
+        if piexif is None:
+            return stub
+        return func
+
+    return decorator
+
+
+@check_piexif()
 def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
     """Copy exif information from src to dest.
 
@@ -28,9 +54,6 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
         dest: Path to write the exif information to.
         reset_orientation: If true, reset the exif orientation tag to normal.
     """
-    if piexif is None:  # No exif support
-        logging.debug("copy_exif: Nothing to do as piexif not found")
-        return
     try:
         exif_dict = piexif.load(src)
         if reset_orientation:
@@ -45,13 +68,12 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
         logging.debug("No exif data in '%s'", dest)
 
 
+@check_piexif("")
 def exif_date_time(filename) -> str:
     """Exif creation date and time of filename."""
-    if piexif is not None:
-        with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
-            exif_dict = piexif.load(filename)
-            return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
-    return ""
+    with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+        exif_dict = piexif.load(filename)
+        return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
 
 
 class ExifOrientation:
