@@ -25,3 +25,9 @@ Feature: Create and run aliases.
         And the message
             'alias: Not overriding default command quit'
             should be displayed
+
+    Scenario: Alias to an external command
+        When I run alias listdir !ls
+        And I run bind zzz listdir
+        And I press zzz
+        Then no message should be displayed

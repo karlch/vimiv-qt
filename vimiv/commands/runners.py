@@ -37,6 +37,20 @@ class LastCommand(NamedTuple):
     Arguments: List[str]
 
 
+def run(text, count=None, mode=None):
+    """Run either external or internal command.
+
+    Args:
+        text: Complete text given to command line or keybinding.
+        count: Count given if any.
+        mode: Mode to run the command in.
+    """
+    if text.startswith("!"):
+        return external(text.lstrip("!"))
+    text = str(count) + text if count is not None else text
+    return command(text, mode)
+
+
 def update_command(text, mode):
     """Update command with aliases and wildcards.
 

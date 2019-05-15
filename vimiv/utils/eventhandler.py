@@ -138,8 +138,8 @@ class KeyHandler:
             logging.debug("KeyPressEvent: found command")
             count = self.partial_handler.count.get_text()
             cmd = bindings[keyname]
-            cmd = runners.update_command(cmd, mode)
-            runners.command(count + cmd, mode)
+            cmd = runners.update_command(cmd, mode)  # Updates aliases and wildcards
+            runners.run(cmd, count=count, mode=mode)
             self.partial_handler.clear_keys()
         # Partial match => store keys
         elif partial_matches:

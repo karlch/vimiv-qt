@@ -19,10 +19,8 @@ from vimiv.utils import eventhandler
 
 def _command_func(prefix, command, mode):
     """Return callable function for command depending on prefix."""
-    if prefix == ":" and command.startswith("!"):
-        return lambda: runners.external(command[1:])
     if prefix == ":":
-        return lambda: runners.command(command, mode)
+        return lambda: runners.run(command, mode=mode)
     # No need to search again if incsearch is enabled
     if prefix in "/?" and not search.use_incremental(mode):
         return lambda: search.search(command, mode, reverse=prefix == "?")
