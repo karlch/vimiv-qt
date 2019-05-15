@@ -33,11 +33,15 @@ class Application(QApplication):
     @api.commands.register()
     def quit(self):
         """Quit vimiv."""
+        self.exit(0)
+
+    def exit(self, returncode):
+        """Exit the main application with returncode."""
         # Do not start any new threads
         QThreadPool.globalInstance().clear()
         # Wait for any running threads to exit safely
         QThreadPool.globalInstance().waitForDone()
-        super().quit()
+        super().exit(returncode)
 
     def _set_icon(self):
         """Set window icon of vimiv."""

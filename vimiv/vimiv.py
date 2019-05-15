@@ -15,7 +15,6 @@ import argparse
 import logging
 import logging.handlers
 import os
-import signal
 import sys
 import tempfile
 
@@ -29,6 +28,7 @@ from vimiv.gui import mainwindow
 from vimiv.utils import (
     xdg,
     clipboard,
+    crash_handler,
     statusbar_loghandler,
     strconvert,
     trash_manager,
@@ -237,8 +237,8 @@ def update_settings(args):
 def main():
     """Run startup and the Qt main loop."""
     qapp = app.Application()
+    crash_handler.CrashHandler(qapp)
     startup(sys.argv[1:])
-    signal.signal(signal.SIGINT, signal.SIG_DFL)  # ^C
     returncode = qapp.exec_()
     plugins.cleanup()
     return returncode
