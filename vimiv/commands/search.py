@@ -81,7 +81,7 @@ class Search(QObject):
         reverse = reverse if not self._reverse else not reverse
         mode = api.modes.current()
         if not self._text:
-            raise api.commands.CommandError("no search performed")
+            raise api.commands.CommandError("No search performed")
         self._run(self._text, mode, count, reverse, False)
 
     def _run(self, text, mode, count, reverse, incremental):

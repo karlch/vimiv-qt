@@ -167,7 +167,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             path_index = self.selectionModel().selectedIndexes()[1]
         # Path does not exist, do not try to select
         except IndexError:
-            logging.warning("library: selecting empty path")
+            logging.warning("Library: selecting empty path")
             return
         path = strip_html(path_index.data())
         if os.path.isdir(path):
