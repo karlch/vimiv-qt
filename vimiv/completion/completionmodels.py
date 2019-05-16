@@ -147,8 +147,9 @@ class SettingsModel(api.completion.BaseModel):
         data = []
         # Show all settings
         for name, setting in api.settings.items():
-            cmd = "set %s" % (name)
-            data.append((cmd, str(setting), setting.desc))
+            if not setting.hidden:
+                cmd = "set %s" % (name)
+                data.append((cmd, str(setting), setting.desc))
         self.set_data(data)
 
 

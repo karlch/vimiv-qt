@@ -54,3 +54,9 @@ Feature: Using completion.
         Given I open any directory
         When I enter command mode with "open-"
         Then the completion model should be command
+
+    Scenario: Do not show hidden setting in completion.
+        Given I open any directory
+        When I enter command mode with "set history_li"
+        And I run complete
+        Then no completion should be selected

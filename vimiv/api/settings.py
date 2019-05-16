@@ -124,6 +124,7 @@ class Setting(ABC):
 
     Attributes:
         name: Name of the setting as string.
+        hidden: True if the setting should not be visible in the :set completion.
 
         _default: Default value of the setting stored in its python type.
         _value: Value of the setting stored in its python type.
@@ -135,6 +136,7 @@ class Setting(ABC):
         default_value: Any,
         desc: str = "",
         suggestions: List[str] = None,
+        hidden: bool = False,
     ):
         """Initialize attributes with default values.
 
@@ -142,6 +144,7 @@ class Setting(ABC):
             name: Name of the setting to initialize.
             desc: Description of the setting.
             suggestions: List of useful values to show in completion widget.
+            hidden: True if the setting should not be visible in the :set completion.
 
             _default: Default value of the setting to start with.
         """
@@ -150,6 +153,7 @@ class Setting(ABC):
         self._default = default_value
         self._value = default_value
         self.desc = desc
+        self.hidden = hidden
         self._suggestions = suggestions
         _storage[name] = self  # Store setting in storage
 
@@ -216,11 +220,12 @@ class NumberSetting(Setting, ABC):
         default_value: Number,
         desc: str = "",
         suggestions: List[str] = None,
+        hidden: bool = False,
         min_value: Number = None,
         max_value: Number = None,
     ):
         """Additionally allow setting minimum and maximum value."""
-        super().__init__(name, default_value, desc, suggestions)
+        super().__init__(name, default_value, desc, suggestions, hidden=hidden)
         self.min_value = min_value
         self.max_value = max_value
 
@@ -372,10 +377,14 @@ STARTUP_LIBRARY = BoolSetting(
     "startup_library",
     True,
     desc="Enter library at startup if there are no images to show",
+    hidden=True,
 )
-STYLE = StrSetting("style", "default")
+STYLE = StrSetting("style", "default", hidden=True)
 COMMAND_HISTORY_LIMIT = IntSetting(
-    "history_limit", 100, desc="Maximum number of commands to store in history"
+    "history_limit",
+    100,
+    desc="Maximum number of commands to store in history",
+    hidden=True,
 )
 
 # Search
