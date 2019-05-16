@@ -76,7 +76,7 @@ def add_to(name: str, value: str) -> None:
 
     Args:
         name: Name of the setting as stored in the storage.
-        new_value: Value to add to the setting with as string.
+        value: Value to add to the setting with as string.
     """
     setting = _storage[name]
     if not isinstance(setting, NumberSetting):
@@ -89,7 +89,7 @@ def multiply_with(name: str, value: str) -> None:
 
     Args:
         name: Name of the setting as stored in the storage.
-        new_value: Value to multiply the setting with with as string.
+        value: Value to multiply the setting with with as string.
     """
     setting = _storage[name]
     if not isinstance(setting, NumberSetting):
@@ -142,11 +142,10 @@ class Setting(ABC):
 
         Args:
             name: Name of the setting to initialize.
+            default_value: Default value of the setting to start with.
             desc: Description of the setting.
             suggestions: List of useful values to show in completion widget.
             hidden: True if the setting should not be visible in the :set completion.
-
-            _default: Default value of the setting to start with.
         """
         super(Setting, self).__init__()
         self.name = name

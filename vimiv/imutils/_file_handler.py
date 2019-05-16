@@ -235,13 +235,10 @@ class WriteImageRunner(QRunnable):
             logging.error(str(e))
 
     def _can_write(self):
-        """Check if the given path is writable.
+        """Check if it is possible to save the current path.
 
-        Raises WriteError if writing is not possible.
-
-        Args:
-            path: Path to write to.
-            image: QPixmap to write.
+        Raises:
+            WriteError if writing is not possible.
         """
         if not isinstance(self._pixmap, QPixmap):
             raise WriteError("Cannot write animations")

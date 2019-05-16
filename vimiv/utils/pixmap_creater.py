@@ -45,7 +45,7 @@ def _draw(
         pixmap: QPixmap to draw on.
         colorname: Name of the inner color in hex format.
         frame_size: Size of the frame to draw in px.
-        frame-colorname: Name of the frame color in hex format.
+        frame_colorname: Name of the frame color in hex format.
     """
     painter = QPainter(pixmap)
     painter.setPen(Qt.NoPen)

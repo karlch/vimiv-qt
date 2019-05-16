@@ -378,7 +378,7 @@ class LibraryModel(QStandardItemModel):
 
         Args:
             paths: List of paths to create a library row for.
-            dirs: Whether all paths are directories.
+            are_directories: Whether all paths are directories.
         """
         starting_index = self.rowCount() + 1  # Want to index from 1
         for i, path in enumerate(paths):

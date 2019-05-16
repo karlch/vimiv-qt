@@ -92,7 +92,7 @@ def yield_supported(paths: List[str]) -> Generator[str, None, None]:
 
     Args:
         paths: List of paths to check for supported paths.
-    Returns:
+    Yields:
         Generator yielding paths if they are supported.
     """
     for path in paths:

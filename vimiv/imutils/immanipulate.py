@@ -214,7 +214,7 @@ def instance():
 class ManipulateRunner(QRunnable):
     """Apply manipulations in an extra thread.
 
-    Args:
+    Attributes:
         _manipulator: Manipulator class to interact with.
         _id: Integer id of this thread.
     """
