@@ -17,7 +17,7 @@ import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, NamedTuple
+from typing import Dict, List, NamedTuple, Optional
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
@@ -81,13 +81,14 @@ def command(text, mode=None):
 
 @api.keybindings.register(".", "repeat-command")
 @api.commands.register(store=False)
-def repeat_command(count: int = 0):
+def repeat_command(count: Optional[int] = None):
     """Repeat the last command."""
     mode = api.modes.current()
     if mode not in _last_command:
         raise api.commands.CommandError("No command to repeat")
     stored_count, cmdname, args = _last_command[mode]
-    count = count if count else stored_count  # Prefer entered count over stored count
+    # Prefer entered count over stored count
+    count = count if count is not None else stored_count
     _run_command(count, cmdname, args, mode)
 
 

@@ -9,7 +9,7 @@
 import logging
 import os
 from contextlib import suppress
-from typing import List
+from typing import List, Optional
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -232,7 +232,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
     @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def goto(self, row: int, count: int = 0):
+    def goto(self, row: int, count: Optional[int] = None):
         """Select specific row in current filelist.
 
         **syntax:** ``:goto row``
@@ -246,7 +246,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """
         if row == -1:
             row = self.model().rowCount()
-        row = count if count else row  # Prefer count
+        row = count if count is not None else row  # Prefer count
         if row > 0:
             row -= 1  # Start indexing at 1
         row = clamp(row, 0, self.model().rowCount() - 1)

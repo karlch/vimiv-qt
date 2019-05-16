@@ -9,7 +9,7 @@
 import collections
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
@@ -223,7 +223,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def goto(self, index: int, count: int = 0):
+    def goto(self, index: int, count: Optional[int] = None):
         """Select specific thumbnail in current filelist.
 
         **syntax:** ``:goto index``
@@ -236,7 +236,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         **count:** Select [count]th thubnail instead.
         """
-        index = count if count else index  # Prefer count
+        index = count if count is not None else index  # Prefer count
         if index > 0:
             index -= 1  # Start indexing at 1
         index = index % self.count()

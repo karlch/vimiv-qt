@@ -58,7 +58,9 @@ class Search(QObject):
     new_search = pyqtSignal(int, list, api.modes.Mode, bool)
     cleared = pyqtSignal()
 
-    def __call__(self, text, mode, count=0, reverse=False, incremental=False):
+    def __call__(
+        self, text, mode, count=0, reverse=False, incremental=False
+    ):  # pylint: disable=count-default-zero
         """Run search.
 
         This method is called from the command line and stores text and reverse

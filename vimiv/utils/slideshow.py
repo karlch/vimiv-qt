@@ -6,6 +6,8 @@
 
 """Class to play a slideshow."""
 
+from typing import Optional
+
 from PyQt5.QtCore import QTimer, pyqtSignal
 
 from vimiv import api, utils
@@ -28,9 +30,9 @@ class Slideshow(QTimer):
 
     @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
-    def slideshow(self, count: int = 0):
+    def slideshow(self, count: Optional[int] = None):
         """Toggle slideshow."""
-        if count:
+        if count is not None:
             api.settings.SLIDESHOW_DELAY.override(str(count))
             self.setInterval(1000 * count)
         elif self.isActive():

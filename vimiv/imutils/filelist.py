@@ -13,7 +13,7 @@ new image in the filelist is selected, it is passed on to the file handler to op
 import logging
 import os
 from random import shuffle
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
@@ -73,7 +73,7 @@ def prev(count: int = 1) -> None:
 @api.keybindings.register(["G", "<end>"], "goto -1", mode=api.modes.IMAGE)
 @api.keybindings.register(["gg", "<home>"], "goto 1", mode=api.modes.IMAGE)
 @api.commands.register(mode=api.modes.IMAGE)
-def goto(index: int, count: int = 0) -> None:
+def goto(index: int, count: Optional[int] = None) -> None:
     """Select specific image in current filelist.
 
     **syntax:** ``:goto index``
@@ -85,8 +85,10 @@ def goto(index: int, count: int = 0) -> None:
 
     **count:** Select [count]th image instead.
     """
-    index = count if count else index
-    _set_index(index % (len(_paths) + 1) - 1)
+    index = count if count is not None else index
+    if index > 0:
+        index -= 1
+    _set_index(index % len(_paths))
 
 
 @api.status.module("{abspath}")

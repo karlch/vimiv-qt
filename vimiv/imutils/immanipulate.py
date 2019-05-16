@@ -8,6 +8,7 @@
 
 import collections
 import time
+from typing import Optional
 
 from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImage
@@ -79,7 +80,9 @@ class Manipulator(QObject):
 
     @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def brightness(self, value: ManipulateLevel = ManipulateLevel(0), count: int = 0):
+    def brightness(
+        self, value: ManipulateLevel = ManipulateLevel(0), count: Optional[int] = None
+    ):
         """Manipulate brightness.
 
         **syntax:** ``:brightness [value]``
@@ -93,14 +96,16 @@ class Manipulator(QObject):
         **count:** Set brightness to [count].
         """
         try:
-            value = ManipulateLevel(count) if count else value
+            value = ManipulateLevel(count) if count is not None else value
             self._update_manipulation("brightness", value)
         except ValueError as e:
             raise api.commands.CommandError(str(e))
 
     @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def contrast(self, value: ManipulateLevel = ManipulateLevel(0), count: int = 0):
+    def contrast(
+        self, value: ManipulateLevel = ManipulateLevel(0), count: Optional[int] = None
+    ):
         """Manipulate contrast.
 
         **syntax:** ``:contrast [value]``
@@ -114,7 +119,7 @@ class Manipulator(QObject):
         **count:** Set contrast to [count].
         """
         try:
-            value = ManipulateLevel(count) if count else value
+            value = ManipulateLevel(count) if count is not None else value
             self._update_manipulation("contrast", value)
         except ValueError as e:
             raise api.commands.CommandError(str(e))
@@ -154,7 +159,7 @@ class Manipulator(QObject):
     @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
     @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def set(self, value: int, count: int = 0):
+    def set(self, value: int, count: Optional[int] = None):
         """Set the value of the current manipulation.
 
         **syntax:** ``:set value``
@@ -164,7 +169,7 @@ class Manipulator(QObject):
 
         **count:** Set the manipulation to [count] instead.
         """
-        value = count if count else value
+        value = count if count is not None else value
         self._update_manipulation(self._current, value)
 
     def _update_manipulation(self, name, value):
