@@ -374,6 +374,9 @@ STARTUP_LIBRARY = BoolSetting(
     desc="Enter library at startup if there are no images to show",
 )
 STYLE = StrSetting("style", "default")
+COMMAND_HISTORY_LIMIT = IntSetting(
+    "history_limit", 100, desc="Maximum number of commands to store in history"
+)
 
 # Search
 SEARCH_IGNORE_CASE = BoolSetting(

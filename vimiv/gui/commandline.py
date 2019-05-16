@@ -72,7 +72,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._history = history.History(history.read())
+        self._history = history.History(
+            history.read(), max_items=api.settings.COMMAND_HISTORY_LIMIT.value
+        )
         self.mode = None
 
         self.returnPressed.connect(self._on_return_pressed)
