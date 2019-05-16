@@ -100,7 +100,7 @@ class History(collections.UserList):
         Args:
             direction: HistoryDirection element.
             text: Current text in the command line.
-        Return:
+        Returns:
             The received command string to set in the command line.
         """
         if not self:
@@ -122,7 +122,7 @@ class History(collections.UserList):
         Args:
             direction: HistoryDirection element.
             text: Current text in the command line used as substring.
-        Return:
+        Returns:
             The received command string to set in the command line.
         """
         if not self:

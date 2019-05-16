@@ -120,7 +120,7 @@ def _parse(text):
 
     Args:
         text: String passed as command.
-    Return:
+    Returns:
         count: Digits prepending the command to interpret as count.
         name: Name of the command passed.
         args: Arguments passed.
@@ -240,7 +240,7 @@ class ShellCommandRunnable(QRunnable):
 def alias(text, mode):
     """Replace alias with the actual command.
 
-    Return:
+    Returns:
         The replaced text if text was an alias else text.
     """
     cmd = text.split()[0]

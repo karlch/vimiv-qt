@@ -122,7 +122,7 @@ def get(name: str, mode: modes.Mode = modes.GLOBAL) -> "_Command":
     Args:
         name: Name of the command to look for.
         mode: Mode in which to look for the command.
-    Return:
+    Returns:
         The Command object asserted with name and mode.
     """
     commands = _registry[mode]
@@ -161,7 +161,7 @@ def items(mode: modes.Mode) -> typing.ItemsView[str, "_Command"]:
 
     Args:
         mode: The mode for which the commands are valid.
-    Return:
+    Returns:
         typing.ItemsView allowing iteration over items.
     """
     return _registry[mode].items()
@@ -173,7 +173,7 @@ def exists(name: str, mode: modes.Mode) -> bool:
     Args:
         name: Name of the command to check for.
         mode: The mode for which the command is valid.
-    Return:
+    Returns:
         True if the command exists.
     """
     return name in _registry[mode]
@@ -330,7 +330,7 @@ def _get_description(func: typing.Callable, name: str) -> str:
     Args:
         func: Python function object to retrieve the docstring from.
         name: Name of the command to retrieve the description for.
-    Return:
+    Returns:
         The string description of the command.
     """
     try:

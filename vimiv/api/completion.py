@@ -108,7 +108,7 @@ class BaseFilter(QSortFilterProxyModel):
 
         Args:
             text: The current command line text.
-        Return:
+        Returns:
             The stripped text used as completion filter.
         """
         return text.lstrip(":/").lstrip(  # Remove trailing ":" or "/"

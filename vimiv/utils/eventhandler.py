@@ -170,7 +170,7 @@ def keyevent_to_string(event):
 
     Args:
         event: The emitted QKeyEvent.
-    Return:
+    Returns:
         Name of the key pressed as meaningful string.
     """
     # Parse modifiers
@@ -215,7 +215,7 @@ def _get_keyname(event):
 
     Args:
         event: The emitted QKeyEvent.
-    Return:
+    Returns:
         Name of the main key press escaping special keys.
     """
     special_keys = {

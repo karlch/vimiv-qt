@@ -158,7 +158,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _get_content(self, directory: str) -> Tuple[List[str], List[str]]:
         """Get supported content of directory.
 
-        Return:
+        Returns:
             images: List of images inside the directory.
             directories: List of directories inside the directory.
         """

@@ -76,7 +76,7 @@ class _Module:
         as first argument (the 'self' argument) of a lambda. For standard
         functions nothing is done.
 
-        Return:
+        Returns:
             A function to be called without arguments.
         """
         logging.debug("Creating function for status module '%s'", func.__name__)
@@ -127,7 +127,7 @@ def evaluate(text: str) -> str:
 
     Args:
         text: The text to evaluate.
-    Return:
+    Returns:
         The updated text.
     """
     modules = _module_expression.findall(text)

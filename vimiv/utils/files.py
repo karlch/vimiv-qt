@@ -21,7 +21,7 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     Args:
         directory: Directory to check for files in via os.listdir(directory).
         show_hidden: Include hidden files in output.
-    Return:
+    Returns:
         Sorted list of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
@@ -37,7 +37,7 @@ def supported(paths: List[str]) -> Tuple[List[str], List[str]]:
 
     Args:
         paths: List containing paths to parse.
-    Return:
+    Returns:
         images: List of images inside the directory.
         directories: List of directories inside the directory.
     """
@@ -58,7 +58,7 @@ def get_size(path: str) -> str:
     the path is a directory, the amount of supported files in the directory is
     returned.
 
-    Return:
+    Returns:
         Size of path as string.
     """
     try:
@@ -75,7 +75,7 @@ def sizeof_fmt(num: float) -> str:
     Args:
         num: Filesize in bytes.
 
-    Return:
+    Returns:
         Filesize in human-readable format.
     """
     for unit in ["B", "K", "M", "G", "T", "P", "E", "Z"]:
@@ -92,7 +92,7 @@ def yield_supported(paths: List[str]) -> Generator[str, None, None]:
 
     Args:
         paths: List of paths to check for supported paths.
-    Return:
+    Returns:
         Generator yielding paths if they are supported.
     """
     for path in paths:
@@ -105,7 +105,7 @@ def get_size_directory(path: str) -> str:
 
     Args:
         path: Path to directory to check.
-    Return:
+    Returns:
         Size as formatted string.
     """
     return str(len(os.listdir(path)))

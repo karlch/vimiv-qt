@@ -77,7 +77,7 @@ def open_paths(paths, select_mode=True):
     Args:
         paths: List of paths to open.
         select_mode: If True, select mode according to paths given.
-    Return:
+    Returns:
         True on success.
     """
     paths = [os.path.abspath(path) for path in paths]

@@ -23,7 +23,7 @@ def positive_int(value):
 
     Args:
         value: Value given to commandline option as string.
-    Return:
+    Returns:
         float(int) if the value is a positive int.
     """
     ivalue = int(value)
@@ -37,7 +37,7 @@ def positive_float(value):
 
     Args:
         value: Value given to commandline option as string.
-    Return:
+    Returns:
         float(value) if the value is a positive float.
     """
     fvalue = float(value)
@@ -54,7 +54,7 @@ def geometry(value):
 
     Args:
         value: Value given to commandline option as string.
-    Return:
+    Returns:
         Tuple in the form of (height, width).
     """
     value = value.lower()  # Both x and X are allowed
@@ -71,7 +71,7 @@ def existing_file(value):
 
     Args:
         value: Value given to commandline option as string.
-    Return:
+    Returns:
         Path to the file as string if it exists.
     """
     if not os.path.isfile(os.path.expanduser(value)):
@@ -86,7 +86,7 @@ def existing_path(value):
 
     Args:
         value: Value given to commandline option as string.
-    Return:
+    Returns:
         Path to the file as string if it exists.
     """
     if not os.path.exists(os.path.expanduser(value)):
@@ -99,7 +99,7 @@ def loglevel(value):
 
     Args:
         value: Value given to command option as string.
-    Return:
+    Returns:
         value as logging level.
     """
     log_levels = {

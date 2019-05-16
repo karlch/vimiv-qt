@@ -106,7 +106,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def _split_prefix(self, text):
         """Remove prefix from text for command processing.
 
-        Return:
+        Returns:
             prefix: One of PREFIXES.
             command: Rest of the text stripped from whitespace.
         """

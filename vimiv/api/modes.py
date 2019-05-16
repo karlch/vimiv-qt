@@ -124,7 +124,7 @@ def get_by_name(name: str) -> Mode:
 
     Args:
         name: Name of the mode to retrieve.
-    Return:
+    Returns:
         The corresponding :class:`vimiv.api.modes.Mode` class.
     """
     for mode in ALL:

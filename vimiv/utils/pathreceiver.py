@@ -16,7 +16,7 @@ def current(mode: api.modes.Mode = None) -> str:
 
     Args:
         mode: Force getting the currently selected path of a specific mode.
-    Return:
+    Returns:
         The currently selected path as abspath.
     """
     mode = mode if mode else api.modes.current()
@@ -34,7 +34,7 @@ def pathlist(mode: api.modes.Mode = None) -> List[str]:
 
     Args:
         mode: Force getting the pathlist of a specific mode.
-    Return:
+    Returns:
         The list of currently open paths.
     """
     mode = mode if mode else api.modes.current()

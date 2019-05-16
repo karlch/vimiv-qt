@@ -133,7 +133,7 @@ def trash_info(filename: str) -> Tuple[str, str]:
 
     Args:
         filename: Name of the file to get info on.
-    Return:
+    Returns:
         original_filename: The absolute path to the original file.
         deletion_date: The deletion date.
     """

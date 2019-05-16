@@ -31,7 +31,7 @@ def get(name: str) -> "Setting":
 
     Args:
         name: Name of the setting as stored in the storage.
-    Return:
+    Returns:
         The actual python Setting object associated with the name.
     """
     return _storage[name]
@@ -42,7 +42,7 @@ def get_value(name: str) -> Any:
 
     Args:
         name: Name of the setting as stored in the storage.
-    Return:
+    Returns:
         The value of the setting in its python data type.
     """
     return _storage[name].value

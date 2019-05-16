@@ -172,7 +172,7 @@ class ThumbnailCreator(QRunnable):
         Args:
             path: Path to the image for which the thumbnail is created.
             thumbnail_path: Path to which the thumbnail is stored.
-        Return:
+        Returns:
             The created QPixmap.
         """
         # Cannot access source
@@ -210,7 +210,7 @@ class ThumbnailCreator(QRunnable):
         Args:
             path: Path to the original image to get attributes from.
             image: QImage object to get attributes from.
-        Return:
+        Returns:
             The generated dictionary.
         """
         return {
@@ -228,7 +228,7 @@ class ThumbnailCreator(QRunnable):
         Args:
             path: Path to the image for which the thumbnail is created.
             thumbnail_path: Path to which the thumbnail is stored.
-        Return:
+        Returns:
             The created QPixmap.
         """
         path_mtime = str(int(os.path.getmtime(path)))

@@ -123,7 +123,7 @@ class _Bindings(collections.UserDict):
 
         Args:
             keys: String containing the keynames to check, e.g. "g".
-        Return:
+        Returns:
             List of partial matches.
         """
         if not keys:

@@ -65,7 +65,7 @@ def get(obj_type: Type[RegisterObject]) -> RegisterObject:
 
     Args:
         obj_type: Type of the component to get.
-    Return:
+    Returns:
         The instance of the object in the registry.
     """
     return _registry[obj_type]

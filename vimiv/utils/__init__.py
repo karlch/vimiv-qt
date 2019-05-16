@@ -35,7 +35,7 @@ def strip_html(text: str) -> str:
 
     strip("<b>hello</b>") = "hello"
 
-    Return:
+    Returns:
         The stripped text.
     """
     stripper = re.compile("<.*?>")
@@ -107,7 +107,7 @@ def _slot_args(argspec, function):
     Args:
         argspec: Function arguments retrieved via inspect.
         function: The python function for which the arguments are created.
-    Return:
+    Returns:
         List of types of the function arguments as arguments for pyqtSlot.
     """
     slot_args = []

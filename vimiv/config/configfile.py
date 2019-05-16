@@ -128,7 +128,7 @@ def _get_section_option(name):
 
     Args:
         name: Name of the setting in the settings storage.
-    Return:
+    Returns:
         section: Name of the section in the config file of the setting.
         option: Name of the option in the config file of the setting.
     """
