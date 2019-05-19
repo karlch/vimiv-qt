@@ -157,15 +157,15 @@ class SettingsOptionModel(api.completion.BaseModel):
     """Completion model filled with suggestions for a specific setting.
 
     Attributes:
-        _name: Name of the corresponding setting.
         _setting: The corresponding settings object.
     """
 
-    def __init__(self, name: str, setting: api.settings.Setting):
+    def __init__(self, setting: api.settings.Setting):
         super().__init__(
-            ":set %s" % (name), text_filter=SettingFilter(), column_widths=(0.5, 0.5)
+            f":set {setting.name}",
+            text_filter=SettingFilter(),
+            column_widths=(0.5, 0.5),
         )
-        self._name = name
         self._setting = setting
         self.setSortRole(3)
         api.settings.signals.changed.connect(self._on_settings_changed)
@@ -180,7 +180,8 @@ class SettingsOptionModel(api.completion.BaseModel):
         for i, suggestion in enumerate(self._setting.suggestions()):
             values["suggestion %d" % (i + 1)] = suggestion
         data = [
-            (f"set {self._name} {value}", option) for option, value in values.items()
+            (f"set {self._setting.name} {value}", option)
+            for option, value in values.items()
         ]
         self.set_data(data)
 
@@ -243,6 +244,6 @@ def init():
     ExternalCommandModel()
     PathModel()
     SettingsModel()
-    for name, setting in api.settings.items():
-        SettingsOptionModel(name=name, setting=setting)
+    for _, setting in api.settings.items():
+        SettingsOptionModel(setting)
     TrashModel()
