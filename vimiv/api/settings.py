@@ -81,7 +81,7 @@ def add_to(name: str, value: str) -> None:
     setting = _storage[name]
     if not isinstance(setting, NumberSetting):
         raise TypeError("Setting %s does not store a number." % (name))
-    setting.add(value)
+    setting += value
 
 
 def multiply_with(name: str, value: str) -> None:
@@ -94,7 +94,7 @@ def multiply_with(name: str, value: str) -> None:
     setting = _storage[name]
     if not isinstance(setting, NumberSetting):
         raise TypeError("Setting %s does not store a number." % (name))
-    setting.multiply(value)
+    setting *= value
 
 
 def reset() -> None:
@@ -233,11 +233,11 @@ class NumberSetting(Setting, ABC):
         """Must still be overridden."""
 
     @abstractmethod
-    def add(self, new_value: str) -> None:
+    def __iadd__(self, value: str) -> "NumberSetting":
         """Must be implemented by child."""
 
     @abstractmethod
-    def multiply(self, new_value: str) -> None:
+    def __imul__(self, value: str) -> "NumberSetting":
         """Must be implemented by child."""
 
 
@@ -248,7 +248,7 @@ class IntSetting(NumberSetting):
         ivalue = strconvert.to_int(new_value, allow_sign=True)
         self._value = clamp(ivalue, self.min_value, self.max_value)
 
-    def add(self, value: str) -> None:
+    def __iadd__(self, value: str) -> "IntSetting":
         """Add a value to the currently stored integer.
 
         Args:
@@ -256,8 +256,9 @@ class IntSetting(NumberSetting):
         """
         ivalue = strconvert.to_int(value, allow_sign=True)
         self._value = clamp(self._value + ivalue, self.min_value, self.max_value)
+        return self
 
-    def multiply(self, value: str) -> None:
+    def __imul__(self, value: str) -> "IntSetting":
         """Multiply the currently stored integer with a value.
 
         Args:
@@ -265,6 +266,7 @@ class IntSetting(NumberSetting):
         """
         ivalue = strconvert.to_int(value, allow_sign=True)
         self._value = clamp(self._value * ivalue, self.min_value, self.max_value)
+        return self
 
     def __str__(self) -> str:
         return "Integer"
@@ -277,7 +279,7 @@ class FloatSetting(NumberSetting):
         fvalue = strconvert.to_float(new_value, allow_sign=True)
         self._value = clamp(fvalue, self.min_value, self.max_value)
 
-    def add(self, value: str) -> None:
+    def __iadd__(self, value: str) -> "FloatSetting":
         """Add a value to the currently stored float.
 
         Args:
@@ -285,15 +287,17 @@ class FloatSetting(NumberSetting):
         """
         fvalue = strconvert.to_float(value, allow_sign=True)
         self._value = clamp(self._value + fvalue, self.min_value, self.max_value)
+        return self
 
-    def multiply(self, value: str) -> None:
-        """Multiply the currently stored integer with a value.
+    def __imul__(self, value: str) -> "FloatSetting":
+        """Multiply the currently stored float with a value.
 
         Args:
             value: The value to multiply with as string.
         """
         fvalue = strconvert.to_float(value, allow_sign=True)
         self._value = clamp(self._value * fvalue, self.min_value, self.max_value)
+        return self
 
     def __str__(self) -> str:
         return "Float"

@@ -52,14 +52,14 @@ def test_override_int_setting(mocker):
 def test_add_int_setting(mocker):
     i = settings.IntSetting("int", 2)
     mocker.patch.object(strconvert, "to_int", return_value=3)
-    i.add("any")
+    i += "any"
     assert i.value == 5
 
 
 def test_multiply_int_setting(mocker):
     i = settings.IntSetting("int", 5)
     mocker.patch.object(strconvert, "to_int", return_value=2)
-    i.multiply("any")
+    i *= "any"
     assert i.value == 10
 
 
@@ -73,14 +73,14 @@ def test_override_float_setting(mocker):
 def test_add_float_setting(mocker):
     f = settings.FloatSetting("float", 1.1)
     mocker.patch.object(strconvert, "to_float", return_value=0.3)
-    f.add("any")
+    f += "any"
     assert f.value == pytest.approx(1.4)
 
 
 def test_multiply_float_setting(mocker):
     f = settings.FloatSetting("float", 4.2)
     mocker.patch.object(strconvert, "to_float", return_value=0.5)
-    f.multiply("any")
+    f *= "any"
     assert f.value == pytest.approx(2.1)
 
 
