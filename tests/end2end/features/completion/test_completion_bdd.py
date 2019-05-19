@@ -38,3 +38,15 @@ def check_completion_model_mode(mode):
 def check_no_completion_selected():
     with pytest.raises(IndexError):
         completionwidget.instance().row()
+
+
+@bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))
+def check_selected_completion_text(text):
+    model = completionwidget.instance().model()
+    completion_data = [
+        model.index(row, column).data()
+        for row in range(model.rowCount())
+        for column in range(model.columnCount())
+    ]
+    completion_text = "\n".join(completion_data)
+    assert text in completion_text

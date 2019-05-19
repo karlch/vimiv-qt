@@ -12,7 +12,7 @@ from typing import List, Set
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.utils import files, trash_manager
+from vimiv.utils import files, trash_manager, slot
 
 
 class Empty(api.completion.BaseModel):
@@ -155,20 +155,41 @@ class SettingsModel(api.completion.BaseModel):
 
 
 class SettingsOptionModel(api.completion.BaseModel):
-    """Completion model filled with suggestions for a specific setting."""
+    """Completion model filled with suggestions for a specific setting.
+
+    Attributes:
+        _name: Name of the corresponding setting.
+        _setting: The corresponding settings object.
+    """
 
     def __init__(self, name: str, setting: api.settings.Setting):
         super().__init__(
             ":set %s" % (name), text_filter=SettingFilter(), column_widths=(0.5, 0.5)
         )
+        self._name = name
+        self._setting = setting
         self.setSortRole(3)
-        data = []
-        values = {"default": str(setting.default), "current": str(setting.value)}
-        for i, suggestion in enumerate(setting.suggestions()):
+        api.settings.signals.changed.connect(self._on_settings_changed)
+        self._update_data()
+
+    def _update_data(self):
+        """Update model content with current setting value."""
+        values = {
+            "default": str(self._setting.default),
+            "current": str(self._setting.value),
+        }
+        for i, suggestion in enumerate(self._setting.suggestions()):
             values["suggestion %d" % (i + 1)] = suggestion
-        for option, value in values.items():
-            data.append(("set %s %s" % (name, value), option))
+        data = [
+            (f"set {self._name} {value}", option) for option, value in values.items()
+        ]
         self.set_data(data)
+
+    @slot
+    def _on_settings_changed(self, setting: api.settings.Setting):
+        """Update data if the value of the setting has changed."""
+        if setting == self._setting:
+            self._update_data()
 
 
 class TrashModel(api.completion.BaseModel):

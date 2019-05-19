@@ -69,3 +69,10 @@ Feature: Using completion.
         And I run complete
         And I activate the command line
         Then the working directory should be path with spaces
+
+    Scenario: Update setting completion with newest value
+        Given I open any directory
+        When I run set slideshow.delay 42
+        And I enter command mode with "set slideshow.delay"
+        And I run complete
+        Then a possible completion should contain 42
