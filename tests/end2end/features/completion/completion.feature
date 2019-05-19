@@ -60,3 +60,12 @@ Feature: Using completion.
         When I enter command mode with "set history_li"
         And I run complete
         Then no completion should be selected
+
+    Scenario: Escape path with spaces upon completion
+        Given I open any directory
+        When I run !mkdir 'path with spaces'
+        And I wait for the command to complete
+        And I enter command mode with "open pat"
+        And I run complete
+        And I activate the command line
+        Then the working directory should be path with spaces

@@ -7,6 +7,7 @@
 """Various completion models for command line completion."""
 
 import os
+import shlex
 from typing import List, Set
 
 from vimiv import api
@@ -110,7 +111,7 @@ class PathModel(api.completion.BaseModel):
         images, directories = files.supported(files.listdir(directory))
         # Format data
         data = [
-            ("open {0}".format(os.path.join(directory, os.path.basename(path))),)
+            ("open " + shlex.quote(os.path.join(directory, os.path.basename(path))),)
             for path in images + directories
         ]
         self.set_data(data)
