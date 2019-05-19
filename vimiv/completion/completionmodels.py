@@ -145,12 +145,11 @@ class SettingsModel(api.completion.BaseModel):
         super().__init__(
             ":set ", text_filter=SettingFilter(), column_widths=(0.4, 0.1, 0.5)
         )
-        data = []
-        # Show all settings
-        for name, setting in api.settings.items():
-            if not setting.hidden:
-                cmd = "set %s" % (name)
-                data.append((cmd, str(setting), setting.desc))
+        data = [
+            (f"set {name}", str(setting), setting.desc)
+            for name, setting in api.settings.items()
+            if not setting.hidden
+        ]
         self.set_data(data)
 
 
