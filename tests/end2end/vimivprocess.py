@@ -6,7 +6,7 @@
 
 """Singleton to start one vimiv process for tests."""
 
-from PyQt5.QtCore import QThreadPool, QCoreApplication
+from PyQt5.QtCore import QThreadPool, QCoreApplication, pyqtBoundSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
@@ -64,3 +64,10 @@ class VimivProc:
         # Needed for cleanup
         QCoreApplication.instance().aboutToQuit.emit()
         api.settings.reset()
+        # Must disconnect these signals ourselves as the automatic disconnection seems
+        # to fail with slots assigned using partial
+        for name in dir(api.imutils):
+            elem = getattr(api.imutils, name)
+            if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
+                print(name, elem)
+                elem.disconnect()
