@@ -6,11 +6,13 @@
 
 """QtWidgets for IMAGE mode."""
 
+from functools import partial
 from contextlib import suppress
+from typing import Optional
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QScrollArea
-from PyQt5.QtGui import QMovie, QPixmap
+from PyQt5.QtGui import QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
@@ -97,35 +99,35 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(Empty())
 
-        imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imutils.movie_loaded.connect(self._on_movie_loaded)
-        imutils.svg_loaded.connect(self._on_svg_loaded)
-        imutils.pixmap_updated.connect(self._on_pixmap_updated)
+        imutils.pixmap_loaded.connect(
+            partial(self._load, widget=Image, scale=ImageScale.Overzoom)
+        )
+        imutils.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
+        imutils.svg_loaded.connect(
+            partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
+        )
+        imutils.pixmap_updated.connect(partial(self._load, widget=Image))
         imutils.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
     def _on_images_cleared(self) -> None:
         self.setWidget(Empty())
 
-    @utils.slot
-    def _on_pixmap_loaded(self, pixmap: QPixmap) -> None:
-        self.setWidget(Image(pixmap))
-        self.scale(ImageScale.Overzoom, 1)
+    def _load(self, argument, widget, scale: Optional[ImageScale] = None) -> None:
+        """Load a new widget into the scrollable image.
 
-    @utils.slot
-    def _on_movie_loaded(self, movie: QMovie) -> None:
-        self.setWidget(Animation(movie))
-        self.scale(1, 1)
+        This method is specialized accordingly for the different possible widgets using
+        functools.partial  in __init__. The argument is always passed by the emitted
+        signal, the other args are specialized using partial.
 
-    @utils.slot
-    def _on_svg_loaded(self, path: str) -> None:
-        self.setWidget(VectorGraphic(path))
-        self.scale(ImageScale.Fit, 1)
-
-    @utils.slot
-    def _on_pixmap_updated(self, pixmap: QPixmap) -> None:
-        self.setWidget(Image(pixmap))
-        self.scale(self._scale, 1)
+        Args:
+            argument: Argument passed to the widget constructor.
+            widget: Widget created for this argument.
+            scale: Scale to set after loading defaulting to the current scale.
+        """
+        scale = scale if scale is not None else self._scale
+        self.setWidget(widget(argument))
+        self.scale(scale)
         api.status.update()
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.IMAGE)
