@@ -29,7 +29,7 @@ help:
 	@printf "make clean: 	        Remove build directories.\n"
 
 install:
-	python3 setup.py install --root=$(DESTDIR)/ --record=install_log.txt
+	python3 setup.py install --root=$(DESTDIR)/ --prefix=$(PREFIX) --record=install_log.txt
 	install -Dm644 misc/vimiv.desktop $(APPDIR)/vimiv.desktop
 	install -Dm644 misc/vimiv.appdata.xml $(METAINFODIR)/vimiv.appdata.xml
 	install -Dm644 LICENSE $(LICENSEDIR)/vimiv/LICENSE
