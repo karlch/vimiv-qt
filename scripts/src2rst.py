@@ -16,7 +16,7 @@ import importlib
 import os
 import sys
 
-from vimiv import vimiv, api
+from vimiv import startup, api
 
 from rstutils import RSTFile
 
@@ -96,7 +96,7 @@ def _gen_keybinding_rows(bindings):
 
 def generate_commandline_options():
     """Generate file including the command line options."""
-    parser = vimiv.get_argparser()
+    parser = startup.get_argparser()
     optionals, positionals, titles = _get_options(parser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
