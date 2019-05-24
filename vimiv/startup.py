@@ -21,7 +21,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, parsertypes, imutils, plugins
+from vimiv import app, api, parsertypes, imutils, plugins, version
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
@@ -46,6 +46,9 @@ def startup(argv):
         argv: sys.argv[1:] from the executable.
     """
     args = get_argparser().parse_args(argv)
+    if args.version:
+        print(version.info())
+        sys.exit(0)
     init_directories(args)
     setup_logging(args.log_level)
     logging.debug("Start: vimiv %s", " ".join(argv))
@@ -82,7 +85,7 @@ def setup_logging(log_level):
 
     logger = logging.getLogger()
     logger.handlers = []
-    logger.setLevel(log_level)
+    logger.setLevel(logging.DEBUG)
 
     file_handler = logging.FileHandler(xdg.join_vimiv_data("vimiv.log"), mode="w")
     file_handler.setFormatter(log_format)
@@ -90,9 +93,11 @@ def setup_logging(log_level):
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(log_format)
+    console_handler.setLevel(log_level)
     logger.addHandler(console_handler)
 
     sb_handler = statusbar_loghandler.StatusbarLogHandler()
+    sb_handler.setLevel(log_level)
     logger.addHandler(sb_handler)
 
 
@@ -107,8 +112,7 @@ def get_argparser():
     parser.add_argument(
         "-v",
         "--version",
-        action="version",
-        version="vimiv version %s" % vimiv.__version__,
+        action="store_true",
         help="Print version information and exit",
     )
     parser.add_argument(
