@@ -11,11 +11,11 @@ import re
 from collections import defaultdict
 from typing import Dict
 
-from vimiv import vimiv
+from vimiv import api
 
 
 def test_short_binding_hides_longer_bindings():
-    for bindings_dict in vimiv.api.keybindings._registry.values():
+    for bindings_dict in api.keybindings._registry.values():
         _test_short_binding_hides_longer_bindings(bindings_dict)
 
 

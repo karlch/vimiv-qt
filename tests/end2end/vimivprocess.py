@@ -14,7 +14,7 @@ from unittest import mock
 
 mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
-from vimiv import api, vimiv  # noqa
+from vimiv import api, startup  # noqa
 from vimiv.commands import runners  # noqa
 from vimiv.utils import working_directory  # noqa
 from vimiv.imutils import filelist  # noqa
@@ -46,7 +46,7 @@ class VimivProc:
 
     def __init__(self, qtbot, argv=[]):
         argv.extend(["--temp-basedir"])
-        vimiv.startup(argv)
+        startup.startup(argv)
         for name, widget in api.objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)

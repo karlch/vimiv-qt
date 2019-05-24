@@ -6,28 +6,12 @@
 
 import os
 
-from PyQt5.QtGui import QGuiApplication, QClipboard
+from PyQt5.QtGui import QClipboard
 
-import pytest
 import pytest_bdd as bdd
 
 
 bdd.scenarios("clipboard.feature")
-
-
-@pytest.fixture()
-def clipboard():
-    yield QGuiApplication.clipboard()
-
-
-@bdd.then(bdd.parsers.parse("The clipboard should be set to {text}"))
-def check_clipboard(clipboard, text):
-    assert clipboard.text(mode=QClipboard.Clipboard) == text
-
-
-@bdd.then(bdd.parsers.parse("The primary selection should be set to {text}"))
-def check_primary(clipboard, text):
-    assert clipboard.text(mode=QClipboard.Selection) == text
 
 
 @bdd.then(

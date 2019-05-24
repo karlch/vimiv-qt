@@ -8,8 +8,8 @@
 
 import sys
 
-import vimiv.vimiv
+import vimiv.startup
 
 
 if __name__ == "__main__":
-    sys.exit(vimiv.vimiv.main())
+    sys.exit(vimiv.startup.main())
