@@ -7,13 +7,13 @@
 """Various utility functions."""
 
 import cProfile
-import pstats
 import functools
 import inspect
 import logging
 import re
 from contextlib import contextmanager, suppress
 from datetime import datetime
+from pstats import Stats
 from typing import Callable, Optional, TypeVar
 
 from PyQt5.QtCore import pyqtSlot
@@ -184,7 +184,6 @@ def profile(amount: int = 15):
     cprofile.enable()
     yield
     cprofile.disable()
-    stats = pstats.Stats(cprofile)
-    # TODO figure out why mypy complains about 'Module has no attribute "SortKey"'
-    stats.sort_stats(pstats.SortKey.CUMULATIVE).print_stats(amount)  # type: ignore
-    stats.sort_stats(pstats.SortKey.TIME).print_stats(amount)  # type: ignore
+    stats = Stats(cprofile)
+    stats.sort_stats("cumulative").print_stats(amount)
+    stats.sort_stats("time").print_stats(amount)
