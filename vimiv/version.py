@@ -10,7 +10,10 @@ Module Attributes:
     _license_str: GPL boilerplate including the licensing information.
 """
 
+import os
+import subprocess
 import sys
+from typing import Optional
 
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
@@ -35,8 +38,14 @@ def info() -> str:
     This includes the current vimiv version and python, Qt as well as PyQt versions and
     some information on the optional dependencies.
     """
+    git_info = _git_info()
+    vimiv_version = (
+        f"vimiv v{vimiv.__version__}\n{git_info}"
+        if git_info is not None
+        else f"vimiv v{vimiv.__version__}"
+    )
     return (
-        f"vimiv v{vimiv.__version__}\n\n"
+        f"{vimiv_version}\n\n"
         f"Python: {_python_version()}\n"
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
@@ -68,6 +77,29 @@ def detailed_info() -> str:
 def _python_version() -> str:
     """Return python version as MAJOR.MINOR.MICRO."""
     return "{info.major}.{info.minor}.{info.micro}".format(info=sys.version_info)
+
+
+def _git_info() -> Optional[str]:
+    """Return git current commit information if possible else None."""
+    gitdir = os.path.realpath(
+        os.path.join(os.path.realpath(__file__), os.pardir, os.pardir)
+    )
+    if not os.path.isdir(os.path.join(gitdir, ".git")):
+        return None
+
+    def _get_cmd_out(*args):
+        """Return output of git shell command ran with args."""
+        out = subprocess.run(args, cwd=gitdir, stdout=subprocess.PIPE, check=True)
+        return out.stdout.decode("utf-8").strip()
+
+    try:
+        commit = _get_cmd_out(
+            "git", "describe", "--no-match", "--always", "--abbrev=40", "--dirty"
+        )
+        date = _get_cmd_out("git", "show", "-s", "--format=%cd", "--date=short", "HEAD")
+    except (subprocess.CalledProcessError, OSError):
+        return None
+    return f"Git: {commit} ({date})"
 
 
 _license_str = """License:
