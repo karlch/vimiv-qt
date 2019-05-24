@@ -10,7 +10,7 @@ import logging
 import os
 
 from PyQt5.QtCore import QThreadPool
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
@@ -45,11 +45,30 @@ class Application(QApplication):
 
     def _set_icon(self):
         """Set window icon of vimiv."""
+        logging.debug("Trying to retrieve icon from theme")
         icon = QIcon.fromTheme(vimiv.__name__)
-        if icon is None:
-            logging.error("Failed to load icon")
-        else:
-            self.setWindowIcon(icon)
+        if icon.isNull():
+            logging.debug("Trying to retrieve icon from project directory")
+            icon = self._icon_from_project_directory()
+            if icon.isNull():
+                logging.error("Failed loading icon")
+                return
+        self.setWindowIcon(icon)
+
+    def _icon_from_project_directory(self):
+        """Try to retrieve the icon from the icons folder.
+
+        Useful if vimiv was not installed but is used from the git project.
+        """
+        icon = QIcon()
+        file_dir = os.path.realpath(os.path.dirname(__file__))
+        project_dir = os.path.join(file_dir, os.pardir)
+        icon_dir = os.path.join(project_dir, "icons")
+        for size in (16, 32, 64, 128, 256, 512):
+            path = os.path.join(icon_dir, f"vimiv_{size}x{size}.png")
+            pixmap = QPixmap(path)
+            icon.addPixmap(pixmap)
+        return icon
 
 
 # We want to use the name open here as it is the best name for the command
