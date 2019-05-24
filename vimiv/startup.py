@@ -39,11 +39,27 @@ from vimiv.utils import (
 _tmpdir = None
 
 
-def startup(argv):
-    """Run the functions to set up everything.
+def main():
+    """Run startup and the Qt main loop."""
+    args = setup_pre_app(sys.argv[1:])
+    qapp = app.Application()
+    crash_handler.CrashHandler(qapp)
+    setup_post_app(args)
+    logging.debug("Startup completed, starting Qt main loop")
+    returncode = qapp.exec_()
+    plugins.cleanup()
+    logging.debug("Exiting with status %d", returncode)
+    return returncode
+
+
+def setup_pre_app(argv):
+    """Early setup that is done before the QApplication is created.
+
+    Includes parsing the command line and setting up logging as well as initializing the
+    components that do not require an application.
 
     Args:
-        argv: sys.argv[1:] from the executable.
+        argv: sys.argv[1:] from the executable or argv passed by test suite.
     """
     args = get_argparser().parse_args(argv)
     if args.version:
@@ -55,22 +71,19 @@ def startup(argv):
     logging.debug("%s\n", version.info())
     logging.debug("%s\n", version.paths())
     update_settings(args)
-    earlyinit()
-    init_ui(args)
-    plugins.load()
-    init_paths(args)
-    logging.debug("Startup completed")
-    api.status.update()
-
-
-def earlyinit():
-    """Initialize objects needed as early as possible."""
-    logging.debug("Initializing early objects")
     clipboard.init()
     trash_manager.init()
+    return args
+
+
+def setup_post_app(args):
+    """Setup performed after creating the QApplication."""
     working_directory.init()
     imutils.init()
     completionmodels.init()
+    init_ui(args)
+    plugins.load()
+    init_paths(args)
 
 
 def setup_logging(log_level):
@@ -199,6 +212,7 @@ def init_paths(args):
     logging.debug("Opening paths")
     if not app.open_paths(args.paths) and api.settings.STARTUP_LIBRARY.value:
         app.open_paths([os.getcwd()])
+    api.status.update()
 
 
 def init_ui(args):
@@ -238,13 +252,3 @@ def update_settings(args):
             logging.error("Unknown setting %s", option)
         except strconvert.ConversionError as e:
             logging.error(str(e))
-
-
-def main():
-    """Run startup and the Qt main loop."""
-    qapp = app.Application()
-    crash_handler.CrashHandler(qapp)
-    startup(sys.argv[1:])
-    returncode = qapp.exec_()
-    plugins.cleanup()
-    return returncode

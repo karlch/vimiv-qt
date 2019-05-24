@@ -17,7 +17,7 @@ mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 from vimiv import api, startup  # noqa
 from vimiv.commands import runners  # noqa
 from vimiv.utils import working_directory  # noqa
-from vimiv.imutils import filelist  # noqa
+from vimiv.imutils import filelist, immanipulate  # noqa
 
 
 _processes = []
@@ -46,12 +46,15 @@ class VimivProc:
 
     def __init__(self, qtbot, argv=[]):
         argv.extend(["--temp-basedir"])
-        startup.startup(argv)
+        args = startup.setup_pre_app(argv)
+        startup.setup_post_app(args)
         for name, widget in api.objreg._registry.items():
             if isinstance(widget, QWidget):
                 qtbot.addWidget(widget)
         # No crazy stuff should happen here, waiting is not really necessary
         working_directory.handler.WAIT_TIME = 0.001
+        # No key holding happens, waiting is not necessary
+        immanipulate.WAIT_TIME = 0.001
 
     def exit(self):
         # Do not start any new threads
