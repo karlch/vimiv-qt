@@ -11,9 +11,9 @@ Feature: Plugin system with default plugins
     Scenario: Show print dialog
         Given I open any image
         When I run print
-        Then the print dialog should be displayed
+        Then the pop up 'Print' should be displayed
 
     Scenario: Show print preview dialog
         Given I open any image
         When I run print --preview
-        Then the print preview dialog should be displayed
+        Then the pop up 'Print Preview' should be displayed

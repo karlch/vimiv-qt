@@ -9,6 +9,7 @@
 import os
 
 from PyQt5.QtCore import Qt, QThreadPool
+from PyQt5.QtWidgets import QApplication
 
 import pytest_bdd as bdd
 
@@ -165,6 +166,15 @@ def enter_thumbnail():
 def check_selected_thumbnail(qtbot, N):
     thumb = thumbnail.instance()
     assert thumb.currentRow() + 1 == int(N)
+
+
+@bdd.then(bdd.parsers.parse("the pop up '{title}' should be displayed"))
+def check_popup_displayed(title):
+    for window in QApplication.topLevelWindows():
+        if window.title() == title:
+            window.close()
+            return
+    raise AssertionError(f"Window '{title}' not found")
 
 
 def _check_status(qtbot, assertion):
