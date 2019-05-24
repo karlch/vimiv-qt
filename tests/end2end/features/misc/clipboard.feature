@@ -3,12 +3,12 @@ Feature: Interaction with the system clipboard.
     Scenario: Copy basename from library path to clipboard.
         Given I open a directory with 1 paths
         When I run copy-name
-        Then the clipboard should be set to child_01
+        Then the clipboard should contain child_01
  
     Scenario: Copy basename from library path to primary.
         Given I open a directory with 1 paths
         When I run copy-name --primary
-        Then the primary selection should be set to child_01
+        Then the primary selection should contain child_01
 
     Scenario: Copy abspath from library path to clipboard.
         Given I open a directory with 1 paths
@@ -19,7 +19,7 @@ Feature: Interaction with the system clipboard.
     Scenario: Copy basename from image path to clipboard.
         Given I open any image
         When I run copy-name
-        Then the clipboard should be set to image.jpg
+        Then the clipboard should contain image.jpg
 
     Scenario: Copy and paste basename from library
         Given I open a directory with 1 paths
