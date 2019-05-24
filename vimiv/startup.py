@@ -52,6 +52,8 @@ def startup(argv):
     init_directories(args)
     setup_logging(args.log_level)
     logging.debug("Start: vimiv %s", " ".join(argv))
+    logging.debug("%s\n", version.info())
+    logging.debug("%s\n", version.paths())
     update_settings(args)
     earlyinit()
     init_ui(args)
