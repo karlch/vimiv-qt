@@ -6,11 +6,13 @@
 
 """Various utility functions."""
 
+import cProfile
+import pstats
 import functools
 import inspect
 import logging
 import re
-from contextlib import suppress
+from contextlib import contextmanager, suppress
 from datetime import datetime
 from typing import Callable, Optional, TypeVar
 
@@ -156,7 +158,33 @@ def timed(function):
         start = datetime.now()
         return_value = function(*args, **kwargs)
         elapsed_in_ms = (datetime.now() - start).total_seconds() * 1000
-        logging.debug("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
+        logging.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
         return return_value
 
     return inner
+
+
+@contextmanager
+def profile(amount: int = 15):
+    """Contextmanager to profile code secions.
+
+    Starts a cProfile.Profile upon entry, disables it on exit and prints profiling
+    information.
+
+    Usage:
+        with profile(amount=10):
+            # your code to profile here
+            ...
+        # This is no longer profiled
+
+    Args:
+        amount: Number of lines to restrict the output to.
+    """
+    cprofile = cProfile.Profile()
+    cprofile.enable()
+    yield
+    cprofile.disable()
+    stats = pstats.Stats(cprofile)
+    # TODO figure out why mypy complains about 'Module has no attribute "SortKey"'
+    stats.sort_stats(pstats.SortKey.CUMULATIVE).print_stats(amount)  # type: ignore
+    stats.sort_stats(pstats.SortKey.TIME).print_stats(amount)  # type: ignore

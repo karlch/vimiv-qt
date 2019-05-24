@@ -83,3 +83,9 @@ def test_slot_fails_without_type_annotations():
         @utils.slot
         def test(x):
             ...
+
+
+def test_profiler(capsys):
+    with utils.profile(5):
+        pass
+    assert "function calls" in capsys.readouterr().out
