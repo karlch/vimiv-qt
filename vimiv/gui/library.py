@@ -137,7 +137,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             last_mode: The mode left.
         """
         if mode == api.modes.LIBRARY:
-            self.show()
             self.update_width()
 
     @utils.slot
