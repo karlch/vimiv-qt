@@ -15,6 +15,7 @@ Feature: Running external commands.
         # Error message may vary between OS
         Then a message should be displayed
 
+    @flaky
     Scenario: Pipe directory to vimiv.
         When I run !mkdir new_directory
         And I wait for the command to complete
