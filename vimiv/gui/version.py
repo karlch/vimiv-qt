@@ -6,12 +6,14 @@
 
 """Pop-up window to display version information."""
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QGuiApplication
 
 import vimiv
 from vimiv import api
 from vimiv.config import styles
+from vimiv.gui import mainwindow
 from vimiv.version import info, detailed_info
 
 
@@ -65,11 +67,12 @@ class VersionPopUp(QDialog):
     URL = "https://karlch.github.io/vimiv-qt/"
 
     def __init__(self):
-        super().__init__()
+        super().__init__(parent=mainwindow.instance())
         self._init_content()
         self.setWindowTitle(self.TITLE)
+        self.setWindowFlags(self.windowFlags() | Qt.Tool)
         styles.apply(self)
-        self.exec_()
+        self.show()
 
     def _init_content(self):
         """Initialize all widgets of the pop-up window."""
