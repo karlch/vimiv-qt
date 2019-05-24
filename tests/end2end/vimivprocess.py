@@ -69,5 +69,4 @@ class VimivProc:
         for name in dir(api.imutils):
             elem = getattr(api.imutils, name)
             if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
-                print(name, elem)
                 elem.disconnect()
