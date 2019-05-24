@@ -215,7 +215,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.open_selected()
         elif direction == direction.Left:
             self.store_position()
-            working_directory.handler.chdir("..")
+            working_directory.handler.chdir(os.pardir)
         else:
             try:
                 row = self.row()
