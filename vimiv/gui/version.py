@@ -21,8 +21,10 @@ from vimiv.version import info, detailed_info
 def version(copy: bool = False) -> None:
     """Show a pop-up with version information.
 
+    syntax: :version [--copy]
+
     optional arguments:
-        * ``copy``: Copy version information to clipboard instead.
+        * ``--copy``: Copy version information to clipboard instead.
     """
     if copy:
         copy_to_clipboard()
