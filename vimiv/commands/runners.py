@@ -82,7 +82,10 @@ def command(text, mode=None):
 @api.keybindings.register(".", "repeat-command")
 @api.commands.register(store=False)
 def repeat_command(count: Optional[int] = None):
-    """Repeat the last command."""
+    """Repeat the last command.
+
+    **count:** Repeat count times.
+    """
     mode = api.modes.current()
     if mode not in _last_command:
         raise api.commands.CommandError("No command to repeat")

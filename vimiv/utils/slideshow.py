@@ -31,7 +31,10 @@ class Slideshow(QTimer):
     @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def slideshow(self, count: Optional[int] = None):
-        """Toggle slideshow."""
+        """Toggle slideshow.
+
+        **count:** Set slideshow delay to count instead.
+        """
         if count is not None:
             api.settings.SLIDESHOW_DELAY.override(str(count))
             self.setInterval(1000 * count)

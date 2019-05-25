@@ -42,7 +42,7 @@ class Transform:
         **syntax:** ``:rotate [--counter-clockwise]``
 
         optional arguments:
-            * ``--counter_clockwise``: Rotate counter clockwise.
+            * ``--counter-clockwise``: Rotate counter clockwise.
 
         **count:** multiplier
         """

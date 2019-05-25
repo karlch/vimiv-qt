@@ -4,7 +4,8 @@ extension-pkg-whitelist=PyQt5,
                         vimiv.imutils._c_manipulate
 # Add custom checkers
 init-hook='import sys; sys.path.append("./scripts/pylint_checkers/")'
-load-plugins=check_count
+load-plugins=check_count,
+             check_docstring,
 
 [MESSAGES CONTROL]
 enable=all

@@ -79,7 +79,7 @@ def goto(index: int, count: Optional[int] = None) -> None:
     **syntax:** ``:goto index``
 
     positional arguments:
-        * index: Number of the image to select.
+        * ``index``: Number of the image to select.
 
     .. hint:: -1 is the last image.
 

@@ -160,7 +160,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         **syntax:** ``:open-selected [--close]``
 
         optional arguments:
-            * ``close``: Close the library if an image was selected.
+            * ``--close``: Close the library if an image was selected.
         """
         try:
             path_index = self.selectionModel().selectedIndexes()[1]

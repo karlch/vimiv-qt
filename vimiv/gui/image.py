@@ -216,8 +216,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
         **syntax:** ``:scale [--level=LEVEL]``
 
+        **count:** If level is a float, multiply by count.
+
         optional arguments:
-            * ``level``: The level to scale the image to.
+            * ``--level``: The level to scale the image to.
 
         .. hint:: supported levels:
 

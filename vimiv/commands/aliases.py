@@ -55,7 +55,7 @@ def alias(name: str, command: List[str], mode: str = "global"):
 
     positional arguments:
         * ``name``: Name of the newly defined alias.
-        * ``command`` Name of the command to alias.
+        * ``command``: Name of the command to alias.
 
     optional arguments:
         * ``--mode``: Mode in which the alias is valid. Default: ``global``.

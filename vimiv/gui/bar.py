@@ -49,7 +49,7 @@ class Bar(QWidget):
         **syntax:** ``:command [--text=TEXT]``
 
         optional arguments:
-            * ``text``: String to append to the ``:`` prefix.
+            * ``--text``: String to append to the ``:`` prefix.
         """
         self._enter_command_mode(":" + text)
 

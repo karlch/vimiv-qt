@@ -51,7 +51,7 @@ class PrintHandler(QObject):
         **syntax:** ``:print [--preview]``
 
         optional arguments:
-            * ``preview``: Show preview dialog before printing.
+            * ``--preview``: Show preview dialog before printing.
         """
         if self._widget is None:
             raise api.commands.CommandError("No widget to print")
