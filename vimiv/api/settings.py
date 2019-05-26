@@ -7,15 +7,14 @@
 """Store and change settings.
 
 Module attributes:
-    signals: Signals for the settings module.
-
     _storage: Initialized Storage object to store settings globally.
 """
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, ItemsView, List, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.sip import wrappertype
 
 from vimiv.utils import strconvert, clamp
 
@@ -116,7 +115,11 @@ def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
 
 
-class Setting(ABC):
+class SettingsMeta(wrappertype, ABCMeta):
+    """Metaclass to allow setting to be an ABC as well as a QObject."""
+
+
+class Setting(QObject, metaclass=SettingsMeta):
     """Stores a setting and its attributes.
 
     This class can not be used directly. Instead it is used as BaseClass for
@@ -128,7 +131,12 @@ class Setting(ABC):
 
         _default: Default value of the setting stored in its python type.
         _value: Value of the setting stored in its python type.
+
+    Signals:
+        changed: Emitted with the new value if the setting changed.
     """
+
+    changed = pyqtSignal(object)
 
     def __init__(
         self,
@@ -147,7 +155,7 @@ class Setting(ABC):
             suggestions: List of useful values to show in completion widget.
             hidden: True if the setting should not be visible in the :set completion.
         """
-        super(Setting, self).__init__()
+        super().__init__()
         self.name = name
         self._default = default_value
         self._value = default_value
@@ -155,6 +163,14 @@ class Setting(ABC):
         self.hidden = hidden
         self._suggestions = suggestions
         _storage[name] = self  # Store setting in storage
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Override setattr to emit changed if the value changed."""
+        if name == "_value":
+            super().__setattr__(name, value)
+            self.changed.emit(value)
+        else:
+            super().__setattr__(name, value)
 
     @property
     def default(self) -> Any:
@@ -202,7 +218,7 @@ class BoolSetting(Setting):
         return "Bool"
 
 
-class NumberSetting(Setting, ABC):
+class NumberSetting(Setting):
     """Used as ABC for Int and Float settings.
 
     This allows using isinstance(setting, NumberSetting) for add_to and
@@ -348,25 +364,10 @@ class StrSetting(Setting):
     """Stores a string setting."""
 
     def override(self, new_value: str) -> None:
-        assert isinstance(new_value, str), "Type of StrSetting must be str"
         self._value = new_value
 
     def __str__(self) -> str:
         return "String"
-
-
-class _Signals(QObject):
-    """Signals for the settings module.
-
-    Signals:
-        changed: Emitted when a setting has changed.
-            arg1: The changed setting.
-    """
-
-    changed = pyqtSignal(Setting)
-
-
-signals = _Signals()
 
 
 # Initialize all settings

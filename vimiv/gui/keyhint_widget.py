@@ -59,7 +59,7 @@ class KeyhintWidget(QLabel):
         eventhandler.KeyHandler.partial_handler.partial_cleared.connect(
             self._on_partial_cleared
         )
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.KEYHINT_DELAY.changed.connect(self._on_delay_changed)
 
         self.hide()
 
@@ -102,11 +102,9 @@ class KeyhintWidget(QLabel):
         self._show_timer.stop()
         self.hide()
 
-    @slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
+    def _on_delay_changed(self, value: int):
         """Update timer interval if the keyhint delay setting changed."""
-        if setting == api.settings.KEYHINT_DELAY:
-            self._show_timer.setInterval(setting.value)
+        self._show_timer.setInterval(value)
 
 
 def instance() -> KeyhintWidget:

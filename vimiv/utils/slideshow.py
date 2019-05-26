@@ -10,7 +10,7 @@ from typing import Optional
 
 from PyQt5.QtCore import QTimer, pyqtSignal
 
-from vimiv import api, utils
+from vimiv import api
 
 
 class Slideshow(QTimer):
@@ -25,7 +25,7 @@ class Slideshow(QTimer):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.SLIDESHOW_DELAY.changed.connect(self._on_delay_changed)
         self.setInterval(api.settings.SLIDESHOW_DELAY.value * 1000)
 
     @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
@@ -59,10 +59,8 @@ class Slideshow(QTimer):
             return api.settings.SLIDESHOW_INDICATOR.value
         return ""
 
-    @utils.slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
-        if setting == api.settings.SLIDESHOW_DELAY:
-            self.setInterval(setting.value * 1000)
+    def _on_delay_changed(self, value: int):
+        self.setInterval(value * 1000)
 
 
 def instance() -> Slideshow:

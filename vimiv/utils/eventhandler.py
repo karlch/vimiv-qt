@@ -31,7 +31,7 @@ class TempKeyStorage(QTimer):
         self.setSingleShot(True)
         self.setInterval(api.settings.KEYHINT_TIMEOUT.value)
         self.timeout.connect(self.on_timeout)
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.KEYHINT_TIMEOUT.changed.connect(self._on_timeout_changed)
 
     def add_text(self, text):
         """Add text to storage."""
@@ -58,11 +58,9 @@ class TempKeyStorage(QTimer):
         self.clear_text()
         api.status.update()
 
-    @utils.slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
+    def _on_timeout_changed(self, value: int):
         """Update timer interval if the keyhint timeout setting changed."""
-        if setting == api.settings.KEYHINT_TIMEOUT:
-            self.setInterval(setting.value)
+        self.setInterval(value)
 
 
 class PartialHandler(QObject):

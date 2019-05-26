@@ -130,7 +130,7 @@ def test_override_str_setting():
 
 def test_fail_override_str_setting():
     s = settings.StrSetting("string", "default")
-    with pytest.raises(AssertionError, match="must be str"):
+    with pytest.raises(ValueError, match="requires value of type"):
         s.override(12)
 
 

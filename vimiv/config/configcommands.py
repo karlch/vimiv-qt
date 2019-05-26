@@ -9,7 +9,6 @@
 from typing import List
 
 from vimiv import api
-from vimiv.utils import strconvert
 
 
 @api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
@@ -18,35 +17,34 @@ from vimiv.utils import strconvert
 @api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
 @api.keybindings.register("b", "set statusbar.show!")
 @api.commands.register()
-def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
+def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
 
-    **syntax:** ``:set setting [value]``
+    **syntax:** ``:set name [value]``
 
     positional arguments:
-        * ``setting``: Name of the setting to set.
+        * ``name``: Name of the setting to set.
         * ``value``: Value to set the setting to. If not given, set to default.
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
     try:
         # Toggle boolean settings
-        if setting.endswith("!"):
-            setting = setting.rstrip("!")
-            api.settings.toggle(setting)
+        if name.endswith("!"):
+            name = name.rstrip("!")
+            api.settings.toggle(name)
         # Add to number settings
         elif strvalue and (strvalue.startswith("+") or strvalue.startswith("-")):
-            api.settings.add_to(setting, strvalue)
+            api.settings.add_to(name, strvalue)
         # Set default
         elif strvalue == "":
-            api.settings.set_to_default(setting)
+            api.settings.set_to_default(name)
         else:
-            api.settings.override(setting, strvalue)
-        api.settings.signals.changed.emit(api.settings.get(setting))
+            api.settings.override(name, strvalue)
     except KeyError:
-        raise api.commands.CommandError("unknown setting %s" % (setting))
+        raise api.commands.CommandError("unknown setting %s" % (name))
     except TypeError as e:
         raise api.commands.CommandError(str(e))
-    except strconvert.ConversionError as e:
+    except ValueError as e:
         raise api.commands.CommandError(str(e))
 
 
