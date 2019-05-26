@@ -253,8 +253,7 @@ class IntSetting(NumberSetting):
         Args:
             value: The integer value to add as string.
         """
-        ivalue = self.convert(value)
-        self.value = clamp(self.value + ivalue, self.min_value, self.max_value)
+        self.value = self.value + self.convert(value)
         return self
 
     def __imul__(self, value: NumberStr) -> "IntSetting":
@@ -263,8 +262,7 @@ class IntSetting(NumberSetting):
         Args:
             value: The value to multiply with as string.
         """
-        ivalue = self.convert(value)
-        self.value = clamp(self.value * ivalue, self.min_value, self.max_value)
+        self.value = self.value * self.convert(value)
         return self
 
     def __str__(self) -> str:
@@ -284,8 +282,7 @@ class FloatSetting(NumberSetting):
         Args:
             value: The float value to add as string.
         """
-        fvalue = self.convert(value)
-        self.value = clamp(self.value + fvalue, self.min_value, self.max_value)
+        self.value = self.value + self.convert(value)
         return self
 
     def __imul__(self, value: NumberStr) -> "FloatSetting":
@@ -294,8 +291,7 @@ class FloatSetting(NumberSetting):
         Args:
             value: The value to multiply with as string.
         """
-        fvalue = self.convert(value)
-        self.value = clamp(self.value * fvalue, self.min_value, self.max_value)
+        self.value = self.value * self.convert(value)
         return self
 
     def __str__(self) -> str:
