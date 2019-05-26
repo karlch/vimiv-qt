@@ -14,9 +14,14 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, ItemsView, List, Union, Callable
 
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.sip import wrappertype
 
 from vimiv.utils import clamp
+
+# Different location under PyQt < 5.11
+try:
+    from PyQt5.sip import wrappertype  # type: ignore
+except ImportError:
+    from sip import wrappertype  # type: ignore
 
 
 Number = Union[int, float]
