@@ -258,7 +258,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
-        api.settings.THUMBNAIL_SIZE.override(str(size))
+        api.settings.THUMBNAIL_SIZE.override(size)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
