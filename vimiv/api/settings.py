@@ -200,14 +200,6 @@ class Setting(QObject, metaclass=SettingsMeta):
         self._suggestions = suggestions
         _storage[name] = self  # Store setting in storage
 
-    def __setattr__(self, name: str, value: Any) -> None:
-        """Override setattr to emit changed if the value changed."""
-        if name == "_value":
-            super().__setattr__(name, value)
-            self.changed.emit(value)
-        else:
-            super().__setattr__(name, value)
-
     @property
     def default(self) -> Any:
         return self._default
@@ -215,6 +207,11 @@ class Setting(QObject, metaclass=SettingsMeta):
     @property
     def value(self) -> Any:
         return self._value
+
+    @value.setter
+    def value(self, value: Any) -> Any:
+        self._value = value
+        self.changed.emit(value)
 
     def is_default(self) -> bool:
         return self.value == self.default
@@ -249,10 +246,10 @@ class BoolSetting(Setting):
     """Stores a boolean setting."""
 
     def override(self, new_value: BoolStr) -> None:
-        self._value = self.convert(new_value)
+        self.value = self.convert(new_value)
 
     def toggle(self) -> None:
-        self._value = not self._value
+        self.value = not self.value
 
     def suggestions(self) -> List[str]:
         return ["True", "False"]
@@ -314,7 +311,7 @@ class IntSetting(NumberSetting):
 
     def override(self, new_value: NumberStr) -> None:
         ivalue = self.convert(new_value)
-        self._value = clamp(ivalue, self.min_value, self.max_value)
+        self.value = clamp(ivalue, self.min_value, self.max_value)
 
     @ensure_type(int)
     def convert(self, text: str) -> int:
@@ -327,7 +324,7 @@ class IntSetting(NumberSetting):
             value: The integer value to add as string.
         """
         ivalue = self.convert(value)
-        self._value = clamp(self._value + ivalue, self.min_value, self.max_value)
+        self.value = clamp(self.value + ivalue, self.min_value, self.max_value)
         return self
 
     def __imul__(self, value: NumberStr) -> "IntSetting":
@@ -337,7 +334,7 @@ class IntSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         ivalue = self.convert(value)
-        self._value = clamp(self._value * ivalue, self.min_value, self.max_value)
+        self.value = clamp(self.value * ivalue, self.min_value, self.max_value)
         return self
 
     def __str__(self) -> str:
@@ -349,7 +346,7 @@ class FloatSetting(NumberSetting):
 
     def override(self, new_value: NumberStr) -> None:
         fvalue = self.convert(new_value)
-        self._value = clamp(fvalue, self.min_value, self.max_value)
+        self.value = clamp(fvalue, self.min_value, self.max_value)
 
     @ensure_type(float, int)
     def convert(self, text: str) -> float:
@@ -362,7 +359,7 @@ class FloatSetting(NumberSetting):
             value: The float value to add as string.
         """
         fvalue = self.convert(value)
-        self._value = clamp(self._value + fvalue, self.min_value, self.max_value)
+        self.value = clamp(self.value + fvalue, self.min_value, self.max_value)
         return self
 
     def __imul__(self, value: NumberStr) -> "FloatSetting":
@@ -372,7 +369,7 @@ class FloatSetting(NumberSetting):
             value: The value to multiply with as string.
         """
         fvalue = self.convert(value)
-        self._value = clamp(self._value * fvalue, self.min_value, self.max_value)
+        self.value = clamp(self.value * fvalue, self.min_value, self.max_value)
         return self
 
     def __str__(self) -> str:
@@ -397,7 +394,7 @@ class ThumbnailSizeSetting(Setting):
         ivalue = self.convert(new_value)
         if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
-        self._value = ivalue
+        self.value = ivalue
 
     @ensure_type(int)
     def convert(self, value: IntStr) -> int:
@@ -405,17 +402,17 @@ class ThumbnailSizeSetting(Setting):
 
     def increase(self) -> None:
         """Increase thumbnail size."""
-        index = self.ALLOWED_VALUES.index(self._value)
+        index = self.ALLOWED_VALUES.index(self.value)
         index += 1
         index = min(index, len(self.ALLOWED_VALUES) - 1)
-        self._value = self.ALLOWED_VALUES[index]
+        self.value = self.ALLOWED_VALUES[index]
 
     def decrease(self) -> None:
         """Decrease thumbnail size."""
-        index = self.ALLOWED_VALUES.index(self._value)
+        index = self.ALLOWED_VALUES.index(self.value)
         index -= 1
         index = max(index, 0)
-        self._value = self.ALLOWED_VALUES[index]
+        self.value = self.ALLOWED_VALUES[index]
 
     def suggestions(self) -> List[str]:
         return [str(value) for value in self.ALLOWED_VALUES]
@@ -428,7 +425,7 @@ class StrSetting(Setting):
     """Stores a string setting."""
 
     def override(self, new_value: str) -> None:
-        self._value = self.convert(new_value)
+        self.value = self.convert(new_value)
 
     @ensure_type(str)
     def convert(self, value: str) -> str:
