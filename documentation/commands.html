@@ -281,7 +281,7 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the newly defined alias.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code> Name of the command to alias.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code>: Name of the command to alias.</p></li>
 </ul>
 </dd>
 <dt>optional arguments:</dt><dd><ul class="simple">
@@ -301,7 +301,7 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: The mode to bind the keybinding in. Default: current.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--mode</span></code>: The mode to bind the keybinding in. Default: current.</p></li>
 </ul>
 </dd>
 </dl>
@@ -312,7 +312,7 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code>: String to append to the <code class="docutils literal notranslate"><span class="pre">:</span></code> prefix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--text</span></code>: String to append to the <code class="docutils literal notranslate"><span class="pre">:</span></code> prefix.</p></li>
 </ul>
 </dd>
 </dl>
@@ -402,14 +402,16 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="repeat-command">
 <span id="ref-global-repeat-command"></span><h3>repeat-command<a class="headerlink" href="#repeat-command" title="Permalink to this headline">¶</a></h3>
 <p>Repeat the last command.</p>
+<p><strong>count:</strong> Repeat count times.</p>
 </div>
 <div class="section" id="scale">
 <span id="ref-global-scale"></span><h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
 <p>Scale the image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">[--level=LEVEL]</span></code></p>
+<p><strong>count:</strong> If level is a float, multiply by count.</p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code>: The level to scale the image to.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--level</span></code>: The level to scale the image to.</p></li>
 </ul>
 </dd>
 </dl>
@@ -482,7 +484,7 @@ it is opened in the library. Other paths are not supported.</p>
 </ul>
 </dd>
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">mode</span></code>: The mode to unbind the keybinding in. Default: current.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--mode</span></code>: The mode to unbind the keybinding in. Default: current.</p></li>
 </ul>
 </dd>
 </dl>
@@ -501,7 +503,7 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="version">
 <span id="ref-global-version"></span><h3>version<a class="headerlink" href="#version" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with version information.</p>
-<p>syntax: :version [–copy]</p>
+<p><strong>syntax:</strong> :version [–copy]</p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--copy</span></code>: Copy version information to clipboard instead.</p></li>
@@ -577,7 +579,7 @@ it is opened in the library. Other paths are not supported.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p>index: Number of the image to select.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">index</span></code>: Number of the image to select.</p></li>
 </ul>
 </dd>
 </dl>
@@ -597,7 +599,7 @@ it is opened in the library. Other paths are not supported.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rotate</span> <span class="pre">[--counter-clockwise]</span></code></p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">--counter_clockwise</span></code>: Rotate counter clockwise.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--counter-clockwise</span></code>: Rotate counter clockwise.</p></li>
 </ul>
 </dd>
 </dl>
@@ -629,6 +631,7 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="slideshow">
 <span id="ref-image-slideshow"></span><h3>slideshow<a class="headerlink" href="#slideshow" title="Permalink to this headline">¶</a></h3>
 <p>Toggle slideshow.</p>
+<p><strong>count:</strong> Set slideshow delay to count instead.</p>
 </div>
 <div class="section" id="write">
 <span id="ref-image-write"></span><h3>write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>
@@ -703,7 +706,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:open-selected</span> <span class="pre">[--close]</span></code></p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">close</span></code>: Close the library if an image was selected.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--close</span></code>: Close the library if an image was selected.</p></li>
 </ul>
 </dd>
 </dl>
@@ -942,7 +945,7 @@ manipulation. Otherwise set brightness to the given value.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code>: String to append to the <code class="docutils literal notranslate"><span class="pre">:</span></code> prefix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--text</span></code>: String to append to the <code class="docutils literal notranslate"><span class="pre">:</span></code> prefix.</p></li>
 </ul>
 </dd>
 </dl>
