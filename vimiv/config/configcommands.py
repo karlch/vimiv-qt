@@ -28,22 +28,28 @@ def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
     try:
+        setting = api.settings.get(name.rstrip("!"))
         # Toggle boolean settings
         if name.endswith("!"):
-            name = name.rstrip("!")
-            api.settings.toggle(name)
-        # Add to number settings
-        elif strvalue and (strvalue.startswith("+") or strvalue.startswith("-")):
-            api.settings.add_to(name, strvalue)
+            operation = "toggling"
+            setting.toggle()
         # Set default
         elif strvalue == "":
-            api.settings.set_to_default(name)
+            operation = "resetting"
+            setting.set_to_default()
+        # Add to number settings
+        elif strvalue.startswith("+") or strvalue.startswith("-"):
+            operation = "adding"
+            setting += strvalue
         else:
-            api.settings.get(name).value = strvalue
+            operation = "setting"
+            setting.value = strvalue
     except KeyError:
-        raise api.commands.CommandError("unknown setting %s" % (name))
-    except TypeError as e:
-        raise api.commands.CommandError(str(e))
+        raise api.commands.CommandError(f"unknown setting '{name}'")
+    except (AttributeError, TypeError):
+        raise api.commands.CommandError(
+            f"'{setting.name}' does not support {operation}"
+        )
     except ValueError as e:
         raise api.commands.CommandError(str(e))
 

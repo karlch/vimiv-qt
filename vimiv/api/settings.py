@@ -52,57 +52,10 @@ def get_value(name: str) -> Any:
     return _storage[name].value
 
 
-def toggle(name: str) -> None:
-    """Toggle the value of a setting.
-
-    Args:
-        name: Name of the setting as stored in the storage.
-    """
-    setting = _storage[name]
-    if not isinstance(setting, BoolSetting):
-        raise TypeError("Setting %s does not store a bool." % (name))
-    setting.toggle()
-
-
-def add_to(name: str, value: str) -> None:
-    """Add a value to a setting.
-
-    Args:
-        name: Name of the setting as stored in the storage.
-        value: Value to add to the setting with as string.
-    """
-    setting = _storage[name]
-    if not isinstance(setting, NumberSetting):
-        raise TypeError("Setting %s does not store a number." % (name))
-    setting += value
-
-
-def multiply_with(name: str, value: str) -> None:
-    """Multiply a setting with a value.
-
-    Args:
-        name: Name of the setting as stored in the storage.
-        value: Value to multiply the setting with with as string.
-    """
-    setting = _storage[name]
-    if not isinstance(setting, NumberSetting):
-        raise TypeError("Setting %s does not store a number." % (name))
-    setting *= value
-
-
 def reset() -> None:
     """Reset all settings to their default value."""
     for setting in _storage.values():
         setting.set_to_default()
-
-
-def set_to_default(name: str) -> None:
-    """Set one setting back to default.
-
-    Args:
-        name: Name of the setting as stored in the storage.
-    """
-    _storage[name].set_to_default()
 
 
 def items() -> ItemsView[str, "Setting"]:
