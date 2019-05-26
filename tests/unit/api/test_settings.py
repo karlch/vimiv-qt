@@ -9,7 +9,6 @@
 import pytest
 
 from vimiv.api import settings
-from vimiv.utils import strconvert
 
 
 def test_init_setting():
@@ -21,18 +20,20 @@ def test_init_setting():
 
 def test_check_default_after_change_for_setting(mocker):
     b = settings.BoolSetting("bool", True)
-    mocker.patch.object(strconvert, "to_bool", return_value=False)
-    b.override("false")
-    strconvert.to_bool.assert_called_with("false")
+    b.override(False)
     assert not b.is_default()
     assert b.default
 
 
 def test_override_bool_setting(mocker):
     b = settings.BoolSetting("bool", True)
-    mocker.patch.object(strconvert, "to_bool", return_value=False)
-    b.override("false")
-    strconvert.to_bool.assert_called_with("false")
+    b.override(False)
+    assert not b.value
+
+
+def test_override_bool_setting_str(mocker):
+    b = settings.BoolSetting("bool", True)
+    b.override("False")
     assert not b.value
 
 
@@ -44,58 +45,74 @@ def test_toggle_bool_setting():
 
 def test_override_int_setting(mocker):
     i = settings.IntSetting("int", 1)
-    mocker.patch("vimiv.utils.strconvert.to_int", return_value=2)
-    i.override("any")
+    i.override(2)
+    assert i.value == 2
+
+
+def test_override_int_setting_str(mocker):
+    i = settings.IntSetting("int", 1)
+    i.override("2")
     assert i.value == 2
 
 
 def test_add_int_setting(mocker):
     i = settings.IntSetting("int", 2)
-    mocker.patch.object(strconvert, "to_int", return_value=3)
-    i += "any"
+    i += 3
     assert i.value == 5
 
 
 def test_multiply_int_setting(mocker):
     i = settings.IntSetting("int", 5)
-    mocker.patch.object(strconvert, "to_int", return_value=2)
-    i *= "any"
+    i *= 2
     assert i.value == 10
 
 
 def test_override_float_setting(mocker):
     f = settings.FloatSetting("float", 2.2)
-    mocker.patch.object(strconvert, "to_float", return_value=3.3)
-    f.override("any")
+    f.override(3.3)
+    assert f.value == pytest.approx(3.3)
+
+
+def test_override_float_setting_str(mocker):
+    f = settings.FloatSetting("float", 2.2)
+    f.override("3.3")
     assert f.value == pytest.approx(3.3)
 
 
 def test_add_float_setting(mocker):
     f = settings.FloatSetting("float", 1.1)
-    mocker.patch.object(strconvert, "to_float", return_value=0.3)
-    f += "any"
+    f += 0.3
     assert f.value == pytest.approx(1.4)
 
 
 def test_multiply_float_setting(mocker):
     f = settings.FloatSetting("float", 4.2)
-    mocker.patch.object(strconvert, "to_float", return_value=0.5)
-    f *= "any"
+    f *= 0.5
     assert f.value == pytest.approx(2.1)
 
 
 def test_override_thumbnail_setting(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
-    mocker.patch.object(strconvert, "to_int", return_value=64)
-    t.override("any")
+    t.override(64)
     assert t.value == 64
 
 
-def test_fail_override_thumbnail_setting(mocker):
+def test_override_thumbnail_setting_str(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
-    mocker.patch.object(strconvert, "to_int", return_value=13)
-    with pytest.raises(ValueError, match="must be one of"):
+    t.override("64")
+    assert t.value == 64
+
+
+def test_fail_override_thumbnail_setting_non_int(mocker):
+    t = settings.ThumbnailSizeSetting("thumb", 128)
+    with pytest.raises(ValueError, match="Cannot convert 'any'"):
         t.override("any")
+
+
+def test_fail_override_thumbnail_setting_wrong_int(mocker):
+    t = settings.ThumbnailSizeSetting("thumb", 128)
+    with pytest.raises(ValueError, match="must be one of"):
+        t.override(13)
 
 
 def test_increase_thumbnail_size():
@@ -130,7 +147,7 @@ def test_override_str_setting():
 
 def test_fail_override_str_setting():
     s = settings.StrSetting("string", "default")
-    with pytest.raises(ValueError, match="requires value of type"):
+    with pytest.raises(ValueError, match="can only convert String"):
         s.override(12)
 
 
