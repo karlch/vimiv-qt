@@ -9,7 +9,6 @@
 from typing import List
 
 from vimiv import api
-from vimiv.utils import strconvert
 
 
 @api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
@@ -18,35 +17,40 @@ from vimiv.utils import strconvert
 @api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
 @api.keybindings.register("b", "set statusbar.show!")
 @api.commands.register()
-def set(setting: str, value: List[str]):  # pylint: disable=redefined-builtin
+def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
     """Set an option.
 
-    **syntax:** ``:set setting [value]``
+    **syntax:** ``:set name [value]``
 
     positional arguments:
-        * ``setting``: Name of the setting to set.
+        * ``name``: Name of the setting to set.
         * ``value``: Value to set the setting to. If not given, set to default.
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
     try:
+        setting = api.settings.get(name.rstrip("!"))
         # Toggle boolean settings
-        if setting.endswith("!"):
-            setting = setting.rstrip("!")
-            api.settings.toggle(setting)
-        # Add to number settings
-        elif strvalue and (strvalue.startswith("+") or strvalue.startswith("-")):
-            api.settings.add_to(setting, strvalue)
+        if name.endswith("!"):
+            operation = "toggling"
+            setting.toggle()
         # Set default
         elif strvalue == "":
-            api.settings.set_to_default(setting)
+            operation = "resetting"
+            setting.set_to_default()
+        # Add to number settings
+        elif strvalue.startswith("+") or strvalue.startswith("-"):
+            operation = "adding"
+            setting += strvalue
         else:
-            api.settings.override(setting, strvalue)
-        api.settings.signals.changed.emit(api.settings.get(setting))
+            operation = "setting"
+            setting.value = strvalue
     except KeyError:
-        raise api.commands.CommandError("unknown setting %s" % (setting))
-    except TypeError as e:
-        raise api.commands.CommandError(str(e))
-    except strconvert.ConversionError as e:
+        raise api.commands.CommandError(f"unknown setting '{name}'")
+    except (AttributeError, TypeError):
+        raise api.commands.CommandError(
+            f"'{setting.name}' does not support {operation}"
+        )
+    except ValueError as e:
         raise api.commands.CommandError(str(e))
 
 

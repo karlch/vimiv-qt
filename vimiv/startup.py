@@ -30,7 +30,6 @@ from vimiv.utils import (
     clipboard,
     crash_handler,
     statusbar_loghandler,
-    strconvert,
     trash_manager,
     working_directory,
 )
@@ -247,8 +246,9 @@ def update_settings(args):
     styles.parse()
     for option, value in args.cmd_settings:
         try:
-            api.settings.override(option, value)
+            setting = api.settings.get(option)
+            setting.value = value
         except KeyError:
             logging.error("Unknown setting %s", option)
-        except strconvert.ConversionError as e:
+        except ValueError as e:
             logging.error(str(e))

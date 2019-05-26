@@ -12,7 +12,7 @@ from typing import List, Set
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.utils import files, trash_manager, slot
+from vimiv.utils import files, trash_manager
 
 
 class Empty(api.completion.BaseModel):
@@ -168,7 +168,7 @@ class SettingsOptionModel(api.completion.BaseModel):
         )
         self._setting = setting
         self.setSortRole(3)
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        setting.changed.connect(self._on_changed)
         self._update_data()
 
     def _update_data(self):
@@ -185,11 +185,9 @@ class SettingsOptionModel(api.completion.BaseModel):
         ]
         self.set_data(data)
 
-    @slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
+    def _on_changed(self, _value):
         """Update data if the value of the setting has changed."""
-        if setting == self._setting:
-            self._update_data()
+        self._update_data()
 
 
 class TrashModel(api.completion.BaseModel):

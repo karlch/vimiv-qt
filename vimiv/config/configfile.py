@@ -12,7 +12,7 @@ import os
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
-from vimiv.utils import xdg, strconvert
+from vimiv.utils import xdg
 
 
 def parse(args):
@@ -95,12 +95,12 @@ def _update_setting(name, parser):
         parser_option = parser.get(section, option)
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
-        api.settings.override(setting_name, parser_option)
-        api.settings.signals.changed.emit(api.settings.get(setting_name))
-        logging.debug("Overriding '%s' with '%s'", setting_name, parser_option)
+        setting = api.settings.get(setting_name)
+        logging.debug("Setting '%s' to '%s'", setting_name, parser_option)
+        setting.value = parser_option
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         logging.info("%s in configfile", str(e))
-    except (strconvert.ConversionError, ValueError) as e:
+    except ValueError as e:
         logging.error("Error reading setting %s: %s", setting_name, str(e))
 
 

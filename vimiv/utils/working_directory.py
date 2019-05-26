@@ -60,7 +60,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories = None
         self._processing = False
 
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.MONITOR_FS.changed.connect(self._on_monitor_fs_changed)
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
         imutils.new_image_opened.connect(self._on_new_image)
@@ -87,15 +87,13 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         else:
             logging.debug("Monitoring %s", directory)
 
-    @utils.slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
+    def _on_monitor_fs_changed(self, value: bool):
         """Start/stop monitoring when the setting changed."""
-        if setting == api.settings.MONITOR_FS:
-            if setting.value:
-                self._monitor(self._dir)
-            else:
-                logging.debug("Turning monitoring off")
-                self._stop_monitoring()
+        if value:
+            self._monitor(self._dir)
+        else:
+            logging.debug("Turning monitoring off")
+            self._stop_monitoring()
 
     def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""

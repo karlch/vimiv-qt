@@ -80,7 +80,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.hide()
 
         self.activated.connect(self._on_activated)
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.LIBRARY_WIDTH.changed.connect(self._on_width_changed)
+        api.settings.LIBRARY_SHOW_HIDDEN.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.modes.signals.entered.connect(self._on_mode_entered)
@@ -121,12 +122,11 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Force repainting when the search results were cleared."""
         self.repaint()
 
-    @utils.slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
-        if setting == api.settings.LIBRARY_WIDTH:
-            self.update_width()
-        elif setting == api.settings.LIBRARY_SHOW_HIDDEN:
-            self._open_directory(".", reload_current=True)
+    def _on_width_changed(self, _value: int):
+        self.update_width()
+
+    def _on_show_hidden_changed(self, _value: bool):
+        self._open_directory(".", reload_current=True)
 
     @utils.slot
     def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):

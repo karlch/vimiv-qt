@@ -87,7 +87,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imutils.new_image_opened.connect(self._on_new_image_opened)
         imutils.new_images_opened.connect(self._on_new_images_opened)
-        api.settings.signals.changed.connect(self._on_settings_changed)
+        api.settings.THUMBNAIL_SIZE.changed.connect(self._on_size_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -258,8 +258,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
-        api.settings.THUMBNAIL_SIZE.override(str(size))
-        api.settings.signals.changed.emit(api.settings.THUMBNAIL_SIZE)
+        api.settings.THUMBNAIL_SIZE.value = size
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
@@ -287,11 +286,9 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self.selectionModel().setCurrentIndex(index, selmod)
         self.scrollTo(index, hint=self.PositionAtCenter)
 
-    @utils.slot
-    def _on_settings_changed(self, setting: api.settings.Setting):
-        if setting == api.settings.THUMBNAIL_SIZE:
-            self.setIconSize(QSize(setting.value, setting.value))
-            self.rescale_items()
+    def _on_size_changed(self, value: int):
+        self.setIconSize(QSize(value, value))
+        self.rescale_items()
 
     def columns(self):
         """Return the number of columns."""
