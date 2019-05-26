@@ -101,7 +101,6 @@ def _update_setting(name, parser):
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         logging.info("%s in configfile", str(e))
     except ValueError as e:
-        # TODO improve message?
         logging.error("Error reading setting %s: %s", setting_name, str(e))
 
 
