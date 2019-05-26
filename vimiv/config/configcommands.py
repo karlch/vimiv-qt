@@ -39,7 +39,7 @@ def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
         elif strvalue == "":
             api.settings.set_to_default(name)
         else:
-            api.settings.override(name, strvalue)
+            api.settings.get(name).value = strvalue
     except KeyError:
         raise api.commands.CommandError("unknown setting %s" % (name))
     except TypeError as e:

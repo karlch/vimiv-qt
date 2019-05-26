@@ -52,17 +52,6 @@ def get_value(name: str) -> Any:
     return _storage[name].value
 
 
-def override(name: str, new_value: str) -> None:
-    """Override the value of a setting.
-
-    Args:
-        name: Name of the setting as stored in the storage.
-        new_value: Value to override the setting with as string.
-    """
-    setting = _storage[name]
-    setting.override(new_value)
-
-
 def toggle(name: str) -> None:
     """Toggle the value of a setting.
 
@@ -210,22 +199,14 @@ class Setting(QObject, metaclass=SettingsMeta):
 
     @value.setter
     def value(self, value: Any) -> Any:
-        self._value = value
-        self.changed.emit(value)
+        self._value = self.hook(value)
+        self.changed.emit(self._value)
 
     def is_default(self) -> bool:
         return self.value == self.default
 
     def set_to_default(self) -> None:
         self._value = self.default
-
-    @abstractmethod
-    def override(self, new_value: str) -> None:
-        """Override the stored value with a new value.
-
-        Must be implemented by the child class as this fails or succeeds
-        depending on the type of value.
-        """
 
     def suggestions(self) -> List[str]:
         """Return a list of valid or useful suggestions for the setting.
@@ -241,12 +222,13 @@ class Setting(QObject, metaclass=SettingsMeta):
         Must be implemented by the child as it knows which type to require.
         """
 
+    def hook(self, value: Any) -> Any:
+        """Function called before a value is set."""
+        return self.convert(value)
+
 
 class BoolSetting(Setting):
     """Stores a boolean setting."""
-
-    def override(self, new_value: BoolStr) -> None:
-        self.value = self.convert(new_value)
 
     def toggle(self) -> None:
         self.value = not self.value
@@ -294,10 +276,6 @@ class NumberSetting(Setting):
         self.max_value = max_value
 
     @abstractmethod
-    def override(self, new_value: NumberStr) -> None:
-        """Must still be overridden."""
-
-    @abstractmethod
     def __iadd__(self, value: NumberStr) -> "NumberSetting":
         """Must be implemented by child."""
 
@@ -305,13 +283,12 @@ class NumberSetting(Setting):
     def __imul__(self, value: NumberStr) -> "NumberSetting":
         """Must be implemented by child."""
 
+    def hook(self, value: NumberStr) -> Number:
+        return clamp(self.convert(value), self.min_value, self.max_value)
+
 
 class IntSetting(NumberSetting):
     """Stores an integer setting."""
-
-    def override(self, new_value: NumberStr) -> None:
-        ivalue = self.convert(new_value)
-        self.value = clamp(ivalue, self.min_value, self.max_value)
 
     @ensure_type(int)
     def convert(self, text: str) -> int:
@@ -343,10 +320,6 @@ class IntSetting(NumberSetting):
 
 class FloatSetting(NumberSetting):
     """Stores a float setting."""
-
-    def override(self, new_value: NumberStr) -> None:
-        fvalue = self.convert(new_value)
-        self.value = clamp(fvalue, self.min_value, self.max_value)
 
     @ensure_type(float, int)
     def convert(self, text: str) -> float:
@@ -385,16 +358,11 @@ class ThumbnailSizeSetting(Setting):
 
     ALLOWED_VALUES = 64, 128, 256, 512
 
-    def override(self, new_value: IntStr) -> None:
-        """Override the setting with a new thumbnail size.
-
-        Args:
-            new_value: String containing.
-        """
-        ivalue = self.convert(new_value)
+    def hook(self, value: IntStr) -> int:
+        ivalue = self.convert(value)
         if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
-        self.value = ivalue
+        return ivalue
 
     @ensure_type(int)
     def convert(self, value: IntStr) -> int:
@@ -423,9 +391,6 @@ class ThumbnailSizeSetting(Setting):
 
 class StrSetting(Setting):
     """Stores a string setting."""
-
-    def override(self, new_value: str) -> None:
-        self.value = self.convert(new_value)
 
     @ensure_type(str)
     def convert(self, value: str) -> str:

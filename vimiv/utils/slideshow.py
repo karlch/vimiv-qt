@@ -33,7 +33,7 @@ class Slideshow(QTimer):
     def slideshow(self, count: Optional[int] = None):
         """Toggle slideshow."""
         if count is not None:
-            api.settings.SLIDESHOW_DELAY.override(count)
+            api.settings.SLIDESHOW_DELAY.value = count
             self.setInterval(1000 * count)
         elif self.isActive():
             self.stop()

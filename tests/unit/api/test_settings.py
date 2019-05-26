@@ -20,20 +20,20 @@ def test_init_setting():
 
 def test_check_default_after_change_for_setting(mocker):
     b = settings.BoolSetting("bool", True)
-    b.override(False)
+    b.value = False
     assert not b.is_default()
     assert b.default
 
 
-def test_override_bool_setting(mocker):
+def test_set_bool_setting(mocker):
     b = settings.BoolSetting("bool", True)
-    b.override(False)
+    b.value = False
     assert not b.value
 
 
-def test_override_bool_setting_str(mocker):
+def test_set_bool_setting_str(mocker):
     b = settings.BoolSetting("bool", True)
-    b.override("False")
+    b.value = "False"
     assert not b.value
 
 
@@ -43,15 +43,15 @@ def test_toggle_bool_setting():
     assert b.value
 
 
-def test_override_int_setting(mocker):
+def test_set_int_setting(mocker):
     i = settings.IntSetting("int", 1)
-    i.override(2)
+    i.value = 2
     assert i.value == 2
 
 
-def test_override_int_setting_str(mocker):
+def test_set_int_setting_str(mocker):
     i = settings.IntSetting("int", 1)
-    i.override("2")
+    i.value = "2"
     assert i.value == 2
 
 
@@ -67,15 +67,15 @@ def test_multiply_int_setting(mocker):
     assert i.value == 10
 
 
-def test_override_float_setting(mocker):
+def test_set_float_setting(mocker):
     f = settings.FloatSetting("float", 2.2)
-    f.override(3.3)
+    f.value = 3.3
     assert f.value == pytest.approx(3.3)
 
 
-def test_override_float_setting_str(mocker):
+def test_set_float_setting_str(mocker):
     f = settings.FloatSetting("float", 2.2)
-    f.override("3.3")
+    f.value = "3.3"
     assert f.value == pytest.approx(3.3)
 
 
@@ -91,28 +91,28 @@ def test_multiply_float_setting(mocker):
     assert f.value == pytest.approx(2.1)
 
 
-def test_override_thumbnail_setting(mocker):
+def test_set_thumbnail_setting(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.override(64)
+    t.value = 64
     assert t.value == 64
 
 
-def test_override_thumbnail_setting_str(mocker):
+def test_set_thumbnail_setting_str(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.override("64")
+    t.value = "64"
     assert t.value == 64
 
 
-def test_fail_override_thumbnail_setting_non_int(mocker):
+def test_fail_set_thumbnail_setting_non_int(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
     with pytest.raises(ValueError, match="Cannot convert 'any'"):
-        t.override("any")
+        t.value = "any"
 
 
-def test_fail_override_thumbnail_setting_wrong_int(mocker):
+def test_fail_set_thumbnail_setting_wrong_int(mocker):
     t = settings.ThumbnailSizeSetting("thumb", 128)
     with pytest.raises(ValueError, match="must be one of"):
-        t.override(13)
+        t.value = 13
 
 
 def test_increase_thumbnail_size():
@@ -139,16 +139,16 @@ def test_decrease_thumbnail_size_at_limit():
     assert t.value == 64
 
 
-def test_override_str_setting():
+def test_set_str_setting():
     s = settings.StrSetting("string", "default")
-    s.override("new")
+    s.value = "new"
     assert s.value == "new"
 
 
-def test_fail_override_str_setting():
+def test_fail_set_str_setting():
     s = settings.StrSetting("string", "default")
     with pytest.raises(ValueError, match="can only convert String"):
-        s.override(12)
+        s.value = 12
 
 
 def test_fail_get_unstored_setting():
