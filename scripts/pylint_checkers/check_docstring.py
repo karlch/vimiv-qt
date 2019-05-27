@@ -73,7 +73,7 @@ class CommandMissingDocumentation(BaseChecker):
         if not argnames:
             return
         for line in node.doc.split("\n"):
-            if line.strip().startswith("**syntax:**"):
+            if re.match(r"\*\*syntax:\*\* ``.*``", line.strip()):
                 return
         self.add_message(self.name_syntax, node=node, args=(node.name,))
 
