@@ -13,6 +13,7 @@ Feature: Plugin system with default plugins
         When I run print
         Then the pop up 'Print' should be displayed
 
+    @flaky
     Scenario: Show print preview dialog
         Given I open any image
         When I run print --preview
