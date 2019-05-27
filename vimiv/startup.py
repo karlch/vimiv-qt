@@ -209,7 +209,7 @@ def init_directories(args):
 def init_paths(args):
     """Open paths given from commandline or fallback to library if set."""
     logging.debug("Opening paths")
-    if not app.open_paths(args.paths) and api.settings.STARTUP_LIBRARY.value:
+    if not app.open_paths(args.paths) and api.settings.startup_library.value:
         app.open_paths([os.getcwd()])
     api.status.update()
 

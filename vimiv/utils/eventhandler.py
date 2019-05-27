@@ -29,9 +29,9 @@ class TempKeyStorage(QTimer):
         self.text = ""
 
         self.setSingleShot(True)
-        self.setInterval(api.settings.KEYHINT_TIMEOUT.value)
+        self.setInterval(api.settings.keyhint.timeout.value)
         self.timeout.connect(self.on_timeout)
-        api.settings.KEYHINT_TIMEOUT.changed.connect(self._on_timeout_changed)
+        api.settings.keyhint.timeout.changed.connect(self._on_timeout_changed)
 
     def add_text(self, text):
         """Add text to storage."""

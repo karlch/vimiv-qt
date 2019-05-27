@@ -106,7 +106,7 @@ class ImageFileHandler(QObject):
         Args:
             path: Path to the image file.
         """
-        if not api.settings.IMAGE_AUTOWRITE:
+        if not api.settings.image.autowrite:
             self._reset()
         elif self.transform.changed() or self.manipulate.changed():
             self.write_pixmap(self.current, path, path)

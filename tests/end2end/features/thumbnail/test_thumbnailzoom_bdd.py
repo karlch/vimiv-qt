@@ -17,6 +17,6 @@ bdd.scenarios("thumbnailzoom.feature")
 def check_thumbnail_size(size):
     size = int(size)
     # Check setting
-    assert api.settings.THUMBNAIL_SIZE.value == size
+    assert api.settings.thumbnail.size.value == size
     # Check actual value
     assert thumbnail.instance().iconSize().width() == size

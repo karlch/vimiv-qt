@@ -80,8 +80,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self.hide()
 
         self.activated.connect(self._on_activated)
-        api.settings.LIBRARY_WIDTH.changed.connect(self._on_width_changed)
-        api.settings.LIBRARY_SHOW_HIDDEN.changed.connect(self._on_show_hidden_changed)
+        api.settings.library.width.changed.connect(self._on_width_changed)
+        api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.modes.signals.entered.connect(self._on_mode_entered)
@@ -253,7 +253,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def update_width(self):
         """Resize width and columns when main window width changes."""
-        width = self.parent().width() * api.settings.LIBRARY_WIDTH.value
+        width = self.parent().width() * api.settings.library.width.value
         self.setFixedWidth(width)
         self.setColumnWidth(0, 0.1 * width)
         self.setColumnWidth(1, 0.75 * width)

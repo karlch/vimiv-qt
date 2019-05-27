@@ -355,116 +355,143 @@ class StrSetting(Setting):
 
 
 # Initialize all settings
-MONITOR_FS = BoolSetting(
+
+monitor_fs = BoolSetting(
     "monitor_filesystem",
     True,
-    desc="Monitor current directory for changes and reload widgets " "automatically",
+    desc="Monitor current directory for changes and reload widgets automatically",
 )
-SHUFFLE = BoolSetting("shuffle", False, desc="Randomly shuffle images")
-STARTUP_LIBRARY = BoolSetting(
+shuffle = BoolSetting("shuffle", False, desc="Randomly shuffle images")
+startup_library = BoolSetting(
     "startup_library",
     True,
     desc="Enter library at startup if there are no images to show",
     hidden=True,
 )
-STYLE = StrSetting("style", "default", hidden=True)
-COMMAND_HISTORY_LIMIT = IntSetting(
+style = StrSetting("style", "default", hidden=True)
+command_history_limit = IntSetting(
     "history_limit",
     100,
     desc="Maximum number of commands to store in history",
     hidden=True,
 )
 
-# Search
-SEARCH_IGNORE_CASE = BoolSetting(
-    "search.ignore_case",
-    True,
-    desc="Ignore case when searching, i.e. 'A' and 'a' are equal",
-)
-SEARCH_INCREMENTAL = BoolSetting(
-    "search.incremental", True, desc="Automatically filter search results when typing"
-)
 
-# Image
-IMAGE_AUTOPLAY = BoolSetting(
-    "image.autoplay", True, desc="Start playing animations on open"
-)
-IMAGE_AUTOWRITE = BoolSetting("image.autowrite", True, desc="Save images on changes")
-IMAGE_OVERZOOM = FloatSetting(
-    "image.overzoom",
-    1.0,
-    desc="Maximum scale to apply trying to fit image to window",
-    suggestions=["1.0", "1.5", "2.0", "5.0"],
-    min_value=1.0,
-)
+class search:  # pylint: disable=invalid-name
+    """Namespace for search related settings."""
 
-# Library
-LIBRARY_WIDTH = FloatSetting(
-    "library.width",
-    0.3,
-    desc="Width of the library as fraction of main window size",
-    suggestions=["0.2", "0.3", "0.4", "0.5"],
-    min_value=0.05,
-    max_value=0.95,
-)
-LIBRARY_SHOW_HIDDEN = BoolSetting(
-    "library.show_hidden", False, desc="Show hidden files in the library"
-)
+    ignore_case = BoolSetting(
+        "search.ignore_case",
+        True,
+        desc="Ignore case when searching, i.e. 'A' and 'a' are equal",
+    )
+    incremental = BoolSetting(
+        "search.incremental",
+        True,
+        desc="Automatically filter search results when typing",
+    )
 
-# Thumbnail
-THUMBNAIL_SIZE = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
 
-# Slideshow
-SLIDESHOW_DELAY = FloatSetting(
-    "slideshow.delay", 2.0, desc="Delay to next image in slideshow", min_value=0.5
-)
-SLIDESHOW_INDICATOR = StrSetting(
-    "slideshow.indicator",
-    "slideshow:",
-    desc="Text to display in statusbar when slideshow is running",
-)
+class image:  # pylint: disable=invalid-name
+    """Namespace for image related settings."""
 
-# Statusbar
-STATUSBAR_COLLAPSE_HOME = BoolSetting(
-    "statusbar.collapse_home", True, desc="Collapse /home/user to ~ in statusbar"
-)
-STATUSBAR_SHOW = BoolSetting(
-    "statusbar.show", True, desc="Always display the statusbar"
-)
-STATUSBAR_MESSAGE_TIMEOUT = IntSetting(
-    "statusbar.message_timeout",
-    5000,
-    desc="Time in ms until statusbar messages are removed",
-    min_value=500,
-)
-# Statusbar module strings, these are not retrieved by their type
-StrSetting("statusbar.left", "{pwd}")
-StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
-StrSetting(
-    "statusbar.left_thumbnail", "{thumbnail-index}/{thumbnail-total} {thumbnail-name}"
-)
-StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
-StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
-StrSetting("statusbar.right", "{keys}  {mode}")
+    autoplay = BoolSetting(
+        "image.autoplay", True, desc="Start playing animations on open"
+    )
+    autowrite = BoolSetting("image.autowrite", True, desc="Save images on changes")
+    overzoom = FloatSetting(
+        "image.overzoom",
+        1.0,
+        desc="Maximum scale to apply trying to fit image to window",
+        suggestions=["1.0", "1.5", "2.0", "5.0"],
+        min_value=1.0,
+    )
 
-# Keyhint widget and related settings
-KEYHINT_DELAY = IntSetting(
-    "keyhint.delay",
-    500,
-    desc="Delay (in ms) until the keyhint widget is displayed",
-    min_value=0,
-)
-KEYHINT_TIMEOUT = IntSetting(
-    "keyhint.timeout",
-    5000,
-    desc="Time (in ms) after which partially typed keybindings are cleared",
-    min_value=100,
-)
 
-# Title module strings, these are not retrieved by their type
-StrSetting(
-    "title.fallback",
-    "vimiv",
-    desc="Default window title if no mode specific options exist",
-)
-StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")
+class library:  # pylint: disable=invalid-name
+    """Namespace for library related settings."""
+
+    width = FloatSetting(
+        "library.width",
+        0.3,
+        desc="Width of the library as fraction of main window size",
+        suggestions=["0.2", "0.3", "0.4", "0.5"],
+        min_value=0.05,
+        max_value=0.95,
+    )
+    show_hidden = BoolSetting(
+        "library.show_hidden", False, desc="Show hidden files in the library"
+    )
+
+
+class thumbnail:  # pylint: disable=invalid-name
+    """Namespace for thumbnail related settings."""
+
+    size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
+
+
+class slideshow:  # pylint: disable=invalid-name
+    """Namespace for slideshow related settings."""
+
+    delay = FloatSetting(
+        "slideshow.delay", 2.0, desc="Delay to next image in slideshow", min_value=0.5
+    )
+    indicator = StrSetting(
+        "slideshow.indicator",
+        "slideshow:",
+        desc="Text to display in statusbar when slideshow is running",
+    )
+
+
+class statusbar:  # pylint: disable=invalid-name
+    """Namespace for statusbar related settings."""
+
+    collapse_home = BoolSetting(
+        "statusbar.collapse_home", True, desc="Collapse /home/user to ~ in statusbar"
+    )
+    show = BoolSetting("statusbar.show", True, desc="Always display the statusbar")
+    message_timeout = IntSetting(
+        "statusbar.message_timeout",
+        5000,
+        desc="Time in ms until statusbar messages are removed",
+        min_value=500,
+    )
+    # Statusbar module strings, these are not retrieved by their type
+    StrSetting("statusbar.left", "{pwd}")
+    StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
+    StrSetting(
+        "statusbar.left_thumbnail",
+        "{thumbnail-index}/{thumbnail-total} {thumbnail-name}",
+    )
+    StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
+    StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
+    StrSetting("statusbar.right", "{keys}  {mode}")
+
+
+class keyhint:  # pylint: disable=invalid-name
+    """Namespace for keyhint related settings."""
+
+    delay = IntSetting(
+        "keyhint.delay",
+        500,
+        desc="Delay (in ms) until the keyhint widget is displayed",
+        min_value=0,
+    )
+    timeout = IntSetting(
+        "keyhint.timeout",
+        5000,
+        desc="Time (in ms) after which partially typed keybindings are cleared",
+        min_value=100,
+    )
+
+
+class title:  # pylint: disable=invalid-name
+    """Namespace for title related settings."""
+
+    # Title module strings, these are not retrieved by their type
+    StrSetting(
+        "title.fallback",
+        "vimiv",
+        desc="Default window title if no mode specific options exist",
+    )
+    StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")

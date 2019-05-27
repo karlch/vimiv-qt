@@ -60,7 +60,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories = None
         self._processing = False
 
-        api.settings.MONITOR_FS.changed.connect(self._on_monitor_fs_changed)
+        api.settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
         imutils.new_image_opened.connect(self._on_new_image)
@@ -80,7 +80,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     def _monitor(self, directory: str) -> None:
         """Monitor the directory by adding it to QFileSystemWatcher."""
-        if not api.settings.MONITOR_FS.value:
+        if not api.settings.monitor_fs.value:
             return
         if not self.addPath(directory):
             logging.error("Cannot monitor %s", directory)
@@ -160,7 +160,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             images: List of images inside the directory.
             directories: List of directories inside the directory.
         """
-        show_hidden = api.settings.LIBRARY_SHOW_HIDDEN.value
+        show_hidden = api.settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
         return files.supported(paths)
 

@@ -16,8 +16,8 @@ bdd.scenarios("keyhint.feature")
 
 @bdd.given("I re-initialize the keyhint widget")
 def reinitialize_keyhint():
-    api.settings.KEYHINT_DELAY.value = 5
-    api.settings.KEYHINT_TIMEOUT.value = 100
+    api.settings.keyhint.delay.value = 5
+    api.settings.keyhint.timeout.value = 100
     eventhandler.KeyHandler.partial_handler.clear_keys()
 
 

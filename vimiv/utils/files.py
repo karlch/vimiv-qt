@@ -127,7 +127,7 @@ def is_image(filename: str) -> bool:
 def pwd() -> str:
     """Current working directory."""
     wd = os.getcwd()
-    if api.settings.STATUSBAR_COLLAPSE_HOME.value:
+    if api.settings.statusbar.collapse_home.value:
         wd = wd.replace(os.path.expanduser("~"), "~")
     return wd
 

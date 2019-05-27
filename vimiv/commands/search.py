@@ -24,7 +24,7 @@ def use_incremental(mode):
     Args:
         mode: Mode for which search should be run.
     """
-    enabled = api.settings.SEARCH_INCREMENTAL.value
+    enabled = api.settings.search.incremental.value
     if enabled and mode in [api.modes.LIBRARY, api.modes.THUMBNAIL]:
         return True
     return False
@@ -162,6 +162,6 @@ def _get_next_match(text, count, paths):
 
 def _matches(first, second):
     """Check if first string is in second string."""
-    if api.settings.SEARCH_IGNORE_CASE.value:
+    if api.settings.search.ignore_case.value:
         return first.lower() in second.lower()
     return first in second

@@ -50,7 +50,7 @@ def parse():
     reference.
     """
     global _style
-    name = api.settings.STYLE.value
+    name = api.settings.style.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
     if name == "default":
         _style = create_default()

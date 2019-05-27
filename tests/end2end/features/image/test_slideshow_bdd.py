@@ -39,7 +39,7 @@ def check_slideshow_not_playing(sshow):
 def check_slideshow_delay(sshow, delay):
     delay = float(delay)
     # Check setting
-    assert api.settings.SLIDESHOW_DELAY.value == delay
+    assert api.settings.slideshow.delay.value == delay
     # Check actual value
     assert sshow.interval() == delay * 1000
 

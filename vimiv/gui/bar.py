@@ -37,8 +37,8 @@ class Bar(QWidget):
         self._maybe_hide()
 
         self.commandline.editingFinished.connect(self._on_editing_finished)
-        api.settings.STATUSBAR_SHOW.changed.connect(self._on_show_changed)
-        api.settings.STATUSBAR_MESSAGE_TIMEOUT.changed.connect(self._on_timeout_changed)
+        api.settings.statusbar.show.changed.connect(self._on_show_changed)
+        api.settings.statusbar.message_timeout.changed.connect(self._on_timeout_changed)
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")
@@ -100,7 +100,7 @@ class Bar(QWidget):
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
-        always_show = api.settings.STATUSBAR_SHOW.value
+        always_show = api.settings.statusbar.show.value
         if not always_show and not self.commandline.hasFocus():
             self.hide()
         else:

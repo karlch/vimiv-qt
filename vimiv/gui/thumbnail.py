@@ -79,7 +79,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
-        default_size = api.settings.THUMBNAIL_SIZE.value
+        default_size = api.settings.thumbnail.size.value
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
 
@@ -87,7 +87,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         imutils.new_image_opened.connect(self._on_new_image_opened)
         imutils.new_images_opened.connect(self._on_new_images_opened)
-        api.settings.THUMBNAIL_SIZE.changed.connect(self._on_size_changed)
+        api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -258,7 +258,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
-        api.settings.THUMBNAIL_SIZE.value = size
+        api.settings.thumbnail.size.value = size
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""

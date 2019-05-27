@@ -25,8 +25,8 @@ class Slideshow(QTimer):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        api.settings.SLIDESHOW_DELAY.changed.connect(self._on_delay_changed)
-        self.setInterval(api.settings.SLIDESHOW_DELAY.value * 1000)
+        api.settings.slideshow.delay.changed.connect(self._on_delay_changed)
+        self.setInterval(api.settings.slideshow.delay.value * 1000)
 
     @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
@@ -36,7 +36,7 @@ class Slideshow(QTimer):
         **count:** Set slideshow delay to count instead.
         """
         if count is not None:
-            api.settings.SLIDESHOW_DELAY.value = count
+            api.settings.slideshow.delay.value = count
             self.setInterval(1000 * count)
         elif self.isActive():
             self.stop()
@@ -59,7 +59,7 @@ class Slideshow(QTimer):
     def running_indicator(self) -> str:
         """Indicator if slideshow is running."""
         if self.isActive():
-            return api.settings.SLIDESHOW_INDICATOR.value
+            return api.settings.slideshow.indicator.value
         return ""
 
     def _on_delay_changed(self, value: int):

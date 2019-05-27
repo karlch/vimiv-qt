@@ -43,7 +43,7 @@ class KeyhintWidget(QLabel):
         super().__init__(parent=parent)
         self._show_timer = QTimer(self)
         self._show_timer.setSingleShot(True)
-        self._show_timer.setInterval(api.settings.KEYHINT_DELAY.value)
+        self._show_timer.setInterval(api.settings.keyhint.delay.value)
         self._show_timer.timeout.connect(self.show)
 
         self._suffix_color = styles.get("keyhint.suffix_color")
@@ -59,7 +59,7 @@ class KeyhintWidget(QLabel):
         eventhandler.KeyHandler.partial_handler.partial_cleared.connect(
             self._on_partial_cleared
         )
-        api.settings.KEYHINT_DELAY.changed.connect(self._on_delay_changed)
+        api.settings.keyhint.delay.changed.connect(self._on_delay_changed)
 
         self.hide()
 

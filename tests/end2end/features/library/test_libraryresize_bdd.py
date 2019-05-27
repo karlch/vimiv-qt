@@ -18,7 +18,7 @@ bdd.scenarios("libraryresize.feature")
 def check_library_size(fraction, qtbot):
     fraction = float(fraction)
     # Check if setting was updated
-    assert api.settings.LIBRARY_WIDTH.value == pytest.approx(fraction)
+    assert api.settings.library.width.value == pytest.approx(fraction)
     # Check if width fits fraction of main window
     real_fraction = library.instance().width() / mainwindow.instance().width()
     assert fraction == real_fraction
