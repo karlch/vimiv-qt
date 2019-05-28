@@ -110,6 +110,7 @@
 <li><a class="reference internal" href="#flip">flip</a></li>
 <li><a class="reference internal" href="#goto">goto</a></li>
 <li><a class="reference internal" href="#play-or-pause">play-or-pause</a></li>
+<li><a class="reference internal" href="#reload">reload</a></li>
 <li><a class="reference internal" href="#rotate">rotate</a></li>
 <li><a class="reference internal" href="#scroll">scroll</a></li>
 <li><a class="reference internal" href="#scroll-edge">scroll-edge</a></li>
@@ -453,10 +454,10 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="set">
 <span id="ref-global-set"></span><h3>set<a class="headerlink" href="#set" title="Permalink to this headline">¶</a></h3>
 <p>Set an option.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">setting</span> <span class="pre">[value]</span></code></p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">setting</span></code>: Name of the setting to set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
 </ul>
 </dd>
@@ -503,7 +504,7 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="version">
 <span id="ref-global-version"></span><h3>version<a class="headerlink" href="#version" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with version information.</p>
-<p><strong>syntax:</strong> :version [–copy]</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:version</span> <span class="pre">[--copy]</span></code></p>
 <dl class="simple">
 <dt>optional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--copy</span></code>: Copy version information to clipboard instead.</p></li>
@@ -538,22 +539,25 @@ it is opened in the library. Other paths are not supported.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
 <td><p>Toggle betwen play and pause of animation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
+<td><p>Reload the current image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
 <td><p>Rotate the image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
 <td><p>Scroll the image in the given direction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
 <td><p>Scroll the image to one edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
 <td><p>Toggle slideshow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
 <td><p>Save the current image to disk.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
 <td><p>Zoom the current widget.</p></td>
 </tr>
 </tbody>
@@ -592,6 +596,10 @@ it is opened in the library. Other paths are not supported.</p>
 <div class="section" id="play-or-pause">
 <span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this headline">¶</a></h3>
 <p>Toggle betwen play and pause of animation.</p>
+</div>
+<div class="section" id="reload">
+<span id="ref-image-reload"></span><h3>reload<a class="headerlink" href="#reload" title="Permalink to this headline">¶</a></h3>
+<p>Reload the current image.</p>
 </div>
 <div class="section" id="rotate">
 <span id="ref-image-rotate"></span><h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
