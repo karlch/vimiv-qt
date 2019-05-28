@@ -52,4 +52,4 @@ def paste_name(primary: bool = True) -> None:
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
-    app.open(clipboard.text(mode=mode))
+    app.open([clipboard.text(mode=mode)])

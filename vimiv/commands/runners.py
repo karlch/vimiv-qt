@@ -191,10 +191,11 @@ class ExternalRunner(QObject):
             stdout: String form of stdout of the exited shell command.
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
-        if paths and app.open_paths(paths):
-            api.status.update()
+        try:
+            app.open(paths)
             logging.debug("Opened paths from pipe '%s'", cmd)
-        else:
+            api.status.update()
+        except api.commands.CommandError:
             logging.warning("%s: No paths from pipe", cmd)
 
 
