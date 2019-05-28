@@ -131,8 +131,11 @@ class ImageFileHandler(QObject):
         """
         # Pass file format explicitly as imghdr does a much better job at this than the
         # file name based approach of QImageReader
-        file_format = files.imghdr.what(path).encode("utf-8")
-        reader = QImageReader(path, file_format)
+        file_format = files.imghdr.what(path)
+        if file_format is None:
+            logging.error("%s is not a valid image", path)
+            return
+        reader = QImageReader(path, file_format.encode("utf-8"))
         reader.setAutoTransform(True)  # Automatically apply exif orientation
         if not reader.canRead():
             logging.error("Cannot read image %s", path)
