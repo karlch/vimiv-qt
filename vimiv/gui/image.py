@@ -106,14 +106,15 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         imutils.svg_loaded.connect(
             partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
         )
-        imutils.pixmap_updated.connect(partial(self._load, widget=Image))
         imutils.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
     def _on_images_cleared(self) -> None:
         self.setWidget(Empty())
 
-    def _load(self, argument, widget, scale: Optional[ImageScale] = None) -> None:
+    def _load(
+        self, argument, reload_only, widget, scale: Optional[ImageScale] = None
+    ) -> None:
         """Load a new widget into the scrollable image.
 
         This method is specialized accordingly for the different possible widgets using
@@ -122,10 +123,11 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
         Args:
             argument: Argument passed to the widget constructor.
+            reload_only: True if the current image is only reloaded.
             widget: Widget created for this argument.
             scale: Scale to set after loading defaulting to the current scale.
         """
-        scale = scale if scale is not None else self._scale
+        scale = scale if scale is not None and not reload_only else self._scale
         self.setWidget(widget(argument))
         self.scale(scale)
         api.status.update()

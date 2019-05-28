@@ -71,6 +71,7 @@ class ImageFileHandler(QObject):
 
         imutils.new_image_opened.connect(self._on_new_image_opened)
         imutils.all_images_cleared.connect(self._on_images_cleared)
+        imutils.image_changed.connect(self.reload)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     @property
@@ -92,13 +93,18 @@ class ImageFileHandler(QObject):
     def _on_new_image_opened(self, path: str):
         """Load proper displayable QWidget for a new image path."""
         self._maybe_write(self._path)
-        self._load(path)
+        self._load(path, reload_only=False)
 
     @utils.slot
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
         self._set_original(None)
+
+    @api.commands.register(mode=api.modes.IMAGE)
+    def reload(self):
+        """Reload the current image."""
+        self._load(self._path, reload_only=True)
 
     def _maybe_write(self, path):
         """Write image to disk if requested and it has changed.
@@ -117,7 +123,7 @@ class ImageFileHandler(QObject):
         self._maybe_write(self._path)
         self._pool.waitForDone(5000)  # Kill writing after 5s
 
-    def _load(self, path):
+    def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
 
         This reads the image using QImageReader and then emits the appropriate
@@ -136,7 +142,7 @@ class ImageFileHandler(QObject):
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self._set_original(None)
-            imutils.svg_loaded.emit(path)
+            imutils.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
             movie = QMovie(path)
@@ -144,7 +150,7 @@ class ImageFileHandler(QObject):
                 logging.error("Error reading animation %s: invalid data", path)
                 return
             self._set_original(movie)
-            imutils.movie_loaded.emit(self.current)
+            imutils.movie_loaded.emit(self.current, reload_only)
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
@@ -152,7 +158,7 @@ class ImageFileHandler(QObject):
                 logging.error("Error reading image %s: %s", path, reader.errorString())
                 return
             self._set_original(pixmap)
-            imutils.pixmap_loaded.emit(self.current)
+            imutils.pixmap_loaded.emit(self.current, reload_only)
         self._path = path
 
     def _reset(self):
@@ -187,7 +193,8 @@ class ImageFileHandler(QObject):
     def update_pixmap(self, pixmap):
         """Set the current pixmap and emit signal to update image shown."""
         self._pixmaps.current = pixmap
-        imutils.pixmap_updated.emit(pixmap)
+        reload_only = True
+        imutils.pixmap_loaded.emit(pixmap, reload_only)
 
     def update_transformed(self, pixmap):
         """Set the transformed and current pixmap."""
