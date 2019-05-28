@@ -18,3 +18,10 @@ def check_zoom_level(level):
     img = image.instance()
     im_level = img.current_width() / img.original_width()
     assert float(level) == pytest.approx(im_level, 0.01)
+
+
+@bdd.then(bdd.parsers.parse("the zoom level should not be {level}"))
+def check_zoom_level_not(level):
+    img = image.instance()
+    im_level = img.current_width() / img.original_width()
+    assert float(level) != pytest.approx(im_level, 0.01)
