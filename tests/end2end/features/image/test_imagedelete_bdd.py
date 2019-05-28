@@ -22,11 +22,6 @@ def wait_for_working_directory_handler(qtbot):
         pass
 
 
-@bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
-def check_filelist_length(number):
-    assert filelist.total() == number
-
-
 @bdd.then(bdd.parsers.parse("{basename} should not be in the filelist"))
 def check_image_not_in_filelist(basename):
     abspath = os.path.abspath(basename)
