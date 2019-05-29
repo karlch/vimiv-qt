@@ -52,13 +52,13 @@ def run(text, count=None, mode=None):
 
 
 def update_command(text, mode):
-    """Update command with aliases and wildcards.
+    """Update command with aliases and percent wildcard.
 
     Args:
         text: String passed as command.
         mode: Mode in which the command is supposed to run.
     """
-    return expand_wildcards(alias(text, mode), mode)
+    return expand_percent(alias(text, mode), mode)
 
 
 def command(text, mode=None):
@@ -140,8 +140,8 @@ def _parse(text):
     return count, cmdname, args
 
 
-def expand_wildcards(text, mode):
-    """Expand % and * to the corresponding path and pathlist.
+def expand_percent(text, mode):
+    """Expand % to the corresponding path.
 
     Args:
         text: The command in which the wildcards are expanded.
@@ -151,9 +151,6 @@ def expand_wildcards(text, mode):
     if "%" in text:
         current = shlex.quote(pathreceiver.current(mode))
         text = re.sub(r"(?<!\\)%", current, text)
-    if "*" in text:
-        pathlist = " ".join([shlex.quote(path) for path in pathreceiver.pathlist(mode)])
-        text = re.sub(r"(?<!\\)\*", pathlist, text)
     return text
 
 

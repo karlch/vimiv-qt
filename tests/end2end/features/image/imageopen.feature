@@ -17,3 +17,18 @@ Feature: Open different images and image formats
         Given I open 5 images
         When I run open image_01.jpg image_02.jpg
         Then the filelist should contain 2 images
+
+    Scenario: Open image using unix-style asterisk pattern expansion
+        Given I open 11 images
+        When I run open image_1*.jpg
+        Then the filelist should contain 2 images
+
+    Scenario: Open image using unix-style question mark pattern expansion
+        Given I open 11 images
+        When I run open image_1?.jpg
+        Then the filelist should contain 2 images
+
+    Scenario: Open image using unix-style group pattern expansion
+        Given I open 12 images
+        When I run open image_1[01].jpg
+        Then the filelist should contain 2 images
