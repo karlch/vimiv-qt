@@ -8,6 +8,7 @@
 
 import logging
 import os
+from typing import List
 
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QIcon, QPixmap
@@ -74,32 +75,19 @@ class Application(QApplication):
 # We want to use the name open here as it is the best name for the command
 @api.keybindings.register("o", "command --text='open '")
 @api.commands.register()
-def open(path: str):  # pylint: disable=redefined-builtin
-    """Open a path.
+def open(paths: List[str]):  # pylint: disable=redefined-builtin
+    """Open one or more paths.
 
-    **syntax:** ``:open path``
+    **syntax:** ``:open path [path ...]``
 
-    If the path is an image, it is opened in image mode. If it is a directory,
-    it is opened in the library. Other paths are not supported.
+    If any path given is an image, all valid images are opened in image mode. Otherwise
+    the first valid directory is opened. If both fails, an error is displayed.
 
     positional arguments:
-        * ``path``: The path to open.
+        * ``paths``: The path(s) to open.
     """
-    assert isinstance(path, str), "Path must be given as string."
-    if not open_paths([os.path.expanduser(path)]):
-        raise api.commands.CommandError("Cannot open %s" % (path))
-
-
-def open_paths(paths, select_mode=True):
-    """Open a list of paths possibly switching to a new mode.
-
-    Args:
-        paths: List of paths to open.
-        select_mode: If True, select mode according to paths given.
-    Returns:
-        True on success.
-    """
-    paths = [os.path.abspath(path) for path in paths]
+    assert isinstance(paths, list), "Paths must be passed as list for nargs=*"
+    paths = [os.path.abspath(os.path.expanduser(path)) for path in paths]
     images, directories = files.supported(paths)
     mode = api.modes.LIBRARY
     if images:
@@ -109,10 +97,8 @@ def open_paths(paths, select_mode=True):
     elif directories:
         working_directory.handler.chdir(directories[0])
     else:
-        return False  # No valid paths found
-    if select_mode:
-        api.modes.enter(mode)
-    return True
+        raise api.commands.CommandError("No valid paths")
+    api.modes.enter(mode)
 
 
 def instance():

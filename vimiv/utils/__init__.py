@@ -14,7 +14,7 @@ import re
 from contextlib import contextmanager, suppress
 from datetime import datetime
 from pstats import Stats
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, List, Any
 
 from PyQt5.QtCore import pyqtSlot
 
@@ -148,6 +148,11 @@ def slot(function):
     slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
     pyqtSlot(*slot_args, **slot_kwargs)(function)
     return function
+
+
+def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
+    """Flatten a list of lists into a single list with all elements."""
+    return [elem for sublist in list_of_lists for elem in sublist]
 
 
 def timed(function):

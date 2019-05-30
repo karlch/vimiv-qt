@@ -47,6 +47,10 @@ It is possible for commands to support the special ``count`` argument.
         for i in range(count):
             print("hello", name)
 
+Another special argument is the ``paths`` argument. It will perform unix-style pattern
+matching using the ``glob`` module on each path given and return a list of matched
+paths. An example of this in action is the ``:open`` command defined in ``vimiv.app``.
+
 Each command is valid for a specific mode, the default being global. To supply
 the mode, add it to the register decorator::
 
@@ -66,11 +70,13 @@ command.
 """
 
 import argparse
+import glob
 import inspect
 import logging
 import typing
+from contextlib import suppress
 
-from vimiv.utils import class_that_defined_method, cached_method, is_method
+from vimiv.utils import class_that_defined_method, cached_method, is_method, flatten
 
 from . import modes, objreg
 
@@ -198,6 +204,13 @@ class _CommandArguments(argparse.ArgumentParser):
         """Override help message to display in statusbar."""
         raise ArgumentError(self.format_help().rstrip())
 
+    def parse_args(self, args: typing.List[str]) -> argparse.Namespace:  # type: ignore
+        """Override parse_args to sort and flatten paths list in addition."""
+        parsed_args = super().parse_args(args)
+        with suppress(AttributeError):
+            parsed_args.paths = sorted(flatten(parsed_args.paths))
+        return parsed_args
+
     def error(self, message: str) -> typing.NoReturn:
         """Override error to raise an exception instead of calling sys.exit."""
         if message.startswith("argument"):  # Remove argument argname:
@@ -233,6 +246,8 @@ class _CommandArguments(argparse.ArgumentParser):
         'nargs': '*' if the type is a List.
         """
         argtype = argument.annotation
+        if argument.name == "paths":
+            return {"type": lambda x: glob.glob(x, recursive=True), "nargs": "+"}
         if argtype == typing.List[str]:
             return {"type": str, "nargs": "*"}
         if optional and argtype is bool:

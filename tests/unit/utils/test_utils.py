@@ -89,3 +89,8 @@ def test_profiler(capsys):
     with utils.profile(5):
         pass
     assert "function calls" in capsys.readouterr().out
+
+
+def test_flatten():
+    list_of_lists = [[1, 2], [3, 4]]
+    assert utils.flatten(list_of_lists) == [1, 2, 3, 4]

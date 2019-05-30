@@ -10,6 +10,7 @@ Module Attributes:
     search: Instance of the Search class used.
 """
 
+import fnmatch
 import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -153,15 +154,18 @@ def _get_next_match(text, count, paths):
         count: Defines how many matches to jump forward.
         paths: List of paths to search in.
     """
-    matches = [path for path in paths if _matches(text, path)]
+    matches = [path for path in paths if _matches(path, text)]
     if matches:
         count = count % len(matches)
         return matches[count], matches
     return paths[0], []
 
 
-def _matches(first, second):
-    """Check if first string is in second string."""
+def _matches(path, pattern):
+    """Return True if path matches pattern.
+
+    This uses fnmatch to perform unix-style filename pattern matching.
+    """
     if api.settings.search.ignore_case.value:
-        return first.lower() in second.lower()
-    return first in second
+        return fnmatch.fnmatchcase(path.lower(), f"*{pattern.lower()}*")
+    return fnmatch.fnmatchcase(path, f"*{pattern}*")
