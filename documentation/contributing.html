@@ -540,6 +540,9 @@ to the argument parser as type of the argument.</p>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Another special argument is the <code class="docutils literal notranslate"><span class="pre">paths</span></code> argument. It will perform unix-style pattern
+matching using the <code class="docutils literal notranslate"><span class="pre">glob</span></code> module on each path given and return a list of matched
+paths. An example of this in action is the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command defined in <code class="docutils literal notranslate"><span class="pre">vimiv.app</span></code>.</p>
 <p>Each command is valid for a specific mode, the default being global. To supply
 the mode, add it to the register decorator:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>@commands.register(mode=Modes.IMAGE)

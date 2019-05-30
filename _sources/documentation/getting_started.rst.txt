@@ -96,7 +96,9 @@ completion is also supported.
 
 Prepending a command with ``!`` lets vimiv interpret the command as an external
 command. The following text is passed to the shell. Here ``%`` is replaced with the
-currently selected file and ``*`` with the current file list. 
+currently selected file and unix style pattern matching including ``*`` and ``?`` can be
+used. Recursive matching is also possible using ``**`` but please note that this can
+become slow in large directory trees.
 Example: ``:!gimp %`` opens the currently selected image in gimp.
 
 External commands can be "piped to vimiv" by appending the ``|`` char to the

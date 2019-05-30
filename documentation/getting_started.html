@@ -191,7 +191,9 @@ displayed. Pressing <code class="docutils literal notranslate"><span class="pre"
 completion is also supported.</p>
 <p>Prepending a command with <code class="docutils literal notranslate"><span class="pre">!</span></code> lets vimiv interpret the command as an external
 command. The following text is passed to the shell. Here <code class="docutils literal notranslate"><span class="pre">%</span></code> is replaced with the
-currently selected file and <code class="docutils literal notranslate"><span class="pre">*</span></code> with the current file list.
+currently selected file and unix style pattern matching including <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">?</span></code> can be
+used. Recursive matching is also possible using <code class="docutils literal notranslate"><span class="pre">**</span></code> but please note that this can
+become slow in large directory trees.
 Example: <code class="docutils literal notranslate"><span class="pre">:!gimp</span> <span class="pre">%</span></code> opens the currently selected image in gimp.</p>
 <p>External commands can be “piped to vimiv” by appending the <code class="docutils literal notranslate"><span class="pre">|</span></code> char to the
 command. The output of the command is then parsed by vimiv. If the first line

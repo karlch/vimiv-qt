@@ -230,7 +230,7 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <td><p>Do nothing.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
-<td><p>Open a path.</p></td>
+<td><p>Open one or more paths.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
@@ -369,13 +369,13 @@ nop.</p>
 </div>
 <div class="section" id="open">
 <span id="ref-global-open"></span><h3>open<a class="headerlink" href="#open" title="Permalink to this headline">¶</a></h3>
-<p>Open a path.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">path</span></code></p>
-<p>If the path is an image, it is opened in image mode. If it is a directory,
-it is opened in the library. Other paths are not supported.</p>
+<p>Open one or more paths.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
+<p>If any path given is an image, all valid images are opened in image mode. Otherwise
+the first valid directory is opened. If both fails, an error is displayed.</p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">path</span></code>: The path to open.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to open.</p></li>
 </ul>
 </dd>
 </dl>
