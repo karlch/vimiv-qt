@@ -222,7 +222,6 @@ def init_ui(args):
     """Initialize the Qt UI."""
     logging.debug("Initializing UI")
     mw = mainwindow.MainWindow()
-    mw.show()
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size
@@ -237,6 +236,7 @@ def init_ui(args):
     x = (screen_geometry.width() - geometry.width) // 2
     y = (screen_geometry.height() - geometry.height) // 2
     mw.setGeometry(x, y, *geometry)
+    mw.show()
 
 
 def update_settings(args):
