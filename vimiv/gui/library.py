@@ -13,7 +13,14 @@ from typing import List, Optional
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
-from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
+from PyQt5.QtGui import (
+    QStandardItemModel,
+    QColor,
+    QTextDocument,
+    QStandardItem,
+    QFontMetrics,
+    QFont,
+)
 
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
@@ -410,6 +417,7 @@ class LibraryDelegate(QStyledItemDelegate):
 
         # Named properties for html
         self.font = styles.get("library.font")
+        self.font_metrics = QFontMetrics(QFont(self.font))
         self.fg = styles.get("library.fg")
         self.dir_fg = styles.get("library.directory.fg")
         self.search_fg = styles.get("library.search.highlighted.fg")
@@ -454,7 +462,8 @@ class LibraryDelegate(QStyledItemDelegate):
         text = index.model().data(index)
         painter.save()
         color = self._get_foreground_color(index, text)
-        text = '<span style="color: %s; font: %s;">%s</span>' % (color, self.font, text)
+        text = self.elided(text, option.rect.width() - 1)
+        text = f'<span style="color: {color}; font: {self.font};">{text}</span>'
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
         painter.translate(option.rect.x(), option.rect.y())
@@ -510,6 +519,23 @@ class LibraryDelegate(QStyledItemDelegate):
         if index.row() % 2:
             return self.odd_bg
         return self.even_bg
+
+    def elided(self, text, width):
+        """Return an elided text preserving html tags.
+
+        If the text is wider than width, it is elided by replacing characters from the
+        middle by …. Surrounding html tags are not included in the calculation and left
+        untouched.
+
+        Args:
+            text: The text to elide.
+            width: Width in pixels that the text may take.
+        Returns:
+            Elided version of the text.
+        """
+        stripped_text = strip_html(text)
+        elided_text = self.font_metrics.elidedText(stripped_text, Qt.ElideMiddle, width)
+        return text.replace(stripped_text, elided_text)
 
     def sizeHint(self, option, index):
         """Return size of the QTextDocument as size hint."""
