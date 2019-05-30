@@ -13,6 +13,23 @@ from vimiv.commands import search
 bdd.scenarios("search.feature")
 
 
+class SearchResults:
+    """Helper class to store search results."""
+
+    def __init__(self):
+        search.search.new_search.connect(self._on_search)
+        self.results = None
+
+    def _on_search(self, _index, results, _mode, _incsearch):
+        self.results = results
+
+    def __len__(self):
+        return len(self.results)
+
+
+search_results = SearchResults()
+
+
 @bdd.when(bdd.parsers.parse("I search for {text}"))
 def run_search(text):
     search.search(text, api.modes.current())
@@ -21,3 +38,8 @@ def run_search(text):
 @bdd.when(bdd.parsers.parse("I search in reverse for {text}"))
 def run_search_reverse(text):
     search.search(text, api.modes.current(), reverse=True)
+
+
+@bdd.then(bdd.parsers.parse("There should be {n:d} search matches"))
+def check_search_matches(n):
+    assert len(search_results) == n
