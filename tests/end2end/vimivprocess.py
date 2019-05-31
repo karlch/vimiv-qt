@@ -43,7 +43,8 @@ def exit():
 class VimivProc:
     """Process class to start and exit one vimiv process."""
 
-    def __init__(self, qtbot, argv=[]):
+    def __init__(self, qtbot, argv=None):
+        argv = [] if argv is None else argv
         argv.extend(["--temp-basedir"])
         args = startup.setup_pre_app(argv)
         startup.setup_post_app(args)
