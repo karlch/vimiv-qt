@@ -95,8 +95,6 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
             return
         # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
-        # Update command with aliases and wildcards
-        command = runners.update_command(command, self.mode)
         # Retrieve function to call depending on prefix
         func = _command_func(prefix, command, self.mode)
         # Run commands in QTimer so the command line has been left when the

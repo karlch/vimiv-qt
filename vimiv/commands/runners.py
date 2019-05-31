@@ -45,13 +45,18 @@ def run(text, count=None, mode=None):
         count: Count given if any.
         mode: Mode to run the command in.
     """
+    text = text.strip()
+    if not text:
+        return
+    text = _update_command(text, mode=mode)
     if text.startswith("!"):
-        return external(text.lstrip("!"))
-    text = str(count) + text if count is not None else text
-    return command(text, mode)
+        external(text.lstrip("!"))
+    else:
+        count = str(count) if count is not None else ""
+        command(count + text, mode)
 
 
-def update_command(text, mode):
+def _update_command(text, mode):
     """Update command with aliases and percent wildcard.
 
     Args:
@@ -72,9 +77,12 @@ def command(text, mode=None):
         text: String passed as command.
         mode: Mode in which the command is supposed to run.
     """
-    if mode is None:
-        mode = api.modes.current()
-    count, cmdname, args = _parse(text)
+    try:
+        count, cmdname, args = _parse(text)
+    except ValueError as e:  # E.g. raised by shlex on unclosed quotation
+        logging.error("Error parsing command: %s", e)
+        return
+    mode = mode if mode is not None else api.modes.current()
     _run_command(count, cmdname, args, mode)
     logging.debug("Ran '%s' succesfully", text)
 

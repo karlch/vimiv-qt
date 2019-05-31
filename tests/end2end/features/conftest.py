@@ -18,6 +18,7 @@ from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import filelist
 
+
 ###############################################################################
 #                                    When                                     #
 ###############################################################################
@@ -25,10 +26,7 @@ from vimiv.imutils import filelist
 
 @bdd.when(bdd.parsers.parse("I run {command}"))
 def run_command(command):
-    mode = api.modes.current()
-    command = runners.update_command(command, mode)
-    func = commandline._command_func(":", command, mode)
-    func()
+    runners.run(command, mode=api.modes.current())
 
 
 @bdd.when(bdd.parsers.parse("I press {keys}"))

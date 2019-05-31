@@ -27,3 +27,11 @@ Feature: Do not crash and display error message on failed commands.
     Scenario: Crash on plain number command
         When I run 3
         Then no crash should happen
+
+    Scenario: Crash on unclosed quote
+        When I run '
+        Then no crash should happen
+
+    Scenario: Crash on empty command
+        When I run
+        Then no crash should happen
