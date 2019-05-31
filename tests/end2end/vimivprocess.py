@@ -7,7 +7,6 @@
 """Singleton to start one vimiv process for tests."""
 
 from PyQt5.QtCore import QThreadPool, QCoreApplication, pyqtBoundSignal, QObject
-from PyQt5.QtWidgets import QWidget
 
 # Must mock decorator before import
 from unittest import mock
@@ -48,9 +47,6 @@ class VimivProc:
         argv.extend(["--temp-basedir"])
         args = startup.setup_pre_app(argv)
         startup.setup_post_app(args)
-        for name, widget in api.objreg._registry.items():
-            if isinstance(widget, QWidget):
-                qtbot.addWidget(widget)
         # No crazy stuff should happen here, waiting is not really necessary
         working_directory.handler.WAIT_TIME = 0.001
         # No key holding happens, waiting is not necessary
