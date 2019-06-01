@@ -86,8 +86,6 @@ def open(paths: List[str]):  # pylint: disable=redefined-builtin
     positional arguments:
         * ``paths``: The path(s) to open.
     """
-    assert isinstance(paths, list), "Paths must be passed as list for nargs=*"
-    paths = [os.path.abspath(os.path.expanduser(path)) for path in paths]
     images, directories = files.supported(paths)
     mode = api.modes.LIBRARY
     if images:

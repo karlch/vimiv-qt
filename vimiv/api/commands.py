@@ -73,6 +73,7 @@ import argparse
 import glob
 import inspect
 import logging
+import os
 import typing
 from contextlib import suppress
 
@@ -208,7 +209,10 @@ class _CommandArguments(argparse.ArgumentParser):
         """Override parse_args to sort and flatten paths list in addition."""
         parsed_args = super().parse_args(args)
         with suppress(AttributeError):
-            parsed_args.paths = sorted(flatten(parsed_args.paths))
+            parsed_args.paths = [
+                os.path.abspath(os.path.expanduser(path))
+                for path in sorted(flatten(parsed_args.paths))
+            ]
         return parsed_args
 
     def error(self, message: str) -> typing.NoReturn:

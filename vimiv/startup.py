@@ -210,7 +210,7 @@ def init_paths(args):
     """Open paths given from commandline or fallback to library if set."""
     logging.debug("Opening paths")
     try:
-        app.open(args.paths)
+        app.open(os.path.abspath(os.path.expanduser(p)) for p in args.paths)
     except api.commands.CommandError:
         logging.debug("init_paths: No valid paths retrieved")
         if api.settings.startup_library.value:
