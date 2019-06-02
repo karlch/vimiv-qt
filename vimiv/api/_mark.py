@@ -15,7 +15,7 @@ from typing import Any, Callable, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import files, pathreceiver, xdg
+from vimiv.utils import files, pathreceiver, xdg, remove_prefix
 from . import commands, keybindings, objreg, status, settings
 
 
@@ -158,6 +158,17 @@ class Mark(QObject):
     def paths(self) -> List[str]:
         """Return list of currently marked paths."""
         return self._marked
+
+    @staticmethod
+    def highlight(text: str, marked: bool = True) -> str:
+        """Add/remove mark indicator from text.
+
+        If marked is True, then the indicator is added to the left of the text.
+        Otherwise it is removed.
+        """
+        mark_str = settings.statusbar.mark_indicator.value + " "
+        text = remove_prefix(text, mark_str)
+        return mark_str + text if marked else text
 
     def _toggle_mark(self, path: str) -> None:
         """Toggle the mark status of a single path.
