@@ -217,6 +217,8 @@ def _insert_values(style):
     style["manipulate.bar.bg"] = "{statusbar.bg}"
     style["manipulate.bar.fg"] = "{library.selected.bg}"
     style["manipulate.bar.border"] = "0px solid"
+    # Mark
+    style["mark.color"] = "{base0e}"
 
 
 def read(name, filename):

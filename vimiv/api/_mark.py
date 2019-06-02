@@ -15,6 +15,7 @@ from typing import Any, Callable, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from vimiv.config import styles
 from vimiv.utils import files, pathreceiver, xdg, remove_prefix
 from . import commands, keybindings, objreg, status, settings
 
@@ -144,7 +145,7 @@ class Mark(QObject):
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""
         if pathreceiver.current() in self._marked:
-            return settings.statusbar.mark_indicator.value
+            return Mark.indicator()
         return ""
 
     @status.module("{mark-count}")
@@ -160,13 +161,23 @@ class Mark(QObject):
         return self._marked
 
     @staticmethod
+    def indicator() -> str:
+        """Colored mark indicator."""
+        color = styles.get("mark.color")
+        return (
+            f"<span style='color: {color};'>"
+            f"{settings.statusbar.mark_indicator.value}"
+            "</span>"
+        )
+
+    @staticmethod
     def highlight(text: str, marked: bool = True) -> str:
         """Add/remove mark indicator from text.
 
         If marked is True, then the indicator is added to the left of the text.
         Otherwise it is removed.
         """
-        mark_str = settings.statusbar.mark_indicator.value + " "
+        mark_str = Mark.indicator() + " "
         text = remove_prefix(text, mark_str)
         return mark_str + text if marked else text
 
