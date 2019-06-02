@@ -187,6 +187,11 @@ def check_popup_displayed(title):
     raise AssertionError(f"Window '{title}' not found")
 
 
+@bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
+def check_filelist_length(number):
+    assert filelist.total() == number
+
+
 def _check_status(qtbot, assertion, info=""):
     """Check statusbar repeatedly as this is threaded and may take a while."""
     iteration = 0

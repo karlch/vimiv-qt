@@ -82,6 +82,11 @@ class Mark(QObject):
             return f"({len(self._marked):d} marked)"
         return ""
 
+    @property
+    def paths(self) -> List[str]:
+        """Return list of currently marked paths."""
+        return self._marked
+
     def _toggle_mark(self, path: str) -> None:
         """Toggle the mark status of a single path.
 

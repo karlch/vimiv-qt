@@ -6,4 +6,7 @@
 
 import pytest_bdd as bdd
 
-from vimiv.imutils import filelist
+from vimiv import api
+
+
+bdd.scenarios("mark.feature")
