@@ -155,6 +155,13 @@ def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
+def remove_prefix(text: str, prefix: str) -> str:
+    """Remove a prefix of a given string."""
+    if text.startswith(prefix):
+        return text[len(prefix) :]
+    return text
+
+
 def timed(function):
     """Decorator to time a function and log evaluation time."""
 

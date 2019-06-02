@@ -94,3 +94,11 @@ def test_profiler(capsys):
 def test_flatten():
     list_of_lists = [[1, 2], [3, 4]]
     assert utils.flatten(list_of_lists) == [1, 2, 3, 4]
+
+
+def test_remove_prefix():
+    assert utils.remove_prefix("start hello", "start") == " hello"
+
+
+def test_remove_prefix_not_found():
+    assert utils.remove_prefix("start hello", "starter") == "start hello"
