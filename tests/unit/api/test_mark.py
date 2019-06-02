@@ -6,9 +6,14 @@
 
 """Tests for vimiv.api._mark."""
 
+import os
+import re
+from collections import namedtuple
+
 import pytest
 
 from vimiv import api
+from vimiv.api._mark import Tag
 
 
 @pytest.fixture
@@ -19,6 +24,26 @@ def mark(mocker):
     yield api.mark
     api.mark._marked.clear()
     api.mark._last_marked.clear()
+
+
+@pytest.fixture
+def tagdir(tmpdir, mocker):
+    def join(*paths):
+        return tmpdir.join(*paths)
+
+    tmp_tagdir = tmpdir.join("tags")
+    mocker.patch("vimiv.utils.xdg.join_vimiv_data", return_value=tmp_tagdir)
+    yield tmp_tagdir
+
+
+@pytest.fixture
+def tagwrite(tagdir):
+    paths = ["first", "second"]
+    name = "test"
+    with Tag(name, read_only=False) as tag:
+        tag.write(paths)
+    path = os.path.join(tagdir, name)
+    yield namedtuple("tagwrite", ["path", "content"])(path, paths)
 
 
 def test_mark_single_image(mark):
@@ -55,3 +80,41 @@ def test_mark_restore(mark):
     mark.mark_restore()
     assert "image" in mark._marked
     assert mark.marked.called_with("image")
+
+
+def test_tag_write(tagwrite):
+    assert os.path.isfile(tagwrite.path)
+
+
+def test_tag_write_header(tagwrite):
+    with open(tagwrite.path, "r") as f:
+        comment_lines = [l for l in f if l.startswith(Tag.COMMENTCHAR)]
+    assert "vimiv tag file" in comment_lines[0]
+    date_re = re.compile(r"# created: \d\d\d\d-\d\d-\d\d \d\d:\d\d")
+    assert (
+        date_re.match(comment_lines[1]) is not None
+    ), f"date not found in {comment_lines[1]}"
+
+
+def test_tag_write_paths(tagwrite):
+    with open(tagwrite.path, "r") as f:
+        path_lines = [l.strip() for l in f if not l.startswith(Tag.COMMENTCHAR)]
+    for path in tagwrite.content:
+        assert path in path_lines
+
+
+def test_tag_write_append_paths(tagwrite):
+    all_paths = tagwrite.content + ["third"]
+    with Tag(tagwrite.path, read_only=False) as tag:
+        tag.write(all_paths)
+    with Tag(tagwrite.path, read_only=True) as tag:
+        read_paths = tag.read()
+    assert len(set(read_paths)) == len(read_paths), "Append created duplicates"
+    assert sorted(read_paths) == sorted(all_paths), "Append wrote wrong content"
+
+
+def test_tag_read(tagwrite):
+    with Tag(tagwrite.path, read_only=True) as tag:
+        paths = tag.read()
+    for path in tagwrite.content:
+        assert path in paths
