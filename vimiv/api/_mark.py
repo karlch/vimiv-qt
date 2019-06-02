@@ -49,6 +49,8 @@ class Mark(QObject):
 
         If a path is currently marked, it is unmarked instead.
 
+        .. hint:: ``:mark %`` marks the current path.
+
         positional arguments:
             * ``paths``: The path(s) to mark.
         """
