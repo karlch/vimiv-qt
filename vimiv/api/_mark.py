@@ -16,7 +16,7 @@ from typing import Any, Callable, List
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import files, pathreceiver, xdg
-from . import commands, keybindings, objreg, status
+from . import commands, keybindings, objreg, status, settings
 
 
 class Mark(QObject):
@@ -144,7 +144,7 @@ class Mark(QObject):
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""
         if pathreceiver.current() in self._marked:
-            return "*"
+            return settings.statusbar.mark_indicator.value
         return ""
 
     @status.module("{mark-count}")

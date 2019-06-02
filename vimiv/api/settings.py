@@ -456,6 +456,11 @@ class statusbar:  # pylint: disable=invalid-name
         desc="Time in ms until statusbar messages are removed",
         min_value=500,
     )
+    mark_indicator = StrSetting(
+        "statusbar.mark_indicator",
+        "<b>*</b>",
+        desc="Text to display if the current image is marked",
+    )
     # Statusbar module strings, these are not retrieved by their type
     StrSetting("statusbar.left", "{pwd}")
     StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
