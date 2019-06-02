@@ -1,5 +1,18 @@
 Feature: Mark and tag images.
 
+    Scenario: Mark current path
+        Given I open 2 images
+        When I run mark %
+        Then there should be 1 marked images
+        And image_01.jpg should be marked
+
+    Scenario: Mark multiple paths
+        Given I open 5 images
+        When I run mark image_01.jpg image_02.jpg
+        Then there should be 2 marked images
+        And image_01.jpg should be marked
+        And image_02.jpg should be marked
+
     Scenario: Load all marked images
         Given I open 5 images
         When I run mark image_01.jpg image_02.jpg

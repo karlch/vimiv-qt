@@ -64,6 +64,7 @@ class VimivProc:
         # Needed for cleanup
         QCoreApplication.instance().aboutToQuit.emit()
         api.settings.reset()
+        api.mark.mark_clear()
         # Must disconnect these signals ourselves as the automatic disconnection seems
         # to fail with slots assigned using partial
         for name in dir(api.imutils):
