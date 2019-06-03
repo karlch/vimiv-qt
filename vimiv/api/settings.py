@@ -470,7 +470,8 @@ class statusbar:  # pylint: disable=invalid-name
     )
     StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
     StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
-    StrSetting("statusbar.right", "{keys}  {mode}")
+    StrSetting("statusbar.right", "{keys}  {mark-count}  {mode}")
+    StrSetting("statusbar.right_image", "{keys}  {mark-indicator} {mark-count}  {mode}")
 
 
 class keyhint:  # pylint: disable=invalid-name
