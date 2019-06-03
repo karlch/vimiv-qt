@@ -152,7 +152,8 @@ class Mark(QObject):
     def mark_count(self) -> str:
         """Total number of currently marked images."""
         if self._marked:
-            return f"({len(self._marked):d} marked)"
+            color = styles.get("mark.color")
+            return wrap_style_span(f"color: {color}", f"{len(self._marked):02d}")
         return ""
 
     @property
