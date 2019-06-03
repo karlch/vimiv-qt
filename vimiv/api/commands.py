@@ -210,8 +210,7 @@ class _CommandArguments(argparse.ArgumentParser):
         parsed_args = super().parse_args(args)
         with suppress(AttributeError):
             parsed_args.paths = [
-                os.path.abspath(os.path.expanduser(path))
-                for path in sorted(flatten(parsed_args.paths))
+                os.path.abspath(path) for path in sorted(flatten(parsed_args.paths))
             ]
         return parsed_args
 
@@ -251,7 +250,10 @@ class _CommandArguments(argparse.ArgumentParser):
         """
         argtype = argument.annotation
         if argument.name == "paths":
-            return {"type": lambda x: glob.glob(x, recursive=True), "nargs": "+"}
+            return {
+                "type": lambda x: glob.glob(os.path.expanduser(x), recursive=True),
+                "nargs": "+",
+            }
         if argtype == typing.List[str]:
             return {"type": str, "nargs": "*"}
         if optional and argtype is bool:
