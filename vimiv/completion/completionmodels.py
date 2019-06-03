@@ -89,14 +89,16 @@ class StripFilter(api.completion.TextFilter):
 
 
 class PathModel(api.completion.BaseModel):
-    """Completion model filled with valid paths for the :open command.
+    """Completion model filled with valid paths for path-like commands.
 
     Attributes:
+        _command: The command for which this model is valid.
         _last_directory: Last directory to avoid re-evaluating on every character.
     """
 
-    def __init__(self):
-        super().__init__(":open ", text_filter=StripFilter("open"))
+    def __init__(self, command):
+        super().__init__(f":{command} ", text_filter=StripFilter(command))
+        self._command = command
         self._last_directory = ""
 
     def on_enter(self, text: str, mode: api.modes.Mode) -> None:
@@ -118,8 +120,9 @@ class PathModel(api.completion.BaseModel):
         # Retrieve supported paths
         images, directories = files.supported(files.listdir(directory))
         # Format data
+        cmd = self._command
         data = [
-            ("open " + shlex.quote(os.path.join(directory, os.path.basename(path))),)
+            (f"{cmd} " + shlex.quote(os.path.join(directory, os.path.basename(path))),)
             for path in images + directories
         ]
         self.set_data(data)
@@ -236,7 +239,8 @@ def init():
     Empty()
     CommandModel()
     ExternalCommandModel()
-    PathModel()
+    PathModel("open")
+    PathModel("delete")
     SettingsModel()
     for _, setting in api.settings.items():
         SettingsOptionModel(setting)
