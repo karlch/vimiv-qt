@@ -54,7 +54,7 @@ def test_delete_multiple_files(trash, tmpdir):
 def test_delete_and_undelete_file(trash, tmpfile):
     trash_manager.delete([tmpfile])
     basename = os.path.basename(tmpfile)
-    trash_manager.undelete(basename)
+    trash_manager.undelete([basename])
     assert os.path.exists(tmpfile)
 
 

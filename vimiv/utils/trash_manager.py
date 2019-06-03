@@ -61,23 +61,28 @@ def delete(paths: List[str]) -> None:
 
 
 @api.commands.register()
-def undelete(basename: str) -> None:
+def undelete(basenames: List[str]) -> None:
     """Restore a file from the trash directory.
 
-    **syntax:** ``:undelete basename``
+    **syntax:** ``:undelete [basename ...]``
+
+    If no basename is given, the last deleted images in this session are restored.
 
     positional arguments:
-        * ``basename``: The basename of the file in the trash directory.
+        * ``basenames``: The basename(s) of the file in the trash directory.
     """
-    trash_filename = os.path.join(_files_directory, basename)
-    info_filename = _get_info_filename(basename)
-    if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
-        raise api.commands.CommandError("File does not exist")
-    original_filename, _ = trash_info(basename)
-    if not os.path.isdir(os.path.dirname(original_filename)):
-        raise api.commands.CommandError("Original directory is not accessible")
-    shutil.move(trash_filename, original_filename)
-    os.remove(info_filename)
+    for basename in basenames:
+        trash_filename = os.path.join(_files_directory, basename)
+        info_filename = _get_info_filename(basename)
+        if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
+            raise api.commands.CommandError(f"File for {basename} does not exist")
+        original_filename, _ = trash_info(basename)
+        if not os.path.isdir(os.path.dirname(original_filename)):
+            raise api.commands.CommandError(
+                f"Original directory of {basename} is not accessible"
+            )
+        shutil.move(trash_filename, original_filename)
+        os.remove(info_filename)
 
 
 def _get_trash_filename(filename: str) -> str:
