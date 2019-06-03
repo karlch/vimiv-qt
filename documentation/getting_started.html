@@ -86,6 +86,7 @@
 <li><a class="reference internal" href="#image-editing">Image Editing</a></li>
 <li><a class="reference internal" href="#command-line">Command Line</a></li>
 <li><a class="reference internal" href="#count">Count</a></li>
+<li><a class="reference internal" href="#marks-and-tags">Marks and Tags</a></li>
 <li><a class="reference internal" href="#what-next">What Next?</a></li>
 </ul>
 </li>
@@ -180,7 +181,7 @@ decrease it by 1/10 use <code class="docutils literal notranslate"><span class="
 to leave manipulate mode reverting any changes press <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code>.</p>
 </div>
 <div class="section" id="command-line">
-<h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
+<span id="commandline"></span><h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
 <p>Similar to many keyboard centric programs, vimiv includes a simple commmand
 line to run commands. It is opened with <code class="docutils literal notranslate"><span class="pre">:</span></code> and closed with <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code> to
 run a command and <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code> to discard it.</p>
@@ -189,12 +190,14 @@ displayed. Pressing <code class="docutils literal notranslate"><span class="pre"
 <code class="docutils literal notranslate"><span class="pre">&lt;shift&gt;&lt;tab&gt;</span></code> cycles in inverse direction.</p>
 <p>Opening new paths from here is done using the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command. Path
 completion is also supported.</p>
+<p>Unix style pattern matching including <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">?</span></code> can be used. Recursive matching is
+also possible using <code class="docutils literal notranslate"><span class="pre">**</span></code> but please note that this can become slow in large directory
+trees. In addition <code class="docutils literal notranslate"><span class="pre">%</span></code> gets replaced with the currently selected file and <code class="docutils literal notranslate"><span class="pre">%m</span></code> by
+all marked images. See <a class="reference internal" href="#marks-and-tags"><span class="std std-ref">Marks and Tags</span></a> for more information on this.</p>
 <p>Prepending a command with <code class="docutils literal notranslate"><span class="pre">!</span></code> lets vimiv interpret the command as an external
-command. The following text is passed to the shell. Here <code class="docutils literal notranslate"><span class="pre">%</span></code> is replaced with the
-currently selected file and unix style pattern matching including <code class="docutils literal notranslate"><span class="pre">*</span></code> and <code class="docutils literal notranslate"><span class="pre">?</span></code> can be
-used. Recursive matching is also possible using <code class="docutils literal notranslate"><span class="pre">**</span></code> but please note that this can
-become slow in large directory trees.
-Example: <code class="docutils literal notranslate"><span class="pre">:!gimp</span> <span class="pre">%</span></code> opens the currently selected image in gimp.</p>
+command. This becomes especially useful in combination with the patterns described
+above.</p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">:!gimp</span> <span class="pre">%</span></code> opens the currently selected image in gimp.</p>
 <p>External commands can be “piped to vimiv” by appending the <code class="docutils literal notranslate"><span class="pre">|</span></code> char to the
 command. The output of the command is then parsed by vimiv. If the first line
 out output is a directory, it is opened in the library. If it is a valid image,
@@ -211,6 +214,36 @@ be navigated and searched through using the <code class="docutils literal notran
 count in the command line, prepend <code class="docutils literal notranslate"><span class="pre">[count]</span></code> to the command, e.g. <code class="docutils literal notranslate"><span class="pre">:5next</span></code>.
 Pressing any number appends it to the current <code class="docutils literal notranslate"><span class="pre">[count]</span></code> and the next command
 is run with the stored <code class="docutils literal notranslate"><span class="pre">[count]</span></code>.</p>
+</div>
+<div class="section" id="marks-and-tags">
+<span id="id1"></span><h2>Marks and Tags<a class="headerlink" href="#marks-and-tags" title="Permalink to this headline">¶</a></h2>
+<p>Images supports the concept of marking images using the <code class="docutils literal notranslate"><span class="pre">:mark</span></code> command. As an
+argument it takes an arbitrary number of paths and supports pattern matching as
+described in <a class="reference internal" href="#commandline"><span class="std std-ref">Command Line</span></a>. The current image is therefore marked using <code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">%</span></code>
+which is bound to <code class="docutils literal notranslate"><span class="pre">m</span></code> by default. Working with the set of marked images is done by
+referencing them in the command line with <code class="docutils literal notranslate"><span class="pre">%m</span></code>.</p>
+<p>Example: <code class="docutils literal notranslate"><span class="pre">:!mogrify</span> <span class="pre">-rotate</span> <span class="pre">90</span> <span class="pre">%m</span></code> rotates all marked images by 90 degrees using the
+<code class="docutils literal notranslate"><span class="pre">mogrify</span></code> command from <a class="reference external" href="https://imagemagick.org/index.php">imagemagick</a>.</p>
+<p>All current marks are removed by running <code class="docutils literal notranslate"><span class="pre">:mark-clear</span></code>. The last set of cleared marks
+can be restored using <code class="docutils literal notranslate"><span class="pre">:mark-restore</span></code>.</p>
+<p>To keep a selection of marks and assigning them a name, tags can be used. New tags are
+created using <code class="docutils literal notranslate"><span class="pre">:tag-write</span> <span class="pre">my_fancy_tag</span></code>. Grouping into sub-directories is possible by
+naming the tags accordingly, e.g. <code class="docutils literal notranslate"><span class="pre">:tag-write</span> <span class="pre">favourites/2017</span></code>. Under the hood, this
+creates a tag file in <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/tags</span></code> which is a simple text file that can
+be parsed as usual.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>When writing to a tag that exists, all currently marked images that are not in
+the tag yet are appended to it.</p>
+</div>
+<p>Loading a tag is done with <code class="docutils literal notranslate"><span class="pre">:tag-load</span> <span class="pre">my_fancy_tag</span></code> which loads all images from the
+tag into the list of marked images. To then open them in image mode we can refer to them
+with <code class="docutils literal notranslate"><span class="pre">%m</span></code> in the open command: <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">%m</span></code>.</p>
+<p>Deleting a tag is done with <code class="docutils literal notranslate"><span class="pre">:tag-delete</span> <span class="pre">my_fancy_tag</span></code>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This deletes the tag permanently with no option to restore it!</p>
+</div>
 </div>
 <div class="section" id="what-next">
 <h2>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h2>

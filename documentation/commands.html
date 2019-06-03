@@ -87,6 +87,9 @@
 <li><a class="reference internal" href="#delete">delete</a></li>
 <li><a class="reference internal" href="#enter">enter</a></li>
 <li><a class="reference internal" href="#fullscreen">fullscreen</a></li>
+<li><a class="reference internal" href="#mark">mark</a></li>
+<li><a class="reference internal" href="#mark-clear">mark-clear</a></li>
+<li><a class="reference internal" href="#mark-restore">mark-restore</a></li>
 <li><a class="reference internal" href="#next">next</a></li>
 <li><a class="reference internal" href="#nop">nop</a></li>
 <li><a class="reference internal" href="#open">open</a></li>
@@ -99,6 +102,9 @@
 <li><a class="reference internal" href="#search-next">search-next</a></li>
 <li><a class="reference internal" href="#search-prev">search-prev</a></li>
 <li><a class="reference internal" href="#set">set</a></li>
+<li><a class="reference internal" href="#tag-delete">tag-delete</a></li>
+<li><a class="reference internal" href="#tag-load">tag-load</a></li>
+<li><a class="reference internal" href="#tag-write">tag-write</a></li>
 <li><a class="reference internal" href="#toggle">toggle</a></li>
 <li><a class="reference internal" href="#unbind">unbind</a></li>
 <li><a class="reference internal" href="#undelete">undelete</a></li>
@@ -223,41 +229,59 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
 <td><p>Toggle fullscreen mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
+<td><p>Mark one or more paths.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
+<td><p>Clear all marks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
+<td><p>Restore the last cleared marks.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Select next image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
 <td><p>Open one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Select previous image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
 <td><p>Quit vimiv.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
 <td><p>Repeat the last command.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
 <td><p>Scale the image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
 <td><p>Start a search.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
 <td><p>Continue search to the next match.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
 <td><p>Continue search to the previous match.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
 <td><p>Set an option.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
+<td><p>Delete an existing tag.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
+<td><p>Load images from a tag into the current mark list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
+<td><p>Write marked paths to a tag.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
 <td><p>Toggle one mode.</p></td>
@@ -355,6 +379,34 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <div class="section" id="fullscreen">
 <span id="ref-global-fullscreen"></span><h3>fullscreen<a class="headerlink" href="#fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
+</div>
+<div class="section" id="mark">
+<span id="ref-global-mark"></span><h3>mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h3>
+<p>Mark one or more paths.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
+<p>If a path is currently marked, it is unmarked instead.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">%</span></code> marks the current path.</p>
+</div>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to mark.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="mark-clear">
+<span id="ref-global-mark-clear"></span><h3>mark-clear<a class="headerlink" href="#mark-clear" title="Permalink to this headline">¶</a></h3>
+<p>Clear all marks.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is possible to restore the last cleared marks using <code class="docutils literal notranslate"><span class="pre">mark-restore</span></code>.</p>
+</div>
+</div>
+<div class="section" id="mark-restore">
+<span id="ref-global-mark-restore"></span><h3>mark-restore<a class="headerlink" href="#mark-restore" title="Permalink to this headline">¶</a></h3>
+<p>Restore the last cleared marks.</p>
 </div>
 <div class="section" id="next">
 <span id="ref-global-next"></span><h3>next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h3>
@@ -459,6 +511,56 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 <dt>positional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="tag-delete">
+<span id="ref-global-tag-delete"></span><h3>tag-delete<a class="headerlink" href="#tag-delete" title="Permalink to this headline">¶</a></h3>
+<p>Delete an existing tag.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:tag-delete</span> <span class="pre">name</span></code></p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If you pass a tag group directory, the complete tree is deleted.</p>
+</div>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="tag-load">
+<span id="ref-global-tag-load"></span><h3>tag-load<a class="headerlink" href="#tag-load" title="Permalink to this headline">¶</a></h3>
+<p>Load images from a tag into the current mark list.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">tag-load</span> <span class="pre">name</span></code></p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>You can open all marked images with <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">%m</span></code>.</p>
+</div>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to delete.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="tag-write">
+<span id="ref-global-tag-write"></span><h3>tag-write<a class="headerlink" href="#tag-write" title="Permalink to this headline">¶</a></h3>
+<p>Write marked paths to a tag.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:tag-write</span> <span class="pre">name</span></code></p>
+<p>This writes all currently marked images to this tag. This allows storing a
+selection of marked images under a name and re-loading them in later sessions
+using <code class="docutils literal notranslate"><span class="pre">:tag-load</span> <span class="pre">name</span></code>. If the tag file exists, all marked paths that are not
+in the tag are appended to it.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is possible to group tags into directories by dividing the name into a
+directory tree, e.g. <code class="docutils literal notranslate"><span class="pre">:tag-write</span> <span class="pre">favourites/2017</span></code>.</p>
+</div>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to create.</p></li>
 </ul>
 </dd>
 </dl>
