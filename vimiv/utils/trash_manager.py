@@ -14,6 +14,7 @@ Module Attributes:
         stored.
     _info_directory: String path to the directory in which info files for
         trashed files are stored.
+    _last_deleted: List of last deleted images to allow undeleting them.
 """
 
 import configparser
@@ -30,6 +31,7 @@ from vimiv.utils import xdg
 
 _files_directory = cast(str, None)
 _info_directory = cast(str, None)
+_last_deleted: List[str] = []
 
 
 def init() -> None:
@@ -51,6 +53,7 @@ def delete(paths: List[str]) -> None:
     positional arguments:
         * ``paths``: The path(s) to delete.
     """
+    _last_deleted.clear()
     for filename in paths:
         filename = os.path.abspath(filename)
         if not os.path.exists(filename):
@@ -58,6 +61,7 @@ def delete(paths: List[str]) -> None:
         trash_filename = _get_trash_filename(filename)
         _create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)
+        _last_deleted.append(os.path.basename(trash_filename))
 
 
 @api.commands.register()
@@ -71,6 +75,7 @@ def undelete(basenames: List[str]) -> None:
     positional arguments:
         * ``basenames``: The basename(s) of the file in the trash directory.
     """
+    basenames = basenames if basenames else _last_deleted
     for basename in basenames:
         trash_filename = os.path.join(_files_directory, basename)
         info_filename = _get_info_filename(basename)

@@ -38,3 +38,11 @@ Feature: Deleting an image in the current file list
         Then the filelist should contain 1 images
         And image_02.jpg should not be in the filelist
         And image_03.jpg should not be in the filelist
+
+    Scenario: Delete and undelete multiple images
+        Given I open 3 images
+        When I run delete image_02.jpg image_03.jpg
+        And I wait for the working directory handler
+        And I run undelete
+        And I wait for the working directory handler
+        Then the filelist should contain 3 images
