@@ -68,15 +68,23 @@ class ExternalCommandModel(api.completion.BaseModel):
         return []
 
 
-class OpenFilter(api.completion.TextFilter):
-    """TextFilter used for the :open command."""
+class StripFilter(api.completion.TextFilter):
+    """TextFilter used for the :command type completions.
+
+    Attributes:
+        _command: The command for which this filter is valid.
+    """
+
+    def __init__(self, command):
+        super().__init__()
+        self._command = command
 
     def strip_text(self, text: str) -> str:
-        """Additionally strip :open to allow match inside word."""
+        """Additionally strip :command to allow match inside word."""
         return (
             super()
             .strip_text(text)
-            .replace("open ", "")  # Still allow match inside word for open
+            .replace(f"{self._command} ", "")  # Still allow match inside word for open
         )
 
 
@@ -88,7 +96,7 @@ class PathModel(api.completion.BaseModel):
     """
 
     def __init__(self):
-        super().__init__(":open ", text_filter=OpenFilter())
+        super().__init__(":open ", text_filter=StripFilter("open"))
         self._last_directory = ""
 
     def on_enter(self, text: str, mode: api.modes.Mode) -> None:
@@ -126,24 +134,12 @@ class PathModel(api.completion.BaseModel):
         return os.path.dirname(text)
 
 
-class SettingFilter(api.completion.TextFilter):
-    """TextFilter used for the :set command."""
-
-    def strip_text(self, text: str) -> str:
-        """Additionally strip :set to allow match inside word."""
-        return (
-            super()
-            .strip_text(text)
-            .replace("set ", "")  # Still allow match inside word for open
-        )
-
-
 class SettingsModel(api.completion.BaseModel):
     """Completion model filled with valid options for the :set command."""
 
     def __init__(self):
         super().__init__(
-            ":set ", text_filter=SettingFilter(), column_widths=(0.4, 0.1, 0.5)
+            ":set ", text_filter=StripFilter("set"), column_widths=(0.4, 0.1, 0.5)
         )
         data = [
             (f"set {name}", str(setting), setting.desc)
@@ -163,7 +159,7 @@ class SettingsOptionModel(api.completion.BaseModel):
     def __init__(self, setting: api.settings.Setting):
         super().__init__(
             f":set {setting.name}",
-            text_filter=SettingFilter(),
+            text_filter=StripFilter("set"),
             column_widths=(0.5, 0.5),
         )
         self._setting = setting
