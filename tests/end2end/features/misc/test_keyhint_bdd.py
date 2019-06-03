@@ -7,7 +7,7 @@
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.gui import keyhint_widget
+from vimiv.gui import keyhint_widget, mainwindow, bar
 from vimiv.utils import eventhandler
 
 
@@ -46,3 +46,17 @@ def keyhint_widget_not_visible():
 @bdd.then(bdd.parsers.parse("the keyhint widget should contain {command}"))
 def keyhint_widget_contains(command):
     assert command in keyhint_widget.instance().text()
+
+
+@bdd.then("the keyhint widget should be above the statusbar")
+def keyhint_widget_above_bar():
+    keyhint_bottom = keyhint_widget.instance().y() + keyhint_widget.instance().height()
+    bar_top = bar.instance().y()
+    assert keyhint_bottom == bar_top
+
+
+@bdd.then("the keyhint widget should be at the bottom")
+def keyhint_widget_bottom():
+    keyhint_bottom = keyhint_widget.instance().y() + keyhint_widget.instance().height()
+    window_bottom = mainwindow.instance().height()
+    assert keyhint_bottom == window_bottom

@@ -19,3 +19,14 @@ Feature: The keyhint overlay widget
         And I wait for the keyhint widget
         And I wait for the keyhint widget timeout
         Then the keyhint widget should not be visible
+
+    Scenario: Keyhint should be above statusbar
+        When I press g
+        And I wait for the keyhint widget
+        Then the keyhint widget should be above the statusbar
+
+    Scenario: Keyhint at bottom with statusbar hidden
+        When I run set statusbar.show false
+        And I press g
+        And I wait for the keyhint widget
+        Then the keyhint widget should be at the bottom

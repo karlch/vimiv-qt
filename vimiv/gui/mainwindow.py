@@ -57,7 +57,9 @@ class MainWindow(QWidget):
         self._set_title()
 
         api.status.signals.update.connect(self._set_title)
-        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.signals.entered.connect(self._on_mode_changed)
+        api.modes.signals.left.connect(self._on_mode_changed)
+        api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
 
     @api.keybindings.register("f", "fullscreen")
     @api.commands.register()
@@ -77,6 +79,11 @@ class MainWindow(QWidget):
         super().resizeEvent(event)
         self._update_overlay_geometry()
         library.instance().update_width()
+
+    def show(self):
+        """Update show to resize overlays."""
+        super().show()
+        self._update_overlay_geometry()
 
     def _update_overlay_geometry(self):
         """Update geometry of all overlay widgets according to current layout."""
@@ -100,8 +107,7 @@ class MainWindow(QWidget):
             title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))
 
-    @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
+    def _on_mode_changed(self, mode: api.modes.Mode, last_mode: api.modes.Mode = None):
         """Update overlay geometry when entering command mode.
 
         This is required as the possibly hidden bar is now certainly visible and the
