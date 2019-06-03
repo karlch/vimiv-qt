@@ -67,14 +67,9 @@ class StatusBar(QWidget):
 
         self["status"] = QWidget()
         labelbox = widgets.SimpleHBox(self["status"])
-        self["left"] = QLabel()
-        self["center"] = QLabel()
-        self["center"].setAlignment(Qt.AlignCenter)
-        self["right"] = QLabel()
-        self["right"].setAlignment(Qt.AlignRight)
-        labelbox.addWidget(self["left"])
-        labelbox.addWidget(self["center"])
-        labelbox.addWidget(self["right"])
+        self._add_label(labelbox, "left", Qt.AlignLeft)
+        self._add_label(labelbox, "center", Qt.AlignCenter)
+        self._add_label(labelbox, "right", Qt.AlignRight)
         self["stack"].addWidget(self["status"])
 
         self["message"] = QLabel()
@@ -128,7 +123,7 @@ class StatusBar(QWidget):
             text = api.settings.get_value("statusbar.%s_%s" % (position, mode))
         except KeyError:
             text = api.settings.get_value("statusbar.%s" % (position))
-        return api.status.evaluate(text)
+        return api.status.evaluate(text.replace(" ", "&nbsp;"))
 
     def _set_severity_style(self, severity):
         """Set the style of the statusbar for a temporary message.
@@ -147,6 +142,14 @@ class StatusBar(QWidget):
             severity
         )
         styles.apply(self, append)
+
+    def _add_label(self, labelbox, position, alignment):
+        """Add a status label to the labelbox."""
+        label = QLabel()
+        label.setAlignment(alignment)
+        label.setTextFormat(Qt.RichText)  # Force rich text to allow using &nbsp;
+        labelbox.addWidget(label)
+        self[position] = label
 
     def _clear_severity_style(self):
         styles.apply(self)
