@@ -233,8 +233,8 @@ def init_ui(args):
             screen_geometry.width() / 2, screen_geometry.height() / 2
         )
     )
-    x = (screen_geometry.width() - geometry.width) // 2
-    y = (screen_geometry.height() - geometry.height) // 2
+    x = screen_geometry.x() + (screen_geometry.width() - geometry.width) // 2
+    y = screen_geometry.y() + (screen_geometry.height() - geometry.height) // 2
     mw.setGeometry(x, y, *geometry)
     mw.show()
 
