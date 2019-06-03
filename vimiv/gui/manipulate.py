@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import eventhandler
+from vimiv.utils import eventhandler, wrap_style_span
 
 
 class Manipulate(eventhandler.KeyHandler, QWidget):
@@ -132,11 +132,9 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         fg_focused = styles.get("manipulate.focused.fg")
         for manipulation, label in self._labels.items():
             if manipulation == name:
-                label.setText(
-                    "<span style='color: %s;'>%s</span>" % (fg_focused, manipulation)
-                )
+                label.setText(wrap_style_span(f"color: {fg_focused}", manipulation))
             else:
-                label.setText("<span style='color: %s;'>%s</span>" % (fg, manipulation))
+                label.setText(wrap_style_span(f"color: {fg}", manipulation))
 
     def _on_pixmap_loaded(self, pixmap):
         self._error = None

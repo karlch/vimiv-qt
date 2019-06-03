@@ -16,7 +16,7 @@ from typing import Any, Callable, List
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.config import styles
-from vimiv.utils import files, pathreceiver, xdg, remove_prefix
+from vimiv.utils import files, pathreceiver, xdg, remove_prefix, wrap_style_span
 from . import commands, keybindings, objreg, status, settings
 
 
@@ -164,10 +164,8 @@ class Mark(QObject):
     def indicator() -> str:
         """Colored mark indicator."""
         color = styles.get("mark.color")
-        return (
-            f"<span style='color: {color};'>"
-            f"{settings.statusbar.mark_indicator.value}"
-            "</span>"
+        return wrap_style_span(
+            f"color: {color}", settings.statusbar.mark_indicator.value
         )
 
     @staticmethod

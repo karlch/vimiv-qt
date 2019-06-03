@@ -26,7 +26,14 @@ from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
-from vimiv.utils import files, eventhandler, strip_html, clamp, working_directory
+from vimiv.utils import (
+    files,
+    eventhandler,
+    strip_html,
+    clamp,
+    working_directory,
+    wrap_style_span,
+)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -480,7 +487,7 @@ class LibraryDelegate(QStyledItemDelegate):
         painter.save()
         color = self._get_foreground_color(index, text)
         text = self.elided(text, option.rect.width() - 1)
-        text = f'<span style="color: {color}; font: {self.font};">{text}</span>'
+        text = wrap_style_span(f"color: {color}; font: {self.font}", text)
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
         painter.translate(option.rect.x(), option.rect.y())
@@ -564,7 +571,7 @@ class LibraryDelegate(QStyledItemDelegate):
 
     def sizeHint(self, option, index):
         """Return size of the QTextDocument as size hint."""
-        text = '<span style="font: %s;">any</>' % (self.font)
+        text = wrap_style_span(f"font: {self.font}", "any")
         self.doc.setHtml(text)
         return QSize(self.doc.idealWidth(), self.doc.size().height())
 
