@@ -149,13 +149,15 @@ def _parse(text):
 
 
 def expand_percent(text, mode):
-    """Expand % to the corresponding path.
+    """Expand % to the corresponding path and %m to all marked paths.
 
     Args:
         text: The command in which the wildcards are expanded.
         mode: Mode the command is run in to get correct path(-list).
     """
     # Check first as the re substitutions are rather expensive
+    if "%m" in text:
+        text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
     if "%" in text:
         current = shlex.quote(pathreceiver.current(mode))
         text = re.sub(r"(?<!\\)%", current, text)

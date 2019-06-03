@@ -26,7 +26,14 @@ from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.gui import widgets
-from vimiv.utils import files, eventhandler, strip_html, clamp, working_directory
+from vimiv.utils import (
+    files,
+    eventhandler,
+    strip_html,
+    clamp,
+    working_directory,
+    wrap_style_span,
+)
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -175,7 +182,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         except IndexError:
             logging.warning("Library: selecting empty path")
             return
-        path = strip_html(path_index.data())
+        path = strip(path_index.data())
         if os.path.isdir(path):
             self._open_directory(path)
         else:
@@ -270,7 +277,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Return absolute path of currently selected path."""
         with suppress(IndexError):  # No path selected
             basename = self.selectionModel().selectedIndexes()[1].data()
-            basename = strip_html(basename)
+            basename = strip(basename)
             return os.path.abspath(basename)
         return ""
 
@@ -309,6 +316,8 @@ class LibraryModel(QStandardItemModel):
         self._highlighted = []
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
+        api.mark.marked.connect(self._mark_highlight)
+        api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
         working_directory.handler.changed.connect(self._on_directory_changed)
         working_directory.handler.loaded.connect(self._update_content)
 
@@ -358,6 +367,20 @@ class LibraryModel(QStandardItemModel):
         """Reset highlighted when the search results were cleared."""
         self._highlighted = []
 
+    def _mark_highlight(self, path: str, marked: bool = True):
+        """(Un-)Highlight a path if it was (un-)marked.
+
+        Args:
+            path: The (un-)marked path.
+            marked: True if it was marked.
+        """
+        try:
+            index = self.pathlist().index(path)
+        except ValueError:
+            return
+        item = self.item(index, 1)
+        item.setText(api.mark.highlight(item.text(), marked))
+
     def remove_all_rows(self):
         """Remove all rows from the model.
 
@@ -371,7 +394,7 @@ class LibraryModel(QStandardItemModel):
         pathlist = []
         for i in range(self.rowCount()):
             basename = self.index(i, 1).data()
-            basename = strip_html(basename)
+            basename = strip(basename)
             pathlist.append(os.path.abspath(basename))
         return pathlist
 
@@ -389,6 +412,7 @@ class LibraryModel(QStandardItemModel):
         starting_index = self.rowCount() + 1  # Want to index from 1
         for i, path in enumerate(paths):
             name = os.path.basename(path)
+            marked = path in api.mark.paths
             if are_directories:
                 name = utils.add_html("b", name + "/")
             with suppress(FileNotFoundError):  # Has been deleted in the meantime
@@ -396,7 +420,7 @@ class LibraryModel(QStandardItemModel):
                 self.appendRow(
                     (
                         QStandardItem(str(starting_index + i)),
-                        QStandardItem(name),
+                        QStandardItem(api.mark.highlight(name, marked)),
                         QStandardItem(size),
                     )
                 )
@@ -463,7 +487,7 @@ class LibraryDelegate(QStyledItemDelegate):
         painter.save()
         color = self._get_foreground_color(index, text)
         text = self.elided(text, option.rect.width() - 1)
-        text = f'<span style="color: {color}; font: {self.font};">{text}</span>'
+        text = wrap_style_span(f"color: {color}; font: {self.font}", text)
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
         painter.translate(option.rect.x(), option.rect.y())
@@ -533,16 +557,29 @@ class LibraryDelegate(QStyledItemDelegate):
         Returns:
             Elided version of the text.
         """
-        stripped_text = strip_html(text)
-        elided_text = self.font_metrics.elidedText(stripped_text, Qt.ElideMiddle, width)
-        return text.replace(stripped_text, elided_text)
+        mark_str = api.settings.statusbar.mark_indicator.value
+        marked = text.startswith(mark_str)
+        html_stripped = strip_html(text)
+        elided = self.font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+        # This becomes more complicated as the html is no longer simply surrounding
+        # We must bring back the html from the mark indicator before replacing
+        if marked:
+            mark_stripped = strip_html(mark_str)
+            html_stripped = html_stripped.replace(mark_stripped, mark_str)
+            elided = elided.replace(mark_stripped, mark_str)
+        return text.replace(html_stripped, elided)
 
     def sizeHint(self, option, index):
         """Return size of the QTextDocument as size hint."""
-        text = '<span style="font: %s;">any</>' % (self.font)
+        text = wrap_style_span(f"font: {self.font}", "any")
         self.doc.setHtml(text)
         return QSize(self.doc.idealWidth(), self.doc.size().height())
 
 
 def instance():
     return api.objreg.get(Library)
+
+
+def strip(path: str) -> str:
+    """Strip html tags and mark indicator from a library path."""
+    return strip_html(api.mark.highlight(path, marked=False))

@@ -116,6 +116,11 @@ class CommandMissingDocumentation(BaseChecker):
                     self.add_message(self.name_ambiguous, node=node)
                 continue
             # @module.register()
+            if isinstance(decorator.func.expr, astroid.node_classes.Name):
+                if decorator.func.expr.name == "commands":
+                    return True
+                return False
+            # @api.module.register()
             if (
                 decorator.func.attrname == "register"
                 and decorator.func.expr.attrname == "commands"

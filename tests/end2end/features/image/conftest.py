@@ -7,8 +7,3 @@
 import pytest_bdd as bdd
 
 from vimiv.imutils import filelist
-
-
-@bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
-def check_filelist_length(number):
-    assert filelist.total() == number

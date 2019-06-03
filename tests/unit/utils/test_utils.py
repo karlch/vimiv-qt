@@ -21,6 +21,13 @@ def test_strip_html():
     assert utils.strip_html("<b>hello</b>") == "hello"
 
 
+def test_wrap_style_span():
+    assert (
+        utils.wrap_style_span("color: red", "text")
+        == "<span style='color: red;'>text</span>"
+    )
+
+
 def test_clamp_with_min_and_max():
     assert utils.clamp(2, 0, 5) == 2
     assert utils.clamp(2, 3, 5) == 3
@@ -94,3 +101,11 @@ def test_profiler(capsys):
 def test_flatten():
     list_of_lists = [[1, 2], [3, 4]]
     assert utils.flatten(list_of_lists) == [1, 2, 3, 4]
+
+
+def test_remove_prefix():
+    assert utils.remove_prefix("start hello", "start") == " hello"
+
+
+def test_remove_prefix_not_found():
+    assert utils.remove_prefix("start hello", "starter") == "start hello"

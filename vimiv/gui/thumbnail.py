@@ -92,6 +92,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
+        api.mark.marked.connect(self._mark_highlight)
+        api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
 
         styles.apply(self)
 
@@ -171,6 +173,21 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         """Reset highlighted and force repaint when search results cleared."""
         self._highlighted = []
         self.repaint()
+
+    def _mark_highlight(self, path: str, marked: bool = True):
+        """(Un-)Highlight a path if it was (un-)marked.
+
+        Args:
+            path: The (un-)marked path.
+            marked: True if it was marked.
+        """
+        try:
+            index = self._paths.index(path)
+        except ValueError:
+            return
+        item = self.item(index)
+        # Set arbitrary text as the mark is highlighted by a rectangle
+        item.setText("1" if marked else "")
 
     def is_highlighted(self, index):
         """Return True if the index is highlighted as search result."""
@@ -355,6 +372,8 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.selection_bg.setNamedColor(styles.get("thumbnail.selected.bg"))
         self.search_bg = QColor()
         self.search_bg.setNamedColor(styles.get("thumbnail.search.highlighted.bg"))
+        self.mark_bg = QColor()
+        self.mark_bg.setNamedColor(styles.get("mark.color"))
         self.padding = int(styles.get("thumbnail.padding"))
 
     def paint(self, painter, option, index):
@@ -412,14 +431,32 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
+        x = option.rect.x() + self.padding + diff_x
+        y = option.rect.y() + self.padding + diff_y
         # Draw
-        painter.drawPixmap(
-            option.rect.x() + self.padding + diff_x,
-            option.rect.y() + self.padding + diff_y,
-            size.width(),
-            size.height(),
-            pixmap,
-        )
+        painter.drawPixmap(x, y, size.width(), size.height(), pixmap)
+        painter.restore()
+        self._draw_mark(painter, index, option, x + size.width(), y + size.height())
+
+    def _draw_mark(self, painter, index, option, x, y):
+        """Draw small rectangle as mark indicator if the image is marked.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            index: The QModelIndex.
+            x: x-coordinate at which the pixmap ends.
+            y: y-coordinate at which the pixmap ends.
+        """
+        if not index.model().data(index):  # Thumbnail not marked
+            return
+        # Try to set 5 % of width, reduce to padding if this is smaller
+        # At least 4px width
+        width = max(min(0.05 * option.rect.width(), self.padding), 4)
+        painter.save()
+        painter.setBrush(self.mark_bg)
+        painter.setPen(Qt.NoPen)
+        painter.drawRect(x - 0.5 * width, y - 0.5 * width, width, width)
         painter.restore()
 
     def _get_background_color(self, index, state):

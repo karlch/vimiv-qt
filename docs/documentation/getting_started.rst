@@ -80,6 +80,8 @@ between -127 and 127 are valid. To increase the value by 1/10 use ``k/K``, to
 decrease it by 1/10 use ``j/J``. To apply the changes accept with ``<return>``,
 to leave manipulate mode reverting any changes press ``<escape>``.
 
+.. _commandline:
+
 Command Line
 ------------
 
@@ -94,11 +96,15 @@ displayed. Pressing ``<tab>`` starts cycling through the completions.
 Opening new paths from here is done using the ``:open`` command. Path
 completion is also supported.
 
+Unix style pattern matching including ``*`` and ``?`` can be used. Recursive matching is
+also possible using ``**`` but please note that this can become slow in large directory
+trees. In addition ``%`` gets replaced with the currently selected file and ``%m`` by
+all marked images. See :ref:`marks_and_tags` for more information on this.
+
 Prepending a command with ``!`` lets vimiv interpret the command as an external
-command. The following text is passed to the shell. Here ``%`` is replaced with the
-currently selected file and unix style pattern matching including ``*`` and ``?`` can be
-used. Recursive matching is also possible using ``**`` but please note that this can
-become slow in large directory trees.
+command. This becomes especially useful in combination with the patterns described
+above.
+
 Example: ``:!gimp %`` opens the currently selected image in gimp.
 
 External commands can be "piped to vimiv" by appending the ``|`` char to the
@@ -120,6 +126,42 @@ Some commands support passing a ``[count]`` as repetition or step. To pass a
 count in the command line, prepend ``[count]`` to the command, e.g. ``:5next``.
 Pressing any number appends it to the current ``[count]`` and the next command
 is run with the stored ``[count]``.
+
+.. _marks_and_tags:
+
+Marks and Tags
+--------------
+
+Images supports the concept of marking images using the ``:mark`` command. As an
+argument it takes an arbitrary number of paths and supports pattern matching as
+described in :ref:`commandline`. The current image is therefore marked using ``:mark %``
+which is bound to ``m`` by default. Working with the set of marked images is done by
+referencing them in the command line with ``%m``.
+
+Example: ``:!mogrify -rotate 90 %m`` rotates all marked images by 90 degrees using the
+``mogrify`` command from `imagemagick <https://imagemagick.org/index.php>`_.
+
+All current marks are removed by running ``:mark-clear``. The last set of cleared marks
+can be restored using ``:mark-restore``.
+
+To keep a selection of marks and assigning them a name, tags can be used. New tags are
+created using ``:tag-write my_fancy_tag``. Grouping into sub-directories is possible by
+naming the tags accordingly, e.g. ``:tag-write favourites/2017``. Under the hood, this
+creates a tag file in ``$XDG_DATA_HOME/vimiv/tags`` which is a simple text file that can
+be parsed as usual.
+
+.. hint::
+
+   When writing to a tag that exists, all currently marked images that are not in
+   the tag yet are appended to it.
+
+Loading a tag is done with ``:tag-load my_fancy_tag`` which loads all images from the
+tag into the list of marked images. To then open them in image mode we can refer to them
+with ``%m`` in the open command: ``:open %m``.
+
+Deleting a tag is done with ``:tag-delete my_fancy_tag``.
+
+.. warning:: This deletes the tag permanently with no option to restore it!
 
 What Next?
 ----------

@@ -32,6 +32,16 @@ def add_html(tag: str, text: str) -> str:
     return "<%s>%s</%s>" % (tag, text, tag)
 
 
+def wrap_style_span(style: str, text: str) -> str:
+    """Surround text in a html style span tag.
+
+    Args:
+        style: The css style content to use.
+        text: The text to surround.
+    """
+    return f"<span style='{style};'>{text}</span>"
+
+
 def strip_html(text: str) -> str:
     """Strip all html tags from text.
 
@@ -153,6 +163,13 @@ def slot(function):
 def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
+
+
+def remove_prefix(text: str, prefix: str) -> str:
+    """Remove a prefix of a given string."""
+    if text.startswith(prefix):
+        return text[len(prefix) :]
+    return text
 
 
 def timed(function):
