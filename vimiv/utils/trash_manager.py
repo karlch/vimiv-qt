@@ -22,7 +22,7 @@ import shutil
 import tempfile
 import time
 from functools import lru_cache
-from typing import cast, Tuple
+from typing import cast, Tuple, List
 
 from vimiv import api
 from vimiv.utils import xdg
@@ -43,20 +43,21 @@ def init() -> None:
 
 @api.keybindings.register("x", "delete %")
 @api.commands.register()
-def delete(filename: str) -> None:
-    """Move a file to the trash directory.
+def delete(paths: List[str]) -> None:
+    """Move one or more paths to the trash directory.
 
-    **syntax:** ``:delete filename``
+    **syntax:** ``:delete path [path ...]``
 
     positional arguments:
-        * ``filename``: The name of the file to delete.
+        * ``paths``: The path(s) to delete.
     """
-    if not os.path.exists(filename):
-        raise api.commands.CommandError("Path '%s' does not exist" % (filename))
-    filename = os.path.abspath(filename)
-    trash_filename = _get_trash_filename(filename)
-    _create_info_file(trash_filename, filename)
-    shutil.move(filename, trash_filename)
+    for filename in paths:
+        filename = os.path.abspath(filename)
+        if not os.path.exists(filename):
+            raise api.commands.CommandError("Path '%s' does not exist" % (filename))
+        trash_filename = _get_trash_filename(filename)
+        _create_info_file(trash_filename, filename)
+        shutil.move(filename, trash_filename)
 
 
 @api.commands.register()

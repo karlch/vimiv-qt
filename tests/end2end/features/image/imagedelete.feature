@@ -30,3 +30,11 @@ Feature: Deleting an image in the current file list
         And I wait for the working directory handler
         Then image_01.jpg should not be in the filelist
         And the image widget should be empty
+
+    Scenario: Delete multiple images
+        Given I open 3 images
+        When I run delete image_02.jpg image_03.jpg
+        And I wait for the working directory handler
+        Then the filelist should contain 1 images
+        And image_02.jpg should not be in the filelist
+        And image_03.jpg should not be in the filelist

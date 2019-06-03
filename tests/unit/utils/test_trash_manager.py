@@ -40,12 +40,19 @@ def trash(monkeypatch, tmpdir):
 
 
 def test_delete_file(trash, tmpfile):
-    trash_manager.delete(tmpfile)
+    trash_manager.delete([tmpfile])
     assert not os.path.exists(tmpfile)
 
 
+def test_delete_multiple_files(trash, tmpdir):
+    files = [create_tmpfile(tmpdir, f"file_{i:d}") for i in range(2)]
+    trash_manager.delete(files)
+    for fname in files:
+        assert not os.path.exists(fname)
+
+
 def test_delete_and_undelete_file(trash, tmpfile):
-    trash_manager.delete(tmpfile)
+    trash_manager.delete([tmpfile])
     basename = os.path.basename(tmpfile)
     trash_manager.undelete(basename)
     assert os.path.exists(tmpfile)
@@ -54,7 +61,7 @@ def test_delete_and_undelete_file(trash, tmpfile):
 def test_do_not_override_existing_file_in_trash(trash, tmpdir):
     for i in range(2):
         path = create_tmpfile(tmpdir, "new_file")
-        trash_manager.delete(path)
+        trash_manager.delete([path])
     trashdir = os.path.join(trash, "files")
     assert os.path.exists(os.path.join(trashdir, "new_file"))
     assert os.path.exists(os.path.join(trashdir, "new_file.2"))
@@ -63,7 +70,7 @@ def test_do_not_override_existing_file_in_trash(trash, tmpdir):
 def test_create_trash_info_file(trash, tmpdir):
     for i in range(2):
         path = create_tmpfile(tmpdir, "new_file")
-        trash_manager.delete(path)
+        trash_manager.delete([path])
     infodir = os.path.join(trash, "info")
     assert os.path.exists(os.path.join(infodir, "new_file.trashinfo"))
     assert os.path.exists(os.path.join(infodir, "new_file.2.trashinfo"))
