@@ -25,7 +25,7 @@ def check_completion_model(model):
         "settings_option": completionmodels.SettingsOptionModel,
         "trash": completionmodels.TrashModel,
     }
-    assert isinstance(completer.instance().proxy_model.sourceModel(), models[model])
+    assert isinstance(completer.instance()._proxy_model.sourceModel(), models[model])
 
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))

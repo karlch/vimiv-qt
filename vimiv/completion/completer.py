@@ -6,6 +6,8 @@
 
 """Completer class as man-in-the-middle between command line and completion."""
 
+from typing import Callable
+
 from PyQt5.QtCore import QObject
 
 from vimiv import api, utils
@@ -37,15 +39,6 @@ class Completer(QObject):
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
-    @property
-    def proxy_model(self):
-        return self._proxy_model
-
-    @proxy_model.setter
-    def proxy_model(self, proxy_model: api.completion.BaseFilter):
-        self._proxy_model = proxy_model
-        self._completion.setModel(proxy_model)
-
     @utils.slot
     def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
         """Initialize completion when command mode was entered.
@@ -57,9 +50,8 @@ class Completer(QObject):
         if mode == api.modes.COMMAND:
             # Set model according to text, defaults are not possible as
             # :command accepts arbitrary text as argument
-            self._maybe_update_model(self._cmd.text())
-            self.proxy_model.sourceModel().on_enter(
-                self.proxy_model.strip_text(self._cmd.text()), last_mode
+            self._update_proxy_model(
+                self._cmd.text(), lambda model, text: model.on_enter(text, last_mode)
             )
             # Show if the model is not empty
             self._maybe_show()
@@ -71,28 +63,35 @@ class Completer(QObject):
         # Clear selection
         self._completion.selectionModel().clear()
         # Update model
-        self._maybe_update_model(text)
-        self.proxy_model.sourceModel().on_text_changed(
-            self.proxy_model.strip_text(text)
-        )
-        # Refilter
-        self.proxy_model.refilter(text)
+        self._update_proxy_model(text, lambda model, text: model.on_text_changed(text))
+        self._proxy_model.refilter(text)
 
     @utils.slot
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
         self._completion.selectionModel().clear()
-        self.proxy_model.reset()
+        self._proxy_model.reset()
         self._completion.hide()
 
-    def _maybe_update_model(self, text):
-        """Update model depending on text."""
-        self.proxy_model = api.completion.get_module(text)
-        self._completion.update_column_widths()
+    def _update_proxy_model(
+        self, text: str, initializer: Callable[[api.completion.BaseModel, str], None]
+    ):
+        """Update completion proxy model depending on text.
+
+        Args:
+            text: Text in the commandline which defines the model.
+            initializer: Callback function to initialize the new proxy model.
+        """
+        proxy_model = api.completion.get_module(self._cmd.text())
+        initializer(proxy_model.sourceModel(), proxy_model.strip_text(text))
+        if proxy_model != self._proxy_model:
+            self._proxy_model = proxy_model
+            self._completion.setModel(proxy_model)
+            self._completion.update_column_widths()
 
     def _maybe_show(self):
         """Show completion widget if the model is not empty."""
-        if not isinstance(self.proxy_model.sourceModel(), completionmodels.Empty):
+        if not isinstance(self._proxy_model.sourceModel(), completionmodels.Empty):
             self._completion.show()
 
     @utils.slot
