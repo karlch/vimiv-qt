@@ -87,9 +87,7 @@ class Completer(QObject):
 
     def _maybe_update_model(self, text):
         """Update model depending on text."""
-        module = api.completion.get_module(text)
-        self.proxy_model = module.Filter
-        self.proxy_model.setSourceModel(module.Model)
+        self.proxy_model = api.completion.get_module(text)
         self._completion.update_column_widths()
 
     def _maybe_show(self):

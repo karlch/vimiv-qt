@@ -53,7 +53,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 """
 
 import string
-from typing import cast, Dict, NamedTuple, Sequence, Tuple
+from typing import cast, Dict, Sequence, Tuple, Optional
 
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -61,7 +61,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from . import modes
 
 
-def get_module(text: str) -> "CompletionModule":
+def get_module(text: str) -> "BaseFilter":
     """Return the completion module which is valid for a given command line text.
 
     Args:
@@ -69,7 +69,7 @@ def get_module(text: str) -> "CompletionModule":
     Returns:
         A completion model providing completion options.
     """
-    best_match, best_match_size = cast(CompletionModule, None), -1
+    best_match, best_match_size = cast(BaseFilter, None), -1
     for required_text, module in _modules.items():
         match_size = len(required_text)
         if text.startswith(required_text) and len(required_text) > best_match_size:
@@ -147,13 +147,12 @@ class BaseModel(QStandardItemModel):
 
     Attributes:
         column_widths: Tuple of floats [0..1] defining the width of each column.
-        text_filter: Filter class used to filter valid completions.
     """
 
     def __init__(
         self,
         text: str,
-        text_filter: BaseFilter = TextFilter(),
+        text_filter: Optional[BaseFilter] = None,
         column_widths: Tuple[float, ...] = (1,),
     ):
         """Initialize class and create completion module.
@@ -165,8 +164,10 @@ class BaseModel(QStandardItemModel):
         """
         super().__init__()
         self.column_widths = column_widths
-        self.text_filter = text_filter
-        _modules[text] = CompletionModule(self, text_filter)  # Register module
+        # Register module using the filter
+        text_filter = text_filter if text_filter is not None else TextFilter()
+        text_filter.setSourceModel(self)
+        _modules[text] = text_filter
 
     def on_enter(self, text: str, mode: modes.Mode) -> None:
         """Called by the completer when the commandline is entered.
@@ -199,9 +200,4 @@ class BaseModel(QStandardItemModel):
         self.sort(0)  # Sort according to the actual text
 
 
-class CompletionModule(NamedTuple):
-    Model: BaseModel
-    Filter: BaseFilter
-
-
-_modules: Dict[str, CompletionModule] = {}
+_modules: Dict[str, BaseFilter] = {}
