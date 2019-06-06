@@ -10,18 +10,12 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from typing import Any, Dict, ItemsView, List, Union, Callable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import clamp
-
-# Different location under PyQt < 5.11
-try:
-    from PyQt5.sip import wrappertype  # type: ignore
-except ImportError:
-    from sip import wrappertype  # type: ignore
+from vimiv.utils import clamp, AbstractQObjectMeta
 
 
 Number = Union[int, float]
@@ -98,11 +92,7 @@ def ensure_type(*types: type) -> Callable[[Methodtype], Methodtype]:
     return decorator
 
 
-class SettingsMeta(wrappertype, ABCMeta):
-    """Metaclass to allow setting to be an ABC as well as a QObject."""
-
-
-class Setting(QObject, metaclass=SettingsMeta):
+class Setting(QObject, metaclass=AbstractQObjectMeta):
     """Stores a setting and its attributes.
 
     This class can not be used directly. Instead it is used as BaseClass for

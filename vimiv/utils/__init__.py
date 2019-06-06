@@ -11,12 +11,19 @@ import functools
 import inspect
 import logging
 import re
+from abc import ABCMeta
 from contextlib import contextmanager, suppress
 from datetime import datetime
 from pstats import Stats
 from typing import Callable, Optional, TypeVar, List, Any
 
 from PyQt5.QtCore import pyqtSlot
+
+# Different location under PyQt < 5.11
+try:
+    from PyQt5.sip import wrappertype  # type: ignore
+except ImportError:
+    from sip import wrappertype  # type: ignore
 
 
 Number = TypeVar("Number", int, float)
@@ -170,6 +177,10 @@ def remove_prefix(text: str, prefix: str) -> str:
     if text.startswith(prefix):
         return text[len(prefix) :]
     return text
+
+
+class AbstractQObjectMeta(wrappertype, ABCMeta):
+    """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
 def timed(function):
