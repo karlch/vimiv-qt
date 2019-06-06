@@ -35,18 +35,18 @@ earth with ``ge`` we could use::
 
 import collections
 from contextlib import suppress
-from typing import Callable, ItemsView, List, Union, Tuple
+from typing import Callable, ItemsView, List, Union, Tuple, Iterable
 
 from . import commands, modes
 
 
 def register(
-    keybinding: Union[str, List[str]], command: str, mode: modes.Mode = modes.GLOBAL
+    keybinding: Union[str, Iterable[str]], command: str, mode: modes.Mode = modes.GLOBAL
 ) -> Callable:
     """Decorator to add a new keybinding.
 
     Args:
-        keybinding: Key sequence(s) to bind as string (List of strings).
+        keybinding: Key sequence(s) to bind as string (Iterable of strings).
         command: Command to bind to.
         mode: Mode in which the keybinding is valid.
     """
