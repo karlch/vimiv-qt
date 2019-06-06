@@ -124,8 +124,8 @@ class Manipulator(QObject):
         except ValueError as e:
             raise api.commands.CommandError(str(e))
 
-    @api.keybindings.register("K", "increase 10", mode=api.modes.MANIPULATE)
-    @api.keybindings.register("k", "increase 1", mode=api.modes.MANIPULATE)
+    @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
+    @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def increase(self, value: int, count: int = 1):
         """Increase the value of the current manipulation.
@@ -140,8 +140,8 @@ class Manipulator(QObject):
         value = self.manipulations[self._current] + value * count
         self._update_manipulation(self._current, value)
 
-    @api.keybindings.register("J", "decrease 10", mode=api.modes.MANIPULATE)
-    @api.keybindings.register("j", "decrease 1", mode=api.modes.MANIPULATE)
+    @api.keybindings.register(("J", "H"), "decrease 10", mode=api.modes.MANIPULATE)
+    @api.keybindings.register(("j", "h"), "decrease 1", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def decrease(self, value: int, count: int = 1):
         """Decrease the value of the current manipulation.
