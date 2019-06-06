@@ -14,7 +14,7 @@ from PyQt5.QtGui import QPixmap, QImageWriter
 @pytest.fixture
 def tmpimage(tmpdir, qtbot):
     """Create an image to work with."""
-    path = str(tmpdir.join("foo.png"))
+    path = str(tmpdir.join("any_image.png"))
     width = 10
     height = 10
     pm = QPixmap(width, height)

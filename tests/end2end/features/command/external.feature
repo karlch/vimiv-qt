@@ -10,7 +10,7 @@ Feature: Running external commands.
         And no message should be displayed
 
     Scenario: Fail an external command.
-        When I run !foo_bar_baz
+        When I run !not-a-shell-command
         And I wait for the command to complete
         # Error message may vary between OS
         Then a message should be displayed

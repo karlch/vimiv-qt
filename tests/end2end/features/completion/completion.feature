@@ -34,7 +34,7 @@ Feature: Using completion.
 
     Scenario: Crash on path completion with non-existent directory
         Given I open any directory
-        When I enter command mode with "open /foo/bar/baz"
+        When I enter command mode with "open /not/a/valid/path"
         Then no crash should happen
 
     Scenario: Reset completions when leaving command mode

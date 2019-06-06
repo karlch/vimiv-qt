@@ -22,7 +22,7 @@ def test_positive_float():
 
 def test_fail_positive_float():
     with pytest.raises(ValueError, match="could not convert"):
-        parsertypes.positive_float("foo")
+        parsertypes.positive_float("this_is_not_a_float")
     with pytest.raises(argparse.ArgumentTypeError, match="must be positive"):
         parsertypes.positive_float(-1)
 
@@ -35,11 +35,11 @@ def test_geometry():
 
 def test_fail_geometry():
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("a xylophone")
+        parsertypes.geometry("a xylophone")  # word with x to emulate form
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("200xbar")
+        parsertypes.geometry("200xnot_a_number")
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("12xfoo")
+        parsertypes.geometry("12xnot_a_number")
     with pytest.raises(argparse.ArgumentTypeError, match="form WIDTHxHEIGHT"):
         parsertypes.geometry("1000")
     with pytest.raises(argparse.ArgumentTypeError, match="must be positive"):

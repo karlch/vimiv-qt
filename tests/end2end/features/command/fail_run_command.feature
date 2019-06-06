@@ -4,10 +4,10 @@ Feature: Do not crash and display error message on failed commands.
         Given I start vimiv
 
     Scenario: Crash when running unknown command.
-        When I run foo
+        When I run not-a-command
         Then no crash should happen
         And the message
-            'foo: unknown command for mode library'
+            'not-a-command: unknown command for mode library'
             should be displayed
 
     Scenario: Crash when running command with unknown arguments.

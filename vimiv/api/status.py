@@ -122,8 +122,8 @@ def evaluate(text: str) -> str:
 
     Example:
         A module called {pwd} is associated with the function os.pwd. Assuming
-        the output of os.pwd() is "/home/foo/bar", the text 'Path: {pwd}'
-        becomes 'Path: /home/foo/bar'.
+        the output of os.pwd() is "/home/user/folder", the text 'Path: {pwd}'
+        becomes 'Path: /home/user/folder'.
 
     Args:
         text: The text to evaluate.
