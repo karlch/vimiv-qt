@@ -120,12 +120,14 @@ class PathModel(api.completion.BaseModel):
         # Retrieve supported paths
         images, directories = files.supported(files.listdir(directory))
         # Format data
-        cmd = self._command
         data = [
-            (f"{cmd} " + shlex.quote(os.path.join(directory, os.path.basename(path))),)
+            self._create_row(os.path.join(directory, os.path.basename(path)))
             for path in images + directories
         ]
         self.set_data(data)
+
+    def _create_row(self, path):
+        return (f"{self._command} {shlex.quote(path)}",)
 
     @staticmethod
     def _get_directory(text: str) -> str:
