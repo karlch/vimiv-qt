@@ -30,6 +30,7 @@ class MainWindow(QWidget):
         bar: bar.Bar object containing statusbar and command line.
 
         _overlays: List of overlay widgets.
+        _stack: ImageThumbnailLayout as main layout widget.
     """
 
     @api.objreg.register
@@ -39,11 +40,11 @@ class MainWindow(QWidget):
         self._overlays = []
 
         grid = widgets.SimpleGrid(self)
-        stack = ImageThumbnailLayout()
+        self._stack = ImageThumbnailLayout()
 
         # Create widgets and add to layout
         lib = library.Library(self)
-        grid.addLayout(stack, 0, 1, 1, 1)
+        grid.addLayout(self._stack, 0, 1, 1, 1)
         grid.addWidget(lib, 0, 0, 1, 1)
         manwidget = manipulate.Manipulate(self)
         self._overlays.append(manwidget)
@@ -57,8 +58,8 @@ class MainWindow(QWidget):
         self._set_title()
 
         api.status.signals.update.connect(self._set_title)
-        api.modes.signals.entered.connect(self._on_mode_changed)
-        api.modes.signals.left.connect(self._on_mode_changed)
+        api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
+        api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
 
     @api.keybindings.register("f", "fullscreen")
@@ -107,15 +108,6 @@ class MainWindow(QWidget):
             title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))
 
-    def _on_mode_changed(self, mode: api.modes.Mode, last_mode: api.modes.Mode = None):
-        """Update overlay geometry when entering command mode.
-
-        This is required as the possibly hidden bar is now certainly visible and the
-        location of the completion widget must be adjusted.
-        """
-        if mode == api.modes.COMMAND:
-            self._update_overlay_geometry()
-
 
 def instance():
     return api.objreg.get(MainWindow)
@@ -137,29 +129,14 @@ class ImageThumbnailLayout(QStackedLayout):
         self.addWidget(self.thumbnail)
         self.setCurrentWidget(self.image)
 
-        self._connect_signals()
+        api.modes.IMAGE.entered.connect(self._enter_image)
+        api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
+        # This is required in addition to the setting when entering image mode as it is
+        # possible to leave for the library
+        api.modes.THUMBNAIL.left.connect(self._enter_image)
 
-    def _connect_signals(self):
-        api.modes.signals.entered.connect(self._on_mode_entered)
-        api.modes.signals.left.connect(self._on_mode_left)
+    def _enter_thumbnail(self):
+        self.setCurrentWidget(self.thumbnail)
 
-    @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
-        """Set current widget to image or thumbnail."""
-        if mode == api.modes.IMAGE:
-            self.setCurrentWidget(self.image)
-        elif mode == api.modes.THUMBNAIL:
-            self.setCurrentWidget(self.thumbnail)
-
-    @utils.slot
-    def _on_mode_left(self, mode: api.modes.Mode):
-        """Set widget to image if thumbnail mode was left.
-
-        This is required in addition to _on_enter in image because it is
-        possible to leave for the library.
-
-        Args:
-            mode: The mode left.
-        """
-        if mode == api.modes.THUMBNAIL:
-            self.setCurrentWidget(self.image)
+    def _enter_image(self):
+        self.setCurrentWidget(self.image)

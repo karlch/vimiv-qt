@@ -68,7 +68,7 @@ class Manipulator(QObject):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate keeping the changes."""
-        api.modes.leave(api.modes.MANIPULATE)
+        api.modes.MANIPULATE.leave()
 
     def reset(self):
         """Reset manipulations to default."""

@@ -169,7 +169,7 @@ Modes
 """""
 
 .. automodule:: vimiv.api.modes
-   :members: widget, get_by_name, current, enter, leave, toggle
+   :members: widget, get_by_name, current
 
 Commands
 """"""""

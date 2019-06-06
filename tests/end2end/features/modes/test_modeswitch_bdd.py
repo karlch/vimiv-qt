@@ -14,4 +14,4 @@ bdd.scenarios("modeswitch.feature")
 
 @bdd.when(bdd.parsers.parse("I toggle {mode} mode"))
 def toggle_mode(mode):
-    api.modes.toggle(api.modes.get_by_name(mode))
+    api.modes.get_by_name(mode).toggle()

@@ -83,7 +83,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
-        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.COMMAND.entered.connect(self._on_entered)
 
         styles.apply(self)
 
@@ -176,15 +176,9 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
         """Override focus out event to not emit editingFinished."""
 
     @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
-        """Store mode from which the command line was entered.
-
-        Args:
-            mode: The mode entered.
-            last_mode: The mode left.
-        """
-        if mode == api.modes.COMMAND:
-            self.mode = last_mode
+    def _on_entered(self):
+        """Store mode from which the command line was entered."""
+        self.mode = api.modes.COMMAND.last
 
 
 def instance():

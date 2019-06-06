@@ -75,7 +75,7 @@ class Bar(QWidget):
         self.show()
         self._stack.setCurrentWidget(self.commandline)
         self.commandline.setText(text)
-        api.modes.enter(api.modes.COMMAND)
+        api.modes.COMMAND.enter()
 
     @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
@@ -89,7 +89,7 @@ class Bar(QWidget):
         self.commandline.setText("")
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
-        api.modes.leave(api.modes.COMMAND)
+        api.modes.COMMAND.leave()
 
     def _on_show_changed(self, value: bool):
         statusbar.statusbar.setVisible(value)

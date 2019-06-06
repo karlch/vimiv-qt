@@ -77,8 +77,8 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
         imutils.movie_loaded.connect(self._on_movie_loaded)
         imutils.svg_loaded.connect(self._on_svg_loaded)
-        api.modes.signals.entered.connect(self._on_mode_entered)
-        api.modes.signals.left.connect(self._on_mode_left)
+        api.modes.MANIPULATE.entered.connect(self._on_entered)
+        api.modes.MANIPULATE.left.connect(self.hide)
         manipulator = immanipulate.instance()
         manipulator.edited.connect(self._on_edited)
         manipulator.focused.connect(self._on_focused)
@@ -89,34 +89,19 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
-        api.modes.leave(api.modes.MANIPULATE)
+        api.modes.MANIPULATE.leave()
         self._reset()
         immanipulate.instance().reset()
 
     @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
-        """Show and hide manipulate widget depending on mode entered.
-
-        Args:
-            mode: The mode entered.
-            last_mode: The mode left.
-        """
-        if mode == api.modes.MANIPULATE and self._error:
-            api.modes.leave(api.modes.MANIPULATE)
+    def _on_entered(self):
+        """Show manipulate widget when manipulate mode is entered."""
+        if self._error:
+            api.modes.MANIPULATE.leave()
             # Must wait for every other statusbar update to complete
             QTimer.singleShot(0, lambda: logging.error(self._error))
-        elif mode == api.modes.MANIPULATE:
+        else:
             self.raise_()
-
-    @utils.slot
-    def _on_mode_left(self, mode: api.modes.Mode):
-        """Reset and hide manipulate widget if the manipulate mode is left.
-
-        Args:
-            mode: The mode left.
-        """
-        if mode == api.modes.MANIPULATE:
-            self.hide()
 
     def _on_edited(self, name, value):
         """Update progressbar value on edit."""

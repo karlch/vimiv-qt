@@ -98,8 +98,8 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
-        api.modes.signals.entered.connect(self._on_mode_entered)
-        api.modes.signals.left.connect(self._on_mode_left)
+        api.modes.LIBRARY.entered.connect(self._on_entered)
+        api.modes.LIBRARY.left.connect(self._on_left)
 
         styles.apply(self)
 
@@ -143,26 +143,14 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         self._open_directory(".", reload_current=True)
 
     @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
-        """Show or hide library depending on the mode entered.
-
-        Args:
-            mode: The mode entered.
-            last_mode: The mode left.
-        """
-        if mode == api.modes.LIBRARY:
-            self.update_width()
+    def _on_entered(self):
+        self.update_width()
 
     @utils.slot
-    def _on_mode_left(self, mode: api.modes.Mode):
-        """Hide library widget if library mode was left.
-
-        Args:
-            mode: The mode left.
-        """
-        if mode == api.modes.LIBRARY:
-            self.hide()
-            self._last_selected = ""
+    def _on_left(self):
+        """Hide library widget if library mode was left."""
+        self.hide()
+        self._last_selected = ""
 
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
@@ -202,7 +190,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         close = close or path == self._last_selected
         self._last_selected = path
         if close:
-            api.modes.leave(api.modes.LIBRARY)
+            api.modes.LIBRARY.leave()
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)

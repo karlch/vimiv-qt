@@ -197,7 +197,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
         imutils.load(self.abspath())
-        api.modes.enter(api.modes.IMAGE)
+        api.modes.IMAGE.enter()
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)

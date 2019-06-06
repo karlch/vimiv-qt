@@ -23,29 +23,27 @@ The following modes exist:
 In addition there is the special ``GLOBAL`` mode which corresponds to
 ``IMAGE``, ``LIBRARY`` and ``THUMBNAIL``. When adding commands for this mode,
 they are automatically added for each of these three modes.
+
+All modes inherit from the common :class:`Mode` base class.
 """
 
 
 import abc
 import logging
-from typing import cast, Any, Callable
+from typing import cast, Any, Callable, List
 
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
+
+from vimiv.utils import AbstractQObjectMeta
 
 
 class NoMode(Exception):
     """Raised when there is no mode to operate on."""
 
 
-class Mode(abc.ABC):
-    """Skeleton for a mode as abstract base class.
-
-    The child must implement the _set_last method which defines which
-    modes are saved as last mode. This is required as in command mode, any mode
-    can be the last mode which is supposed to be focused when leaving the
-    command line, but e.g. in library mode when toggling the library we should
-    never enter manipulate.
+class Mode(QObject, metaclass=AbstractQObjectMeta):
+    """Base class for modes.
 
     Class Attributes:
         _ID: Unique identifier used to compare modes.
@@ -59,11 +57,19 @@ class Mode(abc.ABC):
         _name: Name of the mode used for commands which require a string
             representation.
         _id: The unique identifier used to compare modes.
+
+    Signals:
+        entered: Emitted when this mode is entered.
+        left: Emitted when this mode is left.
     """
+
+    entered = pyqtSignal()
+    left = pyqtSignal()
 
     _ID = 0
 
     def __init__(self, name: str):
+        super().__init__()
         self.active = False
         self.last_fallback = cast(Mode, None)  # Initialized to a mode in _init()
         self.widget = cast(QWidget, None)  # Initialized to a QWidget using @widget
@@ -75,6 +81,47 @@ class Mode(abc.ABC):
         self._id = Mode._ID
         Mode._ID += 1
 
+    def enter(self) -> None:
+        """Enter this mode."""
+        last_mode = current()
+        # Nothing to do as we all already in this mode
+        if last_mode == self:
+            logging.debug("Staying in mode %s", self.name)
+            return
+        # Store last mode
+        if last_mode:
+            logging.debug("Leaving mode %s", last_mode.name)
+            last_mode.active = False
+            self.last = last_mode
+        # Set to active and focus widget
+        self.active = True
+        self.widget.show()
+        self.widget.setFocus()
+        if self.widget.hasFocus():
+            logging.debug("%s widget focused", self)
+        else:
+            logging.debug("Could not focus %s widget", self)
+        self.entered.emit()
+        logging.debug("Entered mode %s", self)
+
+    def leave(self) -> None:
+        """Leave this mode for the last mode."""
+        self.last.enter()
+        self.left.emit()
+        # Reset the last mode when leaving a specific mode as leaving means closing
+        # the widget and we do not want to re-open a closed widget implicitly
+        self.last.reset_last()
+
+    def toggle(self) -> None:
+        """Toggle this mode.
+
+        If the mode is currently visible, leave it. Otherwise enter it.
+        """
+        if self.widget.isVisible():
+            self.leave()
+        else:
+            self.enter()
+
     @property
     def identifier(self) -> int:
         """Value of _id to compare to other modes as property."""
@@ -82,7 +129,13 @@ class Mode(abc.ABC):
 
     @property
     def last(self) -> "Mode":
-        """Value of last mode as property."""
+        """Mode that was active before this one.
+
+        Setting this property must be implemented by the child class.  This is required
+        as in command mode, any mode can be the last mode which is supposed to be
+        focused when leaving the command line, but e.g. in library mode when toggling
+        the library we should never enter manipulate.
+        """
         return self._last
 
     @last.setter
@@ -110,6 +163,7 @@ class Mode(abc.ABC):
 
     @property
     def name(self) -> str:
+        """Name of this mode as read-only property."""
         return self._name
 
     def __repr__(self) -> str:
@@ -190,86 +244,8 @@ MANIPULATE = _MainMode("manipulate")
 
 
 # Utility lists to allow iterating
-ALL = [GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
-GLOBALS = [IMAGE, LIBRARY, THUMBNAIL]
-
-
-class _Signals(QObject):
-    """Simple QObject containing mode related signals.
-
-    Signals:
-        entered: Emitted when a mode is entered.
-            arg1: Name of the mode entered.
-            arg2: Name of the mode left.
-        left: Emitted when a mode is left.
-            arg1: Name of the mode left.
-    """
-
-    entered = pyqtSignal(Mode, Mode)
-    left = pyqtSignal(Mode)
-
-
-signals = _Signals()
-
-
-def enter(mode: Mode) -> None:
-    """Enter another mode.
-
-    Set the current mode to ``mode`` and focus the widget which is asigned to
-    ``mode``.
-
-    Args:
-        mode: The mode to enter.
-    """
-    # Store last mode
-    last_mode = current()
-    if mode == last_mode:
-        logging.debug("Staying in mode %s", mode.name)
-        return
-    if last_mode:
-        logging.debug("Leaving mode %s", last_mode.name)
-        last_mode.active = False
-        mode.last = last_mode
-    # Enter new mode
-    mode.active = True
-    mode.widget.show()
-    mode.widget.setFocus()
-    if mode.widget.hasFocus():
-        logging.debug("%s widget focused", mode)
-    else:
-        logging.debug("Could not focus %s widget", mode)
-    signals.entered.emit(mode, last_mode)
-    logging.debug("Entered mode %s", mode)
-
-
-def leave(mode: Mode) -> None:
-    """Leave the mode ``mode``.
-
-    Enter the mode which was focused before ``mode`` and close the widget
-    assigned to ``mode``.
-
-    Args:
-        mode: The mode to leave.
-    """
-    enter(mode.last)
-    signals.left.emit(mode)
-    # Reset the last mode when leaving a specific mode as leaving means closing
-    # the widget and we do not want to re-open a closed widget implicitly
-    mode.last.reset_last()
-
-
-def toggle(mode: Mode) -> None:
-    """Toggle the mode ``mode``.
-
-    If the mode is currently visible, leave it. Otherwise enter it.
-
-    Args:
-        mode: The mode to leave.
-    """
-    if mode.widget.isVisible():
-        leave(mode)
-    else:
-        enter(mode)
+ALL: List[Mode] = [GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
+GLOBALS: List[Mode] = [IMAGE, LIBRARY, THUMBNAIL]
 
 
 def current() -> Mode:

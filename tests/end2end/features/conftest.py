@@ -44,17 +44,17 @@ def activate_commandline(qtbot):
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))
 def enter_mode(mode):
-    api.modes.enter(api.modes.get_by_name(mode))
+    api.modes.get_by_name(mode).enter()
 
 
 @bdd.when(bdd.parsers.parse("I leave {mode} mode"))
 def leave_mode(mode):
-    api.modes.leave(api.modes.get_by_name(mode))
+    api.modes.get_by_name(mode).leave()
 
 
 @bdd.when(bdd.parsers.parse('I enter command mode with "{text}"'))
 def enter_command_with_text(text):
-    api.modes.enter(api.modes.COMMAND)
+    api.modes.COMMAND.enter()
     commandline.instance().setText(":" + text)
     commandline.instance().textEdited.emit(":" + text)
 
@@ -168,7 +168,7 @@ def check_image_index(index):
 
 @bdd.given("I enter thumbnail mode")
 def enter_thumbnail():
-    api.modes.enter(api.modes.THUMBNAIL)
+    api.modes.THUMBNAIL.enter()
     thumbnail.instance().setFixedWidth(400)  # Make sure width is as expected
 
 

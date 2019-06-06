@@ -96,7 +96,7 @@ def open(paths: List[str]):  # pylint: disable=redefined-builtin
         working_directory.handler.chdir(directories[0])
     else:
         raise api.commands.CommandError("No valid paths")
-    api.modes.enter(mode)
+    mode.enter()
 
 
 def instance():

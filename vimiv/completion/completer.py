@@ -35,27 +35,22 @@ class Completer(QObject):
         self._completion = completion
 
         self._completion.activated.connect(self._on_completion)
-        api.modes.signals.entered.connect(self._on_mode_entered)
+        api.modes.COMMAND.entered.connect(self._on_entered)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
     @utils.slot
-    def _on_mode_entered(self, mode: api.modes.Mode, last_mode: api.modes.Mode):
-        """Initialize completion when command mode was entered.
-
-        Args:
-            mode: The mode entered.
-            last_mode: The mode left.
-        """
-        if mode == api.modes.COMMAND:
-            # Set model according to text, defaults are not possible as
-            # :command accepts arbitrary text as argument
-            self._update_proxy_model(
-                self._cmd.text(), lambda model, text: model.on_enter(text, last_mode)
-            )
-            # Show if the model is not empty
-            self._maybe_show()
-            self._completion.raise_()
+    def _on_entered(self):
+        """Initialize completion when command mode was entered."""
+        last_mode = api.modes.COMMAND.last
+        # Set model according to text, defaults are not possible as
+        # :command accepts arbitrary text as argument
+        self._update_proxy_model(
+            self._cmd.text(), lambda model, text: model.on_enter(text, last_mode)
+        )
+        # Show if the model is not empty
+        self._maybe_show()
+        self._completion.raise_()
 
     @utils.slot
     def _on_text_changed(self, text: str):

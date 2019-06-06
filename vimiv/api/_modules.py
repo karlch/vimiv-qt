@@ -29,7 +29,7 @@ def enter(mode: str) -> None:
     positional arguments:
         * ``mode``: The mode to enter (image/library/thumbnail/manipulate).
     """
-    api.modes.enter(api.modes.get_by_name(mode))
+    api.modes.get_by_name(mode).enter()
 
 
 @api.keybindings.register("tm", "toggle manipulate")
@@ -46,7 +46,7 @@ def toggle(mode: str) -> None:
     positional arguments:
         * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
     """
-    api.modes.toggle(api.modes.get_by_name(mode))
+    api.modes.get_by_name(mode).toggle()
 
 
 ###############################################################################
