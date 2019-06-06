@@ -12,10 +12,6 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -25,6 +21,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -148,13 +148,17 @@
 </li>
 <li><a class="reference internal" href="#manipulate">Manipulate</a><ul>
 <li><a class="reference internal" href="#accept">accept</a></li>
-<li><a class="reference internal" href="#brightness">brightness</a></li>
 <li><a class="reference internal" href="#ref-manipulate-command">command</a></li>
-<li><a class="reference internal" href="#contrast">contrast</a></li>
 <li><a class="reference internal" href="#decrease">decrease</a></li>
 <li><a class="reference internal" href="#discard">discard</a></li>
+<li><a class="reference internal" href="#ref-manipulate-fullscreen">fullscreen</a></li>
+<li><a class="reference internal" href="#ref-manipulate-goto">goto</a></li>
 <li><a class="reference internal" href="#increase">increase</a></li>
+<li><a class="reference internal" href="#ref-manipulate-next">next</a></li>
+<li><a class="reference internal" href="#next-tab">next-tab</a></li>
 <li><a class="reference internal" href="#ref-manipulate-nop">nop</a></li>
+<li><a class="reference internal" href="#ref-manipulate-prev">prev</a></li>
+<li><a class="reference internal" href="#prev-tab">prev-tab</a></li>
 <li><a class="reference internal" href="#ref-manipulate-set">set</a></li>
 </ul>
 </li>
@@ -179,7 +183,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="commands">
 <h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
@@ -196,8 +200,8 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <p>Below is a complete list of all commands in every mode.</p>
 <div class="section" id="global">
 <h2>Global<a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id12">
-<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id16">
+<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id16" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -618,8 +622,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </div>
 <div class="section" id="image">
 <h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id13">
-<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id13" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id17">
+<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -770,8 +774,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </div>
 <div class="section" id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id14">
-<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id14" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id18">
+<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id18" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -843,8 +847,8 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <div class="section" id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id15">
-<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id15" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id19">
+<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id19" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -916,8 +920,8 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <div class="section" id="id7">
 <h2>Command<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id16">
-<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id16" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id20">
+<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -991,8 +995,8 @@ nop.</p>
 </div>
 <div class="section" id="manipulate">
 <h2>Manipulate<a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id17">
-<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id21">
+<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1004,16 +1008,10 @@ nop.</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-accept"><span class="std std-ref">accept</span></a></p></td>
-<td><p>Leave manipulate keeping the changes.</p></td>
+<td><p>Leave manipulate applying the changes to file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-brightness"><span class="std std-ref">brightness</span></a></p></td>
-<td><p>Manipulate brightness.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-command"><span class="std std-ref">command</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-command"><span class="std std-ref">command</span></a></p></td>
 <td><p>Enter command mode.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-contrast"><span class="std std-ref">contrast</span></a></p></td>
-<td><p>Manipulate contrast.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-decrease"><span class="std std-ref">decrease</span></a></p></td>
 <td><p>Decrease the value of the current manipulation.</p></td>
@@ -1021,34 +1019,38 @@ nop.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-discard"><span class="std std-ref">discard</span></a></p></td>
 <td><p>Discard any changes and leave manipulate.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
+<td><p>Toggle fullscreen mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-goto"><span class="std std-ref">goto</span></a></p></td>
+<td><p>Set the value of the current manipulation.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-increase"><span class="std std-ref">increase</span></a></p></td>
 <td><p>Increase the value of the current manipulation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-next"><span class="std std-ref">next</span></a></p></td>
+<td><p>Focus the next manipulation in the current tab.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-next-tab"><span class="std std-ref">next-tab</span></a></p></td>
+<td><p>Focus the next manipulation tab.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-prev"><span class="std std-ref">prev</span></a></p></td>
+<td><p>Focus the previous manipulation in the current tab.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-prev-tab"><span class="std std-ref">prev-tab</span></a></p></td>
+<td><p>Focus the previous manipulation tab.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-set"><span class="std std-ref">set</span></a></p></td>
-<td><p>Set the value of the current manipulation.</p></td>
+<td><p>Set an option.</p></td>
 </tr>
 </tbody>
 </table>
 <div class="section" id="accept">
 <span id="ref-manipulate-accept"></span><h3>accept<a class="headerlink" href="#accept" title="Permalink to this headline">¶</a></h3>
-<p>Leave manipulate keeping the changes.</p>
-</div>
-<div class="section" id="brightness">
-<span id="ref-manipulate-brightness"></span><h3>brightness<a class="headerlink" href="#brightness" title="Permalink to this headline">¶</a></h3>
-<p>Manipulate brightness.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:brightness</span> <span class="pre">[value]</span></code></p>
-<p>If neither value nor count are given, set brightness to the current
-manipulation. Otherwise set brightness to the given value.</p>
-<dl class="simple">
-<dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Set the brightness to value. Range: -127 to 127.</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>count:</strong> Set brightness to [count].</p>
+<p>Leave manipulate applying the changes to file.</p>
 </div>
 <div class="section" id="ref-manipulate-command">
 <span id="id9"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Permalink to this headline">¶</a></h3>
@@ -1060,20 +1062,6 @@ manipulation. Otherwise set brightness to the given value.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="contrast">
-<span id="ref-manipulate-contrast"></span><h3>contrast<a class="headerlink" href="#contrast" title="Permalink to this headline">¶</a></h3>
-<p>Manipulate contrast.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:contrast</span> <span class="pre">[value]</span></code></p>
-<p>If neither value nor count are given, set contrast to the current
-manipulation. Otherwise set contrast to the given value.</p>
-<dl class="simple">
-<dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Set the contrast to value. Range: -127 to 127.</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>count:</strong> Set contrast to [count].</p>
 </div>
 <div class="section" id="decrease">
 <span id="ref-manipulate-decrease"></span><h3>decrease<a class="headerlink" href="#decrease" title="Permalink to this headline">¶</a></h3>
@@ -1091,6 +1079,22 @@ manipulation. Otherwise set contrast to the given value.</p>
 <span id="ref-manipulate-discard"></span><h3>discard<a class="headerlink" href="#discard" title="Permalink to this headline">¶</a></h3>
 <p>Discard any changes and leave manipulate.</p>
 </div>
+<div class="section" id="ref-manipulate-fullscreen">
+<span id="id10"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Permalink to this headline">¶</a></h3>
+<p>Toggle fullscreen mode.</p>
+</div>
+<div class="section" id="ref-manipulate-goto">
+<span id="id11"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Permalink to this headline">¶</a></h3>
+<p>Set the value of the current manipulation.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">value</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the manipulation to.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> Set the manipulation to [count] instead.</p>
+</div>
 <div class="section" id="increase">
 <span id="ref-manipulate-increase"></span><h3>increase<a class="headerlink" href="#increase" title="Permalink to this headline">¶</a></h3>
 <p>Increase the value of the current manipulation.</p>
@@ -1103,23 +1107,43 @@ manipulation. Otherwise set contrast to the given value.</p>
 </dl>
 <p><strong>count:</strong> multiplier</p>
 </div>
+<div class="section" id="ref-manipulate-next">
+<span id="id12"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
+<p>Focus the next manipulation in the current tab.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="next-tab">
+<span id="ref-manipulate-next-tab"></span><h3>next-tab<a class="headerlink" href="#next-tab" title="Permalink to this headline">¶</a></h3>
+<p>Focus the next manipulation tab.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
 <div class="section" id="ref-manipulate-nop">
-<span id="id10"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
+<span id="id13"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove default keybindings by explicitly binding them to
 nop.</p>
 </div>
+<div class="section" id="ref-manipulate-prev">
+<span id="id14"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
+<p>Focus the previous manipulation in the current tab.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
+<div class="section" id="prev-tab">
+<span id="ref-manipulate-prev-tab"></span><h3>prev-tab<a class="headerlink" href="#prev-tab" title="Permalink to this headline">¶</a></h3>
+<p>Focus the previous manipulation tab.</p>
+<p><strong>count:</strong> multiplier</p>
+</div>
 <div class="section" id="ref-manipulate-set">
-<span id="id11"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
-<p>Set the value of the current manipulation.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">value</span></code></p>
+<span id="id15"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
+<p>Set an option.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the manipulation to. Range -127 to 127.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
 </ul>
 </dd>
 </dl>
-<p><strong>count:</strong> Set the manipulation to [count] instead.</p>
 </div>
 </div>
 </div>
@@ -1156,7 +1180,7 @@ nop.</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>

@@ -12,10 +12,6 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/language_data.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -25,6 +21,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -100,6 +100,11 @@
 <li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#image-editing">Image Editing</a><ul>
+<li><a class="reference internal" href="#module-vimiv.imutils.imtransform">Modules</a></li>
+<li><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension">Adding New Manipulations to the C-Extension</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#updating-the-documentation">Updating the Documentation</a></li>
@@ -148,6 +153,11 @@
 <li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#image-editing">Image Editing</a><ul>
+<li><a class="reference internal" href="#module-vimiv.imutils.imtransform">Modules</a></li>
+<li><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension">Adding New Manipulations to the C-Extension</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#updating-the-documentation">Updating the Documentation</a></li>
@@ -157,7 +167,7 @@
 
         </div>
       </div>
-    <div class="col-md-9 content">
+    <div class="body col-md-9 content" role="main">
       
   <div class="section" id="contributing-guidelines">
 <span id="contributing"></span><h1>Contributing Guidelines<a class="headerlink" href="#contributing-guidelines" title="Permalink to this headline">¶</a></h1>
@@ -188,7 +198,8 @@ code base are more than welcome.</p>
 codebase. For some inspiration you could take a look at
 <a class="reference external" href="https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin">issues that could be realized using plugins</a>.</p>
 <p>If you prefer C over python, you may be interested in implementing
-<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/7">additional manipulations in the C extension</a>.</p>
+<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/7">additional manipulations in the C extension</a>.
+Some useful tips on how you can do this can be found <a class="reference internal" href="#c-extension"><span class="std std-ref">here</span></a>.</p>
 <p>Improving the existing documentation and website is always another option in
 case you do not want to write code.</p>
 </div>
@@ -414,6 +425,7 @@ used.</p>
 <p>In addition there is the special <code class="docutils literal notranslate"><span class="pre">GLOBAL</span></code> mode which corresponds to
 <code class="docutils literal notranslate"><span class="pre">IMAGE</span></code>, <code class="docutils literal notranslate"><span class="pre">LIBRARY</span></code> and <code class="docutils literal notranslate"><span class="pre">THUMBNAIL</span></code>. When adding commands for this mode,
 they are automatically added for each of these three modes.</p>
+<p>All modes inherit from the common <code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code> base class.</p>
 <dl class="function">
 <dt id="vimiv.api.modes.widget">
 <code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">widget</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.modes.widget" title="Permalink to this definition">¶</a></dt>
@@ -456,44 +468,6 @@ not available, for example when running commands.</p>
 <dt id="vimiv.api.modes.current">
 <code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the currently active mode.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="vimiv.api.modes.enter">
-<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">enter</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.modes.enter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enter another mode.</p>
-<p>Set the current mode to <code class="docutils literal notranslate"><span class="pre">mode</span></code> and focus the widget which is asigned to
-<code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> – The mode to enter.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="vimiv.api.modes.leave">
-<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">leave</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.modes.leave" title="Permalink to this definition">¶</a></dt>
-<dd><p>Leave the mode <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
-<p>Enter the mode which was focused before <code class="docutils literal notranslate"><span class="pre">mode</span></code> and close the widget
-assigned to <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> – The mode to leave.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="vimiv.api.modes.toggle">
-<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">toggle</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.modes.toggle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Toggle the mode <code class="docutils literal notranslate"><span class="pre">mode</span></code>.</p>
-<p>If the mode is currently visible, leave it. Otherwise enter it.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mode</strong> – The mode to leave.</p>
-</dd>
-</dl>
 </dd></dl>
 
 </div>
@@ -723,8 +697,8 @@ function defined earlier.</p>
 corresponding function.</p>
 <p class="rubric">Example</p>
 <p>A module called {pwd} is associated with the function os.pwd. Assuming
-the output of os.pwd() is “/home/foo/bar”, the text ‘Path: {pwd}’
-becomes ‘Path: /home/foo/bar’.</p>
+the output of os.pwd() is “/home/user/folder”, the text ‘Path: {pwd}’
+becomes ‘Path: /home/user/folder’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>text</strong> – The text to evaluate.</p>
@@ -810,30 +784,31 @@ description column is set up to take 30 % of the total width while the completio
 <em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseFilter</code><a class="headerlink" href="#vimiv.api.completion.BaseFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base filter used for completion filters.</p>
 <dl class="method">
-<dt id="vimiv.api.completion.BaseFilter.refilter">
-<code class="sig-name descname">refilter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseFilter.refilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter completions based on text in the command line.</p>
-<p>Must be implemented by the child classes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="vimiv.api.completion.BaseFilter.strip_text">
-<code class="sig-name descname">strip_text</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.completion.BaseFilter.strip_text" title="Permalink to this definition">¶</a></dt>
-<dd><p>Strip text of characters ignored for filtering.</p>
-<p>This default implementation strips command line prefixes and leading digits. If
-the child class requires additional intelligence it should override this
-method.</p>
+<dt id="vimiv.api.completion.BaseFilter.filtertext">
+<code class="sig-name descname">filtertext</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.completion.BaseFilter.filtertext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update text for filtering.</p>
+<p>This default implementation strips command line prefixes and leading digits and
+possibly activates fuzzy filtering. If the child class requires additional
+logic, it should override this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The stripped text used as completion filter.</p>
+<dd class="field-even"><p>The updated text used as completion filter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.refilter">
+<code class="sig-name descname">refilter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseFilter.refilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter completions based on text in the command line.</p>
+<p>This updates the text according to the <code class="docutils literal notranslate"><span class="pre">filtertext</span></code> method and updates the
+filter regular expression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -884,40 +859,6 @@ method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>data</strong> – List of tuples containing the data for each row.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="vimiv.api.completion.FuzzyFilter">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">FuzzyFilter</code><a class="headerlink" href="#vimiv.api.completion.FuzzyFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple filter fuzzy matching text in all columns.</p>
-<dl class="method">
-<dt id="vimiv.api.completion.FuzzyFilter.refilter">
-<code class="sig-name descname">refilter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.FuzzyFilter.refilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fuzzy filter completions based on text in command line.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="vimiv.api.completion.TextFilter">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">TextFilter</code><a class="headerlink" href="#vimiv.api.completion.TextFilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simple filter matching text in all columns.</p>
-<dl class="method">
-<dt id="vimiv.api.completion.TextFilter.refilter">
-<code class="sig-name descname">refilter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.TextFilter.refilter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter completions based on text in command line.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -980,11 +921,114 @@ displayable Qt widget has been created, the file handler emits one of:</p>
 <p>The image widget in <code class="docutils literal notranslate"><span class="pre">vimiv.gui.image</span></code> connects to these signals and displays
 the appropriate Qt widget.</p>
 </dd>
-<dt>Image manipulation:</dt><dd><p>TODO write documentation once
-<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/56">rethink manipulate mode</a>
-has been completed.</p>
+</dl>
+</div>
+</div>
+<div class="section" id="image-editing">
+<h3>Image Editing<a class="headerlink" href="#image-editing" title="Permalink to this headline">¶</a></h3>
+<p>This section gives a quick overview of the modules that deal with image editing and how
+to add new functionality to manipulate images.</p>
+<div class="section" id="module-vimiv.imutils.imtransform">
+<span id="modules"></span><h4>Modules<a class="headerlink" href="#module-vimiv.imutils.imtransform" title="Permalink to this headline">¶</a></h4>
+<p><em>imtransform - transformations such as rotate and flip</em>.</p>
+<span class="target" id="module-vimiv.imutils.immanipulate"></span><p><em>immanipulate - more complex image manipulations like brightness and contrast</em>.</p>
+<p>The module includes classes in a hierarchical structure where each following class
+includes components of the previous class in the hierarchy.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulation</span></code> stores a single manipulation such as brightness.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ManipulationGroup</span></code> stores manipulations that are applied together such as
+brightness and contrast.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulations</span></code> stores all manipulation groups and provides commands to apply them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulator</span></code> stores the manipulations class and interfaces it with the
+application.</p></li>
+</ol>
+<p id="adding-new-manipulation">Adding new manipulations is done by implementing a new <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="vimiv.imutils.immanipulate.ManipulationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManipulationGroup</span></code></a> and
+adding it to the <code class="docutils literal notranslate"><span class="pre">Manipulations</span></code>.</p>
+<dl class="class">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup">
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param">*manipulations</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for a group of manipulations associated to one manipulation tab.</p>
+<p>The group stores the individual manipulations, associates them to a manipulate
+function and provides a title.</p>
+<p>To implement a new manipulation group:</p>
+<ul class="simple">
+<li><p>Inherit from this base class and define an appropriate constructor</p></li>
+<li><p>Define the <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="vimiv.imutils.immanipulate.ManipulationGroup.title"><code class="xref py py-func docutils literal notranslate"><span class="pre">title()</span></code></a> property</p></li>
+<li><p>Implement the abstract method <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a></p></li>
+</ul>
+<dl class="attribute">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.manipulations">
+<code class="sig-name descname">manipulations</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.manipulations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of individual manipulations.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup._data">
+<code class="sig-name descname">_data</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._data" title="Permalink to this definition">¶</a></dt>
+<dd><p>bytes of the last change from this group. Must be stored as the QPixmap
+is generated directly from the bytes and needs them to stay in memory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup._apply">
+<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em>, <em class="sig-param">*manipulations</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply all manipulations of this group.</p>
+<p>Takes the image data as raw bytes, applies the changes according the current
+manipulation values and returns the updated bytes. In general this is associated
+with a call to a function implemented in the C-extension which manipulates the
+raw data.</p>
+<p>Must be implemented by the child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The raw image data in bytes to manipulate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated raw image data in bytes.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply manipulation function to image data if any manipulation changed.</p>
+<p>Wraps the abstract <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a> with a common setup and finalize part.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.changed">
+<em class="property">property </em><code class="sig-name descname">changed</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if any manipulation has been changed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.title">
+<em class="property">abstract property </em><code class="sig-name descname">title</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title of the manipulation group as referred to in its tab.</p>
+<p>Must be defined by the child class.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="adding-new-manipulations-to-the-c-extension">
+<span id="c-extension"></span><h4>Adding New Manipulations to the C-Extension<a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this headline">¶</a></h4>
+<p>To add new manipulations to the C-extension, two things must be done.</p>
+<p>First, you implement a new manipulate function in its own header such as
+<code class="docutils literal notranslate"><span class="pre">brightness_contrast.h</span></code>. The function should take the image data as pure bytes, the
+size of the data array as well as your new manipulation values as arguments. Task of the
+function is to update the data with the manipulation values accordingly. For this it
+needs to iterate over the data and update each pixel and channel (RGBA) accordingly.</p>
+<p>Once you are happy with your manipulate function, it needs to be registered in
+<code class="docutils literal notranslate"><span class="pre">manipulate.c</span></code>. First you write a wrapper function that converts the python arguments
+to C arguments, runs the manipulate function you just implemented and returns the
+manipulated data back to python. How this is done can be seen in <code class="docutils literal notranslate"><span class="pre">manipulate_bc</span></code> and
+<code class="docutils literal notranslate"><span class="pre">manipulate_hsl</span></code>. The basic structure should be very similar for any case. Finally you
+add the python wrapper function to the <code class="docutils literal notranslate"><span class="pre">ManipulateMethods</span></code> definition. Here you define
+the name of the function as seen by python, pass your function, the calling convention
+and finally a short docstring.</p>
+<p>For much more information on extending python with C see
+<a class="reference external" href="https://docs.python.org/3/extending/extending.html">the python documentation</a></p>
 </div>
 </div>
 </div>
@@ -1035,7 +1079,7 @@ from the source code. It must be run from the repository directory using:</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>

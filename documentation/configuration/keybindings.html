@@ -12,10 +12,6 @@
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/language_data.js"></script>
-    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -25,6 +21,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -98,7 +98,7 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="section" id="keybindings">
 <h1>Keybindings<a class="headerlink" href="#keybindings" title="Permalink to this headline">¶</a></h1>
@@ -446,35 +446,59 @@ for details.</p>
 <tr class="row-even"><td><p>&lt;return&gt;</p></td>
 <td><p>accept</p></td>
 </tr>
-<tr class="row-odd"><td><p>b</p></td>
-<td><p>brightness</p></td>
-</tr>
-<tr class="row-even"><td><p>&lt;colon&gt;</p></td>
+<tr class="row-odd"><td><p>&lt;colon&gt;</p></td>
 <td><p>command</p></td>
-</tr>
-<tr class="row-odd"><td><p>c</p></td>
-<td><p>contrast</p></td>
 </tr>
 <tr class="row-even"><td><p>j</p></td>
 <td><p>decrease 1</p></td>
 </tr>
-<tr class="row-odd"><td><p>J</p></td>
+<tr class="row-odd"><td><p>h</p></td>
+<td><p>decrease 1</p></td>
+</tr>
+<tr class="row-even"><td><p>J</p></td>
+<td><p>decrease 10</p></td>
+</tr>
+<tr class="row-odd"><td><p>H</p></td>
 <td><p>decrease 10</p></td>
 </tr>
 <tr class="row-even"><td><p>&lt;escape&gt;</p></td>
 <td><p>discard</p></td>
 </tr>
-<tr class="row-odd"><td><p>k</p></td>
+<tr class="row-odd"><td><p>f</p></td>
+<td><p>fullscreen</p></td>
+</tr>
+<tr class="row-even"><td><p>gg</p></td>
+<td><p>goto -127</p></td>
+</tr>
+<tr class="row-odd"><td><p>G</p></td>
+<td><p>goto 127</p></td>
+</tr>
+<tr class="row-even"><td><p>k</p></td>
+<td><p>increase 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>l</p></td>
 <td><p>increase 1</p></td>
 </tr>
 <tr class="row-even"><td><p>K</p></td>
 <td><p>increase 10</p></td>
 </tr>
-<tr class="row-odd"><td><p>gg</p></td>
-<td><p>set -127</p></td>
+<tr class="row-odd"><td><p>L</p></td>
+<td><p>increase 10</p></td>
 </tr>
-<tr class="row-even"><td><p>G</p></td>
-<td><p>set 127</p></td>
+<tr class="row-even"><td><p>n</p></td>
+<td><p>next</p></td>
+</tr>
+<tr class="row-odd"><td><p>&lt;tab&gt;</p></td>
+<td><p>next-tab</p></td>
+</tr>
+<tr class="row-even"><td><p>p</p></td>
+<td><p>prev</p></td>
+</tr>
+<tr class="row-odd"><td><p>&lt;shift&gt;&lt;tab&gt;</p></td>
+<td><p>prev-tab</p></td>
+</tr>
+<tr class="row-even"><td><p>b</p></td>
+<td><p>set statusbar.show!</p></td>
 </tr>
 </tbody>
 </table>
@@ -512,7 +536,7 @@ for details.</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.0.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
     </p>
   </div>
 </footer>
