@@ -842,18 +842,12 @@ method.</p>
 
 <dl class="class">
 <dt id="vimiv.api.completion.BaseModel">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">text_filter: vimiv.api.completion.BaseFilter = &lt;vimiv.api.completion.TextFilter object&gt;</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">text_filter: Optional[vimiv.api.completion.BaseFilter] = None</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base model used for completion models.</p>
 <dl class="attribute">
 <dt id="vimiv.api.completion.BaseModel.column_widths">
 <code class="sig-name descname">column_widths</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.column_widths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tuple of floats [0..1] defining the width of each column.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="vimiv.api.completion.BaseModel.text_filter">
-<code class="sig-name descname">text_filter</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.text_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filter class used to filter valid completions.</p>
 </dd></dl>
 
 <dl class="method">
@@ -897,23 +891,6 @@ method.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="vimiv.api.completion.CompletionModule">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">CompletionModule</code><span class="sig-paren">(</span><em class="sig-param">Model</em>, <em class="sig-param">Filter</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.CompletionModule" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="vimiv.api.completion.CompletionModule.Filter">
-<em class="property">property </em><code class="sig-name descname">Filter</code><a class="headerlink" href="#vimiv.api.completion.CompletionModule.Filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="vimiv.api.completion.CompletionModule.Model">
-<em class="property">property </em><code class="sig-name descname">Model</code><a class="headerlink" href="#vimiv.api.completion.CompletionModule.Model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="vimiv.api.completion.FuzzyFilter">
 <em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">FuzzyFilter</code><a class="headerlink" href="#vimiv.api.completion.FuzzyFilter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple filter fuzzy matching text in all columns.</p>
@@ -949,7 +926,7 @@ method.</p>
 
 <dl class="function">
 <dt id="vimiv.api.completion.get_module">
-<code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.CompletionModule<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.BaseFilter<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the completion module which is valid for a given command line text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

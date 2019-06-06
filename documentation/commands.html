@@ -221,7 +221,7 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <td><p>Copy name of current path to system clipboard.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-delete"><span class="std std-ref">delete</span></a></p></td>
-<td><p>Move a file to the trash directory.</p></td>
+<td><p>Move one or more paths to the trash directory.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-enter"><span class="std std-ref">enter</span></a></p></td>
 <td><p>Enter another mode.</p></td>
@@ -356,11 +356,11 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </div>
 <div class="section" id="delete">
 <span id="ref-global-delete"></span><h3>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
-<p>Move a file to the trash directory.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:delete</span> <span class="pre">filename</span></code></p>
+<p>Move one or more paths to the trash directory.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:delete</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code>: The name of the file to delete.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to delete.</p></li>
 </ul>
 </dd>
 </dl>
@@ -595,10 +595,11 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <div class="section" id="undelete">
 <span id="ref-global-undelete"></span><h3>undelete<a class="headerlink" href="#undelete" title="Permalink to this headline">¶</a></h3>
 <p>Restore a file from the trash directory.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:undelete</span> <span class="pre">basename</span></code></p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:undelete</span> <span class="pre">[basename</span> <span class="pre">...]</span></code></p>
+<p>If no basename is given, the last deleted images in this session are restored.</p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">basename</span></code>: The basename of the file in the trash directory.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">basenames</span></code>: The basename(s) of the file in the trash directory.</p></li>
 </ul>
 </dd>
 </dl>
