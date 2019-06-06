@@ -58,7 +58,7 @@ class Manipulator(QObject):
 
     def set_pixmap(self, pixmap):
         """Set the pixmap to a newly edited version."""
-        self._handler.update_pixmap(pixmap)
+        self._handler.current = pixmap
 
     def changed(self):
         """Return True if anything was edited."""
@@ -73,7 +73,7 @@ class Manipulator(QObject):
     def reset(self):
         """Reset manipulations to default."""
         if self.changed():
-            self._handler.update_pixmap(self._handler.transformed)
+            self._handler.current = self._handler.transformed
             self.manipulations = {"brightness": 0, "contrast": 0}
             self.edited.emit("brightness", 0)
             self.edited.emit("contrast", 0)

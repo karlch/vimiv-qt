@@ -50,7 +50,7 @@ class Transform:
         self._rotation_angle = (self._rotation_angle + angle) % 360
         self._transform.rotate(angle)
         pixmap = self.transform_pixmap(self._handler.original)
-        self._handler.update_transformed(pixmap)
+        self._handler.transformed = pixmap
 
     @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
     @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
@@ -81,7 +81,7 @@ class Transform:
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        self._handler.update_transformed(pixmap)
+        self._handler.transformed = pixmap
 
     def transform_pixmap(self, pm):
         """Apply all transformations to the given pixmap."""

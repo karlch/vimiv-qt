@@ -76,18 +76,44 @@ class ImageFileHandler(QObject):
 
     @property
     def current(self):
-        """Current pixmap as property to disallow setting."""
+        """The currently displayed pixmap.
+
+        Upon setting a signal to update the image shown is emitted.
+        """
         return self._pixmaps.current
+
+    @current.setter
+    def current(self, pixmap):
+        self._pixmaps.current = pixmap
+        reload_only = True
+        imutils.pixmap_loaded.emit(pixmap, reload_only)
 
     @property
     def original(self):
-        """Original pixmap as property to disallow setting."""
+        """Original pixmap without any transformation or manipulations.
+
+        Upon setting all edited pixmaps are reset as well.
+        """
         return self._pixmaps.original
+
+    @original.setter
+    def original(self, pixmap) -> None:
+        self._pixmaps.original = (
+            self._pixmaps.transformed
+        ) = self._pixmaps.current = pixmap
 
     @property
     def transformed(self):
-        """Transformed pixmap as property to disallow setting."""
+        """Transformed pixmap without any manipulations applied.
+
+        Upon setting the current pixmap gets updated and shown.
+        """
         return self._pixmaps.transformed
+
+    @transformed.setter
+    def transformed(self, pixmap):
+        self._pixmaps.transformed = pixmap
+        self.current = pixmap
 
     @utils.slot
     def _on_new_image_opened(self, path: str):
@@ -99,7 +125,7 @@ class ImageFileHandler(QObject):
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self._set_original(None)
+        self.original = None
 
     @api.commands.register(mode=api.modes.IMAGE)
     def reload(self):
@@ -144,7 +170,7 @@ class ImageFileHandler(QObject):
         if file_format == "svg" and QSvgWidget:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self._set_original(None)
+            self.original = None
             imutils.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
@@ -152,7 +178,7 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 logging.error("Error reading animation %s: invalid data", path)
                 return
-            self._set_original(movie)
+            self.original = movie
             imutils.movie_loaded.emit(self.current, reload_only)
         # Regular image
         else:
@@ -160,7 +186,7 @@ class ImageFileHandler(QObject):
             if reader.error():
                 logging.error("Error reading image %s: %s", path, reader.errorString())
                 return
-            self._set_original(pixmap)
+            self.original = pixmap
             imutils.pixmap_loaded.emit(self.current, reload_only)
         self._path = path
 
@@ -192,23 +218,6 @@ class ImageFileHandler(QObject):
         runner = WriteImageRunner(pixmap, path, original_path)
         self._pool.start(runner)
         self._reset()
-
-    def update_pixmap(self, pixmap):
-        """Set the current pixmap and emit signal to update image shown."""
-        self._pixmaps.current = pixmap
-        reload_only = True
-        imutils.pixmap_loaded.emit(pixmap, reload_only)
-
-    def update_transformed(self, pixmap):
-        """Set the transformed and current pixmap."""
-        self._pixmaps.transformed = pixmap
-        self.update_pixmap(pixmap)
-
-    def _set_original(self, pixmap):
-        """Set the original pixmap."""
-        self._pixmaps.original = (
-            self._pixmaps.transformed
-        ) = self._pixmaps.current = pixmap
 
 
 class WriteImageRunner(QRunnable):
