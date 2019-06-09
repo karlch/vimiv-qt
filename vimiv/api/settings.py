@@ -11,7 +11,8 @@ Module attributes:
 """
 
 from abc import abstractmethod
-from typing import Any, Dict, ItemsView, List, Union, Callable
+from typing import Any, Dict, ItemsView, List, Union, Callable, Tuple
+import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -344,6 +345,58 @@ class StrSetting(Setting):
         return "String"
 
 
+class ImageOrder(Setting):
+    """Defines an order of an images.
+
+    Could have reverse flag in case:
+        -name
+        -size
+    """
+
+    ORDER_TYPES = {
+        "name": os.path.basename,
+        "modify": os.path.getmtime,
+        "size": os.path.getsize,
+    }
+
+    @classmethod
+    def _get_image_order_data(cls, value: str) -> Tuple[bool, str]:
+        """Determine if asking for reversed order direction.
+
+        Returns is_reverse and actual order function name.
+        """
+
+        if not value:
+            raise ValueError
+
+        reverse = value[0] == '-'
+        if reverse:
+            value = value[1:]
+        return reverse, value
+
+    @classmethod
+    def get_image_order_data(cls, value: str) -> Tuple[bool, Callable[..., Any]]:
+        """Returns is_reverse flag and order function from requested order value."""
+
+        reverse, value = cls._get_image_order_data(value)
+        order_function = cls.ORDER_TYPES.get(value)
+
+        if order_function is None:
+            raise ValueError
+        return reverse, order_function
+
+    @ensure_type(tuple)
+    def convert(self, value: str) -> Tuple[bool, Callable]:
+        try:
+            return self.get_image_order_data(value)
+        except ValueError:
+            # rollback on failure
+            return self.value
+
+    def __str__(self) -> str:
+        return "ImageOrder"
+
+
 # Initialize all settings
 
 monitor_fs = BoolSetting(
@@ -364,6 +417,11 @@ command_history_limit = IntSetting(
     100,
     desc="Maximum number of commands to store in history",
     hidden=True,
+)
+image_order = ImageOrder(
+    "image_order",
+    ImageOrder.get_image_order_data("name"),
+    desc="Set ordering. By name ASC - default.",
 )
 
 

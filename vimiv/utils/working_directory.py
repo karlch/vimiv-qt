@@ -61,6 +61,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._processing = False
 
         api.settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
+        api.settings.image_order.changed.connect(self._image_order_changed)
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
         imutils.new_image_opened.connect(self._on_new_image)
@@ -86,6 +87,10 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             logging.error("Cannot monitor %s", directory)
         else:
             logging.debug("Monitoring %s", directory)
+
+    def _image_order_changed(self):
+        """Load new supported files when order has changed."""
+        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
 
     def _on_monitor_fs_changed(self, value: bool):
         """Start/stop monitoring when the setting changed."""

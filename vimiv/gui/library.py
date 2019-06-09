@@ -288,6 +288,20 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         )  # Fallback to selecting the first row
         self._select_row(row)
 
+    @staticmethod
+    @api.commands.register(mode=api.modes.LIBRARY)
+    def order(by: str = "name"):
+        """Change image order.
+
+        By default used order by name if --by is not specified.
+
+        **syntax:** ``:order --by=modify``
+
+        positional arguments:
+            * ``by``: The name of an order function.
+        """
+        api.settings.image_order.value = by
+
 
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
