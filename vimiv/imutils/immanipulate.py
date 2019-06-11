@@ -60,8 +60,9 @@ class Manipulator(QObject):
         """Set the pixmap to a newly edited version."""
         self._handler.current = pixmap
 
+    @property
     def changed(self):
-        """Return True if anything was edited."""
+        """True if anything was edited."""
         return self.manipulations != {"brightness": 0, "contrast": 0}
 
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
@@ -72,7 +73,7 @@ class Manipulator(QObject):
 
     def reset(self):
         """Reset manipulations to default."""
-        if self.changed():
+        if self.changed:
             self._handler.current = self._handler.transformed
             self.manipulations = {"brightness": 0, "contrast": 0}
             self.edited.emit("brightness", 0)

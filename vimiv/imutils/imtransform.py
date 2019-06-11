@@ -84,13 +84,13 @@ class Transform:
     def _apply_transformations(self):
         """Apply all transformations to the original pixmap."""
         self._handler.transformed = self._handler.original.transformed(
-            self._transform, mode=Qt.SmoothTransformation)
+            self._transform, mode=Qt.SmoothTransformation
+        )
 
+    @property
     def changed(self):
-        """Return True if transformations have been applied."""
-        if self._rotation_angle or self._flip_horizontal or self._flip_vertical:
-            return True
-        return False
+        """True if transformations have been applied."""
+        return self._rotation_angle or self._flip_horizontal or self._flip_vertical
 
     def reset(self):
         """Reset transformations."""

@@ -140,7 +140,7 @@ class ImageFileHandler(QObject):
         """
         if not api.settings.image.autowrite:
             self._reset()
-        elif self.transform.changed() or self.manipulate.changed():
+        elif self.transform.changed or self.manipulate.changed:
             self.write_pixmap(self.current, path, path)
 
     @utils.slot
