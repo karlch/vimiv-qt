@@ -49,8 +49,7 @@ class Transform:
         angle = 90 * count * -1 if counter_clockwise else 90 * count
         self._rotation_angle = (self._rotation_angle + angle) % 360
         self._transform.rotate(angle)
-        pixmap = self.transform_pixmap(self._handler.original)
-        self._handler.transformed = pixmap
+        self._apply_transformations()
 
     @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
     @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
@@ -75,17 +74,17 @@ class Transform:
         # Standard horizontal flip
         else:
             self._transform.scale(-1, 1)
-        pixmap = self.transform_pixmap(self._handler.original)
+        self._apply_transformations()
         # Store changes
         if vertical:
             self._flip_vertical = not self._flip_vertical
         else:
             self._flip_horizontal = not self._flip_horizontal
-        self._handler.transformed = pixmap
 
-    def transform_pixmap(self, pm):
-        """Apply all transformations to the given pixmap."""
-        return pm.transformed(self._transform, mode=Qt.SmoothTransformation)
+    def _apply_transformations(self):
+        """Apply all transformations to the original pixmap."""
+        self._handler.transformed = self._handler.original.transformed(
+            self._transform, mode=Qt.SmoothTransformation)
 
     def changed(self):
         """Return True if transformations have been applied."""
