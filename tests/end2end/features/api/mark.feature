@@ -46,3 +46,11 @@ Feature: Mark and tag images.
         And I run tag-write test
         And I run tag-delete test
         Then the tag file test should not exist
+
+    Scenario: Remove deleted file from mark list
+        Given I open 5 images
+        When I run mark %
+        And I run delete %m
+        And I wait for the working directory handler
+        Then the file image_01.jpg should not exist
+        And image_01.jpg should not be marked

@@ -10,16 +10,9 @@ import pytest_bdd as bdd
 
 from vimiv.imutils import filelist
 from vimiv.gui import image
-from vimiv.utils import working_directory
 
 
 bdd.scenarios("imagedelete.feature")
-
-
-@bdd.when("I wait for the working directory handler")
-def wait_for_working_directory_handler(qtbot):
-    with qtbot.waitSignal(working_directory.handler.changed):
-        pass
 
 
 @bdd.then(bdd.parsers.parse("{basename} should not be in the filelist"))

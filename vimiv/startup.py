@@ -78,6 +78,7 @@ def setup_pre_app(argv):
 def setup_post_app(args):
     """Setup performed after creating the QApplication."""
     working_directory.init()
+    api.mark.watch()
     imutils.init()
     completionmodels.init()
     init_ui(args)

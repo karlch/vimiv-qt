@@ -11,12 +11,12 @@ import logging
 import os
 import shutil
 from datetime import datetime
-from typing import Any, Callable, List
+from typing import Any, Callable, List, cast
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
 
 from vimiv.config import styles
-from vimiv.utils import files, pathreceiver, xdg, remove_prefix, wrap_style_span
+from vimiv.utils import files, pathreceiver, xdg, remove_prefix, wrap_style_span, slot
 from . import commands, keybindings, objreg, status, settings
 
 
@@ -30,6 +30,7 @@ class Mark(QObject):
     Attributes:
         _marked: List of all currently marked images.
         _last_marked: List of images that were marked before clearing.
+        _watcher: QFileSystemWatcher to monitor marked paths.
     """
 
     marked = pyqtSignal(str)
@@ -40,6 +41,7 @@ class Mark(QObject):
         super().__init__()
         self._marked: List[str] = []
         self._last_marked: List[str] = []
+        self._watcher = cast(QFileSystemWatcher, None)
 
     @keybindings.register("m", "mark %")
     @commands.register()
@@ -65,6 +67,7 @@ class Mark(QObject):
         .. hint::
             It is possible to restore the last cleared marks using ``mark-restore``.
         """
+        self._watcher.removePaths(self._marked)
         self._marked, self._last_marked = [], self._marked
         for path in self._last_marked:
             self.unmarked.emit(path)
@@ -72,6 +75,7 @@ class Mark(QObject):
     @commands.register()
     def mark_restore(self) -> None:
         """Restore the last cleared marks."""
+        self._watcher.addPaths(self._last_marked)
         self._marked, self._last_marked = self._last_marked, []
         for path in self._marked:
             self.marked.emit(path)
@@ -189,12 +193,37 @@ class Mark(QObject):
             path: The path to toggle the mark status of.
         """
         try:
-            index = self._marked.index(path)
-            del self._marked[index]
-            self.unmarked.emit(path)
+            self._unmark(path)
         except ValueError:
-            self._marked.append(path)
-            self.marked.emit(path)
+            self._mark(path)
+
+    def watch(self) -> None:
+        """Start the QFileSystemWatcher to monitor marked paths.
+
+        This is required as during __init__ the QApplication is not created yet.
+        """
+        if self._watcher is None:
+            self._watcher = QFileSystemWatcher()
+            self._watcher.fileChanged.connect(self._on_file_changed)
+
+    @slot
+    def _on_file_changed(self, path: str) -> None:
+        """Unmark deleted paths."""
+        if not os.path.exists(path):
+            self._unmark(path)
+
+    def _mark(self, path: str) -> None:
+        """Mark the given path."""
+        self._marked.append(path)
+        self.marked.emit(path)
+        self._watcher.addPath(path)
+
+    def _unmark(self, path: str) -> None:
+        """Unmark the given path."""
+        index = self._marked.index(path)
+        del self._marked[index]
+        self.unmarked.emit(path)
+        self._watcher.removePath(path)
 
 
 class Tag:
