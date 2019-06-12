@@ -25,6 +25,11 @@ def check_image_marked(path):
     assert path in [os.path.basename(p) for p in api.mark.paths]
 
 
+@bdd.then(bdd.parsers.parse("{path} should not be marked"))
+def check_image_not_marked(path):
+    assert path not in [os.path.basename(p) for p in api.mark.paths]
+
+
 @bdd.then(bdd.parsers.parse("the tag file {name} should exist with {n_paths:d} paths"))
 def check_tag_file(name, n_paths):
     with Tag(name, "r") as tag:

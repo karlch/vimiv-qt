@@ -17,6 +17,7 @@ from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import filelist
+from vimiv.utils import working_directory
 
 
 ###############################################################################
@@ -82,6 +83,12 @@ def wait_for_external_command(qtbot):
         qtbot.wait(10)
         iteration += 1
     assert iteration != max_iterations, "external command timed out"
+
+
+@bdd.when("I wait for the working directory handler")
+def wait_for_working_directory_handler(qtbot):
+    with qtbot.waitSignal(working_directory.handler.changed):
+        pass
 
 
 ###############################################################################
@@ -190,6 +197,26 @@ def check_popup_displayed(title):
 @bdd.then(bdd.parsers.parse("the filelist should contain {number} images"))
 def check_filelist_length(number):
     assert filelist.total() == number
+
+
+@bdd.then(bdd.parsers.parse("the file {name} should exist"))
+def check_file_exists(name):
+    assert os.path.isfile(name)
+
+
+@bdd.then(bdd.parsers.parse("the file {name} should not exist"))
+def check_not_file_exists(name):
+    assert not os.path.isfile(name)
+
+
+@bdd.then(bdd.parsers.parse("the directory {name} should exist"))
+def check_directory_exists(name):
+    assert os.path.isdir(name)
+
+
+@bdd.then(bdd.parsers.parse("the directory {name} should not exist"))
+def check_not_directory_exists(name):
+    assert not os.path.isdir(name)
 
 
 def _check_status(qtbot, assertion, info=""):
