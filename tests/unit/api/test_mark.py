@@ -17,12 +17,13 @@ from vimiv.api._mark import Tag
 
 
 @pytest.fixture
-def mark(mocker):
+def mark(qtbot, mocker):
     api.mark.marked = mocker.Mock()
     api.mark.unmarked = mocker.Mock()
+    api.mark.watch()
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
     yield api.mark
-    api.mark._marked.clear()
+    api.mark.mark_clear()
     api.mark._last_marked.clear()
 
 
