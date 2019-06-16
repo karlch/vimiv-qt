@@ -58,7 +58,7 @@ from typing import cast, Dict, Sequence, Tuple, Optional
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-from . import modes
+from . import modes, settings
 
 
 def get_module(text: str) -> "BaseFilter":
@@ -103,28 +103,19 @@ class BaseFilter(QSortFilterProxyModel):
     def filtertext(self, text: str) -> str:
         """Update text for filtering.
 
-        This default implementation strips command line prefixes and leading digits. If
-        the child class requires additional intelligence it should override this
-        method.
+        This default implementation strips command line prefixes and leading digits and
+        possibly activates fuzzy filtering. If the child class requires additional
+        logic, it should override this method.
 
         Args:
             text: The current command line text.
         Returns:
-            The stripped text used as completion filter.
+            The updated text used as completion filter.
         """
-        return text.lstrip(":/" + string.digits)
-
-
-class FuzzyFilter(BaseFilter):
-    """Simple filter fuzzy matching text in all columns."""
-
-    def filtertext(self, text: str) -> str:
-        """Fuzzy filter completions based on text in command line.
-
-        Args:
-            text: The current command line text.
-        """
-        return "*".join(super().filtertext(text))
+        text = text.lstrip(":/" + string.digits)
+        if settings.completion.fuzzy.value:
+            return "*".join(text)
+        return text
 
 
 class BaseModel(QStandardItemModel):

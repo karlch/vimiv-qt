@@ -73,7 +73,7 @@ class CommandLine(eventhandler.KeyHandler, QLineEdit):
     def __init__(self):
         super().__init__()
         self._history = history.History(
-            history.read(), max_items=api.settings.command_history_limit.value
+            history.read(), max_items=api.settings.command.history_limit.value
         )
         self.mode = None
 

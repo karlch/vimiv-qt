@@ -76,3 +76,10 @@ Feature: Using completion.
         And I enter command mode with "set slideshow.delay"
         And I run complete
         Then a possible completion should contain 42
+
+    Scenario: Using fuzzy completion filtering
+        Given I open any directory
+        When I run set completion.fuzzy true
+        And I run command
+        And I press flscrn
+        Then a possible completion should contain fullscreen
