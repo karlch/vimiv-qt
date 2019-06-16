@@ -7,6 +7,8 @@
 """Tests for vimiv.utils"""
 
 import inspect
+from collections import namedtuple
+
 import pytest
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -109,3 +111,51 @@ def test_remove_prefix():
 
 def test_remove_prefix_not_found():
     assert utils.remove_prefix("start hello", "starter") == "start hello"
+
+
+@pytest.fixture(
+    params=[
+        ("a space", "a\\ space"),
+        ("more than one", "more\\ than\\ one"),
+        (" prepending", "\\ prepending"),
+        ("trailing ", "trailing\\ "),
+    ]
+)
+def escape_ws(request):
+    """Fixture to yield different tuples of escaped and unescaped text."""
+    yield namedtuple("EscapeWSInput", ["unescaped", "escaped"])(*request.param)
+
+
+def test_escape_ws(escape_ws):
+    assert utils.escape_ws(escape_ws.unescaped) == escape_ws.escaped
+
+
+def test_unescape_ws(escape_ws):
+    assert utils.unescape_ws(escape_ws.escaped) == escape_ws.unescaped
+
+
+def test_unescape_escape_ws(escape_ws):
+    """Ensure unescaping escaped whitespace returns the initial text."""
+    assert (
+        utils.unescape_ws(utils.escape_ws(escape_ws.unescaped)) == escape_ws.unescaped
+    )
+
+
+def test_escape_unescape_ws(escape_ws):
+    """Ensure escaping unescaped whitespace returns the escaped text."""
+    assert utils.escape_ws(utils.unescape_ws(escape_ws.escaped)) == escape_ws.escaped
+
+
+def test_escape_escaped_ws(escape_ws):
+    """Ensure that escaped whitespace is not escaped twice."""
+    assert utils.escape_ws(escape_ws.escaped) == escape_ws.escaped
+
+
+def test_escape_other_char():
+    assert utils.escape_ws("a space", escape_char="!") == "a! space"
+
+
+def test_escape_additional_whitespace():
+    assert utils.escape_ws("a space\nand newline", whitespace=" \n") == (
+        "a\\ space\\\nand\\ newline"
+    )
