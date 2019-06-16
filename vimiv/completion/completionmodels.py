@@ -7,12 +7,11 @@
 """Various completion models for command line completion."""
 
 import os
-import shlex
 from typing import List, Set
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.utils import files, trash_manager
+from vimiv.utils import files, trash_manager, escape_ws, unescape_ws
 
 
 class Empty(api.completion.BaseModel):
@@ -123,7 +122,7 @@ class PathModel(api.completion.BaseModel):
         self.set_data(data)
 
     def _create_row(self, path):
-        return (f"{self._command} {shlex.quote(path)}",)
+        return (f"{self._command} {escape_ws(path)}",)
 
     @staticmethod
     def _get_directory(text: str) -> str:
@@ -131,8 +130,8 @@ class PathModel(api.completion.BaseModel):
         if not text:
             return "."
         if "/" not in text:
-            return text if os.path.isdir(text) else "."
-        return os.path.dirname(text)
+            return unescape_ws(text) if os.path.isdir(text) else "."
+        return unescape_ws(os.path.dirname(text))
 
 
 class SettingsModel(api.completion.BaseModel):

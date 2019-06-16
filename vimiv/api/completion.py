@@ -93,7 +93,9 @@ class BaseFilter(QSortFilterProxyModel):
         Args:
             text: The current command line text.
         """
-        self.setFilterRegExp(QRegExp(self.filtertext(text), Qt.CaseInsensitive))
+        self.setFilterRegExp(
+            QRegExp(self.filtertext(text), Qt.CaseInsensitive, QRegExp.WildcardUnix)
+        )
 
     def reset(self) -> None:
         self.setFilterRegExp("")
