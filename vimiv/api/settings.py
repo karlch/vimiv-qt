@@ -372,6 +372,14 @@ class command:  # pylint: disable=invalid-name
     )
 
 
+class completion:  # pylint: disable=invalid-name
+    """Namespace for completion related settings."""
+
+    fuzzy = BoolSetting(
+        "completion.fuzzy", False, desc="Use fuzzy matching in completion"
+    )
+
+
 class search:  # pylint: disable=invalid-name
     """Namespace for search related settings."""
 

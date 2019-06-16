@@ -79,8 +79,8 @@ class StripFilter(api.completion.BaseFilter):
         self._command = command
 
     def filtertext(self, text: str) -> str:
-        """Additionally strip :command to allow match inside word."""
-        return super().filtertext(text).replace(f"{self._command} ", "")
+        """Additionally strip command to allow match inside word."""
+        return super().filtertext(text.replace(f"{self._command} ", ""))
 
 
 class PathModel(api.completion.BaseModel):
