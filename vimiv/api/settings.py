@@ -359,12 +359,17 @@ startup_library = BoolSetting(
     hidden=True,
 )
 style = StrSetting("style", "default", hidden=True)
-command_history_limit = IntSetting(
-    "history_limit",
-    100,
-    desc="Maximum number of commands to store in history",
-    hidden=True,
-)
+
+
+class command:  # pylint: disable=invalid-name
+    """Namespace for command related settings."""
+
+    history_limit = IntSetting(
+        "command.history_limit",
+        100,
+        desc="Maximum number of commands to store in history",
+        hidden=True,
+    )
 
 
 class search:  # pylint: disable=invalid-name
