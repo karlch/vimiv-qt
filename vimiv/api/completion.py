@@ -87,20 +87,19 @@ class BaseFilter(QSortFilterProxyModel):
     def refilter(self, text: str) -> None:
         """Filter completions based on text in the command line.
 
-        Must be implemented by the child classes.
+        This updates the text according to the ``filtertext`` method and updates the
+        filter regular expression.
 
         Args:
             text: The current command line text.
         """
-        raise NotImplementedError(
-            "BaseFilter.refilter must be implemented by child class"
-        )
+        self.setFilterRegExp(QRegExp(self.filtertext(text), Qt.CaseInsensitive))
 
     def reset(self) -> None:
         self.setFilterRegExp("")
 
-    def strip_text(self, text: str) -> str:
-        """Strip text of characters ignored for filtering.
+    def filtertext(self, text: str) -> str:
+        """Update text for filtering.
 
         This default implementation strips command line prefixes and leading digits. If
         the child class requires additional intelligence it should override this
@@ -111,35 +110,19 @@ class BaseFilter(QSortFilterProxyModel):
         Returns:
             The stripped text used as completion filter.
         """
-        return text.lstrip(":/").lstrip(  # Remove trailing ":" or "/"
-            string.digits
-        )  # Do not filter on counts
+        return text.lstrip(":/" + string.digits)
 
 
-class TextFilter(BaseFilter):
-    """Simple filter matching text in all columns."""
-
-    def refilter(self, text: str) -> None:
-        """Filter completions based on text in command line.
-
-        Args:
-            text: The current command line text.
-        """
-        text = self.strip_text(text)
-        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive))
-
-
-class FuzzyFilter(TextFilter):
+class FuzzyFilter(BaseFilter):
     """Simple filter fuzzy matching text in all columns."""
 
-    def refilter(self, text: str) -> None:
+    def filtertext(self, text: str) -> str:
         """Fuzzy filter completions based on text in command line.
 
         Args:
             text: The current command line text.
         """
-        text = ".*".join(self._strip_text(text))
-        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive))
+        return "*".join(super().filtertext(text))
 
 
 class BaseModel(QStandardItemModel):
@@ -165,7 +148,7 @@ class BaseModel(QStandardItemModel):
         super().__init__()
         self.column_widths = column_widths
         # Register module using the filter
-        text_filter = text_filter if text_filter is not None else TextFilter()
+        text_filter = text_filter if text_filter is not None else BaseFilter()
         text_filter.setSourceModel(self)
         _modules[text] = text_filter
 

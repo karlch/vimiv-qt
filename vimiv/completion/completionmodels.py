@@ -68,8 +68,8 @@ class ExternalCommandModel(api.completion.BaseModel):
         return []
 
 
-class StripFilter(api.completion.TextFilter):
-    """TextFilter used for the :command type completions.
+class StripFilter(api.completion.BaseFilter):
+    """Completion filter used for the :command type completions.
 
     Attributes:
         _command: The command for which this filter is valid.
@@ -79,13 +79,9 @@ class StripFilter(api.completion.TextFilter):
         super().__init__()
         self._command = command
 
-    def strip_text(self, text: str) -> str:
+    def filtertext(self, text: str) -> str:
         """Additionally strip :command to allow match inside word."""
-        return (
-            super()
-            .strip_text(text)
-            .replace(f"{self._command} ", "")  # Still allow match inside word for open
-        )
+        return super().filtertext(text).replace(f"{self._command} ", "")
 
 
 class PathModel(api.completion.BaseModel):

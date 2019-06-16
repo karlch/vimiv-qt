@@ -78,7 +78,7 @@ class Completer(QObject):
             initializer: Callback function to initialize the new proxy model.
         """
         proxy_model = api.completion.get_module(self._cmd.text())
-        initializer(proxy_model.sourceModel(), proxy_model.strip_text(text))
+        initializer(proxy_model.sourceModel(), proxy_model.filtertext(text))
         if proxy_model != self._proxy_model:
             self._proxy_model = proxy_model
             self._completion.setModel(proxy_model)
