@@ -10,10 +10,12 @@ import collections
 import time
 from typing import Optional
 
-from PyQt5.QtCore import QRunnable, QThreadPool, pyqtSignal, QObject, QCoreApplication
+from PyQt5.QtCore import QRunnable, QThreadPool, QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import QProgressBar, QLabel
 
 from vimiv import api, utils
+from vimiv.config import styles
 from vimiv.commands.argtypes import ManipulateLevel
 from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
@@ -24,6 +26,60 @@ from vimiv.utils import clamp
 WAIT_TIME = 0.3
 
 
+class Manipulation:
+    """Storage class for one manipulation.
+
+    Attributes:
+        name: Name identifier of the manipulation (e.g. brightness).
+        limits: Namedtuple of lower and upper limit for value.
+
+        _init_value: Initial value of the manipulation to allow resetting.
+        _value: Current value of the manipulation.
+    """
+
+    def __init__(self, name, value=0, lower=-127, upper=127):
+        self.bar = QProgressBar()
+        self.bar.setMinimum(lower)
+        self.bar.setMaximum(upper)
+        self.bar.setFormat("%v")
+
+        self.label = QLabel(name)
+
+        self.name = name
+        self.limits = collections.namedtuple("Limits", ["lower", "upper"])(lower, upper)
+
+        self.value = self._value = self._init_value = value
+
+    @property
+    def value(self):
+        """Current value of the manipulation.
+
+        Upon setting it is guaranteed that the value stays within the lower and upper
+        limit and the bar value is updated.
+        """
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        self._value = clamp(value, self.limits.lower, self.limits.upper)
+        self.bar.setValue(self._value)
+
+    def reset(self):
+        self.value = self._init_value
+        self.bar.setValue(self._init_value)
+
+    def focus(self):
+        fg = styles.get("manipulate.focused.fg")
+        self.label.setText(utils.wrap_style_span(f"color: {fg}", self.name))
+
+    def unfocus(self):
+        fg = styles.get("manipulate.fg")
+        self.label.setText(utils.wrap_style_span(f"color: {fg}", self.name))
+
+    def __repr__(self):
+        return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
+
+
 class Manipulator(QObject):
     """Apply manipulations to an image.
 
@@ -31,7 +87,7 @@ class Manipulator(QObject):
     contrast.
 
     Attributes:
-        manipulations: Dictionary storing the values of the manipulations.
+        manipulations: Namedtuple storing all manipulations.
         thread_id: ID of the current manipulation thread.
         data: bytes of the edited pixmap. Must be stored as the QPixmap is
             generated directly from the bytes and needs them to stay in memory.
@@ -41,19 +97,18 @@ class Manipulator(QObject):
     """
 
     pool = QThreadPool()
-    edited = pyqtSignal(str, int)
-    focused = pyqtSignal(str)
 
     @api.objreg.register
     def __init__(self, handler):
         super().__init__()
         self._handler = handler
-        self.manipulations = collections.OrderedDict(
-            [("brightness", 0), ("contrast", 0)]
-        )
         self.thread_id = 0
         self.data = None
-        self._current = "brightness"
+        self.manipulations = collections.namedtuple(
+            "Manipulations", ["Brightness", "Contrast"]
+        )(Manipulation("brightness"), Manipulation("contrast"))
+        self._current = self.manipulations.Brightness  # Default manipulation
+        self._current.focus()
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     def set_pixmap(self, pixmap):
@@ -63,7 +118,10 @@ class Manipulator(QObject):
     @property
     def changed(self):
         """True if anything was edited."""
-        return self.manipulations != {"brightness": 0, "contrast": 0}
+        for manipulation in self.manipulations:
+            if manipulation.value != 0:
+                return True
+        return False
 
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -71,13 +129,19 @@ class Manipulator(QObject):
         """Leave manipulate keeping the changes."""
         api.modes.MANIPULATE.leave()
 
+    @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def discard(self):
+        """Discard any changes and leave manipulate."""
+        api.modes.MANIPULATE.leave()
+        self.reset()
+
     def reset(self):
         """Reset manipulations to default."""
         if self.changed:
             self._handler.current = self._handler.transformed
-            self.manipulations = {"brightness": 0, "contrast": 0}
-            self.edited.emit("brightness", 0)
-            self.edited.emit("contrast", 0)
+            for manipulation in self.manipulations:
+                manipulation.reset()
 
     @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -97,10 +161,12 @@ class Manipulator(QObject):
         **count:** Set brightness to [count].
         """
         try:
-            value = ManipulateLevel(count) if count is not None else value
-            self._update_manipulation("brightness", value)
+            self.manipulations.Brightness.value = (
+                ManipulateLevel(count) if count is not None else value
+            )
         except ValueError as e:
             raise api.commands.CommandError(str(e))
+        self._update_manipulation(self.manipulations.Brightness)
 
     @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -120,10 +186,12 @@ class Manipulator(QObject):
         **count:** Set contrast to [count].
         """
         try:
-            value = ManipulateLevel(count) if count is not None else value
-            self._update_manipulation("contrast", value)
+            self.manipulations.Contrast.value = (
+                ManipulateLevel(count) if count is not None else value
+            )
         except ValueError as e:
             raise api.commands.CommandError(str(e))
+        self._update_manipulation(self.manipulations.Contrast)
 
     @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)
@@ -138,8 +206,8 @@ class Manipulator(QObject):
 
         **count:** multiplier
         """
-        value = self.manipulations[self._current] + value * count
-        self._update_manipulation(self._current, value)
+        self._current.value += value * count
+        self._update_manipulation(self._current)
 
     @api.keybindings.register(("J", "H"), "decrease 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("j", "h"), "decrease 1", mode=api.modes.MANIPULATE)
@@ -154,8 +222,8 @@ class Manipulator(QObject):
 
         **count:** multiplier
         """
-        value = self.manipulations[self._current] - value * count
-        self._update_manipulation(self._current, value)
+        self._current.value -= value * count
+        self._update_manipulation(self._current)
 
     @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
     @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
@@ -170,25 +238,29 @@ class Manipulator(QObject):
 
         **count:** Set the manipulation to [count] instead.
         """
-        value = count if count is not None else value
-        self._update_manipulation(self._current, value)
+        self._current.value = count if count is not None else value
+        self._update_manipulation(self._current)
 
-    def _update_manipulation(self, name, value):
-        """Update the value of one manipulation.
+    def _update_manipulation(self, manipulation: Manipulation):
+        """Apply changes according to an updated manipulation.
+
+        Focuses the manipulation and applies the changes to the displayed image in an
+        extra thread using the runner.
 
         Args:
-            name: Name of the manipulation to update.
-            value: Integer value to set the manipulation to.
+            manipulation: The manipulation that was updated.
         """
-        self._current = name
-        self.focused.emit(name)
-        if value is not None:
-            value = clamp(value, -127, 127)
-            self.edited.emit(name, value)
-            self.manipulations[name] = value
-            self.thread_id += 1
-            runnable = ManipulateRunner(self, self.thread_id)
-            self.pool.start(runnable)
+        # Focus
+        self._current = manipulation
+        for m in self.manipulations:
+            if m == manipulation:
+                m.focus()
+            else:
+                m.unfocus()
+        # Run manipulation
+        self.thread_id += 1
+        runnable = ManipulateRunner(self, self.thread_id)
+        self.pool.start(runnable)
 
     @api.status.module("{processing}")
     def _processing_indicator(self):
@@ -238,8 +310,8 @@ class ManipulateRunner(QRunnable):
         bits.setsize(image.byteCount())
         data = bytes(bits)
         # Run C function
-        bri = self._manipulator.manipulations["brightness"] / 255
-        con = self._manipulator.manipulations["contrast"] / 255
+        bri = self._manipulator.manipulations.Brightness.value / 255
+        con = self._manipulator.manipulations.Contrast.value / 255
         self._manipulator.data = _c_manipulate.manipulate(
             data, image.hasAlphaChannel(), bri, con
         )

@@ -7,7 +7,6 @@
 import pytest_bdd as bdd
 
 from vimiv.imutils import immanipulate
-from vimiv.gui import manipulate
 
 bdd.scenarios("manipulate.feature")
 
@@ -16,7 +15,8 @@ bdd.scenarios("manipulate.feature")
 def manipulate_value(name, value):
     value = int(value)
     # TODO check if image itself changed
-    # Check stored value in the manipulator class
-    assert immanipulate.instance().manipulations[name] == value
-    # Check bar value in the widget
-    assert manipulate.instance()._bars[name].value() == value
+    # Find the correct manipulation
+    for manipulation in immanipulate.instance().manipulations:
+        if manipulation.name == name:
+            assert manipulation.value == value  # Actual value
+            assert manipulation.bar.value() == value  # Displayed bar
