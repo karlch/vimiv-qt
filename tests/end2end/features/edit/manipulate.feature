@@ -37,3 +37,9 @@ Feature: Manipulate an image.
         And I press 20gg
         And I press 0gg
         Then the brightness value should be 0
+
+    Scenario: Do not reset brightness value on focus
+        When I enter manipulate mode
+        And I run brightness --value=10
+        And I run brightness
+        Then the brightness value should be 10

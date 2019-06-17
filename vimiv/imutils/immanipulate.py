@@ -16,7 +16,6 @@ from PyQt5.QtWidgets import QProgressBar, QLabel
 
 from vimiv import api, utils
 from vimiv.config import styles
-from vimiv.commands.argtypes import ManipulateLevel
 from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
 )
@@ -145,9 +144,7 @@ class Manipulator(QObject):
 
     @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def brightness(
-        self, value: ManipulateLevel = ManipulateLevel(0), count: Optional[int] = None
-    ):
+    def brightness(self, value: int = None, count: Optional[int] = None):
         """Manipulate brightness.
 
         **syntax:** ``:brightness [value]``
@@ -160,19 +157,11 @@ class Manipulator(QObject):
 
         **count:** Set brightness to [count].
         """
-        try:
-            self.manipulations.Brightness.value = (
-                ManipulateLevel(count) if count is not None else value
-            )
-        except ValueError as e:
-            raise api.commands.CommandError(str(e))
-        self._update_manipulation(self.manipulations.Brightness)
+        self._manipulation_command(self.manipulations.Brightness, value, count)
 
     @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def contrast(
-        self, value: ManipulateLevel = ManipulateLevel(0), count: Optional[int] = None
-    ):
+    def contrast(self, value: int = None, count: Optional[int] = None):
         """Manipulate contrast.
 
         **syntax:** ``:contrast [value]``
@@ -185,13 +174,17 @@ class Manipulator(QObject):
 
         **count:** Set contrast to [count].
         """
+        self._manipulation_command(self.manipulations.Contrast, value, count)
+
+    def _manipulation_command(self, manipulation, value, count):
+        self._focus(manipulation)
+        if count is None and value is None:  # Only focused
+            return
         try:
-            self.manipulations.Contrast.value = (
-                ManipulateLevel(count) if count is not None else value
-            )
-        except ValueError as e:
+            manipulation.value = int(count) if count is not None else value
+        except ValueError as e:  # Invalid int value given
             raise api.commands.CommandError(str(e))
-        self._update_manipulation(self.manipulations.Contrast)
+        self._apply_manipulation(manipulation)
 
     @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)
@@ -207,7 +200,7 @@ class Manipulator(QObject):
         **count:** multiplier
         """
         self._current.value += value * count
-        self._update_manipulation(self._current)
+        self._apply_manipulation(self._current)
 
     @api.keybindings.register(("J", "H"), "decrease 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("j", "h"), "decrease 1", mode=api.modes.MANIPULATE)
@@ -223,7 +216,7 @@ class Manipulator(QObject):
         **count:** multiplier
         """
         self._current.value -= value * count
-        self._update_manipulation(self._current)
+        self._apply_manipulation(self._current)
 
     @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
     @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
@@ -239,28 +232,22 @@ class Manipulator(QObject):
         **count:** Set the manipulation to [count] instead.
         """
         self._current.value = count if count is not None else value
-        self._update_manipulation(self._current)
+        self._apply_manipulation(self._current)
 
-    def _update_manipulation(self, manipulation: Manipulation):
-        """Apply changes according to an updated manipulation.
+    def _apply_manipulation(self, manipulation: Manipulation):
+        """Apply changes to displayed image according to an updated manipulation."""
+        self.thread_id += 1
+        runnable = ManipulateRunner(self, self.thread_id)
+        self.pool.start(runnable)
 
-        Focuses the manipulation and applies the changes to the displayed image in an
-        extra thread using the runner.
-
-        Args:
-            manipulation: The manipulation that was updated.
-        """
-        # Focus
+    def _focus(self, manipulation: Manipulation):
+        """Focus the manipulation and unfocus all others."""
         self._current = manipulation
         for m in self.manipulations:
             if m == manipulation:
                 m.focus()
             else:
                 m.unfocus()
-        # Run manipulation
-        self.thread_id += 1
-        runnable = ManipulateRunner(self, self.thread_id)
-        self.pool.start(runnable)
 
     @api.status.module("{processing}")
     def _processing_indicator(self):

@@ -54,13 +54,3 @@ class HistoryDirection(Enum):
 
     Next = "next"
     Prev = "prev"
-
-
-class ManipulateLevel(int):
-    """Valid integer for manipulation (any integer between -127 and 127)."""
-
-    def __new__(cls, value):
-        ivalue = int.__new__(cls, value)
-        if abs(ivalue) > 127:
-            raise ValueError("Value must be between -127 and 127")
-        return ivalue
