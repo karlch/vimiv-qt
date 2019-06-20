@@ -66,6 +66,7 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         imutils.svg_loaded.connect(self._on_svg_loaded)
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
+        manipulator.group_focused.connect(self.setCurrentIndex)
         # Hide by default
         self.hide()
 

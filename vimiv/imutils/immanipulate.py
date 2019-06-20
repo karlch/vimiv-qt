@@ -92,7 +92,7 @@ class Manipulation:
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
 
 
-class Manipulations:
+class Manipulations(list):
     """Class of all manipulations.
 
     Each group consists of manipulations that are applied together in one function, e.g.
@@ -112,9 +112,21 @@ class Manipulations:
             group("Brightness / Contrast", (self.brightness, self.contrast)),
         )
 
-    def __iter__(self):
-        """Iterate over all manipulations."""
-        yield from utils.flatten([group.manipulations for group in self.groups])
+        self.extend(utils.flatten([group.manipulations for group in self.groups]))
+
+    def group(self, manipulation):
+        """Return the group of the manipulation."""
+        for group in self.groups:
+            if manipulation in group.manipulations:
+                return group
+        raise KeyError(f"Unknown manipulation {manipulation}")
+
+    def groupindex(self, manipulation):
+        """Retrun the index of the group of which the manipulation is part."""
+        for i, group in enumerate(self.groups):
+            if manipulation in group.manipulations:
+                return i
+        raise KeyError(f"Unknown manipulation {manipulation}")
 
     def apply_all(self, pixmap):
         """Apply all manipulations iteratively to pixmap."""
@@ -174,6 +186,7 @@ class Manipulator(QObject):
     pool = QThreadPool()
 
     updated = pyqtSignal(QPixmap)
+    group_focused = pyqtSignal(int)
 
     @api.objreg.register
     def __init__(self, handler):
@@ -216,49 +229,66 @@ class Manipulator(QObject):
         self.reset()
         self._handler.current = self._handler.transformed
 
+    @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def next(self, count: int = 1):
+        """Focus the next manipulation in the current tab.
+
+        **count:** multiplier
+        """
+        self._navigate_in_tab(count)
+
+    @api.keybindings.register("p", "prev", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def prev(self, count: int = 1):
+        """Focus the previous manipulation in the current tab.
+
+        **count:** multiplier
+        """
+        self._navigate_in_tab(-count)
+
+    def _navigate_in_tab(self, count):
+        """Navigate by count steps in current tab."""
+        group = self.manipulations.group(self._current)
+        index = (group.manipulations.index(self._current) + count) % len(
+            group.manipulations
+        )
+        self._focus(group.manipulations[index])
+
+    @api.keybindings.register("<tab>", "tabnext", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def tabnext(self, count: int = 1):
+        """Focus the next manipulation tab.
+
+        **count:** multiplier
+        """
+        self._navigate_tab(count)
+
+    @api.keybindings.register("<shift><tab>", "tabprev", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def tabprev(self, count: int = 1):
+        """Focus the previous manipulation tab.
+
+        **count:** multiplier
+        """
+        self._navigate_tab(-count)
+
+    def _navigate_tab(self, count):
+        """Navigate by count steps in tabs."""
+        current_index = self.manipulations.groupindex(self._current)
+        next_index = (current_index + count) % len(self.manipulations.groups)
+        manipulation = self.manipulations.groups[next_index].manipulations[0]
+        self._focus(manipulation)
+
     def reset(self):
         """Reset manipulations to default."""
         for manipulation in self.manipulations:
             manipulation.reset()
 
-    @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
-    @api.commands.register(mode=api.modes.MANIPULATE)
-    def brightness(self, value: int = None, count: Optional[int] = None):
-        """Manipulate brightness.
-
-        **syntax:** ``:brightness [value]``
-
-        If neither value nor count are given, set brightness to the current
-        manipulation. Otherwise set brightness to the given value.
-
-        positional arguments:
-            * ``value``: Set the brightness to value. Range: -127 to 127.
-
-        **count:** Set brightness to [count].
-        """
-        self._manipulation_command(self.manipulations.brightness, value, count)
-
-    @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
-    @api.commands.register(mode=api.modes.MANIPULATE)
-    def contrast(self, value: int = None, count: Optional[int] = None):
-        """Manipulate contrast.
-
-        **syntax:** ``:contrast [value]``
-
-        If neither value nor count are given, set contrast to the current
-        manipulation. Otherwise set contrast to the given value.
-
-        positional arguments:
-            * ``value``: Set the contrast to value. Range: -127 to 127.
-
-        **count:** Set contrast to [count].
-        """
-        self._manipulation_command(self.manipulations.contrast, value, count)
-
     def _manipulation_command(self, manipulation, value, count):
         """Run a manipulation command.
 
-        This focused the manipulation and if a new value is passed applies it to the
+        This focuses the manipulation and if a new value is passed applies it to the
         manipulate pixmap.
 
         Args:
@@ -336,6 +366,7 @@ class Manipulator(QObject):
         for manipulation in self.manipulations:
             if manipulation != focused_manipulation:
                 manipulation.unfocus()
+        self.group_focused.emit(self.manipulations.groupindex(focused_manipulation))
 
     @api.status.module("{processing}")
     def _processing_indicator(self):
