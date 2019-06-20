@@ -10,7 +10,7 @@ import logging
 
 from PyQt5.QtCore import QTimer, Qt, QSize
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
@@ -18,7 +18,7 @@ from vimiv.imutils import immanipulate
 from vimiv.utils import eventhandler, slot
 
 
-class Manipulate(eventhandler.KeyHandler, QWidget):
+class Manipulate(eventhandler.KeyHandler, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
@@ -30,6 +30,11 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         font: {statusbar.font};
         color: {manipulate.fg};
         background: {manipulate.bg};
+    }
+
+    QTabWidget {
+        background-color: #00000000;
+        border: 0px;
     }
 
     QProgressBar {
@@ -51,17 +56,10 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         self._error = "No image to manipulate"
 
         styles.apply(self)
-
-        layout = QHBoxLayout()
         # Add all manipulations from immanipulate
         manipulator = immanipulate.instance()
-        for manipulation in manipulator.manipulations:
-            layout.addWidget(manipulation.label)
-            layout.addWidget(manipulation.bar)
-        # Add some spacing
-        layout.addStretch()
-        layout.addStretch()
-        self.setLayout(layout)
+        for group in manipulator.manipulations.groups:
+            self._add_group(group)
         # Connect signals
         imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
         imutils.movie_loaded.connect(self._on_movie_loaded)
@@ -70,6 +68,19 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         api.modes.MANIPULATE.left.connect(self.hide)
         # Hide by default
         self.hide()
+
+    def _add_group(self, group):
+        """Add a group of manipulations into its own tab."""
+        widget = QWidget()
+        layout = QHBoxLayout()
+        for manipulation in group.manipulations:
+            layout.addWidget(manipulation.label)
+            layout.addWidget(manipulation.bar)
+        # Add some spacing for small groups
+        for i in range(4 - len(group.manipulations)):
+            layout.addStretch()
+        widget.setLayout(layout)
+        self.insertTab(-1, widget, group.title)
 
     @utils.slot
     def _on_entered(self):
@@ -163,7 +174,7 @@ class ManipulateImage(QLabel):
         y = (
             self._max_size.height()
             + (self._max_size.height() - pixmap.height())
-            - self._manipulate.sizeHint().height()
+            - self._manipulate.currentWidget().sizeHint().height()
         )
         self.setGeometry(x, y, pixmap.width(), pixmap.height())
 
