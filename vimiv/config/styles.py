@@ -217,6 +217,9 @@ def _insert_values(style):
     style["manipulate.bar.bg"] = "{statusbar.bg}"
     style["manipulate.bar.fg"] = "{library.selected.bg}"
     style["manipulate.bar.border"] = "0px solid"
+    # Manipulate image overlay
+    style["manipulate.image.border"] = "2px solid"
+    style["manipulate.image.border.color"] = "{base0c}"
     # Mark
     style["mark.color"] = "{base0e}"
 

@@ -8,6 +8,7 @@
 
 import logging
 import os
+import shutil
 import tempfile
 from typing import List
 
@@ -204,31 +205,33 @@ class ImageFileHandler(QObject):
             * ``path``: Save to this path instead of the current one.
         """
         assert isinstance(path, list), "Must be list from nargs"
-        path = " ".join(path) if path else self._path
-        self.write_pixmap(self.current, path, self._path)
+        self.write_pixmap(
+            pixmap=self.current, path=" ".join(path), original_path=self._path
+        )
 
-    def write_pixmap(self, pixmap, path, original_path):
+    def write_pixmap(self, pixmap, path=None, original_path=None, parallel=True):
         """Write a pixmap to disk.
 
         Args:
             pixmap: The QPixmap to write.
             path: The path to save the pixmap to.
             original_path: Original path of the opened pixmap.
+            parallel: Perform operation in parallel.
         """
-        runner = WriteImageRunner(pixmap, path, original_path)
-        self._pool.start(runner)
+        if not path:
+            path = original_path = self._path
+        if parallel:
+            runner = WriteImageRunner(pixmap, path, original_path)
+            self._pool.start(runner)
+        else:
+            write_pixmap(pixmap, path, original_path)
         self._reset()
 
 
 class WriteImageRunner(QRunnable):
     """Write QPixmap to file in an extra thread.
 
-    This requires both the path to write to and the original path as Exif data
-    may be copied from the original path to the new copy. The procedure is to
-    write the path to a temporary file first, transplant the Exif data to the
-    temporary file if possible and finally rename the temporary file to the
-    final path. The renaming is done as it is an atomic operation and we may be
-    overriding the existing file.
+    Uses the write_pixmap function.
 
     Attributes:
         _pixmap: The QPixmap to write.
@@ -244,46 +247,70 @@ class WriteImageRunner(QRunnable):
 
     def run(self):
         """Write image to file."""
-        logging.info("Saving %s...", self._path)
-        try:
-            self._can_write()
-            logging.debug("Image is writable")
-            self._write()
-            logging.info("Saved %s", self._path)
-        except WriteError as e:
-            logging.error(str(e))
+        write_pixmap(self._pixmap, self._path, self._original_path)
 
-    def _can_write(self):
-        """Check if it is possible to save the current path.
 
-        Raises:
-            WriteError if writing is not possible.
-        """
-        if not isinstance(self._pixmap, QPixmap):
-            raise WriteError("Cannot write animations")
-        if os.path.exists(self._path):  # Override current path
-            reader = QImageReader(self._path)
-            if not reader.canRead():
-                raise WriteError("Path '%s' exists and is not an image" % (self._path))
+def write_pixmap(pixmap, path, original_path):
+    """Write pixmap to file.
 
-    def _write(self):
-        """Write pixmap to disk."""
-        # Get pixmap type
-        _, ext = os.path.splitext(self._path)
-        # First create temporary file and then move it to avoid race conditions
-        handle, filename = tempfile.mkstemp(dir=os.getcwd(), suffix=ext)
-        os.close(handle)
-        self._pixmap.save(filename)
-        # Copy exif info from original file to new file
-        imutils.exif.copy_exif(self._original_path, filename)
-        os.rename(filename, self._path)
-        # Check if valid image was created
-        if not os.path.isfile(self._path):
-            raise WriteError("File not written, unknown exception")
-        if not files.is_image(self._path):
-            os.remove(self._path)
-            raise WriteError("No valid image written. Is the extention valid?")
+    This requires both the path to write to and the original path as Exif data
+    may be copied from the original path to the new copy. The procedure is to
+    write the path to a temporary file first, transplant the Exif data to the
+    temporary file if possible and finally rename the temporary file to the
+    final path. The renaming is done as it is an atomic operation and we may be
+    overriding the existing file.
+
+    Args:
+        pixmap: The QPixmap to write.
+        path: Path to write the pixmap to.
+        original_path: Original path of the opened pixmap to retrieve exif information.
+    """
+    try:
+        _can_write(pixmap, path)
+        logging.debug("Image is writable")
+        _write(pixmap, path, original_path)
+        logging.info("Saved %s", path)
+    except WriteError as e:
+        logging.error(str(e))
+
+
+def _can_write(pixmap, path):
+    """Check if it is possible to save the current path.
+
+    See write_pixmap for the args description.
+
+    Raises:
+        WriteError if writing is not possible.
+    """
+    if not isinstance(pixmap, QPixmap):
+        raise WriteError("Cannot write animations")
+    if os.path.exists(path):  # Override current path
+        reader = QImageReader(path)
+        if not reader.canRead():
+            raise WriteError("Path '%s' exists and is not an image" % (path))
+
+
+def _write(pixmap, path, original_path):
+    """Write pixmap to disk.
+
+    See write_pixmap for the args description.
+    """
+    # Get pixmap type
+    _, ext = os.path.splitext(path)
+    # First create temporary file and then move it to avoid race conditions
+    handle, filename = tempfile.mkstemp(suffix=ext)
+    os.close(handle)
+    pixmap.save(filename)
+    # Copy exif info from original file to new file
+    imutils.exif.copy_exif(original_path, filename)
+    shutil.move(filename, path)
+    # Check if valid image was created
+    if not os.path.isfile(path):
+        raise WriteError("File not written, unknown exception")
+    if not files.is_image(path):
+        os.remove(path)
+        raise WriteError("No valid image written. Is the extention valid?")
 
 
 class WriteError(Exception):
-    """Raised when the WriteImageRunner encounters problems."""
+    """Raised when write_pixmap encounters problems."""

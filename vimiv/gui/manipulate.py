@@ -8,13 +8,14 @@
 
 import logging
 
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QWidget, QHBoxLayout
+from PyQt5.QtCore import QTimer, Qt, QSize
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import eventhandler
+from vimiv.utils import eventhandler, slot
 
 
 class Manipulate(eventhandler.KeyHandler, QWidget):
@@ -93,6 +94,78 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         """Rescale width when main window was resized."""
         y = window_height - self.sizeHint().height()
         self.setGeometry(0, y, window_width, self.sizeHint().height())
+
+
+class ManipulateImage(QLabel):
+    """Overlay image to display the manipulated image in the bottom right.
+
+    It is shown once manipulate mode is entered and hides afterwards.
+
+    Attributes:
+        _max_size: TODO
+        _pixmap: The manipulated pixmap to display.
+    """
+
+    STYLESHEET = """
+    QLabel {
+        border-top: {manipulate.image.border} {manipulate.image.border.color};
+        border-left: {manipulate.image.border} {manipulate.image.border.color};
+    }
+    """
+
+    def __init__(self, parent, manipulate):
+        super().__init__(parent=parent)
+        self._max_size = QSize(0, 0)
+        self._manipulate = manipulate
+        self._pixmap = None
+        styles.apply(self)
+
+        api.modes.MANIPULATE.entered.connect(self._on_entered)
+        api.modes.MANIPULATE.left.connect(self.hide)
+        immanipulate.instance().updated.connect(self._update_pixmap)
+
+        self.hide()
+
+    def update_geometry(self, window_width, window_height):
+        """Update position and size according to window size.
+
+        The size is adapted to take up the lower right corner. This is then reduced
+        accordingly by displayed pixmap if it is not perfectly square.
+        """
+        scale = 0.5
+        self._max_size = QSize(window_width * scale, window_height * scale)
+        if self._pixmap is not None and self.isVisible():
+            self._rescale()
+
+    @slot
+    def _on_entered(self):
+        if self._pixmap is not None:  # No image to display
+            self.show()
+
+    @slot
+    def _update_pixmap(self, pixmap: QPixmap):
+        """Update the displayed pixmap once the manipulated pixmap has changed."""
+        self._pixmap = pixmap
+        self._rescale()
+
+    def _rescale(self):
+        """Rescale pixmap and geometry to fit."""
+        # Scale pixmap to fit into label
+        pixmap = self._pixmap.scaled(
+            self._max_size.width(),
+            self._max_size.height(),
+            aspectRatioMode=Qt.KeepAspectRatio,
+            transformMode=Qt.SmoothTransformation,
+        )
+        self.setPixmap(pixmap)
+        # Update geometry to only show pixmap
+        x = self._max_size.width() + (self._max_size.width() - pixmap.width())
+        y = (
+            self._max_size.height()
+            + (self._max_size.height() - pixmap.height())
+            - self._manipulate.sizeHint().height()
+        )
+        self.setGeometry(x, y, pixmap.width(), pixmap.height())
 
 
 def instance():

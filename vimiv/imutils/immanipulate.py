@@ -10,9 +10,16 @@ import collections
 import time
 from typing import Optional
 
-from PyQt5.QtCore import QRunnable, QThreadPool, QObject, QCoreApplication
+from PyQt5.QtCore import (
+    QRunnable,
+    QThreadPool,
+    QObject,
+    QCoreApplication,
+    pyqtSignal,
+    Qt,
+)
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QProgressBar, QLabel
+from PyQt5.QtWidgets import QProgressBar, QLabel, QApplication
 
 from vimiv import api, utils
 from vimiv.config import styles
@@ -92,10 +99,13 @@ class Manipulator(QObject):
             generated directly from the bytes and needs them to stay in memory.
 
         _handler: ImageFileHandler used to retrieve and set updated files.
-        _current: Name of the manipulation that is currently being edited.
+        _current: Currently edited manipulation.
+        _pixmap: Manipulated pixmap.
     """
 
     pool = QThreadPool()
+
+    updated = pyqtSignal(QPixmap)
 
     @api.objreg.register
     def __init__(self, handler):
@@ -103,16 +113,17 @@ class Manipulator(QObject):
         self._handler = handler
         self.thread_id = 0
         self.data = None
+        self._pixmap = None
         self.manipulations = collections.namedtuple(
             "Manipulations", ["Brightness", "Contrast"]
         )(Manipulation("brightness"), Manipulation("contrast"))
         self._current = self.manipulations.Brightness  # Default manipulation
-        self._current.focus()
-        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
-    def set_pixmap(self, pixmap):
-        """Set the pixmap to a newly edited version."""
-        self._handler.current = pixmap
+        self._current.focus()
+
+        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
+        api.modes.MANIPULATE.entered.connect(self._on_enter)
+        api.modes.MANIPULATE.left.connect(self._on_leave)
 
     @property
     def changed(self):
@@ -125,7 +136,12 @@ class Manipulator(QObject):
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
-        """Leave manipulate keeping the changes."""
+        """Leave manipulate applying the changes to file."""
+        pixmap, self.data = manipulate_pixmap(
+            self._handler.transformed, self.manipulations
+        )
+        self._handler.current = pixmap
+        self._handler.write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
@@ -134,13 +150,12 @@ class Manipulator(QObject):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
         self.reset()
+        self._handler.current = self._handler.transformed
 
     def reset(self):
         """Reset manipulations to default."""
-        if self.changed:
-            self._handler.current = self._handler.transformed
-            for manipulation in self.manipulations:
-                manipulation.reset()
+        for manipulation in self.manipulations:
+            manipulation.reset()
 
     @api.keybindings.register("b", "brightness", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -177,6 +192,16 @@ class Manipulator(QObject):
         self._manipulation_command(self.manipulations.Contrast, value, count)
 
     def _manipulation_command(self, manipulation, value, count):
+        """Run a manipulation command.
+
+        This focused the manipulation and if a new value is passed applies it to the
+        manipulate pixmap.
+
+        Args:
+            manipulation: The manipulation to update.
+            value: Value to set the manipulation to if any.
+            count: Count passed if any.
+        """
         self._focus(manipulation)
         if count is None and value is None:  # Only focused
             return
@@ -237,17 +262,16 @@ class Manipulator(QObject):
     def _apply_manipulation(self, manipulation: Manipulation):
         """Apply changes to displayed image according to an updated manipulation."""
         self.thread_id += 1
-        runnable = ManipulateRunner(self, self.thread_id)
+        runnable = ManipulateRunner(self, self.thread_id, self._pixmap)
         self.pool.start(runnable)
 
-    def _focus(self, manipulation: Manipulation):
+    def _focus(self, focused_manipulation: Manipulation):
         """Focus the manipulation and unfocus all others."""
-        self._current = manipulation
-        for m in self.manipulations:
-            if m == manipulation:
-                m.focus()
-            else:
-                m.unfocus()
+        self._current = focused_manipulation
+        focused_manipulation.focus()
+        for manipulation in self.manipulations:
+            if manipulation != focused_manipulation:
+                manipulation.unfocus()
 
     @api.status.module("{processing}")
     def _processing_indicator(self):
@@ -256,15 +280,32 @@ class Manipulator(QObject):
             return "processing..."
         return ""
 
-    def unmanipulated(self):
-        """Return unmanipulated image data for ManipulateRunner."""
-        return self._handler.transformed.toImage()
-
     @utils.slot
     def _on_quit(self):
         """Finish thread pool on quit."""
         self.pool.clear()
         self.pool.waitForDone(5000)  # Kill manipulate after 5s
+
+    def _on_enter(self):
+        """Create manipulate pixmap when entering manipulate mode.
+
+        As the pixmap is only displayed in the bottom right, scaling it to be half the
+        total screen width / height is always sufficiently large. This avoids working
+        with the large original when it is not needed.
+        """
+        if self._handler.transformed is None:  # No image to display
+            return
+        screen_geometry = QApplication.desktop().screenGeometry()
+        self._pixmap = self._handler.transformed.scaled(
+            screen_geometry.width(),
+            screen_geometry.height(),
+            aspectRatioMode=Qt.KeepAspectRatio,
+            transformMode=Qt.SmoothTransformation,
+        )
+        self.updated.emit(self._pixmap)
+
+    def _on_leave(self):
+        self._pixmap = None
 
 
 def instance():
@@ -279,35 +320,48 @@ class ManipulateRunner(QRunnable):
         _id: Integer id of this thread.
     """
 
-    def __init__(self, manipulator, thread_id):
+    def __init__(self, manipulator, thread_id, pixmap):
         super().__init__()
         self._manipulator = manipulator
         self._id = thread_id
+        self._pixmap = pixmap
 
     def run(self):
         """Apply manipulations."""
-        # Retrieve current unmanipulated image
-        image = self._manipulator.unmanipulated()
         # Wait for a bit in case user holds down key
         time.sleep(WAIT_TIME)
         if self._id != self._manipulator.thread_id:
             return
-        # Convert original pixmap to python bytes
-        bits = image.constBits()
-        bits.setsize(image.byteCount())
-        data = bytes(bits)
-        # Run C function
-        bri = self._manipulator.manipulations.Brightness.value / 255
-        con = self._manipulator.manipulations.Contrast.value / 255
-        self._manipulator.data = _c_manipulate.manipulate(
-            data, image.hasAlphaChannel(), bri, con
+        # Apply manipulations to pixmap
+        pixmap, self._manipulator.data = manipulate_pixmap(
+            self._pixmap, self._manipulator.manipulations
         )
-        # Convert bytes to QPixmap and set the manipulator pixmap
-        new_image = QImage(
-            self._manipulator.data,
-            image.width(),
-            image.height(),
-            image.bytesPerLine(),
-            image.format(),
-        )
-        self._manipulator.set_pixmap(QPixmap(new_image))
+        # Update
+        self._manipulator.updated.emit(pixmap)
+        api.status.update()
+
+
+def manipulate_pixmap(pixmap, manipulations):
+    """Manipulate a pixmap according to manipulations.
+
+    Args:
+        pixmap: The QPixmap to manipulate.
+        manipulations: Namedtuple containing all the manipulations.
+    Returns:
+        The manipulated pixmap.
+        The underlying data to store
+    """
+    image = pixmap.toImage()
+    # Convert original pixmap to python bytes
+    bits = image.constBits()
+    bits.setsize(image.byteCount())
+    data = bytes(bits)
+    # Run C function
+    bri = manipulations.Brightness.value / 255
+    con = manipulations.Contrast.value / 255
+    data = _c_manipulate.manipulate(data, image.hasAlphaChannel(), bri, con)
+    # Convert bytes to image
+    image = QImage(
+        data, image.width(), image.height(), image.bytesPerLine(), image.format()
+    )
+    return QPixmap(image), data

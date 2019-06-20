@@ -48,6 +48,7 @@ class MainWindow(QWidget):
         grid.addWidget(lib, 0, 0, 1, 1)
         manwidget = manipulate.Manipulate(self)
         self._overlays.append(manwidget)
+        self._overlays.append(manipulate.ManipulateImage(self, manwidget))
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
         self._overlays.append(keyhint_widget.KeyhintWidget(self))
