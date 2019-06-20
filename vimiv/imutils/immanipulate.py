@@ -151,17 +151,17 @@ class Manipulations(list):
         data = bytes(bits)
         # Apply c-function corresponding to manipulation
         if manipulation in (self.brightness, self.contrast):
-            data = self._apply_bc(data, image.hasAlphaChannel())
+            data = self._apply_bc(data)
         image = QImage(
             data, image.width(), image.height(), image.bytesPerLine(), image.format()
         )
         return QPixmap(image), data
 
-    def _apply_bc(self, data, has_alpha):
+    def _apply_bc(self, data):
         """Manipulate brightness and contrast."""
         if self.brightness.changed or self.contrast.changed:
             return _c_manipulate.brightness_contrast(
-                data, has_alpha, self.brightness.value / 255, self.contrast.value / 255
+                data, self.brightness.value / 255, self.contrast.value / 255
             )
         return data
 
