@@ -43,6 +43,8 @@ class Manipulation:
         _value: Current value of the manipulation.
     """
 
+    # One of the values is a property and overall none of this is very complicated
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, name, value=0, lower=-127, upper=127):
         self.bar = QProgressBar()
         self.bar.setMinimum(lower)
@@ -55,6 +57,7 @@ class Manipulation:
         self.limits = collections.namedtuple("Limits", ["lower", "upper"])(lower, upper)
 
         self.value = self._value = self._init_value = value
+        self.changed = False
 
     @property
     def value(self):
@@ -69,10 +72,13 @@ class Manipulation:
     def value(self, value):
         self._value = clamp(value, self.limits.lower, self.limits.upper)
         self.bar.setValue(self._value)
+        self.changed = True
 
     def reset(self):
+        """Reset value and bar to default."""
         self.value = self._init_value
         self.bar.setValue(self._init_value)
+        self.changed = False
 
     def focus(self):
         fg = styles.get("manipulate.focused.fg")
@@ -86,6 +92,68 @@ class Manipulation:
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
 
 
+class Manipulations:
+    """Class of all manipulations.
+
+    Each group consists of manipulations that are applied together in one function, e.g.
+    brightness and contrast. Iterating over the class yields the individual
+    manipulations.
+
+    Applying the manipulations can be done individually using the apply method and all
+    at once using the apply_all method.
+    """
+
+    def __init__(self):
+        self.brightness = Manipulation("brightness")
+        self.contrast = Manipulation("contrast")
+
+        group = collections.namedtuple("ManipulationGroup", ["title", "manipulations"])
+        self.groups = (
+            group("Brightness / Contrast", (self.brightness, self.contrast)),
+        )
+
+    def __iter__(self):
+        """Iterate over all manipulations."""
+        yield from utils.flatten([group.manipulations for group in self.groups])
+
+    def apply_all(self, pixmap):
+        """Apply all manipulations iteratively to pixmap."""
+        for group in self.groups:
+            pixmap, data = self.apply(pixmap, group.manipulations[0])
+        return pixmap, data
+
+    def apply(self, pixmap, manipulation):
+        """Manipulate a pixmap according to the manipulation.
+
+        Args:
+            pixmap: The QPixmap to manipulate.
+            manipulation: The manipulation to apply.
+        Returns:
+            The manipulated pixmap.
+            The underlying data to store
+        """
+        image = pixmap.toImage()
+        # Convert original pixmap to python bytes
+        bits = image.constBits()
+        bits.setsize(image.byteCount())
+        data = bytes(bits)
+        # Apply c-function corresponding to manipulation
+        if manipulation in (self.brightness, self.contrast):
+            data = self._apply_bc(data, image.hasAlphaChannel())
+        image = QImage(
+            data, image.width(), image.height(), image.bytesPerLine(), image.format()
+        )
+        return QPixmap(image), data
+
+    def _apply_bc(self, data, has_alpha):
+        """Manipulate brightness and contrast."""
+        if self.brightness.changed or self.contrast.changed:
+            return _c_manipulate.brightness_contrast(
+                data, has_alpha, self.brightness.value / 255, self.contrast.value / 255
+            )
+        return data
+
+
 class Manipulator(QObject):
     """Apply manipulations to an image.
 
@@ -93,7 +161,7 @@ class Manipulator(QObject):
     contrast.
 
     Attributes:
-        manipulations: Namedtuple storing all manipulations.
+        manipulations: Manipulations class storing all manipulations.
         thread_id: ID of the current manipulation thread.
         data: bytes of the edited pixmap. Must be stored as the QPixmap is
             generated directly from the bytes and needs them to stay in memory.
@@ -114,10 +182,8 @@ class Manipulator(QObject):
         self.thread_id = 0
         self.data = None
         self._pixmap = None
-        self.manipulations = collections.namedtuple(
-            "Manipulations", ["Brightness", "Contrast"]
-        )(Manipulation("brightness"), Manipulation("contrast"))
-        self._current = self.manipulations.Brightness  # Default manipulation
+        self.manipulations = Manipulations()
+        self._current = self.manipulations.brightness  # Default manipulation
 
         self._current.focus()
 
@@ -137,9 +203,7 @@ class Manipulator(QObject):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate applying the changes to file."""
-        pixmap, self.data = manipulate_pixmap(
-            self._handler.transformed, self.manipulations
-        )
+        pixmap, self.data = self.manipulations.apply_all(self._handler.transformed)
         self._handler.current = pixmap
         self._handler.write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
@@ -172,7 +236,7 @@ class Manipulator(QObject):
 
         **count:** Set brightness to [count].
         """
-        self._manipulation_command(self.manipulations.Brightness, value, count)
+        self._manipulation_command(self.manipulations.brightness, value, count)
 
     @api.keybindings.register("c", "contrast", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -189,7 +253,7 @@ class Manipulator(QObject):
 
         **count:** Set contrast to [count].
         """
-        self._manipulation_command(self.manipulations.Contrast, value, count)
+        self._manipulation_command(self.manipulations.contrast, value, count)
 
     def _manipulation_command(self, manipulation, value, count):
         """Run a manipulation command.
@@ -262,7 +326,7 @@ class Manipulator(QObject):
     def _apply_manipulation(self, manipulation: Manipulation):
         """Apply changes to displayed image according to an updated manipulation."""
         self.thread_id += 1
-        runnable = ManipulateRunner(self, self.thread_id, self._pixmap)
+        runnable = ManipulateRunner(self, self.thread_id, self._pixmap, manipulation)
         self.pool.start(runnable)
 
     def _focus(self, focused_manipulation: Manipulation):
@@ -320,11 +384,12 @@ class ManipulateRunner(QRunnable):
         _id: Integer id of this thread.
     """
 
-    def __init__(self, manipulator, thread_id, pixmap):
+    def __init__(self, manipulator, thread_id, pixmap, manipulation):
         super().__init__()
         self._manipulator = manipulator
         self._id = thread_id
         self._pixmap = pixmap
+        self._manipulation = manipulation
 
     def run(self):
         """Apply manipulations."""
@@ -333,35 +398,9 @@ class ManipulateRunner(QRunnable):
         if self._id != self._manipulator.thread_id:
             return
         # Apply manipulations to pixmap
-        pixmap, self._manipulator.data = manipulate_pixmap(
-            self._pixmap, self._manipulator.manipulations
+        pixmap, self._manipulator.data = self._manipulator.manipulations.apply(
+            self._pixmap, self._manipulation
         )
         # Update
         self._manipulator.updated.emit(pixmap)
         api.status.update()
-
-
-def manipulate_pixmap(pixmap, manipulations):
-    """Manipulate a pixmap according to manipulations.
-
-    Args:
-        pixmap: The QPixmap to manipulate.
-        manipulations: Namedtuple containing all the manipulations.
-    Returns:
-        The manipulated pixmap.
-        The underlying data to store
-    """
-    image = pixmap.toImage()
-    # Convert original pixmap to python bytes
-    bits = image.constBits()
-    bits.setsize(image.byteCount())
-    data = bytes(bits)
-    # Run C function
-    bri = manipulations.Brightness.value / 255
-    con = manipulations.Contrast.value / 255
-    data = _c_manipulate.manipulate(data, image.hasAlphaChannel(), bri, con)
-    # Convert bytes to image
-    image = QImage(
-        data, image.width(), image.height(), image.bytesPerLine(), image.format()
-    )
-    return QPixmap(image), data
