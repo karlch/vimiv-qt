@@ -107,9 +107,14 @@ class Manipulations(list):
         self.brightness = Manipulation("brightness")
         self.contrast = Manipulation("contrast")
 
+        self.hue = Manipulation("hue", lower=-180, upper=180)
+        self.saturation = Manipulation("saturation", lower=-100, upper=100)
+        self.lightness = Manipulation("lightness", lower=-100, upper=100)
+
         group = collections.namedtuple("ManipulationGroup", ["title", "manipulations"])
         self.groups = (
-            group("Brightness / Contrast", (self.brightness, self.contrast)),
+            group("Bri | Con", (self.brightness, self.contrast)),
+            group("Hue | Sat | Light", (self.hue, self.saturation, self.lightness)),
         )
 
         self.extend(utils.flatten([group.manipulations for group in self.groups]))
@@ -152,6 +157,8 @@ class Manipulations(list):
         # Apply c-function corresponding to manipulation
         if manipulation in (self.brightness, self.contrast):
             data = self._apply_bc(data)
+        elif manipulation in (self.hue, self.saturation, self.lightness):
+            data = self._apply_hsl(data)
         image = QImage(
             data, image.width(), image.height(), image.bytesPerLine(), image.format()
         )
@@ -162,6 +169,17 @@ class Manipulations(list):
         if self.brightness.changed or self.contrast.changed:
             return _c_manipulate.brightness_contrast(
                 data, self.brightness.value / 255, self.contrast.value / 255
+            )
+        return data
+
+    def _apply_hsl(self, data):
+        """Manipulate hue, saturation and lightness."""
+        if self.hue.changed or self.saturation.changed or self.lightness.changed:
+            return _c_manipulate.hue_saturation_lightness(
+                data,
+                self.hue.value,
+                self.saturation.value / self.saturation.limits.upper,
+                self.lightness.value / self.lightness.limits.upper,
             )
         return data
 
