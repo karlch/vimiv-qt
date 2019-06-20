@@ -63,7 +63,9 @@ class MainWindow(QWidget):
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
 
+    @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
+    @api.commands.register(mode=api.modes.MANIPULATE)
     @api.commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""
