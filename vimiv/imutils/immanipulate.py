@@ -369,18 +369,18 @@ class Manipulator(QObject):
         )
         self._focus(group.manipulations[index])
 
-    @api.keybindings.register("<tab>", "tabnext", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<tab>", "next-tab", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def tabnext(self, count: int = 1):
+    def next_tab(self, count: int = 1):
         """Focus the next manipulation tab.
 
         **count:** multiplier
         """
         self._navigate_tab(count)
 
-    @api.keybindings.register("<shift><tab>", "tabprev", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<shift><tab>", "tab-prev", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def tabprev(self, count: int = 1):
+    def prev_tab(self, count: int = 1):
         """Focus the previous manipulation tab.
 
         **count:** multiplier
