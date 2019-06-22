@@ -6,9 +6,12 @@
 
 """Perform more complex manipulations like brightness and contrast."""
 
+import abc
 import collections
+import copy
+import logging
 import time
-from typing import Optional
+from typing import Optional, NamedTuple, Tuple
 
 from PyQt5.QtCore import (
     QRunnable,
@@ -27,6 +30,9 @@ from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
 )
 from vimiv.utils import clamp
+
+
+ManipulationResult = Tuple[QPixmap, bytes]
 
 
 WAIT_TIME = 0.3
@@ -92,103 +98,180 @@ class Manipulation:
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
 
 
+class ManipulationGroup(abc.ABC):
+    """Group of manipulations associated to one manipulation tab.
+
+    The group stores the individual manipulations, associates them to a manipulate C
+    function and provides a title.
+
+    Attributes:
+        manipulations: Tuple of individual manipulations.
+    """
+
+    def __init__(self, *manipulations: Manipulation):
+        self.manipulations = manipulations
+
+    def __iter__(self):
+        yield from self.manipulations
+
+    def __copy__(self):
+        manipulations = (copy.copy(manipulation) for manipulation in self.manipulations)
+        return type(self)(*manipulations)
+
+    def __repr__(self):
+        return f"{self.__class__.__qualname__}(title={self.title})"
+
+    @property
+    def changed(self) -> bool:
+        """True if any manipulation changed."""
+        for manipulation in self.manipulations:
+            if manipulation.changed:
+                return True
+        return False
+
+    def apply(self, data: bytes) -> bytes:
+        """Apply manipulation function to image data if any manipulation changed."""
+        if not self.changed:
+            return data
+        return self._apply(data, *self.manipulations)
+
+    @abc.abstractproperty
+    def title(self):
+        """Title of the manipulation group as referred to in its tab."""
+
+    @abc.abstractmethod
+    def _apply(self, data: bytes, *manipulations: Manipulation):
+        """Apply all manipulations of this group.
+
+        Must be implemented by the child class.
+        """
+
+
+class BriConGroup(ManipulationGroup):
+    """Manipulation group for brightness and contrast."""
+
+    def __init__(self, *manipulations: Manipulation):
+        if manipulations:  # For copy construction
+            super().__init__(*manipulations)
+        else:  # Default constructor
+            super().__init__(Manipulation("brightness"), Manipulation("contrast"))
+
+    @property
+    def title(self):
+        return "Bri | Con"
+
+    def _apply(self, data, brightness, contrast):
+        return _c_manipulate.brightness_contrast(
+            data, brightness.value / 255, contrast.value / 255
+        )
+
+
+class HSLGroup(ManipulationGroup):
+    """Manipulation group for hue, saturation and lightness."""
+
+    def __init__(self, *manipulations):
+        if manipulations:  # For copy construction
+            super().__init__(*manipulations)
+        else:  # Default constructor
+            super().__init__(
+                Manipulation("hue", lower=-180, upper=180),
+                Manipulation("saturation", lower=-100, upper=100),
+                Manipulation("lightness", lower=-100, upper=100),
+            )
+
+    @property
+    def title(self):
+        return "Hue | Sat | Light"
+
+    def _apply(self, data, hue, saturation, lightness):
+        return _c_manipulate.hue_saturation_lightness(
+            data,
+            hue.value,
+            saturation.value / saturation.limits.upper,
+            lightness.value / lightness.limits.upper,
+        )
+
+
+class ManipulationChange(NamedTuple):
+
+    pixmap: QPixmap
+    manipulations: ManipulationGroup
+
+
 class Manipulations(list):
-    """Class of all manipulations.
+    """Class combining all manipulation groups.
 
     Each group consists of manipulations that are applied together in one function, e.g.
     brightness and contrast. Iterating over the class yields the individual
     manipulations.
 
-    Applying the manipulations can be done individually using the apply method and all
-    at once using the apply_all method.
+    Applying manipulations can be done for a single manipulation using apply and for
+    multiple groups using apply_groups.
     """
 
     def __init__(self):
-        self.brightness = Manipulation("brightness")
-        self.contrast = Manipulation("contrast")
-
-        self.hue = Manipulation("hue", lower=-180, upper=180)
-        self.saturation = Manipulation("saturation", lower=-100, upper=100)
-        self.lightness = Manipulation("lightness", lower=-100, upper=100)
-
-        group = collections.namedtuple("ManipulationGroup", ["title", "manipulations"])
-        self.groups = (
-            group("Bri | Con", (self.brightness, self.contrast)),
-            group("Hue | Sat | Light", (self.hue, self.saturation, self.lightness)),
-        )
-
+        self.groups = (BriConGroup(), HSLGroup())
         self.extend(utils.flatten([group.manipulations for group in self.groups]))
 
-    def group(self, manipulation):
+    def group(self, manipulation: Manipulation) -> ManipulationGroup:
         """Return the group of the manipulation."""
         for group in self.groups:
             if manipulation in group.manipulations:
                 return group
         raise KeyError(f"Unknown manipulation {manipulation}")
 
-    def groupindex(self, manipulation):
+    def groupindex(self, manipulation: Manipulation) -> int:
         """Retrun the index of the group of which the manipulation is part."""
         for i, group in enumerate(self.groups):
             if manipulation in group.manipulations:
                 return i
         raise KeyError(f"Unknown manipulation {manipulation}")
 
-    def apply_all(self, pixmap):
-        """Apply all manipulations iteratively to pixmap."""
-        for group in self.groups:
-            pixmap, data = self.apply(pixmap, group.manipulations[0])
-        return pixmap, data
-
-    def apply(self, pixmap, manipulation):
-        """Manipulate a pixmap according to the manipulation.
+    def apply_groups(
+        self, pixmap: QPixmap, *groups: ManipulationGroup
+    ) -> ManipulationResult:
+        """Manipulate pixmap according all manipulations in groups.
 
         Args:
             pixmap: The QPixmap to manipulate.
-            manipulation: The manipulation to apply.
+            groups: Manipulation groups containing all manipulations to apply in series.
         Returns:
             The manipulated pixmap.
             The underlying data to store
         """
+        logging.debug(f"Manipulate: applying {len(groups):d} groups")
         image = pixmap.toImage()
         # Convert original pixmap to python bytes
         bits = image.constBits()
         bits.setsize(image.byteCount())
         data = bytes(bits)
-        # Apply c-function corresponding to manipulation
-        if manipulation in (self.brightness, self.contrast):
-            data = self._apply_bc(data)
-        elif manipulation in (self.hue, self.saturation, self.lightness):
-            data = self._apply_hsl(data)
+        for group in groups:
+            image, data = self._apply_group(group, image, data)
+        return QPixmap(image), data
+
+    def apply(self, pixmap: QPixmap, manipulation: Manipulation) -> ManipulationResult:
+        """Manipulate pixmap according to single manipulation."""
+        return self.apply_groups(pixmap, self.group(manipulation))
+
+    def _apply_group(
+        self, group: Optional[ManipulationGroup], image: QImage, data: bytes
+    ) -> Tuple[QImage, bytes]:
+        """Apply manipulations of a single group to image using data."""
+        if group is None:
+            return image, data
+        logging.debug(f"Manipulate: applying group {group}")
+        data = group.apply(data)
         image = QImage(
             data, image.width(), image.height(), image.bytesPerLine(), image.format()
         )
-        return QPixmap(image), data
-
-    def _apply_bc(self, data):
-        """Manipulate brightness and contrast."""
-        if self.brightness.changed or self.contrast.changed:
-            return _c_manipulate.brightness_contrast(
-                data, self.brightness.value / 255, self.contrast.value / 255
-            )
-        return data
-
-    def _apply_hsl(self, data):
-        """Manipulate hue, saturation and lightness."""
-        if self.hue.changed or self.saturation.changed or self.lightness.changed:
-            return _c_manipulate.hue_saturation_lightness(
-                data,
-                self.hue.value,
-                self.saturation.value / self.saturation.limits.upper,
-                self.lightness.value / self.lightness.limits.upper,
-            )
-        return data
+        return image, data
 
 
 class Manipulator(QObject):
-    """Apply manipulations to an image.
+    """Handler class to apply manipulations to the current image.
 
     Provides commands for more complex manipulations like brightness and
-    contrast.
+    contrast. Acts as binding link between the manipulations and the gui interface.
 
     Attributes:
         manipulations: Manipulations class storing all manipulations.
@@ -212,15 +295,16 @@ class Manipulator(QObject):
         self._handler = handler
         self.thread_id = 0
         self.data = None
-        self._pixmap = None
+        self._pixmap = self._manipulated = None
+        self._changes = []
         self.manipulations = Manipulations()
-        self._current = self.manipulations.brightness  # Default manipulation
-
+        self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
 
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
         api.modes.MANIPULATE.entered.connect(self._on_enter)
-        api.modes.MANIPULATE.left.connect(self._on_leave)
+        api.modes.MANIPULATE.left.connect(self.reset)
+        self.updated.connect(self._on_updated)
 
     @property
     def changed(self):
@@ -234,7 +318,11 @@ class Manipulator(QObject):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate applying the changes to file."""
-        pixmap, self.data = self.manipulations.apply_all(self._handler.transformed)
+        self._save_changes()  # For the current manipulation
+        pixmap, self.data = self.manipulations.apply_groups(
+            self._handler.transformed,
+            *[change.manipulations for change in self._changes],
+        )
         self._handler.current = pixmap
         self._handler.write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
@@ -293,6 +381,7 @@ class Manipulator(QObject):
 
     def _navigate_tab(self, count):
         """Navigate by count steps in tabs."""
+        self._save_changes()
         current_index = self.manipulations.groupindex(self._current)
         next_index = (current_index + count) % len(self.manipulations.groups)
         manipulation = self.manipulations.groups[next_index].manipulations[0]
@@ -302,6 +391,7 @@ class Manipulator(QObject):
         """Reset manipulations to default."""
         for manipulation in self.manipulations:
             manipulation.reset()
+        self._pixmap = self._manipulated = None
 
     def _manipulation_command(self, manipulation, value, count):
         """Run a manipulation command.
@@ -417,8 +507,27 @@ class Manipulator(QObject):
         )
         self.updated.emit(self._pixmap)
 
-    def _on_leave(self):
-        self._pixmap = None
+    def _on_updated(self, pixmap):
+        """Set manipulated and update status when pixmap was updated.
+
+        This is done with signal handling as the ManipulateRunner runs in another
+        thread and finally emits the signal.
+        """
+        self._manipulated = pixmap
+        api.status.update()
+
+    def _save_changes(self):
+        """Save changes according to the current manipulation."""
+        if self._manipulated is None:  # Nothing changed
+            return
+        current_group = self.manipulations.group(self._current)
+        self._changes.append(
+            ManipulationChange(self._manipulated, copy.copy(current_group))
+        )
+        # Reset to avoid double application of the changes
+        for manipulation in current_group:
+            manipulation.reset()
+        self._pixmap, self._manipulated = self._manipulated, None
 
 
 def instance():
@@ -452,4 +561,3 @@ class ManipulateRunner(QRunnable):
         )
         # Update
         self._manipulator.updated.emit(pixmap)
-        api.status.update()
