@@ -11,7 +11,7 @@ import collections
 import copy
 import logging
 import time
-from typing import Optional, NamedTuple, Tuple
+from typing import Optional, NamedTuple
 
 from PyQt5.QtCore import (
     QRunnable,
@@ -30,9 +30,6 @@ from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
 )
 from vimiv.utils import clamp
-
-
-ManipulationResult = Tuple[QPixmap, bytes]
 
 
 WAIT_TIME = 0.3
@@ -193,6 +190,12 @@ class HSLGroup(ManipulationGroup):
 
 
 class ManipulationChange(NamedTuple):
+    """Storage class for a manipulation change.
+
+    Attributes:
+        pixmap: The manipulated pixmap.
+        manipulations: The manipulation group associated to these changes.
+    """
 
     pixmap: QPixmap
     manipulations: ManipulationGroup
@@ -207,11 +210,17 @@ class Manipulations(list):
 
     Applying manipulations can be done for a single manipulation using apply and for
     multiple groups using apply_groups.
+
+    Attributes:
+        groups: Tuple of all manipulation groups.
+        data: bytes of the edited pixmap. Must be stored as the QPixmap is
+            generated directly from the bytes and needs them to stay in memory.
     """
 
     def __init__(self):
         self.groups = (BriConGroup(), HSLGroup())
-        self.extend(utils.flatten([group.manipulations for group in self.groups]))
+        self.data = None
+        super().__init__(utils.flatten([group.manipulations for group in self.groups]))
 
     def group(self, manipulation: Manipulation) -> ManipulationGroup:
         """Return the group of the manipulation."""
@@ -227,9 +236,7 @@ class Manipulations(list):
                 return i
         raise KeyError(f"Unknown manipulation {manipulation}")
 
-    def apply_groups(
-        self, pixmap: QPixmap, *groups: ManipulationGroup
-    ) -> ManipulationResult:
+    def apply_groups(self, pixmap: QPixmap, *groups: ManipulationGroup) -> QPixmap:
         """Manipulate pixmap according all manipulations in groups.
 
         Args:
@@ -237,34 +244,34 @@ class Manipulations(list):
             groups: Manipulation groups containing all manipulations to apply in series.
         Returns:
             The manipulated pixmap.
-            The underlying data to store
         """
-        logging.debug(f"Manipulate: applying {len(groups):d} groups")
+        logging.debug("Manipulate: applying %d groups", len(groups))
         image = pixmap.toImage()
         # Convert original pixmap to python bytes
         bits = image.constBits()
         bits.setsize(image.byteCount())
-        data = bytes(bits)
+        self.data = bytes(bits)
         for group in groups:
-            image, data = self._apply_group(group, image, data)
-        return QPixmap(image), data
+            image = self._apply_group(group, image)
+        return QPixmap(image)
 
-    def apply(self, pixmap: QPixmap, manipulation: Manipulation) -> ManipulationResult:
+    def apply(self, pixmap: QPixmap, manipulation: Manipulation) -> QPixmap:
         """Manipulate pixmap according to single manipulation."""
         return self.apply_groups(pixmap, self.group(manipulation))
 
-    def _apply_group(
-        self, group: Optional[ManipulationGroup], image: QImage, data: bytes
-    ) -> Tuple[QImage, bytes]:
-        """Apply manipulations of a single group to image using data."""
+    def _apply_group(self, group: Optional[ManipulationGroup], image: QImage) -> QImage:
+        """Apply manipulations of a single group to image."""
         if group is None:
-            return image, data
-        logging.debug(f"Manipulate: applying group {group}")
-        data = group.apply(data)
-        image = QImage(
-            data, image.width(), image.height(), image.bytesPerLine(), image.format()
+            return image
+        logging.debug("Manipulate: applying group %r", group)
+        self.data = group.apply(self.data)
+        return QImage(
+            self.data,
+            image.width(),
+            image.height(),
+            image.bytesPerLine(),
+            image.format(),
         )
-        return image, data
 
 
 class Manipulator(QObject):
@@ -276,12 +283,12 @@ class Manipulator(QObject):
     Attributes:
         manipulations: Manipulations class storing all manipulations.
         thread_id: ID of the current manipulation thread.
-        data: bytes of the edited pixmap. Must be stored as the QPixmap is
-            generated directly from the bytes and needs them to stay in memory.
 
+        _changes: List of applied ManipulationChanges.
+        _current: Currently editedfocused manipulation.
         _handler: ImageFileHandler used to retrieve and set updated files.
-        _current: Currently edited manipulation.
-        _pixmap: Manipulated pixmap.
+        _pixmap: Pixmap to apply current manipulation to.
+        _manipulated: Pixmap after applying current manipulation.
     """
 
     pool = QThreadPool()
@@ -292,14 +299,15 @@ class Manipulator(QObject):
     @api.objreg.register
     def __init__(self, handler):
         super().__init__()
-        self._handler = handler
-        self.thread_id = 0
-        self.data = None
-        self._pixmap = self._manipulated = None
-        self._changes = []
+
         self.manipulations = Manipulations()
+        self.thread_id = 0
+
+        self._changes = []
         self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
+        self._handler = handler
+        self._pixmap = self._manipulated = None
 
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
         api.modes.MANIPULATE.entered.connect(self._on_enter)
@@ -319,7 +327,7 @@ class Manipulator(QObject):
     def accept(self):
         """Leave manipulate applying the changes to file."""
         self._save_changes()  # For the current manipulation
-        pixmap, self.data = self.manipulations.apply_groups(
+        pixmap = self.manipulations.apply_groups(
             self._handler.transformed,
             *[change.manipulations for change in self._changes],
         )
@@ -556,8 +564,6 @@ class ManipulateRunner(QRunnable):
         if self._id != self._manipulator.thread_id:
             return
         # Apply manipulations to pixmap
-        pixmap, self._manipulator.data = self._manipulator.manipulations.apply(
-            self._pixmap, self._manipulation
-        )
+        pixmap = self._manipulator.manipulations.apply(self._pixmap, self._manipulation)
         # Update
         self._manipulator.updated.emit(pixmap)

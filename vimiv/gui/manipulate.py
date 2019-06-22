@@ -78,7 +78,7 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
             layout.addWidget(manipulation.label)
             layout.addWidget(manipulation.bar)
         # Add some spacing for small groups
-        for i in range(4 - len(group.manipulations)):
+        for _ in range(4 - len(group.manipulations)):
             layout.addStretch()
         widget.setLayout(layout)
         self.insertTab(-1, widget, group.title)
