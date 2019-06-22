@@ -11,12 +11,26 @@ from vimiv.imutils import immanipulate
 bdd.scenarios("manipulate.feature")
 
 
-@bdd.then(bdd.parsers.parse("The {name} value should be {value}"))
-def manipulate_value(name, value):
-    value = int(value)
-    # TODO check if image itself changed
-    # Find the correct manipulation
-    for manipulation in immanipulate.instance().manipulations:
-        if manipulation.name == name:
-            assert manipulation.value == value  # Actual value
-            assert manipulation.bar.value() == value  # Displayed bar
+@bdd.when("I apply any manipulation")
+def wait_for_beer(qtbot):
+    manipulator = immanipulate.instance()
+    with qtbot.waitSignal(immanipulate.instance().updated) as _:
+        manipulator.set(10)
+
+
+@bdd.then(bdd.parsers.parse("The current value should be {value:d}"))
+def check_current_manipulation_value(value):
+    manipulation = immanipulate.instance()._current
+    assert manipulation.value == value  # Actual value
+    assert manipulation.bar.value() == value  # Displayed bar value
+
+
+@bdd.then(bdd.parsers.parse("The current manipulation should be {name}"))
+def check_current_manipulation_name(name):
+    manipulation = immanipulate.instance()._current
+    assert manipulation.name == name
+
+
+@bdd.then(bdd.parsers.parse("There should be {n_changes:d} stored changes"))
+def check_stored_changes(n_changes):
+    assert len(immanipulate.instance()._changes) == n_changes

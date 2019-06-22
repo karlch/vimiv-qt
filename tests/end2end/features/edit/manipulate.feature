@@ -3,43 +3,65 @@ Feature: Manipulate an image.
     Background:
         Given I open any image
 
-    Scenario: Set brightness value
+    Scenario: Set value of current manipulation
         When I enter manipulate mode
-        And I run brightness --value=10
-        Then The brightness value should be 10
+        And I run set 10
+        Then The current value should be 10
 
-    Scenario: Set contrast value
+    Scenario: Set value of current manipulation via keybinding
         When I enter manipulate mode
-        And I run contrast --value=10
-        Then The contrast value should be 10
+        And I press 10gg
+        Then The current value should be 10
+
+    Scenario: Set value using increase
+        When I enter manipulate mode
+        And I run increase 10
+        Then The current value should be 10
+
+    Scenario: Set value using increase keybinding
+        When I enter manipulate mode
+        And I press 10k
+        Then The current value should be 10
+
+    Scenario: Set value to zero via keybinding
+        When I enter manipulate mode
+        And I run set 10
+        And I press 0gg
+        Then The current value should be 0
+
+    Scenario: Focus next manipulation
+        When I enter manipulate mode
+        And I run next
+        Then the current manipulation should be contrast
+
+    Scenario: Do not reset value on focus
+        When I enter manipulate mode
+        And I run set 10
+        And I run 2next
+        Then the current manipulation should be brightness
+        And the current value should be 10
+
+    Scenario: Focus next manipulation tab
+        When I enter manipulate mode
+        And I run next-tab
+        Then the current manipulation should be hue
+
+    Scenario: Store manipulation change
+        When I enter manipulate mode
+        And I apply any manipulation
+        And I run next-tab
+        Then there should be 1 stored changes
+
+    Scenario: Store multiple manipulation changes
+        When I enter manipulate mode
+        And I apply any manipulation
+        And I run next-tab
+        And I apply any manipulation
+        And I run next-tab
+        Then there should be 2 stored changes
 
     Scenario: Reset manipulation values on discard
         When I enter manipulate mode
-        And I run brightness --value=10
+        And I apply any manipulation
         And I run discard
-        Then The brightness value should be 0
-
-    Scenario: Set brightness value from command line
-        When I enter manipulate mode
-        And I run command
-        And I press brightness --value=14
-        And I activate the command line
-        Then The mode should be manipulate
-        And The brightness value should be 14
-
-    Scenario: Set brightness value via key binding and count
-        When I enter manipulate mode
-        And I press 20gg
-        Then the brightness value should be 20
-
-    Scenario: Set brightness value to zero via key binding and count
-        When I enter manipulate mode
-        And I press 20gg
-        And I press 0gg
-        Then the brightness value should be 0
-
-    Scenario: Do not reset brightness value on focus
-        When I enter manipulate mode
-        And I run brightness --value=10
-        And I run brightness
-        Then the brightness value should be 10
+        Then The current value should be 0
