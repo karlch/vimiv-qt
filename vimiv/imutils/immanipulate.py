@@ -51,8 +51,6 @@ class Manipulation:
         _value: Current value of the manipulation.
     """
 
-    # One of the values is a property and overall none of this is very complicated
-    # pylint: disable=too-many-instance-attributes
     def __init__(self, name, value=0, lower=-127, upper=127):
         self.bar = QProgressBar()
         self.bar.setMinimum(lower)
