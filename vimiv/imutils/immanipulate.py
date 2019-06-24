@@ -4,7 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Perform more complex manipulations like brightness and contrast."""
+"""More complex image manipulations like brightness and contrast."""
 
 import abc
 import collections
@@ -38,9 +38,14 @@ WAIT_TIME = 0.3
 class Manipulation:
     """Storage class for one manipulation.
 
+    The manipulation is associated with the displayed label and progressbar, the value
+    can be changed and it can be (un-)focused.
+
     Attributes:
-        name: Name identifier of the manipulation (e.g. brightness).
+        bar: QProgressBar to show the current value.
+        label: QLabel displaying the name of the manipulation.
         limits: Namedtuple of lower and upper limit for value.
+        name: Name identifier of the manipulation (e.g. brightness).
 
         _init_value: Initial value of the manipulation to allow resetting.
         _value: Current value of the manipulation.
@@ -56,11 +61,10 @@ class Manipulation:
 
         self.label = QLabel(name)
 
-        self.name = name
         self.limits = collections.namedtuple("Limits", ["lower", "upper"])(lower, upper)
+        self.name = name
 
         self.value = self._value = self._init_value = value
-        self.changed = False
 
     @property
     def value(self):
@@ -75,13 +79,16 @@ class Manipulation:
     def value(self, value):
         self._value = clamp(value, self.limits.lower, self.limits.upper)
         self.bar.setValue(self._value)
-        self.changed = True
+
+    @property
+    def changed(self):
+        """True if the manipulation was changed."""
+        return self._value != self._init_value
 
     def reset(self):
         """Reset value and bar to default."""
         self.value = self._init_value
         self.bar.setValue(self._init_value)
-        self.changed = False
 
     def focus(self):
         fg = styles.get("manipulate.focused.fg")
@@ -112,6 +119,7 @@ class ManipulationGroup(abc.ABC):
         yield from self.manipulations
 
     def __copy__(self):
+        """Copy manipulations to keep the current values upon copy."""
         manipulations = (copy.copy(manipulation) for manipulation in self.manipulations)
         return type(self)(*manipulations)
 
@@ -230,7 +238,7 @@ class Manipulations(list):
         raise KeyError(f"Unknown manipulation {manipulation}")
 
     def groupindex(self, manipulation: Manipulation) -> int:
-        """Retrun the index of the group of which the manipulation is part."""
+        """Return the index of the group of which the manipulation is part."""
         for i, group in enumerate(self.groups):
             if manipulation in group.manipulations:
                 return i
@@ -318,7 +326,7 @@ class Manipulator(QObject):
     def changed(self):
         """True if anything was edited."""
         for manipulation in self.manipulations:
-            if manipulation.value != 0:
+            if manipulation.changed:
                 return True
         return False
 
@@ -330,7 +338,7 @@ class Manipulator(QObject):
         pixmap = self.manipulations.apply_groups(
             self._handler.transformed,
             *[change.manipulations for change in self._changes],
-        )
+        )  # Apply all changes to the full-scale pixmap
         self._handler.current = pixmap
         self._handler.write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
@@ -546,16 +554,18 @@ class ManipulateRunner(QRunnable):
     """Apply manipulations in an extra thread.
 
     Attributes:
-        _manipulator: Manipulator class to interact with.
         _id: Integer id of this thread.
+        _manipulation: Manipulation to apply.
+        _manipulator: Manipulator class to interact with.
+        _pixmap: Pixmap to manipulate.
     """
 
     def __init__(self, manipulator, thread_id, pixmap, manipulation):
         super().__init__()
-        self._manipulator = manipulator
         self._id = thread_id
-        self._pixmap = pixmap
         self._manipulation = manipulation
+        self._manipulator = manipulator
+        self._pixmap = pixmap
 
     def run(self):
         """Apply manipulations."""

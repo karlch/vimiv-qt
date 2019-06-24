@@ -114,7 +114,8 @@ class ManipulateImage(QLabel):
     It is shown once manipulate mode is entered and hides afterwards.
 
     Attributes:
-        _max_size: TODO
+        _manipulate: The manipulate widget to retrieve y-coordinate.
+        _max_size: Maximum size to use up which corresponds to half the window size.
         _pixmap: The manipulated pixmap to display.
     """
 
@@ -127,8 +128,8 @@ class ManipulateImage(QLabel):
 
     def __init__(self, parent, manipulate):
         super().__init__(parent=parent)
-        self._max_size = QSize(0, 0)
         self._manipulate = manipulate
+        self._max_size = QSize(0, 0)
         self._pixmap = None
         styles.apply(self)
 
