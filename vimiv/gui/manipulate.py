@@ -61,14 +61,32 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         for group in manipulator.manipulations.groups:
             self._add_group(group)
         # Connect signals
+        self.currentChanged.connect(manipulator.focus_group_index)
         imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
         imutils.movie_loaded.connect(self._on_movie_loaded)
         imutils.svg_loaded.connect(self._on_svg_loaded)
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
-        manipulator.group_focused.connect(self.setCurrentIndex)
         # Hide by default
         self.hide()
+
+    @api.keybindings.register("<tab>", "next-tab", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def next_tab(self, count: int = 1):
+        """Focus the next manipulation tab.
+
+        **count:** multiplier
+        """
+        self.setCurrentIndex((self.currentIndex() + count) % self.count())
+
+    @api.keybindings.register("<shift><tab>", "prev-tab", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def prev_tab(self, count: int = 1):
+        """Focus the previous manipulation tab.
+
+        **count:** multiplier
+        """
+        self.setCurrentIndex((self.currentIndex() - count) % self.count())
 
     def _add_group(self, group):
         """Add a group of manipulations into its own tab."""

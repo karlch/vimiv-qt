@@ -302,7 +302,6 @@ class Manipulator(QObject):
     pool = QThreadPool()
 
     updated = pyqtSignal(QPixmap)
-    group_focused = pyqtSignal(int)
 
     @api.objreg.register
     def __init__(self, handler):
@@ -376,32 +375,6 @@ class Manipulator(QObject):
             group.manipulations
         )
         self._focus(group.manipulations[index])
-
-    @api.keybindings.register("<tab>", "next-tab", mode=api.modes.MANIPULATE)
-    @api.commands.register(mode=api.modes.MANIPULATE)
-    def next_tab(self, count: int = 1):
-        """Focus the next manipulation tab.
-
-        **count:** multiplier
-        """
-        self._navigate_tab(count)
-
-    @api.keybindings.register("<shift><tab>", "tab-prev", mode=api.modes.MANIPULATE)
-    @api.commands.register(mode=api.modes.MANIPULATE)
-    def prev_tab(self, count: int = 1):
-        """Focus the previous manipulation tab.
-
-        **count:** multiplier
-        """
-        self._navigate_tab(-count)
-
-    def _navigate_tab(self, count):
-        """Navigate by count steps in tabs."""
-        self._save_changes()
-        current_index = self.manipulations.groupindex(self._current)
-        next_index = (current_index + count) % len(self.manipulations.groups)
-        manipulation = self.manipulations.groups[next_index].manipulations[0]
-        self._focus(manipulation)
 
     def reset(self):
         """Reset manipulations to default."""
@@ -483,6 +456,12 @@ class Manipulator(QObject):
         runnable = ManipulateRunner(self, self.thread_id, self._pixmap, manipulation)
         self.pool.start(runnable)
 
+    def focus_group_index(self, index: int):
+        """Focus new manipulation group by index."""
+        self._save_changes()
+        group = self.manipulations.groups[index]
+        self._focus(group.manipulations[0])
+
     def _focus(self, focused_manipulation: Manipulation):
         """Focus the manipulation and unfocus all others."""
         self._current = focused_manipulation
@@ -490,7 +469,6 @@ class Manipulator(QObject):
         for manipulation in self.manipulations:
             if manipulation != focused_manipulation:
                 manipulation.unfocus()
-        self.group_focused.emit(self.manipulations.groupindex(focused_manipulation))
 
     @api.status.module("{processing}")
     def _processing_indicator(self):
