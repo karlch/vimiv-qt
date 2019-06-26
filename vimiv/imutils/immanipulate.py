@@ -11,6 +11,7 @@ import collections
 import copy
 import logging
 import time
+import weakref
 from typing import Optional, NamedTuple
 
 from PyQt5.QtCore import (
@@ -303,7 +304,7 @@ class Manipulator(QObject):
 
         _changes: List of applied ManipulationChanges.
         _current: Currently editedfocused manipulation.
-        _handler: ImageFileHandler used to retrieve and set updated files.
+        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
     """
@@ -322,7 +323,7 @@ class Manipulator(QObject):
         self._changes = []
         self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
-        self._handler = handler
+        self._handler = weakref.ref(handler)
         self._pixmap = self._manipulated = None
 
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
@@ -346,11 +347,11 @@ class Manipulator(QObject):
         """Leave manipulate applying the changes to file."""
         self._save_changes()  # For the current manipulation
         pixmap = self.manipulations.apply_groups(
-            self._handler.transformed,
+            self._handler().transformed,
             *[change.manipulations for change in self._changes],
         )  # Apply all changes to the full-scale pixmap
-        self._handler.current = pixmap
-        self._handler.write_pixmap(pixmap, parallel=False)
+        self._handler().current = pixmap
+        self._handler().write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
@@ -359,7 +360,7 @@ class Manipulator(QObject):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
         self.reset()
-        self._handler.current = self._handler.transformed
+        self._handler().current = self._handler().transformed
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -498,10 +499,10 @@ class Manipulator(QObject):
         total screen width / height is always sufficiently large. This avoids working
         with the large original when it is not needed.
         """
-        if self._handler.transformed is None:  # No image to display
+        if self._handler().transformed is None:  # No image to display
             return
         screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._handler.transformed.scaled(
+        self._pixmap = self._handler().transformed.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
             aspectRatioMode=Qt.KeepAspectRatio,
