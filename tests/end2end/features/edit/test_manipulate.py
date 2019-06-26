@@ -22,7 +22,6 @@ def wait_for_beer(qtbot):
 def check_current_manipulation_value(value):
     manipulation = immanipulate.instance()._current
     assert manipulation.value == value  # Actual value
-    assert manipulation.bar.value() == value  # Displayed bar value
 
 
 @bdd.then(bdd.parsers.parse("The current manipulation should be {name}"))

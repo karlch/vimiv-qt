@@ -20,73 +20,81 @@ from PyQt5.QtCore import (
     QCoreApplication,
     pyqtSignal,
     Qt,
+    QSignalBlocker,
 )
 from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QProgressBar, QLabel, QApplication
+from PyQt5.QtWidgets import QLabel, QApplication
 
 from vimiv import api, utils
+from vimiv.gui.widgets import SliderWithValue
 from vimiv.config import styles
 from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
 )
-from vimiv.utils import clamp
 
 
 WAIT_TIME = 0.3
 
 
-class Manipulation:
+class Manipulation(QObject):
     """Storage class for one manipulation.
 
     The manipulation is associated with the displayed label and progressbar, the value
     can be changed and it can be (un-)focused.
 
     Attributes:
-        bar: QProgressBar to show the current value.
+        slider: QSlider to show the current value.
         label: QLabel displaying the name of the manipulation.
         limits: Namedtuple of lower and upper limit for value.
         name: Name identifier of the manipulation (e.g. brightness).
 
-        _init_value: Initial value of the manipulation to allow resetting.
-        _value: Current value of the manipulation.
+        _init_value: Initial value used for resetting.
     """
 
-    def __init__(self, name, value=0, lower=-127, upper=127):
-        self.bar = QProgressBar()
-        self.bar.setMinimum(lower)
-        self.bar.setMaximum(upper)
-        self.bar.setFormat("%v")
+    updated = pyqtSignal(object)
+
+    def __init__(self, name, value=0, lower=-127, upper=127, init_value=0):
+        super().__init__()
+        self.slider = SliderWithValue(
+            "{manipulate.slider.left}",
+            "{manipulate.slider.handle}",
+            "{manipulate.slider.right}",
+            Qt.Horizontal,
+        )
+        self.slider.setMinimum(lower)
+        self.slider.setMaximum(upper)
+        self.slider.setTracking(False)
 
         self.label = QLabel(name)
 
         self.limits = collections.namedtuple("Limits", ["lower", "upper"])(lower, upper)
         self.name = name
 
-        self.value = self._value = self._init_value = value
+        self.value, self._init_value = value, init_value
+
+        self.slider.valueChanged.connect(lambda value: self.updated.emit(self))
 
     @property
     def value(self):
         """Current value of the manipulation.
 
-        Upon setting it is guaranteed that the value stays within the lower and upper
-        limit and the bar value is updated.
+        Wraps slider.value() and slider.setValue() for convenience.
         """
-        return self._value
+        return self.slider.value()
 
     @value.setter
     def value(self, value):
-        self._value = clamp(value, self.limits.lower, self.limits.upper)
-        self.bar.setValue(self._value)
+        self.slider.setValue(value)
 
     @property
     def changed(self):
         """True if the manipulation was changed."""
-        return self._value != self._init_value
+        return self.value != self._init_value
 
     def reset(self):
         """Reset value and bar to default."""
-        self.value = self._init_value
-        self.bar.setValue(self._init_value)
+        with QSignalBlocker(self):  # We do not want to re-run manipulate on reset
+            self.value = self._init_value
 
     def focus(self):
         fg = styles.get("manipulate.focused.fg")
@@ -98,6 +106,9 @@ class Manipulation:
 
     def __repr__(self):
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
+
+    def __copy__(self):
+        return Manipulation(self.name, self.value, *self.limits)
 
 
 class ManipulationGroup(abc.ABC):
@@ -318,6 +329,8 @@ class Manipulator(QObject):
         api.modes.MANIPULATE.entered.connect(self._on_enter)
         api.modes.MANIPULATE.left.connect(self.reset)
         self.updated.connect(self._on_updated)
+        for manipulation in self.manipulations:
+            manipulation.updated.connect(self._apply_manipulation)
 
     @property
     def changed(self):
@@ -398,7 +411,6 @@ class Manipulator(QObject):
             manipulation.value = int(count) if count is not None else value
         except ValueError as e:  # Invalid int value given
             raise api.commands.CommandError(str(e))
-        self._apply_manipulation(manipulation)
 
     @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)
@@ -414,7 +426,6 @@ class Manipulator(QObject):
         **count:** multiplier
         """
         self._current.value += value * count
-        self._apply_manipulation(self._current)
 
     @api.keybindings.register(("J", "H"), "decrease 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("j", "h"), "decrease 1", mode=api.modes.MANIPULATE)
@@ -430,7 +441,6 @@ class Manipulator(QObject):
         **count:** multiplier
         """
         self._current.value -= value * count
-        self._apply_manipulation(self._current)
 
     @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
     @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
@@ -446,10 +456,10 @@ class Manipulator(QObject):
         **count:** Set the manipulation to [count] instead.
         """
         self._current.value = count if count is not None else value
-        self._apply_manipulation(self._current)
 
     def _apply_manipulation(self, manipulation: Manipulation):
         """Apply changes to displayed image according to an updated manipulation."""
+        self._focus(manipulation)
         self.thread_id += 1
         runnable = ManipulateRunner(self, self.thread_id, self._pixmap, manipulation)
         self.pool.start(runnable)

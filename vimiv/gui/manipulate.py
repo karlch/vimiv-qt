@@ -36,16 +36,6 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         background-color: #00000000;
         border: 0px;
     }
-
-    QProgressBar {
-        background: {manipulate.bar.bg};
-        border: {manipulate.bar.border};
-        text-align: center;
-    }
-
-    QProgressBar::chunk {
-        background: {manipulate.bar.fg};
-    }
     """
 
     @api.modes.widget(api.modes.MANIPULATE)
@@ -94,7 +84,7 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         layout = QHBoxLayout()
         for manipulation in group.manipulations:
             layout.addWidget(manipulation.label)
-            layout.addWidget(manipulation.bar)
+            layout.addWidget(manipulation.slider)
         # Add some spacing for small groups
         for _ in range(4 - len(group.manipulations)):
             layout.addStretch()
