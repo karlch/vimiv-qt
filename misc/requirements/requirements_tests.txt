@@ -1,4 +1,4 @@
-flaky==3.5.3
+flaky==3.6.0
 pytest==4.6.3
 pytest-mock==1.10.4
 pytest-qt==3.2.2
