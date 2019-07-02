@@ -120,10 +120,13 @@ class ManipulationGroup(abc.ABC):
 
     Attributes:
         manipulations: Tuple of individual manipulations.
+        _data: bytes of the last change from this group. Must be stored as the QPixmap
+            is generated directly from the bytes and needs them to stay in memory.
     """
 
     def __init__(self, *manipulations: Manipulation):
         self.manipulations = manipulations
+        self._data = bytes()
 
     def __iter__(self):
         yield from self.manipulations
@@ -148,14 +151,15 @@ class ManipulationGroup(abc.ABC):
         """Apply manipulation function to image data if any manipulation changed."""
         if not self.changed:
             return data
-        return self._apply(data, *self.manipulations)
+        self._data = self._apply(data, *self.manipulations)
+        return self._data
 
     @abc.abstractproperty
     def title(self):
         """Title of the manipulation group as referred to in its tab."""
 
     @abc.abstractmethod
-    def _apply(self, data: bytes, *manipulations: Manipulation):
+    def _apply(self, data: bytes, *manipulations: Manipulation) -> bytes:
         """Apply all manipulations of this group.
 
         Must be implemented by the child class.
@@ -231,13 +235,10 @@ class Manipulations(list):
 
     Attributes:
         groups: Tuple of all manipulation groups.
-        data: bytes of the edited pixmap. Must be stored as the QPixmap is
-            generated directly from the bytes and needs them to stay in memory.
     """
 
     def __init__(self):
         self.groups = (BriConGroup(), HSLGroup())
-        self.data = None
         super().__init__(utils.flatten([group.manipulations for group in self.groups]))
 
     def group(self, manipulation: Manipulation) -> ManipulationGroup:
@@ -264,32 +265,30 @@ class Manipulations(list):
             The manipulated pixmap.
         """
         logging.debug("Manipulate: applying %d groups", len(groups))
-        image = pixmap.toImage()
         # Convert original pixmap to python bytes
+        image = pixmap.toImage()
         bits = image.constBits()
         bits.setsize(image.byteCount())
-        self.data = bytes(bits)
+        data = bytes(bits)
+        # Apply changes on the byte-level
         for group in groups:
-            image = self._apply_group(group, image)
+            data = self._apply_group(group, data)
+        # Convert updated bytes back to pixmap
+        image = QImage(
+            data, image.width(), image.height(), image.bytesPerLine(), image.format()
+        )
         return QPixmap(image)
 
     def apply(self, pixmap: QPixmap, manipulation: Manipulation) -> QPixmap:
         """Manipulate pixmap according to single manipulation."""
         return self.apply_groups(pixmap, self.group(manipulation))
 
-    def _apply_group(self, group: Optional[ManipulationGroup], image: QImage) -> QImage:
+    def _apply_group(self, group: Optional[ManipulationGroup], data: bytes) -> bytes:
         """Apply manipulations of a single group to image."""
         if group is None:
-            return image
+            return data
         logging.debug("Manipulate: applying group %r", group)
-        self.data = group.apply(self.data)
-        return QImage(
-            self.data,
-            image.width(),
-            image.height(),
-            image.bytesPerLine(),
-            image.format(),
-        )
+        return group.apply(data)
 
 
 class Manipulator(QObject):
