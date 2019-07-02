@@ -40,8 +40,8 @@ WAIT_TIME = 0.3
 class Manipulation(QObject):
     """Storage class for one manipulation.
 
-    The manipulation is associated with the displayed label and progressbar, the value
-    can be changed and it can be (un-)focused.
+    The manipulation is associated with the displayed label and slider, the value can be
+    changed and it can be (un-)focused.
 
     Attributes:
         slider: QSlider to show the current value.
@@ -93,7 +93,7 @@ class Manipulation(QObject):
         return self.value != self._init_value
 
     def reset(self):
-        """Reset value and bar to default."""
+        """Reset value back to initial value."""
         with QSignalBlocker(self):  # We do not want to re-run manipulate on reset
             self.value = self._init_value
 
@@ -120,6 +120,7 @@ class ManipulationGroup(abc.ABC):
 
     Attributes:
         manipulations: Tuple of individual manipulations.
+
         _data: bytes of the last change from this group. Must be stored as the QPixmap
             is generated directly from the bytes and needs them to stay in memory.
     """
@@ -141,7 +142,7 @@ class ManipulationGroup(abc.ABC):
 
     @property
     def changed(self) -> bool:
-        """True if any manipulation changed."""
+        """True if any manipulation has been changed."""
         for manipulation in self.manipulations:
             if manipulation.changed:
                 return True
@@ -156,7 +157,10 @@ class ManipulationGroup(abc.ABC):
 
     @abc.abstractproperty
     def title(self):
-        """Title of the manipulation group as referred to in its tab."""
+        """Title of the manipulation group as referred to in its tab.
+
+        Must be defined by the child class.
+        """
 
     @abc.abstractmethod
     def _apply(self, data: bytes, *manipulations: Manipulation) -> bytes:
@@ -227,7 +231,7 @@ class Manipulations(list):
     """Class combining all manipulation groups.
 
     Each group consists of manipulations that are applied together in one function, e.g.
-    brightness and contrast. Iterating over the class yields the individual
+    brightness and contrast. The class is a list containing all individual
     manipulations.
 
     Applying manipulations can be done for a single manipulation using apply and for
@@ -297,6 +301,9 @@ class Manipulator(QObject):
     Provides commands for more complex manipulations like brightness and
     contrast. Acts as binding link between the manipulations and the gui interface.
 
+    Class Attributes:
+        pool: QThreadPool to apply manipulations in parallel.
+
     Attributes:
         manipulations: Manipulations class storing all manipulations.
         thread_id: ID of the current manipulation thread.
@@ -306,6 +313,10 @@ class Manipulator(QObject):
         _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
+
+    Signals:
+        updated: Emitted when the manipulated pixmap was changed.
+            arg1: The new manipulated QPixmap.
     """
 
     pool = QThreadPool()
