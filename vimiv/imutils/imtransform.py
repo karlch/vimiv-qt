@@ -4,7 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Perform simple transformations like rotate and flip."""
+"""*imtransform - transformations such as rotate and flip*."""
 
 import weakref
 

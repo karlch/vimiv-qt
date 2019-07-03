@@ -4,7 +4,23 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""More complex image manipulations like brightness and contrast."""
+"""*immanipulate - more complex image manipulations like brightness and contrast*.
+
+The module includes classes in a hierarchical structure where each following class
+includes components of the previous class in the hierarchy.
+
+#. ``Manipulation`` stores a single manipulation such as brightness.
+#. ``ManipulationGroup`` stores manipulations that are applied together such as
+   brightness and contrast.
+#. ``Manipulations`` stores all manipulation groups and provides commands to apply them.
+#. ``Manipulator`` stores the manipulations class and interfaces it with the
+   application.
+
+.. _adding_new_manipulation:
+
+Adding new manipulations is done by implementing a new :class:`ManipulationGroup` and
+adding it to the ``Manipulations``.
+"""
 
 import abc
 import collections
@@ -113,10 +129,16 @@ class Manipulation(QObject):
 
 
 class ManipulationGroup(abc.ABC):
-    """Group of manipulations associated to one manipulation tab.
+    """Base class for a group of manipulations associated to one manipulation tab.
 
-    The group stores the individual manipulations, associates them to a manipulate C
+    The group stores the individual manipulations, associates them to a manipulate
     function and provides a title.
+
+    To implement a new manipulation group:
+
+    * Inherit from this base class and define an appropriate constructor
+    * Define the :func:`title` property
+    * Implement the abstract method :func:`_apply`
 
     Attributes:
         manipulations: Tuple of individual manipulations.
@@ -149,7 +171,10 @@ class ManipulationGroup(abc.ABC):
         return False
 
     def apply(self, data: bytes) -> bytes:
-        """Apply manipulation function to image data if any manipulation changed."""
+        """Apply manipulation function to image data if any manipulation changed.
+
+        Wraps the abstract :func:`_apply` with a common setup and finalize part.
+        """
         if not self.changed:
             return data
         self._data = self._apply(data, *self.manipulations)
@@ -166,7 +191,17 @@ class ManipulationGroup(abc.ABC):
     def _apply(self, data: bytes, *manipulations: Manipulation) -> bytes:
         """Apply all manipulations of this group.
 
+        Takes the image data as raw bytes, applies the changes according the current
+        manipulation values and returns the updated bytes. In general this is associated
+        with a call to a function implemented in the C-extension which manipulates the
+        raw data.
+
         Must be implemented by the child class.
+
+        Args:
+            data: The raw image data in bytes to manipulate.
+        Returns:
+            The updated raw image data in bytes.
         """
 
 
