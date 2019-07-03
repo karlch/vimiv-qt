@@ -67,18 +67,21 @@ To open the selected thumbnail in image mode, press ``<return>``.
 Image Editing
 -------------
 
-Images can be rotated with the ``<`` and ``>``, flipped with the ``|`` and
-``_`` keys. These
-changes are automatically applied to the file as long as the ``image.autowrite``
-setting is true. An image is deleted with x. This actually moves the image to
-the trash directory specified by the freedesktop standard, by default
-$XDG_DATA_HOME/Trash.
+Images can be rotated with the ``<`` and ``>``, flipped with the ``|`` and ``_`` keys.
+These changes are automatically applied to the file as long as the ``image.autowrite``
+setting is true. An image is deleted with ``x``. This actually moves the image to the
+trash directory specified by the freedesktop standard, by default $XDG_DATA_HOME/Trash.
 
-For additional editing enter manipulate mode. Here brightness and contrast can
-be changed. To change between the manipulations use the ``bc`` keys. Values
-between -127 and 127 are valid. To increase the value by 1/10 use ``k/K``, to
-decrease it by 1/10 use ``j/J``. To apply the changes accept with ``<return>``,
-to leave manipulate mode reverting any changes press ``<escape>``.
+For additional editing enter manipulate mode with ``gm``. Here you can change brightness
+and contraste as well as hue, saturation and lightness. To increase the current
+manipulation by 1/10 use ``k/K`` or ``l/L``. Correspondingly, to decrease it by 1/10 use
+``j/J`` or ``h/H``. To set it to a specific value you can press ``[count]gg``.
+
+Navigating between the manipulations in the current tab is done with ``n/p``. To get to
+the next/previous tab press ``<tab>/<shift><tab>``.
+
+When you are satisfied and want to apply the changes, accept with ``<return>``. If you
+prefer to leave discarding the changes, press ``<escape>``.
 
 .. _commandline:
 
