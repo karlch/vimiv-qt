@@ -39,6 +39,7 @@ codebase. For some inspiration you could take a look at
 
 If you prefer C over python, you may be interested in implementing
 `additional manipulations in the C extension <https://github.com/karlch/vimiv-qt/issues/7>`_.
+Some useful tips on how you can do this can be found :ref:`here<c_extension>`.
 
 Improving the existing documentation and website is always another option in
 case you do not want to write code.
@@ -198,6 +199,31 @@ Imutils Module
 """"""""""""""
 
 .. automodule:: vimiv.imutils
+
+.. _c_extension:
+
+Adding New Manipulations to the C-Extension
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To add new manipulations to the C-extension, two things must be done.
+
+First, you implement a new manipulate function in its own header such as
+``brightness_contrast.h``. The function should take the image data as pure bytes, the
+size of the data array as well as your new manipulation values as arguments. Task of the
+function is to update the data with the manipulation values accordingly. For this it
+needs to iterate over the data and update each pixel and channel (RGBA) accordingly.
+
+Once you are happy with your manipulate function, it needs to be registered in
+``manipulate.c``. First you write a wrapper function that converts the python arguments
+to C arguments, runs the manipulate function you just implemented and returns the
+manipulated data back to python. How this is done can be seen in ``manipulate_bc`` and
+``manipulate_hsl``. The basic structure should be very similar for any case. Finally you
+add the python wrapper function to the ``ManipulateMethods`` definition. Here you define
+the name of the function as seen by python, pass your function, the calling convention
+and finally a short docstring.
+
+For much more information on extending python with C see
+`the python documentation <https://docs.python.org/3/extending/extending.html>`_
 
 
 Updating the Documentation
