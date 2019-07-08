@@ -34,13 +34,6 @@ The image loading process:
 
     The image widget in ``vimiv.gui.image`` connects to these signals and displays
     the appropriate Qt widget.
-
-Image editing modules:
-    .. automodule:: vimiv.imutils.imtransform
-
-    .. automodule:: vimiv.imutils.immanipulate
-       :members: ManipulationGroup
-       :private-members:
 """
 
 from PyQt5.QtCore import QObject, pyqtSignal

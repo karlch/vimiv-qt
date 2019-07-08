@@ -200,10 +200,25 @@ Imutils Module
 
 .. automodule:: vimiv.imutils
 
+Image Editing
+^^^^^^^^^^^^^
+
+This section gives a quick overview of the modules that deal with image editing and how
+to add new functionality to manipulate images.
+
+Modules
+"""""""
+
+.. automodule:: vimiv.imutils.imtransform
+
+.. automodule:: vimiv.imutils.immanipulate
+   :members: ManipulationGroup
+   :private-members:
+
 .. _c_extension:
 
 Adding New Manipulations to the C-Extension
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+""""""""""""""""""""""""""""""""""""""""""""
 
 To add new manipulations to the C-extension, two things must be done.
 
