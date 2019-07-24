@@ -497,7 +497,7 @@ class Manipulator(QObject):
         **syntax:** ``:goto value``
 
         positional arguments:
-            * ``value``: Value to set the manipulation to. Range -127 to 127.
+            * ``value``: Value to set the manipulation to.
 
         **count:** Set the manipulation to [count] instead.
         """
