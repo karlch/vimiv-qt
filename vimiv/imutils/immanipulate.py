@@ -488,13 +488,13 @@ class Manipulator(QObject):
         """
         self._current.value -= value * count
 
-    @api.keybindings.register("gg", "set -127", mode=api.modes.MANIPULATE)
-    @api.keybindings.register("G", "set 127", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("gg", "goto -127", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("G", "goto 127", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def set(self, value: int, count: Optional[int] = None):
+    def goto(self, value: int, count: Optional[int] = None):
         """Set the value of the current manipulation.
 
-        **syntax:** ``:set value``
+        **syntax:** ``:goto value``
 
         positional arguments:
             * ``value``: Value to set the manipulation to. Range -127 to 127.

@@ -5,7 +5,7 @@ Feature: Manipulate an image.
 
     Scenario: Set value of current manipulation
         When I enter manipulate mode
-        And I run set 10
+        And I run goto 10
         Then The current value should be 10
 
     Scenario: Set value of current manipulation via keybinding
@@ -25,7 +25,7 @@ Feature: Manipulate an image.
 
     Scenario: Set value to zero via keybinding
         When I enter manipulate mode
-        And I run set 10
+        And I run goto 10
         And I press 0gg
         Then The current value should be 0
 
@@ -36,7 +36,7 @@ Feature: Manipulate an image.
 
     Scenario: Do not reset value on focus
         When I enter manipulate mode
-        And I run set 10
+        And I run goto 10
         And I run 2next
         Then the current manipulation should be brightness
         And the current value should be 10

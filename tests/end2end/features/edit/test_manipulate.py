@@ -15,7 +15,7 @@ bdd.scenarios("manipulate.feature")
 def wait_for_beer(qtbot):
     manipulator = immanipulate.instance()
     with qtbot.waitSignal(immanipulate.instance().updated) as _:
-        manipulator.set(10)
+        manipulator.goto(10)
 
 
 @bdd.then(bdd.parsers.parse("The current value should be {value:d}"))
