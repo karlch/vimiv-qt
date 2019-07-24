@@ -16,6 +16,12 @@ matrix:
         apt:
           packages:
           - libxkbcommon-x11-0
+    - python: 3.6
+      env: TOXENV=py36-pyqt513
+      addons:
+        apt:
+          packages:
+          - libxkbcommon-x11-0
     - python: 3.7
       env: TOXENV=py37-pyqt59
     - python: 3.7
@@ -23,7 +29,13 @@ matrix:
     - python: 3.7
       env: TOXENV=py37-pyqt511
     - python: 3.7
-      env: TOXENV=py37-pyqt512-cov
+      env: TOXENV=py37-pyqt512
+      addons:
+        apt:
+          packages:
+          - libxkbcommon-x11-0
+    - python: 3.7
+      env: TOXENV=py37-pyqt513-cov
       addons:
         apt:
           packages:
