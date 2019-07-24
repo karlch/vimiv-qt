@@ -34,11 +34,6 @@ The image loading process:
 
     The image widget in ``vimiv.gui.image`` connects to these signals and displays
     the appropriate Qt widget.
-
-Image manipulation:
-    TODO write documentation once
-    `rethink manipulate mode <https://github.com/karlch/vimiv-qt/issues/56>`_
-    has been completed.
 """
 
 from PyQt5.QtCore import QObject, pyqtSignal

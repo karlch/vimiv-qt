@@ -2,6 +2,8 @@
 *                           C extension for vimiv
 * values of used math functions as array to greatly speed up computation
 *******************************************************************************/
+#ifndef math_func_eval_h__
+#define math_func_eval_h__
 
 /* Corresponds to tan(0) ... tan(pi/2) */
 const float TAN[256] = {
@@ -262,3 +264,5 @@ const float TAN[256] = {
     162.33598862000602,
     1.633123935319537e+16
 };
+
+#endif  // ifndef math_func_eval_h__

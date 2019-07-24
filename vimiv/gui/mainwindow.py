@@ -48,6 +48,7 @@ class MainWindow(QWidget):
         grid.addWidget(lib, 0, 0, 1, 1)
         manwidget = manipulate.Manipulate(self)
         self._overlays.append(manwidget)
+        self._overlays.append(manipulate.ManipulateImage(self, manwidget))
         compwidget = completionwidget.CompletionView(self)
         self._overlays.append(compwidget)
         self._overlays.append(keyhint_widget.KeyhintWidget(self))
@@ -62,7 +63,9 @@ class MainWindow(QWidget):
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
 
+    @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
+    @api.commands.register(mode=api.modes.MANIPULATE)
     @api.commands.register()
     def fullscreen(self):
         """Toggle fullscreen mode."""

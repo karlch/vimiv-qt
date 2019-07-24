@@ -4,7 +4,9 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Perform simple transformations like rotate and flip."""
+"""*imtransform - transformations such as rotate and flip*."""
+
+import weakref
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTransform
@@ -19,7 +21,7 @@ class Transform:
     given pixmap.
 
     Attributes:
-        _handler: ImageFileHandler used to retrieve and set updated files.
+        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _transform: QTransform object used to apply transformations.
         _rotation_angle: Currently applied rotation angle in degrees.
         _flip_horizontal: Flip the image horizontally.
@@ -28,7 +30,7 @@ class Transform:
 
     @api.objreg.register
     def __init__(self, handler):
-        self._handler = handler
+        self._handler = weakref.ref(handler)
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
@@ -83,7 +85,7 @@ class Transform:
 
     def _apply_transformations(self):
         """Apply all transformations to the original pixmap."""
-        self._handler.transformed = self._handler.original.transformed(
+        self._handler().transformed = self._handler().original.transformed(
             self._transform, mode=Qt.SmoothTransformation
         )
 

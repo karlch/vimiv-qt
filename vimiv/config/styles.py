@@ -214,9 +214,12 @@ def _insert_values(style):
     style["manipulate.fg"] = "{statusbar.fg}"
     style["manipulate.focused.fg"] = "{base0c}"
     style["manipulate.bg"] = "{image.bg}"
-    style["manipulate.bar.bg"] = "{statusbar.bg}"
-    style["manipulate.bar.fg"] = "{library.selected.bg}"
-    style["manipulate.bar.border"] = "0px solid"
+    style["manipulate.slider.left"] = "{library.selected.bg}"
+    style["manipulate.slider.handle"] = "{base04}"
+    style["manipulate.slider.right"] = "{statusbar.bg}"
+    # Manipulate image overlay
+    style["manipulate.image.border"] = "2px solid"
+    style["manipulate.image.border.color"] = "{base0c}"
     # Mark
     style["mark.color"] = "{base0e}"
 

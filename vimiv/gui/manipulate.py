@@ -8,22 +8,21 @@
 
 import logging
 
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QProgressBar, QLabel
+from PyQt5.QtCore import QTimer, Qt, QSize
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import eventhandler, wrap_style_span
+from vimiv.utils import eventhandler, slot
 
 
-class Manipulate(eventhandler.KeyHandler, QWidget):
+class Manipulate(eventhandler.KeyHandler, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
         _error: String containing the current error message.
-        _labels: Dictionary storing the QLabel objects.
-        _bar: Dictionary storing the QProgressBar objects.
     """
 
     STYLESHEET = """
@@ -33,14 +32,9 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         background: {manipulate.bg};
     }
 
-    QProgressBar {
-        background: {manipulate.bar.bg};
-        border: {manipulate.bar.border};
-        text-align: center;
-    }
-
-    QProgressBar::chunk {
-        background: {manipulate.bar.fg};
+    QTabWidget {
+        background-color: #00000000;
+        border: 0px;
     }
     """
 
@@ -50,48 +44,52 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
         self._error = "No image to manipulate"
-        self._labels = {}
-        self._bars = {}
 
         styles.apply(self)
-
-        layout = QHBoxLayout()
-
-        for manipulation in ["brightness", "contrast"]:
-            bar = QProgressBar()
-            bar.setValue(0)
-            bar.setMinimum(-127)
-            bar.setMaximum(127)
-            bar.setFormat("%v")
-            label = QLabel(manipulation)
-            layout.addWidget(label)
-            layout.addWidget(bar)
-            self._bars[manipulation] = bar
-            self._labels[manipulation] = label
-        self._on_focused("brightness")  # Default selection
-
-        layout.addStretch()
-        layout.addStretch()
-        self.setLayout(layout)
-
+        # Add all manipulations from immanipulate
+        manipulator = immanipulate.instance()
+        for group in manipulator.manipulations.groups:
+            self._add_group(group)
+        # Connect signals
+        self.currentChanged.connect(manipulator.focus_group_index)
         imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
         imutils.movie_loaded.connect(self._on_movie_loaded)
         imutils.svg_loaded.connect(self._on_svg_loaded)
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
-        manipulator = immanipulate.instance()
-        manipulator.edited.connect(self._on_edited)
-        manipulator.focused.connect(self._on_focused)
-
+        # Hide by default
         self.hide()
 
-    @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
+    @api.keybindings.register("<tab>", "next-tab", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
-    def discard(self):
-        """Discard any changes and leave manipulate."""
-        api.modes.MANIPULATE.leave()
-        self._reset()
-        immanipulate.instance().reset()
+    def next_tab(self, count: int = 1):
+        """Focus the next manipulation tab.
+
+        **count:** multiplier
+        """
+        self.setCurrentIndex((self.currentIndex() + count) % self.count())
+
+    @api.keybindings.register("<shift><tab>", "prev-tab", mode=api.modes.MANIPULATE)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    def prev_tab(self, count: int = 1):
+        """Focus the previous manipulation tab.
+
+        **count:** multiplier
+        """
+        self.setCurrentIndex((self.currentIndex() - count) % self.count())
+
+    def _add_group(self, group):
+        """Add a group of manipulations into its own tab."""
+        widget = QWidget()
+        layout = QHBoxLayout()
+        for manipulation in group.manipulations:
+            layout.addWidget(manipulation.label)
+            layout.addWidget(manipulation.slider)
+        # Add some spacing for small groups
+        for _ in range(4 - len(group.manipulations)):
+            layout.addStretch()
+        widget.setLayout(layout)
+        self.insertTab(-1, widget, group.title)
 
     @utils.slot
     def _on_entered(self):
@@ -102,24 +100,6 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
             QTimer.singleShot(0, lambda: logging.error(self._error))
         else:
             self.raise_()
-
-    def _on_edited(self, name, value):
-        """Update progressbar value on edit."""
-        self._bars[name].setValue(value)
-
-    def _on_focused(self, name):
-        """Highlight newly focused mode label.
-
-        Args:
-            name: Name of the label focused.
-        """
-        fg = styles.get("manipulate.fg")
-        fg_focused = styles.get("manipulate.focused.fg")
-        for manipulation, label in self._labels.items():
-            if manipulation == name:
-                label.setText(wrap_style_span(f"color: {fg_focused}", manipulation))
-            else:
-                label.setText(wrap_style_span(f"color: {fg}", manipulation))
 
     def _on_pixmap_loaded(self, pixmap):
         self._error = None
@@ -132,17 +112,81 @@ class Manipulate(eventhandler.KeyHandler, QWidget):
 
     def update_geometry(self, window_width, window_height):
         """Rescale width when main window was resized."""
-        y = window_height - self.height()
-        self.setGeometry(0, y, window_width, self.height())
+        y = window_height - self.sizeHint().height()
+        self.setGeometry(0, y, window_width, self.sizeHint().height())
 
-    def height(self):
-        """Update height to get preferred height of the progress bar."""
-        return self._bars["brightness"].sizeHint().height() * 2
 
-    def _reset(self):
-        """Reset values of all widgets to default."""
-        for bar in self._bars.values():
-            bar.setValue(0)
+class ManipulateImage(QLabel):
+    """Overlay image to display the manipulated image in the bottom right.
+
+    It is shown once manipulate mode is entered and hides afterwards.
+
+    Attributes:
+        _manipulate: The manipulate widget to retrieve y-coordinate.
+        _max_size: Maximum size to use up which corresponds to half the window size.
+        _pixmap: The manipulated pixmap to display.
+    """
+
+    STYLESHEET = """
+    QLabel {
+        border-top: {manipulate.image.border} {manipulate.image.border.color};
+        border-left: {manipulate.image.border} {manipulate.image.border.color};
+    }
+    """
+
+    def __init__(self, parent, manipulate):
+        super().__init__(parent=parent)
+        self._manipulate = manipulate
+        self._max_size = QSize(0, 0)
+        self._pixmap = None
+        styles.apply(self)
+
+        api.modes.MANIPULATE.entered.connect(self._on_entered)
+        api.modes.MANIPULATE.left.connect(self.hide)
+        immanipulate.instance().updated.connect(self._update_pixmap)
+
+        self.hide()
+
+    def update_geometry(self, window_width, window_height):
+        """Update position and size according to window size.
+
+        The size is adapted to take up the lower right corner. This is then reduced
+        accordingly by displayed pixmap if it is not perfectly square.
+        """
+        scale = 0.5
+        self._max_size = QSize(window_width * scale, window_height * scale)
+        if self._pixmap is not None and self.isVisible():
+            self._rescale()
+
+    @slot
+    def _on_entered(self):
+        if self._pixmap is not None:  # No image to display
+            self.show()
+
+    @slot
+    def _update_pixmap(self, pixmap: QPixmap):
+        """Update the displayed pixmap once the manipulated pixmap has changed."""
+        self._pixmap = pixmap
+        self._rescale()
+
+    def _rescale(self):
+        """Rescale pixmap and geometry to fit."""
+        # Scale pixmap to fit into label
+        pixmap = self._pixmap.scaled(
+            self._max_size.width(),
+            self._max_size.height(),
+            aspectRatioMode=Qt.KeepAspectRatio,
+            transformMode=Qt.SmoothTransformation,
+        )
+        self.setPixmap(pixmap)
+        # Update geometry to only show pixmap
+        x = self._max_size.width() + (self._max_size.width() - pixmap.width())
+        y = (
+            self._max_size.height()
+            + (self._max_size.height() - pixmap.height())
+            - self._manipulate.currentWidget().sizeHint().height()
+        )
+        self.setGeometry(x, y, pixmap.width(), pixmap.height())
 
 
 def instance():
