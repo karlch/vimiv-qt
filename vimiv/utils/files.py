@@ -14,6 +14,12 @@ from typing import Generator, List, Tuple, Optional
 from vimiv import api
 from vimiv.utils import pathreceiver
 
+# We need the check as svg support is optional
+try:
+    from PyQt5.QtSvg import QSvgWidget
+except ImportError:
+    QSvgWidget = None
+
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
@@ -146,13 +152,15 @@ def modified() -> str:
     return d.strftime("%y-%m-%d %H:%M")
 
 
-def _test_svg(first_bytes: bytes, _reader) -> Optional[str]:
-    """Check if an opened file is a svg.
+# Only add svg check to imghdr if svg available
+if QSvgWidget is not None:
 
-    Appended to imghdr.tests to detect vector graphics.
-    """
-    return "svg" if _svg_encoding in first_bytes else None
+    def _test_svg(first_bytes: bytes, _reader) -> Optional[str]:
+        """Check if an opened file is a svg.
 
+        Appended to imghdr.tests to detect vector graphics.
+        """
+        return "svg" if _svg_encoding in first_bytes else None
 
-_svg_encoding = "<?xml".encode("utf-8")
-imghdr.tests.append(_test_svg)
+    _svg_encoding = "<?xml".encode("utf-8")
+    imghdr.tests.append(_test_svg)

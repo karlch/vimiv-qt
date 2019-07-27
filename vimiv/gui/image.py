@@ -103,9 +103,10 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
             partial(self._load, widget=Image, scale=ImageScale.Overzoom)
         )
         imutils.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
-        imutils.svg_loaded.connect(
-            partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
-        )
+        if QSvgWidget is not None:  # Only connect loading of svg if available
+            imutils.svg_loaded.connect(
+                partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
+            )
         imutils.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
