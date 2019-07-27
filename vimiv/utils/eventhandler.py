@@ -114,7 +114,11 @@ class KeyHandler:
         """
         api.status.clear()
         mode = api.modes.current()
-        keyname = keyevent_to_string(event)
+        try:
+            keyname = keyevent_to_string(event)
+        except ValueError:  # Only modifier pressed
+            logging.debug("KeyPressEvent: only modifier pressed")
+            return
         logging.debug("KeyPressEvent: handling %s for mode %s", keyname, mode.name)
         bindings = api.keybindings.get(mode)
         # Handle escape separately as it affects multiple widgets and must clear partial
@@ -191,9 +195,8 @@ def keyevent_to_string(event):
         Qt.Key_Direction_L,
         Qt.Key_Direction_R,
     )
-    if event.key() in modifiers:
-        # Only modifier pressed
-        return ""
+    if event.key() in modifiers:  # Only modifier pressed
+        raise ValueError("Modifiers do not have a stand-alone name")
     mod = event.modifiers()
     parts = []
     for mask, mod_name in modmask2str.items():

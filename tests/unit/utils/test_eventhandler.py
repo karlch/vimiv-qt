@@ -6,6 +6,8 @@
 
 """Tests for vimiv.utils.eventhandler."""
 
+import pytest
+
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QKeyEvent
 
@@ -60,8 +62,9 @@ def test_keyevent_to_string_for_alt_modifier_and_letter():
 
 
 def test_keyevent_to_string_for_only_modifier():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
-    assert eventhandler.keyevent_to_string(event) == ""
+    with pytest.raises(ValueError):
+        event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
+        eventhandler.keyevent_to_string(event) == ""
 
 
 def test_keyevent_to_string_for_colon():
