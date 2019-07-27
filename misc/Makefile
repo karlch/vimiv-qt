@@ -1,5 +1,5 @@
-PREFIX := $(DESTDIR)/usr
-DATADIR := $(PREFIX)/share
+PREFIX := /usr
+DATADIR := $(DESTDIR)/$(PREFIX)/share
 MANDIR := $(DATADIR)/man
 APPDIR := $(DATADIR)/applications
 LICENSEDIR := $(DATADIR)/licenses
