@@ -20,6 +20,7 @@ from vimiv.gui import (
     thumbnail,
     manipulate,
     keyhint_widget,
+    version_popup,
 )
 
 
@@ -76,6 +77,20 @@ class MainWindow(QWidget):
             self.showNormal()
         else:
             self.showFullScreen()
+
+    @api.commands.register()
+    def version(self, copy: bool = False) -> None:
+        """Show a pop-up with version information.
+
+        **syntax:** ``:version [--copy]``
+
+        optional arguments:
+            * ``--copy``: Copy version information to clipboard instead.
+        """
+        if copy:
+            version_popup.VersionPopUp.copy_to_clipboard()
+        else:
+            version_popup.VersionPopUp(parent=self)
 
     def resizeEvent(self, event):
         """Update resize event to resize overlays and library.
