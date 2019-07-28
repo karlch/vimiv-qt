@@ -6,47 +6,12 @@
 
 """Simple base QtWidgets to inherit from."""
 
-from PyQt5.QtCore import QItemSelectionModel, QMargins, Qt
+from PyQt5.QtCore import QItemSelectionModel, Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
-from PyQt5.QtWidgets import (
-    QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout,
-    QTreeView,
-    QAbstractItemView,
-    QLabel,
-    QSlider,
-)
+from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QLabel, QSlider
 
 from vimiv.config import styles
 from vimiv.utils import cached_method
-
-
-class SimpleGrid(QGridLayout):
-    """QGridLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
-
-
-class SimpleHBox(QHBoxLayout):
-    """QHBoxLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
-
-
-class SimpleVBox(QVBoxLayout):
-    """QVBoxLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
 
 
 class FlatTreeView(QTreeView):

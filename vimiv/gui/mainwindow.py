@@ -6,7 +6,8 @@
 
 """QMainWindow which groups all the other widgets."""
 
-from PyQt5.QtWidgets import QWidget, QStackedLayout
+from PyQt5.QtCore import QMargins
+from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
 
 from vimiv import api, utils
 from vimiv.completion import completer
@@ -17,7 +18,6 @@ from vimiv.gui import (
     library,
     completionwidget,
     thumbnail,
-    widgets,
     manipulate,
     keyhint_widget,
 )
@@ -39,7 +39,10 @@ class MainWindow(QWidget):
         self.bar = bar.Bar()
         self._overlays = []
 
-        grid = widgets.SimpleGrid(self)
+        grid = QGridLayout(self)
+        grid.setSpacing(0)
+        grid.setContentsMargins(QMargins(0, 0, 0, 0))
+
         self._stack = ImageThumbnailLayout()
 
         # Create widgets and add to layout
