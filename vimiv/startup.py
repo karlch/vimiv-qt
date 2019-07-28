@@ -21,10 +21,9 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import app, api, parsertypes, imutils, plugins, version
+from vimiv import app, api, parsertypes, imutils, plugins, version, gui
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
-from vimiv.gui import mainwindow
 from vimiv.utils import (
     xdg,
     clipboard,
@@ -222,7 +221,7 @@ def init_paths(args):
 def init_ui(args):
     """Initialize the Qt UI."""
     logging.debug("Initializing UI")
-    mw = mainwindow.MainWindow()
+    mw = gui.MainWindow()
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size
