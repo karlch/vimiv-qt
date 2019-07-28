@@ -7,6 +7,7 @@
 """Manipulate widget."""
 
 import logging
+from typing import List
 
 from PyQt5.QtCore import QTimer, Qt, QSize
 from PyQt5.QtGui import QPixmap
@@ -77,6 +78,16 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         **count:** multiplier
         """
         self.setCurrentIndex((self.currentIndex() - count) % self.count())
+
+    @staticmethod
+    def current() -> str:
+        """Current path for manipulate mode."""
+        return imutils.current()
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for manipulate mode."""
+        return imutils.pathlist()
 
     def _add_group(self, group):
         """Add a group of manipulations into its own tab."""

@@ -196,7 +196,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
-        imutils.load(self.abspath())
+        imutils.load(self.current())
         api.modes.IMAGE.enter()
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
@@ -318,7 +318,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         return self.iconSize().width() + 2 * padding
 
     @api.status.module("{thumbnail-name}")
-    def current(self):
+    def _thumbnail_name(self):
         """Name of the currently selected thumbnail."""
         try:
             abspath = self._paths[self.currentRow()]
@@ -328,12 +328,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    def abspath(self):
-        """Return the absolute path of the current thumbnail."""
+    def current(self):
+        """Current path for thumbnail mode."""
         try:
             return self._paths[self.currentRow()]
         except IndexError:
             return ""
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for thumbnail mode."""
+        return imutils.pathlist()
 
     @api.status.module("{thumbnail-size}")
     def size(self):

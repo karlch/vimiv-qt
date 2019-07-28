@@ -8,7 +8,7 @@
 
 from functools import partial
 from contextlib import suppress
-from typing import Optional
+from typing import Optional, List
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QScrollArea, QLabel
@@ -250,6 +250,16 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         """Toggle betwen play and pause of animation."""
         with suppress(AttributeError):  # Currently no animation displayed
             self.widget().play_or_pause()
+
+    @staticmethod
+    def current() -> str:
+        """Current path for image mode."""
+        return imutils.current()
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for manipulate mode."""
+        return imutils.pathlist()
 
     def _scale_to_fit(self, limit=-1):
         """Scale image so it fits the widget size.

@@ -23,7 +23,6 @@ from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
 from vimiv import app, api, utils
 from vimiv.commands import aliases
-from vimiv.utils import pathreceiver
 
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
@@ -159,7 +158,7 @@ def expand_percent(text, mode):
     if "%m" in text:
         text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
     if "%" in text:
-        current = shlex.quote(pathreceiver.current(mode))
+        current = shlex.quote(api.current_path(mode))
         text = re.sub(r"(?<!\\)%", current, text)
     return text
 

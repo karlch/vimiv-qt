@@ -6,6 +6,8 @@
 
 """`Utilities to interact with the application`."""
 
+from typing import List
+
 from . import (
     commands,
     completion,
@@ -22,3 +24,27 @@ from . import (
 from vimiv import imutils, utils  # pylint: disable=wrong-import-order
 
 mark = _mark.Mark()
+
+
+def current_path(mode: modes.Mode = None) -> str:
+    """Get the currently selected path.
+
+    Args:
+        mode: Force getting the currently selected path of a specific mode.
+    Returns:
+        The currently selected path as abspath.
+    """
+    mode = mode if mode else modes.current()
+    return mode.current_path
+
+
+def pathlist(mode: modes.Mode = None) -> List[str]:
+    """Get the list of all currently open paths.
+
+    Args:
+        mode: Force getting the pathlist of a specific mode.
+    Returns:
+        The list of currently open paths.
+    """
+    mode = mode if mode else modes.current()
+    return mode.pathlist

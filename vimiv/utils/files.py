@@ -12,7 +12,6 @@ import os
 from typing import List, Tuple, Optional
 
 from vimiv import api
-from vimiv.utils import pathreceiver
 
 # We need the check as svg support is optional
 try:
@@ -131,13 +130,13 @@ def pwd() -> str:
 @api.status.module("{filesize}")
 def filesize() -> str:
     """Size of the current image in bytes."""
-    return get_size(pathreceiver.current())
+    return get_size(api.current_path())
 
 
 @api.status.module("{modified}")
 def modified() -> str:
     """Modification date of the current image."""
-    mtime = os.path.getmtime(pathreceiver.current())
+    mtime = os.path.getmtime(api.current_path())
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")
 

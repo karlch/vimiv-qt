@@ -11,7 +11,6 @@ import os
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
 from vimiv import app, api
-from vimiv.utils import pathreceiver
 
 
 def init() -> None:
@@ -36,7 +35,7 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
-    path = pathreceiver.current()
+    path = api.current_path()
     name = path if abspath else os.path.basename(path)
     clipboard.setText(name, mode=mode)
 

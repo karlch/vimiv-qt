@@ -16,7 +16,6 @@ import os
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv import api
-from vimiv.utils import pathreceiver
 
 
 def use_incremental(mode):
@@ -87,8 +86,8 @@ class Search(QObject):
 
     def _run(self, text, mode, count, reverse, incremental):
         """Implementation of running search."""
-        paths = pathreceiver.pathlist(mode)
-        current_index = paths.index(pathreceiver.current(mode))
+        paths = api.pathlist(mode)
+        current_index = paths.index(api.current_path(mode))
         basenames = [os.path.basename(path) for path in paths]
         sorted_paths = _sort_for_search(basenames, current_index, reverse)
         next_match, matches = _get_next_match(text, count, sorted_paths)
