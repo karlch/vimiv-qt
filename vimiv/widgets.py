@@ -4,7 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Simple base QtWidgets to inherit from."""
+"""Miscellaneous QtWidgets."""
 
 from PyQt5.QtCore import QItemSelectionModel, Qt
 from PyQt5.QtGui import QPainter, QFontMetrics

@@ -22,10 +22,9 @@ from PyQt5.QtGui import (
     QFont,
 )
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.gui import widgets
 from vimiv.utils import (
     files,
     eventhandler,

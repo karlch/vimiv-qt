@@ -9,9 +9,8 @@
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QSizePolicy
 
-from vimiv import api
+from vimiv import api, widgets
 from vimiv.config import styles
-from vimiv.gui import widgets
 
 
 class CompletionView(widgets.FlatTreeView):

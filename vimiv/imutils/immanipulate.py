@@ -42,8 +42,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication
 
-from vimiv import api, utils
-from vimiv.gui.widgets import SliderWithValue
+from vimiv import api, utils, widgets
 from vimiv.config import styles
 from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
     _c_manipulate,
@@ -72,7 +71,7 @@ class Manipulation(QObject):
 
     def __init__(self, name, value=0, lower=-127, upper=127, init_value=0):
         super().__init__()
-        self.slider = SliderWithValue(
+        self.slider = widgets.SliderWithValue(
             "{manipulate.slider.left}",
             "{manipulate.slider.handle}",
             "{manipulate.slider.right}",
