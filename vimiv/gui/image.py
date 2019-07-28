@@ -11,13 +11,12 @@ from contextlib import suppress
 from typing import Optional
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QScrollArea, QLabel
 from PyQt5.QtGui import QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
-from vimiv.gui import widgets
 from vimiv.utils import eventhandler
 
 # We need the check as svg support is optional
@@ -32,7 +31,7 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
 
     Connects to the *_loaded signals to create the appropriate child widget.
     Commands used in image mode are defined here. Interaction with the child
-    widget happens via the methods defined by widgets.ImageLabel.
+    widget happens via the methods defined by ImageLabel.
 
     Class Attributes:
         MIN_SIZE_SCALE: Minimum scale to scale an image to.
@@ -349,7 +348,34 @@ def instance():
     return api.objreg.get(ScrollableImage)
 
 
-class Empty(widgets.ImageLabel):
+class ImageLabel(QLabel):
+    """Label used to display images in image mode."""
+
+    STYLESHEET = """
+    QLabel {
+        background-color: {image.bg};
+    }
+    """
+
+    def __init__(self):
+        super().__init__()
+        styles.apply(self)
+        self.setAlignment(Qt.AlignCenter)
+
+    def current_size(self):
+        """Return size of the currently displayed image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def original_size(self):
+        """Return size of the original image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def rescale(self, scale):
+        """Rescale the widget to scale."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+
+class Empty(ImageLabel):
     """Empty QLabel to display if there is no image."""
 
     def original_size(self):
@@ -362,7 +388,7 @@ class Empty(widgets.ImageLabel):
         pass
 
 
-class Image(widgets.ImageLabel):
+class Image(ImageLabel):
     """QLabel to display a QPixmap.
 
     Attributes:
@@ -386,7 +412,7 @@ class Image(widgets.ImageLabel):
         self.setPixmap(pixmap)
 
 
-class Animation(widgets.ImageLabel):
+class Animation(ImageLabel):
     """QLabel to display a QMovie.
 
     Attributes:

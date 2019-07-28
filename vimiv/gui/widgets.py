@@ -8,7 +8,7 @@
 
 from PyQt5.QtCore import QItemSelectionModel, Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
-from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QLabel, QSlider
+from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider
 
 from vimiv.config import styles
 from vimiv.utils import cached_method
@@ -120,30 +120,3 @@ class SliderWithValue(QSlider):
         }}
         """
         styles.apply(self, append=sheet)
-
-
-class ImageLabel(QLabel):
-    """Label used to display images in image mode."""
-
-    STYLESHEET = """
-    QLabel {
-        background-color: {image.bg};
-    }
-    """
-
-    def __init__(self):
-        super().__init__()
-        styles.apply(self)
-        self.setAlignment(Qt.AlignCenter)
-
-    def current_size(self):
-        """Return size of the currently displayed image."""
-        raise NotImplementedError("Must be implemented by child widget")
-
-    def original_size(self):
-        """Return size of the original image."""
-        raise NotImplementedError("Must be implemented by child widget")
-
-    def rescale(self, scale):
-        """Rescale the widget to scale."""
-        raise NotImplementedError("Must be implemented by child widget")
