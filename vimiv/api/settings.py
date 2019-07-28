@@ -20,9 +20,7 @@ from vimiv.utils import clamp, AbstractQObjectMeta
 
 Number = Union[int, float]
 NumberStr = Union[Number, str]
-BoolStr = Union[bool, str]
 IntStr = Union[int, str]
-FloatStr = Union[float, str]
 Methodtype = Callable[["Setting", Any], Any]
 
 

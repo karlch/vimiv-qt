@@ -32,20 +32,6 @@ def positive_int(value):
     return ivalue
 
 
-def positive_float(value):
-    """Check if an argument value is a positive float.
-
-    Args:
-        value: Value given to commandline option as string.
-    Returns:
-        float(value) if the value is a positive float.
-    """
-    fvalue = float(value)
-    if fvalue <= 0:
-        raise argparse.ArgumentTypeError("Value must be positive")
-    return fvalue
-
-
 Geometry = namedtuple("Geometry", ["width", "height"])
 
 

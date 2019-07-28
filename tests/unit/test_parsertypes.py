@@ -14,19 +14,6 @@ import pytest
 from vimiv import parsertypes
 
 
-def test_positive_float():
-    text = "2.2"
-    parsed_value = parsertypes.positive_float(text)
-    assert parsed_value == 2.2
-
-
-def test_fail_positive_float():
-    with pytest.raises(ValueError, match="could not convert"):
-        parsertypes.positive_float("this_is_not_a_float")
-    with pytest.raises(argparse.ArgumentTypeError, match="must be positive"):
-        parsertypes.positive_float(-1)
-
-
 def test_geometry():
     text = "300x500"
     parsed_value = parsertypes.geometry(text)

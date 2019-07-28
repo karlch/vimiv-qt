@@ -287,13 +287,6 @@ class Manipulations(list):
                 return group
         raise KeyError(f"Unknown manipulation {manipulation}")
 
-    def groupindex(self, manipulation: Manipulation) -> int:
-        """Return the index of the group of which the manipulation is part."""
-        for i, group in enumerate(self.groups):
-            if manipulation in group.manipulations:
-                return i
-        raise KeyError(f"Unknown manipulation {manipulation}")
-
     def apply_groups(self, pixmap: QPixmap, *groups: ManipulationGroup) -> QPixmap:
         """Manipulate pixmap according all manipulations in groups.
 
@@ -438,25 +431,6 @@ class Manipulator(QObject):
         for manipulation in self.manipulations:
             manipulation.reset()
         self._pixmap = self._manipulated = None
-
-    def _manipulation_command(self, manipulation, value, count):
-        """Run a manipulation command.
-
-        This focuses the manipulation and if a new value is passed applies it to the
-        manipulate pixmap.
-
-        Args:
-            manipulation: The manipulation to update.
-            value: Value to set the manipulation to if any.
-            count: Count passed if any.
-        """
-        self._focus(manipulation)
-        if count is None and value is None:  # Only focused
-            return
-        try:
-            manipulation.value = int(count) if count is not None else value
-        except ValueError as e:  # Invalid int value given
-            raise api.commands.CommandError(str(e))
 
     @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)

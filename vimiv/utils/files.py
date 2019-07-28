@@ -9,7 +9,7 @@
 import datetime
 import imghdr
 import os
-from typing import Generator, List, Tuple, Optional
+from typing import List, Tuple, Optional
 
 from vimiv import api
 from vimiv.utils import pathreceiver
@@ -91,19 +91,6 @@ def sizeof_fmt(num: float) -> str:
             return "%3.0f%s" % (num, unit)
         num /= 1024.0
     return "%.1f%s" % (num, "Y")
-
-
-def yield_supported(paths: List[str]) -> Generator[str, None, None]:
-    """Generator to yield supported paths.
-
-    Args:
-        paths: List of paths to check for supported paths.
-    Yields:
-        Generator yielding paths if they are supported.
-    """
-    for path in paths:
-        if os.path.isdir(path) or is_image(path):
-            yield path
 
 
 def get_size_directory(path: str) -> str:
