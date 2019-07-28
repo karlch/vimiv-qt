@@ -57,7 +57,7 @@ def parse():
     elif name == "default-dark":
         _style = create_default_dark()
     elif os.path.exists(filename):
-        _style = read(name, filename)
+        _style = read(filename)
     else:
         logging.error("Style file '%s' does not exist", filename)
         logging.debug("Falling back to default style")
@@ -224,11 +224,10 @@ def _insert_values(style):
     style["mark.color"] = "{base0e}"
 
 
-def read(name, filename):
+def read(filename):
     """Read style from styles file.
 
     Args:
-        name: Name of the style.
         filename: Name of the styles file to read
     """
     parser = configparser.ConfigParser()

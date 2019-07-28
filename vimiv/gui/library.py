@@ -104,28 +104,28 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         styles.apply(self)
 
     @utils.slot
-    def _on_activated(self, index: QModelIndex):
+    def _on_activated(self, _index: QModelIndex):
         """Open path correctly on activate.
 
         If the path activated is an image, it is opened in image mode. If it is
         a directory, the library is loaded for this directory.
 
         Args:
-            index: The QModelIndex activated.
+            _index: The QModelIndex activated which is always the currently selected.
         """
         self.open_selected()
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
-        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+        self, index: int, _matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
         """Select search result after new search.
 
         Args:
             index: Index to select.
-            matches: List of all matches of the search.
+            _matches: List of all matches of the search.
             mode: Mode for which the search was performed.
-            incremental: True if incremental search was performed.
+            _incremental: True if incremental search was performed.
         """
         if mode == api.modes.LIBRARY:
             self._select_row(index)
@@ -334,7 +334,7 @@ class LibraryModel(QStandardItemModel):
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
-        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+        self, _index: int, matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
         """Store list of indices to highlight on new search.
 
@@ -444,7 +444,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.search_bg = QColor()
         self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
 
-    def createEditor(self, *args):
+    def createEditor(self, *_):
         """Library is not editable by the user."""
         return None
 
@@ -557,7 +557,7 @@ class LibraryDelegate(QStyledItemDelegate):
             elided = elided.replace(mark_stripped, mark_str)
         return text.replace(html_stripped, elided)
 
-    def sizeHint(self, option, index):
+    def sizeHint(self, _option, _index):
         """Return size of the QTextDocument as size hint."""
         text = wrap_style_span(f"font: {self.font}", "any")
         self.doc.setHtml(text)

@@ -43,7 +43,7 @@ class Slideshow(QTimer):
         else:
             self.start()
 
-    def timerEvent(self, event):
+    def timerEvent(self, _event):
         """Emit next_im signal on timer tick."""
         self.next_im.emit()
         api.status.update()

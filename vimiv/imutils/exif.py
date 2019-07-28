@@ -31,7 +31,7 @@ def check_piexif(return_value=None):
     """
 
     def decorator(func):
-        def stub(*args, **kwargs):
+        def stub(*_args, **_kwargs):
             """Dummy function to call if piexif is not available."""
             logging.debug(
                 "Cannot call '%s', piexif is required for exif support", func.__name__

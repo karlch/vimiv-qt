@@ -102,7 +102,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self.loaded.emit(self._images, self._directories)
 
     @utils.slot
-    def _reload_directory(self, path: str):
+    def _reload_directory(self, _path: str):
         """Load new supported files when directory content has changed."""
         self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
 

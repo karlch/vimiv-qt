@@ -156,7 +156,7 @@ class SignalHandler(QObject):
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
-        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+        self, index: int, _matches: List[str], mode: api.modes.Mode, incremental: bool
     ):
         """Select search result after new search.
 
@@ -166,7 +166,7 @@ class SignalHandler(QObject):
 
         Args:
             index: Index to select.
-            matches: List of all matches of the search.
+            _matches: List of all matches of the search.
             mode: Mode for which the search was performed.
             incremental: True if incremental search was performed.
         """

@@ -101,13 +101,13 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         else:
             self.raise_()
 
-    def _on_pixmap_loaded(self, pixmap):
+    def _on_pixmap_loaded(self, _pixmap):
         self._error = None
 
-    def _on_movie_loaded(self, movie):
+    def _on_movie_loaded(self, _movie):
         self._error = "Manipulating animations is not supported"
 
-    def _on_svg_loaded(self, path):
+    def _on_svg_loaded(self, _path):
         self._error = "Manipulating vector graphics is not supported"
 
     def update_geometry(self, window_width, window_height):

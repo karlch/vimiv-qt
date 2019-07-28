@@ -63,7 +63,7 @@ class KeyhintWidget(QLabel):
 
         self.hide()
 
-    def update_geometry(self, window_width, window_bottom):
+    def update_geometry(self, _window_width, window_bottom):
         """Adapt location when main window geometry changes."""
         self._mainwindow_bottom = window_bottom
         self._update_geometry()

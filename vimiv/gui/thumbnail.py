@@ -128,11 +128,11 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         self._select_item(self._paths.index(path))
 
     @utils.slot
-    def _on_activated(self, index: QModelIndex):
+    def _on_activated(self, _index: QModelIndex):
         """Emit signal to update image index on activated.
 
         Args:
-            index: QModelIndex activated.
+            _index: The QModelIndex activated which is always the currently selected.
         """
         self.open_selected()
 
@@ -150,7 +150,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
-        self, index: int, matches: List[str], mode: api.modes.Mode, incremental: bool
+        self, index: int, matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
         """Select search result after new search.
 
@@ -158,7 +158,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             index: Index to select.
             matches: List of all matches of the search.
             mode: Mode for which the search was performed.
-            incremental: True if incremental search was performed.
+            _incremental: True if incremental search was performed.
         """
         self._highlighted = []
         if self._paths and mode == api.modes.THUMBNAIL:
