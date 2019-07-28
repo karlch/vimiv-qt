@@ -9,34 +9,33 @@
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv import api, utils
-from vimiv.gui import commandline, statusbar
 
 
 class Bar(QWidget):
     """Bar at the bottom including statusbar and commandline.
 
     Attributes:
-        commandline: vimiv.gui.commandline.CommandLine object.
-
+        _commandline: Commandline widget in the bar.
         _stack: QStackedLayout containing statusbar and commandline.
+        _statusbar: Statusbar widget in the bar.
     """
 
     @api.objreg.register
-    def __init__(self):
+    def __init__(self, statusbar, commandline):
         super().__init__()
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
-        statusbar.init()
-        self.commandline = commandline.CommandLine()
+        self._commandline = commandline
+        self._statusbar = statusbar
         self._stack = QStackedLayout(self)
 
-        self._stack.addWidget(statusbar.statusbar)
-        self._stack.addWidget(self.commandline)
-        self._stack.setCurrentWidget(statusbar.statusbar)
+        self._stack.addWidget(statusbar)
+        self._stack.addWidget(self._commandline)
+        self._stack.setCurrentWidget(statusbar)
 
         self._maybe_hide()
 
-        self.commandline.editingFinished.connect(self._on_editing_finished)
+        self._commandline.editingFinished.connect(self._on_editing_finished)
         api.settings.statusbar.show.changed.connect(self._on_show_changed)
         api.settings.statusbar.message_timeout.changed.connect(self._on_timeout_changed)
 
@@ -73,35 +72,35 @@ class Bar(QWidget):
     def _enter_command_mode(self, text):
         """Enter command mode setting the text to text."""
         self.show()
-        self._stack.setCurrentWidget(self.commandline)
-        self.commandline.setText(text)
+        self._stack.setCurrentWidget(self._commandline)
+        self._commandline.setText(text)
         api.modes.COMMAND.enter()
 
     @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
-        self.commandline.editingFinished.emit()
+        self._commandline.editingFinished.emit()
 
     @utils.slot
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
-        self.commandline.setText("")
-        self._stack.setCurrentWidget(statusbar.statusbar)
+        self._commandline.setText("")
+        self._stack.setCurrentWidget(self._statusbar)
         self._maybe_hide()
         api.modes.COMMAND.leave()
 
     def _on_show_changed(self, value: bool):
-        statusbar.statusbar.setVisible(value)
+        self._statusbar.setVisible(value)
         self._maybe_hide()
 
     def _on_timeout_changed(self, value: int):
-        statusbar.statusbar.timer.setInterval(value)
+        self._statusbar.timer.setInterval(value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
         always_show = api.settings.statusbar.show.value
-        if not always_show and not self.commandline.hasFocus():
+        if not always_show and not self._commandline.hasFocus():
             self.hide()
         else:
             self.show()
