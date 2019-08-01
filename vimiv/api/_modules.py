@@ -10,7 +10,11 @@ These should not be used anywhere else and are only imported to register the
 corresponding objects.
 """
 
+import datetime
+import os
+
 from vimiv import api
+from vimiv.utils import files
 
 
 ###############################################################################
@@ -56,3 +60,26 @@ def toggle(mode: str) -> None:
 def active_name() -> str:
     """Current mode."""
     return api.modes.current().name.upper()
+
+
+@api.status.module("{pwd}")
+def pwd() -> str:
+    """Current working directory."""
+    wd = os.getcwd()
+    if api.settings.statusbar.collapse_home.value:
+        wd = wd.replace(os.path.expanduser("~"), "~")
+    return wd
+
+
+@api.status.module("{filesize}")
+def filesize() -> str:
+    """Size of the current image in bytes."""
+    return files.get_size(api.current_path())
+
+
+@api.status.module("{modified}")
+def modified() -> str:
+    """Modification date of the current image."""
+    mtime = os.path.getmtime(api.current_path())
+    d = datetime.datetime.fromtimestamp(mtime)
+    return d.strftime("%y-%m-%d %H:%M")
