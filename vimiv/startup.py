@@ -11,7 +11,6 @@ Module Attributes:
         object must exist until vimiv exits.
 """
 
-import argparse
 import logging
 import logging.handlers
 import os
@@ -20,8 +19,7 @@ import tempfile
 
 from PyQt5.QtWidgets import QApplication
 
-import vimiv
-from vimiv import app, api, parsertypes, imutils, plugins, version, gui
+from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import (
@@ -58,7 +56,7 @@ def setup_pre_app(argv):
     Args:
         argv: sys.argv[1:] from the executable or argv passed by test suite.
     """
-    args = get_argparser().parse_args(argv)
+    args = parser.get_argparser().parse_args(argv)
     if args.version:
         print(version.info())
         sys.exit(0)
@@ -112,72 +110,6 @@ def setup_logging(log_level):
     logger.addHandler(statusbar_loghandler)
 
 
-def get_argparser():
-    """Get the argparse parser."""
-    parser = argparse.ArgumentParser(
-        prog=vimiv.__name__, description=vimiv.__description__
-    )
-    parser.add_argument(
-        "-f", "--fullscreen", action="store_true", help="Start fullscreen"
-    )
-    parser.add_argument(
-        "-v",
-        "--version",
-        action="store_true",
-        help="Print version information and exit",
-    )
-    parser.add_argument(
-        "--slideshow", action="store_true", help="Start slideshow at start-up"
-    )
-    parser.add_argument(
-        "-g",
-        "--geometry",
-        type=parsertypes.geometry,
-        metavar="WIDTHxHEIGHT",
-        help="Set the starting geometry",
-    )
-    parser.add_argument(
-        "--temp-basedir", action="store_true", help="Use a temporary basedir"
-    )
-    parser.add_argument(
-        "--config",
-        type=parsertypes.existing_file,
-        metavar="FILE",
-        help="Use FILE as local configuration file",
-    )
-    parser.add_argument(
-        "--keyfile",
-        type=parsertypes.existing_file,
-        metavar="FILE",
-        help="Use FILE as keybinding file",
-    )
-    parser.add_argument(
-        "-s",
-        "--set",
-        nargs=2,
-        default=[],
-        action="append",
-        dest="cmd_settings",
-        metavar=("OPTION", "VALUE"),
-        help="Set a temporary setting",
-    )
-    parser.add_argument(
-        "--log-level",
-        type=parsertypes.loglevel,
-        metavar="LEVEL",
-        help="Set log level to LEVEL",
-        default="info",
-    )
-    parser.add_argument(
-        "paths",
-        nargs="*",
-        type=parsertypes.existing_path,
-        metavar="PATH",
-        help="Paths to open",
-    )
-    return parser
-
-
 def init_directories(args):
     """Create vimiv cache, config and data directories.
 
@@ -226,9 +158,7 @@ def init_ui(args):
     geometry = (
         args.geometry
         if args.geometry
-        else parsertypes.Geometry(
-            screen_geometry.width() / 2, screen_geometry.height() / 2
-        )
+        else parser.Geometry(screen_geometry.width() / 2, screen_geometry.height() / 2)
     )
     x = screen_geometry.x() + (screen_geometry.width() - geometry.width) // 2
     y = screen_geometry.y() + (screen_geometry.height() - geometry.height) // 2
