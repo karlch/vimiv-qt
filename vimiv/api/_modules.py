@@ -13,6 +13,8 @@ corresponding objects.
 import datetime
 import os
 
+from PyQt5.QtGui import QGuiApplication, QClipboard
+
 from vimiv import api
 from vimiv.utils import files
 
@@ -51,6 +53,41 @@ def toggle(mode: str) -> None:
         * ``mode``: The mode to toggle (image/library/thumbnail/manipulate).
     """
     api.modes.get_by_name(mode).toggle()
+
+
+@api.keybindings.register("yA", "copy-name --abspath --primary")
+@api.keybindings.register("yY", "copy-name --primary")
+@api.keybindings.register("ya", "copy-name --abspath")
+@api.keybindings.register("yy", "copy-name")
+@api.commands.register()
+def copy_name(abspath: bool = False, primary: bool = False) -> None:
+    """Copy name of current path to system clipboard.
+
+    **syntax:** ``:copy-name [--abspath] [--primary]``
+
+    optional arguments:
+        * ``--abspath``: Copy absolute path instead of basename.
+        * ``--primary``: Copy to primary selection.
+    """
+    clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    path = api.current_path()
+    name = path if abspath else os.path.basename(path)
+    clipboard.setText(name, mode=mode)
+
+
+@api.commands.register()
+def paste_name(primary: bool = True) -> None:
+    """Paste path from clipboard to open command.
+
+    **syntax:** ``:paste-name [--primary]``
+
+    optional arguments:
+        * ``--primary``: Paste from  primary selection.
+    """
+    clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    api.open([clipboard.text(mode=mode)])
 
 
 ###############################################################################

@@ -26,7 +26,6 @@ from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import (
     xdg,
-    clipboard,
     crash_handler,
     statusbar_loghandler,
     trash_manager,
@@ -69,7 +68,6 @@ def setup_pre_app(argv):
     logging.debug("%s\n", version.info())
     logging.debug("%s\n", version.paths())
     update_settings(args)
-    clipboard.init()
     trash_manager.init()
     return args
 
