@@ -8,15 +8,13 @@
 
 import logging
 import os
-from typing import List
 
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import api, imutils
-from vimiv.utils import files, working_directory
+from vimiv import api
 
 
 class Application(QApplication):
@@ -70,33 +68,6 @@ class Application(QApplication):
             pixmap = QPixmap(path)
             icon.addPixmap(pixmap)
         return icon
-
-
-# We want to use the name open here as it is the best name for the command
-@api.keybindings.register("o", "command --text='open '")
-@api.commands.register()
-def open(paths: List[str]):  # pylint: disable=redefined-builtin
-    """Open one or more paths.
-
-    **syntax:** ``:open path [path ...]``
-
-    If any path given is an image, all valid images are opened in image mode. Otherwise
-    the first valid directory is opened. If both fails, an error is displayed.
-
-    positional arguments:
-        * ``paths``: The path(s) to open.
-    """
-    images, directories = files.supported(paths)
-    mode = api.modes.LIBRARY
-    if images:
-        working_directory.handler.chdir(os.path.dirname(images[0]))
-        imutils.load(*images)
-        mode = api.modes.IMAGE
-    elif directories:
-        working_directory.handler.chdir(directories[0])
-    else:
-        raise api.commands.CommandError("No valid paths")
-    mode.enter()
 
 
 def instance():

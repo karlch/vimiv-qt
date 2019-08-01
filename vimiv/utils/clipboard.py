@@ -10,7 +10,7 @@ import os
 
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
-from vimiv import app, api
+from vimiv import api
 
 
 def init() -> None:
@@ -51,4 +51,4 @@ def paste_name(primary: bool = True) -> None:
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
-    app.open([clipboard.text(mode=mode)])
+    api.open([clipboard.text(mode=mode)])

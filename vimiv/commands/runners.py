@@ -21,7 +21,7 @@ from typing import Dict, List, NamedTuple, Optional
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
-from vimiv import app, api, utils
+from vimiv import api, utils
 from vimiv.commands import aliases
 
 
@@ -198,7 +198,7 @@ class ExternalRunner(QObject):
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         try:
-            app.open(paths)
+            api.open(paths)
             logging.debug("Opened paths from pipe '%s'", cmd)
             api.status.update()
         except api.commands.CommandError:

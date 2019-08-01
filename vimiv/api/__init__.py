@@ -6,6 +6,7 @@
 
 """`Utilities to interact with the application`."""
 
+import os
 from typing import List
 
 from . import (
@@ -48,3 +49,30 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
     """
     mode = mode if mode else modes.current()
     return mode.pathlist
+
+
+# We want to use the name open here as it is the best name for the command
+@keybindings.register("o", "command --text='open '")
+@commands.register()
+def open(paths: List[str]) -> None:  # pylint: disable=redefined-builtin
+    """Open one or more paths.
+
+    **syntax:** ``:open path [path ...]``
+
+    If any path given is an image, all valid images are opened in image mode. Otherwise
+    the first valid directory is opened. If both fails, an error is displayed.
+
+    positional arguments:
+        * ``paths``: The path(s) to open.
+    """
+    images, directories = utils.files.supported(paths)
+    if images:
+        utils.working_directory.handler.chdir(os.path.dirname(images[0]))
+        imutils.load(*images)
+        mode = modes.IMAGE
+    elif directories:
+        utils.working_directory.handler.chdir(directories[0])
+        mode = modes.LIBRARY
+    else:
+        raise commands.CommandError("No valid paths")
+    mode.enter()
