@@ -9,6 +9,8 @@
 import os
 from typing import List
 
+from vimiv.utils import files, working_directory
+
 from . import (
     commands,
     completion,
@@ -22,7 +24,7 @@ from . import (
 )
 
 # This is required to happen after importing locally due to cyclic import issues
-from vimiv import imutils, utils  # pylint: disable=wrong-import-order
+from vimiv import imutils  # pylint: disable=wrong-import-order
 
 mark = _mark.Mark()
 
@@ -65,13 +67,13 @@ def open(paths: List[str]) -> None:  # pylint: disable=redefined-builtin
     positional arguments:
         * ``paths``: The path(s) to open.
     """
-    images, directories = utils.files.supported(paths)
+    images, directories = files.supported(paths)
     if images:
-        utils.working_directory.handler.chdir(os.path.dirname(images[0]))
+        working_directory.handler.chdir(os.path.dirname(images[0]))
         imutils.load(*images)
         mode = modes.IMAGE
     elif directories:
-        utils.working_directory.handler.chdir(directories[0])
+        working_directory.handler.chdir(directories[0])
         mode = modes.LIBRARY
     else:
         raise commands.CommandError("No valid paths")

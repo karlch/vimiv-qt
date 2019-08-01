@@ -19,7 +19,8 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.utils import files, slideshow, working_directory
+from vimiv.utils import files, working_directory
+from .slideshow import Slideshow
 
 
 _paths: List[str] = []
@@ -150,7 +151,7 @@ class SignalHandler(QObject):
         search.search.new_search.connect(self._on_new_search)
         # The slideshow object is created here as it is not required by anything else
         # It stays around as it is part of the global object registry
-        slideshow.Slideshow().next_im.connect(self._on_slideshow_event)
+        Slideshow().next_im.connect(self._on_slideshow_event)
 
         working_directory.handler.images_changed.connect(self._on_images_changed)
 
