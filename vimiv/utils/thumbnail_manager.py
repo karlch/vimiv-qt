@@ -29,7 +29,7 @@ from PyQt5.QtCore import (
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, pixmap_creater, slot
+from vimiv.utils import xdg, slot
 
 
 KEY_URI = "Thumb::URI"
@@ -60,7 +60,7 @@ class ThumbnailManager(QObject):
     created = pyqtSignal(int, QIcon)
     pool = QThreadPool()
 
-    def __init__(self, large: bool = True):
+    def __init__(self, fail_pixmap, large: bool = True):
         super().__init__()
         self.large = large
         # Thumbnail creation should take no longer than 1 s
@@ -77,7 +77,7 @@ class ThumbnailManager(QObject):
         )
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
-        self.fail_pixmap = pixmap_creater.error_thumbnail()
+        self.fail_pixmap = fail_pixmap
         # The signature is Callable[[], None] but this is actually a signal
         # Issue opened: https://github.com/stlehmann/PyQt5-stubs/issues/4
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)  # type: ignore

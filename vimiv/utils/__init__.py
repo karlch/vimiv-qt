@@ -17,7 +17,8 @@ from datetime import datetime
 from pstats import Stats
 from typing import Callable, Optional, TypeVar, List, Any
 
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from ._statusbar_loghandler import handler as statusbar_loghandler
 
@@ -217,6 +218,38 @@ def unescape_ws(text: str, whitespace: str = " ", escape_char: str = "\\\\") -> 
     # First part matches all whitespace characters that are prepended by escape_char
     # Second part replaces with the whitespace character
     return re.sub(rf"{escape_char}([{whitespace}])", r"\1", text)
+
+
+def create_pixmap(
+    color: str = "#FFFFFF",
+    frame_color: str = "#000000",
+    size: int = 256,
+    frame_size: int = 0,
+) -> QPixmap:
+    """Draw pixmap with frame and inner color.
+
+    Args:
+        color: Name of the inner color in hex format.
+        frame_color: Name of the frame color in hex format.
+        size: Total size of the pixmap in px.
+        frame_size: Size of the frame to draw in px.
+    """
+    # Initialize
+    pixmap = QPixmap(size, size)
+    painter = QPainter(pixmap)
+    painter.setPen(Qt.NoPen)
+    qcolor = QColor(0, 0, 0)
+    # Frame
+    qcolor.setNamedColor(frame_color)
+    painter.setBrush(qcolor)
+    painter.drawRect(pixmap.rect())
+    # Inner
+    qcolor.setNamedColor(color)
+    painter.setBrush(qcolor)
+    x = y = frame_size
+    width = height = pixmap.width() - 2 * frame_size
+    painter.drawRect(x, y, width, height)
+    return pixmap
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):
