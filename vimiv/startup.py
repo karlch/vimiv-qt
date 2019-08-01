@@ -110,9 +110,8 @@ def setup_logging(log_level):
     console_handler.setLevel(log_level)
     logger.addHandler(console_handler)
 
-    sb_handler = statusbar_loghandler.StatusbarLogHandler()
-    sb_handler.setLevel(log_level)
-    logger.addHandler(sb_handler)
+    statusbar_loghandler.setLevel(log_level)
+    logger.addHandler(statusbar_loghandler)
 
 
 def get_argparser():

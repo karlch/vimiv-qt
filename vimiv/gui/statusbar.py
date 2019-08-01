@@ -21,7 +21,6 @@ from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout, QHBoxLayout
 
 from vimiv import api, utils
 from vimiv.config import styles
-from vimiv.utils import statusbar_loghandler
 
 
 statusbar = cast("StatusBar", None)
@@ -79,7 +78,7 @@ class StatusBar(QWidget):
 
         styles.apply(self)
 
-        statusbar_loghandler.signals.message.connect(self._on_message)
+        utils.statusbar_loghandler.message.connect(self._on_message)
         api.status.signals.update.connect(self._on_update_status)
 
     @utils.slot

@@ -11,8 +11,10 @@ import logging
 from PyQt5.QtCore import pyqtSignal, QObject
 
 
-class Signals(QObject):
-    """Signals for statusbar log handler.
+class StatusbarLogHandler(QObject, logging.NullHandler):
+    """Loghandler to display log messages in the statusbar.
+
+    Only emits a signal on handle which the statusbar connects to.
 
     Signals:
         message: Emitted with severity and message on log message.
@@ -20,16 +22,9 @@ class Signals(QObject):
 
     message = pyqtSignal(str, str)
 
-
-signals = Signals()
-
-
-class StatusbarLogHandler(logging.NullHandler):
-    """Loghandler to display log messages in the statusbar.
-
-    Only emits a signal on handle which the statusbar connects to.
-    """
-
     def handle(self, record: logging.LogRecord) -> None:
         if record.levelno >= logging.INFO:  # Debug in the statusbar makes no sense
-            signals.message.emit(record.levelname.lower(), record.message)
+            self.message.emit(record.levelname.lower(), record.message)
+
+
+handler = StatusbarLogHandler()
