@@ -25,9 +25,6 @@ from . import (
     _modules,
 )
 
-# This is required to happen after importing locally due to cyclic import issues
-from vimiv import imutils  # pylint: disable=wrong-import-order
-
 mark = _mark.Mark()
 
 
@@ -72,7 +69,7 @@ def open(paths: List[str]) -> None:  # pylint: disable=redefined-builtin
     images, directories = files.supported(paths)
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))
-        imutils.load(*images)
+        signals.load_images.emit(images)
         mode = modes.IMAGE
     elif directories:
         working_directory.handler.chdir(directories[0])

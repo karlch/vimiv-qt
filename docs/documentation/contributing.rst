@@ -196,18 +196,15 @@ Completion
    :members:
 
 Imutils Module
-""""""""""""""
+^^^^^^^^^^^^^^
 
 .. automodule:: vimiv.imutils
 
-Image Editing
-^^^^^^^^^^^^^
+Image Editing Modules
+"""""""""""""""""""""
 
 This section gives a quick overview of the modules that deal with image editing and how
 to add new functionality to manipulate images.
-
-Modules
-"""""""
 
 .. automodule:: vimiv.imutils.imtransform
 

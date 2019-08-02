@@ -22,7 +22,7 @@ from PyQt5.QtGui import (
     QFont,
 )
 
-from vimiv import api, utils, imutils, widgets
+from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.utils import files, eventhandler, strip_html, clamp, wrap_style_span
@@ -177,7 +177,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         """Open a selected image."""
         # Update image if a new image was selected
         if path != self._last_selected:
-            imutils.load(path)
+            api.signals.load_images.emit([path])
         # Close library on double selection or if specified
         close = close or path == self._last_selected
         self._last_selected = path

@@ -14,6 +14,9 @@ class _SignalHandler(QObject):
     """Qt signal handler class for signals exposed via the api.
 
     Signals:
+        load_images: Emitted when new images should be loaded by the filelist.
+            arg1: List of new image paths.
+
         new_image_opened: Emitted when the filelist loaded a new path.
             arg1: Path of the new image.
         new_images_opened: Emitted when the filelist loaded new paths.
@@ -33,6 +36,9 @@ class _SignalHandler(QObject):
             arg2: True if it is only reloaded.
     """
 
+    # Emitted when new images should be loaded
+    load_images = pyqtSignal(list)
+
     # Emited when new image path(s) were opened
     new_image_opened = pyqtSignal(str)
     new_images_opened = pyqtSignal(list)
@@ -50,6 +56,7 @@ class _SignalHandler(QObject):
 _signal_handler = _SignalHandler()  # Instance of Qt signal handler to work with
 
 # Convenience access to the signals
+load_images = _signal_handler.load_images
 new_image_opened = _signal_handler.new_image_opened
 new_images_opened = _signal_handler.new_images_opened
 all_images_cleared = _signal_handler.all_images_cleared
