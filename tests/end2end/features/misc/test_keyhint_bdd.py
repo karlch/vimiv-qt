@@ -7,8 +7,7 @@
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.gui import keyhint_widget, mainwindow, bar
-from vimiv.utils import eventhandler
+from vimiv.gui import keyhint_widget, mainwindow, bar, eventhandler
 
 
 bdd.scenarios("keyhint.feature")

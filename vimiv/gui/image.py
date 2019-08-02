@@ -17,7 +17,7 @@ from PyQt5.QtGui import QMovie
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
-from vimiv.utils import eventhandler
+from .eventhandler import KeyHandler
 
 # We need the check as svg support is optional
 try:
@@ -26,7 +26,7 @@ except ImportError:
     QSvgWidget = None
 
 
-class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
+class ScrollableImage(KeyHandler, QScrollArea):
     """QScrollArea to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.

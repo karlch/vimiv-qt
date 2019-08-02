@@ -11,9 +11,9 @@ from typing import List, Tuple
 from PyQt5.QtCore import pyqtSlot, QTimer, Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.config import styles
-from vimiv.utils import eventhandler, slot
+from .eventhandler import KeyHandler
 
 
 class KeyhintWidget(QLabel):
@@ -53,12 +53,8 @@ class KeyhintWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
         self.setTextFormat(Qt.RichText)
 
-        eventhandler.KeyHandler.partial_handler.partial_matches.connect(
-            self._on_partial_matches
-        )
-        eventhandler.KeyHandler.partial_handler.partial_cleared.connect(
-            self._on_partial_cleared
-        )
+        KeyHandler.partial_handler.partial_matches.connect(self._on_partial_matches)
+        KeyHandler.partial_handler.partial_cleared.connect(self._on_partial_cleared)
         api.settings.keyhint.delay.changed.connect(self._on_delay_changed)
 
         self.hide()
@@ -96,7 +92,7 @@ class KeyhintWidget(QLabel):
         self.setText(f"<table>{text}</table>")
         self._update_geometry()
 
-    @slot
+    @utils.slot
     def _on_partial_cleared(self):
         """Stop timer and hide widget when there are no partial matches to show."""
         self._show_timer.stop()

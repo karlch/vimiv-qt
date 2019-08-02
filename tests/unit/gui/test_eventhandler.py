@@ -4,14 +4,14 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Tests for vimiv.utils.eventhandler."""
+"""Tests for vimiv.gui.eventhandler."""
 
 import pytest
 
 from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtGui import QKeyEvent
 
-from vimiv.utils import eventhandler
+from vimiv.gui import eventhandler
 
 
 def test_temp_key_storage_add_and_get_text(mocker, qtbot):

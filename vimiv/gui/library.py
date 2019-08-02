@@ -25,10 +25,11 @@ from PyQt5.QtGui import (
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import files, eventhandler, strip_html, clamp, wrap_style_span
+from vimiv.utils import files, strip_html, clamp, wrap_style_span
+from .eventhandler import KeyHandler
 
 
-class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
+class Library(KeyHandler, widgets.FlatTreeView):
     """Library widget.
 
     Attributes:

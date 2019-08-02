@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QLineEdit
 from vimiv import api, utils
 from vimiv.commands import history, argtypes, runners, search
 from vimiv.config import styles
-from vimiv.utils import eventhandler
+from .eventhandler import KeyHandler
 
 
 def _command_func(prefix, command, mode):
@@ -43,7 +43,7 @@ class UnknownPrefix(Exception):
         super().__init__(message)
 
 
-class CommandLine(eventhandler.KeyHandler, QLineEdit):
+class CommandLine(KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Class Attributes:

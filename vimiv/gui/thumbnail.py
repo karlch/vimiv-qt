@@ -18,10 +18,11 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import eventhandler, create_pixmap, thumbnail_manager, clamp
+from vimiv.utils import create_pixmap, thumbnail_manager, clamp
+from .eventhandler import KeyHandler
 
 
-class ThumbnailView(eventhandler.KeyHandler, QListWidget):
+class ThumbnailView(KeyHandler, QListWidget):
     """Thumbnail widget.
 
     Attributes:
