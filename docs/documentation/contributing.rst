@@ -195,6 +195,11 @@ Completion
 .. automodule:: vimiv.api.completion
    :members:
 
+Working Directory
+"""""""""""""""""
+
+.. automodule:: vimiv.api.working_directory
+
 Imutils Module
 ^^^^^^^^^^^^^^
 

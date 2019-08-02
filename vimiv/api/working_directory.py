@@ -4,14 +4,54 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Handler to take care of the current working directory.
+r"""Handler to take care of the current working directory.
 
-The handler stores the current working directory and provides a method to
-change it. In addition the directory and current image is monitored using
-QFileSystemWatcher.
+The handler stores the current working directory and provides the :func:`chdir` method
+to change it::
+
+    from vimiv.api import working_directory
+
+    working_directory.handler.chdir("./my/new/directory")
+
+In addition the directory and current image is monitored using QFileSystemWatcher. Any
+changes are exposed via three signals:
+
+* ``loaded`` when the working directory has changed and the content was loaded
+* ``changed`` when the content of the current directory has chagned
+* ``images_changed`` when the images in the current directory where changed
+
+The first two signals are emitted with the list of images and list of directories in the
+working directory as arguments, ``images_changed`` only includes the list of images.
+Thus, if your custom class needs to know the current images and/or directories, it can
+connect to these signals::
+
+    from PyQt5.QtCore import QObject
+
+    from vimiv import api
+
+
+    class MyCustomClass(QObject):
+
+        @api.objreg.register
+        def __init__(self):
+            super().__init__()
+            api.working_directory.handler.loaded.connect(self._on_dir_loaded)
+            api.working_directory.handler.changed.connect(self._on_dir_changed)
+            api.working_directory.handler.images_changed.connect(self._on_im_changed)
+
+        def _on_dir_loaded(self, images, directories):
+            print("Loaded new images:", *images, sep="\n", end="\n\n")
+            print("Loaded new directories:", *directories, sep="\n", end="\n\n")
+
+        def _on_dir_changed(self, images, directories):
+            print("Updated images:", *images, sep="\n", end="\n\n")
+            print("Updated directories:", *directories, sep="\n", end="\n\n")
+
+        def _on_im_changed(self, images):
+            print("Updated images:", *images, sep="\n", end="\n\n")
 
 Module Attributes:
-    handler: The initialized WorkingDirectoryHandler object.
+    handler: The initialized :class:`WorkingDirectoryHandler` object to interact with.
 """
 
 import logging
@@ -31,6 +71,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     Signals:
         loaded: Emitted when the content for a new working directory was
                 loaded.
+            arg1: List of images in the working directory.
+            arg2: List of directories in the working directory.
         changed: Emitted when the content of the working directory has changed.
             arg1: List of images in the working directory.
             arg2: List of directories in the working directory.
