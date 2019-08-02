@@ -24,16 +24,13 @@ from vimiv.utils import eventhandler, create_pixmap, thumbnail_manager, clamp
 class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     """Thumbnail widget.
 
-    Class Attributes:
-        DEFAULT_PIXMAP: Thumbnail image to display before thumbnails were generated.
-        FAIL_PIXMAP: Thumbnail image to display for failed thumbnails.
-
     Attributes:
-        _paths: Last paths loaded to avoid duplicate loading.
+        _default_pixmap: Thumbnail image to display before thumbnails were generated.
         _highlighted: List of indices that are highlighted as search results.
+        _manager: ThumbnailManager class to create thumbnails asynchronously.
+        _paths: Last paths loaded to avoid duplicate loading.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
             string name of the size as value.
-        _manager: ThumbnailManager class to create thumbnails asynchronously.
     """
 
     STYLESHEET = """
@@ -68,29 +65,29 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     }
     """
 
-    DEFAULT_PIXMAP = create_pixmap(
-        color=styles.get("thumbnail.default.bg"),
-        frame_color=styles.get("thumbnail.frame.fg"),
-        size=256,
-        frame_size=10,
-    )
-    FAIL_PIXMAP = create_pixmap(
-        color=styles.get("thumbnail.error.bg"),
-        frame_color=styles.get("thumbnail.frame.fg"),
-        size=256,
-        frame_size=10,
-    )
-
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
     def __init__(self):
         super().__init__()
+        self._default_pixmap = create_pixmap(
+            color=styles.get("thumbnail.default.bg"),
+            frame_color=styles.get("thumbnail.frame.fg"),
+            size=256,
+            frame_size=10,
+        )
         self._paths = []
         self._highlighted = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
         )
-        self._manager = thumbnail_manager.ThumbnailManager(self.FAIL_PIXMAP)
+
+        fail_pixmap = create_pixmap(
+            color=styles.get("thumbnail.error.bg"),
+            frame_color=styles.get("thumbnail.frame.fg"),
+            size=256,
+            frame_size=10,
+        )
+        self._manager = thumbnail_manager.ThumbnailManager(fail_pixmap)
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
@@ -133,7 +130,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             if path not in self._paths:
                 item = QListWidgetItem(self, i)
                 item.setSizeHint(QSize(self.item_size(), self.item_size()))
-                item.setIcon(QIcon(ThumbnailView.DEFAULT_PIXMAP))
+                item.setIcon(QIcon(self._default_pixmap))
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
