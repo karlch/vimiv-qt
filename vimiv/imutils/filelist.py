@@ -19,7 +19,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.utils import files, working_directory
+from vimiv.utils import files
 from .slideshow import Slideshow
 
 
@@ -153,7 +153,7 @@ class SignalHandler(QObject):
         # It stays around as it is part of the global object registry
         Slideshow().next_im.connect(self._on_slideshow_event)
 
-        working_directory.handler.images_changed.connect(self._on_images_changed)
+        api.working_directory.handler.images_changed.connect(self._on_images_changed)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(

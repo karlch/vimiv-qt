@@ -15,7 +15,6 @@ mock.patch("vimiv.utils.cached_method", lambda x: x).start()
 
 from vimiv import api, startup  # noqa
 from vimiv.commands import runners  # noqa
-from vimiv.utils import working_directory  # noqa
 from vimiv.imutils import filelist, immanipulate  # noqa
 
 
@@ -49,7 +48,7 @@ class VimivProc:
         args = startup.setup_pre_app(argv)
         startup.setup_post_app(args)
         # No crazy stuff should happen here, waiting is not really necessary
-        working_directory.handler.WAIT_TIME = 0.001
+        api.working_directory.handler.WAIT_TIME = 0.001
         # No key holding happens, waiting is not necessary
         immanipulate.WAIT_TIME = 0.001
 

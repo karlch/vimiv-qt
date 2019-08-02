@@ -9,7 +9,7 @@
 import os
 from typing import List
 
-from vimiv.utils import files, working_directory
+from vimiv.utils import files
 
 from . import (
     commands,
@@ -20,6 +20,7 @@ from . import (
     settings,
     signals,
     status,
+    working_directory,
     _mark,
     _modules,
 )

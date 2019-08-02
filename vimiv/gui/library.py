@@ -25,14 +25,7 @@ from PyQt5.QtGui import (
 from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import (
-    files,
-    eventhandler,
-    strip_html,
-    clamp,
-    working_directory,
-    wrap_style_span,
-)
+from vimiv.utils import files, eventhandler, strip_html, clamp, wrap_style_span
 
 
 class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
@@ -178,7 +171,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def _open_directory(self, path, reload_current=False):
         """Open a selected directory."""
         self.store_position()
-        working_directory.handler.chdir(path, reload_current)
+        api.working_directory.handler.chdir(path, reload_current)
 
     def _open_image(self, path, close):
         """Open a selected image."""
@@ -216,7 +209,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self.open_selected()
         elif direction == direction.Left:
             self.store_position()
-            working_directory.handler.chdir(os.pardir)
+            api.working_directory.handler.chdir(os.pardir)
         else:
             try:
                 row = self.row()
@@ -305,8 +298,8 @@ class LibraryModel(QStandardItemModel):
         search.search.cleared.connect(self._on_search_cleared)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
-        working_directory.handler.changed.connect(self._on_directory_changed)
-        working_directory.handler.loaded.connect(self._update_content)
+        api.working_directory.handler.changed.connect(self._on_directory_changed)
+        api.working_directory.handler.loaded.connect(self._update_content)
 
     @pyqtSlot(list, list)
     def _update_content(self, images: List[str], directories: List[str]):

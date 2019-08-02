@@ -22,13 +22,7 @@ from PyQt5.QtWidgets import QApplication
 from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
-from vimiv.utils import (
-    xdg,
-    crash_handler,
-    statusbar_loghandler,
-    trash_manager,
-    working_directory,
-)
+from vimiv.utils import xdg, crash_handler, statusbar_loghandler, trash_manager
 
 
 _tmpdir = None
@@ -72,7 +66,7 @@ def setup_pre_app(argv):
 
 def setup_post_app(args):
     """Setup performed after creating the QApplication."""
-    working_directory.init()
+    api.working_directory.init()
     api.mark.watch()
     imutils.init()
     completionmodels.init()

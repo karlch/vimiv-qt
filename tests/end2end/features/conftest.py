@@ -17,7 +17,6 @@ from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import filelist
-from vimiv.utils import working_directory
 
 
 ###############################################################################
@@ -87,7 +86,7 @@ def wait_for_external_command(qtbot):
 
 @bdd.when("I wait for the working directory handler")
 def wait_for_working_directory_handler(qtbot):
-    with qtbot.waitSignal(working_directory.handler.changed):
+    with qtbot.waitSignal(api.working_directory.handler.changed):
         pass
 
 
