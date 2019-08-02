@@ -100,8 +100,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
-        imutils.new_image_opened.connect(self._on_new_image_opened)
-        imutils.new_images_opened.connect(self._on_new_images_opened)
+        api.signals.new_image_opened.connect(self._on_new_image_opened)
+        api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)

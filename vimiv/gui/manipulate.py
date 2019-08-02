@@ -53,9 +53,9 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
             self._add_group(group)
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
-        imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imutils.movie_loaded.connect(self._on_movie_loaded)
-        imutils.svg_loaded.connect(self._on_svg_loaded)
+        api.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        api.signals.movie_loaded.connect(self._on_movie_loaded)
+        api.signals.svg_loaded.connect(self._on_svg_loaded)
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
         # Hide by default

@@ -41,9 +41,9 @@ class PrintHandler(QObject):
 
         self._widget: Optional[PrintWidget] = None
 
-        api.imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
-        api.imutils.movie_loaded.connect(self._on_movie_loaded)
-        api.imutils.svg_loaded.connect(self._on_svg_loaded)
+        api.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        api.signals.movie_loaded.connect(self._on_movie_loaded)
+        api.signals.svg_loaded.connect(self._on_svg_loaded)
 
     @api.commands.register(mode=api.modes.IMAGE)
     def print(self, preview: bool = False) -> None:

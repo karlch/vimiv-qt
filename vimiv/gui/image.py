@@ -98,15 +98,15 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(Empty())
 
-        imutils.pixmap_loaded.connect(
+        api.signals.pixmap_loaded.connect(
             partial(self._load, widget=Image, scale=ImageScale.Overzoom)
         )
-        imutils.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
+        api.signals.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
         if QSvgWidget is not None:  # Only connect loading of svg if available
-            imutils.svg_loaded.connect(
+            api.signals.svg_loaded.connect(
                 partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
             )
-        imutils.all_images_cleared.connect(self._on_images_cleared)
+        api.signals.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
     def _on_images_cleared(self) -> None:

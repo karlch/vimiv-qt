@@ -18,6 +18,7 @@ from . import (
     modes,
     objreg,
     settings,
+    signals,
     status,
     _mark,
     _modules,

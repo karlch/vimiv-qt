@@ -21,7 +21,7 @@ from typing import cast, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils
 from vimiv.utils import files
 
 
@@ -63,7 +63,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         api.settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
-        imutils.new_image_opened.connect(self._on_new_image)
+        api.signals.new_image_opened.connect(self._on_new_image)
 
     def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
@@ -117,7 +117,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _on_file_changed(self, path: str):
         """Emit new_image_opened signal to reload the file on changes."""
         if os.path.exists(path):  # Otherwise the path was deleted
-            self._process(imutils.image_changed.emit)
+            self._process(api.signals.image_changed.emit)
 
     def _process(self, func):
         """Process function after waiting unless another process is running.

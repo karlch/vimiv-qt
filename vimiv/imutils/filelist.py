@@ -196,14 +196,14 @@ def _set_index(index: int, previous: str = None) -> None:
     global _index
     _index = index
     if previous != current():
-        imutils.new_image_opened.emit(current())
+        api.signals.new_image_opened.emit(current())
 
 
 def _set_paths(paths: List[str]) -> None:
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
-    imutils.new_images_opened.emit(_paths)
+    api.signals.new_images_opened.emit(_paths)
 
 
 def _load_single(path: str) -> None:
@@ -242,4 +242,4 @@ def _clear() -> None:
     global _paths, _index
     _paths = []
     _index = 0
-    imutils.all_images_cleared.emit()
+    api.signals.all_images_cleared.emit()

@@ -67,7 +67,7 @@ class VimivProc:
         api.mark.mark_clear()
         # Must disconnect these signals ourselves as the automatic disconnection seems
         # to fail with slots assigned using partial
-        for name in dir(api.imutils):
-            elem = getattr(api.imutils, name)
+        for name in dir(api.signals):
+            elem = getattr(api.signals, name)
             if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
                 elem.disconnect()
