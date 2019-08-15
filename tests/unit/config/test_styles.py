@@ -42,3 +42,39 @@ def test_fail_get_nonexisting_style_option(mocker, new_style):
     styles._style = new_style
     assert styles.get("anything") == ""
     styles._style = None
+
+
+def test_is_color_option():
+    assert styles.Style.is_color_option("test.bg")
+    assert styles.Style.is_color_option("test.fg")
+    assert not styles.Style.is_color_option("test.fga")
+    assert not styles.Style.is_color_option("test.f")
+
+
+def test_check_valid_color():
+    # If a check fails, ValueError is raised, so we need no assert statement
+    styles.Style.check_valid_color("#fff")  # 3 digit hex
+    styles.Style.check_valid_color("#FFF")  # 3 digit hex capital
+    styles.Style.check_valid_color("#FfF")  # 3 digit hex mixed case
+    styles.Style.check_valid_color("#0fF")  # 3 digit hex mixed case and number
+    styles.Style.check_valid_color("#ffffff")  # 6 digit hex
+    styles.Style.check_valid_color("#FFFFFF")  # 6 digit hex capital
+    styles.Style.check_valid_color("#FFfFfF")  # 6 digit hex mixed case
+    styles.Style.check_valid_color("#00fFfF")  # 6 digit hex mixed case and number
+
+
+def test_fail_check_valid_color():
+    _fail_check_valid_color("ffffff")  # Missing leading #
+    _fail_check_valid_color("#fffffff")  # 7 digits
+    _fail_check_valid_color("#fffff")  # 5 digits
+    _fail_check_valid_color("#ffff")  # 4 digits
+    _fail_check_valid_color("#ff")  # 2 digits
+    _fail_check_valid_color("#f")  # 1 digit
+    _fail_check_valid_color("#")  # 0 digits
+    _fail_check_valid_color("#agfjkl")  # invalid content
+
+
+def _fail_check_valid_color(color: str):
+    """Helper method used by test_fail_check_valid_color."""
+    with pytest.raises(ValueError):
+        styles.Style.check_valid_color(color)

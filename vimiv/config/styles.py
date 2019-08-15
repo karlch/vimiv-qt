@@ -18,6 +18,7 @@ import collections
 import configparser
 import logging
 import os
+import re
 
 from vimiv import api
 from vimiv.utils import xdg
@@ -47,6 +48,7 @@ class Style(collections.OrderedDict):
         if len(colors) != 16:
             raise ValueError("Styles must be created with 16 colors for base16")
         for i, color in enumerate(colors):
+            self.check_valid_color(color)
             self[f"base{i:02x}"] = color
         # Fill in all values
         self["font"] = font
@@ -72,6 +74,15 @@ class Style(collections.OrderedDict):
         self["library.scrollbar.fg"] = "{image.scrollbar.fg}"
         self["library.scrollbar.padding"] = "{image.scrollbar.padding}"
         self["library.border"] = "0px solid"
+        # Statusbar
+        self["statusbar.font"] = "{font}"
+        self["statusbar.bg"] = "{base02}"
+        self["statusbar.fg"] = "{base06}"
+        self["statusbar.error"] = "{base08}"
+        self["statusbar.warning"] = "{base09}"
+        self["statusbar.info"] = "{base0c}"
+        self["statusbar.message_border"] = "2px solid"
+        self["statusbar.padding"] = "4"
         # Thumbnail
         self["thumbnail.font"] = "{font}"
         self["thumbnail.fg"] = "{library.fg}"
@@ -82,15 +93,6 @@ class Style(collections.OrderedDict):
         self["thumbnail.default.bg"] = "{statusbar.info}"
         self["thumbnail.error.bg"] = "{statusbar.error}"
         self["thumbnail.frame.fg"] = "{thumbnail.fg}"
-        # Statusbar
-        self["statusbar.font"] = "{font}"
-        self["statusbar.bg"] = "{base02}"
-        self["statusbar.fg"] = "{base06}"
-        self["statusbar.error"] = "{base08}"
-        self["statusbar.warning"] = "{base09}"
-        self["statusbar.info"] = "{base0c}"
-        self["statusbar.message_border"] = "2px solid"
-        self["statusbar.padding"] = "4"
         # Completion
         self["completion.height"] = "16em"
         self["completion.fg"] = "{statusbar.fg}"
@@ -128,7 +130,26 @@ class Style(collections.OrderedDict):
         if item in self:
             super().__setitem__(name, self[item])
         else:
+            if self.is_color_option(name):
+                self.check_valid_color(item)
             super().__setitem__(name, item)
+
+    @staticmethod
+    def is_color_option(name: str):
+        """Return True if the style option corresponds is a color."""
+        return name.endswith((".fg", ".bg"))
+
+    @staticmethod
+    def check_valid_color(color: str):
+        """Check if a color string is a valid html color.
+
+        Accepts strings that start with # and have 3 or 6 hex digits.
+
+        Raises:
+            ValueError if the string is invalid.
+        """
+        if not re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", color.lower()):
+            raise ValueError(f"{color} is not a valid html color")
 
 
 def parse():
