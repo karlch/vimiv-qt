@@ -32,8 +32,8 @@ class Style(collections.OrderedDict):
     Ordered so referencing and dereferencing variables is well defined.
     """
 
-    def __init__(self, *colors):
-        """Initialize style with 16 colors for base 16."""
+    def __init__(self, *colors, font="10pt Monospace"):
+        """Initialize style with 16 colors for base 16 and a font."""
         # We are mainly storing all the values here
         # pylint: disable=too-many-statements
         super().__init__()
@@ -43,6 +43,7 @@ class Style(collections.OrderedDict):
         for i, color in enumerate(colors):
             self[f"base{i:02x}"] = color
         # Fill in all values
+        self["font"] = font
         # Image
         self["image.bg"] = "{base00}"
         self["image.scrollbar.width"] = "8px"
@@ -50,7 +51,7 @@ class Style(collections.OrderedDict):
         self["image.scrollbar.fg"] = "{base03}"
         self["image.scrollbar.padding"] = "2px"
         # Library
-        self["library.font"] = "10pt Monospace"
+        self["library.font"] = "{font}"
         self["library.fg"] = "{base06}"
         self["library.padding"] = "2px"
         self["library.directory.fg"] = "{base07}"
@@ -66,7 +67,7 @@ class Style(collections.OrderedDict):
         self["library.scrollbar.padding"] = "{image.scrollbar.padding}"
         self["library.border"] = "0px solid"
         # Thumbnail
-        self["thumbnail.font"] = "{library.font}"
+        self["thumbnail.font"] = "{font}"
         self["thumbnail.fg"] = "{library.fg}"
         self["thumbnail.bg"] = "{image.bg}"
         self["thumbnail.padding"] = "20"
@@ -76,7 +77,7 @@ class Style(collections.OrderedDict):
         self["thumbnail.error.bg"] = "{statusbar.error}"
         self["thumbnail.frame.fg"] = "{thumbnail.fg}"
         # Statusbar
-        self["statusbar.font"] = "10pt Monospace"
+        self["statusbar.font"] = "{font}"
         self["statusbar.bg"] = "{base02}"
         self["statusbar.fg"] = "{base06}"
         self["statusbar.error"] = "{base08}"
@@ -234,9 +235,13 @@ def read(filename):
     """
     parser = configparser.ConfigParser()
     parser.read(filename)
+    section = parser["STYLE"]
     # Retrieve base colors
-    colors = [parser["STYLE"].pop(f"base{i:02x}") for i in range(16)]
-    style = Style(*colors)
+    colors = [section.pop(f"base{i:02x}") for i in range(16)]
+    if "font" in section:  # User-defined global font
+        style = Style(*colors, font=section["font"])
+    else:  # Default global font
+        style = Style(*colors)
     # Override additional options
     for option, value in parser["STYLE"].items():
         style[option] = value
