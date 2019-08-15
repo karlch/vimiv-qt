@@ -14,7 +14,6 @@ Module Attributes:
         _style["image.bg"] = "#000000"
 """
 
-import collections
 import configparser
 import logging
 import os
@@ -30,7 +29,7 @@ NAME_DEFAULT_DARK = "default-dark"
 _style = None
 
 
-class Style(collections.OrderedDict):
+class Style(dict):
     """Class defining a single style.
 
     The style is based on 16 colors according to base16.
