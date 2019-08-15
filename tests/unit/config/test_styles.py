@@ -12,7 +12,7 @@ from vimiv.config import styles
 
 @pytest.fixture
 def new_style():
-    new_style = styles.Style()
+    new_style = styles.create_default(save_to_file=False)
     yield new_style
     del new_style
 

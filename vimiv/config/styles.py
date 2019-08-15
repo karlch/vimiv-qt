@@ -7,6 +7,9 @@
 """Functions dealing with the stylesheet of the Qt widgets.
 
 Module Attributes:
+    NAME_DEFAULT: Name of the default theme.
+    NAME_DEFAULT_DARK: Name of the dark default theme.
+
     _style: Dictionary saving the style settings from the config file, form:
         _style["image.bg"] = "#000000"
 """
@@ -19,6 +22,9 @@ import os
 from vimiv import api
 from vimiv.utils import xdg
 
+
+NAME_DEFAULT = "default"
+NAME_DEFAULT_DARK = "default-dark"
 
 _style = None
 
@@ -135,10 +141,10 @@ def parse():
     global _style
     name = api.settings.style.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
-    if name == "default":
+    if name == NAME_DEFAULT:
         _style = create_default()
-    elif name == "default-dark":
-        _style = create_default_dark()
+    elif name == NAME_DEFAULT_DARK:
+        _style = create_default(dark=True)
     elif os.path.exists(filename):
         _style = read(filename)
     else:
@@ -169,62 +175,59 @@ def get(name):
         return ""
 
 
-def create_default():
-    """Create the default style."""
+def create_default(dark=False, save_to_file=True):
+    """Create the default style.
+
+    Args:
+        dark: Create the default dark style instead.
+        save_to_file: Dump the default style to file for reading and reference.
+    """
     # Color definitions
     # Uses base16 tomorrow
     # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
-    default = Style(
-        "#ffffff",  # base00
-        "#e0e0e0",  # base01
-        "#d6d6d6",  # base02
-        "#8e908c",  # base03
-        "#969896",  # base04
-        "#4d4d4c",  # base05
-        "#282a2e",  # base06
-        "#1d1f21",  # base07
-        "#c82829",  # base08
-        "#f5871f",  # base09
-        "#eab700",  # base0a
-        "#718c00",  # base0b
-        "#3e999f",  # base0c
-        "#81a2be",  # base0d
-        "#8959a8",  # base0e
-        "#a3685a",  # base0f
-    )
-    # Dump
-    if not os.path.isfile(xdg.join_vimiv_config("styles/default")):
-        dump("default", default)
-    return default
-
-
-def create_default_dark():
-    """Create the default dark style."""
-    # Color definitions
-    # Uses base16 tomorrow-night
-    # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
-    default_dark = Style(
-        "#1d1f21",  # base00
-        "#282a2e",  # base01
-        "#373b41",  # base02
-        "#969896",  # base03
-        "#b4b7b4",  # base04
-        "#c5c8c6",  # base05
-        "#e0e0e0",  # base06
-        "#ffffff",  # base07
-        "#cc6666",  # base08
-        "#de935f",  # base09
-        "#f0c674",  # base0a
-        "#b5bd68",  # base0b
-        "#8abeb7",  # base0c
-        "#81a2be",  # base0d
-        "#b294bb",  # base0e
-        "#a3685a",  # base0f
-    )
-    # Dump
-    if not os.path.isfile(xdg.join_vimiv_config("styles/default-dark")):
-        dump("default-dark", default_dark)
-    return default_dark
+    if dark:
+        style = Style(
+            "#1d1f21",  # base00
+            "#282a2e",  # base01
+            "#373b41",  # base02
+            "#969896",  # base03
+            "#b4b7b4",  # base04
+            "#c5c8c6",  # base05
+            "#e0e0e0",  # base06
+            "#ffffff",  # base07
+            "#cc6666",  # base08
+            "#de935f",  # base09
+            "#f0c674",  # base0a
+            "#b5bd68",  # base0b
+            "#8abeb7",  # base0c
+            "#81a2be",  # base0d
+            "#b294bb",  # base0e
+            "#a3685a",  # base0f
+        )
+        name = NAME_DEFAULT_DARK
+    else:
+        style = Style(
+            "#ffffff",  # base00
+            "#e0e0e0",  # base01
+            "#d6d6d6",  # base02
+            "#8e908c",  # base03
+            "#969896",  # base04
+            "#4d4d4c",  # base05
+            "#282a2e",  # base06
+            "#1d1f21",  # base07
+            "#c82829",  # base08
+            "#f5871f",  # base09
+            "#eab700",  # base0a
+            "#718c00",  # base0b
+            "#3e999f",  # base0c
+            "#81a2be",  # base0d
+            "#8959a8",  # base0e
+            "#a3685a",  # base0f
+        )
+        name = NAME_DEFAULT
+    if save_to_file and not os.path.isfile(xdg.join_vimiv_config("styles", name)):
+        dump(name, style)
+    return style
 
 
 def read(filename):
