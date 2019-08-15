@@ -96,7 +96,7 @@ def _git_info() -> Optional[str]:
 
     try:
         commit = _get_cmd_out(
-            "git", "describe", "--no-match", "--always", "--abbrev=40", "--dirty"
+            "git", "describe", "--match=NoMaTcH", "--always", "--abbrev=40", "--dirty"
         )
         date = _get_cmd_out("git", "show", "-s", "--format=%cd", "--date=short", "HEAD")
     except (subprocess.CalledProcessError, OSError):
