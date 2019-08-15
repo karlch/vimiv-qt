@@ -257,10 +257,21 @@ def read(filename):
         filename: Name of the styles file to read
     """
     parser = configparser.ConfigParser()
-    parser.read(filename)
-    section = parser["STYLE"]
+    # Retrieve the STYLE section
+    try:
+        parser.read(filename)
+        section = parser["STYLE"]
+    except (configparser.MissingSectionHeaderError, KeyError):
+        logging.error(
+            "Style files must start with the [STYLE] header. Falling back to default."
+        )
+        return create_default(save_to_file=False)
     # Retrieve base colors
-    colors = [section.pop(f"base{i:02x}") for i in range(16)]
+    try:
+        colors = [section.pop(f"base{i:02x}") for i in range(16)]
+    except KeyError as e:
+        logging.error("Style is missing color %s. Falling back to default.", e)
+        return create_default(save_to_file=False)
     if "font" in section:  # User-defined global font
         style = Style(*colors, font=section["font"])
     else:  # Default global font
