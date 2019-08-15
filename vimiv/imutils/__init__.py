@@ -7,7 +7,7 @@
 """`Utilities to load, edit, navigate and save images`.
 
 The Image Loading Process
-\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"\"
+,,,,,,,,,,,,,,,,,,,,,,,,,
 
 The image loading process is started by emitting the ``load_images`` signal. It is for
 example emitted by the library when a new image path was selected, in thumbnail mode
