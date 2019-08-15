@@ -97,11 +97,12 @@
 <li><a class="reference internal" href="#module-vimiv.api.keybindings">Keybindings</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.status">Status Modules</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.completion">Completion</a></li>
-<li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.working_directory">Working Directory</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#image-editing">Image Editing</a><ul>
-<li><a class="reference internal" href="#module-vimiv.imutils.imtransform">Modules</a></li>
+<li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a><ul>
+<li><a class="reference internal" href="#the-image-loading-process">The Image Loading Process</a></li>
+<li><a class="reference internal" href="#image-editing-modules">Image Editing Modules</a></li>
 <li><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension">Adding New Manipulations to the C-Extension</a></li>
 </ul>
 </li>
@@ -150,11 +151,12 @@
 <li><a class="reference internal" href="#module-vimiv.api.keybindings">Keybindings</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.status">Status Modules</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.completion">Completion</a></li>
-<li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.working_directory">Working Directory</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#image-editing">Image Editing</a><ul>
-<li><a class="reference internal" href="#module-vimiv.imutils.imtransform">Modules</a></li>
+<li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a><ul>
+<li><a class="reference internal" href="#the-image-loading-process">The Image Loading Process</a></li>
+<li><a class="reference internal" href="#image-editing-modules">Image Editing Modules</a></li>
 <li><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension">Adding New Manipulations to the C-Extension</a></li>
 </ul>
 </li>
@@ -880,39 +882,84 @@ filter regular expression.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-vimiv.api.working_directory">
+<span id="working-directory"></span><h4>Working Directory<a class="headerlink" href="#module-vimiv.api.working_directory" title="Permalink to this headline">¶</a></h4>
+<p>Handler to take care of the current working directory.</p>
+<p>The handler stores the current working directory and provides the <code class="xref py py-func docutils literal notranslate"><span class="pre">chdir()</span></code> method
+to change it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="k">import</span> <span class="n">working_directory</span>
+
+<span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;./my/new/directory&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In addition the directory and current image is monitored using QFileSystemWatcher. Any
+changes are exposed via three signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">loaded</span></code> when the working directory has changed and the content was loaded</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">changed</span></code> when the content of the current directory has chagned</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">images_changed</span></code> when the images in the current directory where changed</p></li>
+</ul>
+<p>The first two signals are emitted with the list of images and list of directories in the
+working directory as arguments, <code class="docutils literal notranslate"><span class="pre">images_changed</span></code> only includes the list of images.
+Thus, if your custom class needs to know the current images and/or directories, it can
+connect to these signals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="n">QObject</span>
+
+<span class="kn">from</span> <span class="nn">vimiv</span> <span class="k">import</span> <span class="n">api</span>
+
+
+<span class="k">class</span> <span class="nc">MyCustomClass</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">objreg</span><span class="o">.</span><span class="n">register</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">loaded</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_dir_loaded</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_dir_changed</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">images_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_im_changed</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_dir_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">directories</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded new images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded new directories:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_dir_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">directories</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated directories:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_im_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Module Attributes:</dt><dd><p>handler: The initialized <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkingDirectoryHandler</span></code> object to interact with.</p>
+</dd>
+</dl>
+</div>
+</div>
 <div class="section" id="module-vimiv.imutils">
-<span id="imutils-module"></span><h4>Imutils Module<a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h4>
+<span id="imutils-module"></span><h3>Imutils Module<a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h3>
 <p><cite>Utilities to load, edit, navigate and save images</cite>.</p>
-<dl>
-<dt>The image loading process:</dt><dd><p>The image loading process is started by calling the <code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code> function. It is for
-example called by the library when a new image path was selected, in thumbnail mode
+<div class="section" id="the-image-loading-process">
+<h4>The Image Loading Process<a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h4>
+<p>The image loading process is started by emitting the <code class="docutils literal notranslate"><span class="pre">load_images</span></code> signal. It is for
+example emitted by the library when a new image path was selected, in thumbnail mode
 upon selection or by the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command. There are a few different cases that are
 taken care of:</p>
 <ul class="simple">
-<li><dl class="simple">
-<dt>Loading a single path that is already in the filelist</dt><dd><p>In this case the filelist navigates to the appropriate index and the image is
-opened.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Loading a single path that is not in the filelist</dt><dd><p>The filelist is populated with all images in the same directory as this path and
-the path is opened.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>Loading multiple paths</dt><dd><p>The filelist is populated with these paths and the first file in the list is
-opened.</p>
-</dd>
-</dl>
-</li>
+<li><p>Loading a single path that is already in the filelist
+In this case the filelist navigates to the appropriate index and the image is
+opened.</p></li>
+<li><p>Loading a single path that is not in the filelist
+The filelist is populated with all images in the same directory as this path and
+the path is opened.</p></li>
+<li><p>Loading multiple paths
+The filelist is populated with these paths and the first file in the list is
+opened.</p></li>
 </ul>
-<p>To open an image the <code class="docutils literal notranslate"><span class="pre">new_image_opened</span></code> signal is emitted with the absolute path
-to this image. This signal is accepted by the file handler in
+<p>To open an image the <code class="docutils literal notranslate"><span class="pre">new_image_opened</span></code> signal is emitted with the absolute path to
+this image. This signal is accepted by the file handler in
 <code class="docutils literal notranslate"><span class="pre">vimiv.imutils._file_handler</span></code> which then loads the actual image from disk using
-<code class="docutils literal notranslate"><span class="pre">QImageReader</span></code>. Once the format of the image has been determined, and a
-displayable Qt widget has been created, the file handler emits one of:</p>
+<code class="docutils literal notranslate"><span class="pre">QImageReader</span></code>. Once the format of the image has been determined, and a displayable Qt
+widget has been created, the file handler emits one of:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">pixmap_loaded</span></code> for standard images</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">movie_loaded</span></code> for animated Gifs</p></li>
@@ -920,17 +967,12 @@ displayable Qt widget has been created, the file handler emits one of:</p>
 </ul>
 <p>The image widget in <code class="docutils literal notranslate"><span class="pre">vimiv.gui.image</span></code> connects to these signals and displays
 the appropriate Qt widget.</p>
-</dd>
-</dl>
 </div>
-</div>
-<div class="section" id="image-editing">
-<h3>Image Editing<a class="headerlink" href="#image-editing" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="image-editing-modules">
+<h4>Image Editing Modules<a class="headerlink" href="#image-editing-modules" title="Permalink to this headline">¶</a></h4>
 <p>This section gives a quick overview of the modules that deal with image editing and how
 to add new functionality to manipulate images.</p>
-<div class="section" id="module-vimiv.imutils.imtransform">
-<span id="modules"></span><h4>Modules<a class="headerlink" href="#module-vimiv.imutils.imtransform" title="Permalink to this headline">¶</a></h4>
-<p><em>imtransform - transformations such as rotate and flip</em>.</p>
+<span class="target" id="module-vimiv.imutils.imtransform"></span><p><em>imtransform - transformations such as rotate and flip</em>.</p>
 <span class="target" id="module-vimiv.imutils.immanipulate"></span><p><em>immanipulate - more complex image manipulations like brightness and contrast</em>.</p>
 <p>The module includes classes in a hierarchical structure where each following class
 includes components of the previous class in the hierarchy.</p>

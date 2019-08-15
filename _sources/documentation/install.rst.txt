@@ -81,10 +81,10 @@ Dependencies
 ------------
 
 * `Python <http://www.python.org/>`_ 3.6 or newer with development extension
-* `Qt <http://qt.io/>`_   5.7.1 or newer
+* `Qt <http://qt.io/>`_   5.9.2 or newer
     - QtCore / qtbase
     - QtSvg (optional for svg support)
-* `PyQt5 <http://www.riverbankcomputing.com/software/pyqt/intro>`_  5.7.1 or newer
+* `PyQt5 <http://www.riverbankcomputing.com/software/pyqt/intro>`_  5.9.2 or newer
 * `setuptools <https://pypi.python.org/pypi/setuptools/>`_ (for installation)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional for exif support)
 
