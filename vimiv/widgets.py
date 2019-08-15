@@ -4,49 +4,14 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Simple base QtWidgets to inherit from."""
+"""Miscellaneous QtWidgets."""
 
-from PyQt5.QtCore import QItemSelectionModel, QMargins, Qt
+from PyQt5.QtCore import QItemSelectionModel, Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
-from PyQt5.QtWidgets import (
-    QVBoxLayout,
-    QHBoxLayout,
-    QGridLayout,
-    QTreeView,
-    QAbstractItemView,
-    QLabel,
-    QSlider,
-)
+from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider
 
 from vimiv.config import styles
 from vimiv.utils import cached_method
-
-
-class SimpleGrid(QGridLayout):
-    """QGridLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
-
-
-class SimpleHBox(QHBoxLayout):
-    """QHBoxLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
-
-
-class SimpleVBox(QVBoxLayout):
-    """QVBoxLayout without spacing and margins."""
-
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.setSpacing(0)
-        self.setContentsMargins(QMargins(0, 0, 0, 0))
 
 
 class FlatTreeView(QTreeView):
@@ -155,30 +120,3 @@ class SliderWithValue(QSlider):
         }}
         """
         styles.apply(self, append=sheet)
-
-
-class ImageLabel(QLabel):
-    """Label used to display images in image mode."""
-
-    STYLESHEET = """
-    QLabel {
-        background-color: {image.bg};
-    }
-    """
-
-    def __init__(self):
-        super().__init__()
-        styles.apply(self)
-        self.setAlignment(Qt.AlignCenter)
-
-    def current_size(self):
-        """Return size of the currently displayed image."""
-        raise NotImplementedError("Must be implemented by child widget")
-
-    def original_size(self):
-        """Return size of the original image."""
-        raise NotImplementedError("Must be implemented by child widget")
-
-    def rescale(self, scale):
-        """Rescale the widget to scale."""
-        raise NotImplementedError("Must be implemented by child widget")

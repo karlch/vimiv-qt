@@ -8,7 +8,7 @@ import imghdr
 
 import pytest_bdd as bdd
 
-from vimiv import app
+from vimiv import api
 
 
 bdd.scenarios("imageopen.feature")
@@ -29,4 +29,4 @@ def _open_file(tmpdir, data):
     with open(path, "wb") as f:
         f.write(data)
     assert imghdr.what(path) is not None, "Invalid magic bytes in test setup"
-    app.open([path])
+    api.open([path])

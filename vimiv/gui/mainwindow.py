@@ -6,29 +6,31 @@
 
 """QMainWindow which groups all the other widgets."""
 
-from PyQt5.QtWidgets import QWidget, QStackedLayout
+from PyQt5.QtCore import QMargins
+from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
 
 from vimiv import api, utils
 from vimiv.completion import completer
 from vimiv.config import configcommands
-from vimiv.gui import (
-    image,
-    bar,
-    library,
-    completionwidget,
-    thumbnail,
-    widgets,
-    manipulate,
-    keyhint_widget,
-)
+
+# Import all GUI widgets used to create the full main window
+from . import statusbar
+from .bar import Bar
+from .commandline import CommandLine
+from .completionwidget import CompletionView
+from .image import ScrollableImage
+from .keyhint_widget import KeyhintWidget
+from .library import Library
+from .manipulate import Manipulate, ManipulateImage
+from .thumbnail import ThumbnailView
+from .version_popup import VersionPopUp
 
 
 class MainWindow(QWidget):
     """QMainWindow which groups all the other widgets.
 
     Attributes:
-        bar: bar.Bar object containing statusbar and command line.
-
+        _bar: bar.Bar object containing statusbar and command line.
         _overlays: List of overlay widgets.
         _stack: ImageThumbnailLayout as main layout widget.
     """
@@ -36,25 +38,31 @@ class MainWindow(QWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self.bar = bar.Bar()
+        statusbar.init()
+        commandline = CommandLine()
+
+        self._bar = Bar(statusbar.statusbar, commandline)
         self._overlays = []
 
-        grid = widgets.SimpleGrid(self)
+        grid = QGridLayout(self)
+        grid.setSpacing(0)
+        grid.setContentsMargins(QMargins(0, 0, 0, 0))
+
         self._stack = ImageThumbnailLayout()
 
         # Create widgets and add to layout
-        lib = library.Library(self)
+        lib = Library(self)
         grid.addLayout(self._stack, 0, 1, 1, 1)
         grid.addWidget(lib, 0, 0, 1, 1)
-        manwidget = manipulate.Manipulate(self)
+        manwidget = Manipulate(self)
         self._overlays.append(manwidget)
-        self._overlays.append(manipulate.ManipulateImage(self, manwidget))
-        compwidget = completionwidget.CompletionView(self)
+        self._overlays.append(ManipulateImage(self, manwidget))
+        compwidget = CompletionView(self)
         self._overlays.append(compwidget)
-        self._overlays.append(keyhint_widget.KeyhintWidget(self))
-        grid.addWidget(self.bar, 1, 0, 1, 2)
+        self._overlays.append(KeyhintWidget(self))
+        grid.addWidget(self._bar, 1, 0, 1, 2)
         # Initialize completer and config commands
-        completer.Completer(self.bar.commandline, compwidget)
+        completer.Completer(commandline, compwidget)
         configcommands.init()
         self._set_title()
 
@@ -74,6 +82,20 @@ class MainWindow(QWidget):
         else:
             self.showFullScreen()
 
+    @api.commands.register()
+    def version(self, copy: bool = False) -> None:
+        """Show a pop-up with version information.
+
+        **syntax:** ``:version [--copy]``
+
+        optional arguments:
+            * ``--copy``: Copy version information to clipboard instead.
+        """
+        if copy:
+            VersionPopUp.copy_to_clipboard()
+        else:
+            VersionPopUp(parent=self)
+
     def resizeEvent(self, event):
         """Update resize event to resize overlays and library.
 
@@ -82,7 +104,7 @@ class MainWindow(QWidget):
         """
         super().resizeEvent(event)
         self._update_overlay_geometry()
-        library.instance().update_width()
+        api.objreg.get(Library).update_width()
 
     def show(self):
         """Update show to resize overlays."""
@@ -92,8 +114,8 @@ class MainWindow(QWidget):
     def _update_overlay_geometry(self):
         """Update geometry of all overlay widgets according to current layout."""
         bottom = self.height()
-        if self.bar.isVisible():
-            bottom -= self.bar.height()
+        if self._bar.isVisible():
+            bottom -= self._bar.height()
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
 
@@ -126,8 +148,8 @@ class ImageThumbnailLayout(QStackedLayout):
 
     def __init__(self):
         super().__init__()
-        self.image = image.ScrollableImage()
-        self.thumbnail = thumbnail.ThumbnailView()
+        self.image = ScrollableImage()
+        self.thumbnail = ThumbnailView()
         self.addWidget(self.image)
         self.addWidget(self.thumbnail)
         self.setCurrentWidget(self.image)

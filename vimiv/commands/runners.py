@@ -21,9 +21,8 @@ from typing import Dict, List, NamedTuple, Optional
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
-from vimiv import app, api, utils
+from vimiv import api, utils
 from vimiv.commands import aliases
-from vimiv.utils import pathreceiver
 
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
@@ -159,7 +158,7 @@ def expand_percent(text, mode):
     if "%m" in text:
         text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
     if "%" in text:
-        current = shlex.quote(pathreceiver.current(mode))
+        current = shlex.quote(api.current_path(mode))
         text = re.sub(r"(?<!\\)%", current, text)
     return text
 
@@ -199,7 +198,7 @@ class ExternalRunner(QObject):
         """
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         try:
-            app.open(paths)
+            api.open(paths)
             logging.debug("Opened paths from pipe '%s'", cmd)
             api.status.update()
         except api.commands.CommandError:

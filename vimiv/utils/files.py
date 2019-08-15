@@ -6,13 +6,9 @@
 
 """Functions dealing with files and paths."""
 
-import datetime
 import imghdr
 import os
 from typing import List, Tuple, Optional
-
-from vimiv import api
-from vimiv.utils import pathreceiver
 
 # We need the check as svg support is optional
 try:
@@ -117,29 +113,6 @@ def is_image(filename: str) -> bool:
         return imghdr.what(filename) is not None
     except (FileNotFoundError, OSError, PermissionError):
         return False
-
-
-@api.status.module("{pwd}")
-def pwd() -> str:
-    """Current working directory."""
-    wd = os.getcwd()
-    if api.settings.statusbar.collapse_home.value:
-        wd = wd.replace(os.path.expanduser("~"), "~")
-    return wd
-
-
-@api.status.module("{filesize}")
-def filesize() -> str:
-    """Size of the current image in bytes."""
-    return get_size(pathreceiver.current())
-
-
-@api.status.module("{modified}")
-def modified() -> str:
-    """Modification date of the current image."""
-    mtime = os.path.getmtime(pathreceiver.current())
-    d = datetime.datetime.fromtimestamp(mtime)
-    return d.strftime("%y-%m-%d %H:%M")
 
 
 # Only add svg check to imghdr if svg available

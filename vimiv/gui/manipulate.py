@@ -7,6 +7,7 @@
 """Manipulate widget."""
 
 import logging
+from typing import List
 
 from PyQt5.QtCore import QTimer, Qt, QSize
 from PyQt5.QtGui import QPixmap
@@ -15,10 +16,11 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import eventhandler, slot
+from vimiv.utils import slot
+from .eventhandler import KeyHandler
 
 
-class Manipulate(eventhandler.KeyHandler, QTabWidget):
+class Manipulate(KeyHandler, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
@@ -52,9 +54,9 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
             self._add_group(group)
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
-        imutils.pixmap_loaded.connect(self._on_pixmap_loaded)
-        imutils.movie_loaded.connect(self._on_movie_loaded)
-        imutils.svg_loaded.connect(self._on_svg_loaded)
+        api.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
+        api.signals.movie_loaded.connect(self._on_movie_loaded)
+        api.signals.svg_loaded.connect(self._on_svg_loaded)
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
         # Hide by default
@@ -77,6 +79,16 @@ class Manipulate(eventhandler.KeyHandler, QTabWidget):
         **count:** multiplier
         """
         self.setCurrentIndex((self.currentIndex() - count) % self.count())
+
+    @staticmethod
+    def current() -> str:
+        """Current path for manipulate mode."""
+        return imutils.current()
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for manipulate mode."""
+        return imutils.pathlist()
 
     def _add_group(self, group):
         """Add a group of manipulations into its own tab."""

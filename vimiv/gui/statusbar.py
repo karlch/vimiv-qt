@@ -16,13 +16,11 @@ Module Attributes:
 
 from typing import cast
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout
+from PyQt5.QtCore import Qt, QTimer, QMargins
+from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout, QHBoxLayout
 
 from vimiv import api, utils
 from vimiv.config import styles
-from vimiv.gui import widgets
-from vimiv.utils import statusbar_loghandler
 
 
 statusbar = cast("StatusBar", None)
@@ -66,7 +64,9 @@ class StatusBar(QWidget):
         self["stack"] = QStackedLayout(self)
 
         self["status"] = QWidget()
-        labelbox = widgets.SimpleHBox(self["status"])
+        labelbox = QHBoxLayout(self["status"])
+        labelbox.setSpacing(0)
+        labelbox.setContentsMargins(QMargins(0, 0, 0, 0))
         self._add_label(labelbox, "left", Qt.AlignLeft)
         self._add_label(labelbox, "center", Qt.AlignCenter)
         self._add_label(labelbox, "right", Qt.AlignRight)
@@ -78,7 +78,7 @@ class StatusBar(QWidget):
 
         styles.apply(self)
 
-        statusbar_loghandler.signals.message.connect(self._on_message)
+        utils.statusbar_loghandler.message.connect(self._on_message)
         api.status.signals.update.connect(self._on_update_status)
 
     @utils.slot

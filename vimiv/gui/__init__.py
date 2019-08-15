@@ -6,4 +6,4 @@
 
 """GUI widgets using Qt5."""
 
-from . import version
+from .mainwindow import MainWindow

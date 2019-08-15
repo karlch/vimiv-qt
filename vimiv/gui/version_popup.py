@@ -11,30 +11,7 @@ from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QGuiApplication
 
 import vimiv
-from vimiv import api
 from vimiv.config import styles
-from vimiv.gui import mainwindow
-from vimiv.version import info, detailed_info
-
-
-@api.commands.register()
-def version(copy: bool = False) -> None:
-    """Show a pop-up with version information.
-
-    **syntax:** ``:version [--copy]``
-
-    optional arguments:
-        * ``--copy``: Copy version information to clipboard instead.
-    """
-    if copy:
-        copy_to_clipboard()
-    else:
-        VersionPopUp()
-
-
-def copy_to_clipboard() -> None:
-    """Copy version information to clipboard."""
-    QGuiApplication.clipboard().setText(info())
 
 
 class VersionPopUp(QDialog):
@@ -68,8 +45,8 @@ class VersionPopUp(QDialog):
     TITLE = f"{vimiv.__name__} - version"
     URL = "https://karlch.github.io/vimiv-qt/"
 
-    def __init__(self):
-        super().__init__(parent=mainwindow.instance())
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
         self._init_content()
         self.setWindowTitle(self.TITLE)
         self.setWindowFlags(self.windowFlags() | Qt.Tool)
@@ -79,12 +56,17 @@ class VersionPopUp(QDialog):
     def _init_content(self):
         """Initialize all widgets of the pop-up window."""
         layout = QVBoxLayout()
-        layout.addWidget(QLabel(detailed_info()))
+        layout.addWidget(QLabel(vimiv.version.detailed_info()))
         layout.addWidget(
             QLabel("Website: <a href='{url}'>{url}</a>".format(url=self.URL))
         )
         button = QPushButton("&Copy version info to clipboard")
-        button.clicked.connect(copy_to_clipboard)
+        button.clicked.connect(self.copy_to_clipboard)
         button.setFlat(True)
         layout.addWidget(button)
         self.setLayout(layout)
+
+    @staticmethod
+    def copy_to_clipboard() -> None:
+        """Copy version information to clipboard."""
+        QGuiApplication.clipboard().setText(vimiv.version.info())

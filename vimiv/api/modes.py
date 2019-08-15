@@ -149,6 +149,14 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         """
         self._last = self.last_fallback
 
+    @property
+    def pathlist(self) -> List[str]:
+        return self.widget.pathlist()
+
+    @property
+    def current_path(self) -> str:
+        return self.widget.current()
+
     @abc.abstractmethod
     def _set_last(self, mode: "Mode") -> None:
         pass

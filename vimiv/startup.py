@@ -11,7 +11,6 @@ Module Attributes:
         object must exist until vimiv exits.
 """
 
-import argparse
 import logging
 import logging.handlers
 import os
@@ -20,19 +19,10 @@ import tempfile
 
 from PyQt5.QtWidgets import QApplication
 
-import vimiv
-from vimiv import app, api, parsertypes, imutils, plugins, version
+from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
-from vimiv.gui import mainwindow
-from vimiv.utils import (
-    xdg,
-    clipboard,
-    crash_handler,
-    statusbar_loghandler,
-    trash_manager,
-    working_directory,
-)
+from vimiv.utils import xdg, crash_handler, statusbar_loghandler, trash_manager
 
 
 _tmpdir = None
@@ -60,7 +50,7 @@ def setup_pre_app(argv):
     Args:
         argv: sys.argv[1:] from the executable or argv passed by test suite.
     """
-    args = get_argparser().parse_args(argv)
+    args = parser.get_argparser().parse_args(argv)
     if args.version:
         print(version.info())
         sys.exit(0)
@@ -70,14 +60,13 @@ def setup_pre_app(argv):
     logging.debug("%s\n", version.info())
     logging.debug("%s\n", version.paths())
     update_settings(args)
-    clipboard.init()
     trash_manager.init()
     return args
 
 
 def setup_post_app(args):
     """Setup performed after creating the QApplication."""
-    working_directory.init()
+    api.working_directory.init()
     api.mark.watch()
     imutils.init()
     completionmodels.init()
@@ -111,75 +100,8 @@ def setup_logging(log_level):
     console_handler.setLevel(log_level)
     logger.addHandler(console_handler)
 
-    sb_handler = statusbar_loghandler.StatusbarLogHandler()
-    sb_handler.setLevel(log_level)
-    logger.addHandler(sb_handler)
-
-
-def get_argparser():
-    """Get the argparse parser."""
-    parser = argparse.ArgumentParser(
-        prog=vimiv.__name__, description=vimiv.__description__
-    )
-    parser.add_argument(
-        "-f", "--fullscreen", action="store_true", help="Start fullscreen"
-    )
-    parser.add_argument(
-        "-v",
-        "--version",
-        action="store_true",
-        help="Print version information and exit",
-    )
-    parser.add_argument(
-        "--slideshow", action="store_true", help="Start slideshow at start-up"
-    )
-    parser.add_argument(
-        "-g",
-        "--geometry",
-        type=parsertypes.geometry,
-        metavar="WIDTHxHEIGHT",
-        help="Set the starting geometry",
-    )
-    parser.add_argument(
-        "--temp-basedir", action="store_true", help="Use a temporary basedir"
-    )
-    parser.add_argument(
-        "--config",
-        type=parsertypes.existing_file,
-        metavar="FILE",
-        help="Use FILE as local configuration file",
-    )
-    parser.add_argument(
-        "--keyfile",
-        type=parsertypes.existing_file,
-        metavar="FILE",
-        help="Use FILE as keybinding file",
-    )
-    parser.add_argument(
-        "-s",
-        "--set",
-        nargs=2,
-        default=[],
-        action="append",
-        dest="cmd_settings",
-        metavar=("OPTION", "VALUE"),
-        help="Set a temporary setting",
-    )
-    parser.add_argument(
-        "--log-level",
-        type=parsertypes.loglevel,
-        metavar="LEVEL",
-        help="Set log level to LEVEL",
-        default="info",
-    )
-    parser.add_argument(
-        "paths",
-        nargs="*",
-        type=parsertypes.existing_path,
-        metavar="PATH",
-        help="Paths to open",
-    )
-    return parser
+    statusbar_loghandler.setLevel(log_level)
+    logger.addHandler(statusbar_loghandler)
 
 
 def init_directories(args):
@@ -211,18 +133,18 @@ def init_paths(args):
     """Open paths given from commandline or fallback to library if set."""
     logging.debug("Opening paths")
     try:
-        app.open(os.path.abspath(os.path.expanduser(p)) for p in args.paths)
+        api.open(os.path.abspath(os.path.expanduser(p)) for p in args.paths)
     except api.commands.CommandError:
         logging.debug("init_paths: No valid paths retrieved")
         if api.settings.startup_library.value:
-            app.open([os.getcwd()])
+            api.open([os.getcwd()])
     api.status.update()
 
 
 def init_ui(args):
     """Initialize the Qt UI."""
     logging.debug("Initializing UI")
-    mw = mainwindow.MainWindow()
+    mw = gui.MainWindow()
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size
@@ -230,9 +152,7 @@ def init_ui(args):
     geometry = (
         args.geometry
         if args.geometry
-        else parsertypes.Geometry(
-            screen_geometry.width() / 2, screen_geometry.height() / 2
-        )
+        else parser.Geometry(screen_geometry.width() / 2, screen_geometry.height() / 2)
     )
     x = screen_geometry.x() + (screen_geometry.width() - geometry.width) // 2
     y = screen_geometry.y() + (screen_geometry.height() - geometry.height) // 2

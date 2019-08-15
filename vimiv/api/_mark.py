@@ -16,8 +16,8 @@ from typing import Any, Callable, List, cast
 from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
 
 from vimiv.config import styles
-from vimiv.utils import files, pathreceiver, xdg, remove_prefix, wrap_style_span, slot
-from . import commands, keybindings, objreg, status, settings
+from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot
+from . import commands, keybindings, objreg, status, settings, modes
 
 
 class Mark(QObject):
@@ -148,7 +148,7 @@ class Mark(QObject):
     @status.module("{mark-indicator}")
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""
-        if pathreceiver.current() in self._marked:
+        if modes.current().current_path in self._marked:
             return Mark.indicator()
         return ""
 

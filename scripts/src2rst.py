@@ -16,7 +16,8 @@ import importlib
 import os
 import sys
 
-from vimiv import startup, api
+# Startup is imported to create all the commands and keybindings via their decorators
+from vimiv import api, parser, startup  # pylint: disable=unused-import
 
 from rstutils import RSTFile
 
@@ -96,8 +97,8 @@ def _gen_keybinding_rows(bindings):
 
 def generate_commandline_options():
     """Generate file including the command line options."""
-    parser = startup.get_argparser()
-    optionals, positionals, titles = _get_options(parser)
+    argparser = parser.get_argparser()
+    optionals, positionals, titles = _get_options(argparser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
     with open(filename_synopsis, "w") as f:
@@ -113,7 +114,7 @@ def generate_commandline_options():
         f.write(optionals)
 
 
-def _get_options(parser):
+def _get_options(argparser):
     """Retrieve the options from the argument parser.
 
     Returns:
@@ -124,7 +125,7 @@ def _get_options(parser):
     optionals = ""
     positionals = ""
     titles = []
-    for action in parser._optionals._actions:
+    for action in argparser._optionals._actions:
         if not action.option_strings:
             positionals += _format_positional(action, titles)
         else:

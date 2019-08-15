@@ -4,18 +4,77 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Functions used by the command line argument parser as type.
-
-Example for parsing commandline arguments:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--geometry", type=parsertypes.geometry)
-"""
+"""The commandline argument parser and related functions."""
 
 import argparse
 import logging
 import os
 from contextlib import suppress
 from collections import namedtuple
+
+import vimiv
+
+
+def get_argparser() -> argparse.ArgumentParser:
+    """Get the argparse parser."""
+    parser = argparse.ArgumentParser(
+        prog=vimiv.__name__, description=vimiv.__description__
+    )
+    parser.add_argument(
+        "-f", "--fullscreen", action="store_true", help="Start fullscreen"
+    )
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        help="Print version information and exit",
+    )
+    parser.add_argument(
+        "--slideshow", action="store_true", help="Start slideshow at start-up"
+    )
+    parser.add_argument(
+        "-g",
+        "--geometry",
+        type=geometry,
+        metavar="WIDTHxHEIGHT",
+        help="Set the starting geometry",
+    )
+    parser.add_argument(
+        "--temp-basedir", action="store_true", help="Use a temporary basedir"
+    )
+    parser.add_argument(
+        "--config",
+        type=existing_file,
+        metavar="FILE",
+        help="Use FILE as local configuration file",
+    )
+    parser.add_argument(
+        "--keyfile",
+        type=existing_file,
+        metavar="FILE",
+        help="Use FILE as keybinding file",
+    )
+    parser.add_argument(
+        "-s",
+        "--set",
+        nargs=2,
+        default=[],
+        action="append",
+        dest="cmd_settings",
+        metavar=("OPTION", "VALUE"),
+        help="Set a temporary setting",
+    )
+    parser.add_argument(
+        "--log-level",
+        type=loglevel,
+        metavar="LEVEL",
+        help="Set log level to LEVEL",
+        default="info",
+    )
+    parser.add_argument(
+        "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"
+    )
+    return parser
 
 
 def positive_int(value):

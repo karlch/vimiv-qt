@@ -8,7 +8,7 @@ import pytest
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.utils import slideshow
+from vimiv.imutils import slideshow
 
 
 bdd.scenarios("slideshow.feature")

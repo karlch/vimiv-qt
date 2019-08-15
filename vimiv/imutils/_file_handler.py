@@ -70,9 +70,9 @@ class ImageFileHandler(QObject):
 
         self._path = ""
 
-        imutils.new_image_opened.connect(self._on_new_image_opened)
-        imutils.all_images_cleared.connect(self._on_images_cleared)
-        imutils.image_changed.connect(self.reload)
+        api.signals.new_image_opened.connect(self._on_new_image_opened)
+        api.signals.all_images_cleared.connect(self._on_images_cleared)
+        api.signals.image_changed.connect(self.reload)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     @property
@@ -87,7 +87,7 @@ class ImageFileHandler(QObject):
     def current(self, pixmap):
         self._pixmaps.current = pixmap
         reload_only = True
-        imutils.pixmap_loaded.emit(pixmap, reload_only)
+        api.signals.pixmap_loaded.emit(pixmap, reload_only)
 
     @property
     def original(self):
@@ -172,7 +172,7 @@ class ImageFileHandler(QObject):
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self.original = None
-            imutils.svg_loaded.emit(path, reload_only)
+            api.signals.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
             movie = QMovie(path)
@@ -180,7 +180,7 @@ class ImageFileHandler(QObject):
                 logging.error("Error reading animation %s: invalid data", path)
                 return
             self.original = movie
-            imutils.movie_loaded.emit(self.current, reload_only)
+            api.signals.movie_loaded.emit(self.current, reload_only)
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
@@ -188,7 +188,7 @@ class ImageFileHandler(QObject):
                 logging.error("Error reading image %s: %s", path, reader.errorString())
                 return
             self.original = pixmap
-            imutils.pixmap_loaded.emit(self.current, reload_only)
+            api.signals.pixmap_loaded.emit(self.current, reload_only)
         self._path = path
 
     def _reset(self):

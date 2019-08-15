@@ -4,55 +4,68 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Tests for functions in vimiv.parsertypes."""
+"""Tests for functions in vimiv.parser."""
 
 import argparse
 import logging
 
 import pytest
 
-from vimiv import parsertypes
+from vimiv import parser
+
+
+@pytest.fixture
+def argparser():
+    yield parser.get_argparser()
+
+
+def test_parser_prog_name(argparser):
+    assert argparser.prog == "vimiv"
+
+
+def test_parser_description(argparser):
+    assert "image viewer" in argparser.description
 
 
 def test_geometry():
     text = "300x500"
-    parsed_value = parsertypes.geometry(text)
-    assert parsed_value == parsertypes.Geometry(300, 500)
+    parsed_value = parser.geometry(text)
+    assert parsed_value == parser.Geometry(300, 500)
 
 
 def test_fail_geometry():
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("a xylophone")  # word with x to emulate form
+        parser.geometry("a xylophone")  # word with x to emulate form
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("200xnot_a_number")
+        parser.geometry("200xnot_a_number")
     with pytest.raises(ValueError, match="invalid"):
-        parsertypes.geometry("12xnot_a_number")
+        parser.geometry("12xnot_a_number")
     with pytest.raises(argparse.ArgumentTypeError, match="form WIDTHxHEIGHT"):
-        parsertypes.geometry("1000")
+        parser.geometry("1000")
     with pytest.raises(argparse.ArgumentTypeError, match="must be positive"):
-        parsertypes.geometry("-100x200")
+        parser.geometry("-100x200")
 
 
 def test_existing_file(mocker):
     mocker.patch("os.path.isfile", return_value=True)
-    assert "any" == parsertypes.existing_file("any")
+    assert "any" == parser.existing_file("any")
 
 
 def test_fail_existing_file(mocker):
     mocker.patch("os.path.isfile", return_value=False)
     with pytest.raises(argparse.ArgumentTypeError, match="No file called"):
-        parsertypes.existing_file("any")
+        parser.existing_file("any")
 
 
 def test_existing_path(mocker):
     mocker.patch("os.path.exists", return_value=True)
-    assert "any" == parsertypes.existing_path("any")
+    assert "any" == parser.existing_path("any")
 
 
 def test_fail_existing_path(mocker):
     mocker.patch("os.path.exists", return_value=False)
     with pytest.raises(argparse.ArgumentTypeError, match="No path called"):
-        parsertypes.existing_path("any")
+        parser.existing_path("any")
 
 
 def test_log_level():
@@ -64,9 +77,9 @@ def test_log_level():
         "debug": logging.DEBUG,
     }
     for name, level in level_dict.items():
-        assert parsertypes.loglevel(name) == level
+        assert parser.loglevel(name) == level
 
 
 def test_fail_log_level():
     with pytest.raises(argparse.ArgumentTypeError, match="Invalid log level"):
-        parsertypes.loglevel("other")
+        parser.loglevel("other")

@@ -19,32 +19,12 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.utils import files, slideshow, working_directory
+from vimiv.utils import files
+from .slideshow import Slideshow
 
 
 _paths: List[str] = []
 _index = 0
-
-
-def load(*paths: str) -> None:
-    """Load new paths into the filelist.
-
-    This function is used from outside to interact with the filelist. For example by the
-    library to update the current selection or by the app to open image paths. In case
-    multiple paths are passed, the first element of the list is selected and opened, the
-    others are loaded into the list.
-
-    Args:
-        paths: List of paths to load into filelist.
-    """
-    if paths is None:
-        logging.debug("Image filelist: no paths to load")
-    elif len(paths) == 1:
-        logging.debug("Image filelist: loading single path %s", paths[0])
-        _load_single(*paths)
-    else:
-        logging.debug("Image filelist: loading %d paths", len(paths))
-        _load_paths(paths, paths[0])
 
 
 # We want to use the name next here as it is the best name for the command
@@ -150,9 +130,31 @@ class SignalHandler(QObject):
         search.search.new_search.connect(self._on_new_search)
         # The slideshow object is created here as it is not required by anything else
         # It stays around as it is part of the global object registry
-        slideshow.Slideshow().next_im.connect(self._on_slideshow_event)
+        Slideshow().next_im.connect(self._on_slideshow_event)
 
-        working_directory.handler.images_changed.connect(self._on_images_changed)
+        api.signals.load_images.connect(self._on_load_images)
+        api.working_directory.handler.images_changed.connect(self._on_images_changed)
+
+    @pyqtSlot(list)
+    def _on_load_images(self, paths: List[str]):
+        """Load new paths into the filelist.
+
+        This function is used from outside to interact with the filelist. For example by
+        the library to update the current selection or by the app to open image paths.
+        In case multiple paths are passed, the first element of the list is selected and
+        opened, the others are loaded into the list.
+
+        Args:
+            paths: List of paths to load into filelist.
+        """
+        if not paths:
+            logging.debug("Image filelist: no paths to load")
+        elif len(paths) == 1:
+            logging.debug("Image filelist: loading single path %s", paths[0])
+            _load_single(*paths)
+        else:
+            logging.debug("Image filelist: loading %d paths", len(paths))
+            _load_paths(paths, paths[0])
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -195,14 +197,14 @@ def _set_index(index: int, previous: str = None) -> None:
     global _index
     _index = index
     if previous != current():
-        imutils.new_image_opened.emit(current())
+        api.signals.new_image_opened.emit(current())
 
 
 def _set_paths(paths: List[str]) -> None:
     """Set the global _paths to paths."""
     global _paths
     _paths = paths
-    imutils.new_images_opened.emit(_paths)
+    api.signals.new_images_opened.emit(_paths)
 
 
 def _load_single(path: str) -> None:
@@ -241,4 +243,4 @@ def _clear() -> None:
     global _paths, _index
     _paths = []
     _index = 0
-    imutils.all_images_cleared.emit()
+    api.signals.all_images_cleared.emit()

@@ -8,17 +8,16 @@
 
 from functools import partial
 from contextlib import suppress
-from typing import Optional
+from typing import Optional, List
 
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QScrollArea
+from PyQt5.QtWidgets import QScrollArea, QLabel
 from PyQt5.QtGui import QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
-from vimiv.gui import widgets
-from vimiv.utils import eventhandler
+from .eventhandler import KeyHandler
 
 # We need the check as svg support is optional
 try:
@@ -27,12 +26,12 @@ except ImportError:
     QSvgWidget = None
 
 
-class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
+class ScrollableImage(KeyHandler, QScrollArea):
     """QScrollArea to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.
     Commands used in image mode are defined here. Interaction with the child
-    widget happens via the methods defined by widgets.ImageLabel.
+    widget happens via the methods defined by ImageLabel.
 
     Class Attributes:
         MIN_SIZE_SCALE: Minimum scale to scale an image to.
@@ -99,15 +98,15 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         self.setWidgetResizable(True)
         self.setWidget(Empty())
 
-        imutils.pixmap_loaded.connect(
+        api.signals.pixmap_loaded.connect(
             partial(self._load, widget=Image, scale=ImageScale.Overzoom)
         )
-        imutils.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
+        api.signals.movie_loaded.connect(partial(self._load, widget=Animation, scale=1))
         if QSvgWidget is not None:  # Only connect loading of svg if available
-            imutils.svg_loaded.connect(
+            api.signals.svg_loaded.connect(
                 partial(self._load, widget=VectorGraphic, scale=ImageScale.Fit)
             )
-        imutils.all_images_cleared.connect(self._on_images_cleared)
+        api.signals.all_images_cleared.connect(self._on_images_cleared)
 
     @utils.slot
     def _on_images_cleared(self) -> None:
@@ -252,6 +251,16 @@ class ScrollableImage(eventhandler.KeyHandler, QScrollArea):
         with suppress(AttributeError):  # Currently no animation displayed
             self.widget().play_or_pause()
 
+    @staticmethod
+    def current() -> str:
+        """Current path for image mode."""
+        return imutils.current()
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for manipulate mode."""
+        return imutils.pathlist()
+
     def _scale_to_fit(self, limit=-1):
         """Scale image so it fits the widget size.
 
@@ -349,7 +358,34 @@ def instance():
     return api.objreg.get(ScrollableImage)
 
 
-class Empty(widgets.ImageLabel):
+class ImageLabel(QLabel):
+    """Label used to display images in image mode."""
+
+    STYLESHEET = """
+    QLabel {
+        background-color: {image.bg};
+    }
+    """
+
+    def __init__(self):
+        super().__init__()
+        styles.apply(self)
+        self.setAlignment(Qt.AlignCenter)
+
+    def current_size(self):
+        """Return size of the currently displayed image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def original_size(self):
+        """Return size of the original image."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+    def rescale(self, scale):
+        """Rescale the widget to scale."""
+        raise NotImplementedError("Must be implemented by child widget")
+
+
+class Empty(ImageLabel):
     """Empty QLabel to display if there is no image."""
 
     def original_size(self):
@@ -362,7 +398,7 @@ class Empty(widgets.ImageLabel):
         pass
 
 
-class Image(widgets.ImageLabel):
+class Image(ImageLabel):
     """QLabel to display a QPixmap.
 
     Attributes:
@@ -386,7 +422,7 @@ class Image(widgets.ImageLabel):
         self.setPixmap(pixmap)
 
 
-class Animation(widgets.ImageLabel):
+class Animation(ImageLabel):
     """QLabel to display a QMovie.
 
     Attributes:

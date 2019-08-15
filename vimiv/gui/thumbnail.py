@@ -18,19 +18,20 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import eventhandler, pixmap_creater, thumbnail_manager, clamp
+from vimiv.utils import create_pixmap, thumbnail_manager, clamp
+from .eventhandler import KeyHandler
 
 
-class ThumbnailView(eventhandler.KeyHandler, QListWidget):
+class ThumbnailView(KeyHandler, QListWidget):
     """Thumbnail widget.
 
     Attributes:
-        _paths: Last paths loaded to avoid duplicate loading.
+        _default_pixmap: Thumbnail image to display before thumbnails were generated.
         _highlighted: List of indices that are highlighted as search results.
+        _manager: ThumbnailManager class to create thumbnails asynchronously.
+        _paths: Last paths loaded to avoid duplicate loading.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
             string name of the size as value.
-        _default_thumb: Thumbnail to display before thumbnails were generated.
-        _manager: ThumbnailManager class to create thumbnails asynchronously.
     """
 
     STYLESHEET = """
@@ -69,13 +70,25 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
+        self._default_pixmap = create_pixmap(
+            color=styles.get("thumbnail.default.bg"),
+            frame_color=styles.get("thumbnail.frame.fg"),
+            size=256,
+            frame_size=10,
+        )
         self._paths = []
         self._highlighted = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
         )
-        self._default_icon = QIcon(pixmap_creater.default_thumbnail())
-        self._manager = thumbnail_manager.ThumbnailManager()
+
+        fail_pixmap = create_pixmap(
+            color=styles.get("thumbnail.error.bg"),
+            frame_color=styles.get("thumbnail.frame.fg"),
+            size=256,
+            frame_size=10,
+        )
+        self._manager = thumbnail_manager.ThumbnailManager(fail_pixmap)
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setViewMode(QListWidget.IconMode)
@@ -85,8 +98,8 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
-        imutils.new_image_opened.connect(self._on_new_image_opened)
-        imutils.new_images_opened.connect(self._on_new_images_opened)
+        api.signals.new_image_opened.connect(self._on_new_image_opened)
+        api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
@@ -118,7 +131,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
             if path not in self._paths:
                 item = QListWidgetItem(self, i)
                 item.setSizeHint(QSize(self.item_size(), self.item_size()))
-                item.setIcon(self._default_icon)
+                item.setIcon(QIcon(self._default_pixmap))
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
@@ -196,7 +209,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
-        imutils.load(self.abspath())
+        api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
@@ -318,7 +331,7 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         return self.iconSize().width() + 2 * padding
 
     @api.status.module("{thumbnail-name}")
-    def current(self):
+    def _thumbnail_name(self):
         """Name of the currently selected thumbnail."""
         try:
             abspath = self._paths[self.currentRow()]
@@ -328,12 +341,17 @@ class ThumbnailView(eventhandler.KeyHandler, QListWidget):
         except IndexError:
             return ""
 
-    def abspath(self):
-        """Return the absolute path of the current thumbnail."""
+    def current(self):
+        """Current path for thumbnail mode."""
         try:
             return self._paths[self.currentRow()]
         except IndexError:
             return ""
+
+    @staticmethod
+    def pathlist() -> List[str]:
+        """List of current paths for thumbnail mode."""
+        return imutils.pathlist()
 
     @api.status.module("{thumbnail-size}")
     def size(self):
