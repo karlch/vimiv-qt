@@ -13,14 +13,7 @@ from typing import List, Optional
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
-from PyQt5.QtGui import (
-    QStandardItemModel,
-    QColor,
-    QTextDocument,
-    QStandardItem,
-    QFontMetrics,
-    QFont,
-)
+from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search
@@ -422,7 +415,6 @@ class LibraryDelegate(QStyledItemDelegate):
 
         # Named properties for html
         self.font = styles.get("library.font")
-        self.font_metrics = QFontMetrics(QFont(self.font))
         self.fg = styles.get("library.fg")
         self.dir_fg = styles.get("library.directory.fg")
         self.search_fg = styles.get("library.search.highlighted.fg")
@@ -467,7 +459,7 @@ class LibraryDelegate(QStyledItemDelegate):
         text = index.model().data(index)
         painter.save()
         color = self._get_foreground_color(index, text)
-        text = self.elided(text, option.rect.width() - 1)
+        text = self.elided(text, painter.fontMetrics(), option.rect.width() - 1)
         text = wrap_style_span(f"color: {color}; font: {self.font}", text)
         self.doc.setHtml(text)
         self.doc.setTextWidth(option.rect.width() - 1)
@@ -525,7 +517,7 @@ class LibraryDelegate(QStyledItemDelegate):
             return self.odd_bg
         return self.even_bg
 
-    def elided(self, text, width):
+    def elided(self, text, font_metrics, width):
         """Return an elided text preserving html tags.
 
         If the text is wider than width, it is elided by replacing characters from the
@@ -534,20 +526,21 @@ class LibraryDelegate(QStyledItemDelegate):
 
         Args:
             text: The text to elide.
+            font_metrics: QFontMetrics to create elided text based on width.
             width: Width in pixels that the text may take.
         Returns:
             Elided version of the text.
         """
-        mark_str = api.settings.statusbar.mark_indicator.value
-        marked = text.startswith(mark_str)
+        mark_str = api.mark.highlight("")
         html_stripped = strip_html(text)
-        elided = self.font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
-        # This becomes more complicated as the html is no longer simply surrounding
-        # We must bring back the html from the mark indicator before replacing
-        if marked:
+        # Html only surrounds the leading mark indicator as directories are never marked
+        if text.startswith(mark_str):
             mark_stripped = strip_html(mark_str)
-            html_stripped = html_stripped.replace(mark_stripped, mark_str)
-            elided = elided.replace(mark_stripped, mark_str)
+            elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+            return elided.replace(mark_stripped, mark_str)
+        # Html surrounds the full text as the file may be a directory which is displayed
+        # in bold
+        elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
         return text.replace(html_stripped, elided)
 
     def sizeHint(self, _option, _index):

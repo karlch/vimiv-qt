@@ -23,3 +23,8 @@ Changed:
 
 * All styles are now based upon base16. Therefore custom styles must define the colors
   ``base00`` to ``base0f``. All other style options are optional.
+
+Fixed:
+^^^^^^
+
+* Elided text is now calculated correctly in the library.
