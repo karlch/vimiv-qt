@@ -7,28 +7,118 @@
 """Functions dealing with the stylesheet of the Qt widgets.
 
 Module Attributes:
+    NAME_DEFAULT: Name of the default theme.
+    NAME_DEFAULT_DARK: Name of the dark default theme.
+
     _style: Dictionary saving the style settings from the config file, form:
         _style["image.bg"] = "#000000"
 """
 
-import collections
 import configparser
 import logging
 import os
+import re
 
 from vimiv import api
 from vimiv.utils import xdg
 
 
+NAME_DEFAULT = "default"
+NAME_DEFAULT_DARK = "default-dark"
+
 _style = None
 
 
-class Style(collections.OrderedDict):
+class Style(dict):
     """Class defining a single style.
+
+    The style is based on 16 colors according to base16.
 
     A python dictionary with a name and overridden __setitem__ for convenience.
     Ordered so referencing and dereferencing variables is well defined.
     """
+
+    def __init__(self, *colors, font="10pt Monospace"):
+        """Initialize style with 16 colors for base 16 and a font."""
+        # We are mainly storing all the values here
+        # pylint: disable=too-many-statements
+        super().__init__()
+        # Initialize the colorscheme from base16
+        if len(colors) != 16:
+            raise ValueError("Styles must be created with 16 colors for base16")
+        for i, color in enumerate(colors):
+            self.check_valid_color(color)
+            self[f"base{i:02x}"] = color
+        # Fill in all values
+        self["font"] = font
+        # Image
+        self["image.bg"] = "{base00}"
+        self["image.scrollbar.width"] = "8px"
+        self["image.scrollbar.bg"] = "{image.bg}"
+        self["image.scrollbar.fg"] = "{base03}"
+        self["image.scrollbar.padding"] = "2px"
+        # Library
+        self["library.font"] = "{font}"
+        self["library.fg"] = "{base06}"
+        self["library.padding"] = "2px"
+        self["library.directory.fg"] = "{base07}"
+        self["library.even.bg"] = "{base01}"
+        self["library.odd.bg"] = "{base01}"
+        self["library.selected.bg"] = "{base0d}"
+        self["library.selected.fg"] = "{base07}"
+        self["library.search.highlighted.fg"] = "{base01}"
+        self["library.search.highlighted.bg"] = "{base04}"
+        self["library.scrollbar.width"] = "{image.scrollbar.width}"
+        self["library.scrollbar.bg"] = "{image.bg}"
+        self["library.scrollbar.fg"] = "{image.scrollbar.fg}"
+        self["library.scrollbar.padding"] = "{image.scrollbar.padding}"
+        self["library.border"] = "0px solid"
+        # Statusbar
+        self["statusbar.font"] = "{font}"
+        self["statusbar.bg"] = "{base02}"
+        self["statusbar.fg"] = "{base06}"
+        self["statusbar.error"] = "{base08}"
+        self["statusbar.warning"] = "{base09}"
+        self["statusbar.info"] = "{base0c}"
+        self["statusbar.message_border"] = "2px solid"
+        self["statusbar.padding"] = "4"
+        # Thumbnail
+        self["thumbnail.font"] = "{font}"
+        self["thumbnail.fg"] = "{library.fg}"
+        self["thumbnail.bg"] = "{image.bg}"
+        self["thumbnail.padding"] = "20"
+        self["thumbnail.selected.bg"] = "{library.selected.bg}"
+        self["thumbnail.search.highlighted.bg"] = "{library.search.highlighted.bg}"
+        self["thumbnail.default.bg"] = "{statusbar.info}"
+        self["thumbnail.error.bg"] = "{statusbar.error}"
+        self["thumbnail.frame.fg"] = "{thumbnail.fg}"
+        # Completion
+        self["completion.height"] = "16em"
+        self["completion.fg"] = "{statusbar.fg}"
+        self["completion.even.bg"] = "{statusbar.bg}"
+        self["completion.odd.bg"] = "{statusbar.bg}"
+        self["completion.selected.fg"] = "{library.selected.fg}"
+        self["completion.selected.bg"] = "{library.selected.bg}"
+        self["completion.scrollbar.width"] = "{image.scrollbar.width}"
+        self["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
+        self["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
+        self["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
+        # Keyhint
+        self["keyhint.padding"] = "2px"
+        self["keyhint.border_radius"] = "10px"
+        self["keyhint.suffix_color"] = "{base0c}"
+        # Manipulate
+        self["manipulate.fg"] = "{statusbar.fg}"
+        self["manipulate.focused.fg"] = "{base0c}"
+        self["manipulate.bg"] = "{image.bg}"
+        self["manipulate.slider.left"] = "{library.selected.bg}"
+        self["manipulate.slider.handle"] = "{base04}"
+        self["manipulate.slider.right"] = "{statusbar.bg}"
+        # Manipulate image overlay
+        self["manipulate.image.border"] = "2px solid"
+        self["manipulate.image.border.color"] = "{base0c}"
+        # Mark
+        self["mark.color"] = "{base0e}"
 
     def __setitem__(self, name, item):
         """Store item automatically surrounding the name with {} if needed."""
@@ -39,7 +129,26 @@ class Style(collections.OrderedDict):
         if item in self:
             super().__setitem__(name, self[item])
         else:
+            if self.is_color_option(name):
+                self.check_valid_color(item)
             super().__setitem__(name, item)
+
+    @staticmethod
+    def is_color_option(name: str):
+        """Return True if the style option corresponds is a color."""
+        return name.endswith((".fg", ".bg"))
+
+    @staticmethod
+    def check_valid_color(color: str):
+        """Check if a color string is a valid html color.
+
+        Accepts strings that start with # and have 3 or 6 hex digits.
+
+        Raises:
+            ValueError if the string is invalid.
+        """
+        if not re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", color.lower()):
+            raise ValueError(f"{color} is not a valid html color")
 
 
 def parse():
@@ -52,10 +161,10 @@ def parse():
     global _style
     name = api.settings.style.value
     filename = xdg.join_vimiv_config("styles/%s" % (name))
-    if name == "default":
+    if name == NAME_DEFAULT:
         _style = create_default()
-    elif name == "default-dark":
-        _style = create_default_dark()
+    elif name == NAME_DEFAULT_DARK:
+        _style = create_default(dark=True)
     elif os.path.exists(filename):
         _style = read(filename)
     else:
@@ -86,142 +195,59 @@ def get(name):
         return ""
 
 
-def create_default():
-    """Create the default style."""
-    default = Style()
+def create_default(dark=False, save_to_file=True):
+    """Create the default style.
+
+    Args:
+        dark: Create the default dark style instead.
+        save_to_file: Dump the default style to file for reading and reference.
+    """
     # Color definitions
     # Uses base16 tomorrow
     # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
-    default["base00"] = "#ffffff"
-    default["base01"] = "#e0e0e0"
-    default["base02"] = "#d6d6d6"
-    default["base03"] = "#8e908c"
-    default["base04"] = "#969896"
-    default["base05"] = "#4d4d4c"
-    default["base06"] = "#282a2e"
-    default["base07"] = "#1d1f21"
-    default["base08"] = "#c82829"
-    default["base09"] = "#f5871f"
-    default["base0a"] = "#eab700"
-    default["base0b"] = "#718c00"
-    default["base0c"] = "#3e999f"
-    default["base0d"] = "#81a2be"
-    default["base0e"] = "#8959a8"
-    default["base0f"] = "#a3685a"
-    # Insert style
-    _insert_values(default)
-    # Dump
-    if not os.path.isfile(xdg.join_vimiv_config("styles/default")):
-        dump("default", default)
-    return default
-
-
-def create_default_dark():
-    """Create the default dark style."""
-    default_dark = Style()
-    # Color definitions
-    # Uses base16 tomorrow-night
-    # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
-    default_dark["base00"] = "#1d1f21"
-    default_dark["base01"] = "#282a2e"
-    default_dark["base02"] = "#373b41"
-    default_dark["base03"] = "#969896"
-    default_dark["base04"] = "#b4b7b4"
-    default_dark["base05"] = "#c5c8c6"
-    default_dark["base06"] = "#e0e0e0"
-    default_dark["base07"] = "#ffffff"
-    default_dark["base08"] = "#cc6666"
-    default_dark["base09"] = "#de935f"
-    default_dark["base0a"] = "#f0c674"
-    default_dark["base0b"] = "#b5bd68"
-    default_dark["base0c"] = "#8abeb7"
-    default_dark["base0d"] = "#81a2be"
-    default_dark["base0e"] = "#b294bb"
-    default_dark["base0f"] = "#a3685a"
-    # Insert style
-    _insert_values(default_dark)
-    # Dump
-    if not os.path.isfile(xdg.join_vimiv_config("styles/default-dark")):
-        dump("default-dark", default_dark)
-    return default_dark
-
-
-def _insert_values(style):
-    """Insert all style values into a default style.
-
-    Args:
-        style: The Style object to insert values into.
-    """
-    # We are only storing all the values here
-    # pylint: disable=too-many-statements
-    # Image
-    style["image.bg"] = "{base00}"
-    style["image.scrollbar.width"] = "8px"
-    style["image.scrollbar.bg"] = "{image.bg}"
-    style["image.scrollbar.fg"] = "{base03}"
-    style["image.scrollbar.padding"] = "2px"
-    # Library
-    style["library.font"] = "10pt Monospace"
-    style["library.fg"] = "{base06}"
-    style["library.padding"] = "2px"
-    style["library.directory.fg"] = "{base07}"
-    style["library.even.bg"] = "{base01}"
-    style["library.odd.bg"] = "{base01}"
-    style["library.selected.bg"] = "{base0d}"
-    style["library.selected.fg"] = "{base07}"
-    style["library.search.highlighted.fg"] = "{base01}"
-    style["library.search.highlighted.bg"] = "{base04}"
-    style["library.scrollbar.width"] = "{image.scrollbar.width}"
-    style["library.scrollbar.bg"] = "{image.bg}"
-    style["library.scrollbar.fg"] = "{image.scrollbar.fg}"
-    style["library.scrollbar.padding"] = "{image.scrollbar.padding}"
-    style["library.border"] = "0px solid"
-    # Thumbnail
-    style["thumbnail.font"] = "{library.font}"
-    style["thumbnail.fg"] = "{library.fg}"
-    style["thumbnail.bg"] = "{image.bg}"
-    style["thumbnail.padding"] = "20"
-    style["thumbnail.selected.bg"] = "{library.selected.bg}"
-    style["thumbnail.search.highlighted.bg"] = "{library.search.highlighted.bg}"
-    style["thumbnail.default.bg"] = "{statusbar.info}"
-    style["thumbnail.error.bg"] = "{statusbar.error}"
-    style["thumbnail.frame.fg"] = "{thumbnail.fg}"
-    # Statusbar
-    style["statusbar.font"] = "10pt Monospace"
-    style["statusbar.bg"] = "{base02}"
-    style["statusbar.fg"] = "{base07}"
-    style["statusbar.error"] = "{base08}"
-    style["statusbar.warning"] = "{base09}"
-    style["statusbar.info"] = "{base0c}"
-    style["statusbar.message_border"] = "2px solid"
-    style["statusbar.padding"] = "4"
-    # Completion
-    style["completion.height"] = "16em"
-    style["completion.fg"] = "{statusbar.fg}"
-    style["completion.even.bg"] = "{statusbar.bg}"
-    style["completion.odd.bg"] = "{statusbar.bg}"
-    style["completion.selected.fg"] = "{library.selected.fg}"
-    style["completion.selected.bg"] = "{library.selected.bg}"
-    style["completion.scrollbar.width"] = "{image.scrollbar.width}"
-    style["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
-    style["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
-    style["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
-    # Keyhint
-    style["keyhint.padding"] = "2px"
-    style["keyhint.border_radius"] = "10px"
-    style["keyhint.suffix_color"] = "{base0c}"
-    # Manipulate
-    style["manipulate.fg"] = "{statusbar.fg}"
-    style["manipulate.focused.fg"] = "{base0c}"
-    style["manipulate.bg"] = "{image.bg}"
-    style["manipulate.slider.left"] = "{library.selected.bg}"
-    style["manipulate.slider.handle"] = "{base04}"
-    style["manipulate.slider.right"] = "{statusbar.bg}"
-    # Manipulate image overlay
-    style["manipulate.image.border"] = "2px solid"
-    style["manipulate.image.border.color"] = "{base0c}"
-    # Mark
-    style["mark.color"] = "{base0e}"
+    if dark:
+        style = Style(
+            "#1d1f21",  # base00
+            "#282a2e",  # base01
+            "#373b41",  # base02
+            "#969896",  # base03
+            "#b4b7b4",  # base04
+            "#c5c8c6",  # base05
+            "#e0e0e0",  # base06
+            "#ffffff",  # base07
+            "#cc6666",  # base08
+            "#de935f",  # base09
+            "#f0c674",  # base0a
+            "#b5bd68",  # base0b
+            "#8abeb7",  # base0c
+            "#81a2be",  # base0d
+            "#b294bb",  # base0e
+            "#a3685a",  # base0f
+        )
+        name = NAME_DEFAULT_DARK
+    else:
+        style = Style(
+            "#ffffff",  # base00
+            "#e0e0e0",  # base01
+            "#d6d6d6",  # base02
+            "#8e908c",  # base03
+            "#969896",  # base04
+            "#4d4d4c",  # base05
+            "#282a2e",  # base06
+            "#1d1f21",  # base07
+            "#c82829",  # base08
+            "#f5871f",  # base09
+            "#eab700",  # base0a
+            "#718c00",  # base0b
+            "#3e999f",  # base0c
+            "#81a2be",  # base0d
+            "#8959a8",  # base0e
+            "#a3685a",  # base0f
+        )
+        name = NAME_DEFAULT
+    if save_to_file and not os.path.isfile(xdg.join_vimiv_config("styles", name)):
+        dump(name, style)
+    return style
 
 
 def read(filename):
@@ -231,8 +257,26 @@ def read(filename):
         filename: Name of the styles file to read
     """
     parser = configparser.ConfigParser()
-    parser.read(filename)
-    style = Style()
+    # Retrieve the STYLE section
+    try:
+        parser.read(filename)
+        section = parser["STYLE"]
+    except (configparser.MissingSectionHeaderError, KeyError):
+        logging.error(
+            "Style files must start with the [STYLE] header. Falling back to default."
+        )
+        return create_default(save_to_file=False)
+    # Retrieve base colors
+    try:
+        colors = [section.pop(f"base{i:02x}") for i in range(16)]
+    except KeyError as e:
+        logging.error("Style is missing color %s. Falling back to default.", e)
+        return create_default(save_to_file=False)
+    if "font" in section:  # User-defined global font
+        style = Style(*colors, font=section["font"])
+    else:  # Default global font
+        style = Style(*colors)
+    # Override additional options
     for option, value in parser["STYLE"].items():
         style[option] = value
     return style

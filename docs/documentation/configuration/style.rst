@@ -11,18 +11,22 @@ on startup if they do not exist.  The styles directory is located in
 ``$XDG_CONFIG_HOME/vimiv/`` where ``$XDG_CONFIG_HOME`` is usually
 ``~/.config/`` if you have not updated it.
 
-You can implement your own style by copying a default file in the ``styles``
-directory, configuring it to your liking, and changing the ``style`` setting in
-the ``vimiv.conf`` file to the name of the new file.
+Creating your own style is easy:
 
-As the default files show, it is possible to define variables and referencing
-them afterwards. Say you define ``red = #ff0000`` and you would like the
-statusbar text to be red. You can then reference it via
-``statusbar.fg = {red}``.
+#. Create a new file in the ``styles`` directory. The file must start with the
+   ``[STYLE]`` header.
+#. Define the colors ``base00`` to ``base0f``. This is required as these colors are
+   referenced by the individual options.
+#. Change the ``style`` setting in the ``vimiv.conf`` file to the name of your newly
+   created file.
+#. Optional: override any other option such as the global ``font`` or individual
+   settings like ``thumbnail.padding``.
 
-.. warning:: Your style **MUST** implement **ALL** of the variables defined
-   in the default style. Not doing so leads to undefined behaviour as the
-   corresponding style of the Qt Widget will be left empty.
+.. hint:: Refer to the created default style for all available options
+
+.. hint:: Defined style options can be referenced via ``new_option = {other_option}``,
+   for example to use a different base color for mark-related things you can use
+   ``mark.color = {base0a}``.
 
 .. hint:: The python configparser module is not case sensitive. Therefore it is
    a good idea to keep all your styles in lower case.
