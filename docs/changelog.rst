@@ -27,7 +27,7 @@ Fixed:
   setting is changed
 
 
-v0.1.0
-------
+v0.1.0 (2019-08-15)
+-------------------
 
 Initial release of the Qt version.
