@@ -79,7 +79,12 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
-<li><a class="reference internal" href="#v0-1">v0.1</a></li>
+<li><a class="reference internal" href="#v0-1-0">v0.1.0</a></li>
+<li><a class="reference internal" href="#v0-2-0-unreleased">v0.2.0 (unreleased)</a><ul>
+<li><a class="reference internal" href="#added">Added:</a></li>
+<li><a class="reference internal" href="#changed">Changed:</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -106,9 +111,26 @@
   <div class="section" id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
 <p>All notable changes to vimiv are documented in this file.</p>
-<div class="section" id="v0-1">
-<h2>v0.1<a class="headerlink" href="#v0-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v0-1-0">
+<h2>v0.1.0<a class="headerlink" href="#v0-1-0" title="Permalink to this headline">¶</a></h2>
 <p>Initial release of the Qt version.</p>
+</div>
+<div class="section" id="v0-2-0-unreleased">
+<h2>v0.2.0 (unreleased)<a class="headerlink" href="#v0-2-0-unreleased" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="added">
+<h3>Added:<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>A global <code class="docutils literal notranslate"><span class="pre">font</span></code> style option to set all fonts at once. If a local option such as
+<code class="docutils literal notranslate"><span class="pre">statusbar.font</span></code> is defined, it overrides the global option.</p></li>
+</ul>
+</div>
+<div class="section" id="changed">
+<h3>Changed:<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>All styles are now based upon base16. Therefore custom styles must define the colors
+<code class="docutils literal notranslate"><span class="pre">base00</span></code> to <code class="docutils literal notranslate"><span class="pre">base0f</span></code>. All other style options are optional.</p></li>
+</ul>
+</div>
 </div>
 </div>
 

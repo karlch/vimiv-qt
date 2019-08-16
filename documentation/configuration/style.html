@@ -111,18 +111,26 @@ respectively.</p>
 on startup if they do not exist.  The styles directory is located in
 <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> where <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually
 <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
-<p>You can implement your own style by copying a default file in the <code class="docutils literal notranslate"><span class="pre">styles</span></code>
-directory, configuring it to your liking, and changing the <code class="docutils literal notranslate"><span class="pre">style</span></code> setting in
-the <code class="docutils literal notranslate"><span class="pre">vimiv.conf</span></code> file to the name of the new file.</p>
-<p>As the default files show, it is possible to define variables and referencing
-them afterwards. Say you define <code class="docutils literal notranslate"><span class="pre">red</span> <span class="pre">=</span> <span class="pre">#ff0000</span></code> and you would like the
-statusbar text to be red. You can then reference it via
-<code class="docutils literal notranslate"><span class="pre">statusbar.fg</span> <span class="pre">=</span> <span class="pre">{red}</span></code>.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Your style <strong>MUST</strong> implement <strong>ALL</strong> of the variables defined
-in the default style. Not doing so leads to undefined behaviour as the
-corresponding style of the Qt Widget will be left empty.</p>
+<p>Creating your own style is easy:</p>
+<ol class="arabic simple">
+<li><p>Create a new file in the <code class="docutils literal notranslate"><span class="pre">styles</span></code> directory. The file must start with the
+<code class="docutils literal notranslate"><span class="pre">[STYLE]</span></code> header.</p></li>
+<li><p>Define the colors <code class="docutils literal notranslate"><span class="pre">base00</span></code> to <code class="docutils literal notranslate"><span class="pre">base0f</span></code>. This is required as these colors are
+referenced by the individual options.</p></li>
+<li><p>Change the <code class="docutils literal notranslate"><span class="pre">style</span></code> setting in the <code class="docutils literal notranslate"><span class="pre">vimiv.conf</span></code> file to the name of your newly
+created file.</p></li>
+<li><p>Optional: override any other option such as the global <code class="docutils literal notranslate"><span class="pre">font</span></code> or individual
+settings like <code class="docutils literal notranslate"><span class="pre">thumbnail.padding</span></code>.</p></li>
+</ol>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Refer to the created default style for all available options</p>
+</div>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Defined style options can be referenced via <code class="docutils literal notranslate"><span class="pre">new_option</span> <span class="pre">=</span> <span class="pre">{other_option}</span></code>,
+for example to use a different base color for mark-related things you can use
+<code class="docutils literal notranslate"><span class="pre">mark.color</span> <span class="pre">=</span> <span class="pre">{base0a}</span></code>.</p>
 </div>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
