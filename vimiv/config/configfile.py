@@ -99,7 +99,7 @@ def _update_setting(name, parser):
         logging.debug("Setting '%s' to '%s'", setting_name, parser_option)
         setting.value = parser_option
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
-        logging.info("%s in configfile", str(e))
+        logging.debug("%s in configfile", str(e))
     except ValueError as e:
         logging.error("Error reading setting %s: %s", setting_name, str(e))
 
