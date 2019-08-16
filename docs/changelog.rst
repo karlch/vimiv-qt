@@ -3,11 +3,6 @@ Changelog
 
 All notable changes to vimiv are documented in this file.
 
-v0.1.0
-------
-
-Initial release of the Qt version.
-
 
 v0.2.0 (unreleased)
 -------------------
@@ -30,3 +25,9 @@ Fixed:
 * Elided text is now calculated correctly in the library.
 * Setting value completions are no longer appended to the existing suggestions when the
   setting is changed
+
+
+v0.1.0
+------
+
+Initial release of the Qt version.
