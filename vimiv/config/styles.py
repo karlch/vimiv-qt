@@ -168,8 +168,7 @@ def parse():
     elif os.path.exists(filename):
         _style = read(filename)
     else:
-        logging.error("Style file '%s' does not exist", filename)
-        logging.debug("Falling back to default style")
+        logging.error("Style file '%s' not found, falling back to default", filename)
         _style = create_default()
 
 
