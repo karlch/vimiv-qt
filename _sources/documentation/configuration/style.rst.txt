@@ -11,6 +11,9 @@ on startup if they do not exist.  The styles directory is located in
 ``$XDG_CONFIG_HOME/vimiv/`` where ``$XDG_CONFIG_HOME`` is usually
 ``~/.config/`` if you have not updated it.
 
+A bunch of base16 styles to pick from are available in the
+`base16-vimiv repository <https://github.com/karlch/base16-vimiv>`_.
+
 Creating your own style is easy:
 
 #. Create a new file in the ``styles`` directory. The file must start with the
