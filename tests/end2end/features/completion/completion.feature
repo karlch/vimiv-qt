@@ -83,3 +83,11 @@ Feature: Using completion.
         And I run command
         And I press flscrn
         Then a possible completion should contain fullscreen
+
+    Scenario: Bug adding the current value multiple times to setting value suggestions
+        Given I open any directory
+        When I run set library.width +0.05
+        And I run set library.width +0.05
+        And I enter command mode with "set library.width"
+        And I run complete
+        Then there should be 6 completion options

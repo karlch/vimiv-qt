@@ -183,6 +183,7 @@ class SettingsOptionModel(api.completion.BaseModel):
 
     def _on_changed(self, _value):
         """Update data if the value of the setting has changed."""
+        self.clear()
         self._update_data()
 
 

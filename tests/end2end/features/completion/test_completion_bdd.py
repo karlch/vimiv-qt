@@ -50,3 +50,9 @@ def check_selected_completion_text(text):
     ]
     completion_text = "\n".join(completion_data)
     assert text in completion_text
+
+
+@bdd.then(bdd.parsers.parse("there should be {number:d} completion options"))
+def check_number_completion_suggestions(number):
+    model = completionwidget.instance().model()
+    assert model.rowCount() == number

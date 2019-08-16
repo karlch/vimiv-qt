@@ -28,3 +28,5 @@ Fixed:
 ^^^^^^
 
 * Elided text is now calculated correctly in the library.
+* Setting value completions are no longer appended to the existing suggestions when the
+  setting is changed
