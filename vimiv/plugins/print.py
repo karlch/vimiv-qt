@@ -66,10 +66,7 @@ class PrintHandler(QObject):
 
         if preview:
             dialog = QPrintPreviewDialog()
-            # See https://github.com/stlehmann/PyQt5-stubs/pull/7
-            # TODO Remove the type: ignore once the PR was merged and a new version is
-            # on PyPi
-            dialog.paintRequested.connect(handle_print)  # type: ignore
+            dialog.paintRequested.connect(handle_print)
             auto_apply_orientation = False
         else:
             dialog = QPrintDialog()
