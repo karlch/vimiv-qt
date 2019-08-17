@@ -87,6 +87,7 @@
 <li><a class="reference internal" href="#delete">delete</a></li>
 <li><a class="reference internal" href="#enter">enter</a></li>
 <li><a class="reference internal" href="#fullscreen">fullscreen</a></li>
+<li><a class="reference internal" href="#log">log</a></li>
 <li><a class="reference internal" href="#mark">mark</a></li>
 <li><a class="reference internal" href="#mark-clear">mark-clear</a></li>
 <li><a class="reference internal" href="#mark-restore">mark-restore</a></li>
@@ -102,6 +103,7 @@
 <li><a class="reference internal" href="#search-next">search-next</a></li>
 <li><a class="reference internal" href="#search-prev">search-prev</a></li>
 <li><a class="reference internal" href="#set">set</a></li>
+<li><a class="reference internal" href="#sleep">sleep</a></li>
 <li><a class="reference internal" href="#tag-delete">tag-delete</a></li>
 <li><a class="reference internal" href="#tag-load">tag-load</a></li>
 <li><a class="reference internal" href="#tag-write">tag-write</a></li>
@@ -234,50 +236,56 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
 <td><p>Toggle fullscreen mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-log"><span class="std std-ref">log</span></a></p></td>
+<td><p>Log a message with the corresponding log level.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
 <td><p>Mark one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
 <td><p>Clear all marks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
 <td><p>Restore the last cleared marks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Select next image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
 <td><p>Open one or more paths.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Select previous image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
 <td><p>Quit vimiv.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
 <td><p>Repeat the last command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
 <td><p>Scale the image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
 <td><p>Start a search.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
 <td><p>Continue search to the next match.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
 <td><p>Continue search to the previous match.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
 <td><p>Set an option.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
+<td><p>Sleep for a given number of seconds.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
 <td><p>Delete an existing tag.</p></td>
@@ -384,6 +392,18 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <div class="section" id="fullscreen">
 <span id="ref-global-fullscreen"></span><h3>fullscreen<a class="headerlink" href="#fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
+</div>
+<div class="section" id="log">
+<span id="ref-global-log"></span><h3>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
+<p>Log a message with the corresponding log level.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:log</span> <span class="pre">level</span> <span class="pre">message</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code>: Log level of the message (debug, info, warning, error, critical).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">message</span></code>: Message to log.</p></li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="mark">
 <span id="ref-global-mark"></span><h3>mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h3>
@@ -516,6 +536,17 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 <dt>positional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="sleep">
+<span id="ref-global-sleep"></span><h3>sleep<a class="headerlink" href="#sleep" title="Permalink to this headline">¶</a></h3>
+<p>Sleep for a given number of seconds.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:sleep</span> <span class="pre">duration</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">duration</span></code>: The number of seconds to sleep.</p></li>
 </ul>
 </dd>
 </dl>

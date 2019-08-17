@@ -16,6 +16,7 @@ Added:
   image mode by default. It comes with the style options ``metadata.bg``,
   ``metadata.padding`` and ``metadata.border_radius``.
 * Completion of tag names for the ``:tag-*`` commands.
+* The ``--command`` argument to run arbitrary commands on startup.
 
 Changed:
 ^^^^^^^^
@@ -33,6 +34,12 @@ Fixed:
 * Completions are now mode dependent removing misleading completions such as undelete in
   manipulate mode.
 * Crash when trying to open tag which does not exist or has wrong permissions
+
+Removed:
+^^^^^^^^
+
+* The ``--slideshow`` argument as it was broken and can easily be emulated by the new
+  ``--command`` argument using ``--command slideshow``.
 
 
 v0.1.0 (2019-08-15)

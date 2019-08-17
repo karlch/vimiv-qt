@@ -83,6 +83,7 @@
 <li><a class="reference internal" href="#added">Added:</a></li>
 <li><a class="reference internal" href="#changed">Changed:</a></li>
 <li><a class="reference internal" href="#fixed">Fixed:</a></li>
+<li><a class="reference internal" href="#removed">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-0-2019-08-15">v0.1.0 (2019-08-15)</a></li>
@@ -123,6 +124,7 @@
 image mode by default. It comes with the style options <code class="docutils literal notranslate"><span class="pre">metadata.bg</span></code>,
 <code class="docutils literal notranslate"><span class="pre">metadata.padding</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata.border_radius</span></code>.</p></li>
 <li><p>Completion of tag names for the <code class="docutils literal notranslate"><span class="pre">:tag-*</span></code> commands.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">--command</span></code> argument to run arbitrary commands on startup.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -142,6 +144,13 @@ setting is changed.</p></li>
 <li><p>Completions are now mode dependent removing misleading completions such as undelete in
 manipulate mode.</p></li>
 <li><p>Crash when trying to open tag which does not exist or has wrong permissions</p></li>
+</ul>
+</div>
+<div class="section" id="removed">
+<h3>Removed:<a class="headerlink" href="#removed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">--slideshow</span></code> argument as it was broken and can easily be emulated by the new
+<code class="docutils literal notranslate"><span class="pre">--command</span></code> argument using <code class="docutils literal notranslate"><span class="pre">--command</span> <span class="pre">slideshow</span></code>.</p></li>
 </ul>
 </div>
 </div>

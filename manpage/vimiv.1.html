@@ -112,7 +112,7 @@
 <h1>Vimiv man page<a class="headerlink" href="#vimiv-man-page" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>vimiv</strong> [<strong>-h</strong>] [<strong>–help</strong>] [<strong>-f</strong>] [<strong>–fullscreen</strong>] [<strong>-v</strong>] [<strong>–version</strong>] [<strong>–slideshow</strong>] [<strong>-g</strong> <em>WIDTHxHEIGHT</em>] [<strong>–geometry</strong> <em>WIDTHxHEIGHT</em>] [<strong>–temp-basedir</strong>] [<strong>–config</strong> <em>FILE</em>] [<strong>–keyfile</strong> <em>FILE</em>] [<strong>-s</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–set</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–log-level</strong> <em>LEVEL</em>] [<strong>PATH</strong>]</p>
+<p><strong>vimiv</strong> [<strong>-h</strong>] [<strong>–help</strong>] [<strong>-f</strong>] [<strong>–fullscreen</strong>] [<strong>-v</strong>] [<strong>–version</strong>] [<strong>-g</strong> <em>WIDTHxHEIGHT</em>] [<strong>–geometry</strong> <em>WIDTHxHEIGHT</em>] [<strong>–temp-basedir</strong>] [<strong>–config</strong> <em>FILE</em>] [<strong>–keyfile</strong> <em>FILE</em>] [<strong>-s</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–set</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–log-level</strong> <em>LEVEL</em>] [<strong>–command</strong> <em>COMMAND</em>] [<strong>PATH</strong>]</p>
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -152,10 +152,6 @@ features are:</p>
 <blockquote>
 <div><p>Print version information and exit</p>
 </div></blockquote>
-<p><strong>–slideshow</strong></p>
-<blockquote>
-<div><p>Start slideshow at start-up</p>
-</div></blockquote>
 <p><strong>-g</strong> <em>WIDTHxHEIGHT</em>, <strong>–geometry</strong> <em>WIDTHxHEIGHT</em></p>
 <blockquote>
 <div><p>Set the starting geometry</p>
@@ -179,6 +175,10 @@ features are:</p>
 <p><strong>–log-level</strong> <em>LEVEL</em></p>
 <blockquote>
 <div><p>Set log level to LEVEL</p>
+</div></blockquote>
+<p><strong>–command</strong> <em>COMMAND</em></p>
+<blockquote>
+<div><p>Run COMMAND on startup, usable multiple times</p>
 </div></blockquote>
 </div>
 </div>
