@@ -69,12 +69,17 @@ def run(text, count=None, mode=None):
     """
     logging.debug("%s: Running '%s'", __name__, text)
     # Expand percent here as it only needs to be done once and is rather expensive
-    # Expand alias here the first time as the aliased command may be a chain that needs
-    # to be split
-    text = expand_percent(alias(text, mode), mode)
+    text = expand_percent(text, mode)
     logging.debug("%s: Expanded text to '%s'", __name__, text)
+    # Split text parts recursively updating aliases in the individual parts
+
+    def replace_aliases(text):
+        return text if SEPARATOR in text else alias(text.strip(), mode)
+
+    textparts = utils.recursive_split(text, SEPARATOR, replace_aliases)
+    logging.debug("%s: Split text into parts '%s'", __name__, textparts)
     try:
-        for i, cmdpart in enumerate(text.split(SEPARATOR)):
+        for i, cmdpart in enumerate(textparts):
             logging.debug("%s: Handling part %d '%s'", __name__, i, cmdpart)
             _run_single(cmdpart, count, mode)
     except CommandPartFailed:
@@ -90,7 +95,6 @@ def _run_single(text, count=None, mode=None):
         count: Count given if any.
         mode: Mode to run the command in.
     """
-    text = alias(text, mode)  # Update aliases again as part of chain may be an alias
     if text.startswith("!"):
         external(text.lstrip("!"))
     else:

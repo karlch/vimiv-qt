@@ -46,5 +46,6 @@ Feature: Chain commands together.
 
     Scenario: Run a chain of aliases where each alias consists of a chain of commands
         When I run alias double_trouble scroll down \&\& scroll down
-        And I run double_trouble && double_trouble
-        Then the library row should be 5
+        And I run alias reverse_double_trouble scroll up \&\& scroll up
+        And I run double_trouble && double_trouble && reverse_double_trouble
+        Then the library row should be 3
