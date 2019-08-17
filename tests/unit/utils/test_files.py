@@ -99,3 +99,19 @@ def test_get_size_directory_with_images(mocker):
 def test_get_size_with_permission_error(mocker):
     mocker.patch("os.path.isfile", side_effect=PermissionError)
     assert files.get_size("any") == "N/A"
+
+
+def test_listfiles(tmpdir):
+    tmpdir.join("file0").open("w")  # File in root directory
+    sub0 = tmpdir.mkdir("sub0")  # Sub-directory with two files
+    sub0.join("file0").open("w")
+    sub0.join("file1").open("w")
+    tmpdir.mkdir("sub1").join("file0").open("w")  # Sub-directory with one file
+    tmpdir.mkdir("sub2")  # Sub-directory with no files
+    expected = [
+        "file0",
+        os.path.join("sub0", "file0"),
+        os.path.join("sub0", "file1"),
+        os.path.join("sub1", "file0"),
+    ]
+    assert sorted(expected) == sorted(files.listfiles(str(tmpdir)))

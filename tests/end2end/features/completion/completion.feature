@@ -32,6 +32,21 @@ Feature: Using completion.
         When I enter command mode with "undelete "
         Then the completion model should be trash
 
+    Scenario: Using tag completion with tag-delete.
+        Given I open any directory
+        When I enter command mode with "tag-delete "
+        Then the completion model should be tag
+
+    Scenario: Using tag completion with tag-load.
+        Given I open any directory
+        When I enter command mode with "tag-load "
+        Then the completion model should be tag
+
+    Scenario: Using tag completion with tag-write.
+        Given I open any directory
+        When I enter command mode with "tag-write "
+        Then the completion model should be tag
+
     Scenario: Crash on path completion with non-existent directory
         Given I open any directory
         When I enter command mode with "open /not/a/valid/path"
@@ -97,3 +112,11 @@ Feature: Using completion.
         When I enter manipulate mode
         And I enter command mode with "undelete "
         Then the completion model should be command
+
+    Scenario: Complete an existing tag
+        Given I start vimiv
+        When I run tag-write my_tag_name
+        And I enter command mode with "tag-load "
+        Then the completion model should be tag
+        And there should be 1 completion options
+        And a possible completion should contain my_tag_name
