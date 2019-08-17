@@ -91,8 +91,10 @@ class PathModel(api.completion.BaseModel):
         _last_directory: Last directory to avoid re-evaluating on every character.
     """
 
-    def __init__(self, command):
-        super().__init__(f":{command} ", text_filter=StripFilter(command))
+    def __init__(self, command, valid_modes=api.modes.GLOBALS):
+        super().__init__(
+            f":{command} ", text_filter=StripFilter(command), valid_modes=valid_modes
+        )
         self._command = command
         self._last_directory = ""
 
@@ -195,7 +197,9 @@ class TrashModel(api.completion.BaseModel):
     """
 
     def __init__(self):
-        super().__init__(":undelete ", column_widths=(0.4, 0.45, 0.15))
+        super().__init__(
+            ":undelete ", column_widths=(0.4, 0.45, 0.15), valid_modes=api.modes.GLOBALS
+        )
         self._initialized = False
 
     def on_enter(self, text: str, mode: api.modes.Mode) -> None:

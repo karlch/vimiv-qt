@@ -42,11 +42,11 @@ class Completer(QObject):
     @utils.slot
     def _on_entered(self):
         """Initialize completion when command mode was entered."""
-        last_mode = api.modes.COMMAND.last
         # Set model according to text, defaults are not possible as
         # :command accepts arbitrary text as argument
         self._update_proxy_model(
-            self._cmd.text(), lambda model, text: model.on_enter(text, last_mode)
+            self._cmd.text(),
+            lambda model, text: model.on_enter(text, api.modes.COMMAND.last),
         )
         # Show if the model is not empty
         self._maybe_show()
@@ -77,7 +77,7 @@ class Completer(QObject):
             text: Text in the commandline which defines the model.
             initializer: Callback function to initialize the new proxy model.
         """
-        proxy_model = api.completion.get_module(self._cmd.text())
+        proxy_model = api.completion.get_module(text, api.modes.COMMAND.last)
         initializer(proxy_model.sourceModel(), proxy_model.filtertext(text))
         if proxy_model != self._proxy_model:
             self._proxy_model = proxy_model
