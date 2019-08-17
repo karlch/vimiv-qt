@@ -43,6 +43,11 @@ class Mark(QObject):
         self._last_marked: List[str] = []
         self._watcher = cast(QFileSystemWatcher, None)
 
+    @property
+    def tagdir(self) -> str:
+        """Path to the tag directory."""
+        return Tag.dirname()
+
     @keybindings.register("m", "mark %")
     @commands.register()
     def mark(self, paths: List[str]) -> None:

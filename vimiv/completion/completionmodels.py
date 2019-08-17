@@ -236,6 +236,40 @@ class TrashModel(api.completion.BaseModel):
         self._initialized = True
 
 
+class TagModel(api.completion.BaseModel):
+    """Completion model filled with valid tag names for the :tag-* commands.
+
+    Attributes:
+        _command: Tag command for which the completion model is valid.
+        _initialized: Bool to allow only re-creating the completion options on_enter.
+    """
+
+    def __init__(self, suffix):
+        super().__init__(f":tag-{suffix}", valid_modes=api.modes.GLOBALS)
+        self._command = f"tag-{suffix}"
+        self._initialized = False
+
+    def on_enter(self, text: str, _mode: api.modes.Mode) -> None:
+        """Update tag model on enter."""
+        self._initialized = False
+        self.on_text_changed(text)
+
+    def on_text_changed(self, text: str) -> None:
+        """Update tag model the once when text changed.
+
+        This is required in addition to on_enter as it is very likely to enter tag
+        completion by typing :tag-.
+        """
+        if self._initialized:
+            return
+        self.clear()
+        data = [
+            (f"{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
+        ]
+        self.set_data(data)
+        self._initialized = True
+
+
 def init():
     """Create completion models."""
     Empty()
@@ -246,4 +280,6 @@ def init():
     SettingsModel()
     for _, setting in api.settings.items():
         SettingsOptionModel(setting)
+    for suffix in ("delete", "load", "write"):
+        TagModel(suffix)
     TrashModel()
