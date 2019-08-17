@@ -18,7 +18,7 @@ import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Callable
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
@@ -43,6 +43,19 @@ class CommandPartFailed(Exception):
     """Raised if a command part fails, e.g. due to the command being unknown."""
 
 
+def text_non_whitespace(func: Callable[..., None]):
+    """Decorator to only run function if text argument is more than plain whitespace."""
+
+    def inner(text: str, *args, **kwargs) -> None:
+        text = text.strip()
+        if not text:
+            return None
+        return func(text, *args, **kwargs)
+
+    return inner
+
+
+@text_non_whitespace
 def run(text, count=None, mode=None):
     """Run a (chain of) command(s).
 
@@ -55,6 +68,11 @@ def run(text, count=None, mode=None):
         mode: Mode to run the command in.
     """
     logging.debug("%s: Running '%s'", __name__, text)
+    # Expand percent here as it only needs to be done once and is rather expensive
+    # Expand alias here the first time as the aliased command may be a chain that needs
+    # to be split
+    text = expand_percent(alias(text, mode), mode)
+    logging.debug("%s: Expanded text to '%s'", __name__, text)
     try:
         for i, cmdpart in enumerate(text.split(SEPARATOR)):
             logging.debug("%s: Handling part %d '%s'", __name__, i, cmdpart)
@@ -63,6 +81,7 @@ def run(text, count=None, mode=None):
         logging.debug("%s: Stopping at %d as '%s' failed", __name__, i, cmdpart)
 
 
+@text_non_whitespace
 def _run_single(text, count=None, mode=None):
     """Run either external or internal command.
 
@@ -71,25 +90,12 @@ def _run_single(text, count=None, mode=None):
         count: Count given if any.
         mode: Mode to run the command in.
     """
-    text = text.strip()
-    if not text:
-        return
-    text = _update_command(text, mode=mode)
+    text = alias(text, mode)  # Update aliases again as part of chain may be an alias
     if text.startswith("!"):
         external(text.lstrip("!"))
     else:
         count = str(count) if count is not None else ""
         command(count + text, mode)
-
-
-def _update_command(text, mode):
-    """Update command with aliases and percent wildcard.
-
-    Args:
-        text: String passed as command.
-        mode: Mode in which the command is supposed to run.
-    """
-    return expand_percent(alias(text, mode), mode)
 
 
 def command(text, mode=None):

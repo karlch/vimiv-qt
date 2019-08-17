@@ -31,3 +31,16 @@ Feature: Chain commands together.
         And the message
             'something: unknown command for mode library'
             should be displayed
+
+    Scenario: Run an alias of chained commands
+        When I run alias double_trouble scroll down \&\& scroll down
+        And I run double_trouble
+        # Run twice as running once also works if the alias is only aliased to scroll
+        # down and the first scroll down is executed right after the alias command
+        And I run double_trouble
+        Then the library row should be 5
+
+    Scenario: Run a chain of aliases where each alias consists of a chain of commands
+        When I run alias double_trouble scroll down \&\& scroll down
+        And I run double_trouble && double_trouble
+        Then the library row should be 5
