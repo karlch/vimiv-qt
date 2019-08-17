@@ -53,7 +53,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 """
 
 import string
-from typing import cast, Dict, Sequence, Tuple, Optional, List
+from typing import cast, Dict, Sequence, Tuple, Optional
 
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -133,7 +133,7 @@ class BaseModel(QStandardItemModel):
         text: str,
         text_filter: Optional[BaseFilter] = None,
         column_widths: Tuple[float, ...] = (1,),
-        valid_modes: List[modes.Mode] = modes.ALL,
+        valid_modes: Tuple[modes.Mode, ...] = modes.ALL,
     ):
         """Initialize class and create completion module.
 

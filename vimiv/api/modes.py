@@ -30,7 +30,7 @@ All modes inherit from the common :class:`Mode` base class.
 
 import abc
 import logging
-from typing import cast, Any, Callable, List
+from typing import cast, Any, Callable, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
@@ -251,9 +251,9 @@ COMMAND = _CommandMode("command")
 MANIPULATE = _MainMode("manipulate")
 
 
-# Utility lists to allow iterating
-ALL: List[Mode] = [GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE]
-GLOBALS: List[Mode] = [IMAGE, LIBRARY, THUMBNAIL]
+# Utility tuples to allow iterating
+ALL: Tuple[Mode, ...] = (GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE)
+GLOBALS: Tuple[Mode, ...] = (IMAGE, LIBRARY, THUMBNAIL)
 
 
 def current() -> Mode:
