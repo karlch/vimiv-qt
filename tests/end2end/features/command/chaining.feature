@@ -11,6 +11,10 @@ Feature: Chain commands together.
         When I run scroll down && scroll down && scroll down
         Then the library row should be 4
 
+    Scenario: Chain commands with count together.
+        When I run 2scroll down && scroll down
+        Then the library row should be 4
+
     Scenario: Fail first of two chained commands
         When I run something wrong && scroll down
         Then the library row should be 1
