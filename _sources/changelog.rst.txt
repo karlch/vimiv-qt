@@ -12,6 +12,9 @@ Added:
 
 * A global ``font`` style option to set all fonts at once. If a local option such as
   ``statusbar.font`` is defined, it overrides the global option.
+* New widget to display image metadata with the ``:metadata`` command bound to ``i`` in
+  image mode by default. It comes with the style options ``metadata.bg``,
+  ``metadata.padding`` and ``metadata.border_radius``.
 
 Changed:
 ^^^^^^^^
