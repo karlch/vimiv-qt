@@ -24,6 +24,9 @@ from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import xdg, crash_handler, statusbar_loghandler, trash_manager
 
+# Must be imported to create the commands using the decorators
+from vimiv.commands import misccommands  # pylint: disable=unused-import
+
 
 _tmpdir = None
 
