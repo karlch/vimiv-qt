@@ -61,7 +61,8 @@ class MainWindow(QWidget):
         compwidget = CompletionView(self)
         self._overlays.append(compwidget)
         self._overlays.append(KeyhintWidget(self))
-        self._overlays.append(MetadataWidget(self))
+        if MetadataWidget is not None:  # Not defined if there is no exif support
+            self._overlays.append(MetadataWidget(self))
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Initialize completer and config commands
         completer.Completer(commandline, compwidget)
