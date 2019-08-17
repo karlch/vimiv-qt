@@ -819,12 +819,18 @@ filter regular expression.</p>
 
 <dl class="class">
 <dt id="vimiv.api.completion.BaseModel">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">text_filter: Optional[vimiv.api.completion.BaseFilter] = None</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">text_filter: Optional[vimiv.api.completion.BaseFilter] = None</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em>, <em class="sig-param">valid_modes: Tuple[vimiv.api.modes.Mode</em>, <em class="sig-param">...] = (Mode.GLOBAL</em>, <em class="sig-param">Mode.IMAGE</em>, <em class="sig-param">Mode.LIBRARY</em>, <em class="sig-param">Mode.THUMBNAIL</em>, <em class="sig-param">Mode.COMMAND</em>, <em class="sig-param">Mode.MANIPULATE)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base model used for completion models.</p>
 <dl class="attribute">
 <dt id="vimiv.api.completion.BaseModel.column_widths">
 <code class="sig-name descname">column_widths</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.column_widths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tuple of floats [0..1] defining the width of each column.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.api.completion.BaseModel.modes">
+<code class="sig-name descname">modes</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.modes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modes for which this completion model is valid.</p>
 </dd></dl>
 
 <dl class="method">
@@ -869,11 +875,14 @@ filter regular expression.</p>
 
 <dl class="function">
 <dt id="vimiv.api.completion.get_module">
-<code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.BaseFilter<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.BaseFilter<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the completion module which is valid for a given command line text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – The current command line text.</p></li>
+<li><p><strong>mode</strong> – Mode for which the module should be valid.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A completion model providing completion options.</p>
