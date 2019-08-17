@@ -257,7 +257,12 @@ class Tag:
         self.mode = "r" if read_only else ("r+" if exists else "a+")
         logging.debug("Opened tag object: %s", self)
         os.makedirs(os.path.dirname(abspath), exist_ok=True)
-        self._file = open(abspath, self.mode)
+        try:
+            self._file = open(abspath, self.mode)
+        except FileNotFoundError:  # For read-only if the file does not exist
+            raise commands.CommandError(f"No tag called '{name}'")
+        except (PermissionError, OSError) as e:
+            raise commands.CommandError(f"Error reading '{name}': {e}")
 
         if read_only:
             logging.debug("%s: Reading tag file", self)

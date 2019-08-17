@@ -54,3 +54,11 @@ Feature: Mark and tag images.
         And I wait for the working directory handler
         Then the file image_01.jpg should not exist
         And image_01.jpg should not be marked
+
+    Scenario: Do not crash on non-existing tag
+        Given I start vimiv
+        When I run tag-load non-existing
+        Then no crash should happen
+        And the message
+            'tag-load: No tag called 'non-existing''
+            should be displayed
