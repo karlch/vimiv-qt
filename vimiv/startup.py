@@ -20,6 +20,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins, version, gui
+from vimiv.commands import runners
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import xdg, crash_handler, statusbar_loghandler, trash_manager
@@ -76,6 +77,8 @@ def setup_post_app(args):
     init_ui(args)
     plugins.load()
     init_paths(args)
+    if args.command:
+        run_startup_commands(*args.command)
 
 
 def setup_logging(log_level):
@@ -180,3 +183,19 @@ def update_settings(args):
             logging.error("Unknown setting %s", option)
         except ValueError as e:
             logging.error(str(e))
+
+
+def run_startup_commands(*commands: str):
+    """Run commands given via --command at startup.
+
+    Args:
+        commands: All command strings given via individual --command arguments.
+    """
+    total = len(commands)
+    for i, command in enumerate(commands):
+        logging.debug("Startup commands: running %d/%d '%s'", i + 1, total, command)
+        if "quit" in command:  # This does not work without a running app
+            logging.warning("Quitting forcefully as the app does not exist")
+            sys.exit(2)
+        else:
+            runners.run(command, mode=api.modes.current())

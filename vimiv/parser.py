@@ -30,9 +30,6 @@ def get_argparser() -> argparse.ArgumentParser:
         help="Print version information and exit",
     )
     parser.add_argument(
-        "--slideshow", action="store_true", help="Start slideshow at start-up"
-    )
-    parser.add_argument(
         "-g",
         "--geometry",
         type=geometry,
@@ -70,6 +67,13 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="LEVEL",
         help="Set log level to LEVEL",
         default="info",
+    )
+    parser.add_argument(
+        "--command",
+        type=str,
+        action="append",
+        metavar="COMMAND",
+        help="Run COMMAND on startup, usable multiple times",
     )
     parser.add_argument(
         "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"

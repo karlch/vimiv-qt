@@ -91,13 +91,27 @@ def any_image_of_size(qtbot, tmpdir, size):
     vimivprocess.exit()
 
 
-@bdd.given(bdd.parsers.parse("I open {N} images"))
+@bdd.given(bdd.parsers.parse("I open {N:d} images"))
 def n_images(qtbot, tmpdir, N):
-    paths = []
-    for i in range(1, int(N) + 1):
-        path = str(tmpdir.join("image_%02d.jpg" % (i)))
-        create_image(path)
-        paths.append(path)
+    paths = _create_n_images(tmpdir, N)
     vimivprocess.init(qtbot, paths)
     yield
     vimivprocess.exit()
+
+
+@bdd.given(bdd.parsers.parse("I open {N:d} images with {args}"))
+def n_images_with_args(qtbot, tmpdir, N, args):
+    paths = _create_n_images(tmpdir, N)
+    arglist = paths + args.split()
+    vimivprocess.init(qtbot, arglist)
+    yield
+    vimivprocess.exit()
+
+
+def _create_n_images(tmpdir, number):
+    paths = []
+    for i in range(1, number + 1):
+        path = str(tmpdir.join("image_%02d.jpg" % (i)))
+        create_image(path)
+        paths.append(path)
+    return paths
