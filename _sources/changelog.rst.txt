@@ -15,6 +15,7 @@ Added:
 * New widget to display image metadata with the ``:metadata`` command bound to ``i`` in
   image mode by default. It comes with the style options ``metadata.bg``,
   ``metadata.padding`` and ``metadata.border_radius``.
+* Completion of tag names for the ``:tag-*`` commands.
 
 Changed:
 ^^^^^^^^
