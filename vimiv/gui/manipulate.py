@@ -174,6 +174,7 @@ class ManipulateImage(QLabel):
     def _on_entered(self):
         if self._pixmap is not None:  # No image to display
             self.show()
+            self.raise_()
 
     @slot
     def _update_pixmap(self, pixmap: QPixmap):
