@@ -27,8 +27,10 @@ Fixed:
 
 * Elided text is now calculated correctly in the library.
 * Setting value completions are no longer appended to the existing suggestions when the
-  setting is changed
+  setting is changed.
 * Overlay widgets are always raised in addition to shown ensuring them to be visible.
+* Completions are now mode dependent removing misleading completions such as undelete in
+  manipulate mode.
 
 
 v0.1.0 (2019-08-15)
