@@ -31,6 +31,7 @@ Fixed:
 * Overlay widgets are always raised in addition to shown ensuring them to be visible.
 * Completions are now mode dependent removing misleading completions such as undelete in
   manipulate mode.
+* Crash when trying to open tag which does not exist or has wrong permissions
 
 
 v0.1.0 (2019-08-15)
