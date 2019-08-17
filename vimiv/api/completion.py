@@ -53,7 +53,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 """
 
 import string
-from typing import cast, Dict, Sequence, Tuple, Optional
+from typing import cast, Dict, Sequence, Tuple, Optional, List
 
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -61,19 +61,21 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from . import modes, settings
 
 
-def get_module(text: str) -> "BaseFilter":
+def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
     """Return the completion module which is valid for a given command line text.
 
     Args:
         text: The current command line text.
+        mode: Mode for which the module should be valid.
     Returns:
         A completion model providing completion options.
     """
     best_match, best_match_size = cast(BaseFilter, None), -1
     for required_text, module in _modules.items():
-        match_size = len(required_text)
-        if text.startswith(required_text) and len(required_text) > best_match_size:
-            best_match, best_match_size = module, match_size
+        if mode in module.sourceModel().modes:
+            match_size = len(required_text)
+            if text.startswith(required_text) and len(required_text) > best_match_size:
+                best_match, best_match_size = module, match_size
     return best_match
 
 
@@ -123,6 +125,7 @@ class BaseModel(QStandardItemModel):
 
     Attributes:
         column_widths: Tuple of floats [0..1] defining the width of each column.
+        modes: Modes for which this completion model is valid.
     """
 
     def __init__(
@@ -130,6 +133,7 @@ class BaseModel(QStandardItemModel):
         text: str,
         text_filter: Optional[BaseFilter] = None,
         column_widths: Tuple[float, ...] = (1,),
+        valid_modes: List[modes.Mode] = modes.ALL,
     ):
         """Initialize class and create completion module.
 
@@ -137,9 +141,11 @@ class BaseModel(QStandardItemModel):
             text: The text in the commandline for which this module is valid.
             text_filter: Filter class used to filter valid completions.
             column_widths: Width of each column shown in the completion widget.
+            valid_modes: Modes for which this completion model is valid.
         """
         super().__init__()
         self.column_widths = column_widths
+        self.modes = valid_modes
         # Register module using the filter
         text_filter = text_filter if text_filter is not None else BaseFilter()
         text_filter.setSourceModel(self)

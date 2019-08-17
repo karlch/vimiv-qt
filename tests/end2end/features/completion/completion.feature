@@ -91,3 +91,9 @@ Feature: Using completion.
         And I enter command mode with "set library.width"
         And I run complete
         Then there should be 6 completion options
+
+    Scenario: Do not show trash completion in manipulate mode
+        Given I open any image
+        When I enter manipulate mode
+        And I enter command mode with "undelete "
+        Then the completion model should be command
