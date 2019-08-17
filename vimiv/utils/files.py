@@ -115,6 +115,22 @@ def is_image(filename: str) -> bool:
         return False
 
 
+def listfiles(directory: str, abspath=False) -> List[str]:
+    """Return list of all files in directory traversing the directory recursively.
+
+    Args:
+        directory: The directory to traverse.
+        abspath: Return the absolute path to the files, not relative to directory.
+    """
+    return [
+        os.path.join(root, fname)
+        if abspath
+        else os.path.join(root.replace(directory, "").lstrip("/"), fname)
+        for root, _, files in os.walk(directory)
+        for fname in files
+    ]
+
+
 # Only add svg check to imghdr if svg available
 if QSvgWidget is not None:
 
