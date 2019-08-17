@@ -7,6 +7,7 @@
 """Classes and functions to run commands.
 
 Module Attributes:
+    SEPARATOR: String used to separate chained commands.
     external: ExternalRunner instance to run shell commands.
 
     _last_command: Dictionary storing the last command for each mode.
@@ -25,6 +26,8 @@ from vimiv import api, utils
 from vimiv.commands import aliases
 
 
+SEPARATOR = "&&"
+
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
 
 
@@ -36,7 +39,31 @@ class LastCommand(NamedTuple):
     Arguments: List[str]
 
 
+class CommandPartFailed(Exception):
+    """Raised if a command part fails, e.g. due to the command being unknown."""
+
+
 def run(text, count=None, mode=None):
+    """Run a (chain of) command(s).
+
+    The text to run is split at SEPARATOR and each part is handled individually by
+    _run_single. If one part fails, the remaining parts are not executed.
+
+    Args:
+        text: Complete text given to command line or keybinding.
+        count: Count given if any.
+        mode: Mode to run the command in.
+    """
+    logging.debug("%s: Running '%s'", __name__, text)
+    try:
+        for i, cmdpart in enumerate(text.split(SEPARATOR)):
+            logging.debug("%s: Handling part %d '%s'", __name__, i, cmdpart)
+            _run_single(cmdpart, count, mode)
+    except CommandPartFailed:
+        logging.debug("%s: Stopping at %d as '%s' failed", __name__, i, cmdpart)
+
+
+def _run_single(text, count=None, mode=None):
     """Run either external or internal command.
 
     Args:
@@ -119,10 +146,13 @@ def _run_command(count, cmdname, args, mode):
         api.status.update()
     except api.commands.CommandNotFound as e:
         logging.error(str(e))
+        raise CommandPartFailed from e
     except (api.commands.ArgumentError, api.commands.CommandError) as e:
         logging.error("%s: %s", cmdname, str(e))
+        raise CommandPartFailed from e
     except api.commands.CommandWarning as w:
         logging.warning("%s: %s", cmdname, str(w))
+        raise CommandPartFailed from w
 
 
 def _parse(text):
