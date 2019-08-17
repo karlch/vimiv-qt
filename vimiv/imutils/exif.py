@@ -76,6 +76,65 @@ def exif_date_time(filename) -> str:
         return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
 
 
+class ExifInformation(dict):
+    """Dictionary to load and store exif information of a single image.
+
+    Exif information is loaded and formatted upon construction. Afterwards the class
+    behaves like a regular dictionary.
+
+    Attributes:
+        _exif: Loaded piexif exif information dictionary if any.
+    """
+
+    def __init__(self, filename):
+        super().__init__()
+        self._exif = None
+
+        if piexif is None:
+            logging.error("%s relies on exif support", self.__class__.__qualname__)
+        else:
+            self._load_exif(filename)
+
+    def _load_exif(self, filename):
+        """Load exif information from filename into the dictionary."""
+        try:
+            self._exif = piexif.load(filename)
+        except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+            return
+        # Read information from 0th IFD
+        ifd = piexif.ImageIFD
+        self._add_bytes_info("Make", "0th", ifd.Make)
+        self._add_bytes_info("Model", "0th", ifd.Model)
+        self._add_bytes_info("DateTime", "0th", ifd.DateTime)
+        # Read information from Exif IFD
+        ifd = piexif.ExifIFD
+        self._add_two_digits("ExposureTime", "Exif", ifd.ExposureTime, suffix=" s")
+        self._add_fraction("FNumber", "Exif", ifd.FNumber, prefix="f/")
+        self._add_fraction("ShutterSpeedValue", "Exif", ifd.ShutterSpeedValue, " EV")
+        self._add_fraction("ApertureValue", "Exif", ifd.ApertureValue, " EV")
+        self._add_fraction("ExposureBiasValue", "Exif", ifd.ExposureBiasValue, " EV")
+        self._add_fraction("FocalLength", "Exif", ifd.FocalLength, " mm")
+        logging.debug("%s initialized, content:\n%r", self.__class__.__qualname__, self)
+
+    def _add_bytes_info(self, name, ifd, key):
+        """Add exif information of type bytes to the dictionary."""
+        with suppress(KeyError):
+            self[name] = self._exif[ifd][key].decode()
+
+    def _add_fraction(self, name, ifd, key, suffix="", prefix=""):
+        """Add exif information as fraction of two numbers to the dictionary."""
+        with suppress(KeyError):
+            value_tuple = self._exif[ifd][key]
+            fraction = value_tuple[0] / value_tuple[1]
+            self[name] = f"{prefix}{fraction:.2f}{suffix}"
+
+    def _add_two_digits(self, name, ifd, key, separator="/", suffix="", prefix=""):
+        """Add exif information as two numbers to the dictionary."""
+        with suppress(KeyError):
+            value_tuple = self._exif[ifd][key]
+            self[name] = f"{prefix}%s{separator}%s{suffix}" % value_tuple
+
+
 class ExifOrientation:
     """Namespace for exif orientation tags.
 

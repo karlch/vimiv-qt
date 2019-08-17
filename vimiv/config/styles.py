@@ -119,6 +119,10 @@ class Style(dict):
         self["manipulate.image.border.color"] = "{base0c}"
         # Mark
         self["mark.color"] = "{base0e}"
+        # Metadata overlay
+        self["metadata.bg"] = self["{statusbar.bg}"].replace("#", "#AA")  # Add alpha
+        self["metadata.padding"] = "{keyhint.padding}"
+        self["metadata.border_radius"] = "{keyhint.border_radius}"
 
     def __setitem__(self, name, item):
         """Store item automatically surrounding the name with {} if needed."""
