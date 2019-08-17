@@ -147,13 +147,6 @@ def loglevel(value):
     Returns:
         value as logging level.
     """
-    log_levels = {
-        "debug": logging.DEBUG,
-        "info": logging.INFO,
-        "warning": logging.WARNING,
-        "error": logging.ERROR,
-        "critical": logging.CRITICAL,
-    }
-    with suppress(KeyError):
-        return log_levels[value.lower()]
+    with suppress(AttributeError):
+        return getattr(logging, value.upper())
     raise argparse.ArgumentTypeError("Invalid log level '%s'" % (value))
