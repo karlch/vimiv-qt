@@ -1,3 +1,3 @@
 pylint==2.3.1
 pycodestyle==2.5.0
-pydocstyle==3.0.0  # pyup: != 4.0.0 # disable 4.0.0, breaks due to https://github.com/PyCQA/pydocstyle/issues/370
+pydocstyle==4.0.1  # pyup: != 4.0.0 # disable 4.0.0, breaks due to https://github.com/PyCQA/pydocstyle/issues/370
