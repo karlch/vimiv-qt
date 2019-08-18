@@ -31,7 +31,7 @@ Now the command ``:hello-planet`` is created. When called without arguments, it
 prints "hello earth" as before, but it is also possible to great other planets
 by passing their name: ``:hello-planet --name=venus``.
 
-Hint:
+.. hint::
 
     Type annotating the arguments is required as the type annotation is passed
     to the argument parser as type of the argument.
