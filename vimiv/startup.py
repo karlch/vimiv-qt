@@ -12,7 +12,6 @@ Module Attributes:
 """
 
 import logging
-import logging.handlers
 import os
 import sys
 import tempfile
@@ -23,7 +22,7 @@ from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.commands import runners
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
-from vimiv.utils import xdg, crash_handler, statusbar_loghandler, trash_manager
+from vimiv.utils import xdg, crash_handler, log, trash_manager
 
 # Must be imported to create the commands using the decorators
 from vimiv.commands import misccommands  # pylint: disable=unused-import
@@ -59,7 +58,7 @@ def setup_pre_app(argv):
         print(version.info())
         sys.exit(0)
     init_directories(args)
-    setup_logging(args.log_level)
+    log.setup_logging(args.log_level)
     logging.debug("Start: vimiv %s", " ".join(argv))
     logging.debug("%s\n", version.info())
     logging.debug("%s\n", version.paths())
@@ -79,35 +78,6 @@ def setup_post_app(args):
     init_paths(args)
     if args.command:
         run_startup_commands(*args.command)
-
-
-def setup_logging(log_level):
-    """Prepare the python logging module.
-
-    Sets it up to write to stderr and $XDG_DATA_HOME/vimiv/vimiv.log.
-
-    Args:
-        log_level: Log level as string as given from the command line.
-    """
-    log_format = logging.Formatter(
-        "[%(asctime)s] %(levelname)s: %(message)s", datefmt="%H:%M:%S"
-    )
-
-    logger = logging.getLogger()
-    logger.handlers = []
-    logger.setLevel(logging.DEBUG)
-
-    file_handler = logging.FileHandler(xdg.join_vimiv_data("vimiv.log"), mode="w")
-    file_handler.setFormatter(log_format)
-    logger.addHandler(file_handler)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(log_format)
-    console_handler.setLevel(log_level)
-    logger.addHandler(console_handler)
-
-    statusbar_loghandler.setLevel(log_level)
-    logger.addHandler(statusbar_loghandler)
 
 
 def init_directories(args):
