@@ -12,7 +12,6 @@ Module Attributes:
     _last_command: Dictionary storing the last command for each mode.
 """
 
-import logging
 import os
 import re
 import shlex
@@ -22,10 +21,12 @@ from typing import Dict, List, NamedTuple, Optional
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
 from vimiv import api, utils
+from vimiv.utils import log
 from vimiv.commands import aliases
 
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
+_logger = log.module_logger(__name__)
 
 
 class LastCommand(NamedTuple):
@@ -79,11 +80,11 @@ def command(text, mode=None):
     try:
         count, cmdname, args = _parse(text)
     except ValueError as e:  # E.g. raised by shlex on unclosed quotation
-        logging.error("Error parsing command: %s", e)
+        log.error("Error parsing command: %s", e)
         return
     mode = mode if mode is not None else api.modes.current()
     _run_command(count, cmdname, args, mode)
-    logging.debug("Ran '%s' succesfully", text)
+    _logger.debug("Ran '%s' succesfully", text)
 
 
 @api.keybindings.register(".", "repeat-command")
@@ -118,11 +119,11 @@ def _run_command(count, cmdname, args, mode):
         cmd(args, count=count)
         api.status.update()
     except api.commands.CommandNotFound as e:
-        logging.error(str(e))
+        log.error(str(e))
     except (api.commands.ArgumentError, api.commands.CommandError) as e:
-        logging.error("%s: %s", cmdname, str(e))
+        log.error("%s: %s", cmdname, str(e))
     except api.commands.CommandWarning as w:
-        logging.warning("%s: %s", cmdname, str(w))
+        log.warning("%s: %s", cmdname, str(w))
 
 
 def _parse(text):
@@ -199,10 +200,10 @@ class ExternalRunner(QObject):
         paths = [path for path in stdout.split("\n") if os.path.exists(path)]
         try:
             api.open(paths)
-            logging.debug("Opened paths from pipe '%s'", cmd)
+            _logger.debug("Opened paths from pipe '%s'", cmd)
             api.status.update()
         except api.commands.CommandError:
-            logging.warning("%s: No paths from pipe", cmd)
+            log.warning("%s: No paths from pipe", cmd)
 
 
 external = ExternalRunner()
@@ -241,10 +242,10 @@ class ShellCommandRunnable(QRunnable):
                     self._text, pargs.stdout.decode()
                 )
             else:
-                logging.debug("Ran '!%s' succesfully", self._text)
+                _logger.debug("Ran '!%s' succesfully", self._text)
         except subprocess.CalledProcessError as e:
             message = e.stderr.decode().split("\n")[0]
-            logging.error("%d  %s", e.returncode, message)
+            log.error("%d  %s", e.returncode, message)
 
 
 def alias(text, mode):

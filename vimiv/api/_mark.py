@@ -7,7 +7,6 @@
 """Mark and tag images."""
 
 
-import logging
 import os
 import shutil
 from datetime import datetime
@@ -16,8 +15,11 @@ from typing import Any, Callable, List, cast
 from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
 
 from vimiv.config import styles
-from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot
+from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
 from . import commands, keybindings, objreg, status, settings, modes
+
+
+_logger = log.module_logger(__name__)
 
 
 class Mark(QObject):
@@ -260,7 +262,7 @@ class Tag:
         abspath = Tag.path(name)
         exists = os.path.isfile(abspath)
         self.mode = "r" if read_only else ("r+" if exists else "a+")
-        logging.debug("Opened tag object: %s", self)
+        _logger.debug("Opened tag object: %s", self)
         os.makedirs(os.path.dirname(abspath), exist_ok=True)
         try:
             self._file = open(abspath, self.mode)
@@ -270,12 +272,12 @@ class Tag:
             raise commands.CommandError(f"Error reading '{name}': {e}")
 
         if read_only:
-            logging.debug("%s: Reading tag file", self)
+            _logger.debug("%s: Reading tag file", self)
         elif not exists:
-            logging.debug("%s: Creating new tag file", self)
+            _logger.debug("%s: Creating new tag file", self)
             self._write_header()
         else:
-            logging.debug("%s: Appending to existing tag file", self)
+            _logger.debug("%s: Appending to existing tag file", self)
 
     def __enter__(self) -> "Tag":
         return self
@@ -297,7 +299,7 @@ class Tag:
         paths = [
             path.strip() for path in self._file if not path.startswith(Tag.COMMENTCHAR)
         ]
-        logging.debug("%s: read %d paths from tag", self, len(paths))
+        _logger.debug("%s: read %d paths from tag", self, len(paths))
         return paths
 
     @staticmethod

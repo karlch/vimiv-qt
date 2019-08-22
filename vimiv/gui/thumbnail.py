@@ -7,7 +7,6 @@
 """Thumbnail widget."""
 
 import collections
-import logging
 import os
 from typing import List, Optional
 
@@ -18,7 +17,7 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import create_pixmap, thumbnail_manager, clamp
+from vimiv.utils import create_pixmap, thumbnail_manager, clamp, log
 from .eventhandler import KeyHandler
 
 
@@ -125,7 +124,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         for i, path in enumerate(self._paths[::-1]):
             if path not in paths:
                 if not self.takeItem(len(self._paths) - 1 - i):
-                    logging.error("Error removing thumbnail for %s", path)
+                    log.error("Error removing thumbnail for %s", path)
         # Add new paths
         for i, path in enumerate(paths):
             if path not in self._paths:

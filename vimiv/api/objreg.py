@@ -31,11 +31,13 @@ function can be used::
 """
 
 import collections
-import logging
 from typing import Any, Callable, Type, TypeVar
+
+from vimiv.utils import log
 
 
 RegisterObject = TypeVar("RegisterObject")
+_logger = log.module_logger(__name__)
 
 
 def register(component_init: Callable) -> Callable:
@@ -85,7 +87,7 @@ class _Registry(collections.UserDict):
             component: The object to store.
         """
         key = self._key(component)
-        logging.debug("Registering object '%r'", component)
+        _logger.debug("Registering object '%r'", component)
         self[key] = component
 
     @staticmethod

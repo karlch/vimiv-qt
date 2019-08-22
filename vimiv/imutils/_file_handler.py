@@ -6,7 +6,6 @@
 
 """Classes to deal with the actual image file."""
 
-import logging
 import os
 import shutil
 import tempfile
@@ -17,13 +16,16 @@ from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.imutils import imtransform, immanipulate
-from vimiv.utils import files
+from vimiv.utils import files, log
 
 # We need the check as svg support is optional
 try:
     from PyQt5.QtSvg import QSvgWidget
 except ImportError:
     QSvgWidget = None
+
+
+_logger = log.module_logger(__name__)
 
 
 class Pixmaps:
@@ -160,12 +162,12 @@ class ImageFileHandler(QObject):
         # file name based approach of QImageReader
         file_format = files.imghdr.what(path)
         if file_format is None:
-            logging.error("%s is not a valid image", path)
+            log.error("%s is not a valid image", path)
             return
         reader = QImageReader(path, file_format.encode("utf-8"))
         reader.setAutoTransform(True)  # Automatically apply exif orientation
         if not reader.canRead():
-            logging.error("Cannot read image %s", path)
+            log.error("Cannot read image %s", path)
             return
         # SVG
         if file_format == "svg" and QSvgWidget:
@@ -177,7 +179,7 @@ class ImageFileHandler(QObject):
         elif reader.supportsAnimation():
             movie = QMovie(path)
             if not movie.isValid() or movie.frameCount() == 0:
-                logging.error("Error reading animation %s: invalid data", path)
+                log.error("Error reading animation %s: invalid data", path)
                 return
             self.original = movie
             api.signals.movie_loaded.emit(self.current, reload_only)
@@ -185,7 +187,7 @@ class ImageFileHandler(QObject):
         else:
             pixmap = QPixmap.fromImageReader(reader)
             if reader.error():
-                logging.error("Error reading image %s: %s", path, reader.errorString())
+                log.error("Error reading image %s: %s", path, reader.errorString())
                 return
             self.original = pixmap
             api.signals.pixmap_loaded.emit(self.current, reload_only)
@@ -267,11 +269,11 @@ def write_pixmap(pixmap, path, original_path):
     """
     try:
         _can_write(pixmap, path)
-        logging.debug("Image is writable")
+        _logger.debug("Image is writable")
         _write(pixmap, path, original_path)
-        logging.info("Saved %s", path)
+        log.info("Saved %s", path)
     except WriteError as e:
-        logging.error(str(e))
+        log.error(str(e))
 
 
 def _can_write(pixmap, path):

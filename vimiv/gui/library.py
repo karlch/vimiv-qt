@@ -6,7 +6,6 @@
 
 """Library widget with model and delegate."""
 
-import logging
 import os
 from contextlib import suppress
 from typing import List, Optional
@@ -18,7 +17,7 @@ from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import files, strip_html, clamp, wrap_style_span
+from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
 from .eventhandler import KeyHandler
 
 
@@ -154,7 +153,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
             path_index = self.selectionModel().selectedIndexes()[1]
         # Path does not exist, do not try to select
         except IndexError:
-            logging.warning("Library: selecting empty path")
+            log.warning("Library: selecting empty path")
             return
         path = strip(path_index.data())
         if os.path.isdir(path):

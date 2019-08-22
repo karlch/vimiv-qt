@@ -72,12 +72,17 @@ command.
 import argparse
 import glob
 import inspect
-import logging
 import os
 import typing
 from contextlib import suppress
 
-from vimiv.utils import class_that_defined_method, cached_method, is_method, flatten
+from vimiv.utils import (
+    class_that_defined_method,
+    cached_method,
+    is_method,
+    flatten,
+    log,
+)
 
 from . import modes, objreg
 
@@ -86,6 +91,7 @@ from . import modes, objreg
 HookFunction = typing.Callable[[], None]
 HookMethod = typing.Callable[[typing.Any], None]
 Hook = typing.Union[HookFunction, HookMethod]
+_logger = log.module_logger(__name__)
 
 
 def register(
@@ -330,7 +336,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         Returns:
             A function to be called with any keyword arguments.
         """
-        logging.debug("Creating function for command '%s'", func.__name__)
+        _logger.debug("Creating function for command '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
@@ -357,5 +363,5 @@ def _get_description(func: typing.Callable, name: str) -> str:
     try:
         return inspect.getdoc(func).split("\n")[0]
     except AttributeError:
-        logging.error("Command %s for %s is missing docstring.", name, func)
+        log.error("Command %s for %s is missing docstring.", name, func)
     return ""

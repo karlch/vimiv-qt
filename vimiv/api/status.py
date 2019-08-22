@@ -33,13 +33,12 @@ If any other object requires the status to be updated, they should call
 """
 
 import functools
-import logging
 import re
 from typing import Callable
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv.utils import cached_method, is_method, class_that_defined_method
+from vimiv.utils import cached_method, is_method, class_that_defined_method, log
 from . import objreg
 
 
@@ -49,6 +48,7 @@ Module = Callable[..., str]
 
 _modules = {}  # Dictionary storing all status modules
 _module_expression = re.compile(r"\{.*?\}")  # Expression to match all status modules
+_logger = log.module_logger(__name__)
 
 
 class InvalidModuleName(Exception):
@@ -79,7 +79,7 @@ class _Module:
         Returns:
             A function to be called without arguments.
         """
-        logging.debug("Creating function for status module '%s'", func.__name__)
+        _logger.debug("Creating function for status module '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = objreg.get(cls)
@@ -150,7 +150,7 @@ def _log_unknown_module(module_name: str) -> None:
     Args:
         module_name: Module string that is unknown.
     """
-    logging.warning("Disabling unknown statusbar module '%s'", module_name)
+    log.warning("Disabling unknown statusbar module '%s'", module_name)
 
 
 class _Signals(QObject):

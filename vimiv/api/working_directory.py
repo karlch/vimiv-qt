@@ -54,15 +54,17 @@ Module Attributes:
     handler: The initialized :class:`WorkingDirectoryHandler` object to interact with.
 """
 
-import logging
 import time
 import os
 from typing import cast, List, Tuple, Callable
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
-from vimiv.utils import files, slot
+from vimiv.utils import files, slot, log
 from . import settings, signals, status
+
+
+_logger = log.module_logger(__name__)
 
 
 class WorkingDirectoryHandler(QFileSystemWatcher):
@@ -119,23 +121,23 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 self._load_directory(directory)
                 self._monitor(directory)
             except PermissionError as e:
-                logging.error("%s: Cannot access '%s'", str(e), directory)
+                log.error("%s: Cannot access '%s'", str(e), directory)
 
     def _monitor(self, directory: str) -> None:
         """Monitor the directory by adding it to QFileSystemWatcher."""
         if not settings.monitor_fs.value:
             return
         if not self.addPath(directory):
-            logging.error("Cannot monitor %s", directory)
+            log.error("Cannot monitor %s", directory)
         else:
-            logging.debug("Monitoring %s", directory)
+            _logger.debug("Monitoring %s", directory)
 
     def _on_monitor_fs_changed(self, value: bool) -> None:
         """Start/stop monitoring when the setting changed."""
         if value:
             self._monitor(self._dir)
         else:
-            logging.debug("Turning monitoring off")
+            _logger.debug("Turning monitoring off")
             self._stop_monitoring()
 
     def _load_directory(self, directory: str) -> None:

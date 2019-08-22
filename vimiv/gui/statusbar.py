@@ -78,7 +78,7 @@ class StatusBar(QWidget):
 
         styles.apply(self)
 
-        utils.statusbar_loghandler.message.connect(self._on_message)
+        utils.log.statusbar_loghandler.message.connect(self._on_message)
         api.status.signals.update.connect(self._on_update_status)
 
     @utils.slot

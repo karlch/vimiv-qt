@@ -6,26 +6,24 @@
 
 """Tests for vimiv.utils.crash_handler."""
 
-import logging
 import functools
 import signal
 import sys
 import types
-from contextlib import suppress
 from collections import namedtuple
 
 import pytest
 
-from vimiv.utils import crash_handler
+from vimiv.utils import crash_handler, log
 
 
 @pytest.fixture
 def print_logging():
     """Fixture to reassign logging to stdout for easier capturing."""
-    info, error, fatal = logging.info, logging.error, logging.fatal
-    logging.info = logging.error = logging.fatal = functools.partial(print, end="")
+    info, error, fatal = log.info, log.error, log.fatal
+    log.info = log.error = log.fatal = functools.partial(print, end="")
     yield
-    logging.info, logging.error, logging.fatal = info, error, fatal
+    log.info, log.error, log.fatal = info, error, fatal
 
 
 @pytest.fixture

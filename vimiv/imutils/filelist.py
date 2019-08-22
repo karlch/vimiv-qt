@@ -10,7 +10,6 @@ The module provides methods to navigate and update the current image filelist. O
 new image in the filelist is selected, it is passed on to the file handler to open it.
 """
 
-import logging
 import os
 from random import shuffle
 from typing import List, Iterable, Optional
@@ -19,12 +18,13 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search
-from vimiv.utils import files
+from vimiv.utils import files, log
 from .slideshow import Slideshow
 
 
 _paths: List[str] = []
 _index = 0
+_logger = log.module_logger(__name__)
 
 
 # We want to use the name next here as it is the best name for the command
@@ -148,12 +148,12 @@ class SignalHandler(QObject):
             paths: List of paths to load into filelist.
         """
         if not paths:
-            logging.debug("Image filelist: no paths to load")
+            _logger.debug("Image filelist: no paths to load")
         elif len(paths) == 1:
-            logging.debug("Image filelist: loading single path %s", paths[0])
+            _logger.debug("Image filelist: loading single path %s", paths[0])
             _load_single(*paths)
         else:
-            logging.debug("Image filelist: loading %d paths", len(paths))
+            _logger.debug("Image filelist: loading %d paths", len(paths))
             _load_paths(paths, paths[0])
 
     @pyqtSlot(int, list, api.modes.Mode, bool)

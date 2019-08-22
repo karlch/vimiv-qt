@@ -6,14 +6,15 @@
 
 """Overlay widget to display image metadata."""
 
-import logging
-
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.imutils import exif
 from vimiv.config import styles
+
+
+_logger = utils.log.module_logger(__name__)
 
 
 if exif.piexif is not None:
@@ -64,8 +65,10 @@ if exif.piexif is not None:
         def metadata(self):
             """Toggle display of exif metadata of current image."""
             if self.isVisible():
+                _logger.debug("Hiding widget")
                 self.hide()
             else:
+                _logger.debug("Showing widget")
                 self._update_text()
                 self.raise_()
                 self.show()
@@ -88,7 +91,7 @@ if exif.piexif is not None:
             """Update the metadata text if the current image has not been loaded."""
             if self._loaded:
                 return
-            logging.debug(
+            _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
             text = ""

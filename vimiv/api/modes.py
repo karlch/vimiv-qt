@@ -29,13 +29,15 @@ All modes inherit from the common :class:`Mode` base class.
 
 
 import abc
-import logging
 from typing import cast, Any, Callable, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
-from vimiv.utils import AbstractQObjectMeta
+from vimiv.utils import AbstractQObjectMeta, log
+
+
+_logger = log.module_logger(__name__)
 
 
 class NoMode(Exception):
@@ -86,11 +88,11 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         last_mode = current()
         # Nothing to do as we all already in this mode
         if last_mode == self:
-            logging.debug("Staying in mode %s", self.name)
+            _logger.debug("Staying in mode %s", self.name)
             return
         # Store last mode
         if last_mode:
-            logging.debug("Leaving mode %s", last_mode.name)
+            _logger.debug("Leaving mode %s", last_mode.name)
             last_mode.active = False
             self.last = last_mode
         # Set to active and focus widget
@@ -98,11 +100,11 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         self.widget.show()
         self.widget.setFocus()
         if self.widget.hasFocus():
-            logging.debug("%s widget focused", self)
+            _logger.debug("%s widget focused", self)
         else:
-            logging.debug("Could not focus %s widget", self)
+            _logger.debug("Could not focus %s widget", self)
         self.entered.emit()
-        logging.debug("Entered mode %s", self)
+        _logger.debug("Entered mode %s", self)
 
     def leave(self) -> None:
         """Leave this mode for the last mode."""

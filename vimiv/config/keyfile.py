@@ -7,11 +7,13 @@
 """Methods to read keybindings from file and store them."""
 
 import configparser
-import logging
 import os
 
 from vimiv import api
-from vimiv.utils import xdg
+from vimiv.utils import xdg, log
+
+
+_logger = log.module_logger(__name__)
 
 
 def parse(args):
@@ -51,7 +53,7 @@ def dump():
     user_file = xdg.join_vimiv_config("keys.conf")
     with open(user_file, "w") as f:
         parser.write(f)
-    logging.debug("Created default keys file %s", user_file)
+    _logger.debug("Created default keys file %s", user_file)
 
 
 def _read(filename):
@@ -67,8 +69,8 @@ def _read(filename):
             section = parser[mode.name.upper()]
             _update_bindings(bindings, section)
         except KeyError:
-            logging.info("Missing section '%s' in keys.conf", mode.name.upper())
-    logging.debug("Read keybindings from '%s'", filename)
+            _logger.debug("Missing section '%s' in keys.conf", mode.name.upper())
+    _logger.debug("Read keybindings from '%s'", filename)
 
 
 class KeyfileParser(configparser.ConfigParser):

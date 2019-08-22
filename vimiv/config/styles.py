@@ -15,12 +15,11 @@ Module Attributes:
 """
 
 import configparser
-import logging
 import os
 import re
 
 from vimiv import api
-from vimiv.utils import xdg
+from vimiv.utils import xdg, log
 
 
 NAME_DEFAULT = "default"
@@ -172,7 +171,7 @@ def parse():
     elif os.path.exists(filename):
         _style = read(filename)
     else:
-        logging.error("Style file '%s' not found, falling back to default", filename)
+        log.error("Style file '%s' not found, falling back to default", filename)
         _style = create_default()
 
 
@@ -194,7 +193,7 @@ def get(name):
     try:
         return _style["{%s}" % (name)]
     except KeyError:
-        logging.error("Style option '%s' not found, falling back to default", name)
+        log.error("Style option '%s' not found, falling back to default", name)
         return ""
 
 
@@ -265,7 +264,7 @@ def read(filename):
         parser.read(filename)
         section = parser["STYLE"]
     except (configparser.MissingSectionHeaderError, KeyError):
-        logging.error(
+        log.error(
             "Style files must start with the [STYLE] header. Falling back to default."
         )
         return create_default(save_to_file=False)
@@ -273,7 +272,7 @@ def read(filename):
     try:
         colors = [section.pop(f"base{i:02x}") for i in range(16)]
     except KeyError as e:
-        logging.error("Style is missing color %s. Falling back to default.", e)
+        log.error("Style is missing color %s. Falling back to default.", e)
         return create_default(save_to_file=False)
     if "font" in section:  # User-defined global font
         style = Style(*colors, font=section["font"])

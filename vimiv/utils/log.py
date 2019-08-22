@@ -48,6 +48,9 @@ def critical(msg: str, *args, **kwargs) -> None:
     logging.getLogger(vimiv.__name__).critical(msg, *args, **kwargs)
 
 
+fatal = critical
+
+
 def setup_logging(level: int, *debug_modules: str) -> None:
     """Configure and set up logging.
 
@@ -83,6 +86,7 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     statusbar_loghandler.setLevel(level)
     # Setup debug logging for specific modules
     for name, logger in _module_loggers.items():
+        logger.setLevel(logging.DEBUG)  # Activate logger in general
         logger.handlers[1].setLevel(logging.DEBUG if name in debug_modules else level)
 
 
@@ -112,7 +116,7 @@ def module_logger(name: str) -> logging.Logger:
     file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(f"<{name}>")
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.CRITICAL)  # No logging before the module has been set up
     logger.propagate = False
     logger.handlers = [file_handler, console_handler]
 
