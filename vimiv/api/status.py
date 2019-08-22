@@ -174,6 +174,7 @@ def update() -> None:
     This function can be called when an update of the status is required. It
     is, for example, always called after a command was run.
     """
+    _logger.debug("Updating status")
     signals.update.emit()
 
 
@@ -182,4 +183,5 @@ def clear() -> None:
 
     This function can be called when any temporary logging messages should be cleared.
     """
+    _logger.debug("Clearing status")
     signals.clear.emit()

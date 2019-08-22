@@ -114,6 +114,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
         if directory != self._dir or reload_current:
+            _logger.debug("Changing directory to '%s'", directory)
             if self.directories():  # Unmonitor old directories
                 self.removePaths(self.directories())
             try:
@@ -122,6 +123,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 self._monitor(directory)
             except PermissionError as e:
                 log.error("%s: Cannot access '%s'", str(e), directory)
+            else:
+                _logger.debug("Directory change completed")
 
     def _monitor(self, directory: str) -> None:
         """Monitor the directory by adding it to QFileSystemWatcher."""
