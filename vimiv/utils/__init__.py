@@ -20,7 +20,7 @@ from typing import Callable, Optional, TypeVar, List, Any
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
-from ._statusbar_loghandler import handler as statusbar_loghandler
+from . import log
 
 # Different location under PyQt < 5.11
 try:
