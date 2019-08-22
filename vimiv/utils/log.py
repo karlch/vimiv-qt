@@ -4,7 +4,39 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Utilities related to logging.
+"""`Utilities related to logging`.
+
+There are two different types of loggers: the application-wide logger and module
+specific loggers.
+
+The application-wide logger is used for general messages meant for the user. All log
+messages with level larger than debug are also sent to the statusbar. To send a message
+to this logger, the utility functions :func:`debug`, :func:`info`, :func:`warning`,
+:func:`error` and :func:`critical` can be used. They are just very thin wrapper
+functions around the python logging functions.
+
+For debugging it is recommended to use a module specific logger. This allows fine-tuning
+the amount of debug statements that should be displayed using the ``--debug`` flag. To
+create a module logger::
+
+    from vimiv.utils import log
+
+    _logger = log.module_logger(__name__)
+
+and use this logger as usual::
+
+    _logger.debug("Performing some setup")
+    ...
+    _logger.debug("Doing the work")
+    ...
+    _logger.debug("Performing some clean-up")
+
+Three log handlers are currently used:
+
+* One to print to the console
+* One to save the output in a log file located in
+  ``$XDG_DATA_HOME/vimiv/vimiv.log``
+* One to print log messages to the statusbar (only for application-wide logger)
 
 Module Attributes:
     statusbar_loghandler: Instance of the log handler connecting to the statusbar.

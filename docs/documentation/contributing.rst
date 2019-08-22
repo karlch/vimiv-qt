@@ -134,22 +134,10 @@ which may be useful to understand before working on bigger changes.
 Logging
 ^^^^^^^
 
-For logging purposes, the
-`standard python logging library <https://docs.python.org/3/howto/logging.html>`_
-is used. Therefore, to use logging anywhere in vimiv::
+Logging is handled by the ``vimiv.utils.log`` module which wraps around the
+`standard python logging library <https://docs.python.org/3/howto/logging.html>`_:
 
-    # Import the logging module at the beginning
-    import logging
-    ...
-    # Use it as usual in the code
-    logging.info("This is an important information")
-
-Three handlers are currently used:
-
-* One to print to the console
-* One to save the output in a log file located in
-  ``$XDG_DATA_HOME/vimiv/vimiv.log``
-* One to print log messages to the statusbar
+.. automodule:: vimiv.utils.log
 
 
 API Documentation
