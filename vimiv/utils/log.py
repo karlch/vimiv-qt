@@ -7,6 +7,8 @@
 """Utilities related to logging.
 
 Module Attributes:
+    statusbar_loghandler: Instance of the log handler connecting to the statusbar.
+
     _module_loggers: Dictionary mapping module names to their corresponding logger.
 """
 
@@ -14,9 +16,10 @@ import logging
 import logging.handlers
 from typing import Dict
 
+from PyQt5.QtCore import pyqtSignal, QObject
+
 import vimiv
 
-from ._statusbar_loghandler import handler as statusbar_loghandler
 from . import xdg
 
 
@@ -122,3 +125,22 @@ def module_logger(name: str) -> logging.Logger:
 
     _module_loggers[name] = logger
     return logger
+
+
+class StatusbarLogHandler(QObject, logging.NullHandler):
+    """Loghandler to display log messages in the statusbar.
+
+    Only emits a signal on handle which the statusbar connects to.
+
+    Signals:
+        message: Emitted with severity and message on log message.
+    """
+
+    message = pyqtSignal(str, str)
+
+    def handle(self, record: logging.LogRecord) -> None:
+        if record.levelno >= logging.INFO:  # Debug in the statusbar makes no sense
+            self.message.emit(record.levelname.lower(), record.message)
+
+
+statusbar_loghandler = StatusbarLogHandler()
