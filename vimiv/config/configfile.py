@@ -98,7 +98,7 @@ def _update_setting(name, parser):
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
         setting = api.settings.get(setting_name)
-        _logger.debug("Setting '%s' to '%s'", setting_name, parser_option)
+        _logger.debug("Updating '%s' with '%s'", setting_name, parser_option)
         setting.value = parser_option
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         _logger.debug("%s in configfile", str(e))
@@ -116,6 +116,7 @@ def _add_statusbar_formatters(configsection):
     possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:
+            _logger.debug("Adding statusbar formatter '%s' with '%s'", name, value)
             api.settings.StrSetting("statusbar.%s" % (name), value)
 
 

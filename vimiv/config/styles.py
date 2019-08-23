@@ -26,6 +26,7 @@ NAME_DEFAULT = "default"
 NAME_DEFAULT_DARK = "default-dark"
 
 _style = None
+_logger = log.module_logger(__name__)
 
 
 class Style(dict):
@@ -42,6 +43,9 @@ class Style(dict):
         # We are mainly storing all the values here
         # pylint: disable=too-many-statements
         super().__init__()
+        _logger.debug(
+            "Initializing style with colors:\n%s\nfont: %s", "\n".join(colors), font
+        )
         # Initialize the colorscheme from base16
         if len(colors) != 16:
             raise ValueError("Styles must be created with 16 colors for base16")
@@ -163,6 +167,7 @@ def parse():
     """
     global _style
     name = api.settings.style.value
+    _logger.debug("Parsing style '%s'", name)
     filename = xdg.join_vimiv_config("styles/%s" % (name))
     if name == NAME_DEFAULT:
         _style = create_default()
@@ -204,6 +209,7 @@ def create_default(dark=False, save_to_file=True):
         dark: Create the default dark style instead.
         save_to_file: Dump the default style to file for reading and reference.
     """
+    _logger.debug("Creating default style")
     # Color definitions
     # Uses base16 tomorrow
     # Thanks to https://github.com/chriskempson/base16-tomorrow-scheme/
@@ -258,6 +264,7 @@ def read(filename):
     Args:
         filename: Name of the styles file to read
     """
+    _logger.debug("Reading style from file '%s'", filename)
     parser = configparser.ConfigParser()
     # Retrieve the STYLE section
     try:
@@ -275,18 +282,20 @@ def read(filename):
         log.error("Style is missing color %s. Falling back to default.", e)
         return create_default(save_to_file=False)
     if "font" in section:  # User-defined global font
-        style = Style(*colors, font=section["font"])
+        style = Style(*colors, font=section.pop("font"))
     else:  # Default global font
         style = Style(*colors)
     # Override additional options
     for option, value in parser["STYLE"].items():
+        _logger.debug("Overriding '%s' with '%s'", option, value)
         style[option] = value
     return style
 
 
 def dump(name, style):
     """Dump style to styles file."""
-    filename = xdg.join_vimiv_config("styles/%s" % (name))
+    filename = xdg.join_vimiv_config("styles", name)
+    _logger.debug("Dumping style to file '%s'", filename)
     parser = configparser.ConfigParser()
     parser.add_section("STYLE")
     for option, value in style.items():

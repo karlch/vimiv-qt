@@ -37,6 +37,7 @@ def parse(args):
 
 def dump():
     """Write default keybindings to keys file."""
+    _logger.debug("Dumping default keybindings to file")
     parser = KeyfileParser(delimiters=":")
     # Add sections
     parser.add_section("GLOBAL")
@@ -53,7 +54,7 @@ def dump():
     user_file = xdg.join_vimiv_config("keys.conf")
     with open(user_file, "w") as f:
         parser.write(f)
-    _logger.debug("Created default keys file %s", user_file)
+    _logger.debug("Created default keys file '%s'", user_file)
 
 
 def _read(filename):
@@ -62,6 +63,7 @@ def _read(filename):
     Args:
         filename: Name of the keybinding file to read.
     """
+    _logger.debug("Reading keybindings from '%s'", filename)
     parser = KeyfileParser()
     parser.read(filename)
     for mode, bindings in api.keybindings.items():
@@ -96,3 +98,9 @@ def _update_bindings(bindings, section):
     """
     for keybinding, command in section.items():
         bindings[keybinding] = command
+        _logger.debug(
+            "Read keybinding '%s': '%s' for mode '%s'",
+            keybinding,
+            command,
+            section.name,
+        )
