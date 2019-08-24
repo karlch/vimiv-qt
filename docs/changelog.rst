@@ -21,6 +21,7 @@ Added:
   argument which accepts the names of modules to debug.  E.g. ``--debug startup`` would
   show all debug messages from ``vimiv/startup.py`` without setting the global log level
   to ``DEBUG``.
+* It is now possible to chain multiple commands with ``&&``. E.g. ``:write && quit``.
 
 Changed:
 ^^^^^^^^
