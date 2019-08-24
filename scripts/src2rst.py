@@ -98,7 +98,7 @@ def _gen_keybinding_rows(bindings):
 def generate_commandline_options():
     """Generate file including the command line options."""
     argparser = parser.get_argparser()
-    optionals, positionals, titles = _get_options(argparser)
+    groups, titles = _get_options(argparser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
     with open(filename_synopsis, "w") as f:
@@ -108,29 +108,30 @@ def generate_commandline_options():
     # Options
     filename_options = "docs/manpage/options.rstsrc"
     with RSTFile(filename_options) as f:
-        f.write_section("positional arguments")
-        f.write(positionals)
-        f.write_section("optional arguments")
-        f.write(optionals)
+        for title, argstr in groups.items():
+            f.write_section(title)
+            f.write(argstr)
 
 
 def _get_options(argparser):
     """Retrieve the options from the argument parser.
 
     Returns:
-        optionals: Formatted string of optional arguments.
-        positionals: Formatted string of positional arguments.
+        groups: Dictionary of group titles and argument strings.
         titles: List containing all argument titles.
     """
-    optionals = ""
-    positionals = ""
+    groups = {}
     titles = []
-    for action in argparser._optionals._actions:
-        if not action.option_strings:
-            positionals += _format_positional(action, titles)
-        else:
-            optionals += _format_optional(action, titles)
-    return optionals, positionals, titles
+    for group in argparser._action_groups:
+        argstr = ""
+        for action in group._group_actions:
+            argstr += (
+                _format_positional(action, titles)
+                if "positional" in group.title
+                else _format_optional(action, titles)
+            )
+        groups[group.title] = argstr
+    return groups, titles
 
 
 def _format_optional(action, titles):
