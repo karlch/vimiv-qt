@@ -7,7 +7,6 @@
 """Handles key and mouse events."""
 
 import collections
-import logging
 import string
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
@@ -15,6 +14,9 @@ from PyQt5.QtGui import QKeySequence
 
 from vimiv import api, utils
 from vimiv.commands import runners, search
+
+
+_logger = utils.log.module_logger(__name__)
 
 
 class TempKeyStorage(QTimer):
@@ -117,14 +119,14 @@ class KeyHandler:
         try:
             keyname = keyevent_to_string(event)
         except ValueError:  # Only modifier pressed
-            logging.debug("KeyPressEvent: only modifier pressed")
+            _logger.debug("KeyPressEvent: only modifier pressed")
             return
-        logging.debug("KeyPressEvent: handling %s for mode %s", keyname, mode.name)
+        _logger.debug("KeyPressEvent: handling %s for mode %s", keyname, mode.name)
         bindings = api.keybindings.get(mode)
         # Handle escape separately as it affects multiple widgets and must clear partial
         # matches instead of checking for them
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
-            logging.debug("KeyPressEvent: handling <escape> key specially")
+            _logger.debug("KeyPressEvent: handling <escape> key specially")
             self.partial_handler.clear_keys()
             search.search.clear()
             return
@@ -133,11 +135,11 @@ class KeyHandler:
         partial_matches = bindings.partial_matches(keyname)
         # Count
         if keyname and keyname in string.digits and mode != api.modes.COMMAND:
-            logging.debug("KeyPressEvent: adding digits")
+            _logger.debug("KeyPressEvent: adding digits")
             self.partial_handler.count.add_text(keyname)
         # Complete match => run command
         elif keyname and keyname in bindings:
-            logging.debug("KeyPressEvent: found command")
+            _logger.debug("KeyPressEvent: found command")
             count = self.partial_handler.count.get_text()
             cmd = bindings[keyname]
             runners.run(cmd, count=count, mode=mode)

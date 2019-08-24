@@ -25,7 +25,6 @@ adding it to the ``Manipulations``.
 import abc
 import collections
 import copy
-import logging
 import time
 import weakref
 from typing import Optional, NamedTuple
@@ -50,6 +49,7 @@ from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
 
 
 WAIT_TIME = 0.3
+_logger = utils.log.module_logger(__name__)
 
 
 class Manipulation(QObject):
@@ -295,7 +295,7 @@ class Manipulations(list):
         Returns:
             The manipulated pixmap.
         """
-        logging.debug("Manipulate: applying %d groups", len(groups))
+        _logger.debug("Manipulate: applying %d groups", len(groups))
         # Convert original pixmap to python bytes
         image = pixmap.toImage()
         bits = image.constBits()
@@ -318,7 +318,7 @@ class Manipulations(list):
         """Apply manipulations of a single group to image."""
         if group is None:
             return data
-        logging.debug("Manipulate: applying group %r", group)
+        _logger.debug("Manipulate: applying group %r", group)
         return group.apply(data)
 
 

@@ -58,7 +58,11 @@ from typing import cast, Dict, Sequence, Tuple, Optional
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
+from vimiv.utils import log
 from . import modes, settings
+
+
+_logger = log.module_logger(__name__)
 
 
 def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
@@ -76,6 +80,7 @@ def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
             match_size = len(required_text)
             if text.startswith(required_text) and len(required_text) > best_match_size:
                 best_match, best_match_size = module, match_size
+    _logger.debug("Model '%s' for text '%s'", best_match.sourceModel(), text)
     return best_match
 
 
@@ -150,6 +155,9 @@ class BaseModel(QStandardItemModel):
         text_filter = text_filter if text_filter is not None else BaseFilter()
         text_filter.setSourceModel(self)
         _modules[text] = text_filter
+
+    def __str__(self) -> str:
+        return self.__class__.__qualname__
 
     def on_enter(self, text: str, mode: modes.Mode) -> None:
         """Called by the completer when the commandline is entered.

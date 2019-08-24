@@ -9,7 +9,6 @@
 import cProfile
 import functools
 import inspect
-import logging
 import re
 from abc import ABCMeta
 from contextlib import contextmanager, suppress
@@ -20,7 +19,7 @@ from typing import Callable, Optional, TypeVar, List, Any
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
-from ._statusbar_loghandler import handler as statusbar_loghandler
+from . import log
 
 # Different location under PyQt < 5.11
 try:
@@ -264,7 +263,7 @@ def timed(function):
         start = datetime.now()
         return_value = function(*args, **kwargs)
         elapsed_in_ms = (datetime.now() - start).total_seconds() * 1000
-        logging.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
+        log.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
         return return_value
 
     return inner

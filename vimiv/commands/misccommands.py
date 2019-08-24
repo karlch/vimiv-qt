@@ -10,7 +10,10 @@ import logging
 import time
 from typing import List
 
-from vimiv import api
+from vimiv import api, utils
+
+
+_logger = utils.log.module_logger(__name__)
 
 
 @api.commands.register()
@@ -39,6 +42,6 @@ def sleep(duration: float):
     positional arguments:
         * ``duration``: The number of seconds to sleep.
     """
-    logging.debug("Sleeping for %.2f seconds, good-night :)", duration)
+    _logger.debug("Sleeping for %.2f seconds, good-night :)", duration)
     time.sleep(duration)
-    logging.debug("Woke up nice and refreshed!")
+    _logger.debug("Woke up nice and refreshed!")

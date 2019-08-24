@@ -6,7 +6,6 @@
 
 """Main application class using QApplication."""
 
-import logging
 import os
 
 from PyQt5.QtCore import QThreadPool
@@ -14,7 +13,10 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
-from vimiv import api
+from vimiv import api, utils
+
+
+_logger = utils.log.module_logger(__name__)
 
 
 class Application(QApplication):
@@ -44,13 +46,13 @@ class Application(QApplication):
 
     def _set_icon(self):
         """Set window icon of vimiv."""
-        logging.debug("Trying to retrieve icon from theme")
+        _logger.debug("Trying to retrieve icon from theme")
         icon = QIcon.fromTheme(vimiv.__name__)
         if icon.isNull():
-            logging.debug("Trying to retrieve icon from project directory")
+            _logger.debug("Trying to retrieve icon from project directory")
             icon = self._icon_from_project_directory()
             if icon.isNull():
-                logging.error("Failed loading icon")
+                utils.log.error("Failed loading icon")
                 return
         self.setWindowIcon(icon)
 

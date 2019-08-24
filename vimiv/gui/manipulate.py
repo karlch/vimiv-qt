@@ -6,7 +6,6 @@
 
 """Manipulate widget."""
 
-import logging
 from typing import List
 
 from PyQt5.QtCore import QTimer, Qt, QSize
@@ -16,7 +15,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import slot
+from vimiv.utils import slot, log
 from .eventhandler import KeyHandler
 
 
@@ -109,7 +108,7 @@ class Manipulate(KeyHandler, QTabWidget):
         if self._error:
             api.modes.MANIPULATE.leave()
             # Must wait for every other statusbar update to complete
-            QTimer.singleShot(0, lambda: logging.error(self._error))
+            QTimer.singleShot(0, lambda: log.error(self._error))
         else:
             self.raise_()
 

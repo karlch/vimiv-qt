@@ -7,7 +7,6 @@
 """Mark and tag images."""
 
 
-import logging
 import os
 import shutil
 from datetime import datetime
@@ -16,8 +15,11 @@ from typing import Any, Callable, List, cast
 from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
 
 from vimiv.config import styles
-from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot
+from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
 from . import commands, keybindings, objreg, status, settings, modes
+
+
+_logger = log.module_logger(__name__)
 
 
 class Mark(QObject):
@@ -62,6 +64,7 @@ class Mark(QObject):
         positional arguments:
             * ``paths``: The path(s) to mark.
         """
+        _logger.debug("Marking %d paths", len(paths))
         for path in (path for path in paths if files.is_image(path)):
             self._toggle_mark(path)
 
@@ -72,18 +75,22 @@ class Mark(QObject):
         .. hint::
             It is possible to restore the last cleared marks using ``mark-restore``.
         """
+        _logger.debug("Clearing all marks")
         self._watcher.removePaths(self._marked)
         self._marked, self._last_marked = [], self._marked
         for path in self._last_marked:
             self.unmarked.emit(path)
+            _logger.debug("Unmarked '%s'", path)
 
     @commands.register()
     def mark_restore(self) -> None:
         """Restore the last cleared marks."""
+        _logger.debug("Restoring last marks")
         self._watcher.addPaths(self._last_marked)
         self._marked, self._last_marked = self._last_marked, []
         for path in self._marked:
             self.marked.emit(path)
+            _logger.debug("Marked '%s'", path)
 
     @commands.register()
     def tag_write(self, name: str) -> None:
@@ -103,6 +110,7 @@ class Mark(QObject):
         positional arguments:
             * ``name``: Name of the tag to create.
         """
+        _logger.debug("Writing to tag file '%s'", name)
         with Tag(name, read_only=False) as tag:
             tag.write(self.paths)
 
@@ -117,6 +125,7 @@ class Mark(QObject):
         positional arguments:
             * ``name``: Name of the tag to delete.
         """
+        _logger.debug("Deleting tag '%s'", name)
         abspath = Tag.path(name)
 
         def safe_delete(operation: Callable) -> None:
@@ -128,8 +137,10 @@ class Mark(QObject):
 
         if os.path.isfile(abspath):
             safe_delete(os.remove)
+            _logger.debug("Removed regular tag file '%s'", name)
         elif os.path.isdir(abspath):
             safe_delete(shutil.rmtree)
+            _logger.debug("Removed tag directory '%s'", name)
         else:
             raise commands.CommandError(f"tag file '{name}' does not exist")
 
@@ -144,11 +155,13 @@ class Mark(QObject):
         positional arguments:
             * ``name``: Name of the tag to delete.
         """
+        _logger.debug("Loading tag '%s'", name)
         with Tag(name) as tag:
             paths = tag.read()
         self._marked = paths
         for path in paths:
             self.marked.emit(path)
+            _logger.debug("Marked '%s'", path)
 
     @status.module("{mark-indicator}")
     def mark_indicator(self) -> str:
@@ -197,6 +210,7 @@ class Mark(QObject):
         Args:
             path: The path to toggle the mark status of.
         """
+        _logger.debug("Toggling '%s'", path)
         try:
             self._unmark(path)
         except ValueError:
@@ -222,6 +236,7 @@ class Mark(QObject):
         self._marked.append(path)
         self.marked.emit(path)
         self._watcher.addPath(path)
+        _logger.debug("Marked '%s'", path)
 
     def _unmark(self, path: str) -> None:
         """Unmark the given path."""
@@ -229,6 +244,7 @@ class Mark(QObject):
         del self._marked[index]
         self.unmarked.emit(path)
         self._watcher.removePath(path)
+        _logger.debug("Unmarked '%s'", path)
 
 
 class Tag:
@@ -260,7 +276,7 @@ class Tag:
         abspath = Tag.path(name)
         exists = os.path.isfile(abspath)
         self.mode = "r" if read_only else ("r+" if exists else "a+")
-        logging.debug("Opened tag object: %s", self)
+        _logger.debug("Opened tag object: '%s'", self)
         os.makedirs(os.path.dirname(abspath), exist_ok=True)
         try:
             self._file = open(abspath, self.mode)
@@ -270,12 +286,12 @@ class Tag:
             raise commands.CommandError(f"Error reading '{name}': {e}")
 
         if read_only:
-            logging.debug("%s: Reading tag file", self)
+            _logger.debug("%s: Reading tag file", self)
         elif not exists:
-            logging.debug("%s: Creating new tag file", self)
+            _logger.debug("%s: Creating new tag file", self)
             self._write_header()
         else:
-            logging.debug("%s: Appending to existing tag file", self)
+            _logger.debug("%s: Appending to existing tag file", self)
 
     def __enter__(self) -> "Tag":
         return self
@@ -290,6 +306,7 @@ class Tag:
         """Write paths to the tag file."""
         existing = {path.strip() for path in self.read()}
         new_paths = set(paths) - existing
+        _logger.debug("Adding %d paths to tag file", len(new_paths))
         self._file.write("\n".join(sorted(new_paths)) + "\n")
 
     def read(self) -> List[str]:
@@ -297,7 +314,7 @@ class Tag:
         paths = [
             path.strip() for path in self._file if not path.startswith(Tag.COMMENTCHAR)
         ]
-        logging.debug("%s: read %d paths from tag", self, len(paths))
+        _logger.debug("%s: read %d paths from tag", self, len(paths))
         return paths
 
     @staticmethod

@@ -10,14 +10,18 @@ All exif related tasks are implemented in this module. The heavy lifting is done
 piexif (https://github.com/hMatoba/Piexif).
 """
 
-import logging
 from contextlib import suppress
+
+from vimiv.utils import log
 
 # We need the check as exif support is optional
 try:
     import piexif
 except ImportError:
     piexif = None
+
+
+_logger = log.module_logger(__name__)
 
 
 def check_piexif(return_value=None):
@@ -33,7 +37,7 @@ def check_piexif(return_value=None):
     def decorator(func):
         def stub(*_args, **_kwargs):
             """Dummy function to call if piexif is not available."""
-            logging.debug(
+            _logger.debug(
                 "Cannot call '%s', piexif is required for exif support", func.__name__
             )
             return return_value
@@ -61,11 +65,11 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
                 exif_dict["0th"][piexif.ImageIFD.Orientation] = ExifOrientation.Normal
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, dest)
-        logging.debug("Succesfully wrote exif data for '%s'", dest)
+        _logger.debug("Succesfully wrote exif data for '%s'", dest)
     except piexif.InvalidImageDataError:  # File is not a jpg
-        logging.debug("File format for '%s' does not support exif", dest)
+        _logger.debug("File format for '%s' does not support exif", dest)
     except ValueError:
-        logging.debug("No exif data in '%s'", dest)
+        _logger.debug("No exif data in '%s'", dest)
 
 
 @check_piexif("")
@@ -91,7 +95,7 @@ class ExifInformation(dict):
         self._exif = None
 
         if piexif is None:
-            logging.error("%s relies on exif support", self.__class__.__qualname__)
+            log.error("%s relies on exif support", self.__class__.__qualname__)
         else:
             self._load_exif(filename)
 
@@ -114,7 +118,7 @@ class ExifInformation(dict):
         self._add_fraction("ApertureValue", "Exif", ifd.ApertureValue, " EV")
         self._add_fraction("ExposureBiasValue", "Exif", ifd.ExposureBiasValue, " EV")
         self._add_fraction("FocalLength", "Exif", ifd.FocalLength, " mm")
-        logging.debug("%s initialized, content:\n%r", self.__class__.__qualname__, self)
+        _logger.debug("%s initialized, content:\n%r", self.__class__.__qualname__, self)
 
     def _add_bytes_info(self, name, ifd, key):
         """Add exif information of type bytes to the dictionary."""

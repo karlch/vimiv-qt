@@ -15,7 +15,7 @@ from typing import Any, Dict, ItemsView, List, Union, Callable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import clamp, AbstractQObjectMeta
+from vimiv.utils import clamp, AbstractQObjectMeta, log
 
 
 Number = Union[int, float]
@@ -25,6 +25,7 @@ Methodtype = Callable[["Setting", Any], Any]
 
 
 _storage: Dict[str, "Setting"] = {}
+_logger = log.module_logger(__name__)
 
 
 def get(name: str) -> "Setting":
@@ -146,6 +147,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
     @value.setter
     def value(self, value: Any) -> Any:
         self._value = self.hook(value)
+        _logger.debug("Setting '%s' to '%s'", self.name, value)
         self.changed.emit(self._value)
 
     def is_default(self) -> bool:

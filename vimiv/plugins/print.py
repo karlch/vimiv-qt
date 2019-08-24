@@ -7,7 +7,6 @@
 """Plugin enabling print support."""
 
 import abc
-import logging
 from typing import cast, Optional, Union
 
 from PyQt5.QtCore import QObject, Qt, QSize
@@ -21,7 +20,10 @@ except ImportError:
     QSvgWidget = None
 
 from vimiv import api
-from vimiv.utils import slot
+from vimiv.utils import slot, log
+
+
+_logger = log.module_logger(__name__)
 
 
 class PrintHandler(QObject):
@@ -57,7 +59,7 @@ class PrintHandler(QObject):
         if self._widget is None:
             raise api.commands.CommandError("No widget to print")
 
-        logging.debug("Starting print dialog")
+        _logger.debug("Starting print dialog")
 
         def handle_print() -> None:
             # We only use handle_print in the function below, None was caught above
@@ -116,7 +118,7 @@ class PrintPixmap(PrintWidget):
 
     def paint(self, printer: QPrinter) -> None:
         """Scale pixmap to match printer page and paint using painter."""
-        logging.debug("Painting pixmap for print")
+        _logger.debug("Painting pixmap for print")
         painter = QPainter(printer)
         scaled_pixmap = self._widget.scaled(
             printer.pageRect().size(), Qt.KeepAspectRatio
@@ -130,7 +132,7 @@ class PrintSvg(PrintWidget):
 
     def paint(self, printer: QPrinter) -> None:
         """Scale vector graphic to match printer page and paint using render."""
-        logging.debug("Painting vector graphic for print")
+        _logger.debug("Painting vector graphic for print")
         scale = min(
             self._widget.sizeHint().width() / printer.pageRect().width(),
             self._widget.sizeHint().height() / printer.pageRect().height(),
@@ -147,14 +149,14 @@ class PrintMovie(PrintWidget):
 
     def paint(self, printer: QPrinter) -> None:
         """Paint every frame of the movie on one printer page."""
-        logging.debug("Painting animation for print")
+        _logger.debug("Painting animation for print")
         painter = QPainter(printer)
 
         for frame in range(self._widget.frameCount()):  # Iterate over all frames
-            logging.debug("Painting frame %d", frame)
+            _logger.debug("Painting frame %d", frame)
 
             if frame > 0:  # Every frame on its own page
-                logging.debug("Adding new page for printer")
+                _logger.debug("Adding new page for printer")
                 printer.newPage()
 
             self._widget.jumpToFrame(frame)

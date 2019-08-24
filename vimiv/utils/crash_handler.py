@@ -7,12 +7,13 @@
 """Handler for uncaught exceptions and signals."""
 
 import functools
-import logging
 import os
 import signal
 import sys
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
+
+from . import log
 
 # Fails on windows
 # We do not officially support windows currently, but might do so in the future
@@ -22,6 +23,9 @@ except ImportError:
     # Mypy does not approve that we assigne None to a module but that is exactly what we
     # want to do for the optional import
     fcntl = None  # type: ignore
+
+
+_logger = log.module_logger(__name__)
 
 
 class CrashHandler(QObject):
@@ -43,7 +47,7 @@ class CrashHandler(QObject):
         # Setup hook for uncaught exceptions
         sys.excepthook = functools.partial(self.handle_exception, sys.excepthook)
         # Finalize
-        logging.debug("Initialized crash handler")
+        _logger.debug("Initialized crash handler")
 
     def _setup_wakeup_fd(self):
         """Set up wakeup filedescriptor for signal handling.
@@ -51,7 +55,7 @@ class CrashHandler(QObject):
         This returns the control from the Qt main loop in C++ back to python and allows
         signal handling in python. Only available for unix-like systems.
         """
-        logging.debug("Setting up wakeup filedescriptor for unix-like systems")
+        _logger.debug("Setting up wakeup filedescriptor for unix-like systems")
         read_fd, write_fd = os.pipe()
         for fd in (read_fd, write_fd):
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
@@ -70,7 +74,7 @@ class CrashHandler(QObject):
         Args:
             timeout: Timeout in seconds after which the timer is repeatedly invoked.
         """
-        logging.debug("Setting up timer for non unix systems")
+        _logger.debug("Setting up timer for non unix systems")
         timer = QTimer()
         timer.start(timeout)
         timer.timeout.connect(lambda: None)
@@ -81,17 +85,15 @@ class CrashHandler(QObject):
         In addition to the standard python exception handler a log message is called and
         the application tries to exit gracefully.
         """
-        logging.error("Uncaught exception! Exiting gracefully and printing stack...")
+        log.error("Uncaught exception! Exiting gracefully and printing stack...")
         initial_handler(exc_type, exc_value, traceback)
         try:
             self._app.exit(1)
         # We exit immediately by killing the application if an error in the graceful
         # exit occurs
         except Exception as e:  # pylint: disable=broad-except
-            logging.fatal(
-                "Uncaught exception in graceful exit... Committing suicide :("
-            )
-            logging.fatal("Exception: %r", e)
+            log.fatal("Uncaught exception in graceful exit... Committing suicide :(")
+            log.fatal("Exception: %r", e)
             sys.exit(42)
 
     def handle_interrupt(self, signum, _frame):
@@ -100,10 +102,10 @@ class CrashHandler(QObject):
         Args:
             signum: Signal number of the interrupt signal retrieved.
         """
-        logging.debug("Interrupt handler called with signal %d", signum)
+        _logger.debug("Interrupt handler called with signal %d", signum)
         _assign_interrupt_handler(self.handle_interrupt_forcefully)
-        logging.info("SIGINT/SIGTERM received, exiting gracefully...")
-        logging.info("To kill the process repeat the signal")
+        log.info("SIGINT/SIGTERM received, exiting gracefully...")
+        log.info("To kill the process repeat the signal")
         QTimer.singleShot(0, functools.partial(self._app.exit, 128 + signum))
 
     def handle_interrupt_forcefully(self, signum, _frame):
@@ -112,8 +114,8 @@ class CrashHandler(QObject):
         Args:
             signum: Signal number of the interrupt signal retrieved.
         """
-        logging.debug("Interrupt handler called a second time with %d", signum)
-        logging.fatal("Forceful kill signal retrieved... Hello darkness my old friend")
+        _logger.debug("Interrupt handler called a second time with %d", signum)
+        log.fatal("Forceful kill signal retrieved... Hello darkness my old friend")
         sys.exit(128 + signum)
 
 

@@ -7,7 +7,6 @@
 """Thumbnail widget."""
 
 import collections
-import logging
 import os
 from typing import List, Optional
 
@@ -18,8 +17,11 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
-from vimiv.utils import create_pixmap, thumbnail_manager, clamp
+from vimiv.utils import create_pixmap, thumbnail_manager, clamp, log
 from .eventhandler import KeyHandler
+
+
+_logger = log.module_logger(__name__)
 
 
 class ThumbnailView(KeyHandler, QListWidget):
@@ -118,20 +120,26 @@ class ThumbnailView(KeyHandler, QListWidget):
             paths: List of new paths to load.
         """
         if paths == self._paths:  # Nothing to do
+            _logger.debug("No new images to load")
             return
+        _logger.debug("Loading %d new images", len(paths))
         # Delete paths that are no longer here
         # We must go in reverse order as otherwise the indexing changes on the
         # fly
         for i, path in enumerate(self._paths[::-1]):
             if path not in paths:
+                _logger.debug("Removing existing thumbnail '%s'", path)
                 if not self.takeItem(len(self._paths) - 1 - i):
-                    logging.error("Error removing thumbnail for %s", path)
+                    log.error("Error removing thumbnail for %s", path)
         # Add new paths
         for i, path in enumerate(paths):
             if path not in self._paths:
+                _logger.debug("Adding new thumbnail '%s'", path)
                 item = QListWidgetItem(self, i)
                 item.setSizeHint(QSize(self.item_size(), self.item_size()))
                 item.setIcon(QIcon(self._default_pixmap))
+                if path in api.mark.paths:
+                    item.setText("1")
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
@@ -197,6 +205,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         try:
             index = self._paths.index(path)
         except ValueError:
+            _logger.debug("Ignoring mark as thumbnails have not been created")
             return
         item = self.item(index)
         # Set arbitrary text as the mark is highlighted by a rectangle
@@ -209,6 +218,7 @@ class ThumbnailView(KeyHandler, QListWidget):
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
         """Open the currently selected thumbnail in image mode."""
+        _logger.debug("Opening selected thumbnail '%s'", self.current())
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
@@ -227,6 +237,7 @@ class ThumbnailView(KeyHandler, QListWidget):
 
         **count:** multiplier
         """
+        _logger.debug("Scrolling in direction '%s'", direction)
         current = self.currentRow()
         column = current % self.columns()
         if direction == argtypes.Direction.Right:
@@ -285,6 +296,7 @@ class ThumbnailView(KeyHandler, QListWidget):
 
         **count:** multiplier
         """
+        _logger.debug("Zooming in direction '%s'", direction)
         size = self.iconSize().width()
         size = size // 2 if direction == direction.Out else size * 2
         size = clamp(size, 64, 512)
@@ -303,6 +315,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         Args:
             index: Number of the current item to select.
         """
+        _logger.debug("Selecting thumbnail number %d", index)
         index = self.model().index(index, 0)
         self._select_index(index)
 
@@ -317,6 +330,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         self.scrollTo(index, hint=self.PositionAtCenter)
 
     def _on_size_changed(self, value: int):
+        _logger.debug("Setting size to %d", value)
         self.setIconSize(QSize(value, value))
         self.rescale_items()
 

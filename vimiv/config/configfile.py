@@ -7,12 +7,14 @@
 """Functions to read configurations from config file and update settings."""
 
 import configparser
-import logging
 import os
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
-from vimiv.utils import xdg
+from vimiv.utils import xdg, log
+
+
+_logger = log.module_logger(__name__)
 
 
 def parse(args):
@@ -35,7 +37,7 @@ def parse(args):
         files.append(args.config)
     if files:
         _read(files)
-        logging.debug("Read configuration from %s", ", ".join(files))
+        _logger.debug("Read configuration from %s", ", ".join(files))
 
 
 def dump():
@@ -56,7 +58,7 @@ def dump():
     with open(user_file, "w") as f:
         parser.write(f)
         f.write("; vim:ft=dosini")
-    logging.debug("Created default config file %s", user_file)
+    _logger.debug("Created default config file %s", user_file)
 
 
 def _read(files):
@@ -96,12 +98,12 @@ def _update_setting(name, parser):
         setting_name = "%s.%s" % (section.lower(), option)
         setting_name = setting_name.replace("general.", "")
         setting = api.settings.get(setting_name)
-        logging.debug("Setting '%s' to '%s'", setting_name, parser_option)
+        _logger.debug("Updating '%s' with '%s'", setting_name, parser_option)
         setting.value = parser_option
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
-        logging.debug("%s in configfile", str(e))
+        _logger.debug("%s in configfile", str(e))
     except ValueError as e:
-        logging.error("Error reading setting %s: %s", setting_name, str(e))
+        log.error("Error reading setting %s: %s", setting_name, str(e))
 
 
 def _add_statusbar_formatters(configsection):
@@ -114,6 +116,7 @@ def _add_statusbar_formatters(configsection):
     possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:
+            _logger.debug("Adding statusbar formatter '%s' with '%s'", name, value)
             api.settings.StrSetting("statusbar.%s" % (name), value)
 
 
@@ -150,7 +153,7 @@ def _add_aliases(configsection):
         try:
             aliases.alias(name, [command], "global")
         except api.commands.CommandError as e:
-            logging.error("Reading aliases from config: %s", str(e))
+            log.error("Reading aliases from config: %s", str(e))
 
 
 def _read_plugins(pluginsection):
@@ -159,5 +162,5 @@ def _read_plugins(pluginsection):
     Args:
         pluginsection: PLUGINS section in the config file.
     """
-    logging.debug("Plugins in config: %s", ", ".join(pluginsection))
+    _logger.debug("Plugins in config: %s", ", ".join(pluginsection))
     plugins.add_plugins(**pluginsection)

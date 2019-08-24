@@ -78,6 +78,16 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"
     )
+
+    devel = parser.add_argument_group("development arguments")
+    devel.add_argument(
+        "--debug",
+        nargs="+",
+        type=str,
+        metavar="MODULE",
+        default=(),
+        help="Force showing debug log messages of MODULE",
+    )
     return parser
 
 

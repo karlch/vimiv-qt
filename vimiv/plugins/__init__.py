@@ -55,13 +55,12 @@ Module Attributes:
 """
 
 import importlib
-import logging
 import os
 import sys
 from types import ModuleType
 from typing import Dict, List
 
-from vimiv.utils import xdg
+from vimiv.utils import xdg, log
 
 
 _app_plugin_directory = os.path.dirname(__file__)
@@ -70,6 +69,7 @@ _plugins: Dict[str, str] = {
     "print": "default"
 }  # key: name, value: additional information
 _loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
+_logger = log.module_logger(__name__)
 
 
 def load(*plugins: str) -> None:
@@ -80,21 +80,21 @@ def load(*plugins: str) -> None:
     Args:
         plugins: Plugin names to load.
     """
-    logging.debug("Loading plugins...")
+    _logger.debug("Loading plugins...")
     sys.path.insert(0, _app_plugin_directory)
     sys.path.insert(0, _user_plugin_directory)
     app_plugins = _get_plugins(_app_plugin_directory)
-    logging.debug("Available app plugins: %s", ", ".join(app_plugins))
+    _logger.debug("Available app plugins: %s", ", ".join(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
-    logging.debug("Available user plugins: %s", ", ".join(user_plugins))
+    _logger.debug("Available user plugins: %s", ", ".join(user_plugins))
     for plugin in plugins if plugins else _plugins:
         if plugin in app_plugins:
             _load_plugin(plugin, _app_plugin_directory)
         elif plugin in user_plugins:
             _load_plugin(plugin, _user_plugin_directory)
         else:
-            logging.debug("Unable to find plugin '%s', ignoring", plugin)
-    logging.debug("Plugin loading completed")
+            _logger.debug("Unable to find plugin '%s', ignoring", plugin)
+    _logger.debug("Plugin loading completed")
 
 
 def cleanup() -> None:
@@ -103,15 +103,15 @@ def cleanup() -> None:
     This calls the cleanup function for all loaded plugins and is called before vimiv is
     closed.
     """
-    logging.debug("Cleaning up plugins")
+    _logger.debug("Cleaning up plugins")
     for name, module in _loaded_plugins.items():
         try:
             # AttributeError is caught afterwards, the module may or may not define
             # cleanup
             module.cleanup()  # type: ignore
-            logging.debug("Cleaned up '%s'", name)
+            _logger.debug("Cleaned up '%s'", name)
         except AttributeError:
-            logging.debug("Plugin '%s' does not define cleanup()", name)
+            _logger.debug("Plugin '%s' does not define cleanup()", name)
 
 
 def add_plugins(**plugins: str) -> None:
@@ -135,19 +135,19 @@ def _load_plugin(name: str, directory: str) -> None:
         name: Name of the plugin as python module.
         directory: Directory in which the python module is located.
     """
-    logging.debug("Loading plugin '%s' from '%s'", name, directory)
+    _logger.debug("Loading plugin '%s' from '%s'", name, directory)
     try:
         module = importlib.import_module(name, directory)
     except ImportError as e:
-        logging.error("Importing plugin '%s': %s", name, str(e))
+        log.error("Importing plugin '%s': %s", name, str(e))
         return
     try:
         # AttributeError is caught afterwards, the module may or may not define init
         module.init()  # type: ignore
-        logging.debug("Initialized '%s'", name)
+        _logger.debug("Initialized '%s'", name)
     except AttributeError:
-        logging.debug("Plugin '%s' does not define init()", name)
-    logging.debug("Loaded '%s' successfully", name)
+        _logger.debug("Plugin '%s' does not define init()", name)
+    _logger.debug("Loaded '%s' successfully", name)
     _loaded_plugins[name] = module
 
 

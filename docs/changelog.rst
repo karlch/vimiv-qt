@@ -17,6 +17,10 @@ Added:
   ``metadata.padding`` and ``metadata.border_radius``.
 * Completion of tag names for the ``:tag-*`` commands.
 * The ``--command`` argument to run arbitrary commands on startup.
+* Logging is now modular, especially for debugging. This comes with the ``--debug``
+  argument which accepts the names of modules to debug.  E.g. ``--debug startup`` would
+  show all debug messages from ``vimiv/startup.py`` without setting the global log level
+  to ``DEBUG``.
 
 Changed:
 ^^^^^^^^
