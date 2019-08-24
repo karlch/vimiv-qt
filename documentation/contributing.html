@@ -307,7 +307,7 @@ called.</p></li>
 </ol>
 <dl class="function">
 <dt id="vimiv.plugins.load">
-<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">*plugins</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">*plugins: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load plugins defined.</p>
 <p>If no plugins are passed to the function all active plugins are loaded.</p>
 <dl class="field-list simple">
@@ -330,23 +330,44 @@ called.</p></li>
 which may be useful to understand before working on bigger changes.</p>
 <div class="section" id="logging">
 <h3>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
-<p>For logging purposes, the
-<a class="reference external" href="https://docs.python.org/3/howto/logging.html">standard python logging library</a>
-is used. Therefore, to use logging anywhere in vimiv:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the logging module at the beginning</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="o">...</span>
-<span class="c1"># Use it as usual in the code</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;This is an important information&quot;</span><span class="p">)</span>
+<p>Logging is handled by the <code class="docutils literal notranslate"><span class="pre">vimiv.utils.log</span></code> module which wraps around the
+<a class="reference external" href="https://docs.python.org/3/howto/logging.html">standard python logging library</a>:</p>
+<span class="target" id="module-vimiv.utils.log"></span><p><cite>Utilities related to logging</cite>.</p>
+<p>There are two different types of loggers: the application-wide logger and module
+specific loggers.</p>
+<p>The application-wide logger is used for general messages meant for the user. All log
+messages with level larger than debug are also sent to the statusbar. To send a message
+to this logger, the utility functions <code class="xref py py-func docutils literal notranslate"><span class="pre">debug()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">info()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">warning()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">error()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">critical()</span></code> can be used. They are just very thin wrapper
+functions around the python logging functions.</p>
+<p>For debugging it is recommended to use a module specific logger. This allows fine-tuning
+the amount of debug statements that should be displayed using the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag. To
+create a module logger:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.utils</span> <span class="k">import</span> <span class="n">log</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">module_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Three handlers are currently used:</p>
+<p>and use this logger as usual:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing some setup&quot;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Doing the work&quot;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing some clean-up&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Three log handlers are currently used:</p>
 <ul class="simple">
 <li><p>One to print to the console</p></li>
 <li><p>One to save the output in a log file located in
 <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/vimiv.log</span></code></p></li>
-<li><p>One to print log messages to the statusbar</p></li>
+<li><p>One to print log messages to the statusbar (only for application-wide logger)</p></li>
 </ul>
+<dl>
+<dt>Module Attributes:</dt><dd><p>statusbar_loghandler: Instance of the log handler connecting to the statusbar.</p>
+<p>_module_loggers: Dictionary mapping module names to their corresponding logger.</p>
+</dd>
+</dl>
 </div>
 <div class="section" id="module-vimiv.api">
 <span id="api-documentation"></span><h3>API Documentation<a class="headerlink" href="#module-vimiv.api" title="Permalink to this headline">¶</a></h3>
@@ -997,7 +1018,7 @@ application.</p></li>
 adding it to the <code class="docutils literal notranslate"><span class="pre">Manipulations</span></code>.</p>
 <dl class="class">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param">*manipulations</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for a group of manipulations associated to one manipulation tab.</p>
 <p>The group stores the individual manipulations, associates them to a manipulate
 function and provides a title.</p>
@@ -1022,7 +1043,7 @@ is generated directly from the bytes and needs them to stay in memory.</p>
 
 <dl class="method">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup._apply">
-<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em>, <em class="sig-param">*manipulations</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em>, <em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply all manipulations of this group.</p>
 <p>Takes the image data as raw bytes, applies the changes according the current
 manipulation values and returns the updated bytes. In general this is associated
@@ -1130,7 +1151,7 @@ from the source code. It must be run from the repository directory using:</p>
     </p>
     <p>
         &copy; Copyright 2018-2019, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
     </p>
   </div>
 </footer>
