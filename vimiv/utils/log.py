@@ -56,31 +56,34 @@ from . import xdg
 
 
 _module_loggers: Dict[str, logging.Logger] = {}
+formatter = logging.Formatter(
+    "[{asctime}] {levelname:8} {name:20} {message}", datefmt="%H:%M:%S", style="{"
+)
 
 
 def debug(msg: str, *args, **kwargs) -> None:
     """Log a debug message using the application-wide logger."""
-    logging.getLogger(vimiv.__name__).debug(msg, *args, **kwargs)
+    logging.getLogger(f"<{vimiv.__name__}>").debug(msg, *args, **kwargs)
 
 
 def info(msg: str, *args, **kwargs) -> None:
     """Log an info message using the application-wide logger."""
-    logging.getLogger(vimiv.__name__).info(msg, *args, **kwargs)
+    logging.getLogger(f"<{vimiv.__name__}>").info(msg, *args, **kwargs)
 
 
 def warning(msg: str, *args, **kwargs) -> None:
     """Log a warning message using the application-wide logger."""
-    logging.getLogger(vimiv.__name__).warning(msg, *args, **kwargs)
+    logging.getLogger(f"<{vimiv.__name__}>").warning(msg, *args, **kwargs)
 
 
 def error(msg: str, *args, **kwargs) -> None:
     """Log an error message using the application-wide logger."""
-    logging.getLogger(vimiv.__name__).error(msg, *args, **kwargs)
+    logging.getLogger(f"<{vimiv.__name__}>").error(msg, *args, **kwargs)
 
 
 def critical(msg: str, *args, **kwargs) -> None:
     """Log a critical message using the application-wide logger."""
-    logging.getLogger(vimiv.__name__).critical(msg, *args, **kwargs)
+    logging.getLogger(f"<{vimiv.__name__}>").critical(msg, *args, **kwargs)
 
 
 fatal = critical
@@ -105,9 +108,6 @@ def setup_logging(level: int, *debug_modules: str) -> None:
         debug_modules: Module names for which debug messages are forced to be shown.
     """
     # Configure the root logger
-    formatter = logging.Formatter(
-        "[{asctime}] {levelname:8} {message}", datefmt="%H:%M:%S", style="{"
-    )
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     # mode=w creates a new file for every new vimiv process
@@ -123,15 +123,18 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     # Setup debug logging for specific modules
     for name, logger in _module_loggers.items():
         logger.setLevel(logging.DEBUG)  # Activate logger in general
-        logger.handlers[1].setLevel(logging.DEBUG if name in debug_modules else level)
+        for handler in logger.handlers:
+            handler.setLevel(logging.DEBUG if name in debug_modules else level)
+        # Append file handler here to ensure logging to one file
+        logger.handlers.append(file_handler)
 
 
 def module_logger(name: str) -> logging.Logger:
     """Create a module-level logger.
 
-    Module-level loggers log to the vimiv log-file as well as the console. Their
-    formatter is slightly different from the application-wide on by also printing the
-    name of the module.
+    Module-level loggers log to the vimiv log-file as well as the console. The file
+    handler is only attached in setup_logging to ensure logging to the correct file,
+    even when starting with --temp-basedir.
 
     Args:
         name: Name of the module for which the logger is created.
@@ -143,18 +146,13 @@ def module_logger(name: str) -> logging.Logger:
     if name in _module_loggers:
         return _module_loggers[name]
 
-    formatter = logging.Formatter(
-        "[{asctime}] {levelname:8} {name:20} {message}", datefmt="%H:%M:%S", style="{"
-    )
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
-    file_handler = logging.FileHandler(xdg.join_vimiv_data("vimiv.log"))
-    file_handler.setFormatter(formatter)
 
     logger = logging.getLogger(f"<{name}>")
     logger.setLevel(logging.CRITICAL)  # No logging before the module has been set up
     logger.propagate = False
-    logger.handlers = [file_handler, console_handler]
+    logger.handlers = [console_handler]
 
     _module_loggers[name] = logger
     return logger
