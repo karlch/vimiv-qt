@@ -7,6 +7,7 @@
 """Classes and functions to run commands.
 
 Module Attributes:
+    SEPARATOR: String used to separate chained commands.
     external: ExternalRunner instance to run shell commands.
 
     _last_command: Dictionary storing the last command for each mode.
@@ -16,7 +17,7 @@ import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, NamedTuple, Optional
+from typing import Dict, List, NamedTuple, Optional, Callable
 
 from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
 
@@ -24,6 +25,8 @@ from vimiv import api, utils
 from vimiv.utils import log
 from vimiv.commands import aliases
 
+
+SEPARATOR = "&&"
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
 _logger = log.module_logger(__name__)
@@ -37,7 +40,55 @@ class LastCommand(NamedTuple):
     Arguments: List[str]
 
 
+class CommandPartFailed(Exception):
+    """Raised if a command part fails, e.g. due to the command being unknown."""
+
+
+def text_non_whitespace(func: Callable[..., None]):
+    """Decorator to only run function if text argument is more than plain whitespace."""
+
+    def inner(text: str, *args, **kwargs) -> None:
+        text = text.strip()
+        if not text:
+            return None
+        return func(text, *args, **kwargs)
+
+    return inner
+
+
+@text_non_whitespace
 def run(text, count=None, mode=None):
+    """Run a (chain of) command(s).
+
+    The text to run is split at SEPARATOR and each part is handled individually by
+    _run_single. If one part fails, the remaining parts are not executed.
+
+    Args:
+        text: Complete text given to command line or keybinding.
+        count: Count given if any.
+        mode: Mode to run the command in.
+    """
+    _logger.debug("Running '%s'", text)
+    # Expand percent here as it only needs to be done once and is rather expensive
+    text = expand_percent(text, mode)
+    _logger.debug("Expanded text to '%s'", text)
+    # Split text parts recursively updating aliases in the individual parts
+
+    def replace_aliases(text):
+        return text if SEPARATOR in text else alias(text.strip(), mode)
+
+    textparts = utils.recursive_split(text, SEPARATOR, replace_aliases)
+    _logger.debug("Split text into parts '%s'", textparts)
+    try:
+        for i, cmdpart in enumerate(textparts):
+            _logger.debug("Handling part %d '%s'", i, cmdpart)
+            _run_single(cmdpart, count, mode)
+    except CommandPartFailed:
+        _logger.debug("Stopping at %d as '%s' failed", i, cmdpart)
+
+
+@text_non_whitespace
+def _run_single(text, count=None, mode=None):
     """Run either external or internal command.
 
     Args:
@@ -45,25 +96,11 @@ def run(text, count=None, mode=None):
         count: Count given if any.
         mode: Mode to run the command in.
     """
-    text = text.strip()
-    if not text:
-        return
-    text = _update_command(text, mode=mode)
     if text.startswith("!"):
         external(text.lstrip("!"))
     else:
         count = str(count) if count is not None else ""
         command(count + text, mode)
-
-
-def _update_command(text, mode):
-    """Update command with aliases and percent wildcard.
-
-    Args:
-        text: String passed as command.
-        mode: Mode in which the command is supposed to run.
-    """
-    return expand_percent(alias(text, mode), mode)
 
 
 def command(text, mode=None):
@@ -120,10 +157,13 @@ def _run_command(count, cmdname, args, mode):
         api.status.update()
     except api.commands.CommandNotFound as e:
         log.error(str(e))
+        raise CommandPartFailed from e
     except (api.commands.ArgumentError, api.commands.CommandError) as e:
         log.error("%s: %s", cmdname, str(e))
+        raise CommandPartFailed from e
     except api.commands.CommandWarning as w:
         log.warning("%s: %s", cmdname, str(w))
+        raise CommandPartFailed from w
 
 
 def _parse(text):

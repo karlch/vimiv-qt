@@ -26,6 +26,7 @@ class Aliases(collections.UserDict):
         # Add defaults
         self[api.modes.GLOBAL]["q"] = "quit"
         self[api.modes.IMAGE]["w"] = "write"
+        self[api.modes.IMAGE]["wq"] = "write && quit"
 
     def get(self, mode):
         """Return all aliases for one mode."""

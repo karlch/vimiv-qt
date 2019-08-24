@@ -105,6 +105,23 @@ def test_flatten():
     assert utils.flatten(list_of_lists) == [1, 2, 3, 4]
 
 
+def test_recursive_split():
+    def updater(text):
+        """Return a text containing two numbers decremented by one, break at 0.
+
+        This results in doubling the number of numbers in every iteration and
+        decrementing all numbers by one. Eventually 2**(N - 1) zeros are left.
+        """
+        number = int(text) - 1
+        if number > 0:
+            return f"{number}.{number}"
+        return "0"
+
+    for number in range(1, 6):
+        expected = ["0"] * 2 ** (number - 1)
+        assert utils.recursive_split(str(number), ".", updater) == expected
+
+
 def test_remove_prefix():
     assert utils.remove_prefix("start hello", "start") == " hello"
 

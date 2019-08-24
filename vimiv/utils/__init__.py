@@ -174,6 +174,21 @@ def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
+def recursive_split(
+    text: str, separator: str, updater: Callable[[str], str]
+) -> List[str]:
+    """Recursively split a string at separator applying an update callable.
+
+    The string is split into parts and the update callable is applied to each part. The
+    function is then called again on the updated text until no more separators remain.
+    """
+    splits = updater(text).split(separator)
+    if len(splits) == 1:  # Updater did not add any new separators
+        return splits
+    nested = [recursive_split(part, separator, updater) for part in splits]
+    return flatten(nested)
+
+
 def remove_prefix(text: str, prefix: str) -> str:
     """Remove a prefix of a given string."""
     if text.startswith(prefix):
