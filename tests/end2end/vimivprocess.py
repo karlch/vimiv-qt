@@ -65,8 +65,14 @@ class VimivProc:
         api.settings.reset()
         api.mark.mark_clear()
         # Must disconnect these signals ourselves as the automatic disconnection seems
-        # to fail with slots assigned using partial
-        for name in dir(api.signals):
-            elem = getattr(api.signals, name)
+        # to fail with slots assigned using partial or lambdas
+        VimivProc.disconnect_custom_signals(api.signals)
+        VimivProc.disconnect_custom_signals(api.mark)
+
+    @staticmethod
+    def disconnect_custom_signals(obj: QObject):
+        """Disconnect all slots from custom signals in obj."""
+        for name in dir(obj):
+            elem = getattr(obj, name)
             if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
                 elem.disconnect()
