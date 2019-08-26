@@ -4,19 +4,45 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""bdd-like steps for end2end testing."""
+"""Functions, fixtures and bdd-like steps for end2end testing."""
 
+import contextlib
 import os
 
 from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtWidgets import QApplication
 
+import pytest
 import pytest_bdd as bdd
 
 from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
 from vimiv.imutils import filelist
+
+
+################################################################################
+#                               Pytest fixtures                                #
+################################################################################
+@pytest.fixture
+def cleanup_helper():
+    """Fixture to keep vimiv registries clean.
+
+    Returns a contextmanager that resets the state of a dictionary to the initial state
+    before running tests.
+    """
+
+    @contextlib.contextmanager
+    def cleanup(init_dict):
+        init_content = {key: dict(value) for key, value in init_dict.items()}
+        yield
+        new_content = {key: dict(value) for key, value in init_dict.items()}
+        for key, valuedict in new_content.items():
+            for elem in valuedict:
+                if elem not in init_content[key]:
+                    del init_dict[key][elem]
+
+    return cleanup
 
 
 ###############################################################################
