@@ -6,6 +6,8 @@
 
 """Singleton to start one vimiv process for tests."""
 
+import logging
+
 from PyQt5.QtCore import QThreadPool, QCoreApplication, pyqtBoundSignal, QObject
 
 # Must mock decorator before import
@@ -64,6 +66,7 @@ class VimivProc:
         QCoreApplication.instance().aboutToQuit.emit()
         api.settings.reset()
         api.mark.mark_clear()
+        logging.getLogger().handlers = []  # Mainly to remove the statusbar handler
         # Must disconnect these signals ourselves as the automatic disconnection seems
         # to fail with slots assigned using partial or lambdas
         VimivProc.disconnect_custom_signals(api.signals)
