@@ -225,6 +225,7 @@ def check_filelist_length(number):
 
 
 @bdd.then(bdd.parsers.parse("the file {name} should exist"))
+@bdd.then("the file <name> should exist")
 def check_file_exists(name):
     assert os.path.isfile(name)
 
