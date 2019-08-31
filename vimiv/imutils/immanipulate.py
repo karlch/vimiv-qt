@@ -88,7 +88,7 @@ class Manipulation(QObject):
 
         self.value, self._init_value = value, init_value
 
-        self.slider.valueChanged.connect(lambda value: self.updated.emit(self))
+        self.slider.valueChanged.connect(self._on_value_changed)
 
     @property
     def value(self):
@@ -119,6 +119,10 @@ class Manipulation(QObject):
     def unfocus(self):
         fg = styles.get("manipulate.fg")
         self.label.setText(utils.wrap_style_span(f"color: {fg}", self.name))
+
+    def _on_value_changed(self, _value):
+        """Emit the updated signal when the slider value has changed."""
+        self.updated.emit(self)
 
     def __repr__(self):
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"

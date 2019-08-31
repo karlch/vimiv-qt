@@ -14,21 +14,10 @@ bdd.scenarios("keybindings.feature")
 
 
 @pytest.fixture(autouse=True)
-def cleanup_keybindings():
-    """Fixture to delete any keybindings that were created in this feature."""
-
-    def copy_bindings():
-        """Helper function to retrieve a 'deepcopy' of the current keybindings."""
-        return {mode: dict(api.keybindings._registry[mode]) for mode in api.modes.ALL}
-
-    init_bindings = copy_bindings()  # Store initial keybindings
-    yield
-    # Delete anything from keybindings that was not in the initial keybindings
-    updated_bindings = copy_bindings()
-    for mode, mode_bindings in updated_bindings.items():
-        for binding in mode_bindings:
-            if binding not in init_bindings[mode]:
-                del api.keybindings._registry[mode][binding]
+def cleanup_keybindings(cleanup_helper):
+    """Fixture to delete any keybindings that were created during testing."""
+    with cleanup_helper(api.keybindings._registry):
+        yield
 
 
 @bdd.then(bdd.parsers.parse("the keybinding {binding} should exist for mode {mode}"))
