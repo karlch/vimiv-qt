@@ -108,7 +108,9 @@ a new plugin:</p>
 <li><p>Put the python module into the plugins folder <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/plugins/</span></code>.</p></li>
 <li><p>Activate it in the <code class="docutils literal notranslate"><span class="pre">PLUGINS</span></code> section of the configuration file by adding:
 <code class="docutils literal notranslate"><span class="pre">plugin_name</span> <span class="pre">=</span> <span class="pre">any</span> <span class="pre">additional</span> <span class="pre">information</span></code> where <code class="docutils literal notranslate"><span class="pre">plugin_name</span></code> is the name of the
-python module added.</p></li>
+python module added and <code class="docutils literal notranslate"><span class="pre">any</span> <span class="pre">additional</span> <span class="pre">information</span></code> is passed on to the plugin
+upon startup. Plugins can decide to use this information string for anything they
+like.</p></li>
 </ol>
 <p>Currently the following user plugins are available:</p>
 <ul class="simple">

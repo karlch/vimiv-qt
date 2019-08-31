@@ -278,10 +278,18 @@ A simple example to get an idea of the plugin structure is realized in the demo 
 <ul class="simple">
 <li><p>The application api imported via <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv</span> <span class="pre">import</span> <span class="pre">api</span></code></p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">init</span></code> function of the plugin which gets called as soon as the plugin is
-loaded</p></li>
+loaded. It receives the information string as first argument which contains the
+additional information supplied by the user in the configuration file after the plugin
+name. This can be used to receive simple information from the user.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of the plugin which gets called when the vimiv application
 exits.</p></li>
 </ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is considered good practice to add <code class="docutils literal notranslate"><span class="pre">*args,</span> <span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">init</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of any plugin. This allows additional information to be passed
+via these functions at any time without breaking the plugin.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Using any other imports from vimiv besides the api module is not considered stable
@@ -307,7 +315,7 @@ called.</p></li>
 </ol>
 <dl class="function">
 <dt id="vimiv.plugins.load">
-<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">*plugins: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">plugins: Dict[str</em>, <em class="sig-param">str] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load plugins defined.</p>
 <p>If no plugins are passed to the function all active plugins are loaded.</p>
 <dl class="field-list simple">
