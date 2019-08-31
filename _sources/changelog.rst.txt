@@ -22,6 +22,9 @@ Added:
   show all debug messages from ``vimiv/startup.py`` without setting the global log level
   to ``DEBUG``.
 * It is now possible to chain multiple commands with ``&&``. E.g. ``:write && quit``.
+* New ``--open-selected`` flag for scroll and goto commands in library which
+  automatically opens any selected image. Added keybindings are ``n`` and ``p`` for
+  scrolling up/down and ``go`` for goto with this flag.
 
 Changed:
 ^^^^^^^^
