@@ -11,9 +11,9 @@ terminal. The init and cleanup functions also print messages to the terminal wit
 further usage for demonstration purposes.
 """
 
-from vimiv import api
-
 from typing import Any
+
+from vimiv import api
 
 
 @api.commands.register()
