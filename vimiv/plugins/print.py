@@ -7,7 +7,7 @@
 """Plugin enabling print support."""
 
 import abc
-from typing import cast, Optional, Union
+from typing import cast, Optional, Union, Any
 
 from PyQt5.QtCore import QObject, Qt, QSize
 from PyQt5.QtGui import QPixmap, QMovie, QPainter
@@ -171,6 +171,6 @@ class PrintMovie(PrintWidget):
         return self._widget.currentPixmap().size()
 
 
-def init() -> None:
+def init(_info: str, *_args: Any, **_kwargs: Any) -> None:
     """Setup print plugin by initializing the PrintHandler class."""
     PrintHandler()

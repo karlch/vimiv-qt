@@ -10,7 +10,9 @@ a new plugin:
 #. Put the python module into the plugins folder ``$XDG_DATA_HOME/vimiv/plugins/``.
 #. Activate it in the ``PLUGINS`` section of the configuration file by adding:
    ``plugin_name = any additional information`` where ``plugin_name`` is the name of the
-   python module added.
+   python module added and ``any additional information`` is passed on to the plugin
+   upon startup. Plugins can decide to use this information string for anything they
+   like.
 
 Currently the following user plugins are available:
 

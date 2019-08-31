@@ -17,9 +17,17 @@ There are three main components a plugin can make use of to interact with vimiv:
 
 * The application api imported via ``from vimiv import api``
 * The ``init`` function of the plugin which gets called as soon as the plugin is
-  loaded
+  loaded. It receives the information string as first argument which contains the
+  additional information supplied by the user in the configuration file after the plugin
+  name. This can be used to receive simple information from the user.
 * The ``cleanup`` function of the plugin which gets called when the vimiv application
   exits.
+
+.. hint::
+
+    It is considered good practice to add ``*args, **kwargs`` to the ``init`` and
+    ``cleanup`` function of any plugin. This allows additional information to be passed
+    via these functions at any time without breaking the plugin.
 
 .. note::
 
@@ -72,7 +80,7 @@ _loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
 
 
-def load(*plugins: str) -> None:
+def load(plugins: Dict[str, str] = None) -> None:
     """Load plugins defined.
 
     If no plugins are passed to the function all active plugins are loaded.
@@ -87,11 +95,11 @@ def load(*plugins: str) -> None:
     _logger.debug("Available app plugins: %s", ", ".join(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
     _logger.debug("Available user plugins: %s", ", ".join(user_plugins))
-    for plugin in plugins if plugins else _plugins:
+    for plugin, info in plugins.items() if plugins is not None else _plugins.items():
         if plugin in app_plugins:
-            _load_plugin(plugin, _app_plugin_directory)
+            _load_plugin(plugin, info, _app_plugin_directory)
         elif plugin in user_plugins:
-            _load_plugin(plugin, _user_plugin_directory)
+            _load_plugin(plugin, info, _user_plugin_directory)
         else:
             _logger.debug("Unable to find plugin '%s', ignoring", plugin)
     _logger.debug("Plugin loading completed")
@@ -128,11 +136,12 @@ def get_plugins() -> Dict[str, str]:
     return dict(_plugins)
 
 
-def _load_plugin(name: str, directory: str) -> None:
+def _load_plugin(name: str, info: str, directory: str) -> None:
     """Load a single plugin.
 
     Args:
         name: Name of the plugin as python module.
+        info: Additional information string passed to the plugin's init.
         directory: Directory in which the python module is located.
     """
     _logger.debug("Loading plugin '%s' from '%s'", name, directory)
@@ -143,10 +152,14 @@ def _load_plugin(name: str, directory: str) -> None:
         return
     try:
         # AttributeError is caught afterwards, the module may or may not define init
-        module.init()  # type: ignore
+        module.init(info)  # type: ignore
         _logger.debug("Initialized '%s'", name)
     except AttributeError:
         _logger.debug("Plugin '%s' does not define init()", name)
+    except TypeError:
+        # TODO Deprecate in v0.3.0
+        _logger.warning("%s: init() without the info argument is deprecated", name)
+        module.init()  # type: ignore
     _logger.debug("Loaded '%s' successfully", name)
     _loaded_plugins[name] = module
 

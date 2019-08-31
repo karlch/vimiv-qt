@@ -16,16 +16,18 @@ from vimiv import plugins
 @pytest.fixture
 def mock_plugin():
     name = "mock_plugin"
-    plugins._load_plugin(name, os.path.abspath("."))
+    info = "useful"
+    plugins._load_plugin(name, info, os.path.abspath("."))
     plugins.cleanup()
-    yield plugins._loaded_plugins[name]
+    yield plugins._loaded_plugins[name], info
     del plugins._loaded_plugins[name]
 
 
 def test_init_and_cleanup_plugin(mock_plugin):
-    mock_plugin.init.assert_called_once()
-    mock_plugin.cleanup.assert_called_once()
+    plugin, info = mock_plugin
+    plugin.init.assert_called_once_with(info)
+    plugin.cleanup.assert_called_once()
 
 
 def test_do_not_fail_on_non_existing_plugin():
-    plugins._load_plugin("does_not_exist", os.path.abspath("."))
+    plugins._load_plugin("does_not_exist", "any info", os.path.abspath("."))

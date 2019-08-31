@@ -31,6 +31,9 @@ Changed:
 
 * All styles are now based upon base16. Therefore custom styles must define the colors
   ``base00`` to ``base0f``. All other style options are optional.
+* Plugins now receive the additional information in the config file as first argument of
+  their ``init`` function. ``init`` without arguments has been deprecated and will be
+  removed in `v0.3.0`.
 
 Fixed:
 ^^^^^^

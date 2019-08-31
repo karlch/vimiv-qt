@@ -13,6 +13,8 @@ further usage for demonstration purposes.
 
 from vimiv import api
 
+from typing import Any
+
 
 @api.commands.register()
 def hello_world() -> None:
@@ -20,9 +22,9 @@ def hello_world() -> None:
     print("Hello world")
 
 
-def init() -> None:
-    print("Initializing demo plugin")
+def init(info: str, *_args: Any, **_kwargs: Any) -> None:
+    print(f"Initializing demo plugin with '{info}'")
 
 
-def cleanup() -> None:
+def cleanup(*_args: Any, **_kwargs: Any) -> None:
     print("Cleaning up demo plugin")
