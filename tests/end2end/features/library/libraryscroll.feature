@@ -36,3 +36,15 @@ Feature: Scrolling the library.
     Scenario: Crash when entering directory without permission
         Given I open a directory for which I do not have access permissions
         Then no crash should happen
+
+    Scenario: Scroll and open the selected image
+        Given I open a directory with 2 images
+        When I run scroll down --open-selected
+        Then the library row should be 2
+        And the image should have the index 2
+
+    Scenario: Select specific image and open it
+        Given I open a directory with 4 images
+        When I run goto 3 --open-selected
+        Then the library row should be 3
+        And the image should have the index 3

@@ -177,12 +177,18 @@ class Library(KeyHandler, widgets.FlatTreeView):
         if close:
             api.modes.LIBRARY.leave()
 
+    @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "n", "scroll down --open-selected", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
     @api.keybindings.register("h", "scroll left", mode=api.modes.LIBRARY)
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def scroll(self, direction: argtypes.Direction, count=1):
+    def scroll(
+        self, direction: argtypes.Direction, open_selected: bool = False, count=1
+    ):
         """Scroll the library in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -195,6 +201,9 @@ class Library(KeyHandler, widgets.FlatTreeView):
 
         positional arguments:
             * ``direction``: The direction to scroll in (left/right/up/down).
+
+        optional arguments:
+            * ``--open-selected``: Automatically open any selected image.
 
         **count:** multiplier
         """
@@ -213,18 +222,22 @@ class Library(KeyHandler, widgets.FlatTreeView):
                 row -= count
             else:
                 row += count
-            self._select_row(clamp(row, 0, self.model().rowCount() - 1))
+            self._select_row(clamp(row, 0, self.model().rowCount() - 1), open_selected)
 
+    @api.keybindings.register("go", "goto 1 --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
     @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def goto(self, row: int, count: Optional[int] = None):
+    def goto(self, row: int, open_selected: bool = False, count: Optional[int] = None):
         """Select specific row in current filelist.
 
         **syntax:** ``:goto row``
 
         positional arguments:
             * ``row``: Number of the row to select.
+
+        optional arguments:
+            * ``--open-selected``: Automatically open any selected image.
 
         .. hint:: -1 is the last row.
 
@@ -236,7 +249,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
         if row > 0:
             row -= 1  # Start indexing at 1
         row = clamp(row, 0, self.model().rowCount() - 1)
-        self._select_row(row)
+        self._select_row(row, open_selected)
 
     def update_width(self):
         """Resize width and columns when main window width changes."""
@@ -272,6 +285,11 @@ class Library(KeyHandler, widgets.FlatTreeView):
             else 0
         )  # Fallback to selecting the first row
         self._select_row(row)
+
+    def _select_row(self, row: int, open_selected_image: bool = False):
+        super()._select_row(row)
+        if open_selected_image and not os.path.isdir(self.current()):
+            self.open_selected(close=False)
 
 
 class LibraryModel(QStandardItemModel):

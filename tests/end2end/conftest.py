@@ -71,6 +71,17 @@ def directory_with_n_paths(qtbot, tmpdir, N):
     vimivprocess.exit()
 
 
+@bdd.given(bdd.parsers.parse("I open a directory with {N:d} images"))
+def directory_with_nimages(qtbot, tmpdir, N):
+    path = tmpdir.mkdir("directory")
+    for i in range(N):
+        image_path = str(path.join(f"image_{i:02d}"))
+        create_image(image_path)
+    vimivprocess.init(qtbot, [str(path)])
+    yield
+    vimivprocess.exit()
+
+
 @bdd.given("I open any image")
 def any_image(qtbot, tmpdir):
     path = str(tmpdir.join("image.jpg"))
