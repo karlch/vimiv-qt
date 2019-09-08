@@ -44,6 +44,12 @@ matrix:
         - pip install tox
         - pip install codecov
     - python: 3.7
+      env: TOXENV=no_optionals
+      addons:
+        apt:
+          packages:
+          - libxkbcommon-x11-0
+    - python: 3.7
       env: TOXENV=lint
     - python: 3.7
       env: TOXENV=packaging
