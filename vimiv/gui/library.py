@@ -149,30 +149,27 @@ class Library(KeyHandler, widgets.FlatTreeView):
         optional arguments:
             * ``--close``: Close the library if an image was selected.
         """
-        try:
-            path_index = self.selectionModel().selectedIndexes()[1]
-        # Path does not exist, do not try to select
-        except IndexError:
+        self._open_path(self.current(), close)
+
+    def _open_path(self, path: str, close: bool):
+        """Open a given path possibly closing the library."""
+        if not path:
             log.warning("Library: selecting empty path")
-            return
-        path = strip(path_index.data())
-        if os.path.isdir(path):
+        elif os.path.isdir(path):
             self._open_directory(path)
         else:
             self._open_image(path, close)
 
     def _open_directory(self, path, reload_current=False):
-        """Open a selected directory."""
+        """Open a directory."""
         self.store_position()
         api.working_directory.handler.chdir(path, reload_current)
 
     def _open_image(self, path, close):
-        """Open a selected image."""
+        """Open an image."""
         # Update image if a new image was selected
         if path != self._last_selected:
             api.signals.load_images.emit([path])
-        # Close library on double selection or if specified
-        close = close or path == self._last_selected
         self._last_selected = path
         if close:
             api.modes.LIBRARY.leave()
@@ -208,7 +205,9 @@ class Library(KeyHandler, widgets.FlatTreeView):
         **count:** multiplier
         """
         if direction == direction.Right:
-            self.open_selected()
+            current = self.current()
+            # Close library on double selection
+            self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
             api.working_directory.handler.chdir(os.pardir)

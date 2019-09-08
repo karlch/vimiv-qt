@@ -48,3 +48,9 @@ Feature: Scrolling the library.
         When I run goto 3 --open-selected
         Then the library row should be 3
         And the image should have the index 3
+
+    Scenario: Do not leave library mode with --open-selected
+        Given I open a directory with 1 images
+        When I run scroll down --open-selected
+        And I run scroll down --open-selected
+        Then the mode should be library
