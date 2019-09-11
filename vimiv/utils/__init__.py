@@ -64,6 +64,10 @@ def strip_html(text: str) -> str:
     return re.sub(stripper, "", text)
 
 
+def escape_html(text: str) -> str:
+    return text.replace("<", "&lt;").replace(">", "&gt;")
+
+
 def clamp(
     value: Number, minimum: Optional[Number], maximum: Optional[Number]
 ) -> Number:
@@ -245,6 +249,15 @@ class Pool:
 def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
+
+
+def split(a, n):
+    """Split list into n parts of approximately equal length.
+
+    See https://stackoverflow.com/questions/2130016 for details.
+    """
+    k, m = divmod(len(a), n)
+    return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
 def recursive_split(

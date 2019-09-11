@@ -14,6 +14,9 @@ Added:
 * Library and thumbnail selection color is dimmed when the corresponding widget is not
   focused. It comes with the style options ``library.selected.bg.unfocus`` and
   ``thumbnail.selected.bg.unfocus``.
+* Pop-up window to show keybindings for current mode. It can be shown with the
+  ``:keybindings`` command and comes with the style options
+  ``keybindings.bindings.color`` and ``keybindings.highlight.color``.
 
 Changed:
 ^^^^^^^^

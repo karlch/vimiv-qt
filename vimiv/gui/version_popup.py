@@ -6,15 +6,14 @@
 
 """Pop-up window to display version information."""
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QGuiApplication
 
 import vimiv
-from vimiv.config import styles
+from vimiv.widgets import PopUp
 
 
-class VersionPopUp(QDialog):
+class VersionPopUp(PopUp):
     """Pop up that displays version information on initialization.
 
     Class Attributes:
@@ -22,35 +21,12 @@ class VersionPopUp(QDialog):
         URL: Url to the vimiv website.
     """
 
-    STYLESHEET = """
-    QDialog {
-        background: {image.bg};
-    }
-    QLabel {
-        color: {statusbar.fg};
-        font: {library.font}
-    }
-    QPushButton {
-        font: {statusbar.font};
-        background-color: {statusbar.bg};
-        border: 0px;
-        padding: 4px;
-        color: {statusbar.fg};
-    }
-    QPushButton:pressed {
-        background-color: {library.selected.bg};
-    }
-    """
-
     TITLE = f"{vimiv.__name__} - version"
     URL = "https://karlch.github.io/vimiv-qt/"
 
     def __init__(self, parent=None):
-        super().__init__(parent=parent)
+        super().__init__(self.TITLE, parent=parent)
         self._init_content()
-        self.setWindowTitle(self.TITLE)
-        self.setWindowFlags(self.windowFlags() | Qt.Tool)
-        styles.apply(self)
         self.show()
 
     def _init_content(self):
