@@ -5,10 +5,6 @@ graft icons
 include AUTHORS
 include CONTRIBUTING.md
 include LICENSE
-exclude .*
-exclude pytest.ini
-exclude tox.ini
-exclude mypy.ini
 
 prune docs
 include docs/description.rst
@@ -18,8 +14,3 @@ include misc/vimiv.1
 include misc/vimiv.desktop
 include misc/vimiv.appdata.xml
 graft misc/requirements
-
-prune scripts
-prune tests
-
-global-exclude __pycache__ *.pyc *.pyo
