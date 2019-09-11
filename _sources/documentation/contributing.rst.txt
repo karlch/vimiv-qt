@@ -69,22 +69,25 @@ The arguably cleanest method is to :ref:`install vimiv using tox
 
     $ .venv/bin/vimiv
 
-If you have the dependencies installed globally, you have two options:
-Install vimiv globally using::
+If you have the dependencies installed globally, you have two other options:
+
+#. Build the c-extension in place and run the vimiv module directly from the repository
+   directory::
+
+    $ python setup.py build_ext --inplace
+    $ python -m vimiv
+
+#. Install the development version globally using::
 
     $ python setup.py develop
 
-or run the vimiv module directly from the repository directory::
+   In contrast to the other options, this replaces your global vimiv installation
+   and removes the option to have both a development and a production executable.
 
-    $ python -m vimiv
-
-The first option, in contrast to the other two, will replace your global vimiv
-version and remove the option to have both a development and a production
-executable.
-
-For running on a clean directory, use the ``--temp-basedir`` option. To change
+For running in a clean directory, use the ``--temp-basedir`` option. To change
 the log level, use the ``--log-level`` option, e.g. ``--log-level debug`` to
-enable debugging messages.
+enable debugging messages. As this can become very noisy, the ``--debug`` flag is useful
+to debug individual modules, e.g. ``--debug config.configfile``.
 
 
 Tests and Checkers

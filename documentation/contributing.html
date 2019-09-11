@@ -225,21 +225,27 @@ and to
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
 </pre></div>
 </div>
-<p>If you have the dependencies installed globally, you have two options:
-Install vimiv globally using:</p>
+<p>If you have the dependencies installed globally, you have two other options:</p>
+<ol class="arabic">
+<li><p>Build the c-extension in place and run the vimiv module directly from the repository
+directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
+$ python -m vimiv
+</pre></div>
+</div>
+</li>
+<li><p>Install the development version globally using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py develop
 </pre></div>
 </div>
-<p>or run the vimiv module directly from the repository directory:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m vimiv
-</pre></div>
-</div>
-<p>The first option, in contrast to the other two, will replace your global vimiv
-version and remove the option to have both a development and a production
-executable.</p>
-<p>For running on a clean directory, use the <code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code> option. To change
+<p>In contrast to the other options, this replaces your global vimiv installation
+and removes the option to have both a development and a production executable.</p>
+</li>
+</ol>
+<p>For running in a clean directory, use the <code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code> option. To change
 the log level, use the <code class="docutils literal notranslate"><span class="pre">--log-level</span></code> option, e.g. <code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">debug</span></code> to
-enable debugging messages.</p>
+enable debugging messages. As this can become very noisy, the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag is useful
+to debug individual modules, e.g. <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">config.configfile</span></code>.</p>
 </div>
 <div class="section" id="tests-and-checkers">
 <h2>Tests and Checkers<a class="headerlink" href="#tests-and-checkers" title="Permalink to this headline">¶</a></h2>

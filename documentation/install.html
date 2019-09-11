@@ -139,6 +139,12 @@ $ cd vimiv-qt
 </div>
 <p>or by downloading one of the snapshots on the
 <a class="reference external" href="https://github.com/karlch/vimiv-qt/releases">releases</a> page.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To compile the C extension, the python header files for python module development are
+required. In some distributions, e.g. Ubuntu, these are not included in the default
+python installation but another package (python-dev for Ubuntu) must be installed.</p>
+</div>
 <div class="section" id="system-wide-installation">
 <h3><a class="toc-backref" href="#id2">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
 <p>Vimiv provides an example Makefile in the <code class="docutils literal notranslate"><span class="pre">misc</span></code> directory for convenience.
@@ -174,12 +180,6 @@ $ cd vimiv-qt
 You can now launch vimiv by running:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>To compile the C extension, the python header files for python module development are
-required. In some distributions, e.g. Ubuntu, these are not included in the default
-python installation but another package (python-dev for Ubuntu) must be installed.</p>
 </div>
 <p>You can create a wrapper script to start vimiv somewhere in your <code class="docutils literal notranslate"><span class="pre">$PATH</span></code>,
 e.g.  <code class="docutils literal notranslate"><span class="pre">/usr/bin/vimiv</span></code> or <code class="docutils literal notranslate"><span class="pre">~/bin/vimiv</span></code>:</p>
