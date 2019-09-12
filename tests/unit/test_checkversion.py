@@ -1,0 +1,61 @@
+# vim: ft=python fileencoding=utf-8 sw=4 et sts=4
+
+# This file is part of vimiv.
+# Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
+# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
+
+"""Unit tests for vimiv.checkversion."""
+
+import pytest
+import sys
+
+from vimiv import checkversion
+
+
+@pytest.mark.parametrize("version_info", ((1,), (2, 6), (3, 5, 900)))
+def test_check_python_version(capsys, monkeypatch, version_info):
+    """Tests to ensure exit and error message on too low python version."""
+    monkeypatch.setattr(sys, "version_info", version_info)
+
+    with pytest.raises(SystemExit, match="1"):
+        checkversion.check_python_version()
+
+    expected = build_message(
+        "python", checkversion.PYTHON_REQUIRED_VERSION, version_info
+    )
+    captured = capsys.readouterr()
+    assert captured.err == expected
+
+
+@pytest.mark.parametrize("version_info", ((1,), (4, 6), (5, 8, 900)))
+def test_check_pyqt_version(capsys, monkeypatch, version_info):
+    """Tests to ensure exit and error message on too low PyQt version."""
+    monkeypatch.setattr(checkversion, "PYQT_VERSION", version_info)
+
+    with pytest.raises(SystemExit, match="1"):
+        checkversion.check_pyqt_version()
+
+    expected = build_message("PyQt", checkversion.PYQT_REQUIRED_VERSION, version_info)
+    captured = capsys.readouterr()
+    assert captured.err == expected
+
+
+def test_check_pyqt_available(capsys, monkeypatch):
+    """Test to ensure exit and error message if PyQt is not available."""
+    monkeypatch.setattr(checkversion, "PYQT_VERSION", None)
+
+    with pytest.raises(SystemExit, match="1"):
+        checkversion.check_pyqt_version()
+
+    expected = "PyQt is required to run vimiv.\n"
+    captured = capsys.readouterr()
+    assert captured.err == expected
+
+
+def build_message(software, required, version):
+    """Helper to create the expected error message on too low software version."""
+    return "At least %s %s is required to run vimiv. Using %s.\n" % (
+        software,
+        ".".join(str(i) for i in required),
+        ".".join(str(i) for i in version),
+    )

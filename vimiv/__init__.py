@@ -6,6 +6,7 @@
 
 """An image viewer with vim-like keybindings based on PyQt5."""
 
+from . import checkversion, version
 
 __license__ = "GPL3"
 __version_info__ = (0, 2, 0)
@@ -14,5 +15,3 @@ __author__ = "Christian Karl"
 __maintainer__ = __author__
 __email__ = "karlch@protonmail.com"
 __description__ = "An image viewer with vim-like keybindings."
-
-from . import version
