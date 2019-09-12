@@ -43,9 +43,9 @@ from PyQt5.QtWidgets import QLabel, QApplication
 
 from vimiv import api, utils, widgets
 from vimiv.config import styles
-from vimiv.imutils import (  # type: ignore # pylint: disable=no-name-in-module
-    _c_manipulate,
-)
+
+# mypy cannot read the C extension
+from vimiv.imutils import _c_manipulate  # type: ignore
 
 
 WAIT_TIME = 0.3
