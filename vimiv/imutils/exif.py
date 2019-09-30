@@ -78,6 +78,7 @@ def exif_date_time(filename) -> str:
     with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
         exif_dict = piexif.load(filename)
         return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
+    return ""
 
 
 class ExifInformation(dict):
