@@ -360,8 +360,8 @@ def _get_description(func: typing.Callable, name: str) -> str:
     Returns:
         The string description of the command.
     """
-    try:
-        return inspect.getdoc(func).split("\n")[0]
-    except AttributeError:
+    docstr = inspect.getdoc(func)
+    if docstr is None:
         log.error("Command %s for %s is missing docstring.", name, func)
-    return ""
+        return ""
+    return docstr.split("\n")[0]  # First line of docstring as description

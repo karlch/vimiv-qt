@@ -183,7 +183,8 @@ class ManipulationGroup(abc.ABC):
         self._data = self._apply(data, *self.manipulations)
         return self._data
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def title(self):
         """Title of the manipulation group as referred to in its tab.
 
