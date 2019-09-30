@@ -45,6 +45,7 @@ Fixed:
 * Completions are now mode dependent removing misleading completions such as undelete in
   manipulate mode.
 * Crash when trying to open tag which does not exist or has wrong permissions
+* Crash when loading a plugin with a syntax error
 
 Removed:
 ^^^^^^^^

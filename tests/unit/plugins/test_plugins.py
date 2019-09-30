@@ -31,3 +31,9 @@ def test_init_and_cleanup_plugin(mock_plugin):
 
 def test_do_not_fail_on_non_existing_plugin():
     plugins._load_plugin("does_not_exist", "any info", os.path.abspath("."))
+
+
+def test_do_not_fail_on_plugin_with_syntax_error():
+    name = "mock_plugin_syntax_error"
+    info = "useful"
+    plugins._load_plugin(name, info, os.path.abspath("."))

@@ -147,7 +147,7 @@ def _load_plugin(name: str, info: str, directory: str) -> None:
     _logger.debug("Loading plugin '%s' from '%s'", name, directory)
     try:
         module = importlib.import_module(name, directory)
-    except ImportError as e:
+    except (ImportError, SyntaxError) as e:
         log.error("Importing plugin '%s': %s", name, str(e))
         return
     try:
