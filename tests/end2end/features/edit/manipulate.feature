@@ -65,3 +65,9 @@ Feature: Manipulate an image.
         And I apply any manipulation
         And I run discard
         Then The current value should be 0
+
+    Scenario: Reset manipulation changes after accepting them
+        When I enter manipulate mode
+        And I apply any manipulation
+        And I run accept
+        Then there should be 0 stored changes

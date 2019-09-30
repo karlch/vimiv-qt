@@ -46,6 +46,7 @@ Fixed:
   manipulate mode.
 * Crash when trying to open tag which does not exist or has wrong permissions
 * Crash when loading a plugin with a syntax error
+* Running accepted manipulations multiple times as the changes were not reset.
 
 Removed:
 ^^^^^^^^

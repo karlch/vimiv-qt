@@ -435,6 +435,7 @@ class Manipulator(QObject):
         for manipulation in self.manipulations:
             manipulation.reset()
         self._pixmap = self._manipulated = None
+        self._changes.clear()
 
     @api.keybindings.register(("K", "L"), "increase 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("k", "l"), "increase 1", mode=api.modes.MANIPULATE)
