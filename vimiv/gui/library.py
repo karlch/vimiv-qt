@@ -268,7 +268,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
 
     def pathlist(self):
         """Return the list of currently open paths."""
-        return self.model().pathlist()
+        return self.model().paths
 
     def store_position(self):
         """Set the stored position for a directory if possible."""
@@ -298,12 +298,15 @@ class LibraryModel(QStandardItemModel):
     has changed.
 
     Attributes:
+        paths: List of currently open paths in the library.
+
         _highlighted: List of indices that are highlighted as search results.
     """
 
     def __init__(self, parent):
         super().__init__(parent=parent)
         self._highlighted = []
+        self.paths = []
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.mark.marked.connect(self._mark_highlight)
@@ -347,10 +350,11 @@ class LibraryModel(QStandardItemModel):
             incremental: True if incremental search was performed.
         """
         if mode == api.modes.LIBRARY:
-            self._highlighted = []
-            for i, path in enumerate(self.pathlist()):
-                if os.path.basename(path) in matches:
-                    self._highlighted.append(i)
+            self._highlighted = [
+                i
+                for i, path in enumerate(self.paths)
+                if os.path.basename(path) in matches
+            ]
 
     @utils.slot
     def _on_search_cleared(self):
@@ -365,7 +369,7 @@ class LibraryModel(QStandardItemModel):
             marked: True if it was marked.
         """
         try:
-            index = self.pathlist().index(path)
+            index = self.paths.index(path)
         except ValueError:
             return
         item = self.item(index, 1)
@@ -378,15 +382,7 @@ class LibraryModel(QStandardItemModel):
         formatting.
         """
         self.removeRows(0, self.rowCount())
-
-    def pathlist(self):
-        """Return the list of currently open paths."""
-        pathlist = []
-        for i in range(self.rowCount()):
-            basename = self.index(i, 1).data()
-            basename = strip(basename)
-            pathlist.append(os.path.abspath(basename))
-        return pathlist
+        self.paths.clear()
 
     def is_highlighted(self, index):
         """Return True if the index is highlighted as search result."""
@@ -414,6 +410,7 @@ class LibraryModel(QStandardItemModel):
                         QStandardItem(size),
                     )
                 )
+                self.paths.append(path)
 
 
 class LibraryDelegate(QStyledItemDelegate):
