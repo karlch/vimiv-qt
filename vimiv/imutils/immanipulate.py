@@ -387,13 +387,14 @@ class Manipulator(QObject):
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
         """Leave manipulate applying the changes to file."""
-        self._save_changes()  # For the current manipulation
-        pixmap = self.manipulations.apply_groups(
-            self._handler().transformed,
-            *[change.manipulations for change in self._changes],
-        )  # Apply all changes to the full-scale pixmap
-        self._handler().current = pixmap
-        self._handler().write_pixmap(pixmap, parallel=False)
+        if self.changed:  # Only run the expensive part when needed
+            self._save_changes()  # For the current manipulation
+            pixmap = self.manipulations.apply_groups(
+                self._handler().transformed,
+                *[change.manipulations for change in self._changes],
+            )  # Apply all changes to the full-scale pixmap
+            self._handler().current = pixmap
+            self._handler().write_pixmap(pixmap, parallel=False)
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
