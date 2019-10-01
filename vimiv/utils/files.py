@@ -67,7 +67,7 @@ def get_size(path: str) -> str:
         if os.path.isfile(path):
             return sizeof_fmt(os.path.getsize(path))
         return get_size_directory(path)
-    except (FileNotFoundError, OSError, PermissionError):
+    except OSError:
         return "N/A"
 
 
@@ -99,7 +99,7 @@ def get_size_directory(path: str) -> str:
     """
     try:
         return str(len(os.listdir(path)))
-    except (FileNotFoundError, OSError, PermissionError):
+    except OSError:
         return "N/A"
 
 
@@ -111,7 +111,7 @@ def is_image(filename: str) -> bool:
     """
     try:
         return imghdr.what(filename) is not None
-    except (FileNotFoundError, OSError, PermissionError):
+    except OSError:
         return False
 
 

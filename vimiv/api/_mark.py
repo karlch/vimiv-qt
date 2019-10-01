@@ -282,7 +282,7 @@ class Tag:
             self._file = open(abspath, self.mode)
         except FileNotFoundError:  # For read-only if the file does not exist
             raise commands.CommandError(f"No tag called '{name}'")
-        except (PermissionError, OSError) as e:
+        except OSError as e:
             raise commands.CommandError(f"Error reading '{name}': {e}")
 
         if read_only:

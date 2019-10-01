@@ -36,7 +36,7 @@ def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
             operation = "toggling"
             setting.toggle()
         # Set default
-        elif strvalue == "":
+        elif not strvalue:
             operation = "resetting"
             setting.set_to_default()
         # Add to number settings
