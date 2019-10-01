@@ -4,13 +4,14 @@
    :width: 400px
    :align: center
 
-.. warning::
+.. note::
 
-    This is the Qt port of vimiv. It is still very much in development. If you
-    want to test this port, awesome! I am looking forward to your feedback,
-    testers are heavily needed. If you require a more stable version, please
-    check out the
-    `gtk version <https://github.com/karlch/vimiv>`_.
+    This Qt port is the future of vimiv. New features will only be implemented here and
+    there are already many improvements compared to the `gtk version
+    <https://github.com/karlch/vimiv>`_. The old version is only recommended if you
+    require a more stable software. In case there is anything you miss here, please
+    `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_. Check the
+    :ref:`roadmap` for more details.
 
 .. include:: description.rst
 
@@ -47,6 +48,7 @@ Contents
 
    documentation/index
    changelog
+   roadmap
    screenshots
 
 .. include:: documentation/getting_help.rst
