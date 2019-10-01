@@ -4,7 +4,7 @@ Changelog
 All notable changes to vimiv are documented in this file.
 
 
-v0.2.0 (unreleased)
+v0.2.0 (2019-10-01)
 -------------------
 
 Added:
