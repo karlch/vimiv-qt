@@ -79,6 +79,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
         self.hide()
 
         self.activated.connect(self._on_activated)
+        self.doubleClicked.connect(self._on_activated)
         api.settings.library.width.changed.connect(self._on_width_changed)
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)

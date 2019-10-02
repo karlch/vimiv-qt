@@ -107,6 +107,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self._on_activated)
+        self.doubleClicked.connect(self._on_activated)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
 

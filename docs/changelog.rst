@@ -4,6 +4,15 @@ Changelog
 All notable changes to vimiv are documented in this file.
 
 
+v0.3.0 (unreleased)
+-------------------
+
+Added:
+^^^^^^
+
+* Elements in library and thumbnail can be selected with a mouse double click.
+
+
 v0.2.0 (2019-10-01)
 -------------------
 
