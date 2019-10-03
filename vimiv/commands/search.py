@@ -50,13 +50,13 @@ class Search(QObject):
         cleared: Emitted when the search was cleared.
     """
 
+    new_search = pyqtSignal(int, list, api.modes.Mode, bool)
+    cleared = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self._text = ""
         self._reverse = False
-
-    new_search = pyqtSignal(int, list, api.modes.Mode, bool)
-    cleared = pyqtSignal()
 
     def __call__(
         self, text, mode, count=0, reverse=False, incremental=False
