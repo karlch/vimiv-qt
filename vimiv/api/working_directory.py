@@ -54,13 +54,12 @@ Module Attributes:
     handler: The initialized :class:`WorkingDirectoryHandler` object to interact with.
 """
 
-import time
 import os
-from typing import cast, List, Tuple, Callable
+from typing import cast, List, Tuple, Generator
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
-from vimiv.utils import files, slot, log
+from vimiv.utils import files, slot, log, task
 from . import settings, signals, status
 
 
@@ -102,7 +101,6 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._dir = ""
         self._images: List[str] = []
         self._directories: List[str] = []
-        self._processing = False
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
         # TODO Fix upstream and open PR
@@ -149,15 +147,18 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._images, self._directories = self._get_content(directory)
         self.loaded.emit(self._images, self._directories)
 
-    @slot
-    def _reload_directory(self, _path: str) -> None:
+    @task.register(single=True)
+    def _reload_directory(self, _path: str) -> Generator:
         """Load new supported files when directory content has changed."""
-        self._process(lambda: self._emit_changes(*self._get_content(self._dir)))
+        _logger.debug("Reloading working directory")
+        yield task.sleep(self.WAIT_TIME)
+        self._emit_changes(*self._get_content(self._dir))
 
     @slot
     def _on_new_image(self, path: str) -> None:
         """Monitor the current image for changes."""
         if self.files():  # Clear old image
+            _logger.debug("Clearing old images")
             self.removePaths(self.files())
         self.addPath(path)
 
@@ -165,24 +166,22 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _on_file_changed(self, path: str) -> None:
         """Emit new_image_opened signal to reload the file on changes."""
         if os.path.exists(path):  # Otherwise the path was deleted
-            self._process(signals.image_changed.emit)
+            if path not in self.files():
+                self.addPath(path)
+            self._maybe_emit_image_changed()
 
-    def _process(self, func: Callable[[], None]) -> None:
-        """Process function after waiting unless another process is running.
+    @task.register(single=True)
+    def _maybe_emit_image_changed(self) -> Generator:
+        """Emit image changed after waiting unless additional changes were made.
 
         This is required as images may be written in parts and loading every
-        single step is neither possible nor wanted and as tools like mogrify
-        from ImageMagick create temporary files which should not be loaded.
-
-        Args:
-            func: The function to call when processing.
+        single step is neither possible nor wanted.
         """
-        if self._processing:
-            return
-        self._processing = True
-        time.sleep(self.WAIT_TIME)
-        func()
-        self._processing = False
+        # Async sleep to keep GUI responsive
+        yield task.sleep(self.WAIT_TIME)
+        _logger.debug("Processing changed image file...")
+        signals.image_changed.emit()
+        _logger.debug("Image file updated")
         status.update()
 
     def _emit_changes(self, images: List[str], directories: List[str]) -> None:

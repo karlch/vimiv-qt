@@ -12,6 +12,11 @@ Added:
 
 * Elements in library and thumbnail can be selected with a mouse double click.
 
+Fixed:
+^^^^^^
+
+* The UI no longer blocks when processing working directory changes.
+
 
 v0.2.0 (2019-10-01)
 -------------------
