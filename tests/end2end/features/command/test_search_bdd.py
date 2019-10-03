@@ -4,6 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import pytest
 import pytest_bdd as bdd
 
 from vimiv import api
@@ -17,17 +18,24 @@ class SearchResults:
     """Helper class to store search results."""
 
     def __init__(self):
+        self.results = []
         search.search.new_search.connect(self._on_search)
-        self.results = None
+        search.search.cleared.connect(self._on_search_cleared)
 
     def _on_search(self, _index, results, _mode, _incsearch):
         self.results = results
+
+    def _on_search_cleared(self):
+        self.results.clear()
 
     def __len__(self):
         return len(self.results)
 
 
-search_results = SearchResults()
+@pytest.fixture(autouse=True)
+def search_results():
+    """Fixture to retrieve a clean helper class to store search results."""
+    yield SearchResults()
 
 
 @bdd.when(bdd.parsers.parse("I search for {text}"))
@@ -41,5 +49,5 @@ def run_search_reverse(text):
 
 
 @bdd.then(bdd.parsers.parse("There should be {n:d} search matches"))
-def check_search_matches(n):
+def check_search_matches(search_results, n):
     assert len(search_results) == n

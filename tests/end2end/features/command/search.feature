@@ -70,3 +70,16 @@ Feature: Run search in different modes.
         When I search for 1[234]
         # Matches: 12, 13, 14
         Then there should be 3 search matches
+
+    Scenario: Reset search when working directory changed
+        Given I open a directory with 5 paths
+        When I search for 1
+        And I run open-selected
+        Then there should be 0 search matches
+
+    Scenario: Re-run search when working directory was updated
+        Given I open a directory with 5 paths
+        When I search for 1
+        And I run !cp -r child_01 child_11
+        And I wait for the working directory handler
+        Then there should be 2 search matches

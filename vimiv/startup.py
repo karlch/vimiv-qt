@@ -18,7 +18,7 @@ import tempfile
 from PyQt5.QtWidgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins, version, gui
-from vimiv.commands import runners
+from vimiv.commands import runners, search
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import xdg, crash_handler, log, trash_manager
@@ -74,6 +74,9 @@ def setup_post_app(args):
     imutils.init()
     completionmodels.init()
     init_ui(args)
+    # Must be done after UI so the search signals are processed after the widgets have
+    # been updated
+    search.search.connect_signals()
     plugins.load()
     init_paths(args)
     if args.command:

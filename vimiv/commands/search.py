@@ -101,6 +101,21 @@ class Search(QObject):
         self._reverse = False
         self.cleared.emit()
 
+    def connect_signals(self):
+        """Connect working directory handler related signals.
+
+        This allows search to react appropriately when the working directory was changed
+        or a new directory was loaded. Cannot be done in the constructor, as the handler
+        is not initialized by then.
+        """
+        api.working_directory.handler.loaded.connect(self.clear)
+        api.working_directory.handler.changed.connect(self._on_directory_changed)
+
+    def _on_directory_changed(self, _images, _directories):
+        """Re-run search, when the working directory changed."""
+        if self._text:
+            self(self._text, api.modes.current())
+
 
 search = Search()
 
