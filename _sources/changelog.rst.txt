@@ -16,6 +16,8 @@ Fixed:
 ^^^^^^
 
 * The UI no longer blocks when processing working directory changes.
+* Search reacts appropriately when the working directory changes. If the content is
+  updated, search is re-run. When a new directory is opened, search is cleared.
 
 
 v0.2.0 (2019-10-01)
