@@ -6,6 +6,8 @@
 
 """Fixtures for pytest."""
 
+import contextlib
+
 import pytest
 
 from PyQt5.QtGui import QPixmap, QImageWriter
@@ -22,3 +24,24 @@ def tmpimage(tmpdir, qtbot):
     writer = QImageWriter(path)
     assert writer.write(pm.toImage())
     return path
+
+
+@pytest.fixture
+def cleanup_helper():
+    """Fixture to keep vimiv registries clean.
+
+    Returns a contextmanager that resets the state of a dictionary to the initial state
+    before running tests.
+    """
+
+    @contextlib.contextmanager
+    def cleanup(init_dict):
+        init_content = {key: dict(value) for key, value in init_dict.items()}
+        yield
+        new_content = {key: dict(value) for key, value in init_dict.items()}
+        for key, valuedict in new_content.items():
+            for elem in valuedict:
+                if elem not in init_content[key]:
+                    del init_dict[key][elem]
+
+    return cleanup

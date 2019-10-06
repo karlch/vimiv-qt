@@ -45,9 +45,10 @@ UPDATED_CONFIG_INVALID = {
 #                                      Fixtures                                        #
 ########################################################################################
 @pytest.fixture(autouse=True)
-def reset_to_default():
-    """Fixture to ensure all settings are reset to default after testing."""
-    yield
+def reset_to_default(cleanup_helper):
+    """Fixture to ensure everything is reset to default after testing."""
+    with cleanup_helper(aliases._aliases):
+        yield
     api.settings.reset()
 
 
@@ -106,7 +107,6 @@ def test_read_aliases(configpath):
     global_aliases = aliases.get(api.modes.IMAGE)
     assert "anything" in global_aliases
     assert global_aliases["anything"] == "scroll left"
-    del global_aliases["anything"]
 
 
 @pytest.mark.parametrize("configpath", [UPDATED_STATUSBAR], indirect=["configpath"])
