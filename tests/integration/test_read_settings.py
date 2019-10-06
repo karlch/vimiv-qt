@@ -71,7 +71,7 @@ def configpath(tmpdir, request):
     path = tmpdir.join("vimiv.conf")
     with open(path, "w") as f:
         parser.write(f)
-    configfile.read([str(path)])
+    configfile.read(str(path))
     yield parser
 
 

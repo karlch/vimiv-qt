@@ -8,7 +8,6 @@
 
 import configparser
 import os
-from typing import List
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
@@ -23,35 +22,28 @@ _logger = log.module_logger(__name__)
 def parse(args) -> None:
     """Parse configuration files.
 
-    This reads settings from user config file and possibly the file given from
-    the commandline. If the user config file does not exist, a default file is
-    created.
+    This reads settings from user config file or the file given from the commandline. If
+    the user config file does not exist, a default file is created.
 
     Args:
         args: Arguments returned from parser.parse_args().
     """
-    user_file = xdg.join_vimiv_config("vimiv.conf")
-    files = []
-    if not os.path.isfile(user_file):  # Create default config file
-        dump()
-    else:
-        files.append(user_file)
     if args.config is not None:
-        files.append(args.config)
-    if files:
-        read(files)
-        _logger.debug("Read configuration from %s", ", ".join(files))
-
-
-def dump() -> None:
-    """Write default configurations to config file."""
-    parser = get_default_configparser()
-    # Write to file
+        return read(args.config)
     user_file = xdg.join_vimiv_config("vimiv.conf")
-    with open(user_file, "w") as f:
+    if not os.path.isfile(user_file):  # Create default config file
+        dump(user_file)
+    else:
+        read(user_file)
+
+
+def dump(path: str) -> None:
+    """Write default configurations to config file at path."""
+    parser = get_default_configparser()
+    with open(path, "w") as f:
         parser.write(f)
         f.write("; vim:ft=dosini")
-    _logger.debug("Created default config file %s", user_file)
+    _logger.debug("Created default config file %s", path)
 
 
 def get_default_configparser() -> configparser.ConfigParser:
@@ -71,16 +63,10 @@ def get_default_configparser() -> configparser.ConfigParser:
     return parser
 
 
-def read(files: List[str]) -> None:
-    """Read config from list of files into settings.
-
-    The files given first are overridden by the files given later.
-
-    Args:
-        files: List of paths for config files to read.
-    """
+def read(path: str) -> None:
+    """Read config from path into settings."""
     parser = _setup_parser()
-    read_log_exception(parser, _logger, *files)
+    read_log_exception(parser, _logger, path)
     # Try to update every single setting
     for name, _ in api.settings.items():
         _update_setting(name, parser)
@@ -93,6 +79,7 @@ def read(files: List[str]) -> None:
     # Read plugins
     if "PLUGINS" in parser:
         _read_plugins(parser["PLUGINS"])
+    _logger.debug("Read configuration from '%s'", path)
 
 
 def _update_setting(name, parser):
