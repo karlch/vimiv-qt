@@ -126,8 +126,12 @@ class Style(dict):
         self["manipulate.image.border.color"] = "{base0c}"
         # Mark
         self["mark.color"] = "{base0e}"
-        # Metadata overlay
-        self["metadata.bg"] = self["{statusbar.bg}"].replace("#", "#AA")  # Add alpha
+        # Metadata overlay with added alpha channel if not there already
+        self["metadata.bg"] = (
+            self["{statusbar.bg}"].replace("#", "#AA")
+            if len(self["{statusbar.bg}"]) == 7
+            else self["{statusbar.bg}"]
+        )
         self["metadata.padding"] = "{keyhint.padding}"
         self["metadata.border_radius"] = "{keyhint.border_radius}"
 
