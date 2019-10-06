@@ -9,6 +9,7 @@
 Module Attributes:
     NAME_DEFAULT: Name of the default theme.
     NAME_DEFAULT_DARK: Name of the dark default theme.
+    DEFAULT_FONT: Default font to use if none is given by the user.
 
     _style: Dictionary saving the style settings from the config file, form:
         _style["image.bg"] = "#000000"
@@ -17,13 +18,17 @@ Module Attributes:
 import configparser
 import os
 import re
+import sys
 
 from vimiv import api
 from vimiv.utils import xdg, log
 
+from . import read_log_exception
+
 
 NAME_DEFAULT = "default"
 NAME_DEFAULT_DARK = "default-dark"
+DEFAULT_FONT = "10pt Monospace"
 
 _style = None
 _logger = log.module_logger(__name__)
@@ -38,7 +43,7 @@ class Style(dict):
     Ordered so referencing and dereferencing variables is well defined.
     """
 
-    def __init__(self, *colors, font="10pt Monospace"):
+    def __init__(self, *colors, font=DEFAULT_FONT):
         """Initialize style with 16 colors for base 16 and a font."""
         # We are mainly storing all the values here
         # pylint: disable=too-many-statements
@@ -122,8 +127,12 @@ class Style(dict):
         self["manipulate.image.border.color"] = "{base0c}"
         # Mark
         self["mark.color"] = "{base0e}"
-        # Metadata overlay
-        self["metadata.bg"] = self["{statusbar.bg}"].replace("#", "#AA")  # Add alpha
+        # Metadata overlay with added alpha channel if not there already
+        self["metadata.bg"] = (
+            self["{statusbar.bg}"].replace("#", "#AA")
+            if len(self["{statusbar.bg}"]) == 7
+            else self["{statusbar.bg}"]
+        )
         self["metadata.padding"] = "{keyhint.padding}"
         self["metadata.border_radius"] = "{keyhint.border_radius}"
 
@@ -142,20 +151,24 @@ class Style(dict):
 
     @staticmethod
     def is_color_option(name: str):
-        """Return True if the style option corresponds is a color."""
-        return name.endswith((".fg", ".bg"))
+        """Return True if the style option name corresponds to a color."""
+        return name.strip("{}").endswith((".fg", ".bg"))
 
     @staticmethod
     def check_valid_color(color: str):
         """Check if a color string is a valid html color.
 
-        Accepts strings that start with # and have 3 or 6 hex digits.
+        Accepts strings that start with # and have 6 (#RRGGBB) or 8 (#AARRGGBB) hex
+        digits.
 
         Raises:
             ValueError if the string is invalid.
         """
-        if not re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", color.lower()):
-            raise ValueError(f"{color} is not a valid html color")
+        if not re.fullmatch(r"#([0-9a-f]{6}|[0-9a-f]{8})", color.lower()):
+            raise ValueError(
+                f"{color} is not a valid html color. "
+                "Supported formats are #RRGGBB and #AARRGGBB."
+            )
 
 
 def parse():
@@ -258,37 +271,39 @@ def create_default(dark=False, save_to_file=True):
     return style
 
 
-def read(filename):
+def read(path: str):
     """Read style from styles file.
 
     Args:
-        filename: Name of the styles file to read
+        path: Name of the styles file to read
     """
-    _logger.debug("Reading style from file '%s'", filename)
+    _logger.debug("Reading style from file '%s'", path)
     parser = configparser.ConfigParser()
+    read_log_exception(parser, _logger, path)
     # Retrieve the STYLE section
     try:
-        parser.read(filename)
         section = parser["STYLE"]
-    except (configparser.MissingSectionHeaderError, KeyError):
-        log.error(
-            "Style files must start with the [STYLE] header. Falling back to default."
-        )
-        return create_default(save_to_file=False)
+    except KeyError:
+        _crash_read(path, "Style files must start with the [STYLE] header")
     # Retrieve base colors
     try:
         colors = [section.pop(f"base{i:02x}") for i in range(16)]
     except KeyError as e:
-        log.error("Style is missing color %s. Falling back to default.", e)
-        return create_default(save_to_file=False)
-    if "font" in section:  # User-defined global font
-        style = Style(*colors, font=section.pop("font"))
-    else:  # Default global font
-        style = Style(*colors)
+        _crash_read(path, f"Style is missing requred base color {e}")
+    # Create style class with possibly user-defined font
+    try:
+        style = Style(*colors, font=section.pop("font", DEFAULT_FONT))
+    except ValueError as e:
+        _crash_read(path, str(e))
     # Override additional options
     for option, value in parser["STYLE"].items():
         _logger.debug("Overriding '%s' with '%s'", option, value)
-        style[option] = value
+        try:
+            style[option] = value
+        except ValueError as e:
+            _logger.error(
+                "Error parsing style option '%s' = '%s':\n%s", option, value, e
+            )
     return style
 
 
@@ -310,3 +325,11 @@ def dump(name, style):
         )
         parser.write(f)
         f.write("; vim:ft=dosini")
+
+
+def _crash_read(path: str, message: str):
+    """Crash consistently on critical errors when reading user styles."""
+    _logger.error(
+        "Error reading styles file '%s':\n\n%s\n\nPlease fix the file :)", path, message
+    )
+    sys.exit(2)

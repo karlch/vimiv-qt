@@ -7,41 +7,31 @@
 """Functions to read configurations from config file and update settings."""
 
 import configparser
-import os
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
-from vimiv.utils import xdg, log
+from vimiv.utils import log
+
+from . import read_log_exception, parse_config
 
 
 _logger = log.module_logger(__name__)
 
 
-def parse(args):
-    """Parse configuration files.
-
-    This reads settings from user config file and possibly the file given from
-    the commandline. If the user config file does not exist, a default file is
-    created.
-
-    Args:
-        args: Arguments returned from parser.parse_args().
-    """
-    user_file = xdg.join_vimiv_config("vimiv.conf")
-    files = []
-    if not os.path.isfile(user_file):  # Create default config file
-        dump()
-    else:
-        files.append(user_file)
-    if args.config is not None:
-        files.append(args.config)
-    if files:
-        _read(files)
-        _logger.debug("Read configuration from %s", ", ".join(files))
+def parse(cli_path: str) -> None:
+    """Parse settings from the vimiv.conf into the settings api."""
+    parse_config(cli_path, "vimiv.conf", read, dump)
 
 
-def dump():
-    """Write default configurations to config file."""
+def dump(path: str) -> None:
+    """Write default configurations to config file at path."""
+    with open(path, "w") as f:
+        get_default_parser().write(f)
+    _logger.debug("Created default configuration file '%s'", path)
+
+
+def get_default_parser() -> configparser.ConfigParser:
+    """Retrieve configparser with default values."""
     parser = configparser.ConfigParser()
     # Add default options
     for name, setting in api.settings.items():
@@ -50,27 +40,17 @@ def dump():
             parser.add_section(section)
         default = str(setting.default)
         parser[section][option] = default
-    # Add default plugins
+    # Add default plugins and aliases section
     parser.add_section("PLUGINS")
     parser["PLUGINS"] = plugins.get_plugins()
-    # Write to file
-    user_file = xdg.join_vimiv_config("vimiv.conf")
-    with open(user_file, "w") as f:
-        parser.write(f)
-        f.write("; vim:ft=dosini")
-    _logger.debug("Created default config file %s", user_file)
+    parser.add_section("ALIASES")
+    return parser
 
 
-def _read(files):
-    """Read config from list of files into settings.
-
-    The files given first are overridden by the files given later.
-
-    Args:
-        files: List of paths for config files to read.
-    """
+def read(path: str) -> None:
+    """Read config from path into settings."""
     parser = _setup_parser()
-    parser.read(files)
+    read_log_exception(parser, _logger, path)
     # Try to update every single setting
     for name, _ in api.settings.items():
         _update_setting(name, parser)
@@ -83,6 +63,7 @@ def _read(files):
     # Read plugins
     if "PLUGINS" in parser:
         _read_plugins(parser["PLUGINS"])
+    _logger.debug("Read configuration from '%s'", path)
 
 
 def _update_setting(name, parser):
@@ -103,7 +84,7 @@ def _update_setting(name, parser):
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         _logger.debug("%s in configfile", str(e))
     except ValueError as e:
-        log.error("Error reading setting %s: %s", setting_name, str(e))
+        _logger.error("Error reading setting %s: %s", setting_name, str(e))
 
 
 def _add_statusbar_formatters(configsection):
@@ -112,7 +93,7 @@ def _add_statusbar_formatters(configsection):
     Args:
         configsection: STATUSBAR section in the config file.
     """
-    positions = ["left", "center", "right"]
+    positions = ("left", "center", "right")
     possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:

@@ -4,17 +4,50 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import configparser
 
 import pytest
 
 from vimiv.config import styles
 
 
-@pytest.fixture
-def new_style():
-    new_style = styles.create_default(save_to_file=False)
+@pytest.fixture(params=(True, False))
+def new_style(request):
+    """Fixture to create a clean default and clean default-dark style."""
+    new_style = styles.create_default(dark=request.param, save_to_file=False)
     yield new_style
-    del new_style
+
+
+@pytest.fixture
+def style_file(tmpdir):
+    """Fixture to create a style file with different properties."""
+
+    def create_style_file(color="#FFF", font=None, n_colors=16, header=True, **options):
+        """Helper function returned to create the styles file.
+
+        Args:
+            color: Color written for the 16 base colors.
+            font: Font written.
+            n_colors: Number of base colors to write.
+            header. If False, omit the STYLE section header.
+            options: Further style options passed.
+        """
+        path = str(tmpdir.join("style"))
+        if not header:
+            return path
+        parser = configparser.ConfigParser()
+        parser.add_section("STYLE")
+        for i in range(n_colors):
+            parser["STYLE"][f"base{i:02x}"] = color
+        if font is not None:
+            parser["STYLE"]["font"] = font
+        for key, value in options.items():
+            parser["STYLE"][key] = value
+        with open(path, "w") as f:
+            parser.write(f)
+        return path
+
+    return create_style_file
 
 
 def test_add_style_option(new_style):
@@ -53,28 +86,80 @@ def test_is_color_option():
 
 def test_check_valid_color():
     # If a check fails, ValueError is raised, so we need no assert statement
-    styles.Style.check_valid_color("#fff")  # 3 digit hex
-    styles.Style.check_valid_color("#FFF")  # 3 digit hex capital
-    styles.Style.check_valid_color("#FfF")  # 3 digit hex mixed case
-    styles.Style.check_valid_color("#0fF")  # 3 digit hex mixed case and number
     styles.Style.check_valid_color("#ffffff")  # 6 digit hex
     styles.Style.check_valid_color("#FFFFFF")  # 6 digit hex capital
     styles.Style.check_valid_color("#FFfFfF")  # 6 digit hex mixed case
     styles.Style.check_valid_color("#00fFfF")  # 6 digit hex mixed case and number
 
 
-def test_fail_check_valid_color():
-    _fail_check_valid_color("ffffff")  # Missing leading #
-    _fail_check_valid_color("#fffffff")  # 7 digits
-    _fail_check_valid_color("#fffff")  # 5 digits
-    _fail_check_valid_color("#ffff")  # 4 digits
-    _fail_check_valid_color("#ff")  # 2 digits
-    _fail_check_valid_color("#f")  # 1 digit
-    _fail_check_valid_color("#")  # 0 digits
-    _fail_check_valid_color("#agfjkl")  # invalid content
-
-
-def _fail_check_valid_color(color: str):
-    """Helper method used by test_fail_check_valid_color."""
+@pytest.mark.parametrize(
+    "color",
+    (
+        "ffffff",  # Missing leading #
+        "#fffffff",  # 7 digits
+        "#fffff",  # 5 digits
+        "#ffff",  # 4 digits
+        "#fff",  # 3 digits
+        "#ff",  # 2 digits
+        "#f",  # 1 digit
+        "#",  # 0 digits
+        "#agfjkl",  # invalid content
+    ),
+)
+def test_fail_check_valid_color(color):
     with pytest.raises(ValueError):
         styles.Style.check_valid_color(color)
+
+
+@pytest.mark.parametrize(
+    "expected_color, expected_font, options",
+    [
+        ("#ffffff", "my new font", {}),
+        ("#ffffff", None, {}),
+        ("#ffffff", None, {"image.bg": "#FF00FF", "library.font": "other"}),
+        ("#ffffff", None, {"image.bg": "invalid", "library.font": "other"}),
+    ],
+)
+def test_read_style(style_file, expected_color, expected_font, options):
+    """Check reading a style file retrieves the correct results."""
+    path = style_file(color=expected_color, font=expected_font, **options)
+    read_style = styles.read(path)
+    # Correct 16 base colors
+    for i in range(16):
+        assert read_style[f"{{base{i:02x}}}"].lower() == expected_color.lower()
+    if expected_font is not None:  # Font from styles file if passed
+        assert read_style["{font}"].lower() == expected_font.lower()
+    else:  # Default font otherwise
+        assert read_style["{font}"].lower() == styles.DEFAULT_FONT.lower()
+    # Any additional options in the styles file
+    default = styles.create_default()
+    for name, expected_value in options.items():
+        key = "{" + name + "}"
+        if styles.Style.is_color_option(name):
+            try:
+                styles.Style.check_valid_color(expected_value)
+            except ValueError:
+                expected_value = default[key]
+        assert read_style[key] == expected_value
+
+
+def test_read_style_missing_section(style_file):
+    """Check reading a style file missing the section header leads to error handling."""
+    check_critical_error_handling(style_file(header=False))
+
+
+@pytest.mark.parametrize("n_colors", range(15))
+def test_read_style_missing_color(style_file, n_colors):
+    """Check reading a style file missing any base color leads to error handling."""
+    check_critical_error_handling(style_file(n_colors=n_colors))
+
+
+def test_read_style_invalid_base_color(style_file):
+    """Check reading a style file with an invalid base color leads to error handling."""
+    check_critical_error_handling(style_file(color="invalid"))
+
+
+def check_critical_error_handling(path):
+    """Helper function to check for correct handling of critical errors."""
+    with pytest.raises(SystemExit, match="2"):
+        styles.read(path)

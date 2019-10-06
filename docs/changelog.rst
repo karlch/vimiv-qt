@@ -12,12 +12,28 @@ Added:
 
 * Elements in library and thumbnail can be selected with a mouse double click.
 
+Changed:
+^^^^^^^^
+
+* Any parsing errors when reading configuration files now log an error message and exit
+  vimiv.
+* The ``--config`` argument overrides the default user configuration path instead of
+  appending to it. This is consistent with the ``--keyfile`` argument.
+* Completely broken user styles now log an error message and exit vimiv instead of
+  falling back to the default. This is consistent with the configuration file handling.
+
 Fixed:
 ^^^^^^
 
 * The UI no longer blocks when processing working directory changes.
 * Search reacts appropriately when the working directory changes. If the content is
   updated, search is re-run. When a new directory is opened, search is cleared.
+* Support for colors with alpha-channel in styles file.
+
+Removed:
+^^^^^^^^
+
+* Support for colors in 3-digit hex format (#RGB), use #RRGGBB instead.
 
 
 v0.2.0 (2019-10-01)

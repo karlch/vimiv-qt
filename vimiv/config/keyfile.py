@@ -7,37 +7,30 @@
 """Methods to read keybindings from file and store them."""
 
 import configparser
-import os
 
 from vimiv import api
-from vimiv.utils import xdg, log
+from vimiv.utils import log
+
+from . import read_log_exception, parse_config
 
 
 _logger = log.module_logger(__name__)
 
 
-def parse(args):
-    """Parse keybindings from the keys.conf into the keybindings registry.
-
-    This reads keybindings from user keys file and possibly the file given from
-    the commandline. If the user keys file does not exist, a default file is
-    created.
-
-    Args:
-        args: Arguments returned from parser.parse_args().
-    """
-    keyfile = xdg.join_vimiv_config("keys.conf")
-    if args.keyfile is not None:  # Read from commandline keys file
-        _read(args.keyfile)
-    elif os.path.isfile(keyfile):  # Read from keys file
-        _read(keyfile)
-    else:  # Create defaults
-        dump()
+def parse(cli_path: str):
+    """Parse keybindings from the keys.conf into the keybindings registry."""
+    parse_config(cli_path, "keys.conf", read, dump)
 
 
-def dump():
-    """Write default keybindings to keys file."""
-    _logger.debug("Dumping default keybindings to file")
+def dump(path: str):
+    """Write default keybindings to keys file at path."""
+    with open(path, "w") as f:
+        get_default_parser().write(f)
+    _logger.debug("Created default keys file '%s'", path)
+
+
+def get_default_parser() -> configparser.ConfigParser:
+    """Retrieve configparser with default keybindings."""
     parser = KeyfileParser(delimiters=":")
     # Add sections
     parser.add_section("GLOBAL")
@@ -50,29 +43,21 @@ def dump():
     for mode, bindings in api.keybindings.items():
         for binding, command in bindings.items():
             parser[mode.name.upper()][binding] = command.replace("%", "%%")
-    # Write to file
-    user_file = xdg.join_vimiv_config("keys.conf")
-    with open(user_file, "w") as f:
-        parser.write(f)
-    _logger.debug("Created default keys file '%s'", user_file)
+    return parser
 
 
-def _read(filename):
-    """Read keybindings in one file into the keybindings registry.
-
-    Args:
-        filename: Name of the keybinding file to read.
-    """
-    _logger.debug("Reading keybindings from '%s'", filename)
+def read(path: str) -> None:
+    """Read keybindings from path into the keybindings registry."""
+    _logger.debug("Reading keybindings from '%s'", path)
     parser = KeyfileParser()
-    parser.read(filename)
+    read_log_exception(parser, _logger, path)
     for mode, bindings in api.keybindings.items():
         try:
             section = parser[mode.name.upper()]
             _update_bindings(bindings, section)
         except KeyError:
             _logger.debug("Missing section '%s' in keys.conf", mode.name.upper())
-    _logger.debug("Read keybindings from '%s'", filename)
+    _logger.debug("Read keybindings from '%s'", path)
 
 
 class KeyfileParser(configparser.ConfigParser):
