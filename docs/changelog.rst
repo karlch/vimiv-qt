@@ -26,6 +26,12 @@ Fixed:
 * The UI no longer blocks when processing working directory changes.
 * Search reacts appropriately when the working directory changes. If the content is
   updated, search is re-run. When a new directory is opened, search is cleared.
+* Support for colors with alpha-channel in styles file.
+
+Removed:
+^^^^^^^^
+
+* Support for colors in 3-digit hex format (#RGB), use #RRGGBB instead.
 
 
 v0.2.0 (2019-10-01)

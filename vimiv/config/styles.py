@@ -153,12 +153,13 @@ class Style(dict):
     def check_valid_color(color: str):
         """Check if a color string is a valid html color.
 
-        Accepts strings that start with # and have 3 or 6 hex digits.
+        Accepts strings that start with # and have 6 (#RRGGBB) or 8 (#AARRGGBB) hex
+        digits.
 
         Raises:
             ValueError if the string is invalid.
         """
-        if not re.fullmatch(r"#([0-9a-f]{3}|[0-9a-f]{6})", color.lower()):
+        if not re.fullmatch(r"#([0-9a-f]{6}|[0-9a-f]{8})", color.lower()):
             raise ValueError(f"{color} is not a valid html color")
 
 
