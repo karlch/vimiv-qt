@@ -19,6 +19,8 @@ Changed:
   vimiv.
 * The ``--config`` argument overrides the default user configuration path instead of
   appending to it. This is consistent with the ``--keyfile`` argument.
+* Completely broken user styles now log an error message and exit vimiv instead of
+  falling back to the default. This is consistent with the configuration file handling.
 
 Fixed:
 ^^^^^^

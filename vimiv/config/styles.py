@@ -18,6 +18,7 @@ Module Attributes:
 import configparser
 import os
 import re
+import sys
 
 from vimiv import api
 from vimiv.utils import xdg, log
@@ -164,7 +165,10 @@ class Style(dict):
             ValueError if the string is invalid.
         """
         if not re.fullmatch(r"#([0-9a-f]{6}|[0-9a-f]{8})", color.lower()):
-            raise ValueError(f"{color} is not a valid html color")
+            raise ValueError(
+                f"{color} is not a valid html color. "
+                "Supported formats are #RRGGBB and #AARRGGBB."
+            )
 
 
 def parse():
@@ -267,37 +271,39 @@ def create_default(dark=False, save_to_file=True):
     return style
 
 
-def read(filename):
+def read(path: str):
     """Read style from styles file.
 
     Args:
-        filename: Name of the styles file to read
+        path: Name of the styles file to read
     """
-    _logger.debug("Reading style from file '%s'", filename)
+    _logger.debug("Reading style from file '%s'", path)
     parser = configparser.ConfigParser()
+    read_log_exception(parser, _logger, path)
     # Retrieve the STYLE section
     try:
-        read_log_exception(parser, _logger, filename)
         section = parser["STYLE"]
     except KeyError:
-        log.error(
-            "Style files must start with the [STYLE] header. Falling back to default."
-        )
-        return create_default(save_to_file=False)
+        _crash_read(path, "Style files must start with the [STYLE] header")
     # Retrieve base colors
     try:
         colors = [section.pop(f"base{i:02x}") for i in range(16)]
     except KeyError as e:
-        log.error("Style is missing color %s. Falling back to default.", e)
-        return create_default(save_to_file=False)
-    if "font" in section:  # User-defined global font
-        style = Style(*colors, font=section.pop("font"))
-    else:  # Default global font
-        style = Style(*colors)
+        _crash_read(path, f"Style is missing requred base color {e}")
+    # Create style class with possibly user-defined font
+    try:
+        style = Style(*colors, font=section.pop("font", DEFAULT_FONT))
+    except ValueError as e:
+        _crash_read(path, str(e))
     # Override additional options
     for option, value in parser["STYLE"].items():
         _logger.debug("Overriding '%s' with '%s'", option, value)
-        style[option] = value
+        try:
+            style[option] = value
+        except ValueError as e:
+            _logger.error(
+                "Error parsing style option '%s' = '%s':\n%s", option, value, e
+            )
     return style
 
 
@@ -319,3 +325,11 @@ def dump(name, style):
         )
         parser.write(f)
         f.write("; vim:ft=dosini")
+
+
+def _crash_read(path: str, message: str):
+    """Crash consistently on critical errors when reading user styles."""
+    _logger.error(
+        "Error reading styles file '%s':\n\n%s\n\nPlease fix the file :)", path, message
+    )
+    sys.exit(2)
