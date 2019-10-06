@@ -4,6 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import configparser
 
 import pytest
 
@@ -15,6 +16,38 @@ def new_style():
     new_style = styles.create_default(save_to_file=False)
     yield new_style
     del new_style
+
+
+@pytest.fixture
+def style_file(tmpdir):
+    """Fixture to create a style file with different properties."""
+
+    def create_style_file(color="#FFF", font=None, n_colors=16, header=True, **options):
+        """Helper function returned to create the styles file.
+
+        Args:
+            color: Color written for the 16 base colors.
+            font: Font written.
+            n_colors: Number of base colors to write.
+            header. If False, omit the STYLE section header.
+            options: Further style options passed.
+        """
+        path = str(tmpdir.join("style"))
+        if not header:
+            return path
+        parser = configparser.ConfigParser()
+        parser.add_section("STYLE")
+        for i in range(n_colors):
+            parser["STYLE"][f"base{i:02x}"] = color
+        if font is not None:
+            parser["STYLE"]["font"] = font
+        for key, value in options.items():
+            parser["STYLE"][key] = value
+        with open(path, "w") as f:
+            parser.write(f)
+        return path
+
+    return create_style_file
 
 
 def test_add_style_option(new_style):
@@ -79,3 +112,40 @@ def test_check_valid_color():
 def test_fail_check_valid_color(color):
     with pytest.raises(ValueError):
         styles.Style.check_valid_color(color)
+
+
+@pytest.mark.parametrize(
+    "expected_color, expected_font, options",
+    [
+        ("#FFFFFF", "my new font", {}),
+        ("#EEE", None, {}),
+        ("#EEE", None, {"image.bg": "#FFF", "library.font": "other"}),
+    ],
+)
+def test_read_style(style_file, expected_color, expected_font, options):
+    """Ensure reading a style file retrieves the correct results."""
+    path = style_file(color=expected_color, font=expected_font, **options)
+    read_style = styles.read(path)
+    # Correct 16 base colors
+    for i in range(16):
+        assert read_style[f"{{base{i:02x}}}"].lower() == expected_color.lower()
+    if expected_font is not None:  # Font from styles file if passed
+        assert read_style["{font}"].lower() == expected_font.lower()
+    else:  # Default font otherwise
+        assert read_style["{font}"].lower() == styles.DEFAULT_FONT.lower()
+    # Any additional options in the styles file
+    for key, expected_value in options.items():
+        assert read_style[f"{{{key}}}"] == expected_value
+
+
+def test_read_style_missing_section(style_file):
+    """Ensure reading a style file missing the section header returns the default."""
+    path = style_file(header=False)
+    assert styles.read(path) == styles.create_default()
+
+
+@pytest.mark.parametrize("n_colors", range(15))
+def test_read_style_missing_color(style_file, n_colors):
+    """Ensure reading a style file missing any base color returns the default."""
+    path = style_file(n_colors=n_colors)
+    assert styles.read(path) == styles.create_default()

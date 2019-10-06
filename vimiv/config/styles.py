@@ -9,6 +9,7 @@
 Module Attributes:
     NAME_DEFAULT: Name of the default theme.
     NAME_DEFAULT_DARK: Name of the dark default theme.
+    DEFAULT_FONT: Default font to use if none is given by the user.
 
     _style: Dictionary saving the style settings from the config file, form:
         _style["image.bg"] = "#000000"
@@ -26,6 +27,7 @@ from . import read_log_exception
 
 NAME_DEFAULT = "default"
 NAME_DEFAULT_DARK = "default-dark"
+DEFAULT_FONT = "10pt Monospace"
 
 _style = None
 _logger = log.module_logger(__name__)
@@ -40,7 +42,7 @@ class Style(dict):
     Ordered so referencing and dereferencing variables is well defined.
     """
 
-    def __init__(self, *colors, font="10pt Monospace"):
+    def __init__(self, *colors, font=DEFAULT_FONT):
         """Initialize style with 16 colors for base 16 and a font."""
         # We are mainly storing all the values here
         # pylint: disable=too-many-statements
