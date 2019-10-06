@@ -11,11 +11,11 @@ import pytest
 from vimiv.config import styles
 
 
-@pytest.fixture
-def new_style():
-    new_style = styles.create_default(save_to_file=False)
+@pytest.fixture(params=(True, False))
+def new_style(request):
+    """Fixture to create a clean default and clean default-dark style."""
+    new_style = styles.create_default(dark=request.param, save_to_file=False)
     yield new_style
-    del new_style
 
 
 @pytest.fixture
