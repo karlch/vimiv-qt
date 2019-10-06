@@ -86,10 +86,6 @@ def test_is_color_option():
 
 def test_check_valid_color():
     # If a check fails, ValueError is raised, so we need no assert statement
-    styles.Style.check_valid_color("#fff")  # 3 digit hex
-    styles.Style.check_valid_color("#FFF")  # 3 digit hex capital
-    styles.Style.check_valid_color("#FfF")  # 3 digit hex mixed case
-    styles.Style.check_valid_color("#0fF")  # 3 digit hex mixed case and number
     styles.Style.check_valid_color("#ffffff")  # 6 digit hex
     styles.Style.check_valid_color("#FFFFFF")  # 6 digit hex capital
     styles.Style.check_valid_color("#FFfFfF")  # 6 digit hex mixed case
@@ -103,6 +99,7 @@ def test_check_valid_color():
         "#fffffff",  # 7 digits
         "#fffff",  # 5 digits
         "#ffff",  # 4 digits
+        "#fff",  # 3 digits
         "#ff",  # 2 digits
         "#f",  # 1 digit
         "#",  # 0 digits
@@ -117,13 +114,14 @@ def test_fail_check_valid_color(color):
 @pytest.mark.parametrize(
     "expected_color, expected_font, options",
     [
-        ("#FFFFFF", "my new font", {}),
-        ("#EEE", None, {}),
-        ("#EEE", None, {"image.bg": "#FFF", "library.font": "other"}),
+        ("#ffffff", "my new font", {}),
+        ("#ffffff", None, {}),
+        ("#ffffff", None, {"image.bg": "#FF00FF", "library.font": "other"}),
+        ("#ffffff", None, {"image.bg": "invalid", "library.font": "other"}),
     ],
 )
 def test_read_style(style_file, expected_color, expected_font, options):
-    """Ensure reading a style file retrieves the correct results."""
+    """Check reading a style file retrieves the correct results."""
     path = style_file(color=expected_color, font=expected_font, **options)
     read_style = styles.read(path)
     # Correct 16 base colors
@@ -134,18 +132,34 @@ def test_read_style(style_file, expected_color, expected_font, options):
     else:  # Default font otherwise
         assert read_style["{font}"].lower() == styles.DEFAULT_FONT.lower()
     # Any additional options in the styles file
-    for key, expected_value in options.items():
-        assert read_style[f"{{{key}}}"] == expected_value
+    default = styles.create_default()
+    for name, expected_value in options.items():
+        key = "{" + name + "}"
+        if styles.Style.is_color_option(name):
+            try:
+                styles.Style.check_valid_color(expected_value)
+            except ValueError:
+                expected_value = default[key]
+        assert read_style[key] == expected_value
 
 
 def test_read_style_missing_section(style_file):
-    """Ensure reading a style file missing the section header returns the default."""
-    path = style_file(header=False)
-    assert styles.read(path) == styles.create_default()
+    """Check reading a style file missing the section header leads to error handling."""
+    check_critical_error_handling(style_file(header=False))
 
 
 @pytest.mark.parametrize("n_colors", range(15))
 def test_read_style_missing_color(style_file, n_colors):
-    """Ensure reading a style file missing any base color returns the default."""
-    path = style_file(n_colors=n_colors)
-    assert styles.read(path) == styles.create_default()
+    """Check reading a style file missing any base color leads to error handling."""
+    check_critical_error_handling(style_file(n_colors=n_colors))
+
+
+def test_read_style_invalid_base_color(style_file):
+    """Check reading a style file with an invalid base color leads to error handling."""
+    check_critical_error_handling(style_file(color="invalid"))
+
+
+def check_critical_error_handling(path):
+    """Helper function to check for correct handling of critical errors."""
+    with pytest.raises(SystemExit, match="2"):
+        styles.read(path)
