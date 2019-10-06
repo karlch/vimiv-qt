@@ -8,6 +8,7 @@
 
 import configparser
 import os
+from typing import List
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
@@ -19,7 +20,7 @@ from . import read_log_exception
 _logger = log.module_logger(__name__)
 
 
-def parse(args):
+def parse(args) -> None:
     """Parse configuration files.
 
     This reads settings from user config file and possibly the file given from
@@ -38,23 +39,13 @@ def parse(args):
     if args.config is not None:
         files.append(args.config)
     if files:
-        _read(files)
+        read(files)
         _logger.debug("Read configuration from %s", ", ".join(files))
 
 
-def dump():
+def dump() -> None:
     """Write default configurations to config file."""
-    parser = configparser.ConfigParser()
-    # Add default options
-    for name, setting in api.settings.items():
-        section, option = _get_section_option(name)
-        if section not in parser:
-            parser.add_section(section)
-        default = str(setting.default)
-        parser[section][option] = default
-    # Add default plugins
-    parser.add_section("PLUGINS")
-    parser["PLUGINS"] = plugins.get_plugins()
+    parser = get_default_configparser()
     # Write to file
     user_file = xdg.join_vimiv_config("vimiv.conf")
     with open(user_file, "w") as f:
@@ -63,7 +54,24 @@ def dump():
     _logger.debug("Created default config file %s", user_file)
 
 
-def _read(files):
+def get_default_configparser() -> configparser.ConfigParser:
+    """Retrieve configparser with default values."""
+    parser = configparser.ConfigParser()
+    # Add default options
+    for name, setting in api.settings.items():
+        section, option = _get_section_option(name)
+        if section not in parser:
+            parser.add_section(section)
+        default = str(setting.default)
+        parser[section][option] = default
+    # Add default plugins and aliases section
+    parser.add_section("PLUGINS")
+    parser["PLUGINS"] = plugins.get_plugins()
+    parser.add_section("ALIASES")
+    return parser
+
+
+def read(files: List[str]) -> None:
     """Read config from list of files into settings.
 
     The files given first are overridden by the files given later.
@@ -105,7 +113,7 @@ def _update_setting(name, parser):
     except (configparser.NoSectionError, configparser.NoOptionError) as e:
         _logger.debug("%s in configfile", str(e))
     except ValueError as e:
-        log.error("Error reading setting %s: %s", setting_name, str(e))
+        _logger.error("Error reading setting %s: %s", setting_name, str(e))
 
 
 def _add_statusbar_formatters(configsection):
@@ -114,7 +122,7 @@ def _add_statusbar_formatters(configsection):
     Args:
         configsection: STATUSBAR section in the config file.
     """
-    positions = ["left", "center", "right"]
+    positions = ("left", "center", "right")
     possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
     for name, value in configsection.items():
         if name in possible:
