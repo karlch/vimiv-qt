@@ -52,28 +52,16 @@ def reset_to_default(cleanup_helper):
     api.settings.reset()
 
 
-def create_custom_parser(request):
-    parser = configfile.get_default_configparser()
-    if hasattr(request, "param"):  # Update parser with custom values
-        for section, content in request.param.items():
-            for key, value in content.items():
-                parser[section][key] = value
-    return parser
+@pytest.fixture(scope="function")
+def configparser(custom_configparser, request):
+    yield custom_configparser(configfile.get_default_parser, **request.param)
 
 
 @pytest.fixture(scope="function")
-def configparser(request):
-    yield create_custom_parser(request)
-
-
-@pytest.fixture(scope="function")
-def configpath(tmpdir, request):
-    parser = create_custom_parser(request)
-    path = tmpdir.join("vimiv.conf")
-    with open(path, "w") as f:
-        parser.write(f)
-    configfile.read(str(path))
-    yield parser
+def configpath(tmpdir, custom_configfile, request):
+    yield custom_configfile(
+        "vimiv.conf", configfile.read, configfile.get_default_parser, **request.param
+    )
 
 
 @pytest.fixture()

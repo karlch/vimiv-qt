@@ -7,46 +7,30 @@
 """Functions to read configurations from config file and update settings."""
 
 import configparser
-import os
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
-from vimiv.utils import xdg, log
+from vimiv.utils import log
 
-from . import read_log_exception
+from . import read_log_exception, parse_config
 
 
 _logger = log.module_logger(__name__)
 
 
-def parse(args) -> None:
-    """Parse configuration files.
-
-    This reads settings from user config file or the file given from the commandline. If
-    the user config file does not exist, a default file is created.
-
-    Args:
-        args: Arguments returned from parser.parse_args().
-    """
-    if args.config is not None:
-        return read(args.config)
-    user_file = xdg.join_vimiv_config("vimiv.conf")
-    if not os.path.isfile(user_file):  # Create default config file
-        dump(user_file)
-    else:
-        read(user_file)
+def parse(cli_path: str) -> None:
+    """Parse settings from the vimiv.conf into the settings api."""
+    parse_config(cli_path, "vimiv.conf", read, dump)
 
 
 def dump(path: str) -> None:
     """Write default configurations to config file at path."""
-    parser = get_default_configparser()
     with open(path, "w") as f:
-        parser.write(f)
-        f.write("; vim:ft=dosini")
-    _logger.debug("Created default config file %s", path)
+        get_default_parser().write(f)
+    _logger.debug("Created default configuration file '%s'", path)
 
 
-def get_default_configparser() -> configparser.ConfigParser:
+def get_default_parser() -> configparser.ConfigParser:
     """Retrieve configparser with default values."""
     parser = configparser.ConfigParser()
     # Add default options

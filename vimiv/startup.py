@@ -145,8 +145,8 @@ def update_settings(args):
     Args:
         args: Arguments returned from parser.parse_args().
     """
-    configfile.parse(args)
-    keyfile.parse(args)
+    configfile.parse(args.config)
+    keyfile.parse(args.keyfile)
     styles.parse()
     for option, value in args.cmd_settings:
         try:
