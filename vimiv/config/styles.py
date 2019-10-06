@@ -146,8 +146,8 @@ class Style(dict):
 
     @staticmethod
     def is_color_option(name: str):
-        """Return True if the style option corresponds is a color."""
-        return name.endswith((".fg", ".bg"))
+        """Return True if the style option name corresponds to a color."""
+        return name.strip("{}").endswith((".fg", ".bg"))
 
     @staticmethod
     def check_valid_color(color: str):
