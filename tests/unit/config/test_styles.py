@@ -63,18 +63,19 @@ def test_check_valid_color():
     styles.Style.check_valid_color("#00fFfF")  # 6 digit hex mixed case and number
 
 
-def test_fail_check_valid_color():
-    _fail_check_valid_color("ffffff")  # Missing leading #
-    _fail_check_valid_color("#fffffff")  # 7 digits
-    _fail_check_valid_color("#fffff")  # 5 digits
-    _fail_check_valid_color("#ffff")  # 4 digits
-    _fail_check_valid_color("#ff")  # 2 digits
-    _fail_check_valid_color("#f")  # 1 digit
-    _fail_check_valid_color("#")  # 0 digits
-    _fail_check_valid_color("#agfjkl")  # invalid content
-
-
-def _fail_check_valid_color(color: str):
-    """Helper method used by test_fail_check_valid_color."""
+@pytest.mark.parametrize(
+    "color",
+    (
+        "ffffff",  # Missing leading #
+        "#fffffff",  # 7 digits
+        "#fffff",  # 5 digits
+        "#ffff",  # 4 digits
+        "#ff",  # 2 digits
+        "#f",  # 1 digit
+        "#",  # 0 digits
+        "#agfjkl",  # invalid content
+    ),
+)
+def test_fail_check_valid_color(color):
     with pytest.raises(ValueError):
         styles.Style.check_valid_color(color)
