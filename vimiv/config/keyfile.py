@@ -12,6 +12,8 @@ import os
 from vimiv import api
 from vimiv.utils import xdg, log
 
+from . import read_log_exception
+
 
 _logger = log.module_logger(__name__)
 
@@ -65,7 +67,7 @@ def _read(filename):
     """
     _logger.debug("Reading keybindings from '%s'", filename)
     parser = KeyfileParser()
-    parser.read(filename)
+    read_log_exception(parser, _logger, filename)
     for mode, bindings in api.keybindings.items():
         try:
             section = parser[mode.name.upper()]

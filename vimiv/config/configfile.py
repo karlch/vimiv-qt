@@ -13,6 +13,8 @@ from vimiv import api, plugins
 from vimiv.commands import aliases
 from vimiv.utils import xdg, log
 
+from . import read_log_exception
+
 
 _logger = log.module_logger(__name__)
 
@@ -70,7 +72,7 @@ def _read(files):
         files: List of paths for config files to read.
     """
     parser = _setup_parser()
-    parser.read(files)
+    read_log_exception(parser, _logger, *files)
     # Try to update every single setting
     for name, _ in api.settings.items():
         _update_setting(name, parser)

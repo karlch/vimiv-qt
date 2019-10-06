@@ -21,6 +21,8 @@ import re
 from vimiv import api
 from vimiv.utils import xdg, log
 
+from . import read_log_exception
+
 
 NAME_DEFAULT = "default"
 NAME_DEFAULT_DARK = "default-dark"
@@ -268,9 +270,9 @@ def read(filename):
     parser = configparser.ConfigParser()
     # Retrieve the STYLE section
     try:
-        parser.read(filename)
+        read_log_exception(parser, _logger, filename)
         section = parser["STYLE"]
-    except (configparser.MissingSectionHeaderError, KeyError):
+    except KeyError:
         log.error(
             "Style files must start with the [STYLE] header. Falling back to default."
         )
