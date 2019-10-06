@@ -12,6 +12,14 @@ Added:
 
 * Elements in library and thumbnail can be selected with a mouse double click.
 
+Changed:
+^^^^^^^^
+
+* Any parsing errors when reading configuration files now log an error message and exit
+  vimiv.
+* The ``--config`` argument overrides the default user configuration path instead of
+  appending to it. This is consistent with the ``--keyfile`` argument.
+
 Fixed:
 ^^^^^^
 
