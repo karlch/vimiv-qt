@@ -82,14 +82,16 @@
 <li><a class="reference internal" href="#">Changelog</a><ul>
 <li><a class="reference internal" href="#v0-3-0-unreleased">v0.3.0 (unreleased)</a><ul>
 <li><a class="reference internal" href="#added">Added:</a></li>
+<li><a class="reference internal" href="#changed">Changed:</a></li>
 <li><a class="reference internal" href="#fixed">Fixed:</a></li>
+<li><a class="reference internal" href="#removed">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-2-0-2019-10-01">v0.2.0 (2019-10-01)</a><ul>
 <li><a class="reference internal" href="#id1">Added:</a></li>
-<li><a class="reference internal" href="#changed">Changed:</a></li>
-<li><a class="reference internal" href="#id2">Fixed:</a></li>
-<li><a class="reference internal" href="#removed">Removed:</a></li>
+<li><a class="reference internal" href="#id2">Changed:</a></li>
+<li><a class="reference internal" href="#id3">Fixed:</a></li>
+<li><a class="reference internal" href="#id4">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-0-2019-08-15">v0.1.0 (2019-08-15)</a></li>
@@ -127,12 +129,30 @@
 <li><p>Elements in library and thumbnail can be selected with a mouse double click.</p></li>
 </ul>
 </div>
+<div class="section" id="changed">
+<h3>Changed:<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Any parsing errors when reading configuration files now log an error message and exit
+vimiv.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">--config</span></code> argument overrides the default user configuration path instead of
+appending to it. This is consistent with the <code class="docutils literal notranslate"><span class="pre">--keyfile</span></code> argument.</p></li>
+<li><p>Completely broken user styles now log an error message and exit vimiv instead of
+falling back to the default. This is consistent with the configuration file handling.</p></li>
+</ul>
+</div>
 <div class="section" id="fixed">
 <h3>Fixed:<a class="headerlink" href="#fixed" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The UI no longer blocks when processing working directory changes.</p></li>
 <li><p>Search reacts appropriately when the working directory changes. If the content is
 updated, search is re-run. When a new directory is opened, search is cleared.</p></li>
+<li><p>Support for colors with alpha-channel in styles file.</p></li>
+</ul>
+</div>
+<div class="section" id="removed">
+<h3>Removed:<a class="headerlink" href="#removed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Support for colors in 3-digit hex format (#RGB), use #RRGGBB instead.</p></li>
 </ul>
 </div>
 </div>
@@ -158,8 +178,8 @@ automatically opens any selected image. Added keybindings are <code class="docut
 scrolling up/down and <code class="docutils literal notranslate"><span class="pre">go</span></code> for goto with this flag.</p></li>
 </ul>
 </div>
-<div class="section" id="changed">
-<h3>Changed:<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Changed:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>All styles are now based upon base16. Therefore custom styles must define the colors
 <code class="docutils literal notranslate"><span class="pre">base00</span></code> to <code class="docutils literal notranslate"><span class="pre">base0f</span></code>. All other style options are optional.</p></li>
@@ -168,8 +188,8 @@ their <code class="docutils literal notranslate"><span class="pre">init</span></
 removed in <cite>v0.3.0</cite>.</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h3>Fixed:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Fixed:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Elided text is now calculated correctly in the library.</p></li>
 <li><p>Setting value completions are no longer appended to the existing suggestions when the
@@ -182,8 +202,8 @@ manipulate mode.</p></li>
 <li><p>Running accepted manipulations multiple times as the changes were not reset.</p></li>
 </ul>
 </div>
-<div class="section" id="removed">
-<h3>Removed:<a class="headerlink" href="#removed" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Removed:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">--slideshow</span></code> argument as it was broken and can easily be emulated by the new
 <code class="docutils literal notranslate"><span class="pre">--command</span></code> argument using <code class="docutils literal notranslate"><span class="pre">--command</span> <span class="pre">slideshow</span></code>.</p></li>
