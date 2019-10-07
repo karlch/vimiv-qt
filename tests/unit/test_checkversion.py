@@ -17,7 +17,7 @@ def test_check_python_version(capsys, monkeypatch, version_info):
     """Tests to ensure exit and error message on too low python version."""
     monkeypatch.setattr(sys, "version_info", version_info)
 
-    with pytest.raises(SystemExit, match="1"):
+    with pytest.raises(SystemExit, match=str(checkversion.ERR_CODE)):
         checkversion.check_python_version()
 
     expected = build_message(
@@ -32,7 +32,7 @@ def test_check_pyqt_version(capsys, monkeypatch, version_info):
     """Tests to ensure exit and error message on too low PyQt version."""
     monkeypatch.setattr(checkversion, "PYQT_VERSION", version_info)
 
-    with pytest.raises(SystemExit, match="1"):
+    with pytest.raises(SystemExit, match=str(checkversion.ERR_CODE)):
         checkversion.check_pyqt_version()
 
     expected = build_message("PyQt", checkversion.PYQT_REQUIRED_VERSION, version_info)
@@ -44,7 +44,7 @@ def test_check_pyqt_available(capsys, monkeypatch):
     """Test to ensure exit and error message if PyQt is not available."""
     monkeypatch.setattr(checkversion, "PYQT_VERSION", None)
 
-    with pytest.raises(SystemExit, match="1"):
+    with pytest.raises(SystemExit, match=str(checkversion.ERR_CODE)):
         checkversion.check_pyqt_version()
 
     expected = "PyQt is required to run vimiv.\n"

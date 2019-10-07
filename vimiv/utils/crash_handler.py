@@ -13,7 +13,7 @@ import sys
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
 
-from . import log
+from . import log, customtypes
 
 # Fails on windows
 # We do not officially support windows currently, but might do so in the future
@@ -88,13 +88,13 @@ class CrashHandler(QObject):
         log.error("Uncaught exception! Exiting gracefully and printing stack...")
         initial_handler(exc_type, exc_value, traceback)
         try:
-            self._app.exit(1)
+            self._app.exit(customtypes.Exit.err_exception)
         # We exit immediately by killing the application if an error in the graceful
         # exit occurs
         except Exception as e:  # pylint: disable=broad-except
             log.fatal("Uncaught exception in graceful exit... Committing suicide :(")
             log.fatal("Exception: %r", e)
-            sys.exit(42)
+            sys.exit(customtypes.Exit.err_suicide)
 
     def handle_interrupt(self, signum, _frame):
         """Initial handler for interrupt signals to exit gracefully.
@@ -106,7 +106,9 @@ class CrashHandler(QObject):
         _assign_interrupt_handler(self.handle_interrupt_forcefully)
         log.info("SIGINT/SIGTERM received, exiting gracefully...")
         log.info("To kill the process repeat the signal")
-        QTimer.singleShot(0, functools.partial(self._app.exit, 128 + signum))
+        QTimer.singleShot(
+            0, functools.partial(self._app.exit, customtypes.Exit.signal + signum)
+        )
 
     def handle_interrupt_forcefully(self, signum, _frame):
         """Second handler for interrupt signals to exit forcefully.
@@ -116,7 +118,7 @@ class CrashHandler(QObject):
         """
         _logger.debug("Interrupt handler called a second time with %d", signum)
         log.fatal("Forceful kill signal retrieved... Hello darkness my old friend")
-        sys.exit(128 + signum)
+        sys.exit(customtypes.Exit.signal + signum)
 
 
 def _assign_interrupt_handler(handler):

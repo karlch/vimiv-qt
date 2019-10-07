@@ -9,6 +9,7 @@ import configparser
 import pytest
 
 from vimiv.config import styles
+from vimiv.utils import customtypes
 
 
 @pytest.fixture(params=(True, False))
@@ -161,5 +162,5 @@ def test_read_style_invalid_base_color(style_file):
 
 def check_critical_error_handling(path):
     """Helper function to check for correct handling of critical errors."""
-    with pytest.raises(SystemExit, match="2"):
+    with pytest.raises(SystemExit, match=str(customtypes.Exit.err_config)):
         styles.read(path)

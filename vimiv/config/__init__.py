@@ -12,7 +12,7 @@ import os
 import sys
 from typing import Optional, Callable
 
-from vimiv.utils import xdg
+from vimiv.utils import xdg, customtypes
 
 
 def parse_config(
@@ -68,4 +68,4 @@ def read_log_exception(
             type(e),
             e,
         )
-        sys.exit(2)
+        sys.exit(customtypes.Exit.err_config)

@@ -21,7 +21,7 @@ from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.commands import runners, search
 from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
-from vimiv.utils import xdg, crash_handler, log, trash_manager
+from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes
 
 # Must be imported to create the commands using the decorators
 from vimiv.commands import misccommands  # pylint: disable=unused-import
@@ -56,7 +56,7 @@ def setup_pre_app(argv):
     args = parser.get_argparser().parse_args(argv)
     if args.version:
         print(version.info())
-        sys.exit(0)
+        sys.exit(customtypes.Exit.success)
     init_directories(args)
     log.setup_logging(args.log_level, *args.debug)
     _logger.debug("Start: vimiv %s", " ".join(argv))
@@ -169,6 +169,6 @@ def run_startup_commands(*commands: str):
         _logger.debug("Startup commands: running %d/%d '%s'", i + 1, total, command)
         if "quit" in command:  # This does not work without a running app
             log.warning("Quitting forcefully as the app does not exist")
-            sys.exit(2)
+            sys.exit(customtypes.Exit.success)
         else:
             runners.run(command, mode=api.modes.current())

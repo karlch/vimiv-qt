@@ -11,6 +11,7 @@ import configparser
 import pytest
 
 from vimiv import config
+from vimiv.utils import customtypes
 
 
 @pytest.mark.parametrize(
@@ -37,6 +38,6 @@ def test_sysexit_on_broken_config(mocker, tmpdir, content, message):
     parser = configparser.ConfigParser()
     path = tmpdir.join("configfile")
     path.write(content)
-    with pytest.raises(SystemExit, match="2"):
+    with pytest.raises(SystemExit, match=str(customtypes.Exit.err_config)):
         config.read_log_exception(parser, mock_logger, str(path))
     mock_logger.critical.assert_called_once()

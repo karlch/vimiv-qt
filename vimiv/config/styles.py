@@ -21,7 +21,7 @@ import re
 import sys
 
 from vimiv import api
-from vimiv.utils import xdg, log
+from vimiv.utils import xdg, log, customtypes
 
 from . import read_log_exception
 
@@ -332,4 +332,4 @@ def _crash_read(path: str, message: str):
     _logger.error(
         "Error reading styles file '%s':\n\n%s\n\nPlease fix the file :)", path, message
     )
-    sys.exit(2)
+    sys.exit(customtypes.Exit.err_config)

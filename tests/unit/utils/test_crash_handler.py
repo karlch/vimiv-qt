@@ -14,7 +14,7 @@ from collections import namedtuple
 
 import pytest
 
-from vimiv.utils import crash_handler, log
+from vimiv.utils import crash_handler, log, customtypes
 
 
 @pytest.fixture
@@ -67,7 +67,7 @@ def test_crash_handler_exception_in_excepthook(capsys, handler):
     handler.app.exit = broken
     # Call system exceptook with some error checking for system exit
     error = ValueError("Not a number")
-    with pytest.raises(SystemExit, match="42"):
+    with pytest.raises(SystemExit, match=str(customtypes.Exit.err_suicide)):
         sys.excepthook(type(error), error, None)
     # Check log output
     captured = capsys.readouterr()
@@ -81,7 +81,7 @@ def test_crash_handler_first_interrupt(capsys, handler):
     captured = capsys.readouterr()
     assert "SIGINT/SIGTERM" in captured.out
     # Check if graceful quit was called
-    assert handler.app.exit.called_once_with(signal.SIGINT + 128)
+    assert handler.app.exit.called_once_with(customtypes.Exit.signal + signal.SIGINT)
     # Check if more forceful handler was installed
     assert (
         signal.getsignal(signal.SIGINT)
@@ -92,7 +92,7 @@ def test_crash_handler_first_interrupt(capsys, handler):
 
 def test_crash_handler_second_interrupt(capsys, handler):
     # Check if sys.exit is called with the correct return code
-    with pytest.raises(SystemExit, match=str(128 + signal.SIGINT)):
+    with pytest.raises(SystemExit, match=str(customtypes.Exit.signal + signal.SIGINT)):
         handler.instance.handle_interrupt_forcefully(signal.SIGINT, None)
     # Check log output
     captured = capsys.readouterr()

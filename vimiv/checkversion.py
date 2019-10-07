@@ -8,12 +8,13 @@
 
 This module is imported first in the top-level __init__.py to ensure we are running with
 the correct python and PyQt versions. In case this fails, error messages are written to
-stderr and we exit with returncode 1.
+stderr and we exit with returncode ERR_CODE.
 
 Module Attributes:
     PYQT_VERSION: The currently installed PyQt version as tuple if any.
     PYQT_REQUIRED_VERSION: The minimum PyQt version required.
     PYTHON_REQUIRED_VERSION: The minimum python version required.
+    ERR_CODE: Returncode used with sys.exit.
 """
 
 import sys
@@ -29,6 +30,7 @@ except ImportError:
 
 PYTHON_REQUIRED_VERSION = (3, 6)
 PYQT_REQUIRED_VERSION = (5, 9, 2)
+ERR_CODE = 2
 
 
 def check_python_version():
@@ -61,7 +63,7 @@ def _exit(message):
     """Write message to stderr and exit with returncode 1."""
     sys.stderr.write(message)
     sys.stderr.flush()
-    sys.exit(1)
+    sys.exit(ERR_CODE)
 
 
 check_python_version()
