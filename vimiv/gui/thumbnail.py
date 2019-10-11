@@ -28,7 +28,7 @@ class ThumbnailView(KeyHandler, QListWidget):
     """Thumbnail widget.
 
     Attributes:
-        _default_pixmap: Thumbnail image to display before thumbnails were generated.
+        _default_icon: Thumbnail icon to display before thumbnails were generated.
         _highlighted: List of indices that are highlighted as search results.
         _manager: ThumbnailManager class to create thumbnails asynchronously.
         _paths: Last paths loaded to avoid duplicate loading.
@@ -72,11 +72,13 @@ class ThumbnailView(KeyHandler, QListWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._default_pixmap = create_pixmap(
-            color=styles.get("thumbnail.default.bg"),
-            frame_color=styles.get("thumbnail.frame.fg"),
-            size=256,
-            frame_size=10,
+        self._default_icon = QIcon(
+            create_pixmap(
+                color=styles.get("thumbnail.default.bg"),
+                frame_color=styles.get("thumbnail.frame.fg"),
+                size=256,
+                frame_size=10,
+            )
         )
         self._paths = []
         self._highlighted = []
@@ -133,14 +135,13 @@ class ThumbnailView(KeyHandler, QListWidget):
                 if not self.takeItem(len(self._paths) - 1 - i):
                     log.error("Error removing thumbnail for %s", path)
         # Add new paths
+        size_hint = QSize(self.item_size(), self.item_size())
         for i, path in enumerate(paths):
             if path not in self._paths:
                 _logger.debug("Adding new thumbnail '%s'", path)
-                item = QListWidgetItem(self, i)
-                item.setSizeHint(QSize(self.item_size(), self.item_size()))
-                item.setIcon(QIcon(self._default_pixmap))
-                if path in api.mark.paths:
-                    item.setText("1")
+                text = "1" if path in api.mark.paths else ""
+                item = QListWidgetItem(self._default_icon, text, self, i)
+                item.setSizeHint(size_hint)
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
