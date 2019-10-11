@@ -7,7 +7,8 @@
 """Various completion models for command line completion."""
 
 import os
-from typing import List, Set
+from functools import lru_cache
+from typing import List, Set, Tuple
 
 from vimiv import api
 from vimiv.commands import aliases
@@ -31,16 +32,23 @@ class CommandModel(api.completion.BaseModel):
         """Create command list for appropriate mode when commandline is entered."""
         self.clear()
         mode = api.modes.COMMAND.last
-        cmdlist = []
-        # Include commands
-        for name, command in api.commands.items(mode):
-            if not command.hide:
-                cmdlist.append((name, command.description))
-        # Include aliases
-        for alias, cmd in aliases.get(mode).items():
-            desc = "Alias for '%s'." % (cmd)
-            cmdlist.append((alias, desc))
-        self.set_data(cmdlist)
+        self.set_data(self.formatted_commands(mode) + self.formatted_aliases(mode))
+
+    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
+        """Return list of commands with description for this mode."""
+        return [
+            (name, command.description)
+            for name, command in api.commands.items(mode)
+            if not command.hide
+        ]
+
+    def formatted_aliases(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
+        """Return list of aliases with explanation for this mode."""
+        return [
+            (alias, f"Alias for '{command}'")
+            for alias, command in aliases.get(mode).items()
+        ]
 
 
 class ExternalCommandModel(api.completion.BaseModel):
