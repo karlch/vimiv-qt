@@ -11,12 +11,12 @@ import shutil
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import QObject, QRunnable, QThreadPool, QCoreApplication
+from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.imutils import imtransform, immanipulate
-from vimiv.utils import files, log
+from vimiv.utils import files, log, asyncrun
 
 # We need the check as svg support is optional
 try:
@@ -59,8 +59,6 @@ class ImageFileHandler(QObject):
         _path: Path to the currently loaded QObject.
         _pixmaps: Pixmaps object storing different version of the loaded image.
     """
-
-    _pool = QThreadPool.globalInstance()
 
     @api.objreg.register
     def __init__(self):
@@ -150,7 +148,6 @@ class ImageFileHandler(QObject):
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path)
-        self._pool.waitForDone(5000)  # Kill writing after 5s
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -223,33 +220,10 @@ class ImageFileHandler(QObject):
         if not path:
             path = original_path = self._path
         if parallel:
-            runner = WriteImageRunner(pixmap, path, original_path)
-            self._pool.start(runner)
+            asyncrun(write_pixmap, pixmap, path, original_path)
         else:
             write_pixmap(pixmap, path, original_path)
         self._reset()
-
-
-class WriteImageRunner(QRunnable):
-    """Write QPixmap to file in an extra thread.
-
-    Uses the write_pixmap function.
-
-    Attributes:
-        _pixmap: The QPixmap to write.
-        _path: Path to write the pixmap to.
-        _original_path: Original path of the opened pixmap.
-    """
-
-    def __init__(self, pixmap, path, original_path):
-        super().__init__()
-        self._pixmap = pixmap
-        self._path = path
-        self._original_path = original_path
-
-    def run(self):
-        """Write image to file."""
-        write_pixmap(self._pixmap, self._path, self._original_path)
 
 
 def write_pixmap(pixmap, path, original_path):
