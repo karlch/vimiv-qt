@@ -13,10 +13,11 @@ import re
 from abc import ABCMeta
 from contextlib import contextmanager, suppress
 from datetime import datetime
+from functools import wraps
 from pstats import Stats
 from typing import Callable, Optional, TypeVar, List, Any
 
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from . import log
@@ -167,6 +168,39 @@ def slot(function):
     slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
     pyqtSlot(*slot_args, **slot_kwargs)(function)
     return function
+
+
+class GenericRunnable(QRunnable):
+    """Generic QRunnable to run an arbitrary function on a QThreadPool."""
+
+    def __init__(self, function, *args, **kwargs):
+        super().__init__()
+        self.function = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def run(self):
+        self.function(*self.args, **self.kwargs)
+
+
+def asyncrun(function, *args, pool=None, **kwargs):
+    """Run function with args and kwargs in parallel on a QThreadPool."""
+    pool = pool if pool is not None else QThreadPool.globalInstance()
+    runnable = GenericRunnable(function, *args, **kwargs)
+    pool.start(runnable)
+
+
+def asyncfunc(pool=None):
+    """Decorator to run function in parallel on a QThreadPool."""
+
+    def decorator(function):
+        @wraps(function)
+        def inner(*args, **kwargs):
+            asyncrun(function, *args, pool=pool, **kwargs)
+
+        return inner
+
+    return decorator
 
 
 def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
