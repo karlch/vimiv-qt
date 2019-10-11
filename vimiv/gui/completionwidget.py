@@ -109,7 +109,7 @@ class CompletionView(widgets.FlatTreeView):
         """Resize columnds according to model."""
         for i in range(self.model().columnCount()):
             fraction = self.model().sourceModel().column_widths[i]
-            self.setColumnWidth(i, fraction * self.width())
+            self.setColumnWidth(i, int(fraction * self.width()))
 
 
 def instance():

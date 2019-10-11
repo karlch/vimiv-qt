@@ -465,8 +465,8 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
-        x = option.rect.x() + self.padding + diff_x
-        y = option.rect.y() + self.padding + diff_y
+        x = int(option.rect.x() + self.padding + diff_x)
+        y = int(option.rect.y() + self.padding + diff_y)
         # Draw
         painter.drawPixmap(x, y, size.width(), size.height(), pixmap)
         painter.restore()

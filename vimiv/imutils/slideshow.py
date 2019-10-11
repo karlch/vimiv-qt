@@ -26,7 +26,7 @@ class Slideshow(QTimer):
     def __init__(self):
         super().__init__()
         api.settings.slideshow.delay.changed.connect(self._on_delay_changed)
-        self.setInterval(api.settings.slideshow.delay.value * 1000)
+        self.setInterval(int(api.settings.slideshow.delay.value * 1000))
 
     @api.keybindings.register("ss", "slideshow", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
@@ -63,7 +63,7 @@ class Slideshow(QTimer):
         return ""
 
     def _on_delay_changed(self, value: int):
-        self.setInterval(value * 1000)
+        self.setInterval(int(value * 1000))
 
 
 def instance() -> Slideshow:

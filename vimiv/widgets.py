@@ -85,8 +85,8 @@ class SliderWithValue(QSlider):
         painter = QPainter(self)
         font_metrics = QFontMetrics(self.font())
 
-        x = (rect.width() - font_metrics.width(text)) / 2
-        y = rect.height() - (rect.height() - font_metrics.capHeight()) / 2
+        x = (rect.width() - font_metrics.width(text)) // 2
+        y = rect.height() - (rect.height() - font_metrics.capHeight()) // 2
         painter.drawText(x, y, text)
 
     @cached_method

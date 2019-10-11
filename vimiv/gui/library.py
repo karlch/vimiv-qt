@@ -254,10 +254,10 @@ class Library(KeyHandler, widgets.FlatTreeView):
     def update_width(self):
         """Resize width and columns when main window width changes."""
         width = self.parent().width() * api.settings.library.width.value
-        self.setFixedWidth(width)
-        self.setColumnWidth(0, 0.1 * width)
-        self.setColumnWidth(1, 0.75 * width)
-        self.setColumnWidth(2, 0.15 * width)
+        self.setFixedWidth(int(width))
+        self.setColumnWidth(0, int(0.1 * width))
+        self.setColumnWidth(1, int(0.75 * width))
+        self.setColumnWidth(2, int(0.15 * width))
 
     def current(self):
         """Return absolute path of currently selected path."""
@@ -561,7 +561,7 @@ class LibraryDelegate(QStyledItemDelegate):
         """Return size of the QTextDocument as size hint."""
         text = wrap_style_span(f"font: {self.font}", "any")
         self.doc.setHtml(text)
-        return QSize(self.doc.idealWidth(), self.doc.size().height())
+        return QSize(int(self.doc.idealWidth()), int(self.doc.size().height()))
 
 
 def instance():

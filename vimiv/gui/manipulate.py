@@ -164,8 +164,7 @@ class ManipulateImage(QLabel):
         The size is adapted to take up the lower right corner. This is then reduced
         accordingly by displayed pixmap if it is not perfectly square.
         """
-        scale = 0.5
-        self._max_size = QSize(window_width * scale, window_height * scale)
+        self._max_size = QSize(window_width // 2, window_height // 2)
         if self._pixmap is not None and self.isVisible():
             self._rescale()
 

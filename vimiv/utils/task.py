@@ -116,4 +116,5 @@ def sleep(duration, executor_class=futures.ThreadPoolExecutor, future_timeout=0.
 
 def advance_gui(maxtime):
     """Advance the Qt main loop for maxtime seconds."""
-    QCoreApplication.instance().processEvents(QEventLoop.AllEvents, maxtime)
+    maxtime_ms = int(maxtime * 1000)
+    QCoreApplication.instance().processEvents(QEventLoop.AllEvents, maxtime_ms)
