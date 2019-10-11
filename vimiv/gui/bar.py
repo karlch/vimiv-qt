@@ -33,11 +33,12 @@ class Bar(QWidget):
         self._stack.addWidget(self._commandline)
         self._stack.setCurrentWidget(statusbar)
 
-        self._maybe_hide()
-
         self._commandline.editingFinished.connect(self._on_editing_finished)
         api.settings.statusbar.show.changed.connect(self._on_show_changed)
         api.settings.statusbar.message_timeout.changed.connect(self._on_timeout_changed)
+
+        if not api.settings.statusbar.show.value:
+            self.hide()
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")
