@@ -44,6 +44,7 @@ class Application(QApplication):
         QThreadPool.globalInstance().waitForDone()
         super().exit(returncode)
 
+    @utils.asyncfunc
     def _set_icon(self):
         """Set window icon of vimiv."""
         _logger.debug("Trying to retrieve icon from theme")
