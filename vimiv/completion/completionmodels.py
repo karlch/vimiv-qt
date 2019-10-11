@@ -27,9 +27,10 @@ class CommandModel(api.completion.BaseModel):
     def __init__(self):
         super().__init__(":", column_widths=(0.3, 0.7))
 
-    def on_enter(self, _text: str, mode: api.modes.Mode) -> None:
+    def on_enter(self, _text: str) -> None:
         """Create command list for appropriate mode when commandline is entered."""
         self.clear()
+        mode = api.modes.COMMAND.last
         cmdlist = []
         # Include commands
         for name, command in api.commands.items(mode):
@@ -47,9 +48,18 @@ class ExternalCommandModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(":!")
+        self._initialized = False
+
+    def on_enter(self, _text: str) -> None:
+        """Set data when first entering this completion model.
+
+        This allows lazy-loading the external executables on demand.
+        """
+        if self._initialized:
+            return
         executables = self._get_executables()
-        data = [["!%s" % (cmd)] for cmd in executables if not cmd.startswith(".")]
-        self.set_data(data)
+        self.set_data((f"!{cmd}",) for cmd in executables if not cmd.startswith("."))
+        self._initialized = True
 
     def _get_executables(self) -> List[str]:
         """Return ordered list of shell executables.
@@ -59,7 +69,7 @@ class ExternalCommandModel(api.completion.BaseModel):
         """
         pathenv = os.environ.get("PATH")
         if pathenv is not None:
-            pathdirs = [d for d in pathenv.split(":") if os.path.isdir(d)]
+            pathdirs = {d for d in pathenv.split(":") if os.path.isdir(d)}
             executables: Set[str] = set()
             for bindir in pathdirs:
                 executables |= set(os.listdir(bindir))
@@ -98,7 +108,7 @@ class PathModel(api.completion.BaseModel):
         self._command = command
         self._last_directory = ""
 
-    def on_enter(self, text: str, mode: api.modes.Mode) -> None:
+    def on_enter(self, text: str) -> None:
         """Update completion options on enter."""
         self.on_text_changed(text)
 
@@ -190,31 +200,15 @@ class SettingsOptionModel(api.completion.BaseModel):
 
 
 class TrashModel(api.completion.BaseModel):
-    """Completion model filled with valid paths for the :undelete command.
-
-    Attributes:
-        _initialized: Bool to allow only re-creating the completion options on_enter.
-    """
+    """Completion model filled with valid paths for the :undelete command."""
 
     def __init__(self):
         super().__init__(
             ":undelete ", column_widths=(0.4, 0.45, 0.15), valid_modes=api.modes.GLOBALS
         )
-        self._initialized = False
 
-    def on_enter(self, text: str, mode: api.modes.Mode) -> None:
-        """Update trash model on enter."""
-        self._initialized = False
-        self.on_text_changed(text)
-
-    def on_text_changed(self, text: str) -> None:
-        """Update trash model the once when text changed.
-
-        This is required in addition to on_enter as it is very likely to enter trash
-        completion by typing :undelete.
-        """
-        if self._initialized:
-            return
+    def on_enter(self, text: str) -> None:
+        """Update trash model on enter to include any newly un-/deleted paths."""
         self.clear()
         data = []
         for path in files.listdir(trash_manager.files_directory()):
@@ -233,7 +227,6 @@ class TrashModel(api.completion.BaseModel):
             # Append data in column form
             data.append((cmd, original, date))
         self.set_data(data)
-        self._initialized = True
 
 
 class TagModel(api.completion.BaseModel):
@@ -241,33 +234,19 @@ class TagModel(api.completion.BaseModel):
 
     Attributes:
         _command: Tag command for which the completion model is valid.
-        _initialized: Bool to allow only re-creating the completion options on_enter.
     """
 
     def __init__(self, suffix):
         super().__init__(f":tag-{suffix}", valid_modes=api.modes.GLOBALS)
         self._command = f"tag-{suffix}"
-        self._initialized = False
 
-    def on_enter(self, text: str, _mode: api.modes.Mode) -> None:
-        """Update tag model on enter."""
-        self._initialized = False
-        self.on_text_changed(text)
-
-    def on_text_changed(self, text: str) -> None:
-        """Update tag model the once when text changed.
-
-        This is required in addition to on_enter as it is very likely to enter tag
-        completion by typing :tag-.
-        """
-        if self._initialized:
-            return
+    def on_enter(self, text: str) -> None:
+        """Update tag model on enter to include any new/deleted tags."""
         self.clear()
-        data = [
+        data = (
             (f"{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
-        ]
+        )
         self.set_data(data)
-        self._initialized = True
 
 
 def init():

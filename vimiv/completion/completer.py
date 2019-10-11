@@ -6,8 +6,6 @@
 
 """Completer class as man-in-the-middle between command line and completion."""
 
-from typing import Callable
-
 from PyQt5.QtCore import QObject
 
 from vimiv import api, utils
@@ -36,6 +34,7 @@ class Completer(QObject):
 
         self._completion.activated.connect(self._on_completion)
         api.modes.COMMAND.entered.connect(self._on_entered)
+        api.modes.COMMAND.left.connect(self._on_left)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
 
@@ -44,13 +43,15 @@ class Completer(QObject):
         """Initialize completion when command mode was entered."""
         # Set model according to text, defaults are not possible as
         # :command accepts arbitrary text as argument
-        self._update_proxy_model(
-            self._cmd.text(),
-            lambda model, text: model.on_enter(text, api.modes.COMMAND.last),
-        )
+        self._update_proxy_model(self._cmd.text())
         # Show if the model is not empty
         self._maybe_show()
         self._completion.raise_()
+
+    @utils.slot
+    def _on_left(self):
+        """Reset completion to empty model when leaving."""
+        self._proxy_model = api.completion.get_module("", api.modes.current())
 
     @utils.slot
     def _on_text_changed(self, text: str):
@@ -58,7 +59,8 @@ class Completer(QObject):
         # Clear selection
         self._completion.selectionModel().clear()
         # Update model
-        self._update_proxy_model(text, lambda model, text: model.on_text_changed(text))
+        self._update_proxy_model(text)
+        self._proxy_model.sourceModel().on_text_changed(text)
         self._proxy_model.refilter(text)
 
     @utils.slot
@@ -68,18 +70,15 @@ class Completer(QObject):
         self._proxy_model.reset()
         self._completion.hide()
 
-    def _update_proxy_model(
-        self, text: str, initializer: Callable[[api.completion.BaseModel, str], None]
-    ):
+    def _update_proxy_model(self, text: str):
         """Update completion proxy model depending on text.
 
         Args:
             text: Text in the commandline which defines the model.
-            initializer: Callback function to initialize the new proxy model.
         """
         proxy_model = api.completion.get_module(text, api.modes.COMMAND.last)
-        initializer(proxy_model.sourceModel(), proxy_model.filtertext(text))
         if proxy_model != self._proxy_model:
+            proxy_model.sourceModel().on_enter(text)
             self._proxy_model = proxy_model
             self._completion.setModel(proxy_model)
             self._completion.update_column_widths()

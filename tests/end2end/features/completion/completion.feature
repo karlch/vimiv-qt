@@ -120,3 +120,12 @@ Feature: Using completion.
         Then the completion model should be tag
         And there should be 1 completion options
         And a possible completion should contain my_tag_name
+
+    Scenario: Show correct completion after changing mode
+        Given I open any image
+        When I run command
+        And I activate the command line
+        And I enter library mode
+        And I run command
+        Then the completion model should be command
+        And a possible completion should contain open-selected

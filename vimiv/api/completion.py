@@ -53,7 +53,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 """
 
 import string
-from typing import cast, Dict, Sequence, Tuple, Optional
+from typing import cast, Dict, Iterable, Tuple, Optional
 
 from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -159,14 +159,13 @@ class BaseModel(QStandardItemModel):
     def __str__(self) -> str:
         return self.__class__.__qualname__
 
-    def on_enter(self, text: str, mode: modes.Mode) -> None:
-        """Called by the completer when the commandline is entered.
+    def on_enter(self, text: str) -> None:
+        """Called by the completer when this model is entered.
 
         This allows models to change their content accordingly.
 
         Args:
             text: The current text in the comand line.
-            mode: Mode from which the commandline was entered.
         """
 
     def on_text_changed(self, text: str) -> None:
@@ -178,14 +177,14 @@ class BaseModel(QStandardItemModel):
             text: The current text in the comand line.
         """
 
-    def set_data(self, data: Sequence[Tuple]) -> None:
+    def set_data(self, data: Iterable[Tuple]) -> None:
         """Add rows to the model.
 
         Args:
             data: List of tuples containing the data for each row.
         """
         for item in data:
-            row = [QStandardItem(elem) for elem in item]
+            row = (QStandardItem(elem) for elem in item)
             self.appendRow(row)
         self.sort(0)  # Sort according to the actual text
 
