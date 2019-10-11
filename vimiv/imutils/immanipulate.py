@@ -30,7 +30,6 @@ import weakref
 from typing import Optional, NamedTuple
 
 from PyQt5.QtCore import (
-    QRunnable,
     QThreadPool,
     QObject,
     QCoreApplication,
@@ -338,13 +337,13 @@ class Manipulator(QObject):
 
     Attributes:
         manipulations: Manipulations class storing all manipulations.
-        thread_id: ID of the current manipulation thread.
 
         _changes: List of applied ManipulationChanges.
         _current: Currently editedfocused manipulation.
         _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
+        _thread_id: ID of the current manipulation thread.
 
     Signals:
         updated: Emitted when the manipulated pixmap was changed.
@@ -352,6 +351,7 @@ class Manipulator(QObject):
     """
 
     pool = QThreadPool()
+    pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
     updated = pyqtSignal(QPixmap)
 
@@ -360,13 +360,13 @@ class Manipulator(QObject):
         super().__init__()
 
         self.manipulations = Manipulations()
-        self.thread_id = 0
 
         self._changes = []
         self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
         self._handler = weakref.ref(handler)
         self._pixmap = self._manipulated = None
+        self._thread_id = 0
 
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
         api.modes.MANIPULATE.entered.connect(self._on_enter)
@@ -486,9 +486,24 @@ class Manipulator(QObject):
     def _apply_manipulation(self, manipulation: Manipulation):
         """Apply changes to displayed image according to an updated manipulation."""
         self._focus(manipulation)
-        self.thread_id += 1
-        runnable = ManipulateRunner(self, self.thread_id, self._pixmap, manipulation)
-        self.pool.start(runnable)
+        self.pool.clear()
+        self._thread_id += 1
+        self._run_manipulation_thread(self._thread_id, manipulation)
+        api.status.update()  # For the "processing" indicator
+
+    @utils.asyncfunc(pool=pool)
+    def _run_manipulation_thread(self, thread_id, manipulation):
+        """Run manipulation in the thread pool.
+
+        Some time is waited before running the manipulation, to keep the number of
+        manipulations done reasonable in case of dragging the slider or keeping a key
+        repeat.
+        """
+        time.sleep(WAIT_TIME)
+        # self._pixmap is None if manipulate mode has been left
+        if self._pixmap is not None and thread_id == self._thread_id:
+            pixmap = self.manipulations.apply(self._pixmap, manipulation)
+            self.updated.emit(pixmap)
 
     def focus_group_index(self, index: int):
         """Focus new manipulation group by index."""
@@ -560,32 +575,3 @@ class Manipulator(QObject):
 
 def instance():
     return api.objreg.get(Manipulator)
-
-
-class ManipulateRunner(QRunnable):
-    """Apply manipulations in an extra thread.
-
-    Attributes:
-        _id: Integer id of this thread.
-        _manipulation: Manipulation to apply.
-        _manipulator: Manipulator class to interact with.
-        _pixmap: Pixmap to manipulate.
-    """
-
-    def __init__(self, manipulator, thread_id, pixmap, manipulation):
-        super().__init__()
-        self._id = thread_id
-        self._manipulation = manipulation
-        self._manipulator = manipulator
-        self._pixmap = pixmap
-
-    def run(self):
-        """Apply manipulations."""
-        # Wait for a bit in case user holds down key
-        time.sleep(WAIT_TIME)
-        if self._id != self._manipulator.thread_id:
-            return
-        # Apply manipulations to pixmap
-        pixmap = self._manipulator.manipulations.apply(self._pixmap, self._manipulation)
-        # Update
-        self._manipulator.updated.emit(pixmap)
