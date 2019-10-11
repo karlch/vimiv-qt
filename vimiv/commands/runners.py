@@ -19,10 +19,8 @@ import shlex
 import subprocess
 from typing import Dict, List, NamedTuple, Optional, Callable
 
-from PyQt5.QtCore import QRunnable, QObject, QThreadPool, pyqtSignal
-
 from vimiv import api, utils
-from vimiv.utils import log
+from vimiv.utils import log, asyncfunc
 from vimiv.commands import aliases
 
 
@@ -204,33 +202,35 @@ def expand_percent(text, mode):
     return text
 
 
-class ExternalRunner(QObject):
-    """Runner for external commands.
+class ExternalRunner:
+    """Runner for external commands."""
 
-    Signals:
-        pipe_output_received: Emitted when :!command | completes.
-            arg1: The shell command that was executed.
-            arg2: stdout of the shell command.
-    """
-
-    _pool = QThreadPool.globalInstance()
-    pipe_output_received = pyqtSignal(str, str)
-
-    def __init__(self):
-        super().__init__()
-        self.pipe_output_received.connect(self._on_pipe_output_received)
-
-    def __call__(self, text):
-        """Run external command using ShellCommandRunnable.
+    @asyncfunc()
+    def __call__(self, text: str) -> None:
+        """Run external command in parallel.
 
         Args:
             text: Text parsed as command to run.
         """
-        runnable = ShellCommandRunnable(text, self)
-        self._pool.start(runnable)
+        pipe = text.endswith("|")
+        text = text.rstrip("|").strip()
+        try:
+            pargs = subprocess.run(
+                text,
+                shell=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            if pipe:
+                self.process_pipe(text, pargs.stdout.decode())
+            else:
+                _logger.debug("Ran '!%s' succesfully", text)
+        except subprocess.CalledProcessError as e:
+            message = e.stderr.decode().split("\n")[0]
+            log.error("%d  %s", e.returncode, message)
 
-    @utils.slot
-    def _on_pipe_output_received(self, cmd: str, stdout: str):
+    def process_pipe(self, cmd: str, stdout: str) -> None:
         """Open paths from stdout.
 
         Args:
@@ -247,45 +247,6 @@ class ExternalRunner(QObject):
 
 
 external = ExternalRunner()
-
-
-class ShellCommandRunnable(QRunnable):
-    """Run shell command in an extra thread.
-
-    Captures stdout and stderr. Logging is called according to the returncode
-    of the command.
-
-    Attributes:
-        _text: Text parsed as command to run.
-        _runner: ExternalRunner that started this runnable.
-        _pipe: Whether to check stdout for paths to open.
-    """
-
-    def __init__(self, text, runner):
-        super().__init__()
-        self._text = text.rstrip("|").strip()
-        self._runner = runner
-        self._pipe = bool(text.endswith("|"))
-
-    def run(self):
-        """Run shell command on QThreadPool.start(self)."""
-        try:
-            pargs = subprocess.run(
-                self._text,
-                shell=True,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            if self._pipe:
-                self._runner.pipe_output_received.emit(
-                    self._text, pargs.stdout.decode()
-                )
-            else:
-                _logger.debug("Ran '!%s' succesfully", self._text)
-        except subprocess.CalledProcessError as e:
-            message = e.stderr.decode().split("\n")[0]
-            log.error("%d  %s", e.returncode, message)
 
 
 def alias(text, mode):
