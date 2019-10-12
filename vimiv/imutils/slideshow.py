@@ -8,19 +8,13 @@
 
 from typing import Optional
 
-from PyQt5.QtCore import QTimer, pyqtSignal
+from PyQt5.QtCore import QTimer
 
 from vimiv import api
 
 
 class Slideshow(QTimer):
-    """Slideshow class inheriting from QTimer.
-
-    Signals:
-        next_im: Emitted when the next image should be displayed.
-    """
-
-    next_im = pyqtSignal()
+    """Slideshow class inheriting from QTimer."""
 
     @api.objreg.register
     def __init__(self):
@@ -43,24 +37,16 @@ class Slideshow(QTimer):
         else:
             self.start()
 
-    def timerEvent(self, _event):
-        """Emit next_im signal on timer tick."""
-        self.next_im.emit()
-        api.status.update()
-
     @api.status.module("{slideshow-delay}")
     def delay(self) -> str:
         """Slideshow delay in seconds if the slideshow is running."""
-        if self.isActive():
-            return "%.1fs" % (self.interval() / 1000)
-        return ""
+        interval_seconds = self.interval() / 1000
+        return f"{interval_seconds:.1f}" if self.isActive() else ""
 
     @api.status.module("{slideshow-indicator}")
     def running_indicator(self) -> str:
         """Indicator if slideshow is running."""
-        if self.isActive():
-            return api.settings.slideshow.indicator.value
-        return ""
+        return api.settings.slideshow.indicator.value if self.isActive() else ""
 
     def _on_delay_changed(self, value: int):
         self.setInterval(int(value * 1000))

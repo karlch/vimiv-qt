@@ -48,5 +48,5 @@ def check_slideshow_delay(sshow, delay):
 def wait_slideshow_signal(qtbot, sshow, N):
     for i in range(N):
         # Wait for slideshow delay and give it a small buffer
-        with qtbot.waitSignal(sshow.next_im, timeout=int(sshow.interval() * 1.2)):
+        with qtbot.waitSignal(sshow.timeout, timeout=int(sshow.interval() * 1.2)):
             pass

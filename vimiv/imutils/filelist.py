@@ -130,7 +130,7 @@ class SignalHandler(QObject):
         search.search.new_search.connect(self._on_new_search)
         # The slideshow object is created here as it is not required by anything else
         # It stays around as it is part of the global object registry
-        Slideshow().next_im.connect(self._on_slideshow_event)
+        Slideshow().timeout.connect(self._on_slideshow_event)
 
         api.signals.load_images.connect(self._on_load_images)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
