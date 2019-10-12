@@ -100,12 +100,12 @@ def init_directories(args):
         os.environ["XDG_CACHE_HOME"] = os.path.join(basedir, "cache")
         os.environ["XDG_CONFIG_HOME"] = os.path.join(basedir, "config")
         os.environ["XDG_DATA_HOME"] = os.path.join(basedir, "data")
-    for directory in [
+    for directory in (
         xdg.vimiv_cache_dir(),
         xdg.vimiv_config_dir(),
         xdg.vimiv_data_dir(),
         xdg.join_vimiv_config("styles"),
-    ]:
+    ):
         os.makedirs(directory, exist_ok=True)
 
 

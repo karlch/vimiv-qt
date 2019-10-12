@@ -25,7 +25,7 @@ def use_incremental(mode):
         mode: Mode for which search should be run.
     """
     enabled = api.settings.search.incremental.value
-    if enabled and mode in [api.modes.LIBRARY, api.modes.THUMBNAIL]:
+    if enabled and mode in (api.modes.LIBRARY, api.modes.THUMBNAIL):
         return True
     return False
 

@@ -231,7 +231,7 @@ class _MainMode(Mode):
 
     def _set_last(self, mode: Mode) -> None:
         """Store any mode except for command and manipulate."""
-        if mode not in [COMMAND, MANIPULATE]:
+        if mode not in (COMMAND, MANIPULATE):
             self._last = mode
 
 

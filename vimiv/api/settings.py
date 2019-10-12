@@ -187,9 +187,9 @@ class BoolSetting(Setting):
     @ensure_type(bool)
     def convert(self, text: str) -> bool:
         text = text.lower()
-        if text in ["yes", "true", "1"]:
+        if text in ("yes", "true", "1"):
             return True
-        if text in ["no", "false", "0"]:
+        if text in ("no", "false", "0"):
             return False
         raise ValueError
 

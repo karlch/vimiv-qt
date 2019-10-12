@@ -80,7 +80,7 @@ def sizeof_fmt(num: float) -> str:
     Returns:
         Filesize in human-readable format.
     """
-    for unit in ["B", "K", "M", "G", "T", "P", "E", "Z"]:
+    for unit in ("B", "K", "M", "G", "T", "P", "E", "Z"):
         if abs(num) < 1024.0:
             if abs(num) < 100:
                 return "%3.1f%s" % (num, unit)

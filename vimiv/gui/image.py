@@ -147,13 +147,13 @@ class ScrollableImage(KeyHandler, QScrollArea):
 
         **count:** multiplier
         """
-        if direction in [direction.Left, direction.Right]:
+        if direction in (direction.Left, direction.Right):
             bar = self.horizontalScrollBar()
             step = int(self.widget().width() * 0.05 * count)
         else:
             bar = self.verticalScrollBar()
             step = int(self.widget().height() * 0.05 * count)
-        if direction in [direction.Right, direction.Down]:
+        if direction in (direction.Right, direction.Down):
             step *= int(-1)
         bar.setValue(bar.value() - step)
 
@@ -161,7 +161,7 @@ class ScrollableImage(KeyHandler, QScrollArea):
     @api.commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
-        for bar in [self.horizontalScrollBar(), self.verticalScrollBar()]:
+        for bar in (self.horizontalScrollBar(), self.verticalScrollBar()):
             bar.setValue(bar.maximum() // 2)
 
     @api.keybindings.register("K", "scroll-edge up", mode=api.modes.IMAGE)
@@ -177,11 +177,11 @@ class ScrollableImage(KeyHandler, QScrollArea):
         positional arguments:
             * ``direction``: The direction to scroll in (left/right/up/down).
         """
-        if direction in [Direction.Left, Direction.Right]:
+        if direction in (Direction.Left, Direction.Right):
             bar = self.horizontalScrollBar()
         else:
             bar = self.verticalScrollBar()
-        if direction in [Direction.Left, Direction.Up]:
+        if direction in (Direction.Left, Direction.Up):
             value = 0
         else:
             value = bar.maximum()
@@ -296,7 +296,7 @@ class ScrollableImage(KeyHandler, QScrollArea):
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
-        self.scale(self._scale, 1)
+        self.scale(self._scale, count=1)
         api.status.update()  # Zoom level changes
 
     def width(self):
