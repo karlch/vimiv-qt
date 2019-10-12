@@ -36,8 +36,9 @@ class StatusBar(QWidget):
 
     Attributes:
         timer: QTimer object to remove temporary messages after timeout.
-
-        _items: Dictionary storing the widgets.
+        status: Widget grouping the labels for status messages.
+        message: Label to display messages.
+        stack: Stacked layout to switch between status and message.
     """
 
     STYLESHEET = """
@@ -53,33 +54,24 @@ class StatusBar(QWidget):
     def __init__(self):
         super().__init__()
         self.timer = QTimer()
-        self._items = {}
-
-        timeout = api.settings.statusbar.message_timeout.value
-        self.timer.setInterval(timeout)
+        self.timer.setInterval(api.settings.statusbar.message_timeout.value)
         self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.clear_message)
-        api.status.signals.clear.connect(self.clear_message)
 
-        self["stack"] = QStackedLayout(self)
+        self.status = StatusLabels()
+        self.message = QLabel()
 
-        self["status"] = QWidget()
-        labelbox = QHBoxLayout(self["status"])
-        labelbox.setSpacing(0)
-        labelbox.setContentsMargins(QMargins(0, 0, 0, 0))
-        self._add_label(labelbox, "left", Qt.AlignLeft)
-        self._add_label(labelbox, "center", Qt.AlignCenter)
-        self._add_label(labelbox, "right", Qt.AlignRight)
-        self["stack"].addWidget(self["status"])
-
-        self["message"] = QLabel()
-        self["stack"].addWidget(self["message"])
-        self["stack"].setCurrentWidget(self["status"])
+        self.stack = QStackedLayout(self)
+        self.stack.addWidget(self.status)
+        self.stack.addWidget(self.message)
+        self.stack.setCurrentWidget(self.status)
 
         styles.apply(self)
 
+        self.timer.timeout.connect(self.clear_message)
+        api.status.signals.clear.connect(self.clear_message)
         utils.log.statusbar_loghandler.message.connect(self._on_message)
         api.status.signals.update.connect(self._on_update_status)
+        api.settings.statusbar.message_timeout.changed.connect(self._on_timeout_changed)
 
     @utils.slot
     def _on_message(self, severity: str, message: str):
@@ -90,16 +82,15 @@ class StatusBar(QWidget):
             message: message of the log record.
         """
         self._set_severity_style(severity)
-        self["message"].setText(message)
-        self["stack"].setCurrentWidget(self["message"])
+        self.message.setText(message)
+        self.stack.setCurrentWidget(self.message)
         self.timer.start()
 
     @utils.slot
     def _on_update_status(self):
         """Update the statusbar."""
         mode = api.modes.current().name.lower()
-        for position in ["left", "center", "right"]:
-            label = self[position]
+        for position, label in self.status:
             text = self._get_text(position, mode)
             label.setText(text)
 
@@ -109,8 +100,11 @@ class StatusBar(QWidget):
         if self.timer.isActive():
             self.timer.stop()
         self._clear_severity_style()
-        self["message"].setText("")
-        self["stack"].setCurrentWidget(self["status"])
+        self.message.clear()
+        self.stack.setCurrentWidget(self.status)
+
+    def _on_timeout_changed(self, value: int):
+        self.timer.setInterval(value)
 
     def _get_text(self, position, mode):
         """Get the text to put into one label depending on the current mode.
@@ -143,22 +137,38 @@ class StatusBar(QWidget):
         )
         styles.apply(self, append)
 
-    def _add_label(self, labelbox, position, alignment):
-        """Add a status label to the labelbox."""
-        label = QLabel()
-        label.setAlignment(alignment)
-        label.setTextFormat(Qt.RichText)  # Force rich text to allow using &nbsp;
-        labelbox.addWidget(label)
-        self[position] = label
-
     def _clear_severity_style(self):
         styles.apply(self)
 
-    def __setitem__(self, name, item):
-        self._items[name] = item
 
-    def __getitem__(self, name):
-        return self._items[name]
+class StatusLabels(QWidget):
+    """Widget to group the different status labels in the statusbar.
+
+    Attributes:
+        left, center, right: The different labels corresponding to their positions.
+    """
+
+    def __init__(self):
+        super().__init__()
+        layout = QHBoxLayout(self)
+        layout.setSpacing(0)
+        layout.setContentsMargins(QMargins(0, 0, 0, 0))
+        self.left = self.label(layout, Qt.AlignLeft)
+        self.center = self.label(layout, Qt.AlignCenter)
+        self.right = self.label(layout, Qt.AlignRight)
+
+    def __iter__(self):
+        yield from zip(
+            ("left", "center", "right"), (self.left, self.center, self.right)
+        )
+
+    def label(self, layout, alignment):
+        """Create a label with this alignment and add it to the layout."""
+        label = QLabel()
+        label.setAlignment(alignment)
+        label.setTextFormat(Qt.RichText)
+        layout.addWidget(label)
+        return label
 
 
 def init():

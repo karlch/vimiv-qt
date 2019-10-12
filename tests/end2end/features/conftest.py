@@ -106,10 +106,10 @@ def check_statusbar_message(qtbot, message):
     bar = statusbar.statusbar
     _check_status(
         qtbot,
-        lambda: message == bar["message"].text(),
+        lambda: message == bar.message.text(),
         info=f"Message expected: '{message}'",
     )
-    assert bar["stack"].currentWidget() == bar["message"]
+    assert bar.stack.currentWidget() == bar.message
 
 
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
@@ -117,28 +117,24 @@ def check_left_status(qtbot, position, text):
     bar = statusbar.statusbar
     _check_status(
         qtbot,
-        lambda: text in bar[position].text(),
+        lambda: text in getattr(bar.status, position).text(),
         info=f"position {position} should include {text}",
     )
-    assert bar["stack"].currentWidget() == bar["status"]
+    assert bar.stack.currentWidget() == bar.status
 
 
 @bdd.then("a message should be displayed")
 def check_a_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    _check_status(
-        qtbot, lambda: bar["message"].text() != "", info="Any message expected"
-    )
-    assert bar["stack"].currentWidget() == bar["message"]
+    _check_status(qtbot, lambda: bar.message.text() != "", info="Any message expected")
+    assert bar.stack.currentWidget() == bar.message
 
 
 @bdd.then("no message should be displayed")
 def check_no_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    _check_status(
-        qtbot, lambda: bar["message"].text() == "", info="No message expected"
-    )
-    assert bar["stack"].currentWidget() == bar["status"]
+    _check_status(qtbot, lambda: bar.message.text() == "", info="No message expected")
+    assert bar.stack.currentWidget() == bar.status
 
 
 @bdd.then(bdd.parsers.parse("the working directory should be {basename}"))

@@ -35,7 +35,6 @@ class Bar(QWidget):
 
         self._commandline.editingFinished.connect(self._on_editing_finished)
         api.settings.statusbar.show.changed.connect(self._on_show_changed)
-        api.settings.statusbar.message_timeout.changed.connect(self._on_timeout_changed)
 
         if not api.settings.statusbar.show.value:
             self.hide()
@@ -94,9 +93,6 @@ class Bar(QWidget):
     def _on_show_changed(self, value: bool):
         self._statusbar.setVisible(value)
         self._maybe_hide()
-
-    def _on_timeout_changed(self, value: int):
-        self._statusbar.timer.setInterval(value)
 
     def _maybe_hide(self):
         """Hide bar if statusbar is not visible and not in command mode."""
