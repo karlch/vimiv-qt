@@ -98,9 +98,3 @@ def nop():
     This is useful to remove default keybindings by explicitly binding them to
     nop.
     """
-
-
-def init():
-    """Initialize config commands."""
-    # Currently does not do anything but the commands need to be registered by
-    # an import. May become useful in the future.

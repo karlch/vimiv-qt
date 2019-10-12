@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
 
 from vimiv import api, utils
 from vimiv.completion import completer
-from vimiv.config import configcommands
 
 # Import all GUI widgets used to create the full main window
 from . import statusbar
@@ -33,28 +32,23 @@ class MainWindow(QWidget):
     Attributes:
         _bar: bar.Bar object containing statusbar and command line.
         _overlays: List of overlay widgets.
-        _stack: ImageThumbnailLayout as main layout widget.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
+        # Create main widgets and add them to the grid layout
         statusbar.init()
         commandline = CommandLine()
-
         self._bar = Bar(statusbar.statusbar, commandline)
-        self._overlays = []
-
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(QMargins(0, 0, 0, 0))
-
-        self._stack = ImageThumbnailLayout()
-
-        # Create widgets and add to layout
-        lib = Library(self)
-        grid.addLayout(self._stack, 0, 1, 1, 1)
-        grid.addWidget(lib, 0, 0, 1, 1)
+        grid.addLayout(ImageThumbnailLayout(), 0, 1, 1, 1)
+        grid.addWidget(Library(self), 0, 0, 1, 1)
+        grid.addWidget(self._bar, 1, 0, 1, 2)
+        # Add overlay widgets
+        self._overlays = []
         manwidget = Manipulate(self)
         self._overlays.append(manwidget)
         self._overlays.append(ManipulateImage(self, manwidget))
@@ -63,12 +57,9 @@ class MainWindow(QWidget):
         self._overlays.append(KeyhintWidget(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
-        grid.addWidget(self._bar, 1, 0, 1, 2)
-        # Initialize completer and config commands
-        completer.Completer(commandline, compwidget)
-        configcommands.init()
-        self._set_title()
 
+        completer.Completer(commandline, compwidget)
+        # Connect signals
         api.status.signals.update.connect(self._set_title)
         api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
