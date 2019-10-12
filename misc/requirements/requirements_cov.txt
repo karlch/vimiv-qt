@@ -1,2 +1,2 @@
 coverage==4.5.4
-pytest-cov==2.7.1
+pytest-cov==2.8.1
