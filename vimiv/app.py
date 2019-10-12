@@ -8,7 +8,6 @@
 
 import os
 
-from PyQt5.QtCore import QThreadPool
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication
 
@@ -36,12 +35,19 @@ class Application(QApplication):
         """Quit vimiv."""
         self.exit(0)
 
+    @staticmethod
+    def preexit(returncode):
+        """Prepare exit by finalizing any running threads."""
+        # Do not start any new threads
+        utils.Pool.clear()
+        # Wait for any running threads to exit safely
+        _logger.debug("Waiting for any running threads...")
+        utils.Pool.wait()
+        _logger.debug("Exiting with returncode %d", returncode)
+
     def exit(self, returncode):
         """Exit the main application with returncode."""
-        # Do not start any new threads
-        QThreadPool.globalInstance().clear()
-        # Wait for any running threads to exit safely
-        QThreadPool.globalInstance().waitForDone()
+        self.preexit(returncode)
         super().exit(returncode)
 
     @utils.asyncfunc

@@ -29,14 +29,7 @@ import time
 import weakref
 from typing import Optional, NamedTuple
 
-from PyQt5.QtCore import (
-    QThreadPool,
-    QObject,
-    QCoreApplication,
-    pyqtSignal,
-    Qt,
-    QSignalBlocker,
-)
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication
 
@@ -350,7 +343,7 @@ class Manipulator(QObject):
             arg1: The new manipulated QPixmap.
     """
 
-    pool = QThreadPool()
+    pool = utils.Pool.get(globalinstance=False)
     pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
     updated = pyqtSignal(QPixmap)
@@ -368,7 +361,6 @@ class Manipulator(QObject):
         self._pixmap = self._manipulated = None
         self._thread_id = 0
 
-        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
         api.modes.MANIPULATE.entered.connect(self._on_enter)
         api.modes.MANIPULATE.left.connect(self.reset)
         self.updated.connect(self._on_updated)
@@ -525,12 +517,6 @@ class Manipulator(QObject):
         if self.pool.activeThreadCount():
             return "processing..."
         return ""
-
-    @utils.slot
-    def _on_quit(self):
-        """Finish thread pool on quit."""
-        self.pool.clear()
-        self.pool.waitForDone(5000)  # Kill manipulate after 5s
 
     def _on_enter(self):
         """Create manipulate pixmap when entering manipulate mode.

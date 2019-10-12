@@ -18,18 +18,11 @@ import tempfile
 from contextlib import suppress
 from typing import Dict, List
 
-from PyQt5.QtCore import (
-    QRunnable,
-    QThreadPool,
-    pyqtSignal,
-    QObject,
-    Qt,
-    QCoreApplication,
-)
+from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, Qt
 from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
 
 import vimiv
-from vimiv.utils import xdg, slot
+from vimiv.utils import xdg, Pool
 
 
 KEY_URI = "Thumb::URI"
@@ -58,7 +51,7 @@ class ThumbnailManager(QObject):
     """
 
     created = pyqtSignal(int, QIcon)
-    pool = QThreadPool()
+    pool = Pool.get(globalinstance=False)
 
     def __init__(self, fail_pixmap, large: bool = True):
         super().__init__()
@@ -78,47 +71,16 @@ class ThumbnailManager(QObject):
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
         self.fail_pixmap = fail_pixmap
-        # The signature is Callable[[], None] but this is actually a signal
-        # Issue opened: https://github.com/stlehmann/PyQt5-stubs/issues/4
-        QCoreApplication.instance().aboutToQuit.connect(self._on_quit)  # type: ignore
 
     def create_thumbnails_async(self, paths: List[str]) -> None:
-        """Start ThumbnailsAsyncCreator to create thumbnails.
+        """Start ThumbnailsCreator for each path to create thumbnails.
 
         Args:
             paths: Paths to create thumbnails for.
         """
         self.pool.clear()
-        async_creator = ThumbnailsAsyncCreator(paths, self)
-        self.pool.start(async_creator)
-
-    @slot
-    def _on_quit(self):
-        self.pool.clear()
-        self.pool.waitForDone(1000)
-
-
-class ThumbnailsAsyncCreator(QRunnable):
-    """Create thumbnails asynchronously.
-
-    Adds one ThumbnailCreator runnable to the thread pool for each thumbnail
-    and starts it.
-
-    Attributes:
-        _paths: List of paths to original images.
-        _manager: The ThumbnailManager object used for callback.
-    """
-
-    def __init__(self, paths: List[str], manager: ThumbnailManager):
-        super().__init__()
-        self._paths = paths
-        self._manager = manager
-
-    def run(self) -> None:
-        """Start ThumbnailCreator for each path."""
-        for i, path in enumerate(self._paths):
-            creator = ThumbnailCreator(i, path, self._manager)
-            self._manager.pool.start(creator)
+        for i, path in enumerate(paths):
+            self.pool.start(ThumbnailCreator(i, path, self))
 
 
 class ThumbnailCreator(QRunnable):

@@ -172,6 +172,7 @@ def run_startup_commands(*commands: str):
         _logger.debug("Startup commands: running %d/%d '%s'", i + 1, total, command)
         if "quit" in command:  # This does not work without a running app
             log.warning("Quitting forcefully as the app does not exist")
+            app.Application.preexit(customtypes.Exit.success)
             sys.exit(customtypes.Exit.success)
         else:
             runners.run(command, mode=api.modes.current())

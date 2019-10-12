@@ -203,6 +203,45 @@ def asyncfunc(pool=None):
     return decorator
 
 
+class Pool:
+    """Class to handle thread pools.
+
+    All created thread pools are stored to allow clearing and waiting for every pool
+    consistently. QThreadPool instances should only be created using this class, never
+    indirectly.
+
+    Class Attributes:
+        _threadpoools: List of all created thread pools.
+    """
+
+    _threadpools = [QThreadPool.globalInstance()]
+
+    @staticmethod
+    def get(*, globalinstance: bool = True) -> QThreadPool:
+        """Return a thread pool to work with.
+
+        Args:
+            globalinstance: Return the Qt application thread pool instead of a new one.
+        """
+        if globalinstance:
+            return QThreadPool.globalInstance()
+        threadpool = QThreadPool()
+        Pool._threadpools.append(threadpool)
+        return threadpool
+
+    @staticmethod
+    def wait(timeout: int = -1):
+        """Wait for all thread pools with the given timeout."""
+        for pool in Pool._threadpools:
+            pool.waitForDone(timeout)
+
+    @staticmethod
+    def clear():
+        """Clear all thread pools."""
+        for pool in Pool._threadpools:
+            pool.clear()
+
+
 def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
