@@ -129,3 +129,9 @@ Feature: Using completion.
         And I run command
         Then the completion model should be command
         And a possible completion should contain open-selected
+
+    Scenario: Relative path completion
+        Given I open a directory with 5 paths
+        When I enter command mode with "open ./"
+        Then the completion model should be path
+        And a possible completion should contain ./child_01

@@ -60,7 +60,9 @@ class Completer(QObject):
         self._completion.selectionModel().clear()
         # Update model
         self._update_proxy_model(text)
-        self._proxy_model.sourceModel().on_text_changed(text)
+        self._proxy_model.sourceModel().on_text_changed(
+            self._proxy_model.filtertext(text)
+        )
         self._proxy_model.refilter(text)
 
     @utils.slot
@@ -78,7 +80,7 @@ class Completer(QObject):
         """
         proxy_model = api.completion.get_module(text, api.modes.COMMAND.last)
         if proxy_model != self._proxy_model:
-            proxy_model.sourceModel().on_enter(text)
+            proxy_model.sourceModel().on_enter(proxy_model.filtertext(text))
             self._proxy_model = proxy_model
             self._completion.setModel(proxy_model)
             self._completion.update_column_widths()
