@@ -24,6 +24,9 @@ Changed:
   appending to it. This is consistent with the ``--keyfile`` argument.
 * Completely broken user styles now log an error message and exit vimiv instead of
   falling back to the default. This is consistent with the configuration file handling.
+* Class instances can now be retrieved from the object registry via ``Class.instance``
+  instead of ``objreg.get(Class)``. The old syntax has been deprecated and will be
+  removed in `v0.4.0`.
 
 Fixed:
 ^^^^^^

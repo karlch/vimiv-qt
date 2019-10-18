@@ -12,7 +12,7 @@ be unique in its type and only one instance of each type can be stored. It is
 mainly used by commands as well as statusbar modules to retrieve the ``self``
 argument for methods that require an instance of the class.
 
-To register a new class in the object registry, the
+To register a new class for this purpose, the
 :func:`register` decorator can be used as following::
 
     from vimiv.api import objreg
@@ -23,77 +23,47 @@ To register a new class in the object registry, the
         def __init__(self):
             ...
 
-The class is then stored in the object registry once the first instance was
-created. To retrieve instance of the class, the :func:`get`
-function can be used::
+The first created instance is then stored in the class itself. To retrieve the instance
+of the class, use::
 
-    my_instance = objreg.get(MyLongLivedClass)
+    my_instance = MyLongLivedClass.instance
 """
 
-import collections
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, Callable
 
 from vimiv.utils import log
 
-
-RegisterObject = TypeVar("RegisterObject")
 _logger = log.module_logger(__name__)
 
 
 def register(component_init: Callable) -> Callable:
-    """Decorator to store a component in the object registry.
+    """Decorator to register a class for the object registry.
 
-    This decorates the ``__init__`` function of the component to register. The
-    object is stored in the registry right after ``__init__`` was called.
+    This decorates the ``__init__`` function of the class to register. The object is
+    stored in the registry right after ``__init__`` was called.
 
     Args:
         component_init: The ``__init__`` function of the component.
     """
 
-    def inside(component: RegisterObject, *args: Any, **kwargs: Any) -> None:
+    def inside(component: Any, *args: Any, **kwargs: Any) -> None:
         """The decorated ``__init__`` function.
 
         Args:
             component: Corresponds to self.
         """
+        _logger.debug("Registering object '%r'", component)
+        component.__class__.instance = component
         component_init(component, *args, **kwargs)
-        _registry.store(component)
 
     return inside
 
 
-def get(obj_type: Type[RegisterObject]) -> RegisterObject:
-    """Retrieve a component from the registry.
+def get(cls):  # type: ignore
+    """Retrieve a class instance from the object registry.
 
-    Args:
-        obj_type: Type of the component to get.
-    Returns:
-        The instance of the object in the registry.
+    This is deprecated as it is equivaltent to cls.instance which is cleaner to read.
     """
-    return _registry[obj_type]
-
-
-class _Registry(collections.UserDict):
-    """Storage class for vimiv components."""
-
-    def store(self, component: RegisterObject) -> None:
-        """Store one component in the registry.
-
-        This is used instead of __setitem__ as the key to store the component
-        with can be calculated from the component itself. Calls
-        __setitem__(_key(component), component).
-
-        Args:
-            component: The object to store.
-        """
-        key = self._key(component)
-        _logger.debug("Registering object '%r'", component)
-        self[key] = component
-
-    @staticmethod
-    def _key(obj: RegisterObject) -> type:
-        """Use object type as unique key to store the object intance."""
-        return type(obj)
-
-
-_registry = _Registry()  # The registry used to store the vimiv components
+    # TODO: Remove this in v0.4.0
+    _logger.warning("Using get(Class) is deprecated, use Class.instance instead")
+    return cls.instance

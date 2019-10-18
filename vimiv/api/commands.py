@@ -84,7 +84,7 @@ from vimiv.utils import (
     log,
 )
 
-from . import modes, objreg
+from . import modes
 
 
 # hook function is either a function with no arguments or a method which takes self
@@ -339,7 +339,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         _logger.debug("Creating function for command '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
-            instance = objreg.get(cls)
+            instance = cls.instance
             hook_method = typing.cast(HookMethod, self.hook)  # Takes self as argument
             return lambda **kwargs: (hook_method(instance), func(instance, **kwargs))
         hook_function = typing.cast(HookFunction, self.hook)  # Takes no arguments

@@ -13,7 +13,7 @@ from vimiv.gui import keyhint_widget, eventhandler
 
 @pytest.fixture()
 def keyhint():
-    return api.objreg.get(keyhint_widget.KeyhintWidget)
+    return keyhint_widget.KeyhintWidget.instance
 
 
 bdd.scenarios("keyhint.feature")

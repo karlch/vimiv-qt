@@ -48,7 +48,7 @@ class Manipulate(KeyHandler, QTabWidget):
 
         styles.apply(self)
         # Add all manipulations from immanipulate
-        manipulator = immanipulate.instance()
+        manipulator = immanipulate.Manipulator.instance
         for group in manipulator.manipulations.groups:
             self._add_group(group)
         # Connect signals
@@ -154,7 +154,7 @@ class ManipulateImage(QLabel):
 
         api.modes.MANIPULATE.entered.connect(self._on_entered)
         api.modes.MANIPULATE.left.connect(self.hide)
-        immanipulate.instance().updated.connect(self._update_pixmap)
+        immanipulate.Manipulator.instance.updated.connect(self._update_pixmap)
 
         self.hide()
 

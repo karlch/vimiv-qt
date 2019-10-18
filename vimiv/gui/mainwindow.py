@@ -97,7 +97,7 @@ class MainWindow(QWidget):
         """
         super().resizeEvent(event)
         self._update_overlay_geometry()
-        api.objreg.get(Library).update_width()
+        Library.instance.update_width()
 
     def show(self):
         """Update show to resize overlays."""

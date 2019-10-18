@@ -7,7 +7,6 @@
 import pytest
 import pytest_bdd as bdd
 
-from vimiv import api
 import vimiv.imutils.immanipulate
 
 bdd.scenarios("manipulate.feature")
@@ -15,7 +14,7 @@ bdd.scenarios("manipulate.feature")
 
 @pytest.fixture()
 def manipulator():
-    yield api.objreg.get(vimiv.imutils.immanipulate.Manipulator)
+    yield vimiv.imutils.immanipulate.Manipulator.instance
 
 
 @pytest.fixture()

@@ -30,27 +30,27 @@ from vimiv.imutils import filelist
 ########################################################################################
 @pytest.fixture()
 def library():
-    yield api.objreg.get(vimiv.gui.library.Library)
+    yield vimiv.gui.library.Library.instance
 
 
 @pytest.fixture()
 def thumbnail():
-    yield api.objreg.get(vimiv.gui.thumbnail.ThumbnailView)
+    yield vimiv.gui.thumbnail.ThumbnailView.instance
 
 
 @pytest.fixture()
 def mainwindow():
-    yield api.objreg.get(vimiv.gui.mainwindow.MainWindow)
+    yield vimiv.gui.mainwindow.MainWindow.instance
 
 
 @pytest.fixture()
 def commandline():
-    yield api.objreg.get(vimiv.gui.commandline.CommandLine)
+    yield vimiv.gui.commandline.CommandLine.instance
 
 
 @pytest.fixture()
 def bar():
-    yield api.objreg.get(vimiv.gui.bar.Bar)
+    yield vimiv.gui.bar.Bar.instance
 
 
 ###############################################################################

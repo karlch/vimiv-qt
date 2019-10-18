@@ -7,7 +7,6 @@
 import pytest
 import pytest_bdd as bdd
 
-from vimiv import api
 from vimiv.gui import metadata_widget
 
 
@@ -16,7 +15,7 @@ bdd.scenarios("metadata.feature")
 
 @pytest.fixture
 def metadata():
-    yield api.objreg.get(metadata_widget.MetadataWidget)
+    yield metadata_widget.MetadataWidget.instance
 
 
 @bdd.then("the metadata widget should be visible")

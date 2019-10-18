@@ -18,12 +18,12 @@ bdd.scenarios("completion.feature")
 
 @pytest.fixture()
 def completer():
-    return api.objreg.get(vimiv.completion.completer.Completer)
+    return vimiv.completion.completer.Completer.instance
 
 
 @pytest.fixture()
 def completionwidget():
-    return api.objreg.get(vimiv.gui.completionwidget.CompletionView)
+    return vimiv.gui.completionwidget.CompletionView.instance
 
 
 @bdd.then(bdd.parsers.parse("the completion model should be {model}"))

@@ -39,7 +39,6 @@ from typing import Callable
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.utils import cached_method, is_method, class_that_defined_method, log
-from . import objreg
 
 
 # module function is either a function with no arguments or a method which takes self
@@ -82,8 +81,7 @@ class _Module:
         _logger.debug("Creating function for status module '%s'", func.__name__)
         if is_method(func):
             cls = class_that_defined_method(func)
-            instance = objreg.get(cls)
-            return functools.partial(func, instance)
+            return functools.partial(func, cls.instance)
         return func
 
 

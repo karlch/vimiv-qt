@@ -6,10 +6,9 @@
 
 import pytest
 
-from vimiv import api
 import vimiv.gui.image
 
 
 @pytest.fixture()
 def image():
-    yield api.objreg.get(vimiv.gui.image.ScrollableImage)
+    yield vimiv.gui.image.ScrollableImage.instance

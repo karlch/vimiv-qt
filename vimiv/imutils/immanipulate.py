@@ -557,7 +557,3 @@ class Manipulator(QObject):
         for manipulation in current_group:
             manipulation.reset()
         self._pixmap, self._manipulated = self._manipulated, None
-
-
-def instance():
-    return api.objreg.get(Manipulator)

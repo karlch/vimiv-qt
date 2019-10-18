@@ -12,10 +12,15 @@ try:
 except ImportError:
     piexif = None
 
-from vimiv import api, imutils
+from vimiv import imutils
 
 
 bdd.scenarios("write.feature")
+
+
+@pytest.fixture()
+def handler():
+    yield imutils._ImageFileHandler.instance
 
 
 @pytest.fixture()
@@ -28,17 +33,15 @@ def exif_content():
 
 @bdd.when(bdd.parsers.parse("I write the image to {name}"))
 @bdd.when("I write the image to <name>")
-def write_image(name):
-    handler = api.objreg.get(imutils._ImageFileHandler)
+def write_image(handler, name):
     handler.write_pixmap(
         handler.current, path=name, original_path=handler._path, parallel=False
     )
 
 
 @bdd.when("I add exif information")
-def add_exif_information(exif_content):
+def add_exif_information(handler, exif_content):
     assert piexif is not None, "piexif required to add exif information"
-    handler = api.objreg.get(imutils._ImageFileHandler)
     path = handler._path
     exif_dict = piexif.load(path)
     for ifd, ifd_dict in exif_content.items():
