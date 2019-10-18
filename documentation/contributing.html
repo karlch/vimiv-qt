@@ -871,15 +871,12 @@ filter regular expression.</p>
 
 <dl class="method">
 <dt id="vimiv.api.completion.BaseModel.on_enter">
-<code class="sig-name descname">on_enter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called by the completer when the commandline is entered.</p>
+<code class="sig-name descname">on_enter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the completer when this model is entered.</p>
 <p>This allows models to change their content accordingly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>text</strong> – The current text in the comand line.</p></li>
-<li><p><strong>mode</strong> – Mode from which the commandline was entered.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>text</strong> – The current text in the comand line.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -898,7 +895,7 @@ filter regular expression.</p>
 
 <dl class="method">
 <dt id="vimiv.api.completion.BaseModel.set_data">
-<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param">data: Sequence[Tuple]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param">data: Iterable[Tuple]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add rows to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
