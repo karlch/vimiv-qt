@@ -181,7 +181,7 @@ def parse():
     global _style
     name = api.settings.style.value
     _logger.debug("Parsing style '%s'", name)
-    filename = xdg.join_vimiv_config("styles/%s" % (name))
+    filename = xdg.join_vimiv_config("styles", name)
     if name == NAME_DEFAULT:
         _style = create_default()
     elif name == NAME_DEFAULT_DARK:

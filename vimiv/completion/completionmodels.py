@@ -193,8 +193,8 @@ class SettingsOptionModel(api.completion.BaseModel):
             "default": str(self._setting.default),
             "current": str(self._setting.value),
         }
-        for i, suggestion in enumerate(self._setting.suggestions()):
-            values["suggestion %d" % (i + 1)] = suggestion
+        for i, suggestion in enumerate(self._setting.suggestions(), start=1):
+            values[f"suggestion {i}"] = suggestion
         data = [
             (f"set {self._setting.name} {value}", option)
             for option, value in values.items()
@@ -220,7 +220,7 @@ class TrashModel(api.completion.BaseModel):
         self.clear()
         data = []
         for path in files.listdir(trash_manager.files_directory()):
-            cmd = "undelete %s" % (os.path.basename(path))
+            cmd = f"undelete {os.path.basename(path)}"
             # Get info and format it neatly
             original, date = trash_manager.trash_info(path)
             original = original.replace(os.path.expanduser("~"), "~")

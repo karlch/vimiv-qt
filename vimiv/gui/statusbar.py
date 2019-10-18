@@ -114,9 +114,9 @@ class StatusBar(QWidget):
             mode: Current mode.
         """
         try:  # Prefer mode specific setting
-            text = api.settings.get_value("statusbar.%s_%s" % (position, mode))
+            text = api.settings.get_value(f"statusbar.{position}_{mode}")
         except KeyError:
-            text = api.settings.get_value("statusbar.%s" % (position))
+            text = api.settings.get_value(f"statusbar.{position}")
         return api.status.evaluate(text.replace(" ", "&nbsp;"))
 
     def _set_severity_style(self, severity):
@@ -128,13 +128,11 @@ class StatusBar(QWidget):
         Args:
             severity: One of "debug", "info", "warning", "error"
         """
-        append = """
-        QLabel {
-            border-top: {statusbar.message_border} {statusbar.%s};
-        }
-        """ % (
-            severity
-        )
+        append = f"""
+        QLabel {{
+            border-top: {{statusbar.message_border}} {{statusbar.{severity}}};
+        }}
+        """
         styles.apply(self, append)
 
     def _clear_severity_style(self):

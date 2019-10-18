@@ -81,7 +81,7 @@ def unbind(keybinding: str, mode: modes.Mode) -> None:
     elif keybinding in _registry[mode]:
         del _registry[mode][keybinding]
     else:
-        raise commands.CommandError("No binding found for '%s'" % (keybinding))
+        raise commands.CommandError(f"No binding found for '{keybinding}'")
 
 
 def _check_duplicate_binding(keybinding: str, command: str, mode: modes.Mode) -> None:
@@ -113,8 +113,8 @@ class _Bindings(collections.UserDict):
     def __add__(self, other: "_Bindings") -> "_Bindings":
         if not isinstance(other, _Bindings):
             raise ValueError(
-                "Cannot add type '%s' to '%s'"
-                % (other.__name__, self.__class__.__qualname__)
+                f"Cannot add type '{other.__class__.__qualname__}' "
+                f"to '{self.__class__.__qualname__}'"
             )
         return _Bindings({**self, **other})
 

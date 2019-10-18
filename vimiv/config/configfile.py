@@ -76,7 +76,7 @@ def _update_setting(name, parser):
     section, option = _get_section_option(name)
     try:
         parser_option = parser.get(section, option)
-        setting_name = "%s.%s" % (section.lower(), option)
+        setting_name = f"{section}.{option}".lower()
         setting_name = setting_name.replace("general.", "")
         setting = api.settings.get(setting_name)
         _logger.debug("Updating '%s' with '%s'", setting_name, parser_option)
@@ -94,11 +94,13 @@ def _add_statusbar_formatters(configsection):
         configsection: STATUSBAR section in the config file.
     """
     positions = ("left", "center", "right")
-    possible = ["%s_%s" % (p, m.name) for p in positions for m in api.modes.ALL]
+    possible = [
+        f"{position}_{mode.name}" for position in positions for mode in api.modes.ALL
+    ]
     for name, value in configsection.items():
         if name in possible:
             _logger.debug("Adding statusbar formatter '%s' with '%s'", name, value)
-            api.settings.StrSetting("statusbar.%s" % (name), value)
+            api.settings.StrSetting(f"statusbar.{name}", value)
 
 
 def _setup_parser():

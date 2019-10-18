@@ -144,7 +144,7 @@ def get(name: str, mode: modes.Mode = modes.GLOBAL) -> "_Command":
     try:
         return commands[name]
     except KeyError:
-        raise CommandNotFound("%s: unknown command for mode %s" % (name, mode.name))
+        raise CommandNotFound(f"{name}: unknown command for mode {mode.name}")
 
 
 class ArgumentError(Exception):
@@ -243,7 +243,7 @@ class _CommandArguments(argparse.ArgumentParser):
     def _argument_name(argument: inspect.Parameter, optional: bool) -> str:
         """Create argument name from inspect parameter."""
         name = argument.name.replace("_", "-")
-        return "--%s" % (name) if optional else name
+        return f"--{name}" if optional else name
 
     @staticmethod
     def _gen_kwargs(
@@ -323,7 +323,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
             kwargs["count"] = int(count)
 
     def __repr__(self) -> str:
-        return "Command('%s', '%s')" % (self.name, self.func)
+        return f"Command('{self.name}', '{self.func}')"
 
     @cached_method
     def _create_func(self, func: typing.Callable) -> typing.Callable:

@@ -177,7 +177,7 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         return self._name
 
     def __repr__(self) -> str:
-        return "Mode.%s" % (self.name.upper())
+        return f"Mode.{self.name.upper()}"
 
 
 def get_by_name(name: str) -> Mode:
@@ -194,7 +194,7 @@ def get_by_name(name: str) -> Mode:
     for mode in ALL:
         if mode.name.lower() == name.lower():
             return mode
-    raise KeyError("'%s' is not a valid mode" % (name.upper()))
+    raise KeyError(f"'{name.upper()}' is not a valid mode")
 
 
 def widget(mode: Mode) -> Callable:

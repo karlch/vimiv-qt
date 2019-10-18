@@ -65,5 +65,5 @@ def alias(name: str, command: List[str], mode: str = "global"):
     commandstr = " ".join(command)
     modeobj = api.modes.get_by_name(mode)
     if api.commands.exists(name, modeobj):
-        raise api.commands.CommandError("Not overriding default command %s" % (name))
+        raise api.commands.CommandError(f"Not overriding default command {name}")
     _aliases[modeobj][name] = commandstr

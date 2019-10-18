@@ -66,7 +66,7 @@ class ThumbnailManager(QObject):
             else os.path.join(directory, "normal")
         )
         self.fail_directory = os.path.join(
-            directory, "fail", "vimiv-%s" % (vimiv.__version__)
+            directory, "fail", f"vimiv-{vimiv.__version__}"
         )
         os.makedirs(self.directory, exist_ok=True)
         os.makedirs(self.fail_directory, exist_ok=True)
@@ -181,7 +181,7 @@ class ThumbnailCreator(QRunnable):
             KEY_SIZE: str(os.path.getsize(path)),
             KEY_WIDTH: str(image.width()),
             KEY_HEIGHT: str(image.height()),
-            KEY_SOFTWARE: "vimiv-%s" % (vimiv.__version__),
+            KEY_SOFTWARE: f"vimiv-{vimiv.__version__}",
         }
 
     def _maybe_recreate_thumbnail(self, path: str, thumbnail_path: str) -> QPixmap:

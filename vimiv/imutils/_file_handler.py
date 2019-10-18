@@ -263,7 +263,7 @@ def _can_write(pixmap, path):
     if os.path.exists(path):  # Override current path
         reader = QImageReader(path)
         if not reader.canRead():
-            raise WriteError("Path '%s' exists and is not an image" % (path))
+            raise WriteError(f"Path '{path}' exists and is not an image")
 
 
 def _write(pixmap, path, original_path):

@@ -57,7 +57,7 @@ def delete(paths: List[str]) -> None:
     for filename in paths:
         filename = os.path.abspath(filename)
         if not os.path.exists(filename):
-            raise api.commands.CommandError("Path '%s' does not exist" % (filename))
+            raise api.commands.CommandError(f"Path '{filename}' does not exist")
         trash_filename = _get_trash_filename(filename)
         _create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)
@@ -126,8 +126,8 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
     os.close(fd)
     temp_file = open(temp_path, "w")
     temp_file.write("[Trash Info]\n")
-    temp_file.write("Path=%s\n" % (original_filename))
-    temp_file.write("DeletionDate=%s\n" % (time.strftime("%Y%m%dT%H%M%S")))
+    temp_file.write(f"Path={original_filename}\n")
+    temp_file.write("DeletionDate={date}\n".format(date=time.strftime("%Y%m%dT%H%M%S")))
     # Make sure that all data is on disk
     temp_file.flush()
     os.fsync(temp_file.fileno())

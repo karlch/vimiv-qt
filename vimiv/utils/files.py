@@ -83,10 +83,10 @@ def sizeof_fmt(num: float) -> str:
     for unit in ("B", "K", "M", "G", "T", "P", "E", "Z"):
         if abs(num) < 1024.0:
             if abs(num) < 100:
-                return "%3.1f%s" % (num, unit)
-            return "%3.0f%s" % (num, unit)
+                return f"{num:3.1f}{unit}"
+            return f"{num:3.0f}{unit}"
         num /= 1024.0
-    return "%.1f%s" % (num, "Y")
+    return f"{num:.1f}Y"
 
 
 def get_size_directory(path: str) -> str:

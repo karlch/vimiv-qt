@@ -134,7 +134,7 @@ def existing_file(value):
         Path to the file as string if it exists.
     """
     if not os.path.isfile(os.path.expanduser(value)):
-        raise argparse.ArgumentTypeError("No file called '%s'" % (value))
+        raise argparse.ArgumentTypeError(f"No file called '{value}'")
     return value
 
 
@@ -149,7 +149,7 @@ def existing_path(value):
         Path to the file as string if it exists.
     """
     if not os.path.exists(os.path.expanduser(value)):
-        raise argparse.ArgumentTypeError("No path called '%s'" % (value))
+        raise argparse.ArgumentTypeError(f"No path called '{value}'")
     return value
 
 
@@ -163,4 +163,4 @@ def loglevel(value):
     """
     with suppress(AttributeError):
         return getattr(logging, value.upper())
-    raise argparse.ArgumentTypeError("Invalid log level '%s'" % (value))
+    raise argparse.ArgumentTypeError(f"Invalid log level '{value}'")

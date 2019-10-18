@@ -122,7 +122,7 @@ class MainWindow(QWidget):
         """Update window title depending on mode and settings."""
         mode = api.modes.current().name
         try:  # Prefer mode specific setting
-            title = api.settings.get_value("title.%s" % (mode))
+            title = api.settings.get_value(f"title.{mode}")
         except KeyError:
             title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))

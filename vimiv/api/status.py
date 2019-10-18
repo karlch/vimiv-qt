@@ -66,7 +66,7 @@ class _Module:
         return func()
 
     def __repr__(self) -> str:
-        return "StatusModule('%s')" % (self._func.__name__)
+        return f"StatusModule('{self._func.__name__}')"
 
     @cached_method
     def _create_func(self, func: Module) -> Module:
@@ -103,11 +103,9 @@ def module(name: str) -> Callable[[Module], Module]:
     def decorator(function: Module) -> Module:
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
-            message = "Invalid name '%s' for status module %s" % (
-                name,
-                function.__name__,
+            raise InvalidModuleName(
+                f"Invalid name '{name}' for status module {function.__name__}"
             )
-            raise InvalidModuleName(message)
         _modules[name] = _Module(function)
         return function
 

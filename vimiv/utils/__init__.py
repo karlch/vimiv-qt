@@ -39,7 +39,7 @@ def add_html(tag: str, text: str) -> str:
         tag: Tag to use, e.g. b.
         text: The text to surround.
     """
-    return "<%s>%s</%s>" % (tag, text, tag)
+    return f"<{tag}>{text}</{tag}>"
 
 
 def wrap_style_span(style: str, text: str) -> str:
@@ -116,9 +116,9 @@ class AnnotationNotFound(Exception):
     """Raised if a there is no type annotation to use."""
 
     def __init__(self, name: str, function: Callable):
-        message = "Missing type annotation for parameter '%s' in function '%s'" % (
-            name,
-            function.__qualname__,
+        message = (
+            f"Missing type annotation for parameter '{name}' "
+            f"in function '{function.__qualname__}'"
         )
         super().__init__(message)
 

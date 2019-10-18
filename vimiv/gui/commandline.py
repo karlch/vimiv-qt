@@ -36,11 +36,8 @@ class UnknownPrefix(Exception):
         Args:
             prefix: The unknown prefix.
         """
-        message = "Unknown prefix '%s', possible values: %s" % (
-            prefix,
-            ", ".join(["'%s'" % (p) for p in CommandLine.PREFIXES]),
-        )
-        super().__init__(message)
+        possible = ", ".join(str(prefix) for prefix in CommandLine.PREFIXES)
+        super().__init__(f"Unknown prefix '{prefix}', possible values: {possible}")
 
 
 class CommandLine(KeyHandler, QLineEdit):

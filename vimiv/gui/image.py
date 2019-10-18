@@ -311,12 +311,12 @@ class ScrollableImage(KeyHandler, QScrollArea):
     def _get_zoom_level(self):
         """Zoom level of the image in percent."""
         level = self.current_width() / self.original_width()
-        return "%2.0f%%" % (level * 100)
+        return f"{level * 100:2.0f}%"
 
     @api.status.module("{image-size}")
     def _get_image_size(self):
         """Size of the image in pixels in the form WIDTHxHEIGHT."""
-        return "%dx%d" % (self.original_width(), self.original_height())
+        return f"{self.original_width()}x{self.original_height()}"
 
     def current_width(self):
         """Convenience method to get the widgets current width."""
