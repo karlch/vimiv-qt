@@ -106,7 +106,3 @@ class KeyhintWidget(QLabel):
         """Override show to always raise the widget in addition."""
         super().show()
         self.raise_()
-
-
-def instance() -> KeyhintWidget:
-    return api.objreg.get(KeyhintWidget)

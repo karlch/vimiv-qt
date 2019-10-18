@@ -77,7 +77,3 @@ class Application(QApplication):
             pixmap = QPixmap(path)
             icon.addPixmap(pixmap)
         return icon
-
-
-def instance():
-    return api.objreg.get(Application)

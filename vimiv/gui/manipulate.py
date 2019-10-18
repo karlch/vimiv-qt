@@ -198,7 +198,3 @@ class ManipulateImage(QLabel):
             - self._manipulate.currentWidget().sizeHint().height()
         )
         self.setGeometry(x, y, pixmap.width(), pixmap.height())
-
-
-def instance():
-    return api.objreg.get(Manipulate)

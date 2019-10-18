@@ -128,10 +128,6 @@ class MainWindow(QWidget):
         self.setWindowTitle(api.status.evaluate(title))
 
 
-def instance():
-    return api.objreg.get(MainWindow)
-
-
 class ImageThumbnailLayout(QStackedLayout):
     """QStackedLayout to toggle between image and thumbnail mode.
 

@@ -101,7 +101,3 @@ class Bar(QWidget):
             self.hide()
         else:
             self.show()
-
-
-def instance():
-    return api.objreg.get(Bar)

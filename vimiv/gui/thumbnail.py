@@ -507,7 +507,3 @@ class ThumbnailDelegate(QStyledItemDelegate):
         if self.parent().is_highlighted(index):
             return self.search_bg
         return self.bg
-
-
-def instance():
-    return api.objreg.get(ThumbnailView)

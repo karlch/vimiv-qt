@@ -564,10 +564,6 @@ class LibraryDelegate(QStyledItemDelegate):
         return QSize(int(self.doc.idealWidth()), int(self.doc.size().height()))
 
 
-def instance():
-    return api.objreg.get(Library)
-
-
 def strip(path: str) -> str:
     """Strip html tags and mark indicator from a library path."""
     return strip_html(api.mark.highlight(path, marked=False))

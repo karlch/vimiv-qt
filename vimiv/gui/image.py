@@ -354,10 +354,6 @@ class ScrollableImage(KeyHandler, QScrollArea):
             return 0.01
 
 
-def instance():
-    return api.objreg.get(ScrollableImage)
-
-
 class ImageLabel(QLabel):
     """Label used to display images in image mode."""
 

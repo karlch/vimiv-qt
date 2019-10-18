@@ -176,7 +176,3 @@ class CommandLine(KeyHandler, QLineEdit):
     def _on_entered(self):
         """Store mode from which the command line was entered."""
         self.mode = api.modes.COMMAND.last
-
-
-def instance():
-    return api.objreg.get(CommandLine)

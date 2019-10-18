@@ -106,7 +106,3 @@ class Completer(QObject):
             cmdtext = cmdtext[1:]
         # Set text in commandline
         self._cmd.setText(prefix + digits + text)
-
-
-def instance():
-    return api.objreg.get(Completer)

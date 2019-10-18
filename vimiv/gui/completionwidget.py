@@ -110,7 +110,3 @@ class CompletionView(widgets.FlatTreeView):
         for i in range(self.model().columnCount()):
             fraction = self.model().sourceModel().column_widths[i]
             self.setColumnWidth(i, int(fraction * self.width()))
-
-
-def instance():
-    return api.objreg.get(CompletionView)

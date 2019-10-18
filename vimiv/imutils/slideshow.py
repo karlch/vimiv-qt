@@ -50,7 +50,3 @@ class Slideshow(QTimer):
 
     def _on_delay_changed(self, value: int):
         self.setInterval(int(value * 1000))
-
-
-def instance() -> Slideshow:
-    return api.objreg.get(Slideshow)
