@@ -8,8 +8,8 @@ import os
 
 import pytest_bdd as bdd
 
+import vimiv.gui.image
 from vimiv.imutils import filelist
-from vimiv.gui import image
 
 
 bdd.scenarios("imagedelete.feature")
@@ -22,5 +22,5 @@ def check_image_not_in_filelist(basename):
 
 
 @bdd.then("the image widget should be empty")
-def check_image_widget_empty():
-    assert isinstance(image.instance().widget(), image.Empty)
+def check_image_widget_empty(image):
+    assert isinstance(image.widget(), vimiv.gui.image.Empty)

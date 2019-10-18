@@ -9,22 +9,21 @@ from PyQt5.QtCore import Qt
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.gui import commandline
 
 
 bdd.scenarios("commandline.feature")
 
 
 @bdd.when("I hit backspace")
-def hit_backspace(qtbot):
+def hit_backspace(commandline, qtbot):
     """Needed as passing backspace as a string is not possible."""
-    qtbot.keyClick(commandline.instance(), Qt.Key_Backspace)
+    qtbot.keyClick(commandline, Qt.Key_Backspace)
     qtbot.wait(10)
 
 
 @bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
-def check_commandline_text(text):
-    assert commandline.instance().text() == text
+def check_commandline_text(commandline, text):
+    assert commandline.text() == text
 
 
 @bdd.then("the mode should not be command")

@@ -4,10 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import pytest
 import pytest_bdd as bdd
-
-from vimiv.gui import image
 
 
 bdd.scenarios("imagefit.feature")
@@ -23,36 +20,31 @@ def almost_equal(size, expected):
     assert size <= expected
 
 
-@pytest.fixture
-def img():
-    yield image.instance()
-
-
 @bdd.then(bdd.parsers.parse("the pixmap width should be {width}"))
-def check_pixmap_width(img, width):
-    almost_equal(img.current_width(), int(width))
+def check_pixmap_width(image, width):
+    almost_equal(image.current_width(), int(width))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should be {height}"))
-def check_pixmap_height(img, height):
-    almost_equal(img.current_height(), int(height))
+def check_pixmap_height(image, height):
+    almost_equal(image.current_height(), int(height))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should fit"))
-def check_pixmap_width_fit(img):
-    almost_equal(img.current_width(), img.width())
+def check_pixmap_width_fit(image):
+    almost_equal(image.current_width(), image.width())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should fit"))
-def check_pixmap_height_fit(img):
-    almost_equal(img.current_height(), img.height())
+def check_pixmap_height_fit(image):
+    almost_equal(image.current_height(), image.height())
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should not fit"))
-def check_pixmap_width_no_fit(img):
-    assert img.width() != img.current_width()
+def check_pixmap_width_no_fit(image):
+    assert image.width() != image.current_width()
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should not fit"))
-def check_pixmap_height_no_fit(img):
-    assert img.height() != img.current_height()
+def check_pixmap_height_no_fit(image):
+    assert image.height() != image.current_height()

@@ -11,12 +11,46 @@ import os
 from PyQt5.QtCore import Qt, QThreadPool
 from PyQt5.QtWidgets import QApplication
 
+import pytest
 import pytest_bdd as bdd
 
+import vimiv.gui.library
+import vimiv.gui.thumbnail
+import vimiv.gui.mainwindow
+import vimiv.gui.commandline
+import vimiv.gui.bar
 from vimiv import api
 from vimiv.commands import runners
-from vimiv.gui import commandline, statusbar, mainwindow, library, thumbnail
+from vimiv.gui import statusbar
 from vimiv.imutils import filelist
+
+
+########################################################################################
+#                                   Pytest fixtures                                    #
+########################################################################################
+@pytest.fixture()
+def library():
+    yield api.objreg.get(vimiv.gui.library.Library)
+
+
+@pytest.fixture()
+def thumbnail():
+    yield api.objreg.get(vimiv.gui.thumbnail.ThumbnailView)
+
+
+@pytest.fixture()
+def mainwindow():
+    yield api.objreg.get(vimiv.gui.mainwindow.MainWindow)
+
+
+@pytest.fixture()
+def commandline():
+    yield api.objreg.get(vimiv.gui.commandline.CommandLine)
+
+
+@pytest.fixture()
+def bar():
+    yield api.objreg.get(vimiv.gui.bar.Bar)
 
 
 ###############################################################################
@@ -36,9 +70,9 @@ def key_press(qtbot, keys):
 
 
 @bdd.when("I activate the command line")
-def activate_commandline(qtbot):
+def activate_commandline(commandline, qtbot):
     """Needed as passing return as a string is not possible."""
-    qtbot.keyClick(commandline.instance(), Qt.Key_Return)
+    qtbot.keyClick(commandline, Qt.Key_Return)
     qtbot.wait(10)
 
 
@@ -53,17 +87,17 @@ def leave_mode(mode):
 
 
 @bdd.when(bdd.parsers.parse('I enter command mode with "{text}"'))
-def enter_command_with_text(text):
+def enter_command_with_text(commandline, text):
     api.modes.COMMAND.enter()
-    commandline.instance().setText(":" + text)
-    commandline.instance().textEdited.emit(":" + text)
+    commandline.setText(":" + text)
+    commandline.textEdited.emit(":" + text)
 
 
 @bdd.when(bdd.parsers.parse("I resize the window to {size}"))
-def resize_main_window(size):
+def resize_main_window(mainwindow, size):
     width = int(size.split("x")[0])
     height = int(size.split("x")[1])
-    mainwindow.instance().resize(width, height)
+    mainwindow.resize(width, height)
 
 
 @bdd.when(bdd.parsers.parse("I wait for {N}ms"))
@@ -143,13 +177,13 @@ def check_working_directory(basename):
 
 
 @bdd.then("the window should be fullscreen")
-def check_fullscreen():
-    assert mainwindow.instance().isFullScreen()
+def check_fullscreen(mainwindow):
+    assert mainwindow.isFullScreen()
 
 
 @bdd.then("the window should not be fullscreen")
-def check_not_fullscreen():
-    assert not mainwindow.instance().isFullScreen()
+def check_not_fullscreen(mainwindow):
+    assert not mainwindow.isFullScreen()
 
 
 @bdd.then(bdd.parsers.parse("the mode should be {mode}"))
@@ -159,8 +193,8 @@ def check_mode(mode, qtbot):
 
 
 @bdd.then(bdd.parsers.parse("the library row should be {row}"))
-def check_row_number(row):
-    assert library.instance().row() + 1 == int(row)
+def check_row_number(library, row):
+    assert library.row() + 1 == int(row)
 
 
 @bdd.then(bdd.parsers.parse("the image should have the index {index}"))
@@ -169,15 +203,14 @@ def check_image_index(index):
 
 
 @bdd.given("I enter thumbnail mode")
-def enter_thumbnail():
+def enter_thumbnail(thumbnail):
     api.modes.THUMBNAIL.enter()
-    thumbnail.instance().setFixedWidth(400)  # Make sure width is as expected
+    thumbnail.setFixedWidth(400)  # Make sure width is as expected
 
 
 @bdd.then(bdd.parsers.parse("the thumbnail number {N} should be selected"))
-def check_selected_thumbnail(qtbot, N):
-    thumb = thumbnail.instance()
-    assert thumb.currentRow() + 1 == int(N)
+def check_selected_thumbnail(thumbnail, qtbot, N):
+    assert thumbnail.currentRow() + 1 == int(N)
 
 
 @bdd.then(bdd.parsers.parse("the pop up '{title}' should be displayed"))

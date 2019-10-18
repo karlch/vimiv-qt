@@ -7,8 +7,6 @@
 import os
 import pytest_bdd as bdd
 
-from vimiv.gui import library
-
 
 bdd.scenarios("library.feature")
 
@@ -19,10 +17,10 @@ def add_hidden_path():
 
 
 @bdd.when("I reload the library")
-def reload_library():
-    library.instance()._open_directory(".", reload_current=True)
+def reload_library(library):
+    library._open_directory(".", reload_current=True)
 
 
 @bdd.then(bdd.parsers.parse("the library should contain {n_paths:d} paths"))
-def check_library_paths(n_paths):
-    assert len(library.instance().pathlist()) == n_paths
+def check_library_paths(library, n_paths):
+    assert len(library.pathlist()) == n_paths

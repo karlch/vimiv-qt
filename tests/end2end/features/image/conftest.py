@@ -4,6 +4,12 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import pytest_bdd as bdd
+import pytest
 
-from vimiv.imutils import filelist
+from vimiv import api
+import vimiv.gui.image
+
+
+@pytest.fixture()
+def image():
+    yield api.objreg.get(vimiv.gui.image.ScrollableImage)

@@ -7,12 +7,11 @@
 import pytest_bdd as bdd
 
 from vimiv.imutils import filelist
-from vimiv.gui import mainwindow
 
 
 bdd.scenarios("imagetitle.feature")
 
 
 @bdd.then("the image name should be in the window title")
-def image_name_in_title():
-    assert filelist.basename() in mainwindow.instance().windowTitle()
+def image_name_in_title(mainwindow):
+    assert filelist.basename() in mainwindow.windowTitle()

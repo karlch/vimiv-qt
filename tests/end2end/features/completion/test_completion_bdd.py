@@ -7,16 +7,27 @@
 import pytest
 import pytest_bdd as bdd
 
+import vimiv.completion.completer
+import vimiv.gui.completionwidget
 from vimiv import api
-from vimiv.completion import completionmodels, completer
-from vimiv.gui import completionwidget
+from vimiv.completion import completionmodels
 
 
 bdd.scenarios("completion.feature")
 
 
+@pytest.fixture()
+def completer():
+    return api.objreg.get(vimiv.completion.completer.Completer)
+
+
+@pytest.fixture()
+def completionwidget():
+    return api.objreg.get(vimiv.gui.completionwidget.CompletionView)
+
+
 @bdd.then(bdd.parsers.parse("the completion model should be {model}"))
-def check_completion_model(model):
+def check_completion_model(completer, model):
     models = {
         "command": completionmodels.CommandModel,
         "path": completionmodels.PathModel,
@@ -26,24 +37,24 @@ def check_completion_model(model):
         "trash": completionmodels.TrashModel,
         "tag": completionmodels.TagModel,
     }
-    assert isinstance(completer.instance()._proxy_model.sourceModel(), models[model])
+    assert isinstance(completer._proxy_model.sourceModel(), models[model])
 
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))
-def check_completion_model_mode(mode):
+def check_completion_model_mode(completer, mode):
     assert api.modes.current() == api.modes.COMMAND  # Sanity check
-    assert completer.instance()._cmd.mode == api.modes.get_by_name(mode)
+    assert completer._cmd.mode == api.modes.get_by_name(mode)
 
 
 @bdd.then("no completion should be selected")
-def check_no_completion_selected():
+def check_no_completion_selected(completionwidget):
     with pytest.raises(IndexError):
-        completionwidget.instance().row()
+        completionwidget.row()
 
 
 @bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))
-def check_selected_completion_text(text):
-    model = completionwidget.instance().model()
+def check_selected_completion_text(completionwidget, text):
+    model = completionwidget.model()
     completion_data = [
         model.index(row, column).data()
         for row in range(model.rowCount())
@@ -54,6 +65,6 @@ def check_selected_completion_text(text):
 
 
 @bdd.then(bdd.parsers.parse("there should be {number:d} completion options"))
-def check_number_completion_suggestions(number):
-    model = completionwidget.instance().model()
+def check_number_completion_suggestions(completionwidget, number):
+    model = completionwidget.model()
     assert model.rowCount() == number
