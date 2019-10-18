@@ -55,7 +55,7 @@ def any_directory(qtbot, tmpdir):
 @bdd.given("I open a directory for which I do not have access permissions")
 def any_directory_without_permission(qtbot, tmpdir):
     path = tmpdir.mkdir("directory")
-    os.chmod(str(path), 0o000)
+    os.chmod(str(path), 0o666)
     vimivprocess.init(qtbot, [str(path)])
     yield
     vimivprocess.exit()
