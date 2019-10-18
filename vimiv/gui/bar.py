@@ -34,7 +34,10 @@ class Bar(QWidget):
         self._stack.setCurrentWidget(statusbar)
 
         self._commandline.editingFinished.connect(self._on_editing_finished)
+        self._statusbar.timer.timeout.connect(self._maybe_hide)
         api.settings.statusbar.show.changed.connect(self._on_show_changed)
+        api.status.signals.clear.connect(self._maybe_hide)
+        utils.log.statusbar_loghandler.message.connect(self.show)
 
         if not api.settings.statusbar.show.value:
             self.hide()

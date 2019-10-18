@@ -8,6 +8,8 @@ import logging
 
 import pytest_bdd as bdd
 
+from vimiv import api
+
 
 bdd.scenarios("message.feature")
 
@@ -15,3 +17,18 @@ bdd.scenarios("message.feature")
 @bdd.when(bdd.parsers.parse("I log the warning '{message}'"))
 def log_warning(message, qtbot):
     logging.warning(message)
+
+
+@bdd.when("I clear the status")
+def clear_status():
+    api.status.clear()
+
+
+@bdd.then("the bar should be visible")
+def check_bar_visible(bar):
+    assert bar.isVisible()
+
+
+@bdd.then("the bar should not be visible")
+def check_bar_not_visible(bar):
+    assert not bar.isVisible()
