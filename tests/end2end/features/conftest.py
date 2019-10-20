@@ -132,7 +132,7 @@ def wait_for_working_directory_handler(qtbot):
 @bdd.then("no crash should happen")
 def no_crash(qtbot):
     """Don't do anything, exceptions fail the test anyway."""
-    qtbot.wait(0.01)
+    qtbot.wait(1)
 
 
 @bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
