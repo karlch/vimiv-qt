@@ -400,14 +400,10 @@ class ThumbnailDelegate(QStyledItemDelegate):
         super().__init__(parent)
 
         # QColor options for background drawing
-        self.bg = QColor()
-        self.bg.setNamedColor(styles.get("thumbnail.bg"))
-        self.selection_bg = QColor()
-        self.selection_bg.setNamedColor(styles.get("thumbnail.selected.bg"))
-        self.search_bg = QColor()
-        self.search_bg.setNamedColor(styles.get("thumbnail.search.highlighted.bg"))
-        self.mark_bg = QColor()
-        self.mark_bg.setNamedColor(styles.get("mark.color"))
+        self.bg = QColor(styles.get("thumbnail.bg"))
+        self.selection_bg = QColor(styles.get("thumbnail.selected.bg"))
+        self.search_bg = QColor(styles.get("thumbnail.search.highlighted.bg"))
+        self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = int(styles.get("thumbnail.padding"))
 
     def paint(self, painter, option, index):

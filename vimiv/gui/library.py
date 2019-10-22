@@ -425,14 +425,10 @@ class LibraryDelegate(QStyledItemDelegate):
         self.search_fg = styles.get("library.search.highlighted.fg")
 
         # QColor options for background drawing
-        self.selection_bg = QColor()
-        self.selection_bg.setNamedColor(styles.get("library.selected.bg"))
-        self.even_bg = QColor()
-        self.odd_bg = QColor()
-        self.even_bg.setNamedColor(styles.get("library.even.bg"))
-        self.odd_bg.setNamedColor(styles.get("library.odd.bg"))
-        self.search_bg = QColor()
-        self.search_bg.setNamedColor(styles.get("library.search.highlighted.bg"))
+        self.selection_bg = QColor(styles.get("library.selected.bg"))
+        self.even_bg = QColor(styles.get("library.even.bg"))
+        self.odd_bg = QColor(styles.get("library.odd.bg"))
+        self.search_bg = QColor(styles.get("library.search.highlighted.bg"))
 
     def createEditor(self, *_):
         """Library is not editable by the user."""

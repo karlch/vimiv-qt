@@ -325,14 +325,11 @@ def create_pixmap(
     pixmap = QPixmap(size, size)
     painter = QPainter(pixmap)
     painter.setPen(Qt.NoPen)
-    qcolor = QColor(0, 0, 0)
     # Frame
-    qcolor.setNamedColor(frame_color)
-    painter.setBrush(qcolor)
+    painter.setBrush(QColor(frame_color))
     painter.drawRect(pixmap.rect())
     # Inner
-    qcolor.setNamedColor(color)
-    painter.setBrush(qcolor)
+    painter.setBrush(QColor(color))
     x = y = frame_size
     width = height = pixmap.width() - 2 * frame_size
     painter.drawRect(x, y, width, height)
