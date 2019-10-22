@@ -34,6 +34,7 @@ Fixed:
 * Support for colors with alpha-channel in styles file.
 * Status messages are shown even if the bar is hidden.
 * Setting the style option from the command-line via ``-s style NAME``
+* Crash when passing an invalid mode to commands.
 
 Removed:
 ^^^^^^^^

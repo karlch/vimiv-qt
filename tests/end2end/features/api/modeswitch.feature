@@ -34,3 +34,8 @@ Feature: Switching between different modes.
         And I toggle thumbnail mode
         And I toggle library mode
         Then the mode should be image
+
+    Scenario: Do not crash on invalid mode name
+        Given I start vimiv
+        When I run enter invalid
+        Then no crash should happen

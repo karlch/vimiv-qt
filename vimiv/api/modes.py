@@ -40,8 +40,8 @@ from vimiv.utils import AbstractQObjectMeta, log
 _logger = log.module_logger(__name__)
 
 
-class NoMode(Exception):
-    """Raised when there is no mode to operate on."""
+class InvalidMode(Exception):
+    """Exception raised when no valid mode could be found."""
 
 
 class Mode(QObject, metaclass=AbstractQObjectMeta):
@@ -194,7 +194,7 @@ def get_by_name(name: str) -> Mode:
     for mode in ALL:
         if mode.name.lower() == name.lower():
             return mode
-    raise KeyError(f"'{name.upper()}' is not a valid mode")
+    raise InvalidMode(f"'{name.upper()}' is not a valid mode")
 
 
 def widget(mode: Mode) -> Callable:
@@ -263,7 +263,7 @@ def current() -> Mode:
     for mode in ALL:
         if mode.active:
             return mode
-    raise NoMode()
+    raise InvalidMode("No active mode")
 
 
 def _init() -> None:

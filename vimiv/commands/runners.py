@@ -156,8 +156,12 @@ def _run_command(count, cmdname, args, mode):
     except api.commands.CommandNotFound as e:
         log.error(str(e))
         raise CommandPartFailed from e
-    except (api.commands.ArgumentError, api.commands.CommandError) as e:
-        log.error("%s: %s", cmdname, str(e))
+    except (
+        api.commands.ArgumentError,
+        api.commands.CommandError,
+        api.modes.InvalidMode,
+    ) as e:
+        log.error("%s: %s", cmdname, e)
         raise CommandPartFailed from e
     except api.commands.CommandWarning as w:
         log.warning("%s: %s", cmdname, str(w))
