@@ -127,6 +127,9 @@
 <h3>Added:<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Elements in library and thumbnail can be selected with a mouse double click.</p></li>
+<li><p>Library and thumbnail selection color is dimmed when the corresponding widget is not
+focused. It comes with the style options <code class="docutils literal notranslate"><span class="pre">library.selected.bg.unfocus</span></code> and
+<code class="docutils literal notranslate"><span class="pre">thumbnail.selected.bg.unfocus</span></code>.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -148,6 +151,8 @@ falling back to the default. This is consistent with the configuration file hand
 updated, search is re-run. When a new directory is opened, search is cleared.</p></li>
 <li><p>Support for colors with alpha-channel in styles file.</p></li>
 <li><p>Status messages are shown even if the bar is hidden.</p></li>
+<li><p>Setting the style option from the command-line via <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">style</span> <span class="pre">NAME</span></code></p></li>
+<li><p>Crash when passing an invalid mode to commands.</p></li>
 </ul>
 </div>
 <div class="section" id="removed">

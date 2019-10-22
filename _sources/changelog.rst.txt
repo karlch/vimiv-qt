@@ -11,6 +11,9 @@ Added:
 ^^^^^^
 
 * Elements in library and thumbnail can be selected with a mouse double click.
+* Library and thumbnail selection color is dimmed when the corresponding widget is not
+  focused. It comes with the style options ``library.selected.bg.unfocus`` and
+  ``thumbnail.selected.bg.unfocus``.
 
 Changed:
 ^^^^^^^^
@@ -30,6 +33,8 @@ Fixed:
   updated, search is re-run. When a new directory is opened, search is cleared.
 * Support for colors with alpha-channel in styles file.
 * Status messages are shown even if the bar is hidden.
+* Setting the style option from the command-line via ``-s style NAME``
+* Crash when passing an invalid mode to commands.
 
 Removed:
 ^^^^^^^^
