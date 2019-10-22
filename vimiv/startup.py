@@ -149,8 +149,6 @@ def update_settings(args):
         args: Arguments returned from parser.parse_args().
     """
     configfile.parse(args.config)
-    keyfile.parse(args.keyfile)
-    styles.parse()
     for option, value in args.cmd_settings:
         try:
             setting = api.settings.get(option)
@@ -159,6 +157,8 @@ def update_settings(args):
             log.error("Unknown setting %s", option)
         except ValueError as e:
             log.error(str(e))
+    keyfile.parse(args.keyfile)
+    styles.parse()
 
 
 def run_startup_commands(*commands: str):

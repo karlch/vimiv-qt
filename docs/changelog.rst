@@ -30,6 +30,7 @@ Fixed:
   updated, search is re-run. When a new directory is opened, search is cleared.
 * Support for colors with alpha-channel in styles file.
 * Status messages are shown even if the bar is hidden.
+* Setting the style option from the command-line via ``-s style NAME``
 
 Removed:
 ^^^^^^^^
