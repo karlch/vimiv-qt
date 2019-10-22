@@ -83,8 +83,8 @@ class Library(KeyHandler, widgets.FlatTreeView):
         api.settings.library.width.changed.connect(self._on_width_changed)
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
-        search.search.cleared.connect(self._on_search_cleared)
-        api.modes.LIBRARY.entered.connect(self._on_entered)
+        search.search.cleared.connect(self.repaint)
+        api.modes.LIBRARY.entered.connect(self.update_width)
         api.modes.LIBRARY.left.connect(self._on_left)
 
         styles.apply(self)
@@ -117,20 +117,11 @@ class Library(KeyHandler, widgets.FlatTreeView):
             self._select_row(index)
             self.repaint()
 
-    @utils.slot
-    def _on_search_cleared(self):
-        """Force repainting when the search results were cleared."""
-        self.repaint()
-
     def _on_width_changed(self, _value: int):
         self.update_width()
 
     def _on_show_hidden_changed(self, _value: bool):
         self._open_directory(".", reload_current=True)
-
-    @utils.slot
-    def _on_entered(self):
-        self.update_width()
 
     @utils.slot
     def _on_left(self):
