@@ -16,7 +16,7 @@ Module Attributes:
 
 from typing import cast
 
-from PyQt5.QtCore import Qt, QTimer, QMargins
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QLabel, QWidget, QStackedLayout, QHBoxLayout
 
 from vimiv import api, utils
@@ -150,7 +150,7 @@ class StatusLabels(QWidget):
         super().__init__()
         layout = QHBoxLayout(self)
         layout.setSpacing(0)
-        layout.setContentsMargins(QMargins(0, 0, 0, 0))
+        layout.setContentsMargins(0, 0, 0, 0)
         self.left = self.label(layout, Qt.AlignLeft)
         self.center = self.label(layout, Qt.AlignCenter)
         self.right = self.label(layout, Qt.AlignRight)

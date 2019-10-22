@@ -6,7 +6,6 @@
 
 """QMainWindow which groups all the other widgets."""
 
-from PyQt5.QtCore import QMargins
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
 
 from vimiv import api, utils
@@ -43,7 +42,7 @@ class MainWindow(QWidget):
         self._bar = Bar(statusbar.statusbar, commandline)
         grid = QGridLayout(self)
         grid.setSpacing(0)
-        grid.setContentsMargins(QMargins(0, 0, 0, 0))
+        grid.setContentsMargins(0, 0, 0, 0)
         grid.addLayout(ImageThumbnailLayout(), 0, 1, 1, 1)
         grid.addWidget(Library(self), 0, 0, 1, 1)
         grid.addWidget(self._bar, 1, 0, 1, 2)
