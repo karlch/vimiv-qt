@@ -70,13 +70,11 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
 
     _ID = 0
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, active: bool = False, last: "Mode" = None):
         super().__init__()
-        self.active = False
-        self.last_fallback = cast(Mode, None)  # Initialized to a mode in _init()
+        self.active = active
+        self.last_fallback = self._last = cast(Mode, last)
         self.widget = cast(QWidget, None)  # Initialized to a QWidget using @widget
-
-        self._last = cast(Mode, None)  # Initialized to a mode in _init()
         self._name = name
 
         # Store global ID as ID and increase it by one
@@ -246,11 +244,14 @@ class _CommandMode(Mode):
 
 # Create all modes
 GLOBAL = _MainMode("global")
-IMAGE = _MainMode("image")
-LIBRARY = _MainMode("library")
-THUMBNAIL = _MainMode("thumbnail")
-COMMAND = _CommandMode("command")
-MANIPULATE = _MainMode("manipulate")
+IMAGE = _MainMode("image", active=True)
+LIBRARY = _MainMode("library", last=IMAGE)
+THUMBNAIL = _MainMode("thumbnail", last=IMAGE)
+COMMAND = _CommandMode("command", last=IMAGE)
+MANIPULATE = _MainMode("manipulate", last=IMAGE)
+# This cannot be done in the constructor as the constructor of LIBRARY requires IMAGE
+# and vice-versa
+IMAGE.last = IMAGE.last_fallback = LIBRARY
 
 
 # Utility tuples to allow iterating
@@ -264,16 +265,3 @@ def current() -> Mode:
         if mode.active:
             return mode
     raise InvalidMode("No active mode")
-
-
-def _init() -> None:
-    """Initialize default values for each mode."""
-    for _mode in ALL:
-        if _mode == IMAGE:
-            _mode.active = True  # Default mode
-            _mode.last = _mode.last_fallback = LIBRARY
-        else:
-            _mode.last = _mode.last_fallback = IMAGE
-
-
-_init()
