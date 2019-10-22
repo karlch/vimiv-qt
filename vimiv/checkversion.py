@@ -55,7 +55,7 @@ def _exit_version(software, required, installed):
     """Call exit for out-of-date software."""
     _exit(
         "At least %s %s is required to run vimiv. Using %s.\n"
-        % (software, ".".join(map(str, required)), ".".join(map(str, installed)))
+        % (software, join_version_tuple(required), join_version_tuple(installed))
     )
 
 
