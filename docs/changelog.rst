@@ -11,6 +11,9 @@ Added:
 ^^^^^^
 
 * Elements in library and thumbnail can be selected with a mouse double click.
+* Library and thumbnail selection color is dimmed when the corresponding widget is not
+  focused. It comes with the style options ``library.selected.bg.unfocus`` and
+  ``thumbnail.selected.bg.unfocus``.
 
 Changed:
 ^^^^^^^^

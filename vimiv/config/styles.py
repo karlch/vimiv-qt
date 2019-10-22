@@ -73,6 +73,7 @@ class Style(dict):
         self["library.even.bg"] = "{base01}"
         self["library.odd.bg"] = "{base01}"
         self["library.selected.bg"] = "{base0d}"
+        self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
         self["library.selected.fg"] = "{base07}"
         self["library.search.highlighted.fg"] = "{base01}"
         self["library.search.highlighted.bg"] = "{base04}"
@@ -96,6 +97,7 @@ class Style(dict):
         self["thumbnail.bg"] = "{image.bg}"
         self["thumbnail.padding"] = "20"
         self["thumbnail.selected.bg"] = "{library.selected.bg}"
+        self["thumbnail.selected.bg.unfocus"] = "{library.selected.bg.unfocus}"
         self["thumbnail.search.highlighted.bg"] = "{library.search.highlighted.bg}"
         self["thumbnail.default.bg"] = "{statusbar.info}"
         self["thumbnail.error.bg"] = "{statusbar.error}"
@@ -127,12 +129,8 @@ class Style(dict):
         self["manipulate.image.border.color"] = "{base0c}"
         # Mark
         self["mark.color"] = "{base0e}"
-        # Metadata overlay with added alpha channel if not there already
-        self["metadata.bg"] = (
-            self["{statusbar.bg}"].replace("#", "#AA")
-            if len(self["{statusbar.bg}"]) == 7
-            else self["{statusbar.bg}"]
-        )
+        # Metadata overlay
+        self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
         self["metadata.padding"] = "{keyhint.padding}"
         self["metadata.border_radius"] = "{keyhint.border_radius}"
 
@@ -169,6 +167,12 @@ class Style(dict):
                 f"{color} is not a valid html color. "
                 "Supported formats are #RRGGBB and #AARRGGBB."
             )
+
+    @staticmethod
+    def add_alpha(color: str, alpha: str):
+        """Add alpha channel to color if it is not there already."""
+        assert len(alpha) == 2, "Require 2 characters to define alpha"
+        return color.replace("#", f"#{alpha}") if len(color) == 7 else color
 
 
 def parse():

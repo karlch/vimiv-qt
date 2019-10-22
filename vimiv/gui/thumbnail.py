@@ -402,6 +402,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # QColor options for background drawing
         self.bg = QColor(styles.get("thumbnail.bg"))
         self.selection_bg = QColor(styles.get("thumbnail.selected.bg"))
+        self.selection_bg_unfocus = QColor(styles.get("thumbnail.selected.bg.unfocus"))
         self.search_bg = QColor(styles.get("thumbnail.search.highlighted.bg"))
         self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = int(styles.get("thumbnail.padding"))
@@ -499,7 +500,9 @@ class ThumbnailDelegate(QStyledItemDelegate):
             state: State of the index indicating selected.
         """
         if state & QStyle.State_Selected:
-            return self.selection_bg
+            if api.modes.current() == api.modes.THUMBNAIL:
+                return self.selection_bg
+            return self.selection_bg_unfocus
         if self.parent().is_highlighted(index):
             return self.search_bg
         return self.bg

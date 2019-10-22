@@ -426,6 +426,7 @@ class LibraryDelegate(QStyledItemDelegate):
 
         # QColor options for background drawing
         self.selection_bg = QColor(styles.get("library.selected.bg"))
+        self.selection_bg_unfocus = QColor(styles.get("library.selected.bg.unfocus"))
         self.even_bg = QColor(styles.get("library.even.bg"))
         self.odd_bg = QColor(styles.get("library.odd.bg"))
         self.search_bg = QColor(styles.get("library.search.highlighted.bg"))
@@ -511,7 +512,9 @@ class LibraryDelegate(QStyledItemDelegate):
             state: State of the index indicating selected.
         """
         if state & QStyle.State_Selected:
-            return self.selection_bg
+            if api.modes.current() == api.modes.LIBRARY:
+                return self.selection_bg
+            return self.selection_bg_unfocus
         if index.model().is_highlighted(index):
             return self.search_bg
         if index.row() % 2:
