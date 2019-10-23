@@ -121,7 +121,9 @@ class KeybindingsPopUp(PopUp):
 
     def highlighted_search_str(self, search: str) -> str:
         """Current search string wrapped in a highlight color span."""
-        return utils.wrap_style_span(f"color: {self._highlight_color}", search)
+        return utils.add_html(
+            utils.wrap_style_span(f"color: {self._highlight_color}", search), "b", "u"
+        )
 
     def _update_text(self, search: str = None) -> None:
         """Update keybinding-command text for all columns.

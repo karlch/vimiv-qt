@@ -32,14 +32,16 @@ except ImportError:
 Number = TypeVar("Number", int, float)
 
 
-def add_html(tag: str, text: str) -> str:
-    """Surround text in a html tag.
+def add_html(text: str, *tags: str) -> str:
+    """Surround text html tags.
 
     Args:
-        tag: Tag to use, e.g. b.
         text: The text to surround.
+        tags: Tuple of tags to use, e.g. "b", "i".
     """
-    return f"<{tag}>{text}</{tag}>"
+    for tag in tags:
+        text = f"<{tag}>{text}</{tag}>"
+    return text
 
 
 def wrap_style_span(style: str, text: str) -> str:

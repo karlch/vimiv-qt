@@ -392,7 +392,7 @@ class LibraryModel(QStandardItemModel):
             name = os.path.basename(path)
             marked = path in api.mark.paths
             if are_directories:
-                name = utils.add_html("b", name + "/")
+                name = utils.add_html(name + "/", "b")
             with suppress(FileNotFoundError):  # Has been deleted in the meantime
                 size = files.get_size(path)
                 self.appendRow(
