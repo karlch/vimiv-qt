@@ -48,5 +48,5 @@ class Slideshow(QTimer):
         """Indicator if slideshow is running."""
         return api.settings.slideshow.indicator.value if self.isActive() else ""
 
-    def _on_delay_changed(self, value: int):
+    def _on_delay_changed(self, value: float):
         self.setInterval(int(value * 1000))
