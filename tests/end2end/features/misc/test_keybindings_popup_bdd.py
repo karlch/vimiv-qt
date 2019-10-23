@@ -8,7 +8,7 @@ import pytest
 import pytest_bdd as bdd
 
 import vimiv.gui.keybindings_popup
-from vimiv import utils
+from vimiv import api, utils
 
 bdd.scenarios("keybindings_popup.feature")
 
@@ -30,6 +30,17 @@ def press_keys_popup(keybindings_popup, qtbot, keys):
 @bdd.then(bdd.parsers.parse("the keybindings pop up should contain '{text}'"))
 def check_keybindings_popup_text(keybindings_popup, text):
     assert text in keybindings_popup.text
+
+
+@bdd.then(bdd.parsers.parse("the keybindings pop up should describe '{command}'"))
+def check_keybindings_popup_description(keybindings_popup, command):
+    description = api.commands.get(command, api.modes.current()).description
+    assert description in keybindings_popup.description
+
+
+@bdd.then("the keybindings pop up description should be empty")
+def check_keybindings_popup_description_empty(keybindings_popup):
+    assert not keybindings_popup.description
 
 
 @bdd.then(bdd.parsers.parse("'{search}' should be highlighted in '{command}'"))

@@ -31,3 +31,10 @@ Feature: Keybindings command with pop up window with the keybindings for current
         When I run keybindings
         And I type 'comm' in the pop up
         Then 'comm' should be highlighted in 'command'
+        Then the keybindings pop up should describe 'command'
+
+    Scenario: Do not describe single command matches
+        Given I start vimiv
+        When I run keybindings
+        And I type 'a' in the pop up
+        Then the keybindings pop up description should be empty

@@ -6,7 +6,7 @@
 
 """Pop-up window to display keybindings of current mode."""
 
-from typing import List, Tuple, Iterator
+from typing import List, Tuple, Iterator, Set
 
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QLayout, QLineEdit
 
@@ -33,6 +33,8 @@ class KeybindingsPopUp(PopUp):
         _highlight_color: Color used to highlight matching search results.
         _labels: List of labels to display keybinding-command text per column.
         _search: Line edit widget to search for commands.
+        _search_matches: Set of commands that match the current search.
+        _description_label: Label to display a description of matching commands.
     """
 
     TITLE = f"{vimiv.__name__} - keybindings"
@@ -56,6 +58,8 @@ class KeybindingsPopUp(PopUp):
         self._highlight_color = styles.get("keybindings.highlight.color")
         self._labels: List[QLabel] = []
         self._search = QLineEdit()
+        self._search_matches: Set[str] = set()
+        self._description_label = QLabel()
 
         self._search.setPlaceholderText("search")
 
@@ -67,6 +71,7 @@ class KeybindingsPopUp(PopUp):
             self._labels.append(label)
             content_layout.addWidget(label)
         layout.addLayout(content_layout)
+        layout.addWidget(self._description_label)
         layout.addWidget(self._search)
         self.setLayout(layout)
 
@@ -82,6 +87,11 @@ class KeybindingsPopUp(PopUp):
     def text(self) -> str:
         """Complete keybinding/command text displayed in all columns."""
         return "\n".join(label.text() for label in self._labels)
+
+    @property
+    def description(self) -> str:
+        """Text of the description label for matching commands."""
+        return self._description_label.text()
 
     @property
     def column_count(self) -> int:
@@ -109,7 +119,7 @@ class KeybindingsPopUp(PopUp):
         """
         text = ""
         for binding, command in bindings:
-            if search:
+            if search and search in command:
                 command = command.replace(search, highlight)
             text += (
                 "<tr>"
@@ -125,6 +135,16 @@ class KeybindingsPopUp(PopUp):
             utils.wrap_style_span(f"color: {self._highlight_color}", search), "b", "u"
         )
 
+    def update_search_matches(
+        self, search: str, bindings: List[Tuple[str, str]]
+    ) -> None:
+        """Add names of commands that match the current search to the match set."""
+        self._search_matches |= {
+            command.split(maxsplit=1)[0]
+            for _, command in bindings
+            if search in command.split(maxsplit=1)[0]
+        }
+
     def _update_text(self, search: str = None) -> None:
         """Update keybinding-command text for all columns.
 
@@ -138,6 +158,26 @@ class KeybindingsPopUp(PopUp):
         search = search if search is not None else self._search.text()
         search = search.strip()
         highlight = self.highlighted_search_str(search)
+        self._search_matches.clear()
 
         for label, bindings in zip(self._labels, self.column_bindings()):
             label.setText(self.column_text(search, highlight, bindings))
+            self.update_search_matches(search, bindings)
+
+        self._update_description(search, highlight)
+
+    def _update_description(self, search, highlight):
+        """Update text of the description label with new search results."""
+        if len(search) < 2:  # Do not print many matches for single character search
+            self._description_label.clear()
+            return
+        text = ""
+        for command_name in sorted(self._search_matches):
+            command = api.commands.get(command_name, api.modes.current())
+            text += (
+                "<tr>"
+                f"<td>{command_name.replace(search, highlight)}</td>"
+                f"<td style='padding-left: 2ex'>{command.description}</td>"
+                "</tr>"
+            )
+        self._description_label.setText(text)
