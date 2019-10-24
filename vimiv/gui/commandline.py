@@ -79,9 +79,7 @@ class CommandLine(KeyHandler, QLineEdit):
         self.textEdited.connect(self._on_text_edited)
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
-        QCoreApplication.instance().aboutToQuit.connect(  # type: ignore
-            self._on_app_quit
-        )
+        QCoreApplication.instance().aboutToQuit.connect(self._on_app_quit)
         api.modes.COMMAND.entered.connect(self._on_entered)
 
         styles.apply(self)

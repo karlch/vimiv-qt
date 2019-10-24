@@ -81,7 +81,7 @@ class History(collections.UserList):
             self._temporary_element_stored = False
             self._substr_matches = []
 
-    def insert(self, command: str):
+    def insert(self, command):
         """Insert a command into the history.
 
         Overridden parent function as the index is always 0 and the list should

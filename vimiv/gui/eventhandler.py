@@ -9,7 +9,7 @@
 import string
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QKeyEvent
 
 from vimiv import api, utils
 from vimiv.commands import runners, search
@@ -107,7 +107,7 @@ class KeyHandler:
 
     partial_handler = PartialHandler()
 
-    def keyPressEvent(self, event):
+    def keyPressEvent(self, event: QKeyEvent):
         """Handle key press event for the widget.
 
         Args:

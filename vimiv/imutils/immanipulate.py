@@ -93,7 +93,7 @@ class Manipulation(QObject):
 
         self.value, self._init_value = value, init_value
 
-        self.slider.valueChanged.connect(self._on_value_changed)
+        self.slider.valueChanged.connect(self._on_value_changed)  # type: ignore
 
     @property
     def value(self) -> int:
