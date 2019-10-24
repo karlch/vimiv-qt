@@ -471,6 +471,10 @@ class statusbar:  # pylint: disable=invalid-name
         "statusbar.left_thumbnail",
         "{thumbnail-index}/{thumbnail-total} {thumbnail-name}",
     )
+    StrSetting(
+        "statusbar.left_manipulate",
+        "{basename}   {image-size}   Modified: {modified}   {processing}",
+    )
     StrSetting("statusbar.center_thumbnail", "{thumbnail-size}")
     StrSetting("statusbar.center", "{slideshow-indicator} {slideshow-delay}")
     StrSetting("statusbar.right", "{keys}  {mark-count}  {mode}")

@@ -17,6 +17,8 @@ Added:
 * Pop-up window to show keybindings for current mode. It can be shown with the
   ``:keybindings`` command and comes with the style options
   ``keybindings.bindings.color`` and ``keybindings.highlight.color``.
+* Default left statusbar setting for manipulate mode showing basename, image size,
+  modification date and the processing indicator
 
 Changed:
 ^^^^^^^^
