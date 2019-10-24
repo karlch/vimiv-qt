@@ -10,13 +10,12 @@ Module Attribute:
     _aliases: Dictionary storing aliases initialized with defaults.
 """
 
-import collections
 from typing import List
 
 from vimiv import api
 
 
-class Aliases(collections.UserDict):
+class Aliases(dict):
     """Store and receive aliases for every mode."""
 
     def __init__(self):

@@ -33,7 +33,6 @@ earth with ``ge`` we could use::
         print("hello", name)
 """
 
-import collections
 from contextlib import suppress
 from typing import Callable, ItemsView, List, Union, Tuple, Iterable
 
@@ -102,7 +101,7 @@ def _check_duplicate_binding(keybinding: str, command: str, mode: modes.Mode) ->
         )
 
 
-class _Bindings(collections.UserDict):
+class _Bindings(dict):
     """Store keybindings of one mode.
 
     Essentially a simple python dictionary which is stored in the module
