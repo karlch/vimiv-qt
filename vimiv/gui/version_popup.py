@@ -18,11 +18,9 @@ class VersionPopUp(PopUp):
 
     Class Attributes:
         TITLE: Window title used for the pop up.
-        URL: Url to the vimiv website.
     """
 
     TITLE = f"{vimiv.__name__} - version"
-    URL = "https://karlch.github.io/vimiv-qt/"
 
     def __init__(self, parent=None):
         super().__init__(self.TITLE, parent=parent)
@@ -34,7 +32,7 @@ class VersionPopUp(PopUp):
         layout = QVBoxLayout()
         layout.addWidget(QLabel(vimiv.version.detailed_info()))
         layout.addWidget(
-            QLabel("Website: <a href='{url}'>{url}</a>".format(url=self.URL))
+            QLabel("Website: <a href='{url}'>{url}</a>".format(url=vimiv.__url__))
         )
         button = QPushButton("&Copy version info to clipboard")
         button.clicked.connect(self.copy_to_clipboard)
