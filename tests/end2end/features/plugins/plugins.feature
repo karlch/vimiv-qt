@@ -8,6 +8,7 @@ Feature: Plugin system with default plugins
              'print: No widget to print'
              should be displayed
 
+    @flaky
     Scenario: Show print dialog
         Given I open any image
         When I run print
