@@ -6,54 +6,102 @@
 
 """Tests for commands.history."""
 
-from vimiv.commands import history
+import pytest
+
+import vimiv.commands.history
 from vimiv.commands.argtypes import HistoryDirection
 
 
-def test_update_history():
-    hist = history.History([])
-    hist.update("test")
-    assert "test" in hist
+PREFIXES = ":?/"
+CYCLE_HISTORY = [":first", ":second", ":third"]
+SUBSTR_HISTORY = [":first", ":final", ":useless"]
+MIXED_HISTORY = [prefix + text for text in ("first", "second") for prefix in PREFIXES]
 
 
-def test_update_history_with_duplicates():
-    hist = history.History([])
-    hist.update("test")
-    hist.update("test")
-    assert len(hist) == 1
+@pytest.fixture()
+def history():
+    yield vimiv.commands.history.History(PREFIXES, [], max_items=20)
 
 
-def test_never_exceed_history_max_elements():
-    hist = history.History([], 20)
-    for i in range(25):
-        hist.update("test-%d" % (i))
-    assert len(hist) == 20
+@pytest.fixture()
+def cycle_history():
+    yield vimiv.commands.history.History(PREFIXES, CYCLE_HISTORY, max_items=20)
 
 
-def test_cycle_through_history():
-    hist = history.History(["first", "second", "third"])
-    assert hist.cycle(HistoryDirection.Next, "temporary") == "first"
-    assert hist.cycle(HistoryDirection.Next, "") == "second"
-    assert hist.cycle(HistoryDirection.Prev, "") == "first"
-    assert hist.cycle(HistoryDirection.Prev, "") == "temporary"
+@pytest.fixture()
+def substr_history():
+    yield vimiv.commands.history.History(PREFIXES, SUBSTR_HISTORY, max_items=20)
 
 
-def test_do_not_fail_cycle_on_empty_history():
-    hist = history.History([])
-    result = hist.cycle(HistoryDirection.Next, "temporary")
-    assert result == ""
+@pytest.fixture()
+def mixed_history():
+    yield vimiv.commands.history.History(PREFIXES, MIXED_HISTORY, max_items=20)
 
 
-def test_clear_temporary_history_element():
-    hist = history.History(["first"])
-    hist.cycle(HistoryDirection.Next, "temporary")
-    hist.update("second")
-    assert "temporary" not in hist
+def test_update_history(history):
+    history.update(":test")
+    assert ":test" in history
 
 
-def test_substring_search_history():
-    hist = history.History(["first", "final", "useless"])
-    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "first"
-    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "final"
-    assert hist.substr_cycle(HistoryDirection.Next, "fi") == "fi"
-    assert hist.substr_cycle(HistoryDirection.Prev, "fi") == "final"
+def test_fail_update_history_invalid_prefix(history):
+    with pytest.raises(ValueError):
+        history.update("test")
+
+
+def test_fail_update_history_empty_command(history):
+    with pytest.raises(ValueError):
+        history.update("")
+
+
+def test_update_history_with_duplicates(history):
+    for _ in range(3):
+        history.update(":test")
+    assert len(history) == 1
+
+
+def test_never_exceed_history_max_elements(history):
+    for i in range(history.maxlen + 5):
+        history.update(":test-%d" % (i))
+    assert len(history) == history.maxlen
+
+
+def test_do_not_fail_cycle_on_empty_history(history):
+    expected = ":temporary"
+    result = history.cycle(HistoryDirection.Next, expected)
+    assert result == expected
+
+
+def test_do_not_store_temporary_history_element(history):
+    history.cycle(HistoryDirection.Next, ":temporary")
+    assert ":temporary" not in history
+
+
+def test_cycle_through_history(cycle_history):
+    start = ":start"
+    for expected in CYCLE_HISTORY:
+        assert cycle_history.cycle(HistoryDirection.Next, start) == expected
+    assert cycle_history.cycle(HistoryDirection.Next, start) == start
+
+
+def test_cycle_reverse_through_history(cycle_history):
+    start = ":start"
+    for expected in CYCLE_HISTORY[::-1]:
+        assert cycle_history.cycle(HistoryDirection.Prev, start) == expected
+    assert cycle_history.cycle(HistoryDirection.Prev, start) == start
+
+
+def test_substr_search_history(substr_history):
+    start = SUBSTR_HISTORY[0][:2]
+    matches = [elem for elem in SUBSTR_HISTORY if elem.startswith(start)]
+    for expected in matches:
+        assert substr_history.substr_cycle(HistoryDirection.Next, start) == expected
+    assert substr_history.substr_cycle(HistoryDirection.Next, start) == start
+
+
+@pytest.mark.parametrize("prefix", PREFIXES)
+def test_do_not_mix_prefixes(mixed_history, prefix):
+    start = prefix + "start"
+    matches = [elem for elem in MIXED_HISTORY if elem.startswith(prefix)]
+    for expected in matches:
+        assert mixed_history.cycle(HistoryDirection.Next, start) == expected
+    assert mixed_history.substr_cycle(HistoryDirection.Next, start) == start

@@ -6,9 +6,9 @@
 
 """Functions to read and write command history."""
 
-import collections
 import os
-from typing import List
+from collections import deque
+from typing import List, Iterable, Optional, Deque
 
 from vimiv.commands import argtypes
 from vimiv.utils import xdg
@@ -42,44 +42,41 @@ def write(commands: List[str]):
             f.write(command + "\n")
 
 
-class History(collections.deque):
+class History(deque):
     """Store and interact with command line history.
 
-    Implemented as a deque which stores the commands in the history.
+    Implemented as a deque which stores the commands in the history. Commands with
+    different prefixes are not mixed when cycling through history.
 
     Attributes:
-        _index: Index of the currently %% command.
-        _max_items: Integer defining the maximum amount of items to store.
-        _temporary_element_stored: Bool telling if a temporary text stored in
-            history during cycle.
+        _prefixes: Valid prefixes for commands to store.
+        _tmpdeque: Temporary deque used when cycling through history.
     """
 
-    def __init__(self, commands, max_items=100):
+    def __init__(self, prefixes: str, commands: Iterable[str], max_items: int = 100):
         super().__init__(commands, maxlen=max_items)
-        self._index = 0
-        self._temporary_element_stored = False
-        self._substr_matches: List[str] = []
+        self._prefixes = prefixes
+        self._tmpdeque: Optional[Deque[str]] = None
 
-    def update(self, command: str):
+    def update(self, command: str) -> None:
         """Update history with a new command.
 
         Args:
             command: New command to be inserted.
         """
-        self.reset()
-        if command in self:
+        if not command or command[0] not in self._prefixes:
+            raise ValueError(
+                f"Invalid history command, must start with one of {self._prefixes}"
+            )
+        while command in self:
             self.remove(command)
         self.appendleft(command)
 
-    def reset(self):
-        """Reset history when command was run."""
-        self._index = 0
-        if self._temporary_element_stored:
-            self.popleft()
-            self._temporary_element_stored = False
-            self._substr_matches = []
+    def reset(self) -> None:
+        """Reset history cycling."""
+        self._tmpdeque = None
 
-    def cycle(self, direction: argtypes.HistoryDirection, text: str):
+    def cycle(self, direction: argtypes.HistoryDirection, text: str) -> str:
         """Cycle through command history.
 
         Called from the command line by the history command.
@@ -88,20 +85,11 @@ class History(collections.deque):
             direction: HistoryDirection element.
             text: Current text in the command line.
         Returns:
-            The received command string to set in the command line.
+            The received command to set in the command line.
         """
-        if not self:
-            return ""
-        if not self._temporary_element_stored:
-            self.appendleft(text)
-            self._temporary_element_stored = True
-        if direction == direction.Next:
-            self._index = (self._index + 1) % len(self)
-        else:
-            self._index = (self._index - 1) % len(self)
-        return self[self._index]
+        return self._cycle_tmpdeque(direction, text, match=text[0])
 
-    def substr_cycle(self, direction: argtypes.HistoryDirection, text: str):
+    def substr_cycle(self, direction: argtypes.HistoryDirection, text: str) -> str:
         """Cycle through command history with substring matching.
 
         Called from the command line by the history-substr-search command.
@@ -110,18 +98,27 @@ class History(collections.deque):
             direction: HistoryDirection element.
             text: Current text in the command line used as substring.
         Returns:
-            The received command string to set in the command line.
+            The received command to set in the command line.
         """
-        if not self:
-            return ""
-        if not self._temporary_element_stored:
-            self.appendleft(text)
-            self._temporary_element_stored = True
-            for command in self:
-                if text in command:
-                    self._substr_matches.append(command)
-        if direction == direction.Next:
-            self._index = (self._index + 1) % len(self._substr_matches)
-        else:
-            self._index = (self._index - 1) % len(self._substr_matches)
-        return self._substr_matches[self._index]
+        return self._cycle_tmpdeque(direction, text, match=text)
+
+    def _cycle_tmpdeque(
+        self, direction: argtypes.HistoryDirection, text: str, match: str
+    ) -> str:
+        """Cycle through the temporary deque of matching history elements.
+
+        If there is no temporary deque, a new cycle is started by creating a temporary
+        deque with all commands in history starting with match.
+
+        Args:
+            direction: HistoryDirection element.
+            text: Current text in the command line to prepend to temporary deque.
+            match: Text to filter commands by when creating temporary deque.
+        Returns:
+            The received command to set in the command line.
+        """
+        if self._tmpdeque is None:
+            self._tmpdeque = deque(cmd for cmd in self if cmd.startswith(match))
+            self._tmpdeque.appendleft(text)
+        self._tmpdeque.rotate(-1 if direction == direction.Next else 1)
+        return self._tmpdeque[0]

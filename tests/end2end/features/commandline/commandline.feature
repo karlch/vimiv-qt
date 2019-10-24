@@ -39,6 +39,18 @@ Feature: Use the command line.
         And I run history-substr-search next
         Then the text in the command line should be :next
 
+    Scenario: Do not remove prefix on empty history
+        When I run command
+        And I run history next
+        Then the text in the command line should be :
+
+    Scenario: Do not mix search and command history
+        When I run command --text next
+        And I activate the command line
+        And I run search
+        And I run history next
+        Then the text in the command line should be /
+
     Scenario: Close command line when prefix is deleted
         When I run command
         And I hit backspace

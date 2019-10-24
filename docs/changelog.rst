@@ -43,6 +43,7 @@ Fixed:
 * Status messages are shown even if the bar is hidden.
 * Setting the style option from the command-line via ``-s style NAME``.
 * Crash when passing an invalid mode to commands.
+* Mixing command and search history when cycling history without substring match.
 
 Removed:
 ^^^^^^^^
