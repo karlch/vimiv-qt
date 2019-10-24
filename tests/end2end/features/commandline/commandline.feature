@@ -55,3 +55,8 @@ Feature: Use the command line.
         When I run command
         And I hit backspace
         Then the mode should not be command
+
+    Scenario: Show command help on -h
+        When I run command --text='open-selected -h'
+        And I activate the command line
+        Then the help for 'open-selected' should be displayed

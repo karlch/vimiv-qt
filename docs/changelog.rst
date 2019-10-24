@@ -32,6 +32,8 @@ Changed:
 * Class instances can now be retrieved from the object registry via ``Class.instance``
   instead of ``objreg.get(Class)``. The old syntax has been deprecated and will be
   removed in `v0.4.0`.
+* Show full command desctiption on ``:command -h`` instead of the default help created
+  by argparse.
 
 Fixed:
 ^^^^^^

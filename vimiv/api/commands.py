@@ -111,14 +111,19 @@ def register(
 
     def decorator(func: typing.Callable) -> typing.Callable:
         name = _get_command_name(func)
-        desc = _get_description(func, name)
-        arguments = _CommandArguments(name, desc, func)
+        description = inspect.getdoc(func)
+        if description is None:
+            log.error("Command %s for %s is missing docstring.", name, func)
+            description = short_description = ""
+        else:
+            short_description = description.split("\n", maxsplit=1)[0]
+        arguments = _CommandArguments(name, description, func)
         cmd = _Command(
             name,
             func,
             arguments,
             mode=mode,
-            description=desc,
+            description=short_description,
             hide=hide,
             hook=hook,
             store=store,
@@ -157,6 +162,10 @@ class CommandError(Exception):
 
 class CommandWarning(Exception):
     """Raised if a command wants to show the user a warning."""
+
+
+class CommandInfo(Exception):
+    """Raised if a command wants to show the user an info."""
 
 
 class CommandNotFound(Exception):
@@ -209,7 +218,7 @@ class _CommandArguments(argparse.ArgumentParser):
 
     def print_help(self, _file: typing.IO = None) -> typing.NoReturn:
         """Override help message to display in statusbar."""
-        raise ArgumentError(self.format_help().rstrip())
+        raise CommandInfo(self.description)
 
     def parse_args(self, args: typing.List[str]) -> argparse.Namespace:  # type: ignore
         """Override parse_args to sort and flatten paths list in addition."""
@@ -349,19 +358,3 @@ class _Command:  # pylint: disable=too-many-instance-attributes
 def _get_command_name(func: typing.Callable) -> str:
     """Retrieve command name from name of function object."""
     return func.__name__.lower().replace("_", "-")
-
-
-def _get_description(func: typing.Callable, name: str) -> str:
-    """Retrive the command description from function docstring.
-
-    Args:
-        func: Python function object to retrieve the docstring from.
-        name: Name of the command to retrieve the description for.
-    Returns:
-        The string description of the command.
-    """
-    docstr = inspect.getdoc(func)
-    if docstr is None:
-        log.error("Command %s for %s is missing docstring.", name, func)
-        return ""
-    return docstr.split("\n")[0]  # First line of docstring as description

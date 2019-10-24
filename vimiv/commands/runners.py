@@ -166,6 +166,9 @@ def _run_command(count, cmdname, args, mode):
     except api.commands.CommandWarning as w:
         log.warning("%s: %s", cmdname, str(w))
         raise CommandPartFailed from w
+    except api.commands.CommandInfo as i:
+        log.info("%s: %s", cmdname, i)
+        raise CommandPartFailed from i
 
 
 def _parse(text):
