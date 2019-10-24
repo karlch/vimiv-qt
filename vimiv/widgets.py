@@ -8,7 +8,7 @@
 
 from PyQt5.QtCore import QItemSelectionModel, Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
-from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider
+from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
 from vimiv.config import styles
 from vimiv.utils import cached_method
@@ -120,3 +120,38 @@ class SliderWithValue(QSlider):
         }}
         """
         styles.apply(self, append=sheet)
+
+
+class PopUp(QDialog):
+    """Base class for pop-up windows to ensure consistent styling and behaviour."""
+
+    STYLESHEET = """
+    QDialog {
+        background: {image.bg};
+    }
+    QLabel {
+        color: {statusbar.fg};
+        font: {library.font}
+    }
+    QPushButton {
+        font: {statusbar.font};
+        background-color: {statusbar.bg};
+        border: 0px;
+        padding: 4px;
+        color: {statusbar.fg};
+    }
+    QPushButton:pressed {
+        background-color: {library.selected.bg};
+    }
+    """
+
+    def __init__(self, title: str, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle(title)
+        self.setWindowFlags(self.windowFlags() | Qt.Tool)  # type: ignore
+        styles.apply(self)
+
+    def reject(self):
+        """Override reject to additionally delete the QObject."""
+        super().reject()
+        self.deleteLater()

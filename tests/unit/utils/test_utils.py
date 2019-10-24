@@ -16,7 +16,11 @@ from vimiv import utils
 
 
 def test_add_html():
-    assert utils.add_html("b", "hello") == "<b>hello</b>"
+    assert utils.add_html("hello", "b") == "<b>hello</b>"
+
+
+def test_add_html_multiple():
+    assert utils.add_html("hello", "b", "i") == "<i><b>hello</b></i>"
 
 
 def test_strip_html():

@@ -129,6 +129,9 @@ class Style(dict):
         self["manipulate.image.border.color"] = "{base0c}"
         # Mark
         self["mark.color"] = "{base0e}"
+        # Keybindings popup
+        self["keybindings.bindings.color"] = "{keyhint.suffix_color}"
+        self["keybindings.highlight.color"] = "{mark.color}"
         # Metadata overlay
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
         self["metadata.padding"] = "{keyhint.padding}"
@@ -150,7 +153,7 @@ class Style(dict):
     @staticmethod
     def is_color_option(name: str):
         """Return True if the style option name corresponds to a color."""
-        return name.strip("{}").endswith((".fg", ".bg"))
+        return name.strip("{}").endswith((".fg", ".bg", ".color"))
 
     @staticmethod
     def check_valid_color(color: str):

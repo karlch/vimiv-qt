@@ -23,6 +23,7 @@ from .manipulate import Manipulate, ManipulateImage
 from .thumbnail import ThumbnailView
 from .version_popup import VersionPopUp
 from .metadata_widget import MetadataWidget
+from .keybindings_popup import KeybindingsPopUp
 
 
 class MainWindow(QWidget):
@@ -88,6 +89,18 @@ class MainWindow(QWidget):
             VersionPopUp.copy_to_clipboard()
         else:
             VersionPopUp(parent=self)
+
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register()
+    def keybindings(self, columns: int = 2):
+        """Show a pop-up with keybindings information.
+
+        **syntax:** ``:keybindings [--columns=N]``
+
+        optional arguments:
+            * ``--columns``: Number of columns to split the bindings in.
+        """
+        KeybindingsPopUp(columns, parent=self)
 
     def resizeEvent(self, event):
         """Update resize event to resize overlays and library.

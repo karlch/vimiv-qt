@@ -32,14 +32,16 @@ except ImportError:
 Number = TypeVar("Number", int, float)
 
 
-def add_html(tag: str, text: str) -> str:
-    """Surround text in a html tag.
+def add_html(text: str, *tags: str) -> str:
+    """Surround text html tags.
 
     Args:
-        tag: Tag to use, e.g. b.
         text: The text to surround.
+        tags: Tuple of tags to use, e.g. "b", "i".
     """
-    return f"<{tag}>{text}</{tag}>"
+    for tag in tags:
+        text = f"<{tag}>{text}</{tag}>"
+    return text
 
 
 def wrap_style_span(style: str, text: str) -> str:
@@ -62,6 +64,10 @@ def strip_html(text: str) -> str:
     """
     stripper = re.compile("<.*?>")
     return re.sub(stripper, "", text)
+
+
+def escape_html(text: str) -> str:
+    return text.replace("<", "&lt;").replace(">", "&gt;")
 
 
 def clamp(
@@ -245,6 +251,15 @@ class Pool:
 def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
+
+
+def split(a, n):
+    """Split list into n parts of approximately equal length.
+
+    See https://stackoverflow.com/questions/2130016 for details.
+    """
+    k, m = divmod(len(a), n)
+    return (a[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
 def recursive_split(
