@@ -245,7 +245,7 @@ class TagModel(api.completion.BaseModel):
     """
 
     def __init__(self, suffix):
-        super().__init__(f":tag-{suffix}", valid_modes=api.modes.GLOBALS)
+        super().__init__(f":tag-{suffix} ", valid_modes=api.modes.GLOBALS)
         self._command = f"tag-{suffix}"
 
     def on_enter(self, text: str) -> None:
@@ -255,6 +255,35 @@ class TagModel(api.completion.BaseModel):
             (f"{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
         )
         self.set_data(data)
+
+
+class HelpModel(api.completion.BaseModel):
+    """Completion model filled with options for :help."""
+
+    def __init__(self):
+        super().__init__(
+            ":help", column_widths=(0.3, 0.7), text_filter=StripFilter("help")
+        )
+        self._general = [("help  vimiv", "General information")]
+        self._formatted_settings = [
+            (f"help {name}", setting.desc) for name, setting in api.settings.items()
+        ]
+
+    def on_enter(self, _text: str) -> None:
+        """Create help list for appropriate mode when model is entered."""
+        self.clear()
+        mode = api.modes.COMMAND.last
+        self.set_data(
+            self._general + self.formatted_commands(mode) + self._formatted_settings
+        )
+
+    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
+        """Return list of commands with description for this mode."""
+        return [
+            (f"help :{name}", command.description)
+            for name, command in api.commands.items(mode)
+        ]
 
 
 def init():
@@ -270,3 +299,4 @@ def init():
     for suffix in ("delete", "load", "write"):
         TagModel(suffix)
     TrashModel()
+    HelpModel()

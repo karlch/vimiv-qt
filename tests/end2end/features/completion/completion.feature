@@ -47,6 +47,14 @@ Feature: Using completion.
         When I enter command mode with "tag-write "
         Then the completion model should be tag
 
+    Scenario: Using help completion
+        Given I open any directory
+        When I enter command mode with "help "
+        Then the completion model should be help
+        And a possible completion should contain :open-selected
+        And a possible completion should contain library.width
+        And a possible completion should contain vimiv
+
     Scenario: Crash on path completion with non-existent directory
         Given I open any directory
         When I enter command mode with "open /not/a/valid/path"
