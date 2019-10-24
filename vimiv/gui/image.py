@@ -345,13 +345,8 @@ class ScrollableImage(KeyHandler, QScrollArea):
         This is either MIN_SIZE_SCALE or the scale which corresponds to
         MIN_SIZE_PIXEL.
         """
-        try:
-            widget_size = min(
-                self.widget().original.width(), self.widget().original.height()
-            )
-            return max(self.MIN_SIZE_SCALE, self.MIN_SIZE_PIXEL / widget_size)
-        except AttributeError:
-            return 0.01
+        widget_size = min(self.original_width(), self.original_height())
+        return max(self.MIN_SIZE_SCALE, self.MIN_SIZE_PIXEL / widget_size)
 
 
 class ImageLabel(QLabel):
