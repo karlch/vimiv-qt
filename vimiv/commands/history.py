@@ -42,10 +42,10 @@ def write(commands: List[str]):
             f.write(command + "\n")
 
 
-class History(collections.UserList):
+class History(collections.deque):
     """Store and interact with command line history.
 
-    Implemented as a list which stores the commands in the history.
+    Implemented as a deque which stores the commands in the history.
 
     Attributes:
         _index: Index of the currently %% command.
@@ -55,10 +55,8 @@ class History(collections.UserList):
     """
 
     def __init__(self, commands, max_items=100):
-        super().__init__()
-        self.extend(commands)
+        super().__init__(commands, maxlen=max_items)
         self._index = 0
-        self._max_items = max_items
         self._temporary_element_stored = False
         self._substr_matches: List[str] = []
 
@@ -71,27 +69,15 @@ class History(collections.UserList):
         self.reset()
         if command in self:
             self.remove(command)
-        self.insert(command)
+        self.appendleft(command)
 
     def reset(self):
         """Reset history when command was run."""
         self._index = 0
         if self._temporary_element_stored:
-            self.pop(i=0)
+            self.popleft()
             self._temporary_element_stored = False
             self._substr_matches = []
-
-    def insert(self, command):
-        """Insert a command into the history.
-
-        Overridden parent function as the index is always 0 and the list should
-        never exceed a maximum length.
-
-        Args:
-            command: New command to be inserted.
-        """
-        super().insert(0, command)
-        self.data = self.data[: self._max_items]
 
     def cycle(self, direction: argtypes.HistoryDirection, text: str):
         """Cycle through command history.
@@ -107,7 +93,7 @@ class History(collections.UserList):
         if not self:
             return ""
         if not self._temporary_element_stored:
-            self.insert(text)
+            self.appendleft(text)
             self._temporary_element_stored = True
         if direction == direction.Next:
             self._index = (self._index + 1) % len(self)
@@ -129,7 +115,7 @@ class History(collections.UserList):
         if not self:
             return ""
         if not self._temporary_element_stored:
-            self.insert(text)
+            self.appendleft(text)
             self._temporary_element_stored = True
             for command in self:
                 if text in command:
