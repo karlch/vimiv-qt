@@ -17,16 +17,6 @@ from vimiv.config import styles
 from .eventhandler import KeyHandler
 
 
-def _command_func(prefix, command, mode):
-    """Return callable function for command depending on prefix."""
-    if prefix == ":":
-        return lambda: runners.run(command, mode=mode)
-    # No need to search again if incsearch is enabled
-    if prefix in "/?" and not search.use_incremental(mode):
-        return lambda: search.search(command, mode, reverse=prefix == "?")
-    return lambda: None
-
-
 class UnknownPrefix(Exception):
     """Raised if a prefix in the command line is not known."""
 
@@ -92,13 +82,15 @@ class CommandLine(KeyHandler, QLineEdit):
         prefix, command = self._split_prefix(self.text())
         if not command:  # Only prefix entered
             return
-        # Write prefix to history as well for "separate" search history
         self._history.update(prefix + command)
-        # Retrieve function to call depending on prefix
-        func = _command_func(prefix, command, self.mode)
         # Run commands in QTimer so the command line has been left when the
         # command runs
-        QTimer.singleShot(0, func)
+        if prefix == ":":
+            QTimer.singleShot(0, lambda: runners.run(command, mode=self.mode))
+        elif not search.use_incremental(self.mode):
+            QTimer.singleShot(
+                0, lambda: search.search(command, self.mode, reverse=prefix == "?")
+            )
 
     def _split_prefix(self, text):
         """Remove prefix from text for command processing.
