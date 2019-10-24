@@ -63,7 +63,6 @@ class Completer(QObject):
         self._proxy_model.sourceModel().on_text_changed(
             self._proxy_model.filtertext(text)
         )
-        self._proxy_model.refilter(text)
 
     @utils.slot
     def _on_editing_finished(self):
@@ -84,6 +83,7 @@ class Completer(QObject):
             self._proxy_model = proxy_model
             self._completion.setModel(proxy_model)
             self._completion.update_column_widths()
+        self._proxy_model.refilter(text)
 
     def _maybe_show(self):
         """Show completion widget if the model is not empty."""

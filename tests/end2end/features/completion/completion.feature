@@ -135,3 +135,12 @@ Feature: Using completion.
         When I enter command mode with "open ./"
         Then the completion model should be path
         And a possible completion should contain ./child_01
+
+    Scenario: Show command completion after running invalid command
+        Given I start vimiv
+        When I run command
+        And I press notacommand
+        And I activate the command line
+        And I run command
+        Then the completion model should be command
+        And a possible completion should contain open-selected
