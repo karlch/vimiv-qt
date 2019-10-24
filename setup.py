@@ -37,6 +37,7 @@ def read_from_init(name):
 
 setuptools.setup(
     python_requires=">=3.6",
+    install_requires=["PyQt5>=5.9.2"],
     packages=setuptools.find_packages(),
     ext_modules=[manipulate_module],
     entry_points={"gui_scripts": ["vimiv = vimiv.startup:main"]},
