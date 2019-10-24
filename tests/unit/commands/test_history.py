@@ -105,3 +105,10 @@ def test_do_not_mix_prefixes(mixed_history, prefix):
     for expected in matches:
         assert mixed_history.cycle(HistoryDirection.Next, start) == expected
     assert mixed_history.substr_cycle(HistoryDirection.Next, start) == start
+
+
+def test_reset_when_cycle_mode_changed(substr_history):
+    start = SUBSTR_HISTORY[0][:2]
+    for expected in SUBSTR_HISTORY[:2]:
+        assert substr_history.substr_cycle(HistoryDirection.Next, start) == expected
+    assert substr_history.cycle(HistoryDirection.Prev, start) == SUBSTR_HISTORY[-1]

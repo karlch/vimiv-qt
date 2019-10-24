@@ -44,6 +44,7 @@ Fixed:
 * Setting the style option from the command-line via ``-s style NAME``.
 * Crash when passing an invalid mode to commands.
 * Mixing command and search history when cycling history without substring match.
+* Switching between cycling history with and without substring match.
 
 Removed:
 ^^^^^^^^

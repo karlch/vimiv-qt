@@ -6,6 +6,7 @@
 
 """Functions to read and write command history."""
 
+import enum
 import os
 from collections import deque
 from typing import List, Iterable, Optional, Deque
@@ -42,6 +43,13 @@ def write(commands: List[str]):
             f.write(command + "\n")
 
 
+class CycleMode(enum.Enum):
+    """Enum defining the different modes for history cycling."""
+
+    Regular = 0
+    Substring = 1
+
+
 class History(deque):
     """Store and interact with command line history.
 
@@ -55,6 +63,7 @@ class History(deque):
 
     def __init__(self, prefixes: str, commands: Iterable[str], max_items: int = 100):
         super().__init__(commands, maxlen=max_items)
+        self._mode = CycleMode.Regular
         self._prefixes = prefixes
         self._tmpdeque: Optional[Deque[str]] = None
 
@@ -87,7 +96,7 @@ class History(deque):
         Returns:
             The received command to set in the command line.
         """
-        return self._cycle_tmpdeque(direction, text, match=text[0])
+        return self._cycle_tmpdeque(direction, text, CycleMode.Regular, match=text[0])
 
     def substr_cycle(self, direction: argtypes.HistoryDirection, text: str) -> str:
         """Cycle through command history with substring matching.
@@ -100,10 +109,14 @@ class History(deque):
         Returns:
             The received command to set in the command line.
         """
-        return self._cycle_tmpdeque(direction, text, match=text)
+        return self._cycle_tmpdeque(direction, text, CycleMode.Substring, match=text)
 
     def _cycle_tmpdeque(
-        self, direction: argtypes.HistoryDirection, text: str, match: str
+        self,
+        direction: argtypes.HistoryDirection,
+        text: str,
+        mode: CycleMode,
+        match: str,
     ) -> str:
         """Cycle through the temporary deque of matching history elements.
 
@@ -117,8 +130,11 @@ class History(deque):
         Returns:
             The received command to set in the command line.
         """
-        if self._tmpdeque is None:
-            self._tmpdeque = deque(cmd for cmd in self if cmd.startswith(match))
+        if self._tmpdeque is None or mode != self._mode:
+            self._mode = mode
+            self._tmpdeque = deque(
+                cmd for cmd in self if cmd.startswith(match) and cmd != text
+            )
             self._tmpdeque.appendleft(text)
         self._tmpdeque.rotate(-1 if direction == direction.Next else 1)
         return self._tmpdeque[0]
