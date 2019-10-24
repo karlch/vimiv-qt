@@ -18,7 +18,7 @@ from vimiv.utils import files, trash_manager, escape_ws, unescape_ws
 class Empty(api.completion.BaseModel):
     """Empty completion model used as fallback."""
 
-    def __init__(self):  # type: ignore
+    def __init__(self):
         super().__init__("")
 
 

@@ -24,7 +24,7 @@ from . import log
 
 # Different location under PyQt < 5.11
 try:
-    from PyQt5.sip import wrappertype  # type: ignore
+    from PyQt5.sip import wrappertype
 except ImportError:
     from sip import wrappertype  # type: ignore
 
