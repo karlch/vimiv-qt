@@ -6,7 +6,6 @@
 
 """Handles key and mouse events."""
 
-import collections
 import string
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
@@ -177,13 +176,11 @@ def keyevent_to_string(event):
         Name of the key pressed as meaningful string.
     """
     # Parse modifiers
-    modmask2str = collections.OrderedDict(
-        [
-            (Qt.ControlModifier, "<ctrl>"),
-            (Qt.AltModifier, "<alt>"),
-            (Qt.MetaModifier, "<meta>"),
-        ]
-    )
+    modmask2str = {
+        Qt.ControlModifier: "<ctrl>",
+        Qt.AltModifier: "<alt>",
+        Qt.MetaModifier: "<meta>",
+    }
     modifiers = (
         Qt.Key_Control,
         Qt.Key_Alt,

@@ -6,7 +6,6 @@
 
 """Thumbnail widget."""
 
-import collections
 import os
 from typing import List, Optional
 
@@ -82,9 +81,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         )
         self._highlighted: List[int] = []
         self._paths: List[str] = []
-        self._sizes = collections.OrderedDict(
-            [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
-        )
+        self._sizes = {64: "small", 128: "normal", 256: "large", 512: "x-large"}
 
         fail_pixmap = create_pixmap(
             color=styles.get("thumbnail.error.bg"),
