@@ -57,6 +57,13 @@ def test_keyevent_to_string_for_control_modifier_and_letter():
 
 
 def test_keyevent_to_string_for_alt_modifier_and_letter():
+    event = QKeyEvent(
+        QEvent.KeyPress, Qt.Key_A, Qt.AltModifier | Qt.ControlModifier, "a"
+    )
+    assert eventhandler.keyevent_to_string(event) == "<ctrl><alt>a"
+
+
+def test_keyevent_to_string_for_control_alt_modifier_and_letter():
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.AltModifier, "a")
     assert eventhandler.keyevent_to_string(event) == "<alt>a"
 
