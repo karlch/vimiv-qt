@@ -184,8 +184,8 @@ class Library(KeyHandler, widgets.FlatTreeView):
 
         The behaviour is similar to the file manager ranger.
 
-        * Scrolling left selects the current file.
-        * Scrolling right selects the parent directory.
+        * Scrolling right selects the current file.
+        * Scrolling left selects the parent directory.
         * Scrolling up and down moves the cursor.
 
         positional arguments:
