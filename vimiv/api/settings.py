@@ -455,7 +455,7 @@ class statusbar:  # pylint: disable=invalid-name
     show = BoolSetting("statusbar.show", True, desc="Always display the statusbar")
     message_timeout = IntSetting(
         "statusbar.message_timeout",
-        5000,
+        60000,
         desc="Time in ms until statusbar messages are removed",
         min_value=500,
     )
