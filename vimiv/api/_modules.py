@@ -117,6 +117,9 @@ def filesize() -> str:
 @api.status.module("{modified}")
 def modified() -> str:
     """Modification date of the current image."""
-    mtime = os.path.getmtime(api.current_path())
+    try:
+        mtime = os.path.getmtime(api.current_path())
+    except OSError:
+        return "N/A"
     d = datetime.datetime.fromtimestamp(mtime)
     return d.strftime("%y-%m-%d %H:%M")
