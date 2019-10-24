@@ -46,7 +46,7 @@ setuptools.setup(
     description=read_from_init("description"),
     long_description=read_file(os.path.join(BASEDIR, "README.md")),
     long_description_content_type="text/markdown",
-    url="https://karlch.github.io/vimiv-qt/",
+    url=read_from_init("url"),
     project_urls={
         "Source Code": "https://github.com/karlch/vimiv-qt",
         "Bug Tracker": "https://github.com/karlch/vimiv-qt/issues",

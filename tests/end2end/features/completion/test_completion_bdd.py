@@ -36,6 +36,7 @@ def check_completion_model(completer, model):
         "settings_option": completionmodels.SettingsOptionModel,
         "trash": completionmodels.TrashModel,
         "tag": completionmodels.TagModel,
+        "help": completionmodels.HelpModel,
     }
     assert isinstance(completer._proxy_model.sourceModel(), models[model])
 

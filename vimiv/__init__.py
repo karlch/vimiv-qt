@@ -15,3 +15,4 @@ __author__ = "Christian Karl"
 __maintainer__ = __author__
 __email__ = "karlch@protonmail.com"
 __description__ = "An image viewer with vim-like keybindings."
+__url__ = "https://karlch.github.io/vimiv-qt/"

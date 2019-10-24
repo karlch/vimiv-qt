@@ -19,6 +19,8 @@ Added:
   ``keybindings.bindings.color`` and ``keybindings.highlight.color``.
 * Default left statusbar setting for manipulate mode showing basename, image size,
   modification date and the processing indicator.
+* New ``:help`` command to display help messages on commands, settings and some general
+  information.
 
 Changed:
 ^^^^^^^^

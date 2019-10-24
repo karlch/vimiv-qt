@@ -60,3 +60,19 @@ Feature: Use the command line.
         When I run command --text='open-selected -h'
         And I activate the command line
         Then the help for 'open-selected' should be displayed
+
+    Scenario Outline: Show help using help command
+        When I run help <topic>
+        Then the help for '<topic>' should be displayed
+
+        Examples:
+            | topic          |
+            | :open-selected |
+            | vimiv          |
+            | library.width  |
+
+    Scenario: Fail help command with unknown topic
+        When I run help invalid_topic
+        Then the message
+            'help: Unknown topic 'invalid_topic''
+            should be displayed
