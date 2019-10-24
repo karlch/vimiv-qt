@@ -115,7 +115,7 @@ def is_image(filename: str) -> bool:
         return False
 
 
-def listfiles(directory: str, abspath=False) -> List[str]:
+def listfiles(directory: str, abspath: bool = False) -> List[str]:
     """Return list of all files in directory traversing the directory recursively.
 
     Args:

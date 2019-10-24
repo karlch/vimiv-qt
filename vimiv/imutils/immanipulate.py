@@ -23,11 +23,10 @@ adding it to the ``Manipulations``.
 """
 
 import abc
-import collections
 import copy
 import time
 import weakref
-from typing import Optional, NamedTuple
+from typing import Optional, NamedTuple, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker
 from PyQt5.QtGui import QPixmap, QImage
@@ -42,6 +41,13 @@ from vimiv.imutils import _c_manipulate  # type: ignore
 
 WAIT_TIME = 0.3
 _logger = utils.log.module_logger(__name__)
+
+
+class Limits(NamedTuple):
+    """Storage class for manipulation value limits."""
+
+    lower: int
+    upper: int
 
 
 class Manipulation(QObject):
@@ -61,7 +67,14 @@ class Manipulation(QObject):
 
     updated = pyqtSignal(object)
 
-    def __init__(self, name, value=0, lower=-127, upper=127, init_value=0):
+    def __init__(
+        self,
+        name: str,
+        value: int = 0,
+        lower: int = -127,
+        upper: int = 127,
+        init_value: int = 0,
+    ):
         super().__init__()
         self.slider = widgets.SliderWithValue(
             "{manipulate.slider.left}",
@@ -75,7 +88,7 @@ class Manipulation(QObject):
 
         self.label = QLabel(name)
 
-        self.limits = collections.namedtuple("Limits", ["lower", "upper"])(lower, upper)
+        self.limits = Limits(lower, upper)
         self.name = name
 
         self.value, self._init_value = value, init_value
@@ -83,7 +96,7 @@ class Manipulation(QObject):
         self.slider.valueChanged.connect(self._on_value_changed)
 
     @property
-    def value(self):
+    def value(self) -> int:
         """Current value of the manipulation.
 
         Wraps slider.value() and slider.setValue() for convenience.
@@ -91,11 +104,11 @@ class Manipulation(QObject):
         return self.slider.value()
 
     @value.setter
-    def value(self, value):
+    def value(self, value: int) -> None:
         self.slider.setValue(value)
 
     @property
-    def changed(self):
+    def changed(self) -> bool:
         """True if the manipulation was changed."""
         return self.value != self._init_value
 
@@ -116,10 +129,10 @@ class Manipulation(QObject):
         """Emit the updated signal when the slider value has changed."""
         self.updated.emit(self)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__qualname__}(name={self.name}, value={self.value})"
 
-    def __copy__(self):
+    def __copy__(self) -> "Manipulation":
         return Manipulation(self.name, self.value, *self.limits)
 
 
@@ -354,7 +367,7 @@ class Manipulator(QObject):
 
         self.manipulations = Manipulations()
 
-        self._changes = []
+        self._changes: List[ManipulationChange] = []
         self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
         self._handler = weakref.ref(handler)

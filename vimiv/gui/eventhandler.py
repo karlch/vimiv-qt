@@ -151,7 +151,7 @@ class KeyHandler:
         # Nothing => run default Qt bindings of parent object
         else:
             # super() is the parent Qt widget
-            super().keyPressEvent(event)  # pylint: disable=no-member
+            super().keyPressEvent(event)  # type: ignore  # pylint: disable=no-member
             api.status.update()  # Will not be called by command
             self.partial_handler.clear_keys()
 
@@ -199,15 +199,11 @@ def keyevent_to_string(event):
     )
     if event.key() in modifiers:  # Only modifier pressed
         raise ValueError("Modifiers do not have a stand-alone name")
+    # Prepend all modifiers and append keyname
     mod = event.modifiers()
-    parts = []
-    for mask, mod_name in modmask2str.items():
-        if mod & mask and mod_name not in parts:
-            parts.append(mod_name)
-    # Append keyname
-    parts.append(_get_keyname(event))
-    keyname = "".join(parts)
-    return keyname
+    modifier_names = [mod_name for mask, mod_name in modmask2str.items() if mod & mask]
+    keyname = _get_keyname(event)
+    return "".join(modifier_names) + keyname
 
 
 def _get_keyname(event):

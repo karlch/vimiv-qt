@@ -8,7 +8,7 @@
 
 import os
 from contextlib import suppress
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -69,7 +69,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
-        self._positions = {}
+        self._positions: Dict[str, int] = {}
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -297,8 +297,8 @@ class LibraryModel(QStandardItemModel):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
-        self._highlighted = []
-        self.paths = []
+        self._highlighted: List[int] = []
+        self.paths: List[str] = []
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.mark.marked.connect(self._mark_highlight)

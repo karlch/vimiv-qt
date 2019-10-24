@@ -90,7 +90,7 @@ def class_that_defined_method(method):
     return getattr(inspect.getmodule(method), method.__qualname__.split(".")[0])
 
 
-def is_method(func):
+def is_method(func: Callable) -> bool:
     """Return True if func is a method owned by a class.
 
     This is used by the decorators for statusbar and command, when the class is

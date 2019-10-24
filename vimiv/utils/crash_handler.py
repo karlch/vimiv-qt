@@ -12,6 +12,7 @@ import signal
 import sys
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
+from PyQt5.QtWidgets import QApplication
 
 from . import log, customtypes
 
@@ -35,7 +36,7 @@ class CrashHandler(QObject):
         _app: Main vimiv application to exit from.
     """
 
-    def __init__(self, app):
+    def __init__(self, app: QApplication):
         super().__init__()
         self._app = app
         # Setup signal handling
@@ -64,7 +65,7 @@ class CrashHandler(QObject):
         notifier.activated.connect(lambda: None)
         signal.set_wakeup_fd(write_fd)
 
-    def _setup_timer(self, timeout=1000):
+    def _setup_timer(self, timeout: int = 1000):
         """Set up a timer for signal handling.
 
         The timer gets called every timeout ms and returns the control from the Qt main
@@ -96,7 +97,7 @@ class CrashHandler(QObject):
             log.fatal("Exception: %r", e)
             sys.exit(customtypes.Exit.err_suicide)
 
-    def handle_interrupt(self, signum, _frame):
+    def handle_interrupt(self, signum: int, _frame):
         """Initial handler for interrupt signals to exit gracefully.
 
         Args:

@@ -6,6 +6,8 @@
 
 """QMainWindow which groups all the other widgets."""
 
+from typing import List
+
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
 
 from vimiv import api, utils
@@ -48,7 +50,7 @@ class MainWindow(QWidget):
         grid.addWidget(Library(self), 0, 0, 1, 1)
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
-        self._overlays = []
+        self._overlays: List[QWidget] = []
         manwidget = Manipulate(self)
         self._overlays.append(manwidget)
         self._overlays.append(ManipulateImage(self, manwidget))

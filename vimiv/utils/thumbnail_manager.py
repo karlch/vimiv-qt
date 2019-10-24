@@ -53,7 +53,7 @@ class ThumbnailManager(QObject):
     created = pyqtSignal(int, QIcon)
     pool = Pool.get(globalinstance=False)
 
-    def __init__(self, fail_pixmap, large: bool = True):
+    def __init__(self, fail_pixmap: QPixmap, large: bool = True):
         super().__init__()
         self.large = large
         # Thumbnail creation should take no longer than 1 s

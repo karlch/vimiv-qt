@@ -6,7 +6,7 @@
 
 """Manipulate widget."""
 
-from typing import List
+from typing import List, Optional
 
 from PyQt5.QtCore import QTimer, Qt, QSize
 from PyQt5.QtGui import QPixmap
@@ -149,7 +149,7 @@ class ManipulateImage(QLabel):
         super().__init__(parent=parent)
         self._manipulate = manipulate
         self._max_size = QSize(0, 0)
-        self._pixmap = None
+        self._pixmap: Optional[QPixmap] = None
         styles.apply(self)
 
         api.modes.MANIPULATE.entered.connect(self._on_entered)

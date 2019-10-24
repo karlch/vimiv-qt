@@ -19,6 +19,7 @@ import configparser
 import os
 import re
 import sys
+from typing import cast
 
 from vimiv import api
 from vimiv.utils import xdg, log, customtypes
@@ -30,7 +31,7 @@ NAME_DEFAULT = "default"
 NAME_DEFAULT_DARK = "default-dark"
 DEFAULT_FONT = "10pt Monospace"
 
-_style = None
+_style = cast("Style", None)
 _logger = log.module_logger(__name__)
 
 
@@ -43,7 +44,7 @@ class Style(dict):
     Ordered so referencing and dereferencing variables is well defined.
     """
 
-    def __init__(self, *colors, font=DEFAULT_FONT):
+    def __init__(self, *colors: str, font: str = DEFAULT_FONT):
         """Initialize style with 16 colors for base 16 and a font."""
         # We are mainly storing all the values here
         # pylint: disable=too-many-statements
@@ -137,7 +138,7 @@ class Style(dict):
         self["metadata.padding"] = "{keyhint.padding}"
         self["metadata.border_radius"] = "{keyhint.border_radius}"
 
-    def __setitem__(self, name, item):
+    def __setitem__(self, name: str, item: str):
         """Store item automatically surrounding the name with {} if needed."""
         assert isinstance(name, str), "Style options must be strings."
         assert isinstance(item, str), "Style values must be strings."
@@ -151,7 +152,7 @@ class Style(dict):
             super().__setitem__(name, item)
 
     @staticmethod
-    def is_color_option(name: str):
+    def is_color_option(name: str) -> bool:
         """Return True if the style option name corresponds to a color."""
         return name.strip("{}").endswith((".fg", ".bg", ".color"))
 
@@ -172,7 +173,7 @@ class Style(dict):
             )
 
     @staticmethod
-    def add_alpha(color: str, alpha: str):
+    def add_alpha(color: str, alpha: str) -> str:
         """Add alpha channel to color if it is not there already."""
         assert len(alpha) == 2, "Require 2 characters to define alpha"
         return color.replace("#", f"#{alpha}") if len(color) == 7 else color
@@ -200,7 +201,7 @@ def parse():
         _style = create_default()
 
 
-def apply(obj, append=""):
+def apply(obj, append: str = ""):
     """Apply stylesheet to an object dereferencing config options.
 
     Args:
@@ -213,7 +214,7 @@ def apply(obj, append=""):
     obj.setStyleSheet(sheet)
 
 
-def get(name):
+def get(name: str) -> str:
     """Return style option for a given name."""
     try:
         return _style["{%s}" % (name)]
@@ -222,7 +223,7 @@ def get(name):
         return ""
 
 
-def create_default(dark=False, save_to_file=True):
+def create_default(dark: bool = False, save_to_file: bool = True) -> Style:
     """Create the default style.
 
     Args:
@@ -278,7 +279,7 @@ def create_default(dark=False, save_to_file=True):
     return style
 
 
-def read(path: str):
+def read(path: str) -> Style:
     """Read style from styles file.
 
     Args:
@@ -314,7 +315,7 @@ def read(path: str):
     return style
 
 
-def dump(name, style):
+def dump(name: str, style: Style):
     """Dump style to styles file."""
     filename = xdg.join_vimiv_config("styles", name)
     _logger.debug("Dumping style to file '%s'", filename)

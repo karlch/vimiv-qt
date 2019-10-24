@@ -8,6 +8,7 @@
 
 import collections
 import os
+from typing import List
 
 from vimiv.commands import argtypes
 from vimiv.utils import xdg
@@ -29,7 +30,7 @@ def read():
     return history
 
 
-def write(commands):
+def write(commands: List[str]):
     """Write command history to file.
 
     Args:
@@ -59,9 +60,9 @@ class History(collections.UserList):
         self._index = 0
         self._max_items = max_items
         self._temporary_element_stored = False
-        self._substr_matches = []
+        self._substr_matches: List[str] = []
 
-    def update(self, command):
+    def update(self, command: str):
         """Update history with a new command.
 
         Args:
@@ -80,7 +81,7 @@ class History(collections.UserList):
             self._temporary_element_stored = False
             self._substr_matches = []
 
-    def insert(self, command):
+    def insert(self, command: str):
         """Insert a command into the history.
 
         Overridden parent function as the index is always 0 and the list should

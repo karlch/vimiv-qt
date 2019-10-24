@@ -80,8 +80,8 @@ class ThumbnailView(KeyHandler, QListWidget):
                 frame_size=10,
             )
         )
-        self._paths = []
-        self._highlighted = []
+        self._highlighted: List[int] = []
+        self._paths: List[str] = []
         self._sizes = collections.OrderedDict(
             [(64, "small"), (128, "normal"), (256, "large"), (512, "x-large")]
         )
