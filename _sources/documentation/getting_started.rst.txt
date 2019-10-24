@@ -11,7 +11,7 @@ Vimiv is, as one would expect from an application with vim-like keybindings,
 completely keyboard driven. To get you started some of the most important
 keybindings for controlling vimiv are explained below. For a complete list of
 them take a look at the ``keys.conf`` file which is generated upon startup in
-``$XDG_CONFIG_HOME/vimiv/``.
+``$XDG_CONFIG_HOME/vimiv/`` or open the keybindings pop-up by running ``:keybindings``.
 
 Basics
 ------

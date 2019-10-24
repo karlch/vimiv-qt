@@ -130,6 +130,11 @@
 <li><p>Library and thumbnail selection color is dimmed when the corresponding widget is not
 focused. It comes with the style options <code class="docutils literal notranslate"><span class="pre">library.selected.bg.unfocus</span></code> and
 <code class="docutils literal notranslate"><span class="pre">thumbnail.selected.bg.unfocus</span></code>.</p></li>
+<li><p>Pop-up window to show keybindings for current mode. It can be shown with the
+<code class="docutils literal notranslate"><span class="pre">:keybindings</span></code> command and comes with the style options
+<code class="docutils literal notranslate"><span class="pre">keybindings.bindings.color</span></code> and <code class="docutils literal notranslate"><span class="pre">keybindings.highlight.color</span></code>.</p></li>
+<li><p>Default left statusbar setting for manipulate mode showing basename, image size,
+modification date and the processing indicator</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -141,6 +146,9 @@ vimiv.</p></li>
 appending to it. This is consistent with the <code class="docutils literal notranslate"><span class="pre">--keyfile</span></code> argument.</p></li>
 <li><p>Completely broken user styles now log an error message and exit vimiv instead of
 falling back to the default. This is consistent with the configuration file handling.</p></li>
+<li><p>Class instances can now be retrieved from the object registry via <code class="docutils literal notranslate"><span class="pre">Class.instance</span></code>
+instead of <code class="docutils literal notranslate"><span class="pre">objreg.get(Class)</span></code>. The old syntax has been deprecated and will be
+removed in <cite>v0.4.0</cite>.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">

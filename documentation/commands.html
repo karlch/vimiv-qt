@@ -88,6 +88,7 @@
 <li><a class="reference internal" href="#delete">delete</a></li>
 <li><a class="reference internal" href="#enter">enter</a></li>
 <li><a class="reference internal" href="#fullscreen">fullscreen</a></li>
+<li><a class="reference internal" href="#keybindings">keybindings</a></li>
 <li><a class="reference internal" href="#log">log</a></li>
 <li><a class="reference internal" href="#mark">mark</a></li>
 <li><a class="reference internal" href="#mark-clear">mark-clear</a></li>
@@ -158,6 +159,7 @@
 <li><a class="reference internal" href="#ref-manipulate-fullscreen">fullscreen</a></li>
 <li><a class="reference internal" href="#ref-manipulate-goto">goto</a></li>
 <li><a class="reference internal" href="#increase">increase</a></li>
+<li><a class="reference internal" href="#ref-manipulate-keybindings">keybindings</a></li>
 <li><a class="reference internal" href="#ref-manipulate-next">next</a></li>
 <li><a class="reference internal" href="#next-tab">next-tab</a></li>
 <li><a class="reference internal" href="#ref-manipulate-nop">nop</a></li>
@@ -204,8 +206,8 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <p>Below is a complete list of all commands in every mode.</p>
 <div class="section" id="global">
 <h2>Global<a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id16">
-<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id16" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id17">
+<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -237,76 +239,79 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
 <td><p>Toggle fullscreen mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-log"><span class="std std-ref">log</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-keybindings"><span class="std std-ref">keybindings</span></a></p></td>
+<td><p>Show a pop-up with keybindings information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-log"><span class="std std-ref">log</span></a></p></td>
 <td><p>Log a message with the corresponding log level.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
 <td><p>Mark one or more paths.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
 <td><p>Clear all marks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
 <td><p>Restore the last cleared marks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Select next image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
 <td><p>Open one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Select previous image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
 <td><p>Quit vimiv.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
 <td><p>Repeat the last command.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
 <td><p>Scale the image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
 <td><p>Start a search.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
 <td><p>Continue search to the next match.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
 <td><p>Continue search to the previous match.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
 <td><p>Set an option.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
 <td><p>Sleep for a given number of seconds.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
 <td><p>Delete an existing tag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
 <td><p>Load images from a tag into the current mark list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
 <td><p>Write marked paths to a tag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
 <td><p>Toggle one mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
 <td><p>Unbind a keybinding.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
 <td><p>Restore a file from the trash directory.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
 <td><p>Show a pop-up with version information.</p></td>
 </tr>
 </tbody>
@@ -393,6 +398,17 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <div class="section" id="fullscreen">
 <span id="ref-global-fullscreen"></span><h3>fullscreen<a class="headerlink" href="#fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
+</div>
+<div class="section" id="keybindings">
+<span id="ref-global-keybindings"></span><h3>keybindings<a class="headerlink" href="#keybindings" title="Permalink to this headline">¶</a></h3>
+<p>Show a pop-up with keybindings information.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
+<dl class="simple">
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--columns</span></code>: Number of columns to split the bindings in.</p></li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="log">
 <span id="ref-global-log"></span><h3>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
@@ -655,8 +671,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </div>
 <div class="section" id="image">
 <h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id17">
-<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id18">
+<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id18" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -814,8 +830,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </div>
 <div class="section" id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id18">
-<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id18" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id19">
+<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id19" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -895,8 +911,8 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <div class="section" id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id19">
-<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id19" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id20">
+<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -968,8 +984,8 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <div class="section" id="id7">
 <h2>Command<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id20">
-<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id21">
+<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1043,8 +1059,8 @@ nop.</p>
 </div>
 <div class="section" id="manipulate">
 <h2>Manipulate<a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id21">
-<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id22">
+<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id22" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1076,22 +1092,25 @@ nop.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-increase"><span class="std std-ref">increase</span></a></p></td>
 <td><p>Increase the value of the current manipulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-keybindings"><span class="std std-ref">keybindings</span></a></p></td>
+<td><p>Show a pop-up with keybindings information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Focus the next manipulation in the current tab.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-next-tab"><span class="std std-ref">next-tab</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-next-tab"><span class="std std-ref">next-tab</span></a></p></td>
 <td><p>Focus the next manipulation tab.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Focus the previous manipulation in the current tab.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-prev-tab"><span class="std std-ref">prev-tab</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-prev-tab"><span class="std std-ref">prev-tab</span></a></p></td>
 <td><p>Focus the previous manipulation tab.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-manipulate-set"><span class="std std-ref">set</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-manipulate-set"><span class="std std-ref">set</span></a></p></td>
 <td><p>Set an option.</p></td>
 </tr>
 </tbody>
@@ -1155,8 +1174,19 @@ nop.</p>
 </dl>
 <p><strong>count:</strong> multiplier</p>
 </div>
+<div class="section" id="ref-manipulate-keybindings">
+<span id="id12"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Permalink to this headline">¶</a></h3>
+<p>Show a pop-up with keybindings information.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
+<dl class="simple">
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--columns</span></code>: Number of columns to split the bindings in.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
 <div class="section" id="ref-manipulate-next">
-<span id="id12"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
+<span id="id13"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
 <p>Focus the next manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
@@ -1166,13 +1196,13 @@ nop.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-manipulate-nop">
-<span id="id13"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
+<span id="id14"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove default keybindings by explicitly binding them to
 nop.</p>
 </div>
 <div class="section" id="ref-manipulate-prev">
-<span id="id14"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
+<span id="id15"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
 <p>Focus the previous manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
@@ -1182,7 +1212,7 @@ nop.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-manipulate-set">
-<span id="id15"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
+<span id="id16"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
 <p>Set an option.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
 <dl class="simple">

@@ -14,6 +14,11 @@ Added:
 * Library and thumbnail selection color is dimmed when the corresponding widget is not
   focused. It comes with the style options ``library.selected.bg.unfocus`` and
   ``thumbnail.selected.bg.unfocus``.
+* Pop-up window to show keybindings for current mode. It can be shown with the
+  ``:keybindings`` command and comes with the style options
+  ``keybindings.bindings.color`` and ``keybindings.highlight.color``.
+* Default left statusbar setting for manipulate mode showing basename, image size,
+  modification date and the processing indicator
 
 Changed:
 ^^^^^^^^
@@ -24,6 +29,9 @@ Changed:
   appending to it. This is consistent with the ``--keyfile`` argument.
 * Completely broken user styles now log an error message and exit vimiv instead of
   falling back to the default. This is consistent with the configuration file handling.
+* Class instances can now be retrieved from the object registry via ``Class.instance``
+  instead of ``objreg.get(Class)``. The old syntax has been deprecated and will be
+  removed in `v0.4.0`.
 
 Fixed:
 ^^^^^^

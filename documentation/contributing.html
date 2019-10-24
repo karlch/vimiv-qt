@@ -397,7 +397,7 @@ are stored and identified using their type. Therefore every stored object must
 be unique in its type and only one instance of each type can be stored. It is
 mainly used by commands as well as statusbar modules to retrieve the <code class="docutils literal notranslate"><span class="pre">self</span></code>
 argument for methods that require an instance of the class.</p>
-<p>To register a new class in the object registry, the
+<p>To register a new class for this purpose, the
 <a class="reference internal" href="#vimiv.api.objreg.register" title="vimiv.api.objreg.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator can be used as following:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="k">import</span> <span class="n">objreg</span>
 
@@ -408,32 +408,24 @@ argument for methods that require an instance of the class.</p>
         <span class="o">...</span>
 </pre></div>
 </div>
-<p>The class is then stored in the object registry once the first instance was
-created. To retrieve instance of the class, the <a class="reference internal" href="#vimiv.api.objreg.get" title="vimiv.api.objreg.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">get()</span></code></a>
-function can be used:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_instance</span> <span class="o">=</span> <span class="n">objreg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">MyLongLivedClass</span><span class="p">)</span>
+<p>The first created instance is then stored in the class itself. To retrieve the instance
+of the class, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_instance</span> <span class="o">=</span> <span class="n">MyLongLivedClass</span><span class="o">.</span><span class="n">instance</span>
 </pre></div>
 </div>
 <dl class="function">
 <dt id="vimiv.api.objreg.get">
-<code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">obj_type: Type[RegisterObject]</em><span class="sig-paren">)</span> &#x2192; RegisterObject<a class="headerlink" href="#vimiv.api.objreg.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve a component from the registry.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj_type</strong> – Type of the component to get.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The instance of the object in the registry.</p>
-</dd>
-</dl>
+<code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">cls</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.objreg.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a class instance from the object registry.</p>
+<p>This is deprecated as it is equivaltent to cls.instance which is cleaner to read.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="vimiv.api.objreg.register">
 <code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">component_init: Callable</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.objreg.register" title="Permalink to this definition">¶</a></dt>
-<dd><p>Decorator to store a component in the object registry.</p>
-<p>This decorates the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the component to register. The
-object is stored in the registry right after <code class="docutils literal notranslate"><span class="pre">__init__</span></code> was called.</p>
+<dd><p>Decorator to register a class for the object registry.</p>
+<p>This decorates the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the class to register. The object is
+stored in the registry right after <code class="docutils literal notranslate"><span class="pre">__init__</span></code> was called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>component_init</strong> – The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the component.</p>
