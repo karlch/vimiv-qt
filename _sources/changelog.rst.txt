@@ -18,7 +18,7 @@ Added:
   ``:keybindings`` command and comes with the style options
   ``keybindings.bindings.color`` and ``keybindings.highlight.color``.
 * Default left statusbar setting for manipulate mode showing basename, image size,
-  modification date and the processing indicator
+  modification date and the processing indicator.
 
 Changed:
 ^^^^^^^^
@@ -41,7 +41,7 @@ Fixed:
   updated, search is re-run. When a new directory is opened, search is cleared.
 * Support for colors with alpha-channel in styles file.
 * Status messages are shown even if the bar is hidden.
-* Setting the style option from the command-line via ``-s style NAME``
+* Setting the style option from the command-line via ``-s style NAME``.
 * Crash when passing an invalid mode to commands.
 
 Removed:
@@ -90,8 +90,8 @@ Fixed:
 * Overlay widgets are always raised in addition to shown ensuring them to be visible.
 * Completions are now mode dependent removing misleading completions such as undelete in
   manipulate mode.
-* Crash when trying to open tag which does not exist or has wrong permissions
-* Crash when loading a plugin with a syntax error
+* Crash when trying to open tag which does not exist or has wrong permissions.
+* Crash when loading a plugin with a syntax error.
 * Running accepted manipulations multiple times as the changes were not reset.
 
 Removed:
