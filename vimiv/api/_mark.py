@@ -75,6 +75,9 @@ class Mark(QObject):
         .. hint::
             It is possible to restore the last cleared marks using ``mark-restore``.
         """
+        if not self._marked:
+            _logger.debug("No marks to clear")
+            return
         _logger.debug("Clearing all marks")
         self._watcher.removePaths(self._marked)
         self._marked, self._last_marked = [], self._marked
