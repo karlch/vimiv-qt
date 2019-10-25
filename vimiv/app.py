@@ -50,7 +50,7 @@ class Application(QApplication):
         self.preexit(returncode)
         super().exit(returncode)
 
-    @utils.asyncfunc
+    @utils.asyncfunc()
     def _set_icon(self):
         """Set window icon of vimiv."""
         _logger.debug("Trying to retrieve icon from theme")
