@@ -179,7 +179,7 @@ class SettingsOptionModel(api.completion.BaseModel):
     def __init__(self, setting: api.settings.Setting):
         super().__init__(
             f":set {setting.name}",
-            text_filter=StripFilter("set"),
+            text_filter=StripFilter(f"set {setting.name}"),
             column_widths=(0.5, 0.5),
         )
         self._setting = setting
@@ -212,7 +212,10 @@ class TrashModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(
-            ":undelete ", column_widths=(0.4, 0.45, 0.15), valid_modes=api.modes.GLOBALS
+            ":undelete ",
+            column_widths=(0.4, 0.45, 0.15),
+            valid_modes=api.modes.GLOBALS,
+            text_filter=StripFilter("undelete"),
         )
 
     def on_enter(self, text: str) -> None:
@@ -245,8 +248,12 @@ class TagModel(api.completion.BaseModel):
     """
 
     def __init__(self, suffix):
-        super().__init__(f":tag-{suffix} ", valid_modes=api.modes.GLOBALS)
         self._command = f"tag-{suffix}"
+        super().__init__(
+            f":{self._command} ",
+            valid_modes=api.modes.GLOBALS,
+            text_filter=StripFilter(self._command),
+        )
 
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
