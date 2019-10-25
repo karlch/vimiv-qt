@@ -67,15 +67,14 @@ def run(text, count=None, mode=None):
         mode: Mode to run the command in.
     """
     _logger.debug("Running '%s'", text)
-    # Expand percent here as it only needs to be done once and is rather expensive
-    text = expand_percent(text, mode)
-    _logger.debug("Expanded text to '%s'", text)
-    # Split text parts recursively updating aliases in the individual parts
 
-    def replace_aliases(text):
-        return text if SEPARATOR in text else alias(text.strip(), mode)
+    def update_part(text):
+        """Update aliases and % in final parts without seperator."""
+        if SEPARATOR in text:
+            return text
+        return expand_percent(alias(text.strip(), mode), mode)
 
-    textparts = utils.recursive_split(text, SEPARATOR, replace_aliases)
+    textparts = utils.recursive_split(text, SEPARATOR, update_part)
     _logger.debug("Split text into parts '%s'", textparts)
     try:
         for i, cmdpart in enumerate(textparts):
@@ -203,9 +202,11 @@ def expand_percent(text, mode):
     # Check first as the re substitutions are rather expensive
     if "%m" in text:
         text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
+        text = text.replace("\\%m", "%")  # Remove escape characters
     if "%" in text:
         current = shlex.quote(api.current_path(mode))
         text = re.sub(r"(?<!\\)%", current, text)
+        text = text.replace("\\%", "%")  # Remove escape characters
     return text
 
 
@@ -264,5 +265,6 @@ def alias(text, mode):
     """
     cmd = text.split()[0]
     if cmd in aliases.get(mode):
-        return text.replace(cmd, aliases.get(mode)[cmd])
+        text = text.replace(cmd, aliases.get(mode)[cmd])
+        return expand_percent(text, mode)
     return text
