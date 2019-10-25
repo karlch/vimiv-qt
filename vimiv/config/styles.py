@@ -24,7 +24,7 @@ from typing import cast
 from vimiv import api
 from vimiv.utils import xdg, log, customtypes
 
-from . import read_log_exception
+from . import read_log_exception, external_configparser
 
 
 NAME_DEFAULT = "default"
@@ -286,7 +286,7 @@ def read(path: str) -> Style:
         path: Name of the styles file to read
     """
     _logger.debug("Reading style from file '%s'", path)
-    parser = configparser.ConfigParser()
+    parser = external_configparser.get_parser()
     read_log_exception(parser, _logger, path)
     # Retrieve the STYLE section
     try:

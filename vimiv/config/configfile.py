@@ -12,7 +12,7 @@ from vimiv import api, plugins
 from vimiv.commands import aliases
 from vimiv.utils import log
 
-from . import read_log_exception, parse_config
+from . import read_log_exception, parse_config, external_configparser
 
 
 _logger = log.module_logger(__name__)
@@ -49,7 +49,7 @@ def get_default_parser() -> configparser.ConfigParser:
 
 def read(path: str) -> None:
     """Read config from path into settings."""
-    parser = _setup_parser()
+    parser = external_configparser.get_parser()
     read_log_exception(parser, _logger, path)
     # Try to update every single setting
     for name, _ in api.settings.items():
@@ -101,12 +101,6 @@ def _add_statusbar_formatters(configsection):
         if name in possible:
             _logger.debug("Adding statusbar formatter '%s' with '%s'", name, value)
             api.settings.StrSetting(f"statusbar.{name}", value)
-
-
-def _setup_parser():
-    """Setup config file parser."""
-    parser = configparser.ConfigParser()
-    return parser
 
 
 def _get_section_option(name):
