@@ -10,9 +10,18 @@ import os
 
 from PyQt5.QtGui import QPixmap
 
+import pytest
 import pytest_bdd as bdd
 
+import mockdecorators
 import vimivprocess
+
+
+@pytest.fixture(autouse=True, scope="module")
+def cleanup_objreg():
+    """Fixture to clear any left-over instances of the objreg."""
+    yield
+    mockdecorators.mockregister_cleanup()
 
 
 ###############################################################################

@@ -10,14 +10,9 @@ import logging
 
 from PyQt5.QtCore import QThreadPool, QCoreApplication, pyqtBoundSignal, QObject
 
-# Must mock decorator before import
-from unittest import mock
-
-mock.patch("vimiv.utils.cached_method", lambda x: x).start()
-
-from vimiv import api, startup  # noqa
-from vimiv.commands import runners  # noqa
-from vimiv.imutils import filelist, immanipulate  # noqa
+from vimiv import api, startup
+from vimiv.commands import runners
+from vimiv.imutils import filelist, immanipulate
 
 
 _processes = []
@@ -70,7 +65,6 @@ class VimivProc:
         # Must disconnect these signals ourselves as the automatic disconnection seems
         # to fail with slots assigned using partial or lambdas
         VimivProc.disconnect_custom_signals(api.signals)
-        VimivProc.disconnect_custom_signals(api.mark)
 
     @staticmethod
     def disconnect_custom_signals(obj: QObject):
