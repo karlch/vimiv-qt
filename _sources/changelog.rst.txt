@@ -51,6 +51,7 @@ Fixed:
 * Crash when passing an invalid mode to commands.
 * Mixing command and search history when cycling history without substring match.
 * Switching between cycling history with and without substring match.
+* Aliasing to commands including the ``%`` and ``%m`` wildcards.
 
 Removed:
 ^^^^^^^^
