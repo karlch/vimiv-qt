@@ -31,5 +31,8 @@ Creating your own style is easy:
    for example to use a different base color for mark-related things you can use
    ``mark.color = {base0a}``.
 
+.. hint:: As for settings, you can refer to
+    :ref:`external resources <external_resources>`.
+
 .. hint:: The python configparser module is not case sensitive. Therefore it is
-   a good idea to keep all your styles in lower case.
+   a good idea to keep all your style options in lower case.
