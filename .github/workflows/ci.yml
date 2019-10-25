@@ -1,0 +1,64 @@
+name: Continuous integration
+
+on: [push]
+
+jobs:
+  py36-37:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7]
+        toxenv: [pyqt59, pyqt510, pyqt511, pyqt512, pyqt513, mypy]
+        exclude:
+          - python-version: 3.6
+            toxenv: mypy
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libxkbcommon-x11-0
+        python -m pip install --upgrade pip
+        pip install tox
+    - name: Test with tox
+      run: |
+        tox -e ${{ matrix.toxenv }}
+      env:
+        CI: Github-Actions
+
+  py38:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toxenv: [pyqt513-cov, lint, packaging, mypy]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libxkbcommon-x11-0
+        python -m pip install --upgrade pip
+        pip install tox
+    - name: Test with tox
+      run: |
+        tox -e ${{ matrix.toxenv }}
+      env:
+        CI: Github-Actions
+    - name: Upload coverage to codecov
+      run: |
+        pip install codecov
+        codecov -X gcov
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      if: matrix.toxenv == 'pyqt513-cov'
