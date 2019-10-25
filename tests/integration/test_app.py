@@ -29,6 +29,7 @@ def app(mocker):
     QApplication.exit.assert_called_with(0)
 
 
+@pytest.mark.ci_skip
 def test_load_icon(app):
     assert not app.windowIcon().isNull()
 
