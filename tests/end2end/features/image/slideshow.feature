@@ -15,12 +15,12 @@ Feature: Play a slideshow.
     Scenario: Set slideshow delay via setting
         Given I open any image
         When I run set slideshow.delay 4
-        Then the slideshow delay should be 4
+        Then the slideshow delay should be 4.0
 
     Scenario: Set slideshow delay via count
         Given I open any image
         When I run 5slideshow
-        Then the slideshow delay should be 5
+        Then the slideshow delay should be 5.0
 
     Scenario: Slideshow updates the displayed image
         Given I open 5 images

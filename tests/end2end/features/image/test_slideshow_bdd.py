@@ -19,10 +19,10 @@ def sshow():
     return slideshow.Slideshow.instance
 
 
-@bdd.given(bdd.parsers.parse("I forcefully set the slideshow delay to {N}ms"))
+@bdd.given(bdd.parsers.parse("I forcefully set the slideshow delay to {N:d}ms"))
 def set_slideshow_delay(sshow, N):
     """Set the slideshow delay to a small value to increase test speed."""
-    sshow.setInterval(int(N))
+    sshow.setInterval(N)
 
 
 @bdd.then("the slideshow should be playing")
@@ -35,9 +35,8 @@ def check_slideshow_not_playing(sshow):
     assert not sshow.isActive()
 
 
-@bdd.then(bdd.parsers.parse("the slideshow delay should be {delay}"))
+@bdd.then(bdd.parsers.parse("the slideshow delay should be {delay:f}"))
 def check_slideshow_delay(sshow, delay):
-    delay = float(delay)
     # Check setting
     assert api.settings.slideshow.delay.value == delay
     # Check actual value

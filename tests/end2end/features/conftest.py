@@ -208,9 +208,9 @@ def enter_thumbnail(thumbnail):
     thumbnail.setFixedWidth(400)  # Make sure width is as expected
 
 
-@bdd.then(bdd.parsers.parse("the thumbnail number {N} should be selected"))
+@bdd.then(bdd.parsers.parse("the thumbnail number {N:d} should be selected"))
 def check_selected_thumbnail(thumbnail, qtbot, N):
-    assert thumbnail.currentRow() + 1 == int(N)
+    assert thumbnail.currentRow() + 1 == N
 
 
 @bdd.then(bdd.parsers.parse("the pop up '{title}' should be displayed"))

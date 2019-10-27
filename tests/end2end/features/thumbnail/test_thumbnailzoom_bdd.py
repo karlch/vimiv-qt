@@ -12,9 +12,8 @@ from vimiv import api
 bdd.scenarios("thumbnailzoom.feature")
 
 
-@bdd.then(bdd.parsers.parse("the thumbnail size should be {size}"))
+@bdd.then(bdd.parsers.parse("the thumbnail size should be {size:d}"))
 def check_thumbnail_size(thumbnail, size):
-    size = int(size)
     # Check setting
     assert api.settings.thumbnail.size.value == size
     # Check actual value

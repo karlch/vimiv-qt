@@ -13,9 +13,8 @@ from vimiv import api
 bdd.scenarios("libraryresize.feature")
 
 
-@bdd.then(bdd.parsers.parse("the library width should be {fraction}"))
+@bdd.then(bdd.parsers.parse("the library width should be {fraction:f}"))
 def check_library_size(library, mainwindow, fraction, qtbot):
-    fraction = float(fraction)
     # Check if setting was updated
     assert api.settings.library.width.value == pytest.approx(fraction)
     # Check if width fits fraction of main window
