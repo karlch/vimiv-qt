@@ -19,10 +19,16 @@ def keyhint():
 bdd.scenarios("keyhint.feature")
 
 
-@bdd.given("I re-initialize the keyhint widget")
-def reinitialize_keyhint():
-    api.settings.keyhint.delay.value = 5
-    api.settings.keyhint.timeout.value = 100
+@pytest.fixture(autouse=True)
+def update_keyhint():
+    """Fixture to shorten and reset keyhint delays."""
+    delay = api.settings.keyhint.delay.value
+    timeout = api.settings.keyhint.timeout.value
+    api.settings.keyhint.delay.value = 1
+    api.settings.keyhint.timeout.value = 10
+    yield
+    api.settings.keyhint.delay.value = delay
+    api.settings.keyhint.timeout.value = timeout
     eventhandler.KeyHandler.partial_handler.clear_keys()
 
 

@@ -2,7 +2,6 @@ Feature: The keyhint overlay widget
 
     Background:
         Given I start vimiv
-        And I re-initialize the keyhint widget
 
     Scenario: Display widget on partial keybindings
         When I press g
