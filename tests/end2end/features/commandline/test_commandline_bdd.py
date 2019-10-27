@@ -24,7 +24,6 @@ bdd.scenarios("commandline.feature")
 def hit_backspace(commandline, qtbot):
     """Needed as passing backspace as a string is not possible."""
     qtbot.keyClick(commandline, Qt.Key_Backspace)
-    qtbot.wait(10)
 
 
 @bdd.when("I run help <topic>")
