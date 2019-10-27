@@ -14,7 +14,7 @@ import pytest
 import pytest_bdd as bdd
 
 import mockdecorators
-import vimivprocess
+from vimivprocess import VimivProc
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -25,113 +25,78 @@ def cleanup_objreg():
 
 
 ###############################################################################
-#                              helper functions                               #
-###############################################################################
-def create_image(path, fileformat="jpg", size=(300, 300)):
-    """Generate a valid image file.
-
-    Args:
-        path: The path at which the image is created.
-        fileformat: The fileformat of the image to create, e.g. jpg.
-        size: (width, height) as tuple of integers.
-    """
-    pixmap = QPixmap(*size)
-    pixmap.save(path, fileformat)
-
-
-###############################################################################
 #                                  bdd Given                                  #
 ###############################################################################
-
-
 @bdd.given("I start vimiv")
-def startup(qtbot, tmpdir):
-    # Not really any different from "y open any directory" below but cleaner to
-    # read in scenarios where the directory is not explicitly needed
-    vimivprocess.init(qtbot, [str(tmpdir)])
-    yield
-    vimivprocess.exit()
-
-
 @bdd.given("I open any directory")
-def any_directory(qtbot, tmpdir):
-    path = tmpdir.mkdir("directory")
-    vimivprocess.init(qtbot, [str(path)])
-    yield
-    vimivprocess.exit()
+def start_vimiv(qtbot, tmpdir):
+    yield from run_directory(tmpdir)
 
 
 @bdd.given("I open a directory for which I do not have access permissions")
-def any_directory_without_permission(qtbot, tmpdir):
-    path = tmpdir.mkdir("directory")
-    os.chmod(str(path), 0o666)
-    vimivprocess.init(qtbot, [str(path)])
-    yield
-    vimivprocess.exit()
+def start_directory_without_permission(qtbot, tmpdir):
+    yield from run_directory(tmpdir, permission=0o666)
 
 
-@bdd.given(bdd.parsers.parse("I open a directory with {N} paths"))
-def directory_with_n_paths(qtbot, tmpdir, N):
-    path = tmpdir.mkdir("directory")
-    for i in range(int(N)):
-        path.mkdir("child_%02d" % (i + 1))
-    vimivprocess.init(qtbot, [str(path)])
-    yield
-    vimivprocess.exit()
+@bdd.given(bdd.parsers.parse("I open a directory with {n_children:d} paths"))
+def start_directory_with_n_paths(qtbot, tmpdir, n_children):
+    yield from run_directory(tmpdir, n_children=n_children)
 
 
-@bdd.given(bdd.parsers.parse("I open a directory with {N:d} images"))
-def directory_with_nimages(qtbot, tmpdir, N):
-    path = tmpdir.mkdir("directory")
-    for i in range(N):
-        image_path = str(path.join(f"image_{i:02d}"))
-        create_image(image_path)
-    vimivprocess.init(qtbot, [str(path)])
-    yield
-    vimivprocess.exit()
+@bdd.given(bdd.parsers.parse("I open a directory with {n_images:d} images"))
+def start_directory_with_n_images(qtbot, tmpdir, n_images):
+    yield from run_directory(tmpdir, n_images=n_images)
 
 
 @bdd.given("I open any image")
-def any_image(qtbot, tmpdir):
-    path = str(tmpdir.join("image.jpg"))
-    create_image(path)
-    vimivprocess.init(qtbot, [path])
-    yield
-    vimivprocess.exit()
+def start_any_image(qtbot, tmpdir):
+    yield from run_image(tmpdir)
 
 
 @bdd.given(bdd.parsers.parse("I open any image of size {size}"))
-def any_image_of_size(qtbot, tmpdir, size):
-    size = size.split("x")
-    size = [int(elem) for elem in size]
-    path = str(tmpdir.join("image.jpg"))
-    create_image(path, size=size)
-    vimivprocess.init(qtbot, [path])
-    yield
-    vimivprocess.exit()
+def start_any_image_of_size(qtbot, tmpdir, size):
+    size = [int(elem) for elem in size.split("x")]
+    yield from run_image(tmpdir, size=size)
 
 
-@bdd.given(bdd.parsers.parse("I open {N:d} images"))
-def n_images(qtbot, tmpdir, N):
-    paths = _create_n_images(tmpdir, N)
-    vimivprocess.init(qtbot, paths)
-    yield
-    vimivprocess.exit()
+@bdd.given(bdd.parsers.parse("I open {n_images:d} images"))
+def start_n_images(qtbot, tmpdir, n_images):
+    yield from run_image(tmpdir, n_images=n_images)
 
 
-@bdd.given(bdd.parsers.parse("I open {N:d} images with {args}"))
-def n_images_with_args(qtbot, tmpdir, N, args):
-    paths = _create_n_images(tmpdir, N)
-    arglist = paths + args.split()
-    vimivprocess.init(qtbot, arglist)
-    yield
-    vimivprocess.exit()
+@bdd.given(bdd.parsers.parse("I open {n_images:d} images with {args}"))
+def start_n_images_with_args(qtbot, tmpdir, n_images, args):
+    yield from run_image(tmpdir, n_images=n_images, args=args.split())
 
 
-def _create_n_images(tmpdir, number):
+###############################################################################
+#                              helper functions                               #
+###############################################################################
+def run_directory(tmpdir, n_children=0, n_images=0, permission=0o777):
+    path = tmpdir.mkdir("directory")
+    os.chmod(str(path), permission)
+
+    for i in range(n_children):
+        path.mkdir(f"child_{i + 1:02d}")
+
+    create_n_images(path, n_images)
+
+    with VimivProc([str(path)]):
+        yield
+
+
+def run_image(tmpdir, n_images=1, size=(300, 300), args=None):
+    paths = create_n_images(tmpdir, n_images, size=size)
+    args = paths if args is None else paths + args
+    with VimivProc(args):
+        yield
+
+
+def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
     paths = []
     for i in range(1, number + 1):
-        path = str(tmpdir.join("image_%02d.jpg" % (i)))
-        create_image(path)
+        basename = f"image.{imgformat}" if number == 1 else f"image_{i:02d}.{imgformat}"
+        path = str(tmpdir.join(basename))
+        QPixmap(*size).save(path, imgformat)
         paths.append(path)
     return paths

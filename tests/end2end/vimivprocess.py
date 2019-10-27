@@ -15,41 +15,24 @@ from vimiv.commands import runners
 from vimiv.imutils import filelist, immanipulate
 
 
-_processes = []
-
-
-def init(qtbot, argv):
-    """Create the VimivProc object."""
-    assert not _processes, "Not creating another vimiv process"
-    _processes.append(VimivProc(qtbot, argv))
-
-
-def instance():
-    """Get the VimivProc object."""
-    assert _processes, "No vimiv process created"
-    return _processes[0]
-
-
-def exit():
-    """Close the vimiv process."""
-    instance().exit()
-    del _processes[0]
-
-
 class VimivProc:
     """Process class to start and exit one vimiv process."""
 
-    def __init__(self, qtbot, argv=None):
+    def __init__(self, argv=None):
         argv = [] if argv is None else argv
         argv.extend(["--temp-basedir"])
-        args = startup.setup_pre_app(argv)
+        self.argv = argv
+
+    def __enter__(self, *args, **kwargs):
+        args = startup.setup_pre_app(self.argv)
         startup.setup_post_app(args)
         # No crazy stuff should happen here, waiting is not really necessary
         api.working_directory.handler.WAIT_TIME = 0.001
         # No key holding happens, waiting is not necessary
         immanipulate.WAIT_TIME = 0.001
+        return self
 
-    def exit(self):
+    def __exit__(self, *args, **kwargs):
         # Do not start any new threads
         QThreadPool.globalInstance().clear()
         # Wait for any running threads to exit safely
