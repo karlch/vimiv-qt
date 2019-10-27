@@ -53,11 +53,6 @@ def reset_to_default(cleanup_helper):
 
 
 @pytest.fixture(scope="function")
-def configparser(custom_configparser, request):
-    yield custom_configparser(configfile.get_default_parser, **request.param)
-
-
-@pytest.fixture(scope="function")
 def configpath(tmpdir, custom_configfile, request):
     yield custom_configfile(
         "vimiv.conf", configfile.read, configfile.get_default_parser, **request.param
