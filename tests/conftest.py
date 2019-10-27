@@ -11,8 +11,6 @@ import contextlib
 
 import pytest
 
-from PyQt5.QtGui import QPixmap, QImageWriter
-
 
 CI = "CI" in os.environ
 
@@ -40,19 +38,6 @@ def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
         apply_platform_markers(item)
-
-
-@pytest.fixture
-def tmpimage(tmpdir, qtbot):
-    """Create an image to work with."""
-    path = str(tmpdir.join("any_image.png"))
-    width = 10
-    height = 10
-    pm = QPixmap(width, height)
-    qtbot.addWidget(pm)
-    writer = QImageWriter(path)
-    assert writer.write(pm.toImage())
-    return path
 
 
 @pytest.fixture
