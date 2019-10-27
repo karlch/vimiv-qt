@@ -66,14 +66,12 @@ def configpath(tmpdir, custom_configfile, request):
 
 @pytest.fixture()
 def mock_strsetting(mocker):
-    with mocker.patch.object(api.settings, "StrSetting"):
-        yield api.settings.StrSetting
+    yield mocker.patch.object(api.settings, "StrSetting")
 
 
 @pytest.fixture()
 def mock_logger(mocker):
-    with mocker.patch.object(configfile, "_logger"):
-        yield configfile._logger
+    yield mocker.patch.object(configfile, "_logger")
 
 
 ########################################################################################
