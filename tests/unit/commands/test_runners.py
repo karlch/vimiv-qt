@@ -20,8 +20,8 @@ PERCENT_M_LIST = ["mark1", "mark2", "mark3"]
 def mock_percents(mocker):
     """Fixture to mock objects sending % and %m."""
     mocker.patch.object(api, "current_path", return_value=PERCENT_TEXT)
-    with mocker.patch.object(api, "mark") as mock_mark:
-        mock_mark.paths = mocker.PropertyMock(return_value=PERCENT_M_LIST)
+    mock_mark = mocker.patch.object(api, "mark")
+    type(mock_mark).paths = mocker.PropertyMock(return_value=PERCENT_M_LIST)
 
 
 @pytest.mark.parametrize("text", [" ", "\n", " \n", "\t\t", "\n \t"])
