@@ -12,19 +12,13 @@ import pytest_bdd as bdd
 bdd.scenarios("misccommands.feature")
 
 
-starttime = None
-
-
-@bdd.when("I start a timer")
-def start_timer():
-    global starttime
-    starttime = time.time()
+@bdd.given("I start a timer")
+def starttime():
+    yield time.time()
 
 
 @bdd.then(bdd.parsers.parse("at least {duration:f} seconds should have elapsed"))
-def check_time_elapsed(duration):
-    global starttime
-    assert starttime is not None, "Forgot to start timer"
+def check_time_elapsed(starttime, duration):
     elapsed = time.time() - starttime
     assert elapsed >= duration
     starttime = None

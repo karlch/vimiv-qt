@@ -28,6 +28,6 @@ Feature: Run miscellaneous commands.
             should be displayed
 
     Scenario: Sleep for some time
-        When I start a timer
-        And I run sleep 0.05
+        Given I start a timer
+        When I run sleep 0.05
         Then at least 0.05 seconds should have elapsed
