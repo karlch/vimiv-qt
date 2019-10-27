@@ -23,7 +23,7 @@ def manipulation(manipulator):
 
 
 @bdd.when("I apply any manipulation")
-def wait_for_beer(manipulator, qtbot):
+def apply_any_manipulation(manipulator, qtbot):
     with qtbot.waitSignal(manipulator.updated) as _:
         manipulator.goto(10)
 
