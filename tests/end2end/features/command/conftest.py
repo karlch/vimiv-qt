@@ -12,5 +12,4 @@ from vimiv.commands import aliases
 @pytest.fixture(autouse=True)
 def cleanup_aliases(cleanup_helper):
     """Fixture to delete any aliases that were created in this feature."""
-    with cleanup_helper(aliases._aliases):
-        yield
+    yield from cleanup_helper(aliases._aliases)

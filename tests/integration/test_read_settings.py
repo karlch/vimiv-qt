@@ -47,8 +47,7 @@ UPDATED_CONFIG_INVALID = {
 @pytest.fixture(autouse=True)
 def reset_to_default(cleanup_helper):
     """Fixture to ensure everything is reset to default after testing."""
-    with cleanup_helper(aliases._aliases):
-        yield
+    yield from cleanup_helper(aliases._aliases)
     api.settings.reset()
 
 

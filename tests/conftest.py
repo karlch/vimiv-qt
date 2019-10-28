@@ -7,7 +7,6 @@
 """Fixtures for pytest."""
 
 import os
-import contextlib
 
 import pytest
 
@@ -48,7 +47,6 @@ def cleanup_helper():
     before running tests.
     """
 
-    @contextlib.contextmanager
     def cleanup(init_dict):
         init_content = {key: dict(value) for key, value in init_dict.items()}
         yield

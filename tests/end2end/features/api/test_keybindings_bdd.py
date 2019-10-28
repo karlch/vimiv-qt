@@ -16,8 +16,7 @@ bdd.scenarios("keybindings.feature")
 @pytest.fixture(autouse=True)
 def cleanup_keybindings(cleanup_helper):
     """Fixture to delete any keybindings that were created during testing."""
-    with cleanup_helper(api.keybindings._registry):
-        yield
+    yield from cleanup_helper(api.keybindings._registry)
 
 
 @bdd.then(bdd.parsers.parse("the keybinding {binding} should exist for mode {mode}"))
