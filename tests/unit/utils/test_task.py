@@ -6,9 +6,7 @@
 
 """Unit tests for vimiv.utils.task."""
 
-import functools
 import time
-from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 
 import pytest
