@@ -100,11 +100,6 @@ def resize_main_window(mainwindow, size):
     mainwindow.resize(width, height)
 
 
-@bdd.when(bdd.parsers.parse("I wait for {N}ms"))
-def wait(qtbot, N):
-    qtbot.wait(int(N))
-
-
 @bdd.when("I wait for the command to complete")
 def wait_for_external_command(qtbot):
     """Wait until the external process has completed."""
