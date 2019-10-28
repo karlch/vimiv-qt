@@ -29,5 +29,5 @@ Feature: Run miscellaneous commands.
 
     Scenario: Sleep for some time
         Given I start a timer
-        When I run sleep 0.05
-        Then at least 0.05 seconds should have elapsed
+        When I run sleep 0.01
+        Then at least 0.01 seconds should have elapsed

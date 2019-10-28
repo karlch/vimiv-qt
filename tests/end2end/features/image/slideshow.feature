@@ -24,7 +24,7 @@ Feature: Play a slideshow.
 
     Scenario: Slideshow updates the displayed image
         Given I open 5 images
-        And I forcefully set the slideshow delay to 50ms
+        And I forcefully set the slideshow delay to 10ms
         When I run slideshow
         And I let the slideshow run 2 times
         Then the image should have the index 3

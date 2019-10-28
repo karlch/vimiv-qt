@@ -113,7 +113,7 @@ def wait_for_external_command(qtbot):
     while (
         QThreadPool.globalInstance().activeThreadCount() and iteration < max_iterations
     ):
-        qtbot.wait(10)
+        qtbot.wait(1)
         iteration += 1
     assert iteration != max_iterations, "external command timed out"
 
