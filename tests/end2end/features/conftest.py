@@ -4,7 +4,7 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Functions, fixtures and bdd-like steps for end2end testing."""
+"""Fixtures and bdd-like steps for usage during end2end testing."""
 
 import os
 
