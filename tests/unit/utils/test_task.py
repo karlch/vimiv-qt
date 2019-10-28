@@ -7,7 +7,7 @@
 """Unit tests for vimiv.utils.task."""
 
 import time
-from multiprocessing.pool import ThreadPool
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -100,8 +100,8 @@ def repeat_task(n_times, single=False):
         yield task.sleep(sleep_duration, future_timeout=future_timeout)
         calls.append(number)
 
-    with ThreadPool(n_times) as pool:
-        pool.map(local_task, range(n_times))
+    with ThreadPoolExecutor(max_workers=n_times) as executor:
+        executor.map(local_task, range(n_times))
 
     # Only the last call for single mode, all of them otherwise
     expected = [n_times - 1] if single else list(range(n_times))
