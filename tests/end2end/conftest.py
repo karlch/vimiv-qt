@@ -6,22 +6,57 @@
 
 """Functions, fixtures and bdd-like steps for end2end testing."""
 
+import logging
 import os
 
+from PyQt5.QtCore import pyqtBoundSignal, QObject
 from PyQt5.QtGui import QPixmap
 
 import pytest
 import pytest_bdd as bdd
 
 import mockdecorators
-from vimivprocess import VimivProc
+
+from vimiv import api, startup, utils
+from vimiv.commands import runners
+from vimiv.imutils import filelist, immanipulate
+
+
+########################################################################################
+#                                   Pytest fixtures                                    #
+########################################################################################
+@pytest.fixture(autouse=True)
+def qapp(qtbot):
+    """Ensure a Qt application from qtbot is always available for end2end tests."""
+
+
+@pytest.fixture(autouse=True)
+def cleanup():
+    """Fixture to reset various vimiv properties at the end of each test."""
+    yield
+    utils.Pool.clear()
+    utils.Pool.wait(5000)
+    api.settings.reset()
+    api.mark.mark_clear()
+    disconnect_custom_signals(api.signals)
+    runners._last_command.clear()
+    filelist._paths = []
+    filelist._index = 0
 
 
 @pytest.fixture(autouse=True, scope="module")
-def cleanup_objreg():
-    """Fixture to clear any left-over instances of the objreg."""
+def cleanup_module():
+    """Fixture to reset properties on a module basis."""
     yield
+    logging.getLogger().handlers = []  # Mainly to remove the statusbar handler
     mockdecorators.mockregister_cleanup()
+
+
+@pytest.fixture(autouse=True, scope="session")
+def faster_wait_times():
+    """Fixture to set faster wait times for testing."""
+    api.working_directory.WorkingDirectoryHandler.WAIT_TIME = 0.001
+    immanipulate.WAIT_TIME = 0.001
 
 
 ###############################################################################
@@ -29,67 +64,73 @@ def cleanup_objreg():
 ###############################################################################
 @bdd.given("I start vimiv")
 @bdd.given("I open any directory")
-def start_vimiv(qtbot, tmpdir):
-    yield from run_directory(tmpdir)
+def start_vimiv(tmpdir):
+    start_directory(tmpdir)
 
 
 @bdd.given("I open a directory for which I do not have access permissions")
-def start_directory_without_permission(qtbot, tmpdir):
-    yield from run_directory(tmpdir, permission=0o666)
+def start_directory_without_permission(tmpdir):
+    start_directory(tmpdir, permission=0o666)
 
 
 @bdd.given(bdd.parsers.parse("I open a directory with {n_children:d} paths"))
-def start_directory_with_n_paths(qtbot, tmpdir, n_children):
-    yield from run_directory(tmpdir, n_children=n_children)
+def start_directory_with_n_paths(tmpdir, n_children):
+    start_directory(tmpdir, n_children=n_children)
 
 
 @bdd.given(bdd.parsers.parse("I open a directory with {n_images:d} images"))
-def start_directory_with_n_images(qtbot, tmpdir, n_images):
-    yield from run_directory(tmpdir, n_images=n_images)
+def start_directory_with_n_images(tmpdir, n_images):
+    start_directory(tmpdir, n_images=n_images)
 
 
 @bdd.given("I open any image")
-def start_any_image(qtbot, tmpdir):
-    yield from run_image(tmpdir)
+def start_any_image(tmpdir):
+    start_image(tmpdir)
 
 
 @bdd.given(bdd.parsers.parse("I open any image of size {size}"))
-def start_any_image_of_size(qtbot, tmpdir, size):
+def start_any_image_of_size(tmpdir, size):
     size = [int(elem) for elem in size.split("x")]
-    yield from run_image(tmpdir, size=size)
+    start_image(tmpdir, size=size)
 
 
 @bdd.given(bdd.parsers.parse("I open {n_images:d} images"))
-def start_n_images(qtbot, tmpdir, n_images):
-    yield from run_image(tmpdir, n_images=n_images)
+def start_n_images(tmpdir, n_images):
+    start_image(tmpdir, n_images=n_images)
 
 
 @bdd.given(bdd.parsers.parse("I open {n_images:d} images with {args}"))
-def start_n_images_with_args(qtbot, tmpdir, n_images, args):
-    yield from run_image(tmpdir, n_images=n_images, args=args.split())
+def start_n_images_with_args(tmpdir, n_images, args):
+    start_image(tmpdir, n_images=n_images, args=args.split())
 
 
 ###############################################################################
 #                              helper functions                               #
 ###############################################################################
-def run_directory(tmpdir, n_children=0, n_images=0, permission=0o777):
-    path = tmpdir.mkdir("directory")
-    os.chmod(str(path), permission)
+def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777):
+    """Run vimiv startup using one directory as the passed path."""
+    directory = tmpdir.mkdir("directory")
+    os.chmod(str(directory), permission)
 
     for i in range(n_children):
-        path.mkdir(f"child_{i + 1:02d}")
+        directory.mkdir(f"child_{i + 1:02d}")
 
-    create_n_images(path, n_images)
+    create_n_images(directory, n_images)
 
-    with VimivProc([str(path)]):
-        yield
+    start([str(directory)])
 
 
-def run_image(tmpdir, n_images=1, size=(300, 300), args=None):
+def start_image(tmpdir, n_images=1, size=(300, 300), args=None):
+    """Run vimiv startup using n images as the passed paths."""
     paths = create_n_images(tmpdir, n_images, size=size)
     args = paths if args is None else paths + args
-    with VimivProc(args):
-        yield
+    start(args)
+
+
+def start(argv):
+    """Run vimiv startup passing argv as argument list."""
+    args = startup.setup_pre_app(argv + ["--temp-basedir"])
+    startup.setup_post_app(args)
 
 
 def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
@@ -100,3 +141,11 @@ def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
         QPixmap(*size).save(path, imgformat)
         paths.append(path)
     return paths
+
+
+def disconnect_custom_signals(obj: QObject):
+    """Disconnect all slots from custom signals in obj."""
+    for name in dir(obj):
+        elem = getattr(obj, name)
+        if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
+            elem.disconnect()
