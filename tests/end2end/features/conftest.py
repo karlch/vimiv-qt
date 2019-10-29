@@ -103,14 +103,12 @@ def resize_main_window(mainwindow, size):
 @bdd.when("I wait for the command to complete")
 def wait_for_external_command(qtbot):
     """Wait until the external process has completed."""
-    max_iterations = 100
-    iteration = 0
-    while (
-        QThreadPool.globalInstance().activeThreadCount() and iteration < max_iterations
-    ):
-        qtbot.wait(1)
-        iteration += 1
-    assert iteration != max_iterations, "external command timed out"
+    message = "external command timed out"
+
+    def external_finished():
+        assert QThreadPool.globalInstance().activeThreadCount() == 0, message
+
+    qtbot.waitUntil(external_finished, timeout=100)
 
 
 @bdd.when("I wait for the working directory handler")
@@ -133,36 +131,45 @@ def no_crash(qtbot):
 @bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
 def check_statusbar_message(qtbot, message):
     bar = statusbar.statusbar
-    _check_status(
-        qtbot,
-        lambda: message == bar.message.text(),
-        info=f"Message expected: '{message}'",
-    )
+
+    def check_status():
+        assert message == bar.message.text(), "Message expected: '{message}'"
+
+    qtbot.waitUntil(check_status, timeout=100)
     assert bar.stack.currentWidget() == bar.message
 
 
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
 def check_left_status(qtbot, position, text):
     bar = statusbar.statusbar
-    _check_status(
-        qtbot,
-        lambda: text in getattr(bar.status, position).text(),
-        info=f"position {position} should include {text}",
-    )
+    message = f"statusbar {position} should include {text}"
+
+    def check_status():
+        assert text in getattr(bar.status, position).text(), message
+
+    qtbot.waitUntil(check_status, timeout=100)
     assert bar.stack.currentWidget() == bar.status
 
 
 @bdd.then("a message should be displayed")
 def check_a_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    _check_status(qtbot, lambda: bar.message.text() != "", info="Any message expected")
+
+    def check_status():
+        assert bar.message.text(), "Any message expected"
+
+    qtbot.waitUntil(check_status, timeout=100)
     assert bar.stack.currentWidget() == bar.message
 
 
 @bdd.then("no message should be displayed")
 def check_no_statusbar_message(qtbot):
     bar = statusbar.statusbar
-    _check_status(qtbot, lambda: bar.message.text() == "", info="No message expected")
+
+    def check_status():
+        assert not bar.message.text(), "No message expected"
+
+    qtbot.waitUntil(check_status, timeout=100)
     assert bar.stack.currentWidget() == bar.status
 
 
@@ -241,13 +248,3 @@ def check_directory_exists(name):
 @bdd.then(bdd.parsers.parse("the directory {name} should not exist"))
 def check_not_directory_exists(name):
     assert not os.path.isdir(name)
-
-
-def _check_status(qtbot, assertion, info=""):
-    """Check statusbar repeatedly as this is threaded and may take a while."""
-    iteration = 0
-    max_iterations = 100
-    while not assertion() and iteration < max_iterations:
-        qtbot.wait(10)
-        iteration += 1
-    assert iteration != max_iterations, "Statusbar check timed out\n" + info
