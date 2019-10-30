@@ -1,8 +1,7 @@
 .. _plugins:
 
-#######
 Plugins
-#######
+=======
 
 Vimiv provides the option to extend its functionality with python module plugins. To add
 a new plugin:

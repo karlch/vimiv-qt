@@ -31,6 +31,9 @@ For much more information on vimiv, please check out the
 [documentation](https://karlch.github.io/vimiv-qt/documentation/index.html).
 To learn how to get vimiv running, see the
 [installation guide](https://karlch.github.io/vimiv-qt/documentation/install.html).
+Afterwards this is a good place to
+[get started](https://karlch.github.io/vimiv-qt/documentation/getting\_started.html).
+
 
 For information on contributing to vimiv, you can take a look at the
 [contributing guidelines](https://karlch.github.io/vimiv-qt/documentation/contributing.html).

@@ -13,6 +13,9 @@ keybindings for controlling vimiv are explained below. For a complete list of
 them take a look at the ``keys.conf`` file which is generated upon startup in
 ``$XDG_CONFIG_HOME/vimiv/`` or open the keybindings pop-up by running ``:keybindings``.
 
+You can run ``:help topic`` to get some additional information on a specific topic.
+Completion will guide you through the different options like commands and settings.
+
 Basics
 ------
 
