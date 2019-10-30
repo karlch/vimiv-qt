@@ -4,11 +4,6 @@
 # Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-# This file is part of vimiv.
-# Copyright 2017-2018 Christian Karl (karlch) <karlch at protonmail dot com>
-# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
-# vim: ft=python fileencoding=utf-8 sw=4 et sts=4
-
 """Generate reST documentation from source code docstrings."""
 
 import inspect
