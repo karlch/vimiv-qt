@@ -3,14 +3,21 @@
 Contributing Guidelines
 =======================
 
-This page contains guidelines for contributing to vimiv as well as a few tips
-on how to get started. If you feel like relevant information is missing, please
-open an `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_.
+You want to contribute to vimiv? Great!
+
+This page contains some guidelines as well as a few tips on how to get started. If you
+feel like relevant information is missing, please open an `issue on github
+<https://github.com/karlch/vimiv-qt/issues/>`_.
 
 In case any of the following recommendations would stop you from contributing,
 please ignore them and contribute anyway. The chances are that I will fix
 upcoming issues for you. The guidelines are simply meant to ease work for me
 and to keep everything consistent.
+
+In case you have questions, feel free to `contact me directly <karlch@protonmail.com>`_
+or open an
+`issue on github <https://github.com/karlch/vimiv-qt/issues/>`_
+if you think the question is of general interest.
 
 
 Finding Something to Do
