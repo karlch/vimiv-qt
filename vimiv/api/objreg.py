@@ -52,8 +52,9 @@ def register(component_init: Callable) -> Callable:
         Args:
             component: Corresponds to self.
         """
-        _logger.debug("Registering object '%r'", component)
-        component.__class__.instance = component
+        cls = component.__class__
+        _logger.debug("Registering '%s.%s'", cls.__module__, cls.__qualname__)
+        cls.instance = component
         component_init(component, *args, **kwargs)
 
     return inside
