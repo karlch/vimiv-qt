@@ -80,6 +80,8 @@
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#arch-linux">Arch Linux</a></li>
+<li><a class="reference internal" href="#using-pip">Using pip</a></li>
 <li><a class="reference internal" href="#manual-install">Manual Install</a><ul>
 <li><a class="reference internal" href="#system-wide-installation">System-Wide Installation</a></li>
 <li><a class="reference internal" href="#using-tox">Using Tox</a></li>
@@ -117,21 +119,45 @@
 <p>Table of Contents:</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#manual-install" id="id1">Manual Install</a></p>
+<li><p><a class="reference internal" href="#arch-linux" id="id1">Arch Linux</a></p></li>
+<li><p><a class="reference internal" href="#using-pip" id="id2">Using pip</a></p></li>
+<li><p><a class="reference internal" href="#manual-install" id="id3">Manual Install</a></p>
 <ul>
-<li><p><a class="reference internal" href="#system-wide-installation" id="id2">System-Wide Installation</a></p></li>
-<li><p><a class="reference internal" href="#using-tox" id="id3">Using Tox</a></p></li>
+<li><p><a class="reference internal" href="#system-wide-installation" id="id4">System-Wide Installation</a></p></li>
+<li><p><a class="reference internal" href="#using-tox" id="id5">Using Tox</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#dependencies" id="id4">Dependencies</a></p>
+<li><p><a class="reference internal" href="#dependencies" id="id6">Dependencies</a></p>
 <ul>
-<li><p><a class="reference internal" href="#package-names-for-distributions" id="id5">Package Names For Distributions</a></p></li>
+<li><p><a class="reference internal" href="#package-names-for-distributions" id="id7">Package Names For Distributions</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="arch-linux">
+<h2><a class="toc-backref" href="#id1">Arch Linux</a><a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h2>
+<p>The
+<a class="reference external" href="https://aur.archlinux.org/packages/vimiv-qt/">latest stable release</a>
+and the
+<a class="reference external" href="https://aur.archlinux.org/packages/vimiv-qt-git/">git development version</a>
+is available in the AUR.</p>
+</div>
+<div class="section" id="using-pip">
+<h2><a class="toc-backref" href="#id2">Using pip</a><a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
+<p>You can retrieve the latest stable release using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip3 install --user vimiv
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This does not install data files such as the icons or the <code class="docutils literal notranslate"><span class="pre">vimiv.desktop</span></code>
+file globally. Thus e.g. file managers may not find the vimiv program as
+expected. To get an idea on how to install these, you can take a look at
+the Makefile located in <cite>misc/Makefile</cite> and read the section below.</p>
+</div>
+</div>
 <div class="section" id="manual-install">
-<h2><a class="toc-backref" href="#id1">Manual Install</a><a class="headerlink" href="#manual-install" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Manual Install</a><a class="headerlink" href="#manual-install" title="Permalink to this headline">¶</a></h2>
 <p>First of all get the code by cloning the git repository and switch into the
 repository folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt/
@@ -147,7 +173,7 @@ required. In some distributions, e.g. Ubuntu, these are not included in the defa
 python installation but another package (python-dev for Ubuntu) must be installed.</p>
 </div>
 <div class="section" id="system-wide-installation">
-<h3><a class="toc-backref" href="#id2">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id4">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
 <p>Vimiv provides an example Makefile in the <code class="docutils literal notranslate"><span class="pre">misc</span></code> directory for convenience.
 To install copy the Makefile into the repository directory, <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">misc/Makefile</span>
 <span class="pre">.</span></code>, tweak it to your liking and run (as root if installing system-wide):</p>
@@ -166,7 +192,7 @@ your needs. To uninstall vimiv the standard:</p>
 <p>should work.</p>
 </div>
 <div class="section" id="using-tox">
-<span id="install-using-tox"></span><h3><a class="toc-backref" href="#id3">Using Tox</a><a class="headerlink" href="#using-tox" title="Permalink to this headline">¶</a></h3>
+<span id="install-using-tox"></span><h3><a class="toc-backref" href="#id5">Using Tox</a><a class="headerlink" href="#using-tox" title="Permalink to this headline">¶</a></h3>
 <p>First of all get the code by cloning the git repository and switch into the
 repository folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt/
@@ -198,7 +224,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section above.</
 </div>
 </div>
 <div class="section" id="dependencies">
-<h2><a class="toc-backref" href="#id4">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.python.org/">Python</a> 3.6 or newer with development extension</p></li>
 <li><dl class="simple">
@@ -214,7 +240,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section above.</
 <li><p><a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> (optional for exif support)</p></li>
 </ul>
 <div class="section" id="package-names-for-distributions">
-<h3><a class="toc-backref" href="#id5">Package Names For Distributions</a><a class="headerlink" href="#package-names-for-distributions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7">Package Names For Distributions</a><a class="headerlink" href="#package-names-for-distributions" title="Permalink to this headline">¶</a></h3>
 <p>Installing the following packages should pull in all necessary dependencies for
 building and running vimiv.</p>
 <dl class="simple">

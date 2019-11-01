@@ -5,6 +5,33 @@ Table of Contents:
 
 .. contents:: :local:
 
+
+Arch Linux
+----------
+
+The
+`latest stable release <https://aur.archlinux.org/packages/vimiv-qt/>`_
+and the
+`git development version <https://aur.archlinux.org/packages/vimiv-qt-git/>`_
+is available in the AUR.
+
+
+Using pip
+---------
+
+You can retrieve the latest stable release using::
+
+    $ pip3 install --user vimiv
+
+
+.. warning::
+
+    This does not install data files such as the icons or the ``vimiv.desktop``
+    file globally. Thus e.g. file managers may not find the vimiv program as
+    expected. To get an idea on how to install these, you can take a look at
+    the Makefile located in `misc/Makefile` and read the section below.
+
+
 Manual Install
 --------------
 
