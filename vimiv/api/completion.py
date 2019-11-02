@@ -100,9 +100,10 @@ class BaseFilter(QSortFilterProxyModel):
         Args:
             text: The current command line text.
         """
-        self.setFilterRegExp(
-            QRegExp(self.filtertext(text), Qt.CaseInsensitive, QRegExp.WildcardUnix)
-        )
+        text = self.filtertext(text)
+        if settings.completion.fuzzy.value:
+            text = "*".join(text)
+        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive, QRegExp.WildcardUnix))
 
     def reset(self) -> None:
         self.setFilterRegExp("")
@@ -110,19 +111,15 @@ class BaseFilter(QSortFilterProxyModel):
     def filtertext(self, text: str) -> str:
         """Update text for filtering.
 
-        This default implementation strips command line prefixes and leading digits and
-        possibly activates fuzzy filtering. If the child class requires additional
-        logic, it should override this method.
+        This default implementation strips command line prefixes and leading digits. If
+        the child class requires additional logic, it should override this method.
 
         Args:
             text: The current command line text.
         Returns:
             The updated text used as completion filter.
         """
-        text = text.lstrip(":/" + string.digits)
-        if settings.completion.fuzzy.value:
-            return "*".join(text)
-        return text
+        return text.lstrip(":/?" + string.digits)
 
 
 class BaseModel(QStandardItemModel):

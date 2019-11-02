@@ -7,6 +7,11 @@ All notable changes to vimiv are documented in this file.
 v0.4.0 (unreleased)
 -------------------
 
+Fixed:
+^^^^^^
+
+* Fuzzy path completion.
+
 
 v0.3.0 (2019-11-01)
 -------------------

@@ -144,6 +144,13 @@ Feature: Using completion.
         Then the completion model should be path
         And a possible completion should contain ./child_01
 
+    Scenario: Relative path completion with fuzzy filtering
+        Given I open a directory with 3 paths
+        When I run set completion.fuzzy true
+        And I enter command mode with "open ./cld"
+        Then the completion model should be path
+        And a possible completion should contain ./child_01
+
     Scenario: Show command completion after running invalid command
         Given I start vimiv
         When I run command
