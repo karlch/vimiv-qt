@@ -827,9 +827,8 @@ description column is set up to take 30 % of the total width while the completio
 <dt id="vimiv.api.completion.BaseFilter.filtertext">
 <code class="sig-name descname">filtertext</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.completion.BaseFilter.filtertext" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update text for filtering.</p>
-<p>This default implementation strips command line prefixes and leading digits and
-possibly activates fuzzy filtering. If the child class requires additional
-logic, it should override this method.</p>
+<p>This default implementation strips command line prefixes and leading digits. If
+the child class requires additional logic, it should override this method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
