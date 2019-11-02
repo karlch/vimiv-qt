@@ -79,7 +79,11 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Settings</a></li>
+<li><a class="reference internal" href="#">Settings</a><ul>
+<li><a class="reference internal" href="#referring-to-external-resources">Referring to external resources</a></li>
+<li><a class="reference internal" href="#overview-of-all-settings">Overview of all settings</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -111,6 +115,18 @@
 </ul>
 <p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
 <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
+<div class="section" id="referring-to-external-resources">
+<span id="external-resources"></span><h2>Referring to external resources<a class="headerlink" href="#referring-to-external-resources" title="Permalink to this headline">¶</a></h2>
+<p>In the configuration file, it is possible to refer to external resources using the
+<code class="docutils literal notranslate"><span class="pre">option</span> <span class="pre">=</span> <span class="pre">${RESOURCE:variable}</span></code>
+syntax. Here <code class="docutils literal notranslate"><span class="pre">RESOURCE</span></code> defines the type of external resource, and <code class="docutils literal notranslate"><span class="pre">variable</span></code> is the
+corresponding variable name. The following options are available:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">${env:VARIABLE}</span></code> to retrieve the value of the environment variable <code class="docutils literal notranslate"><span class="pre">$VARIABLE</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="overview-of-all-settings">
+<h2>Overview of all settings<a class="headerlink" href="#overview-of-all-settings" title="Permalink to this headline">¶</a></h2>
 <p>The following table explains all available settings.</p>
 <table class="colwidths-given docutils align-default" id="id1">
 <caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
@@ -195,6 +211,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 
 

@@ -7,6 +7,12 @@ All notable changes to vimiv are documented in this file.
 v0.4.0 (unreleased)
 -------------------
 
+Added:
+^^^^^^
+
+* The option to reference environment variables in the configuration files using
+  ``${env:VARIABLE}``.
+
 Fixed:
 ^^^^^^
 
