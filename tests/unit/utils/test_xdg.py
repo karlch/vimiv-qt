@@ -22,11 +22,13 @@ def unset_xdg_env(monkeypatch):
 
 
 @pytest.fixture
-def mock_getenv(monkeypatch):
-    """Mock getenv to always return '.'."""
-    monkeypatch.setenv("XDG_CACHE_HOME", ".")
-    monkeypatch.setenv("XDG_CONFIG_HOME", ".")
-    monkeypatch.setenv("XDG_DATA_HOME", ".")
+def mock_xdg(tmpdir, monkeypatch):
+    """Set XDG_* directories to a temporary directory."""
+    dirname = str(tmpdir.join("directory"))
+    monkeypatch.setenv("XDG_CACHE_HOME", dirname)
+    monkeypatch.setenv("XDG_CONFIG_HOME", dirname)
+    monkeypatch.setenv("XDG_DATA_HOME", dirname)
+    yield dirname
 
 
 def test_xdg_defaults(unset_xdg_env):
@@ -39,21 +41,12 @@ def test_xdg_defaults(unset_xdg_env):
         assert func() == os.path.expanduser(expected_retval)
 
 
-def test_other_values(mock_getenv):
+def test_xdg_from_env(mock_xdg):
     for func in [xdg.user_cache_dir, xdg.user_config_dir, xdg.user_data_dir]:
-        assert func() == "."
+        assert func() == mock_xdg
 
 
-def test_vimiv_xdg_dirs(mock_getenv):
+@pytest.mark.parametrize("paths", [tuple(), ("path",), ("directory", "path")])
+def test_vimiv_xdg_dirs(mock_xdg, paths):
     for func in [xdg.vimiv_cache_dir, xdg.vimiv_config_dir, xdg.vimiv_data_dir]:
-        assert func() == "./vimiv"
-
-
-def test_join_vimiv_xdg_dirs(mock_getenv):
-    for func in [xdg.vimiv_cache_dir, xdg.vimiv_config_dir, xdg.vimiv_data_dir]:
-        assert func("pathname") == "./vimiv/pathname"
-
-
-def test_join_vimiv_xdg_dirs_multiple_paths(mock_getenv):
-    for func in [xdg.vimiv_cache_dir, xdg.vimiv_config_dir, xdg.vimiv_data_dir]:
-        assert func("directory", "pathname") == "./vimiv/directory/pathname"
+        assert func(*paths) == os.path.join(mock_xdg, "vimiv", *paths)

@@ -19,9 +19,11 @@ def test_listdir_wrapper(mocker):
 
 
 def test_listdir_wrapper_returns_abspath(mocker):
-    mocker.patch("os.listdir", return_value=["a.txt", "b.txt"])
-    mocker.patch("os.path.abspath", return_value="dir")
-    assert files.listdir("directory") == ["dir/a.txt", "dir/b.txt"]
+    dirname, paths = "dir", ["a.txt", "b.txt"]
+    mocker.patch("os.listdir", return_value=paths)
+    mocker.patch("os.path.abspath", return_value=dirname)
+    expected = [os.path.join(dirname, path) for path in paths]
+    assert files.listdir("directory") == expected
 
 
 def test_listdir_wrapper_sort(mocker):
