@@ -39,8 +39,7 @@ def init() -> None:
     global _files_directory, _info_directory
     _files_directory = os.path.join(xdg.user_data_dir(), "Trash/files")
     _info_directory = os.path.join(xdg.user_data_dir(), "Trash/info")
-    os.makedirs(_files_directory, exist_ok=True)
-    os.makedirs(_info_directory, exist_ok=True)
+    xdg.makedirs(_files_directory, _info_directory)
 
 
 @api.keybindings.register("x", "delete %")

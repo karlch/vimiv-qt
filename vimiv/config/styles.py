@@ -323,7 +323,7 @@ def read(path: str) -> Style:
 def dump(name: str, style: Style):
     """Dump style to styles file."""
     filename = abspath(name)
-    os.makedirs(os.path.dirname(filename), mode=0o700, exist_ok=True)
+    xdg.makedirs(os.path.dirname(filename))
     _logger.debug("Dumping style to file '%s'", filename)
     parser = configparser.ConfigParser()
     parser.add_section("STYLE")

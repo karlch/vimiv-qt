@@ -17,6 +17,11 @@ def _qstandardpath(location, *paths: str) -> str:
     return os.path.join(QStandardPaths.writableLocation(location), *paths)
 
 
+def makedirs(*paths: str) -> None:
+    for path in paths:
+        os.makedirs(path, mode=0o700, exist_ok=True)
+
+
 def user_data_dir(*paths: str) -> str:
     return _qstandardpath(QStandardPaths.GenericDataLocation, *paths)
 
