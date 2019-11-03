@@ -15,20 +15,17 @@ from vimiv.commands import argtypes
 from vimiv.utils import xdg
 
 
+def filename():
+    """Return absolute path to history file."""
+    return xdg.vimiv_data_dir("history")
+
+
 def read():
     """Read command history from file."""
-    filename = xdg.vimiv_data_dir("history")
-    # Create empty history file
-    if not os.path.isfile(filename):
-        with open(filename, "w") as f:
-            f.write("")
+    if not os.path.isfile(filename()):
         return []
-    # Read from file
-    history = []
-    with open(filename) as f:
-        for line in f.readlines():
-            history.append(line.rstrip("\n"))
-    return history
+    with open(filename()) as f:
+        return [line.strip() for line in f]
 
 
 def write(commands: List[str]):
@@ -37,8 +34,7 @@ def write(commands: List[str]):
     Args:
         commands: List of commands.
     """
-    filename = xdg.vimiv_data_dir("history")
-    with open(filename, "w") as f:
+    with open(filename(), "w") as f:
         for command in commands:
             f.write(command + "\n")
 
