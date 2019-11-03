@@ -104,7 +104,7 @@ def init_directories(args):
         xdg.vimiv_cache_dir(),
         xdg.vimiv_config_dir(),
         xdg.vimiv_data_dir(),
-        xdg.join_vimiv_config("styles"),
+        xdg.vimiv_config_dir("styles"),
     ):
         os.makedirs(directory, exist_ok=True)
 

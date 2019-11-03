@@ -72,7 +72,7 @@ from vimiv.utils import xdg, log
 
 
 _app_plugin_directory = os.path.dirname(__file__)
-_user_plugin_directory = xdg.join_vimiv_data("plugins")
+_user_plugin_directory = xdg.vimiv_data_dir("plugins")
 _plugins: Dict[str, str] = {
     "print": "default"
 }  # key: name, value: additional information

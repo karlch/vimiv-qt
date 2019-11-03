@@ -8,38 +8,34 @@
 
 import os
 
+from PyQt5.QtCore import QStandardPaths
 
-def user_data_dir() -> str:
-    return os.getenv("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
-
-
-def user_config_dir() -> str:
-    return os.getenv("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+import vimiv
 
 
-def user_cache_dir() -> str:
-    return os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+def _qstandardpath(location, *paths: str) -> str:
+    return os.path.join(QStandardPaths.writableLocation(location), *paths)
 
 
-def vimiv_data_dir() -> str:
-    return os.path.join(user_data_dir(), "vimiv")
+def user_data_dir(*paths: str) -> str:
+    return _qstandardpath(QStandardPaths.GenericDataLocation, *paths)
 
 
-def vimiv_cache_dir() -> str:
-    return os.path.join(user_cache_dir(), "vimiv")
+def user_config_dir(*paths: str) -> str:
+    return _qstandardpath(QStandardPaths.GenericConfigLocation, *paths)
 
 
-def vimiv_config_dir() -> str:
-    return os.path.join(user_config_dir(), "vimiv")
+def user_cache_dir(*paths: str) -> str:
+    return _qstandardpath(QStandardPaths.GenericCacheLocation, *paths)
 
 
-def join_vimiv_data(*paths) -> str:
-    return os.path.join(vimiv_data_dir(), *paths)
+def vimiv_data_dir(*paths: str) -> str:
+    return user_data_dir(vimiv.__name__, *paths)
 
 
-def join_vimiv_cache(*paths) -> str:
-    return os.path.join(vimiv_cache_dir(), *paths)
+def vimiv_cache_dir(*paths: str) -> str:
+    return user_cache_dir(vimiv.__name__, *paths)
 
 
-def join_vimiv_config(*paths) -> str:
-    return os.path.join(vimiv_config_dir(), *paths)
+def vimiv_config_dir(*paths: str) -> str:
+    return user_config_dir(vimiv.__name__, *paths)

@@ -133,7 +133,7 @@ def test_read_style(style_file, expected_color, expected_font, options):
     else:  # Default font otherwise
         assert read_style["{font}"].lower() == styles.DEFAULT_FONT.lower()
     # Any additional options in the styles file
-    default = styles.create_default()
+    default = styles.create_default(save_to_file=False)
     for name, expected_value in options.items():
         key = "{" + name + "}"
         if styles.Style.is_color_option(name):

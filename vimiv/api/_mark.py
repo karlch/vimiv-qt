@@ -323,7 +323,7 @@ class Tag:
     @staticmethod
     def dirname() -> str:
         """Return path to the tag directory."""
-        return xdg.join_vimiv_data("tags")
+        return xdg.vimiv_data_dir("tags")
 
     @staticmethod
     def path(name: str) -> str:

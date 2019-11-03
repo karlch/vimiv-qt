@@ -111,7 +111,7 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     # mode=w creates a new file for every new vimiv process
-    file_handler = logging.FileHandler(xdg.join_vimiv_data("vimiv.log"), mode="w")
+    file_handler = logging.FileHandler(xdg.vimiv_data_dir("vimiv.log"), mode="w")
     file_handler.setFormatter(formatter)
 
     root_logger = logging.getLogger()

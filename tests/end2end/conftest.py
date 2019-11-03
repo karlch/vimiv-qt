@@ -9,7 +9,7 @@
 import logging
 import os
 
-from PyQt5.QtCore import pyqtBoundSignal, QObject
+from PyQt5.QtCore import pyqtBoundSignal, QObject, QStandardPaths
 from PyQt5.QtGui import QPixmap
 
 import pytest
@@ -28,6 +28,11 @@ from vimiv.imutils import filelist, immanipulate
 @pytest.fixture(autouse=True)
 def qapp(qtbot):
     """Ensure a Qt application from qtbot is always available for end2end tests."""
+
+
+@pytest.fixture(autouse=True)
+def mock_directories(tmpdir, mocker):
+    mocker.patch.object(QStandardPaths, "writableLocation", return_value=str(tmpdir))
 
 
 @pytest.fixture(autouse=True)
@@ -129,7 +134,7 @@ def start_image(tmpdir, n_images=1, size=(300, 300), args=None):
 
 def start(argv):
     """Run vimiv startup passing argv as argument list."""
-    args = startup.setup_pre_app(argv + ["--temp-basedir"])
+    args = startup.setup_pre_app(argv)
     startup.setup_post_app(args)
 
 

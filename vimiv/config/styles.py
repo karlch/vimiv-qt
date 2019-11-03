@@ -189,7 +189,7 @@ def parse():
     global _style
     name = api.settings.style.value
     _logger.debug("Parsing style '%s'", name)
-    filename = xdg.join_vimiv_config("styles", name)
+    filename = xdg.vimiv_config_dir("styles", name)
     if name == NAME_DEFAULT:
         _style = create_default()
     elif name == NAME_DEFAULT_DARK:
@@ -274,7 +274,7 @@ def create_default(dark: bool = False, save_to_file: bool = True) -> Style:
             "#a3685a",  # base0f
         )
         name = NAME_DEFAULT
-    if save_to_file and not os.path.isfile(xdg.join_vimiv_config("styles", name)):
+    if save_to_file and not os.path.isfile(xdg.vimiv_config_dir("styles", name)):
         dump(name, style)
     return style
 
@@ -317,7 +317,7 @@ def read(path: str) -> Style:
 
 def dump(name: str, style: Style):
     """Dump style to styles file."""
-    filename = xdg.join_vimiv_config("styles", name)
+    filename = xdg.vimiv_config_dir("styles", name)
     _logger.debug("Dumping style to file '%s'", filename)
     parser = configparser.ConfigParser()
     parser.add_section("STYLE")

@@ -50,10 +50,10 @@ def test_vimiv_xdg_dirs(mock_getenv):
 
 
 def test_join_vimiv_xdg_dirs(mock_getenv):
-    for func in [xdg.join_vimiv_cache, xdg.join_vimiv_config, xdg.join_vimiv_data]:
+    for func in [xdg.vimiv_cache_dir, xdg.vimiv_config_dir, xdg.vimiv_data_dir]:
         assert func("pathname") == "./vimiv/pathname"
 
 
 def test_join_vimiv_xdg_dirs_multiple_paths(mock_getenv):
-    for func in [xdg.join_vimiv_cache, xdg.join_vimiv_config, xdg.join_vimiv_data]:
-        assert func("directory", "path") == "./vimiv/directory/path"
+    for func in [xdg.vimiv_cache_dir, xdg.vimiv_config_dir, xdg.vimiv_data_dir]:
+        assert func("directory", "pathname") == "./vimiv/directory/pathname"

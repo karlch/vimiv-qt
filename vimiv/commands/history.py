@@ -17,7 +17,7 @@ from vimiv.utils import xdg
 
 def read():
     """Read command history from file."""
-    filename = xdg.join_vimiv_data("history")
+    filename = xdg.vimiv_data_dir("history")
     # Create empty history file
     if not os.path.isfile(filename):
         with open(filename, "w") as f:
@@ -37,7 +37,7 @@ def write(commands: List[str]):
     Args:
         commands: List of commands.
     """
-    filename = xdg.join_vimiv_data("history")
+    filename = xdg.vimiv_data_dir("history")
     with open(filename, "w") as f:
         for command in commands:
             f.write(command + "\n")

@@ -33,7 +33,7 @@ def tagdir(tmpdir, mocker):
         return tmpdir.join(*paths)
 
     tmp_tagdir = tmpdir.join("tags")
-    mocker.patch("vimiv.utils.xdg.join_vimiv_data", return_value=tmp_tagdir)
+    mocker.patch.object(Tag, "dirname", return_value=tmp_tagdir)
     yield tmp_tagdir
 
 
