@@ -13,7 +13,19 @@ from PyQt5.QtCore import QStandardPaths
 import vimiv
 
 
-def _qstandardpath(location, *paths: str) -> str:
+basedir = None
+
+
+def _standardpath(location, name: str, *paths: str) -> str:
+    """Return absolute path to a standard storage directory.
+
+    Args:
+        location: Location ID according to QStandardPaths.
+        name: Fallback name to use in case there is a base directory.
+        paths: Any additional paths passed to os.path.join.
+    """
+    if basedir is not None:
+        return os.path.join(basedir, name, *paths)
     return os.path.join(QStandardPaths.writableLocation(location), *paths)
 
 
@@ -23,15 +35,15 @@ def makedirs(*paths: str) -> None:
 
 
 def user_data_dir(*paths: str) -> str:
-    return _qstandardpath(QStandardPaths.GenericDataLocation, *paths)
+    return _standardpath(QStandardPaths.GenericDataLocation, "data", *paths)
 
 
 def user_config_dir(*paths: str) -> str:
-    return _qstandardpath(QStandardPaths.GenericConfigLocation, *paths)
+    return _standardpath(QStandardPaths.GenericConfigLocation, "config", *paths)
 
 
 def user_cache_dir(*paths: str) -> str:
-    return _qstandardpath(QStandardPaths.GenericCacheLocation, *paths)
+    return _standardpath(QStandardPaths.GenericCacheLocation, "cache", *paths)
 
 
 def vimiv_data_dir(*paths: str) -> str:

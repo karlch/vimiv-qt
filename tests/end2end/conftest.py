@@ -9,7 +9,7 @@
 import logging
 import os
 
-from PyQt5.QtCore import pyqtBoundSignal, QObject, QStandardPaths
+from PyQt5.QtCore import pyqtBoundSignal, QObject
 from PyQt5.QtGui import QPixmap
 
 import pytest
@@ -31,8 +31,11 @@ def qapp(qtbot):
 
 
 @pytest.fixture(autouse=True)
-def mock_directories(tmpdir, mocker):
-    mocker.patch.object(QStandardPaths, "writableLocation", return_value=str(tmpdir))
+def mock_directories(tmpdir):
+    directory = tmpdir.join(".vimiv-data")
+    utils.xdg.basedir = str(directory)
+    yield
+    utils.xdg.basedir = None
 
 
 @pytest.fixture(autouse=True)

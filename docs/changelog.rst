@@ -12,6 +12,8 @@ Added:
 
 * The option to reference environment variables in the configuration files using
   ``${env:VARIABLE}``.
+* The ``-b``, ``--basedir`` argument to override the base directory for storage. In
+  contrast to ``--temp-basedir`` the directory is not deleted later.
 
 Fixed:
 ^^^^^^

@@ -76,6 +76,9 @@ def get_argparser() -> argparse.ArgumentParser:
         help="Run COMMAND on startup, usable multiple times",
     )
     parser.add_argument(
+        "-b", "--basedir", metavar="DIRECTORY", help="Directory to use for all storage"
+    )
+    parser.add_argument(
         "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"
     )
 
