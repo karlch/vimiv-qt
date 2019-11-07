@@ -55,8 +55,8 @@ def cleanup_module():
 @pytest.fixture(autouse=True, scope="session")
 def faster_wait_times():
     """Fixture to set faster wait times for testing."""
-    api.working_directory.WorkingDirectoryHandler.WAIT_TIME = 0.001
-    immanipulate.WAIT_TIME = 0.001
+    api.working_directory.WorkingDirectoryHandler.WAIT_TIME = 0
+    immanipulate.WAIT_TIME = 0
 
 
 ###############################################################################
