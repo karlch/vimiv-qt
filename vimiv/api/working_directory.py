@@ -139,7 +139,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             self._monitor(self._dir)
         else:
             _logger.debug("Turning monitoring off")
-            self._stop_monitoring()
+            if self.directories() or self.files():
+                self.removePaths(self.directories() + self.files())
 
     def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""
@@ -223,4 +224,4 @@ def init() -> None:
     been created.
     """
     global handler
-    handler = WorkingDirectoryHandler() if handler is None else handler
+    handler = WorkingDirectoryHandler()
