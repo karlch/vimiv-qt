@@ -156,10 +156,6 @@ def _load_plugin(name: str, info: str, directory: str) -> None:
         _logger.debug("Initialized '%s'", name)
     except AttributeError:
         _logger.debug("Plugin '%s' does not define init()", name)
-    except TypeError:
-        # TODO Deprecate in v0.3.0
-        _logger.warning("%s: init() without the info argument is deprecated", name)
-        module.init()  # type: ignore
     _logger.debug("Loaded '%s' successfully", name)
     _loaded_plugins[name] = module
 

@@ -58,13 +58,3 @@ def register(component_init: Callable) -> Callable:
         component_init(component, *args, **kwargs)
 
     return inside
-
-
-def get(cls):  # type: ignore
-    """Retrieve a class instance from the object registry.
-
-    This is deprecated as it is equivaltent to cls.instance which is cleaner to read.
-    """
-    # TODO: Remove this in v0.4.0
-    _logger.warning("Using get(Class) is deprecated, use Class.instance instead")
-    return cls.instance
