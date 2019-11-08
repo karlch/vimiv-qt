@@ -238,7 +238,8 @@ class ExternalRunner:
             message = e.stderr.decode().split("\n")[0]
             log.error("%d  %s", e.returncode, message)
 
-    def process_pipe(self, cmd: str, stdout: str) -> None:
+    # This is covered in the tests but run in parallel using Qt
+    def process_pipe(self, cmd: str, stdout: str) -> None:  # pragma: no cover
         """Open paths from stdout.
 
         Args:
