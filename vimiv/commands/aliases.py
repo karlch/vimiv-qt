@@ -10,18 +10,20 @@ Module Attribute:
     _aliases: Dictionary storing aliases initialized with defaults.
 """
 
-from typing import List
+from typing import Dict, List
 
 from vimiv import api
 
+Aliases = Dict[str, str]
 
-_aliases = {mode: {} for mode in api.modes.ALL}
+
+_aliases: Dict[api.modes.Mode, Aliases] = {mode: {} for mode in api.modes.ALL}
 # Add default aliases
 _aliases[api.modes.GLOBAL].update(q="quit")
 _aliases[api.modes.IMAGE].update(w="write", wq="write && quit")
 
 
-def get(mode):
+def get(mode: api.modes.Mode) -> Aliases:
     """Return all aliases for the mode 'mode'."""
     if mode in api.modes.GLOBALS:
         return {**_aliases[api.modes.GLOBAL], **_aliases[mode]}
