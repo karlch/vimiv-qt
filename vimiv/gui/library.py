@@ -295,11 +295,13 @@ class LibraryModel(QStandardItemModel):
         paths: List of currently open paths in the library.
 
         _highlighted: List of indices that are highlighted as search results.
+        _library: Main library object to interact with.
     """
 
-    def __init__(self, parent):
-        super().__init__(parent=parent)
+    def __init__(self, library: Library):
+        super().__init__()
         self._highlighted: List[int] = []
+        self._library = library
         self.paths: List[str] = []
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
@@ -319,7 +321,7 @@ class LibraryModel(QStandardItemModel):
         self.remove_all_rows()
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
-        self.parent().select_stored_position()
+        self._library.select_stored_position()
 
     @pyqtSlot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
@@ -327,9 +329,8 @@ class LibraryModel(QStandardItemModel):
 
         In addition to _update_content() the position is stored.
         """
-        self.parent().store_position()
-        # This is tricky as we are calling a slot
-        self._update_content(images, directories)  # type: ignore
+        self._library.store_position()
+        self._update_content(images, directories)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
