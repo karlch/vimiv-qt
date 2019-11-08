@@ -310,7 +310,7 @@ class Manipulations(list):
         image = pixmap.toImage()
         bits = image.constBits()
         bits.setsize(image.byteCount())
-        data = bytes(bits)
+        data = bits.asstring()
         # Apply changes on the byte-level
         for group in groups:
             data = self._apply_group(group, data)
