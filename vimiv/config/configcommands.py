@@ -34,7 +34,7 @@ def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
         # Toggle boolean settings
         if name.endswith("!"):
             operation = "toggling"
-            setting.toggle()
+            setting.toggle()  # type: ignore  # We catch the AttributeError later
         # Set default
         elif not strvalue:
             operation = "resetting"
@@ -42,7 +42,7 @@ def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
         # Add to number settings
         elif strvalue.startswith("+") or strvalue.startswith("-"):
             operation = "adding"
-            setting += strvalue
+            setting += strvalue  # type: ignore  # We catch the AttributeError later
         else:
             operation = "setting"
             setting.value = strvalue
