@@ -17,6 +17,7 @@ Fixed:
 ^^^^^^
 
 * Fuzzy path completion.
+* Setting ``monitor_filesystem`` to ``false`` during runtime.
 
 
 v0.3.0 (2019-11-01)
