@@ -12,27 +12,22 @@ from collections import namedtuple
 
 import pytest
 
-from vimiv import api
-from vimiv.api._mark import Tag
+from vimiv.api._mark import Mark, Tag
 
 
 @pytest.fixture
 def mark(qtbot, mocker):
-    api.mark.marked = mocker.Mock()
-    api.mark.unmarked = mocker.Mock()
-    api.mark.watch()
+    instance = Mark()
+    instance.marked = mocker.Mock()
+    instance.unmarked = mocker.Mock()
+    instance.watch()
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
-    yield api.mark
-    api.mark.mark_clear()
-    api.mark._last_marked.clear()
+    yield instance
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def tagdir(tmpdir, mocker):
-    def join(*paths):
-        return tmpdir.join(*paths)
-
-    tmp_tagdir = tmpdir.join("tags")
+    tmp_tagdir = tmpdir.mkdir("tags")
     mocker.patch("vimiv.utils.xdg.join_vimiv_data", return_value=tmp_tagdir)
     yield tmp_tagdir
 
