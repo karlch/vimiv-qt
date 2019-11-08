@@ -15,26 +15,10 @@ from typing import List
 from vimiv import api
 
 
-class Aliases(dict):
-    """Store and receive aliases for every mode."""
-
-    def __init__(self):
-        super().__init__()
-        for mode in api.modes.ALL:
-            self[mode] = {}
-        # Add defaults
-        self[api.modes.GLOBAL]["q"] = "quit"
-        self[api.modes.IMAGE]["w"] = "write"
-        self[api.modes.IMAGE]["wq"] = "write && quit"
-
-    def get(self, mode):
-        """Return all aliases for one mode."""
-        if mode in api.modes.GLOBALS:
-            return {**self[api.modes.GLOBAL], **self[mode]}
-        return self[mode]
-
-
-_aliases = Aliases()
+_aliases = {mode: {} for mode in api.modes.ALL}
+# Add default aliases
+_aliases[api.modes.GLOBAL].update(q="quit")
+_aliases[api.modes.IMAGE].update(w="write", wq="write && quit")
 
 
 def get(mode):
