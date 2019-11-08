@@ -6,12 +6,5 @@
 
 import pytest_bdd as bdd
 
-from vimiv import plugins
-
 
 bdd.scenarios("plugins.feature")
-
-
-@bdd.when(bdd.parsers.parse("I load the {name} plugin"))
-def load_plugin(name):
-    plugins.load(name)

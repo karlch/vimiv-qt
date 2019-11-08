@@ -80,7 +80,7 @@ _loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
 
 
-def load(plugins: Dict[str, str] = None) -> None:
+def load() -> None:
     """Load plugins defined.
 
     If no plugins are passed to the function all active plugins are loaded.
@@ -95,7 +95,7 @@ def load(plugins: Dict[str, str] = None) -> None:
     _logger.debug("Available app plugins: %s", ", ".join(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
     _logger.debug("Available user plugins: %s", ", ".join(user_plugins))
-    for plugin, info in plugins.items() if plugins is not None else _plugins.items():
+    for plugin, info in _plugins.items():
         if plugin in app_plugins:
             _load_plugin(plugin, info, _app_plugin_directory)
         elif plugin in user_plugins:
