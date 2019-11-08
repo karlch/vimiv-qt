@@ -1,5 +1,5 @@
 [run]
-source = vimiv
+omit = *__main__.py
 
 [report]
 exclude_lines =
