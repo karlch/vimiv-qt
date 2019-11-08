@@ -7,9 +7,9 @@
 """Plugin enabling print support."""
 
 import abc
-from typing import cast, Optional, Union, Any
+from typing import Optional, Any, Union
 
-from PyQt5.QtCore import QObject, Qt, QSize
+from PyQt5.QtCore import QObject, Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 
@@ -59,22 +59,29 @@ class PrintHandler(QObject):
         if self._widget is None:
             raise api.commands.CommandError("No widget to print")
 
-        _logger.debug("Starting print dialog")
-
-        def handle_print() -> None:
-            # We only use handle_print in the function below, None was caught above
-            self._widget = cast(PrintWidget, self._widget)
-            self._widget.print(dialog.printer(), auto_apply_orientation)
-
         if preview:
+            _logger.debug("Starting print preview dialog")
             dialog = QPrintPreviewDialog()
-            dialog.paintRequested.connect(handle_print)
-            auto_apply_orientation = False
+            self.handle_print(self._widget, dialog, dialog.paintRequested)
         else:
-            dialog = QPrintDialog()
-            auto_apply_orientation = True
+            _logger.debug("Starting print dialog")
+            self.handle_print(self._widget, QPrintDialog(), auto_apply_orientation=True)
 
-        dialog.open(handle_print)
+    @staticmethod
+    def handle_print(
+        widget: "PrintWidget",
+        dialog: Union[QPrintPreviewDialog, QPrintDialog],
+        *signals: pyqtSignal,
+        auto_apply_orientation: bool = False,
+    ) -> None:
+        """Handle a print request of widget for a specific dialog."""
+
+        def handler() -> None:
+            widget.print(dialog.printer(), auto_apply_orientation)
+
+        for signal in signals:
+            signal.connect(handler)
+        dialog.open(handler)
 
     @slot
     def _on_pixmap_loaded(self, pixmap: QPixmap) -> None:
@@ -96,12 +103,9 @@ class PrintWidget(abc.ABC):
     implement paint to paint themselves for printing.
     """
 
-    def __init__(self, qwidget: Union[QPixmap, QMovie, QSvgWidget]):
-        self._widget = qwidget
-
     def print(self, printer: QPrinter, auto_apply_orientation: bool = False) -> None:
         """Print the widget."""
-        if auto_apply_orientation and self.size().width() > self.size().height():
+        if auto_apply_orientation and self.size.width() > self.size.height():
             printer.setOrientation(QPrinter.Landscape)
         self.paint(printer)
 
@@ -109,12 +113,17 @@ class PrintWidget(abc.ABC):
     def paint(self, printer: QPrinter) -> None:
         """Delegate actual painting to the child widget."""
 
+    @property
+    @abc.abstractmethod
     def size(self) -> QSize:
-        return self._widget.size()
+        """Delegate to the child widget."""
 
 
 class PrintPixmap(PrintWidget):
     """Print class for pixmap images."""
+
+    def __init__(self, pixmap: QPixmap):
+        self._widget = pixmap
 
     def paint(self, printer: QPrinter) -> None:
         """Scale pixmap to match printer page and paint using painter."""
@@ -126,9 +135,16 @@ class PrintPixmap(PrintWidget):
         painter.drawPixmap(0, 0, scaled_pixmap)
         painter.end()
 
+    @property
+    def size(self) -> QSize:
+        return self._widget.size()
+
 
 class PrintSvg(PrintWidget):
     """Print class for svg vector graphics."""
+
+    def __init__(self, svg_widget: QSvgWidget):
+        self._widget = svg_widget
 
     def paint(self, printer: QPrinter) -> None:
         """Scale vector graphic to match printer page and paint using render."""
@@ -140,12 +156,16 @@ class PrintSvg(PrintWidget):
         self._widget.setFixedSize(self._widget.sizeHint() * scale)
         self._widget.render(printer)
 
+    @property
     def size(self) -> QSize:
         return self._widget.sizeHint()
 
 
 class PrintMovie(PrintWidget):
     """Print class for anmiations."""
+
+    def __init__(self, movie: QMovie):
+        self._widget = movie
 
     def paint(self, printer: QPrinter) -> None:
         """Paint every frame of the movie on one printer page."""
@@ -167,6 +187,7 @@ class PrintMovie(PrintWidget):
 
         painter.end()
 
+    @property
     def size(self) -> QSize:
         return self._widget.currentPixmap().size()
 
