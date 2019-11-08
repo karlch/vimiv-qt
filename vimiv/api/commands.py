@@ -97,7 +97,7 @@ _logger = log.module_logger(__name__)
 def register(
     mode: modes.Mode = modes.GLOBAL,
     hide: bool = False,
-    hook: Hook = None,
+    hook: Hook = lambda *args: None,
     store: bool = True,
 ) -> typing.Callable:
     """Decorator to store a command in the registry.
@@ -301,7 +301,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         mode: modes.Mode = modes.GLOBAL,
         description: str = "",
         hide: bool = False,
-        hook: Hook = None,
+        hook: Hook = lambda *args: None,
         store: bool = True,
     ):
         self.name = name
@@ -310,7 +310,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         self.mode = mode
         self.description = description
         self.hide = hide
-        self.hook = hook if hook is not None else lambda *args: None
+        self.hook = hook
         self.store = store
 
     def __call__(self, args: typing.List[str], count: str) -> None:
