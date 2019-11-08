@@ -18,6 +18,7 @@ Fixed:
 
 * Fuzzy path completion.
 * Setting ``monitor_filesystem`` to ``false`` during runtime.
+* Crash when entering command mode with ``{filesize}`` status module.
 
 
 v0.3.0 (2019-11-01)

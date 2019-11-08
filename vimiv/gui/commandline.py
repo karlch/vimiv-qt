@@ -76,6 +76,12 @@ class CommandLine(KeyHandler, QLineEdit):
 
         styles.apply(self)
 
+    def pathlist(self):
+        return api.modes.COMMAND.last.widget.pathlist()
+
+    def current(self):
+        return api.modes.COMMAND.last.widget.current()
+
     @utils.slot
     def _on_return_pressed(self) -> None:
         """Run command and store history on return."""

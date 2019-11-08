@@ -218,6 +218,8 @@ def widget(mode: Mode) -> Callable:
         def inner(component: Any, *args: Any, **kwargs: Any) -> None:
             mode.widget = component
             component_init(component, *args, **kwargs)
+            assert hasattr(component, "current"), "Mode widget must define 'current'"
+            assert hasattr(component, "pathlist"), "Mode widget must define 'pathlist'"
 
         return inner
 

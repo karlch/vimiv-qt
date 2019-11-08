@@ -15,3 +15,15 @@ Feature: Display status information in the statusbar
         Given I open any directory
         When I run enter image
         Then the right status should include IMAGE
+
+    Scenario: Show filesize in statusbar
+        Given I start vimiv
+        When I run set statusbar.left {filesize}
+        # No current path selected
+        Then the left status should include N/A
+
+    Scenario: Do not crash when showing filesize in command moe
+        Given I start vimiv
+        When I run set statusbar.left {filesize}
+        And I run command
+        Then no crash should happen
