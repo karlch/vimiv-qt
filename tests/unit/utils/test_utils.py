@@ -15,6 +15,24 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from vimiv import utils
 
 
+@pytest.fixture()
+def cached_method_cls(mocker):
+    """Fixture to retrieve a class with mock utilities and a cached method."""
+
+    class CachedMethodCls:
+
+        RESULT = 42
+
+        def __init__(self):
+            self.mock = mocker.Mock(return_value=self.RESULT)
+
+        @utils.cached_method
+        def method(self):
+            return self.mock()
+
+    yield CachedMethodCls()
+
+
 def test_add_html():
     assert utils.add_html("hello", "b") == "<b>hello</b>"
 
@@ -180,3 +198,16 @@ def test_escape_additional_whitespace():
     assert utils.escape_ws("a space\nand newline", whitespace=" \n") == (
         "a\\ space\\\nand\\ newline"
     )
+
+
+def test_cached_method_result(cached_method_cls):
+    # First is the initial call
+    assert cached_method_cls.method() == cached_method_cls.RESULT
+    # Second is the cached result
+    assert cached_method_cls.method() == cached_method_cls.RESULT
+
+
+def test_cached_calls_expensive_once(cached_method_cls):
+    cached_method_cls.method()
+    cached_method_cls.method()
+    cached_method_cls.mock.assert_called_once()
