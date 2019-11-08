@@ -32,6 +32,14 @@ def qapp(qtbot):
 
 
 @pytest.fixture(autouse=True)
+def mock_directories(tmpdir):
+    directory = tmpdir.join(".vimiv-data")
+    utils.xdg.basedir = str(directory)
+    yield
+    utils.xdg.basedir = None
+
+
+@pytest.fixture(autouse=True)
 def cleanup():
     """Fixture to reset various vimiv properties at the end of each test."""
     yield
@@ -130,7 +138,7 @@ def start_image(tmpdir, n_images=1, size=(300, 300), args=None):
 
 def start(argv):
     """Run vimiv startup passing argv as argument list."""
-    args = startup.setup_pre_app(argv + ["--temp-basedir"])
+    args = startup.setup_pre_app(argv)
     startup.setup_post_app(args)
 
 

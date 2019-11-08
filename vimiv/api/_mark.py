@@ -280,7 +280,7 @@ class Tag:
         exists = os.path.isfile(abspath)
         self.mode = "r" if read_only else ("r+" if exists else "a+")
         _logger.debug("Opened tag object: '%s'", self)
-        os.makedirs(os.path.dirname(abspath), exist_ok=True)
+        xdg.makedirs(os.path.dirname(abspath))
         try:
             self._file = open(abspath, self.mode)
         except FileNotFoundError:  # For read-only if the file does not exist
@@ -323,7 +323,7 @@ class Tag:
     @staticmethod
     def dirname() -> str:
         """Return path to the tag directory."""
-        return xdg.join_vimiv_data("tags")
+        return xdg.vimiv_data_dir("tags")
 
     @staticmethod
     def path(name: str) -> str:

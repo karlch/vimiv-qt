@@ -96,17 +96,10 @@ def init_directories(args):
     if args.temp_basedir:
         global _tmpdir
         _tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
-        basedir = _tmpdir.name
-        os.environ["XDG_CACHE_HOME"] = os.path.join(basedir, "cache")
-        os.environ["XDG_CONFIG_HOME"] = os.path.join(basedir, "config")
-        os.environ["XDG_DATA_HOME"] = os.path.join(basedir, "data")
-    for directory in (
-        xdg.vimiv_cache_dir(),
-        xdg.vimiv_config_dir(),
-        xdg.vimiv_data_dir(),
-        xdg.join_vimiv_config("styles"),
-    ):
-        os.makedirs(directory, exist_ok=True)
+        args.basedir = _tmpdir.name
+    if args.basedir is not None:
+        xdg.basedir = args.basedir
+    xdg.makedirs(xdg.vimiv_cache_dir(), xdg.vimiv_config_dir(), xdg.vimiv_data_dir())
 
 
 def init_paths(args):

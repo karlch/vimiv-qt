@@ -35,7 +35,7 @@ def parse_config(
     if cli_path is not None:
         read(cli_path)
         return
-    user_path = xdg.join_vimiv_config(basename)
+    user_path = xdg.vimiv_config_dir(basename)
     if os.path.isfile(user_path):  # Read from user configuration file
         read(user_path)
     else:  # Dump defaults

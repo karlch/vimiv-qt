@@ -28,8 +28,8 @@ def mark(qtbot, mocker):
 @pytest.fixture(autouse=True)
 def tagdir(tmpdir, mocker):
     tmp_tagdir = tmpdir.mkdir("tags")
-    mocker.patch("vimiv.utils.xdg.join_vimiv_data", return_value=tmp_tagdir)
-    yield tmp_tagdir
+    mocker.patch.object(Tag, "dirname", return_value=str(tmp_tagdir))
+    yield str(tmp_tagdir)
 
 
 @pytest.fixture
