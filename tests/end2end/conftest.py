@@ -17,9 +17,10 @@ import pytest_bdd as bdd
 
 import mockdecorators
 
-from vimiv import api, startup, utils
-from vimiv.commands import runners
-from vimiv.imutils import filelist, immanipulate
+with mockdecorators.apply():
+    from vimiv import api, startup, utils
+    from vimiv.commands import runners
+    from vimiv.imutils import filelist, immanipulate
 
 
 ########################################################################################

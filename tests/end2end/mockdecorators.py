@@ -6,6 +6,7 @@
 
 """Module to patch vimiv decorators before import."""
 
+from contextlib import contextmanager
 from unittest import mock
 
 _known_classes = set()
@@ -29,5 +30,10 @@ def mockregister_cleanup():
             cls.instance = None
 
 
-mock.patch("vimiv.utils.cached_method", lambda x: x).start()
-mock.patch("vimiv.api.objreg.register", mockregister).start()
+@contextmanager
+def apply():
+    """Contextmanager to mock relevant vimiv decorators and restore state."""
+    with mock.patch("vimiv.utils.cached_method", lambda x: x), mock.patch(
+        "vimiv.api.objreg.register", mockregister
+    ):
+        yield
