@@ -12,12 +12,17 @@ Added:
 
 * The option to reference environment variables in the configuration files using
   ``${env:VARIABLE}``.
+* The ``-b``, ``--basedir`` argument to override the base directory for storage. In
+  contrast to ``--temp-basedir`` the directory is not deleted later.
 
 Fixed:
 ^^^^^^
 
 * Fuzzy path completion.
 * Setting ``monitor_filesystem`` to ``false`` during runtime.
+* Crash when entering command mode with ``{filesize}`` status module.
+* XDG related directories such as XDG_CONFIG_HOME are created with mode 700 as expected
+  by the XDG standard if they do not exist.
 
 
 v0.3.0 (2019-11-01)

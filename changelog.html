@@ -133,6 +133,8 @@
 <ul class="simple">
 <li><p>The option to reference environment variables in the configuration files using
 <code class="docutils literal notranslate"><span class="pre">${env:VARIABLE}</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">-b</span></code>, <code class="docutils literal notranslate"><span class="pre">--basedir</span></code> argument to override the base directory for storage. In
+contrast to <code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code> the directory is not deleted later.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
@@ -140,6 +142,9 @@
 <ul class="simple">
 <li><p>Fuzzy path completion.</p></li>
 <li><p>Setting <code class="docutils literal notranslate"><span class="pre">monitor_filesystem</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code> during runtime.</p></li>
+<li><p>Crash when entering command mode with <code class="docutils literal notranslate"><span class="pre">{filesize}</span></code> status module.</p></li>
+<li><p>XDG related directories such as XDG_CONFIG_HOME are created with mode 700 as expected
+by the XDG standard if they do not exist.</p></li>
 </ul>
 </div>
 </div>
