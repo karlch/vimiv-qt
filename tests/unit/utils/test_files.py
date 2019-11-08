@@ -9,6 +9,8 @@
 import os
 import tarfile
 
+import pytest
+
 from vimiv.utils import files
 
 
@@ -74,12 +76,18 @@ def test_tar_gz_not_an_image(tmpdir):
     assert files.is_image(outfile) is False
 
 
-def test_sizeof_fmt():
-    assert files.sizeof_fmt(2048) == "2.0K"
+def test_is_image_on_error(tmpdir):
+    path = tmpdir.join("my_file")
+    path.write("")
+    path.chmod(0o00)
+    assert files.is_image(path) is False
 
 
-def test_sizeof_fmt_small_file():
-    assert files.sizeof_fmt(510) == "510B"
+@pytest.mark.parametrize(
+    "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024 ** 8, "3.0Y")]
+)
+def test_sizeof_fmt(size, expected):
+    assert files.sizeof_fmt(size) == expected
 
 
 def test_get_size_directory_with_directories(mocker):
