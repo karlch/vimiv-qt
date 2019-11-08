@@ -119,8 +119,8 @@ def help(topic: str) -> None:  # pylint: disable=redefined-builtin
         return
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
+        # This raises an exception and leaves this command
         command(["-h"], "")
-        return
     with suppress(KeyError):
         setting = api.settings.get(topic)
         log.info(
