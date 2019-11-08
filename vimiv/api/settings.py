@@ -133,7 +133,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         self._value = default_value
         self.desc = desc
         self.hidden = hidden
-        self._suggestions = suggestions
+        self._suggestions = suggestions if suggestions is not None else []
         _storage[name] = self  # Store setting in storage
 
     @property
@@ -161,7 +161,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
         Used by the completion widget.
         """
-        return self._suggestions if self._suggestions else []
+        return self._suggestions
 
     @abstractmethod
     def convert(self, value: Any) -> Any:
