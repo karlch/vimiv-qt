@@ -114,3 +114,15 @@ def test_tag_read(tagwrite):
         paths = tag.read()
     for path in tagwrite.content:
         assert path in paths
+
+
+@pytest.mark.parametrize("parts", [("tag",), ("category", "tag")])
+def test_tag_delete(mark, parts):
+    basename = parts[0]
+    name = os.path.join(*parts)
+    tagpath = Tag.path(name)
+    os.makedirs(os.path.dirname(tagpath), exist_ok=True, mode=0o700)
+    with open(Tag.path(name), "w") as f:
+        f.write("My tag content")
+    mark.tag_delete(basename)
+    assert not os.path.exists(Tag.path(basename))
