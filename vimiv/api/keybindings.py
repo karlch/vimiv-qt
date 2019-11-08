@@ -142,9 +142,3 @@ def get(mode: modes.Mode) -> _Bindings:
 
 def items() -> ItemsView[modes.Mode, _Bindings]:
     return _registry.items()
-
-
-def clear() -> None:
-    """Clear all keybindings."""
-    for bindings in _registry.values():
-        bindings.clear()
