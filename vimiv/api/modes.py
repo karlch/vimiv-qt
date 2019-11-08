@@ -159,7 +159,7 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
 
     @abc.abstractmethod
     def _set_last(self, mode: "Mode") -> None:
-        pass
+        """Delegate storing the last mode to the child widget."""
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mode):

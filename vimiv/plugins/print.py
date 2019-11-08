@@ -107,7 +107,7 @@ class PrintWidget(abc.ABC):
 
     @abc.abstractmethod
     def paint(self, printer: QPrinter) -> None:
-        pass
+        """Delegate actual painting to the child widget."""
 
     def size(self) -> QSize:
         return self._widget.size()
