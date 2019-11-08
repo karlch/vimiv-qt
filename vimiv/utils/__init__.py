@@ -25,7 +25,7 @@ from . import log
 # Different location under PyQt < 5.11
 try:
     from PyQt5.sip import wrappertype
-except ImportError:
+except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
     from sip import wrappertype  # type: ignore
 
 
@@ -185,13 +185,13 @@ class GenericRunnable(QRunnable):
         self.args = args
         self.kwargs = kwargs
 
-    def run(self):
+    def run(self):  # pragma: no cover  # This is in parallel in Qt
         self.function(*self.args, **self.kwargs)
 
 
 def asyncrun(function, *args, pool=None, **kwargs):
     """Run function with args and kwargs in parallel on a QThreadPool."""
-    pool = pool if pool is not None else QThreadPool.globalInstance()
+    pool = pool if pool is not None else Pool.get()
     runnable = GenericRunnable(function, *args, **kwargs)
     pool.start(runnable)
 

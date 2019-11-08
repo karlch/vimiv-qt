@@ -63,7 +63,7 @@ class Application(QApplication):
                 return
         self.setWindowIcon(icon)
 
-    def _icon_from_project_directory(self):
+    def _icon_from_project_directory(self):  # pragma: no cover  # Called in async
         """Try to retrieve the icon from the icons folder.
 
         Useful if vimiv was not installed but is used from the git project.

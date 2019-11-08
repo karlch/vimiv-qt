@@ -3,6 +3,8 @@ source = vimiv
 
 [report]
 exclude_lines =
+    pragma: no cover
     coverage: ignore
     raise NotImplementedError
     if __name__ == "__main__"
+    @utils.asyncfunc

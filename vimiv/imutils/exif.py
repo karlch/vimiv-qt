@@ -17,7 +17,7 @@ from vimiv.utils import log
 # We need the check as exif support is optional
 try:
     import piexif
-except ImportError:
+except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
     piexif = None
 
 
