@@ -136,7 +136,7 @@ class Mark(QObject):
             try:
                 operation(abspath)
             except PermissionError:
-                raise commands.CommandError(f"permission denied")
+                raise commands.CommandError(f"Permission denied")
 
         if os.path.isfile(abspath):
             safe_delete(os.remove)
@@ -145,7 +145,7 @@ class Mark(QObject):
             safe_delete(shutil.rmtree)
             _logger.debug("Removed tag directory '%s'", name)
         else:
-            raise commands.CommandError(f"tag file '{name}' does not exist")
+            raise commands.CommandError(f"No tag called '{name}'")
 
     @commands.register()
     def tag_load(self, name: str) -> None:

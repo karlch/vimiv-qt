@@ -62,3 +62,24 @@ Feature: Mark and tag images.
         And the message
             'tag-load: No tag called 'non-existing''
             should be displayed
+
+    Scenario: Do not crash when reading tag without permission
+        Given I start vimiv
+        When I create the tag 'new_tag' with permissions '000'
+        And I run tag-load new_tag
+        Then no crash should happen
+
+    Scenario: Do not crash when deleting non-existing tag
+        Given I start vimiv
+        When I run tag-delete non-existing
+        Then no crash should happen
+        And the message
+            'tag-delete: No tag called 'non-existing''
+            should be displayed
+
+    Scenario: Do not crash when deleting tag without permission
+        Given I start vimiv
+        When I run tag-write new_tag
+        And I remove the delete permissions
+        And I run tag-delete new_tag
+        Then no crash should happen
