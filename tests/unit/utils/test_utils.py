@@ -7,6 +7,7 @@
 """Tests for vimiv.utils"""
 
 import inspect
+import time
 from collections import namedtuple
 
 import pytest
@@ -211,3 +212,23 @@ def test_cached_calls_expensive_once(cached_method_cls):
     cached_method_cls.method()
     cached_method_cls.method()
     cached_method_cls.mock.assert_called_once()
+
+
+def test_timed(mocker):
+    mocker.patch("vimiv.utils.log.info")
+    expected = 42
+    sleep_time_ms = 1
+
+    @utils.timed
+    def func():
+        time.sleep(sleep_time_ms / 1000)
+        return expected
+
+    result = func()
+
+    assert result == expected  # Ensure the result is preserved
+    utils.log.info.assert_called_once()  # Ensure a message was logged
+    # Ensure the message contains the elapsed time
+    message_args = utils.log.info.call_args[0]
+    message_time = message_args[-1]
+    assert message_time == pytest.approx(sleep_time_ms, sleep_time_ms)

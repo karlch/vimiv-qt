@@ -358,6 +358,7 @@ class AbstractQObjectMeta(wrappertype, ABCMeta):
 def timed(function):
     """Decorator to time a function and log evaluation time."""
 
+    @wraps(function)
     def inner(*args, **kwargs):
         """Wrap decorated function and add timing."""
         start = datetime.now()
