@@ -6,6 +6,8 @@
 
 """Tests for commands.history."""
 
+import os
+
 import pytest
 
 import vimiv.commands.history
@@ -36,6 +38,13 @@ def substr_history():
 @pytest.fixture()
 def mixed_history():
     yield vimiv.commands.history.History(PREFIXES, MIXED_HISTORY, max_items=20)
+
+
+@pytest.fixture()
+def history_file(tmpdir, mocker):
+    path = str(tmpdir.join("history"))
+    mocker.patch.object(vimiv.commands.history, "filename", return_value=path)
+    yield path
 
 
 def test_update_history(history):
@@ -112,3 +121,10 @@ def test_reset_when_cycle_mode_changed(substr_history):
     for expected in SUBSTR_HISTORY[:2]:
         assert substr_history.substr_cycle(HistoryDirection.Next, start) == expected
     assert substr_history.cycle(HistoryDirection.Prev, start) == SUBSTR_HISTORY[-1]
+
+
+def test_write_read_history(history_file):
+    expected = [":first", ":second", ":third"]
+    vimiv.commands.history.write(expected)
+    assert os.path.isfile(history_file), "History file not created"
+    assert vimiv.commands.history.read() == expected
