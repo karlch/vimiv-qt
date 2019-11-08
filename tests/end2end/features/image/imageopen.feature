@@ -32,3 +32,11 @@ Feature: Open different images and image formats
         Given I open 12 images
         When I run open image_1[01].jpg
         Then the filelist should contain 2 images
+
+    Scenario: Open invalid path
+        Given I open any image
+        When I run open not_an_image
+        Then no crash should happen
+        And the message
+            'open: No valid paths'
+            should be displayed
