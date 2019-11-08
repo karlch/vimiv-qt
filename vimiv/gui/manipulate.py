@@ -113,7 +113,7 @@ class Manipulate(KeyHandler, QTabWidget):
             self.raise_()
 
     def _on_pixmap_loaded(self, _pixmap):
-        self._error = None
+        self._error = ""
 
     def _on_movie_loaded(self, _movie):
         self._error = "Manipulating animations is not supported"
@@ -182,6 +182,7 @@ class ManipulateImage(QLabel):
 
     def _rescale(self):
         """Rescale pixmap and geometry to fit."""
+        assert self._pixmap is not None, "No pixmap to rescale"
         # Scale pixmap to fit into label
         pixmap = self._pixmap.scaled(
             self._max_size.width(),

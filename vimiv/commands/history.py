@@ -9,18 +9,18 @@
 import enum
 import os
 from collections import deque
-from typing import List, Iterable, Optional, Deque
+from typing import Iterable, Optional, Deque, List
 
 from vimiv.commands import argtypes
 from vimiv.utils import xdg
 
 
-def filename():
+def filename() -> str:
     """Return absolute path to history file."""
     return xdg.vimiv_data_dir("history")
 
 
-def read():
+def read() -> List[str]:
     """Read command history from file."""
     if not os.path.isfile(filename()):
         return []
@@ -28,11 +28,11 @@ def read():
         return [line.strip() for line in f]
 
 
-def write(commands: List[str]):
+def write(commands: Iterable[str]):
     """Write command history to file.
 
     Args:
-        commands: List of commands.
+        commands: Iterable of commands to write.
     """
     with open(filename(), "w") as f:
         for command in commands:

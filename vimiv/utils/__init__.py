@@ -15,7 +15,7 @@ from contextlib import contextmanager, suppress
 from datetime import datetime
 from functools import wraps
 from pstats import Stats
-from typing import Callable, Optional, TypeVar, List, Any
+from typing import Callable, Optional, TypeVar, List, Any, Iterator
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -29,6 +29,9 @@ except ImportError:  # pragma: no cover  # Covered in a different tox env during
     from sip import wrappertype  # type: ignore
 
 
+Type = TypeVar("Type")
+Func = TypeVar("Func", bound=Callable[..., Any])
+FuncNone = TypeVar("FuncNone", bound=Callable[..., None])
 Number = TypeVar("Number", int, float)
 
 
@@ -159,7 +162,7 @@ def _slot_kwargs(argspec):
     return {}
 
 
-def slot(function):
+def slot(function: Func) -> Func:
     """Annotation based slot decorator using pyqtSlot.
 
     Syntactic sugar for pyqtSlot so the parameter types do not have to be repeated when
@@ -196,12 +199,12 @@ def asyncrun(function, *args, pool=None, **kwargs):
     pool.start(runnable)
 
 
-def asyncfunc(pool=None):
+def asyncfunc(pool: QThreadPool = None) -> Callable:
     """Decorator to run function in parallel on a QThreadPool."""
 
-    def decorator(function):
+    def decorator(function: FuncNone) -> Callable[[FuncNone], FuncNone]:
         @wraps(function)
-        def inner(*args, **kwargs):
+        def inner(*args, **kwargs) -> None:
             asyncrun(function, *args, pool=pool, **kwargs)
 
         return inner
@@ -253,7 +256,7 @@ def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
-def split(a, n):
+def split(a: List[Type], n: int) -> Iterator[List[Type]]:
     """Split list into n parts of approximately equal length.
 
     See https://stackoverflow.com/questions/2130016 for details.
@@ -371,7 +374,7 @@ def timed(function):
 
 
 @contextmanager
-def profile(amount: int = 15):
+def profile(amount: int = 15) -> Iterator[None]:
     """Contextmanager to profile code secions.
 
     Starts a cProfile.Profile upon entry, disables it on exit and prints profiling

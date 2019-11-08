@@ -17,7 +17,7 @@ import os
 import re
 import shlex
 import subprocess
-from typing import Dict, List, NamedTuple, Optional, Callable
+from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
 from vimiv.utils import log, asyncfunc
@@ -33,7 +33,7 @@ _logger = log.module_logger(__name__)
 class LastCommand(NamedTuple):
     """Simple class storing command text, arguments and count."""
 
-    Count: int
+    Count: str
     Command: str
     Arguments: List[str]
 
@@ -42,7 +42,7 @@ class CommandPartFailed(Exception):
     """Raised if a command part fails, e.g. due to the command being unknown."""
 
 
-def text_non_whitespace(func: Callable[..., None]):
+def text_non_whitespace(func: utils.FuncNone) -> utils.FuncNone:
     """Decorator to only run function if text argument is more than plain whitespace."""
 
     def inner(text: str, *args, **kwargs) -> None:
@@ -51,11 +51,12 @@ def text_non_whitespace(func: Callable[..., None]):
             return None
         return func(text, *args, **kwargs)
 
-    return inner
+    # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
+    return inner  # type: ignore
 
 
 @text_non_whitespace
-def run(text, count=None, mode=None):
+def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
     """Run a (chain of) command(s).
 
     The text to run is split at SEPARATOR and each part is handled individually by
@@ -63,12 +64,12 @@ def run(text, count=None, mode=None):
 
     Args:
         text: Complete text given to command line or keybinding.
-        count: Count given if any.
         mode: Mode to run the command in.
+        count: Count given if any.
     """
     _logger.debug("Running '%s'", text)
 
-    def update_part(text):
+    def update_part(text: str) -> str:
         """Update aliases and % in final parts without seperator."""
         if SEPARATOR in text:
             return text
@@ -79,13 +80,13 @@ def run(text, count=None, mode=None):
     try:
         for i, cmdpart in enumerate(textparts):
             _logger.debug("Handling part %d '%s'", i, cmdpart)
-            _run_single(cmdpart, count, mode)
+            _run_single(cmdpart, mode, count)
     except CommandPartFailed:
         _logger.debug("Stopping at %d as '%s' failed", i, cmdpart)
 
 
 @text_non_whitespace
-def _run_single(text, count=None, mode=None):
+def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
     """Run either external or internal command.
 
     Args:
@@ -96,11 +97,10 @@ def _run_single(text, count=None, mode=None):
     if text.startswith("!"):
         external(text.lstrip("!"))
     else:
-        count = str(count) if count is not None else ""
         command(count + text, mode)
 
 
-def command(text, mode=None):
+def command(text: str, mode: api.modes.Mode = None) -> None:
     """Run internal command when called.
 
     Splits the given text into count, name and arguments. Then runs the
@@ -123,7 +123,7 @@ def command(text, mode=None):
 
 @api.keybindings.register(".", "repeat-command")
 @api.commands.register(store=False)
-def repeat_command(count: Optional[int] = None):
+def repeat_command(count: str = None) -> None:
     """Repeat the last command.
 
     **count:** Repeat count times.
@@ -137,7 +137,9 @@ def repeat_command(count: Optional[int] = None):
     _run_command(count, cmdname, args, mode)
 
 
-def _run_command(count, cmdname, args, mode):
+def _run_command(
+    count: str, cmdname: str, args: List[str], mode: api.modes.Mode
+) -> None:
     """Run a given command.
 
     Args:
@@ -170,7 +172,7 @@ def _run_command(count, cmdname, args, mode):
         raise CommandPartFailed from i
 
 
-def _parse(text):
+def _parse(text: str) -> Tuple[str, str, List[str]]:
     """Parse given command text into count, name and arguments.
 
     Args:
@@ -192,7 +194,7 @@ def _parse(text):
     return count, cmdname, args
 
 
-def expand_percent(text, mode):
+def expand_percent(text: str, mode: api.modes.Mode) -> str:
     """Expand % to the corresponding path and %m to all marked paths.
 
     Args:
@@ -258,7 +260,7 @@ class ExternalRunner:
 external = ExternalRunner()
 
 
-def alias(text, mode):
+def alias(text: str, mode: api.modes.Mode) -> str:
     """Replace alias with the actual command.
 
     Returns:
