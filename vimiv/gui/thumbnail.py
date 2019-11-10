@@ -226,7 +226,7 @@ class ThumbnailView(KeyHandler, QListWidget):
     @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def scroll(self, direction: argtypes.Direction, count=1):
+    def scroll(self, direction: argtypes.Direction, count=1):  # type: ignore[override]
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``

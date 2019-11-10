@@ -8,7 +8,7 @@
 
 import imghdr
 import os
-from typing import List, Tuple, Optional, BinaryIO
+from typing import List, Tuple, Optional, BinaryIO, Iterable
 
 # We need the check as svg support is optional
 try:
@@ -34,7 +34,7 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     )
 
 
-def supported(paths: List[str]) -> Tuple[List[str], List[str]]:
+def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
     """Get a list of supported images and a list of directories from paths.
 
     Args:

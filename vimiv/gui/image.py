@@ -89,9 +89,9 @@ class ScrollableImage(KeyHandler, QScrollArea):
 
     @api.modes.widget(api.modes.IMAGE)
     @api.objreg.register
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self._scale = 1.0
+        self._scale = ImageScaleFloat(1.0)
 
         styles.apply(self)
         self.setAlignment(Qt.AlignCenter)
@@ -113,7 +113,7 @@ class ScrollableImage(KeyHandler, QScrollArea):
         self.setWidget(Empty())
 
     def _load(
-        self, argument, reload_only, widget, scale: Optional[ImageScale] = None
+        self, argument, reload_only, widget, scale: Optional[ImageScaleFloat] = None
     ) -> None:
         """Load a new widget into the scrollable image.
 
@@ -137,7 +137,7 @@ class ScrollableImage(KeyHandler, QScrollArea):
     @api.keybindings.register("l", "scroll right", mode=api.modes.IMAGE)
     @api.keybindings.register("h", "scroll left", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
-    def scroll(self, direction: Direction, count: int = 1):
+    def scroll(self, direction: Direction, count: int = 1):  # type: ignore[override]
         """Scroll the image in the given direction.
 
         **syntax:** ``:scroll direction``
@@ -308,7 +308,7 @@ class ScrollableImage(KeyHandler, QScrollArea):
         return self.viewport().height()
 
     @api.status.module("{zoomlevel}")
-    def _get_zoom_level(self):
+    def _get_zoom_level(self) -> str:
         """Zoom level of the image in percent."""
         level = self.current_width() / self.original_width()
         return f"{level * 100:2.0f}%"

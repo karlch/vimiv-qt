@@ -36,12 +36,14 @@ earth with ``ge`` we could use::
 from contextlib import suppress
 from typing import Callable, ItemsView, List, Union, Tuple, Iterable
 
+from vimiv.utils import customtypes
+
 from . import commands, modes
 
 
 def register(
     keybinding: Union[str, Iterable[str]], command: str, mode: modes.Mode = modes.GLOBAL
-) -> Callable:
+) -> Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to add a new keybinding.
 
     Args:
@@ -50,7 +52,7 @@ def register(
         mode: Mode in which the keybinding is valid.
     """
 
-    def decorator(function: Callable) -> Callable:
+    def decorator(function: customtypes.FuncT) -> customtypes.FuncT:
         if isinstance(keybinding, str):
             bind(keybinding, command, mode)
         else:

@@ -82,6 +82,7 @@ from vimiv.utils import (
     is_method,
     flatten,
     log,
+    customtypes,
 )
 
 from . import modes
@@ -99,7 +100,7 @@ def register(
     hide: bool = False,
     hook: Hook = lambda *args: None,
     store: bool = True,
-) -> typing.Callable:
+) -> typing.Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to store a command in the registry.
 
     Args:
@@ -109,7 +110,7 @@ def register(
         store: Save command to allow repeating with '.'.
     """
 
-    def decorator(func: typing.Callable) -> typing.Callable:
+    def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
         name = _get_command_name(func)
         description = inspect.getdoc(func)
         if description is None:

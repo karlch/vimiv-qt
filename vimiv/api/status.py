@@ -34,18 +34,19 @@ If any other object requires the status to be updated, they should call
 
 import functools
 import re
-from typing import Callable
+from typing import Callable, TypeVar, Any, Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv.utils import cached_method, is_method, class_that_defined_method, log
 
 
-# module function is either a function with no arguments or a method which takes self
-Module = Callable[..., str]
+Module = Callable[[], str]
+# Module function is either a function with no arguments or a method which takes self
+ModuleFunc = TypeVar("ModuleFunc", Callable[[], str], Callable[[Any], str])
 
 
-_modules = {}  # Dictionary storing all status modules
+_modules: Dict[str, "_Module"] = {}  # Dictionary storing all status modules
 _module_expression = re.compile(r"\{.*?\}")  # Expression to match all status modules
 _logger = log.module_logger(__name__)
 
@@ -57,7 +58,7 @@ class InvalidModuleName(Exception):
 class _Module:
     """Class to store function of one status module."""
 
-    def __init__(self, func: Module):
+    def __init__(self, func: Callable[..., str]):
         self._func = func
 
     def __call__(self) -> str:
@@ -68,7 +69,7 @@ class _Module:
         return f"StatusModule('{self._func.__name__}')"
 
     @cached_method
-    def _create_func(self, func: Module) -> Module:
+    def _create_func(self, func: Callable[..., str]) -> Module:
         """Create function to call for a status module.
 
         This retrieves the instance of a class object for methods and sets it
@@ -85,7 +86,7 @@ class _Module:
         return func
 
 
-def module(name: str) -> Callable[[Module], Module]:
+def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
     """Decorator to register a function as status module.
 
     The decorated function must return a string that can be displayed as
@@ -98,7 +99,7 @@ def module(name: str) -> Callable[[Module], Module]:
             text.
     """
 
-    def decorator(function: Module) -> Module:
+    def decorator(function: ModuleFunc) -> ModuleFunc:
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
             raise InvalidModuleName(

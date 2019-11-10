@@ -7,7 +7,7 @@
 """`Utilities to interact with the application`."""
 
 import os
-from typing import List
+from typing import List, Iterable
 
 from vimiv.utils import files
 
@@ -55,7 +55,7 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
 # We want to use the name open here as it is the best name for the command
 @keybindings.register("o", "command --text='open '")
 @commands.register()
-def open(paths: List[str]) -> None:  # pylint: disable=redefined-builtin
+def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
     """Open one or more paths.
 
     **syntax:** ``:open path [path ...]``

@@ -29,11 +29,12 @@ class Application(QApplication):
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
 
+    @staticmethod
     @api.keybindings.register("q", "quit")
     @api.commands.register()
-    def quit(self) -> None:
+    def quit() -> None:
         """Quit vimiv."""
-        self.exit(0)
+        Application.exit(0)
 
     @staticmethod
     def preexit(returncode: int) -> None:

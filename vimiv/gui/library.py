@@ -172,7 +172,9 @@ class Library(KeyHandler, widgets.FlatTreeView):
         "n", "scroll down --open-selected", mode=api.modes.LIBRARY
     )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
-    @api.keybindings.register("h", "scroll left", mode=api.modes.LIBRARY)
+    @api.keybindings.register(  # No idea why this has to go in this weird location
+        "h", "scroll left", mode=api.modes.LIBRARY  # type: ignore[override]
+    )
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(
