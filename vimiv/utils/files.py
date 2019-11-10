@@ -8,7 +8,7 @@
 
 import imghdr
 import os
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, BinaryIO
 
 # We need the check as svg support is optional
 try:
@@ -134,7 +134,7 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
 # Only add svg check to imghdr if svg available
 if QSvgWidget is not None:
 
-    def _test_svg(first_bytes: bytes, _reader) -> Optional[str]:
+    def _test_svg(first_bytes: bytes, _reader: BinaryIO) -> Optional[str]:
         """Check if an opened file is a svg.
 
         Appended to imghdr.tests to detect vector graphics.

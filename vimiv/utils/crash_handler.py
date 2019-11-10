@@ -10,6 +10,8 @@ import functools
 import os
 import signal
 import sys
+from types import FrameType, TracebackType
+from typing import Callable, Type
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
 from PyQt5.QtWidgets import QApplication
@@ -25,6 +27,9 @@ except ImportError:
     # want to do for the optional import
     fcntl = None  # type: ignore
 
+ExceptionHandler = Callable[[Type[BaseException], BaseException, TracebackType], None]
+# See https://github.com/PyCQA/pylint/issues/2804
+SignalHandler = Callable[[signal.Signals, FrameType], None]  # pylint: disable=no-member
 
 _logger = log.module_logger(__name__)
 
@@ -50,7 +55,7 @@ class CrashHandler(QObject):
         # Finalize
         _logger.debug("Initialized crash handler")
 
-    def _setup_wakeup_fd(self):
+    def _setup_wakeup_fd(self) -> None:
         """Set up wakeup filedescriptor for signal handling.
 
         This returns the control from the Qt main loop in C++ back to python and allows
@@ -62,10 +67,11 @@ class CrashHandler(QObject):
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
         notifier = QSocketNotifier(read_fd, QSocketNotifier.Read, self)
-        notifier.activated.connect(lambda: None)
+        # Signal misinterpreted as a callable
+        notifier.activated.connect(lambda: None)  # type: ignore
         signal.set_wakeup_fd(write_fd)
 
-    def _setup_timer(self, timeout: int = 1000):
+    def _setup_timer(self, timeout: int = 1000) -> None:
         """Set up a timer for signal handling.
 
         The timer gets called every timeout ms and returns the control from the Qt main
@@ -80,7 +86,13 @@ class CrashHandler(QObject):
         timer.start(timeout)
         timer.timeout.connect(lambda: None)
 
-    def handle_exception(self, initial_handler, exc_type, exc_value, traceback):
+    def handle_exception(
+        self,
+        initial_handler: ExceptionHandler,
+        exc_type: Type[BaseException],
+        exc_value: BaseException,
+        traceback: TracebackType,
+    ) -> None:
         """Custom exception handler for uncaught exceptions.
 
         In addition to the standard python exception handler a log message is called and
@@ -97,7 +109,7 @@ class CrashHandler(QObject):
             log.fatal("Exception: %r", e)
             sys.exit(customtypes.Exit.err_suicide)
 
-    def handle_interrupt(self, signum: int, _frame):
+    def handle_interrupt(self, signum: int, _frame: FrameType) -> None:
         """Initial handler for interrupt signals to exit gracefully.
 
         Args:
@@ -111,7 +123,7 @@ class CrashHandler(QObject):
             0, functools.partial(self._app.exit, customtypes.Exit.signal + signum)
         )
 
-    def handle_interrupt_forcefully(self, signum, _frame):
+    def handle_interrupt_forcefully(self, signum: int, _frame: FrameType) -> None:
         """Second handler for interrupt signals to exit forcefully.
 
         Args:
@@ -122,7 +134,7 @@ class CrashHandler(QObject):
         sys.exit(customtypes.Exit.signal + signum)
 
 
-def _assign_interrupt_handler(handler):
+def _assign_interrupt_handler(handler: SignalHandler) -> None:
     """Assign handler function to interrupt-like signals."""
     signal.signal(signal.SIGINT, handler)
     signal.signal(signal.SIGTERM, handler)

@@ -15,7 +15,7 @@ from contextlib import contextmanager, suppress
 from datetime import datetime
 from functools import wraps
 from pstats import Stats
-from typing import Callable, Optional, TypeVar, List, Any, Iterator
+from typing import Callable, Optional, TypeVar, List, Any, Iterator, Dict
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -132,7 +132,7 @@ class AnnotationNotFound(Exception):
         super().__init__(message)
 
 
-def _slot_args(argspec, function):
+def _slot_args(argspec: inspect.FullArgSpec, function: Callable) -> List[type]:
     """Create arguments for pyqtSlot from function arguments.
 
     Args:
@@ -153,7 +153,7 @@ def _slot_args(argspec, function):
     return slot_args
 
 
-def _slot_kwargs(argspec):
+def _slot_kwargs(argspec: inspect.FullArgSpec) -> Dict[str, Any]:
     """Add return type to slot kwargs if it exists."""
     with suppress(KeyError):
         return_type = argspec.annotations["return"]
@@ -182,32 +182,33 @@ def slot(function: Func) -> Func:
 class GenericRunnable(QRunnable):
     """Generic QRunnable to run an arbitrary function on a QThreadPool."""
 
-    def __init__(self, function, *args, **kwargs):
+    def __init__(self, function: Callable, *args, **kwargs):
         super().__init__()
         self.function = function
         self.args = args
         self.kwargs = kwargs
 
-    def run(self):  # pragma: no cover  # This is in parallel in Qt
+    def run(self) -> None:  # pragma: no cover  # This is in parallel in Qt
         self.function(*self.args, **self.kwargs)
 
 
-def asyncrun(function, *args, pool=None, **kwargs):
+def asyncrun(function: Callable, *args, pool: QThreadPool = None, **kwargs) -> None:
     """Run function with args and kwargs in parallel on a QThreadPool."""
     pool = pool if pool is not None else Pool.get()
     runnable = GenericRunnable(function, *args, **kwargs)
     pool.start(runnable)
 
 
-def asyncfunc(pool: QThreadPool = None) -> Callable:
+def asyncfunc(pool: QThreadPool = None) -> Callable[[FuncNone], FuncNone]:
     """Decorator to run function in parallel on a QThreadPool."""
 
-    def decorator(function: FuncNone) -> Callable[[FuncNone], FuncNone]:
+    def decorator(function: FuncNone) -> FuncNone:
         @wraps(function)
-        def inner(*args, **kwargs) -> None:
+        def inner(*args: Any, **kwargs: Any) -> None:
             asyncrun(function, *args, pool=pool, **kwargs)
 
-        return inner
+        # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
+        return inner  # type: ignore
 
     return decorator
 
@@ -239,13 +240,13 @@ class Pool:
         return threadpool
 
     @staticmethod
-    def wait(timeout: int = -1):
+    def wait(timeout: int = -1) -> None:
         """Wait for all thread pools with the given timeout."""
         for pool in Pool._threadpools:
             pool.waitForDone(timeout)
 
     @staticmethod
-    def clear():
+    def clear() -> None:
         """Clear all thread pools."""
         for pool in Pool._threadpools:
             pool.clear()
@@ -358,11 +359,11 @@ class AbstractQObjectMeta(wrappertype, ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
-def timed(function):
+def timed(function: Func) -> Func:
     """Decorator to time a function and log evaluation time."""
 
     @wraps(function)
-    def inner(*args, **kwargs):
+    def inner(*args: Any, **kwargs: Any) -> Any:
         """Wrap decorated function and add timing."""
         start = datetime.now()
         return_value = function(*args, **kwargs)
@@ -370,7 +371,8 @@ def timed(function):
         log.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
         return return_value
 
-    return inner
+    # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
+    return inner  # type: ignore
 
 
 @contextmanager

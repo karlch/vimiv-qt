@@ -16,7 +16,9 @@ import vimiv
 basedir = None
 
 
-def _standardpath(location, name: str, *paths: str) -> str:
+def _standardpath(
+    location: QStandardPaths.StandardLocation, name: str, *paths: str
+) -> str:
     """Return absolute path to a standard storage directory.
 
     Args:
