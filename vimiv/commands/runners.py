@@ -20,7 +20,7 @@ import subprocess
 from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
-from vimiv.utils import log, asyncfunc
+from vimiv.utils import log, asyncfunc, customtypes
 from vimiv.commands import aliases
 
 
@@ -42,7 +42,7 @@ class CommandPartFailed(Exception):
     """Raised if a command part fails, e.g. due to the command being unknown."""
 
 
-def text_non_whitespace(func: utils.FuncNone) -> utils.FuncNone:
+def text_non_whitespace(func: customtypes.FuncNoneT) -> customtypes.FuncNoneT:
     """Decorator to only run function if text argument is more than plain whitespace."""
 
     def inner(text: str, *args, **kwargs) -> None:

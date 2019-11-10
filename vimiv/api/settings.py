@@ -11,17 +11,14 @@ Module attributes:
 """
 
 from abc import abstractmethod
-from typing import Any, Dict, ItemsView, List, Union, Callable
+from typing import Any, Dict, ItemsView, List, Callable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import clamp, AbstractQObjectMeta, log
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
 
 
-Number = Union[int, float]
-NumberStr = Union[Number, str]
-IntStr = Union[int, str]
-Methodtype = Callable[["Setting", Any], Any]
+MethodT = Callable[["Setting", Any], Any]
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -60,7 +57,7 @@ def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
 
 
-def ensure_type(*types: type) -> Callable[[Methodtype], Methodtype]:
+def ensure_type(*types: type) -> Callable[[MethodT], MethodT]:
     """Decorator to ensure type of value argument is compatible with setting.
 
     If the value is one of types, it is returned without conversion as these are the
@@ -73,7 +70,7 @@ def ensure_type(*types: type) -> Callable[[Methodtype], Methodtype]:
         ValueError: If the conversion fails.
     """
 
-    def decorator(methodconvert: Methodtype) -> Methodtype:
+    def decorator(methodconvert: MethodT) -> MethodT:
         def convert(self: "Setting", value: Any) -> Any:
             if isinstance(value, types):
                 return value
@@ -211,12 +208,12 @@ class NumberSetting(Setting):
     def __init__(
         self,
         name: str,
-        default_value: Number,
+        default_value: customtypes.Number,
         desc: str = "",
         suggestions: List[str] = None,
         hidden: bool = False,
-        min_value: Number = None,
-        max_value: Number = None,
+        min_value: customtypes.Number = None,
+        max_value: customtypes.Number = None,
     ):
         """Additionally allow setting minimum and maximum value."""
         super().__init__(name, default_value, desc, suggestions, hidden=hidden)
@@ -224,14 +221,14 @@ class NumberSetting(Setting):
         self.max_value = max_value
 
     @abstractmethod
-    def __iadd__(self, value: NumberStr) -> "NumberSetting":
+    def __iadd__(self, value: customtypes.NumberStr) -> "NumberSetting":
         """Must be implemented by child."""
 
     @abstractmethod
-    def __imul__(self, value: NumberStr) -> "NumberSetting":
+    def __imul__(self, value: customtypes.NumberStr) -> "NumberSetting":
         """Must be implemented by child."""
 
-    def hook(self, value: NumberStr) -> Number:
+    def hook(self, value: customtypes.NumberStr) -> customtypes.Number:
         return clamp(self.convert(value), self.min_value, self.max_value)
 
 
@@ -242,7 +239,7 @@ class IntSetting(NumberSetting):
     def convert(self, text: str) -> int:
         return int(text)
 
-    def __iadd__(self, value: NumberStr) -> "IntSetting":
+    def __iadd__(self, value: customtypes.NumberStr) -> "IntSetting":
         """Add a value to the currently stored integer.
 
         Args:
@@ -251,7 +248,7 @@ class IntSetting(NumberSetting):
         self.value = self.value + self.convert(value)
         return self
 
-    def __imul__(self, value: NumberStr) -> "IntSetting":
+    def __imul__(self, value: customtypes.NumberStr) -> "IntSetting":
         """Multiply the currently stored integer with a value.
 
         Args:
@@ -271,7 +268,7 @@ class FloatSetting(NumberSetting):
     def convert(self, text: str) -> float:
         return float(text)
 
-    def __iadd__(self, value: NumberStr) -> "FloatSetting":
+    def __iadd__(self, value: customtypes.NumberStr) -> "FloatSetting":
         """Add a value to the currently stored float.
 
         Args:
@@ -280,7 +277,7 @@ class FloatSetting(NumberSetting):
         self.value = self.value + self.convert(value)
         return self
 
-    def __imul__(self, value: NumberStr) -> "FloatSetting":
+    def __imul__(self, value: customtypes.NumberStr) -> "FloatSetting":
         """Multiply the currently stored float with a value.
 
         Args:
@@ -302,14 +299,14 @@ class ThumbnailSizeSetting(Setting):
 
     ALLOWED_VALUES = 64, 128, 256, 512
 
-    def hook(self, value: IntStr) -> int:
+    def hook(self, value: customtypes.IntStr) -> int:
         ivalue = self.convert(value)
         if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
         return ivalue
 
     @ensure_type(int)
-    def convert(self, value: IntStr) -> int:
+    def convert(self, value: customtypes.IntStr) -> int:
         return int(value)
 
     def increase(self) -> None:

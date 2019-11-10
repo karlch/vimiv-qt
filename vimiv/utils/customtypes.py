@@ -7,8 +7,19 @@
 """Custom data types."""
 
 import enum
+import typing
 
 from vimiv import checkversion
+
+
+AnyT = typing.TypeVar("AnyT")
+FuncT = typing.TypeVar("FuncT", bound=typing.Callable[..., typing.Any])
+FuncNoneT = typing.TypeVar("FuncNoneT", bound=typing.Callable[..., None])
+NumberT = typing.TypeVar("NumberT", int, float)
+
+Number = typing.Union[int, float]
+NumberStr = typing.Union[Number, str]
+IntStr = typing.Union[int, str]
 
 
 @enum.unique

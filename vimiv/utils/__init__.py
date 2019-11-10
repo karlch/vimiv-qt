@@ -15,24 +15,19 @@ from contextlib import contextmanager, suppress
 from datetime import datetime
 from functools import wraps
 from pstats import Stats
-from typing import Callable, Optional, TypeVar, List, Any, Iterator, Dict
+from typing import Callable, Optional, List, Any, Iterator, Dict
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from . import log
+from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
 
 # Different location under PyQt < 5.11
 try:
     from PyQt5.sip import wrappertype
 except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
     from sip import wrappertype  # type: ignore
-
-
-Type = TypeVar("Type")
-Func = TypeVar("Func", bound=Callable[..., Any])
-FuncNone = TypeVar("FuncNone", bound=Callable[..., None])
-Number = TypeVar("Number", int, float)
 
 
 def add_html(text: str, *tags: str) -> str:
@@ -74,8 +69,8 @@ def escape_html(text: str) -> str:
 
 
 def clamp(
-    value: Number, minimum: Optional[Number], maximum: Optional[Number]
-) -> Number:
+    value: NumberT, minimum: Optional[NumberT], maximum: Optional[NumberT]
+) -> NumberT:
     """Clamp a value so it does not exceed boundaries."""
     if minimum is not None:
         value = max(value, minimum)
@@ -162,7 +157,7 @@ def _slot_kwargs(argspec: inspect.FullArgSpec) -> Dict[str, Any]:
     return {}
 
 
-def slot(function: Func) -> Func:
+def slot(function: FuncT) -> FuncT:
     """Annotation based slot decorator using pyqtSlot.
 
     Syntactic sugar for pyqtSlot so the parameter types do not have to be repeated when
@@ -199,10 +194,10 @@ def asyncrun(function: Callable, *args, pool: QThreadPool = None, **kwargs) -> N
     pool.start(runnable)
 
 
-def asyncfunc(pool: QThreadPool = None) -> Callable[[FuncNone], FuncNone]:
+def asyncfunc(pool: QThreadPool = None) -> Callable[[FuncNoneT], FuncNoneT]:
     """Decorator to run function in parallel on a QThreadPool."""
 
-    def decorator(function: FuncNone) -> FuncNone:
+    def decorator(function: FuncNoneT) -> FuncNoneT:
         @wraps(function)
         def inner(*args: Any, **kwargs: Any) -> None:
             asyncrun(function, *args, pool=pool, **kwargs)
@@ -257,7 +252,7 @@ def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
-def split(a: List[Type], n: int) -> Iterator[List[Type]]:
+def split(a: List[AnyT], n: int) -> Iterator[List[AnyT]]:
     """Split list into n parts of approximately equal length.
 
     See https://stackoverflow.com/questions/2130016 for details.
@@ -359,7 +354,7 @@ class AbstractQObjectMeta(wrappertype, ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
-def timed(function: Func) -> Func:
+def timed(function: FuncT) -> FuncT:
     """Decorator to time a function and log evaluation time."""
 
     @wraps(function)
