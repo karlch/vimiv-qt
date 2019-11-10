@@ -87,7 +87,7 @@ def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
 class BaseFilter(QSortFilterProxyModel):
     """Base filter used for completion filters."""
 
-    def __init__(self):  # type: ignore
+    def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
 
@@ -120,6 +120,10 @@ class BaseFilter(QSortFilterProxyModel):
             The updated text used as completion filter.
         """
         return text.lstrip(":/?" + string.digits)
+
+    def sourceModel(self) -> "BaseModel":
+        # We know we are only using the BaseFilter with BaseModel
+        return cast(BaseModel, super().sourceModel())
 
 
 class BaseModel(QStandardItemModel):
