@@ -11,14 +11,15 @@ Module attributes:
 """
 
 from abc import abstractmethod
-from typing import Any, Dict, ItemsView, List, Callable
+from typing import Any, Dict, ItemsView, List, Callable, TypeVar
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
 
 
-MethodT = Callable[["Setting", Any], Any]
+SettingT = TypeVar("SettingT", bound="Setting")
+MethodT = Callable[[SettingT, Any], Any]
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -57,7 +58,7 @@ def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
 
 
-def ensure_type(*types: type) -> Callable[[MethodT], MethodT]:
+def ensure_type(*types: type) -> Callable[[MethodT[SettingT]], MethodT[SettingT]]:
     """Decorator to ensure type of value argument is compatible with setting.
 
     If the value is one of types, it is returned without conversion as these are the
@@ -70,8 +71,8 @@ def ensure_type(*types: type) -> Callable[[MethodT], MethodT]:
         ValueError: If the conversion fails.
     """
 
-    def decorator(methodconvert: MethodT) -> MethodT:
-        def convert(self: "Setting", value: Any) -> Any:
+    def decorator(methodconvert: MethodT[SettingT]) -> MethodT[SettingT]:
+        def convert(self: Any, value: Any) -> Any:
             if isinstance(value, types):
                 return value
             if isinstance(value, str):
