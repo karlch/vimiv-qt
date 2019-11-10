@@ -94,7 +94,7 @@ def get_argparser() -> argparse.ArgumentParser:
     return parser
 
 
-def positive_int(value):
+def positive_int(value: str) -> int:
     """Check if an argument value is a positive int.
 
     Args:
@@ -111,7 +111,7 @@ def positive_int(value):
 Geometry = namedtuple("Geometry", ["width", "height"])
 
 
-def geometry(value):
+def geometry(value: str) -> Geometry:
     """Check if an argument value is a valid geometry.
 
     Args:
@@ -128,7 +128,7 @@ def geometry(value):
     return Geometry(width, height)
 
 
-def existing_file(value):
+def existing_file(value: str) -> str:
     """Check if an argument value is an existing file.
 
     Args:
@@ -141,7 +141,7 @@ def existing_file(value):
     return value
 
 
-def existing_path(value):
+def existing_path(value: str) -> str:
     """Check if an argument value is an existing path.
 
     The difference to existing_file above is that this allows directories.
@@ -156,7 +156,7 @@ def existing_path(value):
     return value
 
 
-def loglevel(value):
+def loglevel(value: str) -> int:
     """Check if an argument value is a valid log level.
 
     Args:

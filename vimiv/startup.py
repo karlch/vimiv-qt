@@ -11,9 +11,11 @@ Module Attributes:
         object must exist until vimiv exits.
 """
 
+import argparse
 import os
 import sys
 import tempfile
+from typing import List
 
 from PyQt5.QtWidgets import QApplication
 
@@ -32,7 +34,7 @@ _tmpdir = None
 _logger = log.module_logger(__name__)
 
 
-def main():
+def main() -> int:
     """Run startup and the Qt main loop."""
     args = setup_pre_app(sys.argv[1:])
     qapp = app.Application()
@@ -45,7 +47,7 @@ def main():
     return returncode
 
 
-def setup_pre_app(argv):
+def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     """Early setup that is done before the QApplication is created.
 
     Includes parsing the command line and setting up logging as well as initializing the
@@ -68,7 +70,7 @@ def setup_pre_app(argv):
     return args
 
 
-def setup_post_app(args):
+def setup_post_app(args: argparse.Namespace) -> None:
     """Setup performed after creating the QApplication."""
     api.working_directory.init()
     api.mark.watch()
@@ -84,7 +86,7 @@ def setup_post_app(args):
         run_startup_commands(*args.command)
 
 
-def init_directories(args):
+def init_directories(args: argparse.Namespace) -> None:
     """Create vimiv cache, config and data directories.
 
     The directories are either the directories defined in the freedesktop
@@ -102,7 +104,7 @@ def init_directories(args):
     xdg.makedirs(xdg.vimiv_cache_dir(), xdg.vimiv_config_dir(), xdg.vimiv_data_dir())
 
 
-def init_paths(args):
+def init_paths(args: argparse.Namespace) -> None:
     """Open paths given from commandline or fallback to library if set."""
     _logger.debug("Opening paths")
     try:
@@ -114,7 +116,7 @@ def init_paths(args):
     api.status.update()
 
 
-def init_ui(args):
+def init_ui(args: argparse.Namespace) -> None:
     """Initialize the Qt UI."""
     _logger.debug("Initializing UI")
     mw = gui.MainWindow()
@@ -135,7 +137,7 @@ def init_ui(args):
     mw.show()
 
 
-def update_settings(args):
+def update_settings(args: argparse.Namespace) -> None:
     """Update default settings with command line arguments and configfiles.
 
     Args:
@@ -154,7 +156,7 @@ def update_settings(args):
     styles.parse()
 
 
-def run_startup_commands(*commands: str):
+def run_startup_commands(*commands: str) -> None:
     """Run commands given via --command at startup.
 
     Args:

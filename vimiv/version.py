@@ -89,7 +89,7 @@ def _git_info() -> Optional[str]:
     if not os.path.isdir(os.path.join(gitdir, ".git")):
         return None
 
-    def _get_cmd_out(*args):
+    def _get_cmd_out(*args: str) -> str:
         """Return output of git shell command ran with args."""
         out = subprocess.run(args, cwd=gitdir, stdout=subprocess.PIPE, check=True)
         return out.stdout.decode("utf-8").strip()

@@ -22,7 +22,7 @@ class Application(QApplication):
     """Main application class."""
 
     @api.objreg.register
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the main Qt application."""
         super().__init__([vimiv.__name__])  # Only pass program name to Qt
         self.setApplicationVersion(vimiv.__version__)
@@ -31,12 +31,12 @@ class Application(QApplication):
 
     @api.keybindings.register("q", "quit")
     @api.commands.register()
-    def quit(self):
+    def quit(self) -> None:
         """Quit vimiv."""
         self.exit(0)
 
     @staticmethod
-    def preexit(returncode):
+    def preexit(returncode: int) -> None:
         """Prepare exit by finalizing any running threads."""
         # Do not start any new threads
         utils.Pool.clear()
@@ -45,13 +45,14 @@ class Application(QApplication):
         utils.Pool.wait()
         _logger.debug("Exiting with returncode %d", returncode)
 
-    def exit(self, returncode):
+    @staticmethod
+    def exit(returncode: int = 0) -> None:
         """Exit the main application with returncode."""
-        self.preexit(returncode)
-        super().exit(returncode)
+        Application.preexit(returncode)
+        QApplication.exit(returncode)
 
     @utils.asyncfunc()
-    def _set_icon(self):
+    def _set_icon(self) -> None:
         """Set window icon of vimiv."""
         _logger.debug("Trying to retrieve icon from theme")
         icon = QIcon.fromTheme(vimiv.__name__)
@@ -63,7 +64,7 @@ class Application(QApplication):
                 return
         self.setWindowIcon(icon)
 
-    def _icon_from_project_directory(self):  # pragma: no cover  # Called in async
+    def _icon_from_project_directory(self) -> QIcon:  # pragma: no cover  # Async
         """Try to retrieve the icon from the icons folder.
 
         Useful if vimiv was not installed but is used from the git project.
