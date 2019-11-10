@@ -66,7 +66,7 @@ class CrashHandler(QObject):
         for fd in (read_fd, write_fd):
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-        notifier = QSocketNotifier(read_fd, QSocketNotifier.Read, self)
+        notifier = QSocketNotifier(read_fd, QSocketNotifier.Read, self)  # type: ignore
         # Signal misinterpreted as a callable
         notifier.activated.connect(lambda: None)  # type: ignore
         signal.set_wakeup_fd(write_fd)
