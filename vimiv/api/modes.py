@@ -74,7 +74,7 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         super().__init__()
         self.active = active
         self.last_fallback = self._last = cast(Mode, last)
-        self.widget = cast(QWidget, None)  # Initialized to a QWidget using @widget
+        self.widget = cast(_ModeWidget, None)  # Initialized using @widget
         self._name = name
 
         # Store global ID as ID and increase it by one
@@ -195,6 +195,21 @@ def get_by_name(name: str) -> Mode:
     raise InvalidMode(f"'{name.upper()}' is not a valid mode")
 
 
+class _ModeWidget(QWidget):
+    """Helper class defining the requirements for mode widgets.
+
+    This should in principle be solved using protocols, but these are only available
+    starting from python 3.8 and we still support python 3.6.
+    See https://docs.python.org/3/library/typing.html#typing.Protocol for more details.
+    """
+
+    def current(self) -> str:
+        """Return the current path valid for this mode."""
+
+    def pathlist(self) -> List[str]:
+        """Return the current list of paths valid for this mode."""
+
+
 def widget(mode: Mode) -> Callable:
     """Decorator to assign a widget to a mode.
 
@@ -217,6 +232,12 @@ def widget(mode: Mode) -> Callable:
     def decorator(component_init: Callable) -> Callable:
         def inner(component: Any, *args: Any, **kwargs: Any) -> None:
             mode.widget = component
+            _logger.debug(
+                "Set '%s.%s' as widget of '%s'",
+                component.__module__,
+                component.__class__.__qualname__,
+                mode,
+            )
             component_init(component, *args, **kwargs)
             assert hasattr(component, "current"), "Mode widget must define 'current'"
             assert hasattr(component, "pathlist"), "Mode widget must define 'pathlist'"
