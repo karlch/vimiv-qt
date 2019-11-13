@@ -68,12 +68,25 @@ class CommandMissingDocumentation(BaseChecker):
         self._check_count_section(node, argnames)
         self._check_syntax_section(node, regular_argnames)
 
+    @staticmethod
+    def sections(docstr):
+        """Retrieve list of all sections separated by an empty line in docstr."""
+        sections = []
+        content = ""
+        for line in docstr.split("\n"):
+            if not line.strip():
+                sections.append(content)
+                content = ""
+            else:
+                content += line
+        return sections
+
     def _check_syntax_section(self, node, argnames):
         """Check if a syntax section is available for commands with arguments."""
         if not argnames:
             return
-        for line in node.doc.split("\n"):
-            if re.match(r"\*\*syntax:\*\* ``.*``", line.strip()):
+        for section in self.sections(node.doc):
+            if re.match(r"\*\*syntax:\*\* ``.*``", section.strip()):
                 return
         self.add_message(self.name_syntax, node=node, args=(node.name,))
 
