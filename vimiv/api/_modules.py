@@ -13,12 +13,16 @@ corresponding objects.
 import datetime
 import os
 from contextlib import suppress
+from typing import List
 
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
 import vimiv
 from vimiv import api
 from vimiv.utils import files, log
+
+
+_logger = log.module_logger(__name__)
 
 
 ###############################################################################
@@ -133,6 +137,89 @@ def help(topic: str) -> None:  # pylint: disable=redefined-builtin
         )
         return
     raise api.commands.CommandError(f"Unknown topic '{topic}'")
+
+
+@api.commands.register()
+def rename(
+    paths: List[str],
+    base: str,
+    start: int = 1,
+    separator: str = "_",
+    overwrite: bool = False,
+    skip_image_check: bool = False,
+) -> None:
+    """Rename images with a common base.
+
+    **syntax:** ``:rename path [path ...] base [--start=INDEX] [--separator=SEPARATOR]
+    [--overwrite] [--skip-image-check]``
+
+    Example::
+        ``:rename * identifier`` would rename all images in the filelist to
+        ``identifier_001``, ``identifier_002``, ..., ``identifier_NNN``.
+
+    positional arguments:
+        * ``paths``: The path(s) to rename.
+        * ``base``: Base name to use for numbering.
+
+    optional arguments:
+        * ``--start``: Index to start numbering with. Default: 1.
+        * ``--separator``: Separator between base and numbers. Default: '_'.
+        * ``--overwrite``: Overwrite existing paths when renaming.
+        * ``--skip-image-check``: Do not check if all renamed paths are images.
+    """
+    paths = [path for path in paths if files.is_image(path) or skip_image_check]
+    if not paths:
+        raise api.commands.CommandError("No paths to rename")
+    marked = []
+    for i, path in enumerate(paths, start=start):
+        _, extension = os.path.splitext(path)
+        dirname = os.path.dirname(path)
+        basename = f"{base}{separator}{i:03d}{extension}"
+        outfile = os.path.join(dirname, basename)
+        if os.path.exists(outfile) and not overwrite:
+            log.warning(
+                "Outfile '%s' exists, skipping. To overwrite add '--overwrite'.",
+                outfile,
+            )
+        else:
+            _logger.debug("%s -> %s", path, outfile)
+            os.rename(path, outfile)
+            if path in api.mark.paths:  # Keep mark status of the renamed path
+                marked.append(outfile)
+    api.mark.mark(marked)
+
+
+@api.commands.register()
+def mark_rename(
+    base: str, start: int = 1, overwrite: bool = False, separator: str = "_"
+) -> None:
+    """Rename marked images with a common base.
+
+    **syntax:** ``:mark-rename base [--start=INDEX] [--separator=SEPARATOR]
+    [--overwrite] [--skip-image-check]``
+
+    Example::
+        ``:mark-rename my_mark`` would rename all marked images to
+        ``my_mark_001``, ``my_mark_002``, ..., ``my_mark_NNN``.
+
+    positional arguments:
+        * ``paths``: The path(s) to rename.
+        * ``base``: Base name to use for numbering.
+
+    optional arguments:
+        * ``--start``: Index to start numbering with. Default: 1.
+        * ``--separator``: Separator between base and numbers. Default: '_'.
+        * ``--overwrite``: Overwrite existing paths when renaming.
+        * ``--skip-image-check``: Do not check if all renamed paths are images.
+    """
+    rename(
+        api.mark.paths,
+        base,
+        start=start,
+        overwrite=overwrite,
+        separator=separator,
+        skip_image_check=True,
+    )
 
 
 ###############################################################################
