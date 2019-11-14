@@ -22,29 +22,38 @@ def almost_equal(size, expected):
 
 @bdd.then(bdd.parsers.parse("the pixmap width should be {width}"))
 def check_pixmap_width(image, width):
-    almost_equal(image.current_width(), int(width))
+    almost_equal(image.scene().sceneRect().width() * image.zoom_level, int(width))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should be {height}"))
 def check_pixmap_height(image, height):
-    almost_equal(image.current_height(), int(height))
+    almost_equal(image.scene().sceneRect().height() * image.zoom_level, int(height))
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should fit"))
 def check_pixmap_width_fit(image):
-    almost_equal(image.current_width(), image.width())
+    almost_equal(
+        image.viewport().width(), image.scene().sceneRect().width() * image.zoom_level
+    )
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should fit"))
 def check_pixmap_height_fit(image):
-    almost_equal(image.current_height(), image.height())
+    almost_equal(
+        image.viewport().height(), image.scene().sceneRect().height() * image.zoom_level
+    )
 
 
 @bdd.then(bdd.parsers.parse("the pixmap width should not fit"))
 def check_pixmap_width_no_fit(image):
-    assert image.width() != image.current_width()
+    assert (
+        image.viewport().width() != image.scene().sceneRect().width() * image.zoom_level
+    )
 
 
 @bdd.then(bdd.parsers.parse("the pixmap height should not fit"))
 def check_pixmap_height_no_fit(image):
-    assert image.height() != image.current_height()
+    assert (
+        image.viewport().height()
+        != image.scene().sceneRect().height() * image.zoom_level
+    )
