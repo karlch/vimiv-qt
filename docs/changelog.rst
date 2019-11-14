@@ -24,6 +24,7 @@ Fixed:
 * Crash when entering command mode with ``{filesize}`` status module.
 * XDG related directories such as XDG_CONFIG_HOME are created with mode 700 as expected
   by the XDG standard if they do not exist.
+* Writing image changes on quit.
 
 
 v0.3.0 (2019-11-01)
