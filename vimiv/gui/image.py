@@ -265,12 +265,6 @@ class ScrollableImage(KeyHandler, QGraphicsView):
         level = utils.clamp(level, self.MIN_SCALE, self.MAX_SCALE)
         super().scale(level / self.zoom_level, level / self.zoom_level)
 
-    def resizeEvent(self, event):
-        """Rescale the child image and update statusbar on resize event."""
-        super().resizeEvent(event)
-        self.scale(self._scale)
-        api.status.update()  # Zoom level changes
-
     @property
     def zoom_level(self) -> float:
         """Retrieve the current zoom level. 1 is the original image size."""
@@ -295,3 +289,30 @@ class ScrollableImage(KeyHandler, QGraphicsView):
             widget = self.items()[0].widget()
             movie = widget.movie()
             movie.setPaused(not movie.state() == QMovie.Paused)
+
+    def resizeEvent(self, event):
+        """Rescale the child image and update statusbar on resize event."""
+        super().resizeEvent(event)
+        self.scale(self._scale)
+        api.status.update()  # Zoom level changes
+
+    def mousePressEvent(self, event):
+        """Update mouse press event to start panning on left button."""
+        if event.button() == Qt.LeftButton:
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        """Update mouse release event to stop any panning."""
+        self.setDragMode(QGraphicsView.NoDrag)
+        super().mouseReleaseEvent(event)
+
+    def wheelEvent(self, event):
+        """Update mouse wheel to zoom with control."""
+        if event.modifiers() & Qt.ControlModifier:
+            scale = 1.03 ** event.angleDelta().y()
+            self._scale_to_float(self.zoom_level * scale)
+            self._scale = ImageScaleFloat(self.zoom_level)
+            api.status.update()
+        else:
+            super().wheelEvent(event)
