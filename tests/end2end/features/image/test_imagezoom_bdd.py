@@ -13,11 +13,9 @@ bdd.scenarios("imagezoom.feature")
 
 @bdd.then(bdd.parsers.parse("the zoom level should be {level:f}"))
 def check_zoom_level(image, level):
-    im_level = image.current_width() / image.original_width()
-    assert level == pytest.approx(im_level, 0.01)
+    assert level == pytest.approx(image.zoom_level, 0.01)
 
 
 @bdd.then(bdd.parsers.parse("the zoom level should not be {level:f}"))
 def check_zoom_level_not(image, level):
-    im_level = image.current_width() / image.original_width()
-    assert level != pytest.approx(im_level, 0.01)
+    assert level != pytest.approx(image.zoom_level, 0.01)
