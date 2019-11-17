@@ -326,7 +326,7 @@ called.</p></li>
 </ol>
 <dl class="function">
 <dt id="vimiv.plugins.load">
-<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">plugins: Dict[str</em>, <em class="sig-param">str] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load plugins defined.</p>
 <p>If no plugins are passed to the function all active plugins are loaded.</p>
 <dl class="field-list simple">
@@ -640,7 +640,7 @@ command.</p>
 
 <dl class="function">
 <dt id="vimiv.api.commands.register">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL, hide: bool = False, hook: Union[Callable[[], None], Callable[[Any], None]] = None, store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL, hide: bool = False, hook: Union[Callable[[], None], Callable[[Any], None]] = &lt;function &lt;lambda&gt;&gt;, store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to store a command in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -744,7 +744,7 @@ becomes ‘Path: /home/user/folder’.</p>
 
 <dl class="function">
 <dt id="vimiv.api.status.module">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Callable[[Callable[[...], str]], Callable[[...], str]]<a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Callable[[ModuleFunc], ModuleFunc]<a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to register a function as status module.</p>
 <p>The decorated function must return a string that can be displayed as
 status. When calling <a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, any occurance of <code class="docutils literal notranslate"><span class="pre">name</span></code> will be
@@ -844,6 +844,11 @@ filter regular expression.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.sourceModel">
+<code class="sig-name descname">sourceModel</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; QAbstractItemModel<a class="headerlink" href="#vimiv.api.completion.BaseFilter.sourceModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

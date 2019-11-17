@@ -93,6 +93,7 @@
 <li><a class="reference internal" href="#log">log</a></li>
 <li><a class="reference internal" href="#mark">mark</a></li>
 <li><a class="reference internal" href="#mark-clear">mark-clear</a></li>
+<li><a class="reference internal" href="#mark-rename">mark-rename</a></li>
 <li><a class="reference internal" href="#mark-restore">mark-restore</a></li>
 <li><a class="reference internal" href="#next">next</a></li>
 <li><a class="reference internal" href="#nop">nop</a></li>
@@ -100,6 +101,7 @@
 <li><a class="reference internal" href="#paste-name">paste-name</a></li>
 <li><a class="reference internal" href="#prev">prev</a></li>
 <li><a class="reference internal" href="#quit">quit</a></li>
+<li><a class="reference internal" href="#rename">rename</a></li>
 <li><a class="reference internal" href="#repeat-command">repeat-command</a></li>
 <li><a class="reference internal" href="#scale">scale</a></li>
 <li><a class="reference internal" href="#search">search</a></li>
@@ -256,26 +258,32 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
 <td><p>Clear all marks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-rename"><span class="std std-ref">mark-rename</span></a></p></td>
+<td><p>Rename marked images with a common base.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
 <td><p>Restore the last cleared marks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Select next image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
 <td><p>Open one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Select previous image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
 <td><p>Quit vimiv.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-rename"><span class="std std-ref">rename</span></a></p></td>
+<td><p>Rename images with a common base.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
 <td><p>Repeat the last command.</p></td>
@@ -466,6 +474,29 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <p>It is possible to restore the last cleared marks using <code class="docutils literal notranslate"><span class="pre">mark-restore</span></code>.</p>
 </div>
 </div>
+<div class="section" id="mark-rename">
+<span id="ref-global-mark-rename"></span><h3>mark-rename<a class="headerlink" href="#mark-rename" title="Permalink to this headline">¶</a></h3>
+<p>Rename marked images with a common base.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark-rename</span> <span class="pre">base</span> <span class="pre">[--start=INDEX]</span> <span class="pre">[--separator=SEPARATOR]</span>
+<span class="pre">[--overwrite]</span> <span class="pre">[--skip-image-check]</span></code></p>
+<dl class="simple">
+<dt>Example::</dt><dd><p><code class="docutils literal notranslate"><span class="pre">:mark-rename</span> <span class="pre">my_mark</span></code> would rename all marked images to
+<code class="docutils literal notranslate"><span class="pre">my_mark_001</span></code>, <code class="docutils literal notranslate"><span class="pre">my_mark_002</span></code>, …, <code class="docutils literal notranslate"><span class="pre">my_mark_NNN</span></code>.</p>
+</dd>
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to rename.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: Base name to use for numbering.</p></li>
+</ul>
+</dd>
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--start</span></code>: Index to start numbering with. Default: 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--separator</span></code>: Separator between base and numbers. Default: ‘_’.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--overwrite</span></code>: Overwrite existing paths when renaming.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--skip-image-check</span></code>: Do not check if all renamed paths are images.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
 <div class="section" id="mark-restore">
 <span id="ref-global-mark-restore"></span><h3>mark-restore<a class="headerlink" href="#mark-restore" title="Permalink to this headline">¶</a></h3>
 <p>Restore the last cleared marks.</p>
@@ -513,6 +544,29 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 <div class="section" id="quit">
 <span id="ref-global-quit"></span><h3>quit<a class="headerlink" href="#quit" title="Permalink to this headline">¶</a></h3>
 <p>Quit vimiv.</p>
+</div>
+<div class="section" id="rename">
+<span id="ref-global-rename"></span><h3>rename<a class="headerlink" href="#rename" title="Permalink to this headline">¶</a></h3>
+<p>Rename images with a common base.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rename</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span> <span class="pre">base</span> <span class="pre">[--start=INDEX]</span> <span class="pre">[--separator=SEPARATOR]</span>
+<span class="pre">[--overwrite]</span> <span class="pre">[--skip-image-check]</span></code></p>
+<dl class="simple">
+<dt>Example::</dt><dd><p><code class="docutils literal notranslate"><span class="pre">:rename</span> <span class="pre">*</span> <span class="pre">identifier</span></code> would rename all images in the filelist to
+<code class="docutils literal notranslate"><span class="pre">identifier_001</span></code>, <code class="docutils literal notranslate"><span class="pre">identifier_002</span></code>, …, <code class="docutils literal notranslate"><span class="pre">identifier_NNN</span></code>.</p>
+</dd>
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to rename.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base</span></code>: Base name to use for numbering.</p></li>
+</ul>
+</dd>
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--start</span></code>: Index to start numbering with. Default: 1.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--separator</span></code>: Separator between base and numbers. Default: ‘_’.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--overwrite</span></code>: Overwrite existing paths when renaming.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--skip-image-check</span></code>: Do not check if all renamed paths are images.</p></li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="repeat-command">
 <span id="ref-global-repeat-command"></span><h3>repeat-command<a class="headerlink" href="#repeat-command" title="Permalink to this headline">¶</a></h3>
