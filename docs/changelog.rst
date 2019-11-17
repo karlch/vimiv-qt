@@ -15,6 +15,8 @@ Added:
 * The ``-b``, ``--basedir`` argument to override the base directory for storage. In
   contrast to ``--temp-basedir`` the directory is not deleted later.
 * ``:rename`` and ``mark-rename`` commands to rename files starting from a common base.
+* Panning images with the left mouse button.
+* Zooming images with control+mouse-wheel.
 
 Fixed:
 ^^^^^^
