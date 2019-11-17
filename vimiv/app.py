@@ -39,7 +39,7 @@ class Application(QApplication):
     @staticmethod
     def preexit(returncode: int) -> None:
         """Prepare exit by finalizing any running threads."""
-        Application.instance.aboutToQuit.emit()
+        QApplication.instance().aboutToQuit.emit()  # type: ignore
         # Do not start any new threads
         utils.Pool.clear()
         # Wait for any running threads to exit safely
