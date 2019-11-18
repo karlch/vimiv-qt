@@ -58,13 +58,11 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     """
     args = parser.get_argparser().parse_args(argv)
     if args.version:
-        print(version.info())
+        print(version.info(), version.paths(), sep="\n\n")
         sys.exit(customtypes.Exit.success)
     init_directories(args)
     log.setup_logging(args.log_level, *args.debug)
     _logger.debug("Start: vimiv %s", " ".join(argv))
-    _logger.debug("%s\n", version.info())
-    _logger.debug("%s\n", version.paths())
     update_settings(args)
     trash_manager.init()
     return args
