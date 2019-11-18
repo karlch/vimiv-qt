@@ -9,6 +9,8 @@ import os
 import re
 import setuptools
 
+import fastentrypoints
+
 # C extensions
 manipulate_module = setuptools.Extension(
     "vimiv.imutils._c_manipulate", sources=["c-extension/manipulate.c"]
