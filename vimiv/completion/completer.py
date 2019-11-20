@@ -28,6 +28,8 @@ class Completer(QObject):
     @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__()
+        completionmodels.init()
+
         self._proxy_model = None
         self._cmd = commandline
         self._completion = completion

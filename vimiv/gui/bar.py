@@ -9,6 +9,9 @@
 from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
 
 from vimiv import api, utils
+from vimiv.completion import completer
+
+from . import statusbar, commandline, completionwidget
 
 
 class Bar(QWidget):
@@ -17,24 +20,27 @@ class Bar(QWidget):
     Attributes:
         _commandline: Commandline widget in the bar.
         _stack: QStackedLayout containing statusbar and commandline.
-        _statusbar: Statusbar widget in the bar.
     """
 
     @api.objreg.register
-    def __init__(self, statusbar, commandline):
-        super().__init__()
+    def __init__(self, mainwindow):
+        super().__init__(parent=mainwindow)
+        statusbar.init()
+
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
-        self._commandline = commandline
-        self._statusbar = statusbar
-        self._stack = QStackedLayout(self)
+        self._commandline = commandline.CommandLine()
+        completion_widget = completionwidget.CompletionView(mainwindow)
+        mainwindow.add_overlay(completion_widget, resize=False)
+        completer.Completer(self._commandline, completion_widget)
 
-        self._stack.addWidget(statusbar)
+        self._stack = QStackedLayout(self)
+        self._stack.addWidget(statusbar.statusbar)
         self._stack.addWidget(self._commandline)
-        self._stack.setCurrentWidget(statusbar)
+        self._stack.setCurrentWidget(statusbar.statusbar)
 
         self._commandline.editingFinished.connect(self._on_editing_finished)
-        self._statusbar.timer.timeout.connect(self._maybe_hide)
+        statusbar.statusbar.timer.timeout.connect(self._maybe_hide)
         api.settings.statusbar.show.changed.connect(self._on_show_changed)
         api.status.signals.clear.connect(self._maybe_hide)
         utils.log.statusbar_loghandler.message.connect(self.show)
@@ -89,12 +95,12 @@ class Bar(QWidget):
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
         self._commandline.setText("")
-        self._stack.setCurrentWidget(self._statusbar)
+        self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
         api.modes.COMMAND.leave()
 
     def _on_show_changed(self, value: bool):
-        self._statusbar.setVisible(value)
+        statusbar.statusbar.setVisible(value)
         self._maybe_hide()
 
     def _maybe_hide(self):

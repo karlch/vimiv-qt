@@ -11,13 +11,9 @@ from typing import List
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
 
 from vimiv import api, utils
-from vimiv.completion import completer
 
 # Import all GUI widgets used to create the full main window
-from . import statusbar
 from .bar import Bar
-from .commandline import CommandLine
-from .completionwidget import CompletionView
 from .image import ScrollableImage
 from .keyhint_widget import KeyhintWidget
 from .library import Library
@@ -39,10 +35,9 @@ class MainWindow(QWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
+        self._overlays: List[QWidget] = []
         # Create main widgets and add them to the grid layout
-        statusbar.init()
-        commandline = CommandLine()
-        self._bar = Bar(statusbar.statusbar, commandline)
+        self._bar = Bar(self)
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
@@ -50,14 +45,9 @@ class MainWindow(QWidget):
         grid.addWidget(Library(self), 0, 0, 1, 1)
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
-        self._overlays: List[QWidget] = []
-        compwidget = CompletionView(self)
-        self._overlays.append(compwidget)
         self._overlays.append(KeyhintWidget(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
-
-        completer.Completer(commandline, compwidget)
         # Connect signals
         api.status.signals.update.connect(self._set_title)
         api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
@@ -131,9 +121,11 @@ class MainWindow(QWidget):
             return self.height() - self._bar.height()
         return self.height()
 
-    def add_overlay(self, widget):
+    def add_overlay(self, widget, resize=True):
+        """Add a new overlay widget to the main window and update its geometry."""
         self._overlays.append(widget)
-        widget.update_geometry(self.width(), self.bottom)
+        if resize:
+            widget.update_geometry(self.width(), self.bottom)
 
     def _update_overlay_geometry(self):
         """Update geometry of all overlay widgets according to current layout."""
