@@ -6,6 +6,7 @@
 
 """Classes to deal with the actual image file."""
 
+import enum
 import os
 import shutil
 import tempfile
@@ -42,6 +43,14 @@ class Pixmaps:
     transformed = None
 
 
+class ImageType(enum.IntEnum):
+    """Enum class for different image widget types."""
+
+    Pixmap = 0
+    Svg = 1
+    Movie = 2
+
+
 class ImageFileHandler(QObject):
     """Handler to load and write images.
 
@@ -66,14 +75,21 @@ class ImageFileHandler(QObject):
         self._pixmaps = Pixmaps()
 
         self.transform = imtransform.Transform(self)
-        self.manipulate = immanipulate.Manipulator(self)
+        self.manipulate = None
 
         self._path = ""
+        self._image_type = None
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.signals.image_changed.connect(self.reload)
+        api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
+
+    @property
+    def editable(self):
+        """True if the currently opened image is transformable/manipulatable."""
+        return self._image_type == ImageType.Pixmap
 
     @property
     def current(self):
@@ -128,6 +144,7 @@ class ImageFileHandler(QObject):
         self._path = ""
         self.original = None
 
+    @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
     def reload(self):
         """Reload the current image."""
@@ -141,13 +158,19 @@ class ImageFileHandler(QObject):
         """
         if not api.settings.image.autowrite:
             self._reset()
-        elif self.transform.changed or self.manipulate.changed:
+        elif self.transform.changed or (
+            self.manipulate is not None and self.manipulate.changed
+        ):
             self.write_pixmap(self.current, path, path)
 
     @utils.slot
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path)
+
+    @utils.slot
+    def _init_manipulate(self):
+        self.manipulate = immanipulate.Manipulator(self)
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -172,6 +195,7 @@ class ImageFileHandler(QObject):
             # VectorGraphic widget needs the path in the constructor
             self.original = None
             api.signals.svg_loaded.emit(path, reload_only)
+            self._image_type = ImageType.Svg
         # Gif
         elif reader.supportsAnimation():
             movie = QMovie(path)
@@ -180,6 +204,7 @@ class ImageFileHandler(QObject):
                 return
             self.original = movie
             api.signals.movie_loaded.emit(self.current, reload_only)
+            self._image_type = ImageType.Movie
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
@@ -188,11 +213,14 @@ class ImageFileHandler(QObject):
                 return
             self.original = pixmap
             api.signals.pixmap_loaded.emit(self.current, reload_only)
+            self._image_type = ImageType.Pixmap
         self._path = path
 
     def _reset(self):
+        """Reset transform and manipulate back to default."""
         self.transform.reset()
-        self.manipulate.reset()
+        if self.manipulate is not None:
+            self.manipulate.reset()
 
     @api.commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):

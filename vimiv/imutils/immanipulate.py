@@ -28,7 +28,7 @@ import time
 import weakref
 from typing import Optional, NamedTuple, List
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker
+from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QLabel, QApplication
 
@@ -510,6 +510,7 @@ class Manipulator(QObject):
             pixmap = self.manipulations.apply(self._pixmap, manipulation)
             self.updated.emit(pixmap)
 
+    @utils.slot
     def focus_group_index(self, index: int):
         """Focus new manipulation group by index."""
         self._save_changes()
@@ -538,7 +539,11 @@ class Manipulator(QObject):
         total screen width / height is always sufficiently large. This avoids working
         with the large original when it is not needed.
         """
-        if self._handler().transformed is None:  # No image to display
+        if not self._handler().editable:
+            api.modes.MANIPULATE.leave()
+            QTimer.singleShot(
+                0, lambda: utils.log.error("File format does not support manipulate")
+            )
             return
         screen_geometry = QApplication.desktop().screenGeometry()
         self._pixmap = self._handler().transformed.scaled(

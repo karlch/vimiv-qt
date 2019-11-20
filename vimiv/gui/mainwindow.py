@@ -51,9 +51,6 @@ class MainWindow(QWidget):
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
         self._overlays: List[QWidget] = []
-        manwidget = Manipulate(self)
-        self._overlays.append(manwidget)
-        self._overlays.append(ManipulateImage(self, manwidget))
         compwidget = CompletionView(self)
         self._overlays.append(compwidget)
         self._overlays.append(KeyhintWidget(self))
@@ -66,6 +63,14 @@ class MainWindow(QWidget):
         api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
+        api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
+
+    @utils.slot
+    def _init_manipulate(self):
+        """Create UI widgets related to manipulate mode."""
+        manipulate_widget = Manipulate(self)
+        self.add_overlay(manipulate_widget)
+        self.add_overlay(ManipulateImage(self, manipulate_widget))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
@@ -119,11 +124,20 @@ class MainWindow(QWidget):
         super().show()
         self._update_overlay_geometry()
 
+    @property
+    def bottom(self):
+        """Bottom of the main window respecting the status bar height."""
+        if self._bar.isVisible():
+            return self.height() - self._bar.height()
+        return self.height()
+
+    def add_overlay(self, widget):
+        self._overlays.append(widget)
+        widget.update_geometry(self.width(), self.bottom)
+
     def _update_overlay_geometry(self):
         """Update geometry of all overlay widgets according to current layout."""
-        bottom = self.height()
-        if self._bar.isVisible():
-            bottom -= self._bar.height()
+        bottom = self.bottom
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
 
