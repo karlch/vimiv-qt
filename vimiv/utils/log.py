@@ -45,7 +45,6 @@ Module Attributes:
 """
 
 import logging
-import logging.handlers
 from typing import Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject
