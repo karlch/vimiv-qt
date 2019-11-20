@@ -8,7 +8,7 @@
 
 from typing import List
 
-from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
+from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
 
 from vimiv import api, utils
 from vimiv.completion import completer
@@ -46,7 +46,7 @@ class MainWindow(QWidget):
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
-        grid.addLayout(ImageThumbnailLayout(), 0, 1, 1, 1)
+        grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
         grid.addWidget(Library(self), 0, 0, 1, 1)
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
@@ -142,8 +142,8 @@ class MainWindow(QWidget):
         self.setWindowTitle(api.status.evaluate(title))
 
 
-class ImageThumbnailLayout(QStackedLayout):
-    """QStackedLayout to toggle between image and thumbnail mode.
+class ImageThumbnailStack(QStackedWidget):
+    """QStackedWidget to toggle between image and thumbnail mode.
 
     Attributes:
         image: The image widget.
@@ -156,7 +156,6 @@ class ImageThumbnailLayout(QStackedLayout):
         self.thumbnail = ThumbnailView()
         self.addWidget(self.image)
         self.addWidget(self.thumbnail)
-        self.setCurrentWidget(self.image)
 
         api.modes.IMAGE.entered.connect(self._enter_image)
         api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
@@ -164,8 +163,10 @@ class ImageThumbnailLayout(QStackedLayout):
         # possible to leave for the library
         api.modes.THUMBNAIL.left.connect(self._enter_image)
 
+    @utils.slot
     def _enter_thumbnail(self):
         self.setCurrentWidget(self.thumbnail)
 
+    @utils.slot
     def _enter_image(self):
         self.setCurrentWidget(self.image)
