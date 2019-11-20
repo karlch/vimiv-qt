@@ -10,11 +10,11 @@ These should not be used anywhere else and are only imported to register the
 corresponding objects.
 """
 
-import datetime
 import os
 from contextlib import suppress
 from typing import List
 
+from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
 import vimiv
@@ -253,5 +253,5 @@ def modified() -> str:
         mtime = os.path.getmtime(api.current_path())
     except OSError:
         return "N/A"
-    d = datetime.datetime.fromtimestamp(mtime)
-    return d.strftime("%y-%m-%d %H:%M")
+    date_time = QDateTime.fromSecsSinceEpoch(int(mtime))
+    return date_time.toString("yyyy-MM-dd HH:mm")

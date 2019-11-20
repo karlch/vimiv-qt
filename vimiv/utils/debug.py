@@ -8,8 +8,8 @@
 
 import cProfile
 import functools
+import time
 from contextlib import contextmanager
-from datetime import datetime
 from pstats import Stats
 from typing import Any, Iterator
 
@@ -23,9 +23,9 @@ def timed(function: FuncT) -> FuncT:
     @functools.wraps(function)
     def inner(*args: Any, **kwargs: Any) -> Any:
         """Wrap decorated function and add timing."""
-        start = datetime.now()
+        start = time.time()
         return_value = function(*args, **kwargs)
-        elapsed_in_ms = (datetime.now() - start).total_seconds() * 1000
+        elapsed_in_ms = (time.time() - start) * 1000
         log.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
         return return_value
 
