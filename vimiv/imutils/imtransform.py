@@ -48,6 +48,7 @@ class Transform:
 
         **count:** multiplier
         """
+        self._ensure_editable()
         angle = 90 * count * -1 if counter_clockwise else 90 * count
         self._rotation_angle = (self._rotation_angle + angle) % 360
         self._transform.rotate(angle)
@@ -64,6 +65,7 @@ class Transform:
         optional arguments:
             * ``--vertical``: Flip image vertically instead of horizontally.
         """
+        self._ensure_editable()
         # Vertical flip but image rotated by 90 degrees
         if vertical and self._rotation_angle % 180:
             self._transform.scale(-1, 1)
@@ -88,6 +90,10 @@ class Transform:
         self._handler().transformed = self._handler().original.transformed(
             self._transform, mode=Qt.SmoothTransformation
         )
+
+    def _ensure_editable(self):
+        if not self._handler().editable:
+            raise api.commands.CommandError("File format does not support transform")
 
     @property
     def changed(self):
