@@ -8,7 +8,7 @@
 
 import os
 
-from PyQt5.QtCore import Qt, QThreadPool
+from PyQt5.QtCore import Qt, QProcess
 from PyQt5.QtWidgets import QApplication
 
 import pytest
@@ -103,10 +103,12 @@ def resize_main_window(mainwindow, size):
 @bdd.when("I wait for the command to complete")
 def wait_for_external_command(qtbot):
     """Wait until the external process has completed."""
-    message = "external command timed out"
+    runner = runners.external._impl
+    if runner is None:
+        return
 
     def external_finished():
-        assert QThreadPool.globalInstance().activeThreadCount() == 0, message
+        assert runner.state() == QProcess.NotRunning, "external command timed out"
 
     qtbot.waitUntil(external_finished, timeout=100)
 
