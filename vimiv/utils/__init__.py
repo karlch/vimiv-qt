@@ -364,8 +364,9 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
     if process.exitStatus() != QProcess.NormalExit:
-        raise OSError(str(process.readAllStandardError(), "utf-8").strip())
-    return str(process.readAllStandardOutput(), "utf-8").strip()
+        stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
+        raise OSError(stderr)
+    return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):

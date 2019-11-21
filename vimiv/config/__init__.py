@@ -7,12 +7,11 @@
 """Functions to store, read and change configurations."""
 
 import configparser
-import logging
 import os
 import sys
 from typing import Optional, Callable
 
-from vimiv.utils import xdg, customtypes
+from vimiv.utils import xdg, customtypes, log
 
 
 def parse_config(
@@ -43,7 +42,7 @@ def parse_config(
 
 
 def read_log_exception(
-    parser: configparser.ConfigParser, logger: logging.Logger, *files: str
+    parser: configparser.ConfigParser, logger: log.LazyLogger, *files: str
 ) -> None:
     """Read configuration files using parser logging any critical exceptions.
 
