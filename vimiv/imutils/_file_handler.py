@@ -150,7 +150,7 @@ class ImageFileHandler(QObject):
         """Reload the current image."""
         self._load(self._path, reload_only=True)
 
-    def _maybe_write(self, path):
+    def _maybe_write(self, path, parallel=True):
         """Write image to disk if requested and it has changed.
 
         Args:
@@ -161,12 +161,12 @@ class ImageFileHandler(QObject):
         elif self.transform.changed or (
             self.manipulate is not None and self.manipulate.changed
         ):
-            self.write_pixmap(self.current, path, path)
+            self.write_pixmap(self.current, path, original_path=path, parallel=parallel)
 
     @utils.slot
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
-        self._maybe_write(self._path)
+        self._maybe_write(self._path, parallel=False)
 
     @utils.slot
     def _init_manipulate(self):
