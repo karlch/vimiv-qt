@@ -30,7 +30,7 @@ def log(level: str, message: List[str]):
         log_level = getattr(logging, level.upper())
     except AttributeError:
         raise api.commands.CommandError(f"Unknown log level '{level}'")
-    logging.log(log_level, " ".join(message))
+    utils.log.log(log_level, " ".join(message))
 
 
 @api.commands.register()
