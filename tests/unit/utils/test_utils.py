@@ -6,6 +6,7 @@
 
 """Tests for vimiv.utils"""
 
+import os
 import inspect
 from collections import namedtuple
 
@@ -205,3 +206,17 @@ def test_cached_calls_expensive_once(cached_method_cls):
     cached_method_cls.method()
     cached_method_cls.method()
     cached_method_cls.mock.assert_called_once()
+
+
+def test_run_qprocess():
+    assert utils.run_qprocess("pwd") == os.getcwd()
+
+
+def test_run_qprocess_in_other_dir(tmpdir):
+    directory = str(tmpdir.mkdir("directory"))
+    assert utils.run_qprocess("pwd", cwd=directory) == directory
+
+
+def test_fail_run_qprocess_raises_oserror():
+    with pytest.raises(OSError):
+        utils.run_qprocess("NoTaCoMmAnD")

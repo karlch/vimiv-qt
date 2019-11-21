@@ -13,7 +13,7 @@ from abc import ABCMeta
 from contextlib import suppress
 from typing import Callable, Optional, List, Any, Iterator, Dict
 
-from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
+from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
@@ -343,6 +343,29 @@ def create_pixmap(
     width = height = pixmap.width() - 2 * frame_size
     painter.drawRect(x, y, width, height)
     return pixmap
+
+
+def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
+    """Run a shell command synchronously using QProcess.
+
+    Args:
+        cmd: The command to run.
+        args: Any arguments passed to the command.
+        cwd: Directory of the command to run in.
+    Returns:
+        The starndard output of the command.
+    Raises:
+        OSError on failure.
+    """
+    process = QProcess()
+    if cwd is not None:
+        process.setWorkingDirectory(cwd)
+    process.start(cmd, args)
+    if not process.waitForFinished():
+        raise OSError("Error waiting for process")
+    if process.exitStatus() != QProcess.NormalExit:
+        raise OSError(str(process.readAllStandardError(), "utf-8").strip())
+    return str(process.readAllStandardOutput(), "utf-8").strip()
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):
