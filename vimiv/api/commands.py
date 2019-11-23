@@ -84,6 +84,7 @@ from vimiv.utils import (
     flatten,
     log,
     customtypes,
+    escape_glob,
 )
 
 from . import modes
@@ -242,7 +243,9 @@ class _CommandArguments(argparse.ArgumentParser):
         argtype = argument.annotation
         if argument.name == "paths":
             return {
-                "type": lambda x: glob.glob(os.path.expanduser(x), recursive=True),
+                "type": lambda x: glob.glob(
+                    os.path.expanduser(escape_glob(x)), recursive=True
+                ),
                 "nargs": "+",
             }
         if argtype == typing.List[str]:

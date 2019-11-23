@@ -7,13 +7,14 @@
 """Runner for external commands."""
 
 import os
+import glob
 import shlex
 from typing import List
 
 from PyQt5.QtCore import QProcess, QCoreApplication
 
 from vimiv import api
-from vimiv.utils import log
+from vimiv.utils import log, flatten, contains_any, escape_glob
 
 
 _logger = log.module_logger(__name__)
@@ -29,7 +30,7 @@ class ExternalRunner:
           arguments.
 
     Run is preferred in general, as no sub-shell is required, but cannot deal with
-    wildcards or redirection.
+    redirection.
 
     Attributes:
         _impl: The implementation class used to run external commands.
@@ -47,7 +48,7 @@ class ExternalRunner:
 
     def run(self, text: str):
         """Run an external command text."""
-        text = text.strip()
+        text = escape_glob(text.strip())
         pipe = text.endswith("|")
         split = shlex.split(text.rstrip("|"))
         command, args = split[0], split[1:]
@@ -67,9 +68,9 @@ class ExternalRunner:
             * ``--shellarg``: Argument to prepend for the shell. Default: ``-c``.
 
         The difference to running commands with ! is that an actual shell is involved
-        instead of running the program directly. This means that shell wildcards,
-        redirection etc. will work in spawn, but not with !. Nevertheless ! is
-        recommended in general for performance and security reasons.
+        instead of running the program directly. This means that shell, redirection
+        etc. will work in spawn, but not with !. Nevertheless ! is recommended in
+        general for performance and security reasons.
         """
         if not command:
             raise api.commands.CommandError("No command to run")
@@ -105,6 +106,9 @@ class _ExternalRunnerImpl(QProcess):
             log.warning("Closing running process '%s'", self.program())
             self.close()
         self._pipe = pipe
+        args = flatten(
+            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,) for arg in args
+        )
         _logger.debug("Running external command '%s' with '%r'", command, args)
         self.start(command, args)
 
