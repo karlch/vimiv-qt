@@ -390,20 +390,18 @@ class LibraryModel(QStandardItemModel):
             paths: List of paths to create a library row for.
             are_directories: Whether all paths are directories.
         """
-        starting_index = self.rowCount() + 1  # Want to index from 1
-        for i, path in enumerate(paths):
+        get_size = files.get_size_directory if are_directories else files.get_size_file
+        mark_prefix = api.mark.indicator() + " "
+        for i, path in enumerate(paths, start=self.rowCount() + 1):
             name = os.path.basename(path)
-            marked = path in api.mark.paths
             if are_directories:
                 name = utils.add_html(name + "/", "b")
+            if path in api.mark.paths:
+                name = mark_prefix + name
             with suppress(FileNotFoundError):  # Has been deleted in the meantime
-                size = files.get_size(path)
+                size = get_size(path)
                 self.appendRow(
-                    (
-                        QStandardItem(str(starting_index + i)),
-                        QStandardItem(api.mark.highlight(name, marked)),
-                        QStandardItem(size),
-                    )
+                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size),)
                 )
                 self.paths.append(path)
 

@@ -64,9 +64,18 @@ def get_size(path: str) -> str:
         Size of path as string.
     """
     try:
-        if os.path.isfile(path):
-            return sizeof_fmt(os.path.getsize(path))
-        return get_size_directory(path)
+        isfile = os.path.isfile(path)
+    except OSError:
+        return "N/A"
+    if isfile:
+        return get_size_file(path)
+    return get_size_directory(path)
+
+
+def get_size_file(path: str) -> str:
+    """Retrieve the size of a file as formatted byte number in human-readable format."""
+    try:
+        return sizeof_fmt(os.path.getsize(path))
     except OSError:
         return "N/A"
 
