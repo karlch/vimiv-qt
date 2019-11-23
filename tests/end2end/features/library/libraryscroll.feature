@@ -54,3 +54,9 @@ Feature: Scrolling the library.
         When I run scroll down --open-selected
         And I run scroll down --open-selected
         Then the mode should be library
+
+    Scenario: Follow image mode
+        Given I open 2 images
+        When I run next
+        And I enter library mode
+        Then the library row should be 2

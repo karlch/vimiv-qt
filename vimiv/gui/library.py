@@ -86,6 +86,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
         search.search.cleared.connect(self.repaint)
         api.modes.LIBRARY.entered.connect(self.update_width)
         api.modes.LIBRARY.left.connect(self._on_left)
+        api.signals.new_image_opened.connect(self._select_path)
 
         styles.apply(self)
 
@@ -128,6 +129,12 @@ class Library(KeyHandler, widgets.FlatTreeView):
         """Hide library widget if library mode was left."""
         self.hide()
         self._last_selected = ""
+
+    @utils.slot
+    def _select_path(self, path: str):
+        """Select a specific path by name."""
+        with suppress(ValueError):
+            self._select_row(self.model().paths.index(path))  # type: ignore
 
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
