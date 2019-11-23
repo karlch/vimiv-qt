@@ -178,6 +178,7 @@ class SignalHandler(QObject):
     @utils.slot
     def _on_slideshow_event(self):
         next(1)
+        api.status.update()
 
     @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):

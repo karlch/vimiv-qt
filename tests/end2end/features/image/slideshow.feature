@@ -28,6 +28,7 @@ Feature: Play a slideshow.
         When I run slideshow
         And I let the slideshow run 2 times
         Then the image should have the index 3
+        And the left status should include 03
 
     Scenario: Start slideshow upon startup
         Given I open 5 images with --command slideshow
