@@ -70,6 +70,12 @@ def test_contains_any(sequence, elems, expected):
     assert utils.contains_any(sequence, elems) == expected
 
 
+@pytest.mark.parametrize("char", "*?[]")
+def test_glob_escape(char):
+    assert utils.escape_glob(rf"test{char}.jpg") == f"test{char}.jpg"
+    assert utils.escape_glob(rf"test\{char}.jpg") == f"test[{char}].jpg"
+
+
 def test_clamp_with_min_and_max():
     assert utils.clamp(2, 0, 5) == 2
     assert utils.clamp(2, 3, 5) == 3

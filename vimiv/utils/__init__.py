@@ -63,6 +63,16 @@ def escape_html(text: str) -> str:
     return text.replace("<", "&lt;").replace(">", "&gt;")
 
 
+def escape_glob(text: str) -> str:
+    r"""Escape special characters prefixed by \ for glob using [character]."""
+
+    def escape_char(match):
+        char = match.group()[-1]
+        return f"[{char}]"
+
+    return re.sub(r"\\[\*\?\[\]]", escape_char, text)
+
+
 def contains_any(sequence: Iterable[AnyT], elems: Union[Iterable[AnyT], AnyT]) -> bool:
     """Return True if the sequence contains any of the elems."""
     if not sequence:
