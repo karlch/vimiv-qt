@@ -106,11 +106,12 @@ class _ExternalRunnerImpl(QProcess):
             log.warning("Closing running process '%s'", self.program())
             self.close()
         self._pipe = pipe
-        args = flatten(
-            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,) for arg in args
+        arglist: List[str] = flatten(
+            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,)  # type: ignore
+            for arg in args
         )
-        _logger.debug("Running external command '%s' with '%r'", command, args)
-        self.start(command, args)
+        _logger.debug("Running external command '%s' with '%r'", command, arglist)
+        self.start(command, arglist)
 
     def _on_finished(self, exitcode, exitstatus):
         """Check exit status and possibly process standard output on completion."""

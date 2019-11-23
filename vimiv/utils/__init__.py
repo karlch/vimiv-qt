@@ -11,7 +11,7 @@ import inspect
 import re
 from abc import ABCMeta
 from contextlib import suppress
-from typing import Callable, Optional, List, Any, Iterator, Dict, Iterable, Union
+from typing import Callable, Optional, List, Any, Iterator, Dict, Iterable, Union, cast
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -78,10 +78,11 @@ def contains_any(sequence: Iterable[AnyT], elems: Union[Iterable[AnyT], AnyT]) -
     if not sequence:
         return False
     try:
+        elems = cast(Iterable[AnyT], elems)
         iter(elems)
         return bool(set(sequence) & set(elems))
     except TypeError:
-        return elems in sequence
+        return cast(AnyT, elems) in sequence
 
 
 def clamp(
@@ -263,7 +264,7 @@ class Pool:
             pool.clear()
 
 
-def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
+def flatten(list_of_lists: Iterable[Iterable[AnyT]]) -> List[AnyT]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
 
