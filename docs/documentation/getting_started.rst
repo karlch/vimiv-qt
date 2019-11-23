@@ -121,6 +121,13 @@ all lines are checked for images and these are opened.
 Example: ``:!find ~/Images -ctime -5 -type f |`` opens all files in
 ``~/Images`` younger than five days.
 
+.. note::
+
+    External commands started with ``!`` do not run in a sub-shell for security and
+    performance reasons. This means that redirection with ``|`` or ``>`` as well as any
+    other shell specifics do not work. If you require to run with a sub-shell, use the
+    ``:spawn`` command instead.
+
 Command line history is saved to ``$XDG_DATA_HOME/vimiv/history``. History can
 be navigated and searched through using the ``<control>p/<control>n`` and
 ``<up>/<down>`` keys.

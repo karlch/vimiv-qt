@@ -18,6 +18,12 @@ Added:
 * Panning images with the left mouse button.
 * Zooming images with control+mouse-wheel.
 
+Changed:
+^^^^^^^^
+
+* External commands started with ``!`` no longer run in a sub-shell. To run commands
+  with a sub-shell use ``:spawn`` instead.
+
 Fixed:
 ^^^^^^
 
