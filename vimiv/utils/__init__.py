@@ -11,7 +11,7 @@ import inspect
 import re
 from abc import ABCMeta
 from contextlib import suppress
-from typing import Callable, Optional, List, Any, Iterator, Dict
+from typing import Callable, Optional, List, Any, Iterator, Dict, Iterable, Union
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -61,6 +61,17 @@ def strip_html(text: str) -> str:
 
 def escape_html(text: str) -> str:
     return text.replace("<", "&lt;").replace(">", "&gt;")
+
+
+def contains_any(sequence: Iterable[AnyT], elems: Union[Iterable[AnyT], AnyT]) -> bool:
+    """Return True if the sequence contains any of the elems."""
+    if not sequence:
+        return False
+    try:
+        iter(elems)
+        return bool(set(sequence) & set(elems))
+    except TypeError:
+        return elems in sequence
 
 
 def clamp(

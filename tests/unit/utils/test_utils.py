@@ -53,6 +53,23 @@ def test_wrap_style_span():
     )
 
 
+@pytest.mark.parametrize(
+    "sequence, elems, expected",
+    [
+        ("abc", "a", True),
+        ("abc", "d", False),
+        ("abc", "bc", True),
+        (range(5), 4, True),
+        (range(5), 10, False),
+        (range(5), (2, 3), True),
+        ("", "52", False),
+        ("imag*", "*?[]", True),
+    ],
+)
+def test_contains_any(sequence, elems, expected):
+    assert utils.contains_any(sequence, elems) == expected
+
+
 def test_clamp_with_min_and_max():
     assert utils.clamp(2, 0, 5) == 2
     assert utils.clamp(2, 3, 5) == 3
