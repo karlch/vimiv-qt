@@ -208,6 +208,13 @@ out output is a directory, it is opened in the library. If it is a valid image,
 all lines are checked for images and these are opened.</p>
 <p>Example: <code class="docutils literal notranslate"><span class="pre">:!find</span> <span class="pre">~/Images</span> <span class="pre">-ctime</span> <span class="pre">-5</span> <span class="pre">-type</span> <span class="pre">f</span> <span class="pre">|</span></code> opens all files in
 <code class="docutils literal notranslate"><span class="pre">~/Images</span></code> younger than five days.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>External commands started with <code class="docutils literal notranslate"><span class="pre">!</span></code> do not run in a sub-shell for security and
+performance reasons. This means that redirection with <code class="docutils literal notranslate"><span class="pre">|</span></code> or <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> as well as any
+other shell specifics do not work. If you require to run with a sub-shell, use the
+<code class="docutils literal notranslate"><span class="pre">:spawn</span></code> command instead.</p>
+</div>
 <p>Command line history is saved to <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/history</span></code>. History can
 be navigated and searched through using the <code class="docutils literal notranslate"><span class="pre">&lt;control&gt;p/&lt;control&gt;n</span></code> and
 <code class="docutils literal notranslate"><span class="pre">&lt;up&gt;/&lt;down&gt;</span></code> keys.</p>

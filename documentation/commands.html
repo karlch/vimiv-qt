@@ -109,6 +109,7 @@
 <li><a class="reference internal" href="#search-prev">search-prev</a></li>
 <li><a class="reference internal" href="#set">set</a></li>
 <li><a class="reference internal" href="#sleep">sleep</a></li>
+<li><a class="reference internal" href="#spawn">spawn</a></li>
 <li><a class="reference internal" href="#tag-delete">tag-delete</a></li>
 <li><a class="reference internal" href="#tag-load">tag-load</a></li>
 <li><a class="reference internal" href="#tag-write">tag-write</a></li>
@@ -306,25 +307,28 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
 <td><p>Sleep for a given number of seconds.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-spawn"><span class="std std-ref">spawn</span></a></p></td>
+<td><p>Spawn a command in a sub-shell.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
 <td><p>Delete an existing tag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
 <td><p>Load images from a tag into the current mark list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
 <td><p>Write marked paths to a tag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
 <td><p>Toggle one mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
 <td><p>Unbind a keybinding.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
 <td><p>Restore a file from the trash directory.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
 <td><p>Show a pop-up with version information.</p></td>
 </tr>
 </tbody>
@@ -641,6 +645,26 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
+</div>
+<div class="section" id="spawn">
+<span id="ref-global-spawn"></span><h3>spawn<a class="headerlink" href="#spawn" title="Permalink to this headline">¶</a></h3>
+<p>Spawn a command in a sub-shell.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:spawn</span> <span class="pre">command</span> <span class="pre">[--shell=shell</span> <span class="pre">--shellarg=shellarg]</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">command</span></code>: Full command with arguments to pass to the shell.</p></li>
+</ul>
+</dd>
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--shell</span></code>: The program to use as sub-shell. Default: <code class="docutils literal notranslate"><span class="pre">sh</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--shellarg</span></code>: Argument to prepend for the shell. Default: <code class="docutils literal notranslate"><span class="pre">-c</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>The difference to running commands with ! is that an actual shell is involved
+instead of running the program directly. This means that shell, redirection
+etc. will work in spawn, but not with !. Nevertheless ! is recommended in
+general for performance and security reasons.</p>
 </div>
 <div class="section" id="tag-delete">
 <span id="ref-global-tag-delete"></span><h3>tag-delete<a class="headerlink" href="#tag-delete" title="Permalink to this headline">¶</a></h3>

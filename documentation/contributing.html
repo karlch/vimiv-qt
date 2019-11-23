@@ -382,11 +382,6 @@ create a module logger:</p>
 <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/vimiv.log</span></code></p></li>
 <li><p>One to print log messages to the statusbar (only for application-wide logger)</p></li>
 </ul>
-<dl>
-<dt>Module Attributes:</dt><dd><p>statusbar_loghandler: Instance of the log handler connecting to the statusbar.</p>
-<p>_module_loggers: Dictionary mapping module names to their corresponding logger.</p>
-</dd>
-</dl>
 </div>
 <div class="section" id="module-vimiv.api">
 <span id="api-documentation"></span><h3>API Documentation<a class="headerlink" href="#module-vimiv.api" title="Permalink to this headline">¶</a></h3>
@@ -640,14 +635,13 @@ command.</p>
 
 <dl class="function">
 <dt id="vimiv.api.commands.register">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL, hide: bool = False, hook: Union[Callable[[], None], Callable[[Any], None]] = &lt;function &lt;lambda&gt;&gt;, store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em>, <em class="sig-param">hide: bool = False</em>, <em class="sig-param">store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to store a command in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> – Mode in which the command can be executed.</p></li>
 <li><p><strong>hide</strong> – Hide command from command line.</p></li>
-<li><p><strong>hook</strong> – Function to run before executing the command.</p></li>
 <li><p><strong>store</strong> – Save command to allow repeating with ‘.’.</p></li>
 </ul>
 </dd>
