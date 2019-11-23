@@ -118,19 +118,15 @@ def cached_method(func):
     """Decorator to cache the result of a class method."""
     attr_name = "_lazy_" + func.__name__
 
-    @property
     @functools.wraps(func)
-    def _lazyprop(self):
-        def inner(*args, **kwargs):
-            # Store the result of the function to attr_name in first
-            # evaluation, afterwards return the cached value
-            if not hasattr(self, attr_name):
-                setattr(self, attr_name, func(self, *args, **kwargs))
-            return getattr(self, attr_name)
+    def inner(self, *args, **kwargs):
+        # Store the result of the function to attr_name in first
+        # evaluation, afterwards return the cached value
+        if not hasattr(self, attr_name):
+            setattr(self, attr_name, func(self, *args, **kwargs))
+        return getattr(self, attr_name)
 
-        return inner
-
-    return _lazyprop
+    return inner
 
 
 class AnnotationNotFound(Exception):
