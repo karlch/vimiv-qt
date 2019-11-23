@@ -57,3 +57,5 @@ max-args=10
 valid-metaclass-classmethod-first-arg=cls
 
 [TYPECHECK]
+# __setattr__ magic that confuses pylint
+ignored-modules=vimiv.utils.log

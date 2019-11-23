@@ -8,14 +8,14 @@
 
 from typing import List, Optional
 
-from PyQt5.QtCore import QTimer, Qt, QSize
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
-from vimiv.utils import slot, log
+from vimiv.utils import slot
 from .eventhandler import KeyHandler
 
 
@@ -44,7 +44,6 @@ class Manipulate(KeyHandler, QTabWidget):
     def __init__(self, parent):
         super().__init__(parent=parent)
         self.setAttribute(Qt.WA_StyledBackground, True)
-        self._error = "No image to manipulate"
 
         styles.apply(self)
         # Add all manipulations from immanipulate
@@ -53,11 +52,6 @@ class Manipulate(KeyHandler, QTabWidget):
             self._add_group(group)
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
-        api.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
-        api.signals.movie_loaded.connect(self._on_movie_loaded)
-        api.signals.svg_loaded.connect(self._on_svg_loaded)
-        api.modes.MANIPULATE.entered.connect(self._on_entered)
-        api.modes.MANIPULATE.left.connect(self.hide)
         # Hide by default
         self.hide()
 
@@ -102,25 +96,6 @@ class Manipulate(KeyHandler, QTabWidget):
         widget.setLayout(layout)
         self.insertTab(-1, widget, group.title)
 
-    @utils.slot
-    def _on_entered(self):
-        """Show manipulate widget when manipulate mode is entered."""
-        if self._error:
-            api.modes.MANIPULATE.leave()
-            # Must wait for every other statusbar update to complete
-            QTimer.singleShot(0, lambda: log.error(self._error))
-        else:
-            self.raise_()
-
-    def _on_pixmap_loaded(self, _pixmap):
-        self._error = ""
-
-    def _on_movie_loaded(self, _movie):
-        self._error = "Manipulating animations is not supported"
-
-    def _on_svg_loaded(self, _path):
-        self._error = "Manipulating vector graphics is not supported"
-
     def update_geometry(self, window_width, window_height):
         """Rescale width when main window was resized."""
         y = window_height - self.sizeHint().height()
@@ -152,8 +127,7 @@ class ManipulateImage(QLabel):
         self._pixmap: Optional[QPixmap] = None
         styles.apply(self)
 
-        api.modes.MANIPULATE.entered.connect(self._on_entered)
-        api.modes.MANIPULATE.left.connect(self.hide)
+        api.modes.MANIPULATE.left.connect(self._on_left)
         immanipulate.Manipulator.instance.updated.connect(self._update_pixmap)
 
         self.hide()
@@ -169,16 +143,20 @@ class ManipulateImage(QLabel):
             self._rescale()
 
     @slot
-    def _on_entered(self):
-        if self._pixmap is not None:  # No image to display
-            self.show()
-            self.raise_()
-
-    @slot
     def _update_pixmap(self, pixmap: QPixmap):
-        """Update the displayed pixmap once the manipulated pixmap has changed."""
+        """Update the manipulate pixmap and show manipulate widgets if needed."""
+        if not self.isVisible():
+            self._manipulate.raise_()
+            self.raise_()
+            self.show()
         self._pixmap = pixmap
         self._rescale()
+
+    @utils.slot
+    def _on_left(self):
+        """Hide manipulate widgets when leaving manipulate mode."""
+        self.hide()
+        self._manipulate.hide()
 
     def _rescale(self):
         """Rescale pixmap and geometry to fit."""

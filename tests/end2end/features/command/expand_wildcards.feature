@@ -23,8 +23,8 @@ Feature: Expand wildcards when running commands
         Given I open a directory with 2 paths
         When I run !rmdir *
         And I wait for the command to complete
-        Then the directory child_1 should not exist
-        And the directory child_2 should not exist
+        Then the directory child_01 should not exist
+        And the directory child_02 should not exist
 
     Scenario: Expand * to the list of images in image mode
         Given I open 2 images

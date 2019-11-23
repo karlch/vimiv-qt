@@ -8,23 +8,23 @@
 
 Module Attributes:
     SEPARATOR: String used to separate chained commands.
-    external: ExternalRunner instance to run shell commands.
 
     _last_command: Dictionary storing the last command for each mode.
 """
 
-import os
 import re
 import shlex
-import subprocess
 from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
-from vimiv.utils import log, asyncfunc, customtypes
+from vimiv.utils import log, customtypes
 from vimiv.commands import aliases
+
+from .external import ExternalRunner
 
 
 SEPARATOR = "&&"
+external = ExternalRunner()
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
 _logger = log.module_logger(__name__)
@@ -95,7 +95,7 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external(text.lstrip("!"))
+        external.run(text.lstrip("!"))
     else:
         command(count + text, mode)
 
@@ -210,54 +210,6 @@ def expand_percent(text: str, mode: api.modes.Mode) -> str:
         text = re.sub(r"(?<!\\)%", current, text)
         text = text.replace("\\%", "%")  # Remove escape characters
     return text
-
-
-class ExternalRunner:
-    """Runner for external commands."""
-
-    @asyncfunc()
-    def __call__(self, text: str) -> None:
-        """Run external command in parallel.
-
-        Args:
-            text: Text parsed as command to run.
-        """
-        pipe = text.endswith("|")
-        text = text.rstrip("|").strip()
-        try:
-            pargs = subprocess.run(
-                text,
-                shell=True,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            if pipe:
-                self.process_pipe(text, pargs.stdout.decode())
-            else:
-                _logger.debug("Ran '!%s' succesfully", text)
-        except subprocess.CalledProcessError as e:
-            message = e.stderr.decode().split("\n")[0]
-            log.error("%d  %s", e.returncode, message)
-
-    # This is covered in the tests but run in parallel using Qt
-    def process_pipe(self, cmd: str, stdout: str) -> None:  # pragma: no cover
-        """Open paths from stdout.
-
-        Args:
-            cmd: Executed shell command.
-            stdout: String form of stdout of the exited shell command.
-        """
-        paths = [path for path in stdout.split("\n") if os.path.exists(path)]
-        try:
-            api.open(paths)
-            _logger.debug("Opened paths from pipe '%s'", cmd)
-            api.status.update()
-        except api.commands.CommandError:
-            log.warning("%s: No paths from pipe", cmd)
-
-
-external = ExternalRunner()
 
 
 def alias(text: str, mode: api.modes.Mode) -> str:

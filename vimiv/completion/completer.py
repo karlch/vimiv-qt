@@ -28,15 +28,21 @@ class Completer(QObject):
     @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__()
+
         self._proxy_model = None
         self._cmd = commandline
         self._completion = completion
 
         self._completion.activated.connect(self._on_completion)
+        api.modes.COMMAND.first_entered.connect(self._init_models)
         api.modes.COMMAND.entered.connect(self._on_entered)
         api.modes.COMMAND.left.connect(self._on_left)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
+
+    @utils.slot
+    def _init_models(self):
+        completionmodels.init()
 
     @utils.slot
     def _on_entered(self):

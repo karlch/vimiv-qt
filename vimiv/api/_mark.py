@@ -9,10 +9,9 @@
 
 import os
 import shutil
-from datetime import datetime
 from typing import Any, Callable, List, cast
 
-from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher
+from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
 
 from vimiv.config import styles
 from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
@@ -333,8 +332,8 @@ class Tag:
     def _write_header(self) -> None:
         """Write header to a new tag file."""
         self._write_comment("vimiv tag file")
-        now = datetime.now()
-        formatted_time = now.strftime("%Y-%m-%d %H:%M")
+        now = QDateTime.currentDateTime()
+        formatted_time = now.toString("yyyy-MM-dd HH:mm")
         self._write_comment(f"created: {formatted_time}")
 
     def _write_comment(self, comment: str) -> None:

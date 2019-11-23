@@ -37,8 +37,8 @@ _last_deleted: List[str] = []
 def init() -> None:
     """Create the necessary directories."""
     global _files_directory, _info_directory
-    _files_directory = os.path.join(xdg.user_data_dir(), "Trash/files")
-    _info_directory = os.path.join(xdg.user_data_dir(), "Trash/info")
+    _files_directory = xdg.user_data_dir("Trash", "files")
+    _info_directory = xdg.user_data_dir("Trash", "info")
     xdg.makedirs(_files_directory, _info_directory)
 
 

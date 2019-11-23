@@ -75,6 +75,7 @@ import inspect
 import os
 import typing
 from contextlib import suppress
+from functools import partial
 
 from vimiv.utils import (
     class_that_defined_method,
@@ -83,53 +84,28 @@ from vimiv.utils import (
     flatten,
     log,
     customtypes,
+    escape_glob,
 )
 
 from . import modes
 
 
-# hook function is either a function with no arguments or a method which takes self
-HookFunction = typing.Callable[[], None]
-HookMethod = typing.Callable[[typing.Any], None]
-Hook = typing.Union[HookFunction, HookMethod]
 _logger = log.module_logger(__name__)
 
 
 def register(
-    mode: modes.Mode = modes.GLOBAL,
-    hide: bool = False,
-    hook: Hook = lambda *args: None,
-    store: bool = True,
+    mode: modes.Mode = modes.GLOBAL, hide: bool = False, store: bool = True,
 ) -> typing.Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to store a command in the registry.
 
     Args:
         mode: Mode in which the command can be executed.
         hide: Hide command from command line.
-        hook: Function to run before executing the command.
         store: Save command to allow repeating with '.'.
     """
 
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
-        name = _get_command_name(func)
-        description = inspect.getdoc(func)
-        if description is None:
-            log.error("Command %s for %s is missing docstring.", name, func)
-            description = short_description = ""
-        else:
-            short_description = description.split("\n", maxsplit=1)[0]
-        arguments = _CommandArguments(name, description, func)
-        cmd = _Command(
-            name,
-            func,
-            arguments,
-            mode=mode,
-            description=short_description,
-            hide=hide,
-            hook=hook,
-            store=store,
-        )
-        _registry[mode][name] = cmd
+        _Command(func, mode=mode, hide=hide, store=store)
         return func
 
     return decorator
@@ -267,7 +243,9 @@ class _CommandArguments(argparse.ArgumentParser):
         argtype = argument.annotation
         if argument.name == "paths":
             return {
-                "type": lambda x: glob.glob(os.path.expanduser(x), recursive=True),
+                "type": lambda x: glob.glob(
+                    os.path.expanduser(escape_glob(x)), recursive=True
+                ),
                 "nargs": "+",
             }
         if argtype == typing.List[str]:
@@ -284,35 +262,40 @@ class _Command:  # pylint: disable=too-many-instance-attributes
     """Skeleton for a command.
 
     Attributes:
-        arguments: _CommandArguments argument parser.
+        name: Name of the command as string.
         func: Corresponding executable to call.
         mode: Mode in which the command can be executed.
-        name: Name of the command as string.
-        description: Description of the command for help.
         hide: Hide command from command line.
-        hook: Function to run before executing the command.
         store: Save command to allow repeating with '.'.
+        description: Brief command description.
+
+        _argparser: Argument parser used when the command is called.
+        _long_description: Full command description.
     """
 
     def __init__(
         self,
-        name: str,
         func: typing.Callable,
-        arguments: _CommandArguments,
         mode: modes.Mode = modes.GLOBAL,
-        description: str = "",
         hide: bool = False,
-        hook: Hook = lambda *args: None,
         store: bool = True,
     ):
-        self.name = name
+        self._argparser: typing.Optional[_CommandArguments] = None
+        self.name = _get_command_name(func)
         self.func = func
-        self.arguments = arguments
         self.mode = mode
-        self.description = description
         self.hide = hide
-        self.hook = hook
         self.store = store
+        # Retrieve description from docstring
+        docstr = inspect.getdoc(func)
+        if docstr is None:
+            log.error("Command %s for %s is missing docstring.", self.name, func)
+            self.description = self.long_description = ""
+        else:
+            self.description = docstr.split("\n", maxsplit=1)[0]
+            self.long_description = docstr
+        # Store command in the global registry
+        _registry[mode][self.name] = self
 
     def __call__(self, args: typing.List[str], count: str) -> None:
         """Parse arguments and call func.
@@ -321,11 +304,23 @@ class _Command:  # pylint: disable=too-many-instance-attributes
             args: List of arguments for argparser to parse.
             count: Count passed to the command.
         """
-        parsed_args = self.arguments.parse_args(args)
+        parsed_args = self.argparser.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
         func = self._create_func(self.func)
         func(**kwargs)
+
+    @property
+    def argparser(self) -> _CommandArguments:
+        """The initialized argument parser.
+
+        This is used so the parser is lazily created upon first command call.
+        """
+        if self._argparser is None:
+            self._argparser = _CommandArguments(
+                self.name, self.long_description, self.func
+            )
+        return self._argparser
 
     def _parse_count(self, count: str, kwargs: typing.Dict[str, typing.Any]) -> None:
         """Add count to kwargs if supported."""
@@ -339,9 +334,9 @@ class _Command:  # pylint: disable=too-many-instance-attributes
     def _create_func(self, func: typing.Callable) -> typing.Callable:
         """Create function to call for a command function.
 
-        This processes hooks and retrieves the instance of a class object for
-        methods and sets it as first argument (the 'self' argument) of a
-        lambda. For standard functions nothing is done.
+        This retrieves the instance of a class object for methods and sets it as first
+        argument (the 'self' argument) of a lambda. For standard functions nothing is
+        done.
 
         Returns:
             A function to be called with any keyword arguments.
@@ -350,10 +345,8 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         if is_method(func):
             cls = class_that_defined_method(func)
             instance = cls.instance
-            hook_method = typing.cast(HookMethod, self.hook)  # Takes self as argument
-            return lambda **kwargs: (hook_method(instance), func(instance, **kwargs))
-        hook_function = typing.cast(HookFunction, self.hook)  # Takes no arguments
-        return lambda **kwargs: (hook_function(), func(**kwargs))
+            return partial(func, instance)
+        return func
 
 
 def _get_command_name(func: typing.Callable) -> str:

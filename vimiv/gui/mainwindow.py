@@ -8,16 +8,12 @@
 
 from typing import List
 
-from PyQt5.QtWidgets import QWidget, QStackedLayout, QGridLayout
+from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
 
 from vimiv import api, utils
-from vimiv.completion import completer
 
 # Import all GUI widgets used to create the full main window
-from . import statusbar
 from .bar import Bar
-from .commandline import CommandLine
-from .completionwidget import CompletionView
 from .image import ScrollableImage
 from .keyhint_widget import KeyhintWidget
 from .library import Library
@@ -39,33 +35,32 @@ class MainWindow(QWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
+        self._overlays: List[QWidget] = []
         # Create main widgets and add them to the grid layout
-        statusbar.init()
-        commandline = CommandLine()
-        self._bar = Bar(statusbar.statusbar, commandline)
+        self._bar = Bar(self)
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
-        grid.addLayout(ImageThumbnailLayout(), 0, 1, 1, 1)
+        grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
         grid.addWidget(Library(self), 0, 0, 1, 1)
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
-        self._overlays: List[QWidget] = []
-        manwidget = Manipulate(self)
-        self._overlays.append(manwidget)
-        self._overlays.append(ManipulateImage(self, manwidget))
-        compwidget = CompletionView(self)
-        self._overlays.append(compwidget)
         self._overlays.append(KeyhintWidget(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
-
-        completer.Completer(commandline, compwidget)
         # Connect signals
         api.status.signals.update.connect(self._set_title)
         api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
+        api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
+
+    @utils.slot
+    def _init_manipulate(self):
+        """Create UI widgets related to manipulate mode."""
+        manipulate_widget = Manipulate(self)
+        self.add_overlay(manipulate_widget)
+        self.add_overlay(ManipulateImage(self, manipulate_widget))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
@@ -119,11 +114,22 @@ class MainWindow(QWidget):
         super().show()
         self._update_overlay_geometry()
 
+    @property
+    def bottom(self):
+        """Bottom of the main window respecting the status bar height."""
+        if self._bar.isVisible():
+            return self.height() - self._bar.height()
+        return self.height()
+
+    def add_overlay(self, widget, resize=True):
+        """Add a new overlay widget to the main window and update its geometry."""
+        self._overlays.append(widget)
+        if resize:
+            widget.update_geometry(self.width(), self.bottom)
+
     def _update_overlay_geometry(self):
         """Update geometry of all overlay widgets according to current layout."""
-        bottom = self.height()
-        if self._bar.isVisible():
-            bottom -= self._bar.height()
+        bottom = self.bottom
         for overlay in self._overlays:
             overlay.update_geometry(self.width(), bottom)
 
@@ -142,8 +148,8 @@ class MainWindow(QWidget):
         self.setWindowTitle(api.status.evaluate(title))
 
 
-class ImageThumbnailLayout(QStackedLayout):
-    """QStackedLayout to toggle between image and thumbnail mode.
+class ImageThumbnailStack(QStackedWidget):
+    """QStackedWidget to toggle between image and thumbnail mode.
 
     Attributes:
         image: The image widget.
@@ -156,7 +162,6 @@ class ImageThumbnailLayout(QStackedLayout):
         self.thumbnail = ThumbnailView()
         self.addWidget(self.image)
         self.addWidget(self.thumbnail)
-        self.setCurrentWidget(self.image)
 
         api.modes.IMAGE.entered.connect(self._enter_image)
         api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
@@ -164,8 +169,10 @@ class ImageThumbnailLayout(QStackedLayout):
         # possible to leave for the library
         api.modes.THUMBNAIL.left.connect(self._enter_image)
 
+    @utils.slot
     def _enter_thumbnail(self):
         self.setCurrentWidget(self.thumbnail)
 
+    @utils.slot
     def _enter_image(self):
         self.setCurrentWidget(self.image)

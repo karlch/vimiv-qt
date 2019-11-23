@@ -51,7 +51,6 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         _ID: Unique identifier used to compare modes.
 
     Attributes:
-        active: True if the mode is currently active.
         last_fallback: Mode to use as _last in case _last was closed.
         widget: QWidget associated with this mode.
 
@@ -59,23 +58,27 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         _name: Name of the mode used for commands which require a string
             representation.
         _id: The unique identifier used to compare modes.
+        _entered: True if the mode has ever been entered.
 
     Signals:
+        first_entered: Emitted before the mode is entered the first time.
         entered: Emitted when this mode is entered.
         left: Emitted when this mode is left.
     """
 
+    first_entered = pyqtSignal()
     entered = pyqtSignal()
     left = pyqtSignal()
 
     _ID = 0
+    active = cast("Mode", None)  # Initialized during reading of the module
 
-    def __init__(self, name: str, active: bool = False, last: "Mode" = None):
+    def __init__(self, name: str, last: "Mode" = None):
         super().__init__()
-        self.active = active
         self.last_fallback = self._last = cast(Mode, last)
         self.widget = cast(_ModeWidget, None)  # Initialized using @widget
         self._name = name
+        self._entered = False
 
         # Store global ID as ID and increase it by one
         self._id = Mode._ID
@@ -91,10 +94,12 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         # Store last mode
         if last_mode:
             _logger.debug("Leaving mode %s", last_mode.name)
-            last_mode.active = False
             self.last = last_mode
+        if not self._entered:
+            self._entered = True
+            self.first_entered.emit()
         # Set to active and focus widget
-        self.active = True
+        Mode.active = self
         self.widget.show()
         self.widget.setFocus()
         if self.widget.hasFocus():
@@ -267,7 +272,8 @@ class _CommandMode(Mode):
 
 # Create all modes
 GLOBAL = _MainMode("global")
-IMAGE = _MainMode("image", active=True)
+IMAGE = _MainMode("image")
+Mode.active = IMAGE
 LIBRARY = _MainMode("library", last=IMAGE)
 THUMBNAIL = _MainMode("thumbnail", last=IMAGE)
 COMMAND = _CommandMode("command", last=IMAGE)
@@ -276,7 +282,6 @@ MANIPULATE = _MainMode("manipulate", last=IMAGE)
 # and vice-versa
 IMAGE.last = IMAGE.last_fallback = LIBRARY
 
-
 # Utility tuples to allow iterating
 ALL: Tuple[Mode, ...] = (GLOBAL, IMAGE, LIBRARY, THUMBNAIL, COMMAND, MANIPULATE)
 GLOBALS: Tuple[Mode, ...] = (IMAGE, LIBRARY, THUMBNAIL)
@@ -284,7 +289,4 @@ GLOBALS: Tuple[Mode, ...] = (IMAGE, LIBRARY, THUMBNAIL)
 
 def current() -> Mode:
     """Return the currently active mode."""
-    for mode in ALL:
-        if mode.active:
-            return mode
-    raise InvalidMode("No active mode")
+    return Mode.active

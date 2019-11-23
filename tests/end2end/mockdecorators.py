@@ -25,8 +25,8 @@ def mockregister(component_init):
 
 def mockregister_cleanup():
     for cls in _known_classes:
-        # Mark instance is stored as a global variable in api
-        if "Mark" not in cls.__qualname__:
+        # Instances stored as a global variable
+        if cls.__qualname__ not in ("Mark", "ExternalRunner"):
             cls.instance = None
 
 

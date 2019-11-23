@@ -14,3 +14,5 @@ include misc/vimiv.1
 include misc/vimiv.desktop
 include misc/vimiv.appdata.xml
 graft misc/requirements
+
+include fastentrypoints.py

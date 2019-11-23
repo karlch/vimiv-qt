@@ -11,7 +11,6 @@ Module Attributes:
 """
 
 import os
-import subprocess
 import sys
 from functools import lru_cache
 from typing import Optional
@@ -19,7 +18,7 @@ from typing import Optional
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
-from vimiv.utils import xdg
+from vimiv.utils import xdg, run_qprocess
 
 # Optional imports to check if these features are supported
 try:
@@ -89,17 +88,20 @@ def _git_info() -> Optional[str]:
     if not os.path.isdir(os.path.join(gitdir, ".git")):
         return None
 
-    def _get_cmd_out(*args: str) -> str:
-        """Return output of git shell command ran with args."""
-        out = subprocess.run(args, cwd=gitdir, stdout=subprocess.PIPE, check=True)
-        return out.stdout.decode("utf-8").strip()
-
     try:
-        commit = _get_cmd_out(
-            "git", "describe", "--match=NoMaTcH", "--always", "--abbrev=40", "--dirty"
+        commit = run_qprocess(
+            "git",
+            "describe",
+            "--match=NoMaTcH",
+            "--always",
+            "--abbrev=40",
+            "--dirty",
+            cwd=gitdir,
         )
-        date = _get_cmd_out("git", "show", "-s", "--format=%cd", "--date=short", "HEAD")
-    except (subprocess.CalledProcessError, OSError):
+        date = run_qprocess(
+            "git", "show", "-s", "--format=%cd", "--date=short", "HEAD", cwd=gitdir
+        )
+    except OSError:
         return None
     return f"Git: {commit} ({date})"
 

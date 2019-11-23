@@ -6,21 +6,16 @@
 
 """Various utility functions."""
 
-import cProfile
 import functools
 import inspect
 import re
 from abc import ABCMeta
-from contextlib import contextmanager, suppress
-from datetime import datetime
-from functools import wraps
-from pstats import Stats
-from typing import Callable, Optional, List, Any, Iterator, Dict
+from contextlib import suppress
+from typing import Callable, Optional, List, Any, Iterator, Dict, Iterable, Union, cast
 
-from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool
+from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
-from . import log
 from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
 
 # Different location under PyQt < 5.11
@@ -66,6 +61,28 @@ def strip_html(text: str) -> str:
 
 def escape_html(text: str) -> str:
     return text.replace("<", "&lt;").replace(">", "&gt;")
+
+
+def escape_glob(text: str) -> str:
+    r"""Escape special characters prefixed by \ for glob using [character]."""
+
+    def escape_char(match):
+        char = match.group()[-1]
+        return f"[{char}]"
+
+    return re.sub(r"\\[\*\?\[\]]", escape_char, text)
+
+
+def contains_any(sequence: Iterable[AnyT], elems: Union[Iterable[AnyT], AnyT]) -> bool:
+    """Return True if the sequence contains any of the elems."""
+    if not sequence:
+        return False
+    try:
+        elems = cast(Iterable[AnyT], elems)
+        iter(elems)
+        return bool(set(sequence) & set(elems))
+    except TypeError:
+        return cast(AnyT, elems) in sequence
 
 
 def clamp(
@@ -198,7 +215,7 @@ def asyncfunc(pool: QThreadPool = None) -> Callable[[FuncNoneT], FuncNoneT]:
     """Decorator to run function in parallel on a QThreadPool."""
 
     def decorator(function: FuncNoneT) -> FuncNoneT:
-        @wraps(function)
+        @functools.wraps(function)
         def inner(*args: Any, **kwargs: Any) -> None:
             asyncrun(function, *args, pool=pool, **kwargs)
 
@@ -247,7 +264,7 @@ class Pool:
             pool.clear()
 
 
-def flatten(list_of_lists: List[List[Any]]) -> List[Any]:
+def flatten(list_of_lists: Iterable[Iterable[AnyT]]) -> List[AnyT]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
 
@@ -350,46 +367,29 @@ def create_pixmap(
     return pixmap
 
 
-class AbstractQObjectMeta(wrappertype, ABCMeta):
-    """Metaclass to allow setting to be an ABC as well as a QObject."""
-
-
-def timed(function: FuncT) -> FuncT:
-    """Decorator to time a function and log evaluation time."""
-
-    @wraps(function)
-    def inner(*args: Any, **kwargs: Any) -> Any:
-        """Wrap decorated function and add timing."""
-        start = datetime.now()
-        return_value = function(*args, **kwargs)
-        elapsed_in_ms = (datetime.now() - start).total_seconds() * 1000
-        log.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
-        return return_value
-
-    # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
-    return inner  # type: ignore
-
-
-@contextmanager
-def profile(amount: int = 15) -> Iterator[None]:
-    """Contextmanager to profile code secions.
-
-    Starts a cProfile.Profile upon entry, disables it on exit and prints profiling
-    information.
-
-    Usage:
-        with profile(amount=10):
-            # your code to profile here
-            ...
-        # This is no longer profiled
+def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
+    """Run a shell command synchronously using QProcess.
 
     Args:
-        amount: Number of lines to restrict the output to.
+        cmd: The command to run.
+        args: Any arguments passed to the command.
+        cwd: Directory of the command to run in.
+    Returns:
+        The starndard output of the command.
+    Raises:
+        OSError on failure.
     """
-    cprofile = cProfile.Profile()
-    cprofile.enable()
-    yield
-    cprofile.disable()
-    stats = Stats(cprofile)
-    stats.sort_stats("cumulative").print_stats(amount)
-    stats.sort_stats("time").print_stats(amount)
+    process = QProcess()
+    if cwd is not None:
+        process.setWorkingDirectory(cwd)
+    process.start(cmd, args)
+    if not process.waitForFinished():
+        raise OSError("Error waiting for process")
+    if process.exitStatus() != QProcess.NormalExit:
+        stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
+        raise OSError(stderr)
+    return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
+
+
+class AbstractQObjectMeta(wrappertype, ABCMeta):
+    """Metaclass to allow setting to be an ABC as well as a QObject."""

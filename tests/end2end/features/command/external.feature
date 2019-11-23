@@ -12,8 +12,9 @@ Feature: Running external commands.
     Scenario: Fail an external command.
         When I run !not-a-shell-command
         And I wait for the command to complete
-        # Error message may vary between OS
-        Then a message should be displayed
+        Then the message
+            'Error running 'not-a-shell-command': command not found or not executable'
+            should be displayed
 
     @flaky
     Scenario: Pipe directory to vimiv.
@@ -29,3 +30,8 @@ Feature: Running external commands.
         Then the message
             'ls: No paths from pipe'
             should be displayed
+
+    Scenario: Use spawn with sub-shell
+        When I run spawn echo anything > test.txt
+        And I wait for the command to complete
+        Then the file test.txt should exist

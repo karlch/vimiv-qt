@@ -6,8 +6,8 @@
 
 """Tests for vimiv.utils"""
 
+import os
 import inspect
-import time
 from collections import namedtuple
 
 import pytest
@@ -51,6 +51,29 @@ def test_wrap_style_span():
         utils.wrap_style_span("color: red", "text")
         == "<span style='color: red;'>text</span>"
     )
+
+
+@pytest.mark.parametrize(
+    "sequence, elems, expected",
+    [
+        ("abc", "a", True),
+        ("abc", "d", False),
+        ("abc", "bc", True),
+        (range(5), 4, True),
+        (range(5), 10, False),
+        (range(5), (2, 3), True),
+        ("", "52", False),
+        ("imag*", "*?[]", True),
+    ],
+)
+def test_contains_any(sequence, elems, expected):
+    assert utils.contains_any(sequence, elems) == expected
+
+
+@pytest.mark.parametrize("char", "*?[]")
+def test_glob_escape(char):
+    assert utils.escape_glob(rf"test{char}.jpg") == f"test{char}.jpg"
+    assert utils.escape_glob(rf"test\{char}.jpg") == f"test[{char}].jpg"
 
 
 def test_clamp_with_min_and_max():
@@ -115,12 +138,6 @@ def test_slot_fails_without_type_annotations():
         @utils.slot
         def test(x):
             ...
-
-
-def test_profiler(capsys):
-    with utils.profile(5):
-        pass
-    assert "function calls" in capsys.readouterr().out
 
 
 def test_flatten():
@@ -214,21 +231,15 @@ def test_cached_calls_expensive_once(cached_method_cls):
     cached_method_cls.mock.assert_called_once()
 
 
-def test_timed(mocker):
-    mocker.patch("vimiv.utils.log.info")
-    expected = 42
-    sleep_time_ms = 1
+def test_run_qprocess():
+    assert utils.run_qprocess("pwd") == os.getcwd()
 
-    @utils.timed
-    def func():
-        time.sleep(sleep_time_ms / 1000)
-        return expected
 
-    result = func()
+def test_run_qprocess_in_other_dir(tmpdir):
+    directory = str(tmpdir.mkdir("directory"))
+    assert utils.run_qprocess("pwd", cwd=directory) == directory
 
-    assert result == expected  # Ensure the result is preserved
-    utils.log.info.assert_called_once()  # Ensure a message was logged
-    # Ensure the message contains the elapsed time
-    message_args = utils.log.info.call_args[0]
-    message_time = message_args[-1]
-    assert message_time == pytest.approx(sleep_time_ms, sleep_time_ms)
+
+def test_fail_run_qprocess_raises_oserror():
+    with pytest.raises(OSError):
+        utils.run_qprocess("NoTaCoMmAnD")

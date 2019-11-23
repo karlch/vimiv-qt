@@ -51,6 +51,8 @@ def cleanup():
     runners._last_command.clear()
     filelist._paths = []
     filelist._index = 0
+    for mode in api.modes.ALL:
+        mode._entered = False
 
 
 @pytest.fixture(autouse=True, scope="module")

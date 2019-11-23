@@ -21,7 +21,6 @@ from PyQt5.QtWidgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.commands import runners, search
-from vimiv.completion import completionmodels
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes
 
@@ -58,13 +57,11 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     """
     args = parser.get_argparser().parse_args(argv)
     if args.version:
-        print(version.info())
+        print(version.info(), version.paths(), sep="\n\n")
         sys.exit(customtypes.Exit.success)
     init_directories(args)
     log.setup_logging(args.log_level, *args.debug)
     _logger.debug("Start: vimiv %s", " ".join(argv))
-    _logger.debug("%s\n", version.info())
-    _logger.debug("%s\n", version.paths())
     update_settings(args)
     trash_manager.init()
     return args
@@ -75,7 +72,6 @@ def setup_post_app(args: argparse.Namespace) -> None:
     api.working_directory.init()
     api.mark.watch()
     imutils.init()
-    completionmodels.init()
     init_ui(args)
     # Must be done after UI so the search signals are processed after the widgets have
     # been updated

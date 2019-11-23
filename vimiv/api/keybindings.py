@@ -33,7 +33,6 @@ earth with ``ge`` we could use::
         print("hello", name)
 """
 
-from contextlib import suppress
 from typing import Callable, ItemsView, List, Union, Tuple, Iterable
 
 from vimiv.utils import customtypes
@@ -90,12 +89,7 @@ def _check_duplicate_binding(keybinding: str, command: str, mode: modes.Mode) ->
 
     If an identical keybinding is found, a ValueError is raised.
     """
-    existing_command = None
-    with suppress(KeyError):
-        existing_command = _registry[mode][keybinding]
-    if mode in modes.GLOBALS:
-        with suppress(KeyError):
-            existing_command = _registry[modes.GLOBAL][keybinding]
+    existing_command = get(mode).get(keybinding)
     if existing_command is not None:
         raise ValueError(
             f"Duplicate keybinding for '{keybinding}', "
