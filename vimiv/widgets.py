@@ -48,6 +48,7 @@ class FlatTreeView(QTreeView):
         """
         selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
         self.selectionModel().setCurrentIndex(index, selmod)
+        self.scrollTo(index, hint=self.PositionAtCenter)
 
     def row(self):
         """Return the currently selected row."""

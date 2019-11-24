@@ -84,7 +84,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self.repaint)
-        api.modes.LIBRARY.entered.connect(self.update_width)
+        api.modes.LIBRARY.entered.connect(self._on_enter)
         api.modes.LIBRARY.left.connect(self._on_left)
         api.signals.new_image_opened.connect(self._select_path)
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
@@ -124,6 +124,12 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def _on_show_hidden_changed(self, _value: bool):
         self._open_directory(".", reload_current=True)
+
+    @utils.slot
+    def _on_enter(self):
+        """Update widths and TODO."""
+        self.update_width()
+        self.scrollTo(self.currentIndex(), hint=self.PositionAtCenter)
 
     @utils.slot
     def _on_left(self):

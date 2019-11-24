@@ -28,6 +28,7 @@ Changed:
 
 * External commands started with ``!`` no longer run in a sub-shell. To run commands
   with a sub-shell use ``:spawn`` instead.
+* The selected path in the library is centered as in thumbnail mode if possible.
 
 Fixed:
 ^^^^^^
