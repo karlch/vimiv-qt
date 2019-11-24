@@ -6,7 +6,7 @@
 
 """Completion widget in the bar."""
 
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv import api, widgets
@@ -29,7 +29,6 @@ class CompletionView(widgets.FlatTreeView):
         alternate-background-color: {completion.odd.bg};
         outline: 0;
         border: 0px;
-        padding: {statusbar.padding};
         min-height: {completion.height};
         max-height: {completion.height};
     }
@@ -37,23 +36,6 @@ class CompletionView(widgets.FlatTreeView):
     QTreeView::item:selected, QTreeView::item:selected:hover {
         color: {completion.selected.fg};
         background-color: {completion.selected.bg};
-    }
-
-    QTreeView QScrollBar {
-        width: {completion.scrollbar.width};
-        background: {completion.scrollbar.bg};
-    }
-
-    QTreeView QScrollBar::handle {
-        background: {completion.scrollbar.fg};
-        border: {completion.scrollbar.padding} solid
-                {completion.scrollbar.bg};
-        min-height: 10px;
-    }
-
-    QTreeView QScrollBar::sub-line, QScrollBar::add-line {
-        border: none;
-        background: none;
     }
     """
 
@@ -63,7 +45,9 @@ class CompletionView(widgets.FlatTreeView):
     def __init__(self, parent):
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setEditTriggers(self.NoEditTriggers)
 
         self.hide()
 
@@ -98,7 +82,7 @@ class CompletionView(widgets.FlatTreeView):
         self._select_row(row)
         index = self.selectionModel().selectedIndexes()[0]
         completion = index.data()
-        self.activated.emit(completion)
+        self.activated.emit(completion.lstrip())
 
     def resizeEvent(self, event):
         """Resize columns on resize event."""

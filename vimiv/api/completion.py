@@ -185,7 +185,10 @@ class BaseModel(QStandardItemModel):
             data: List of tuples containing the data for each row.
         """
         for item in data:
-            row = (QStandardItem(elem) for elem in item)
+            row = (
+                QStandardItem(" " + elem if i == 0 else elem)
+                for i, elem in enumerate(item)
+            )
             self.appendRow(row)
         self.sort(0)  # Sort according to the actual text
 

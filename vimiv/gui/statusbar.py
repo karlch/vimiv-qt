@@ -47,7 +47,8 @@ class StatusBar(QWidget):
         font: {statusbar.font};
         background-color: {statusbar.bg};
         color: {statusbar.fg};
-        padding: {statusbar.padding};
+        padding-top: {statusbar.padding};
+        padding-bottom: {statusbar.padding};
     }
     """
 

@@ -51,7 +51,8 @@ class CommandLine(KeyHandler, QLineEdit):
         background-color: {statusbar.bg};
         color: {statusbar.fg};
         border: 0px solid;
-        padding: {statusbar.padding};
+        padding-top: {statusbar.padding};
+        padding-bottom: {statusbar.padding};
     }
     """
 

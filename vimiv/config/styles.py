@@ -110,10 +110,6 @@ class Style(dict):
         self["completion.odd.bg"] = "{statusbar.bg}"
         self["completion.selected.fg"] = "{library.selected.fg}"
         self["completion.selected.bg"] = "{library.selected.bg}"
-        self["completion.scrollbar.width"] = "{image.scrollbar.width}"
-        self["completion.scrollbar.bg"] = "{image.scrollbar.bg}"
-        self["completion.scrollbar.fg"] = "{image.scrollbar.fg}"
-        self["completion.scrollbar.padding"] = "{image.scrollbar.padding}"
         # Keyhint
         self["keyhint.padding"] = "2px"
         self["keyhint.border_radius"] = "10px"
