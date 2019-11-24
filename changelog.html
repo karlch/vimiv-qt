@@ -139,6 +139,11 @@ contrast to <code class="docutils literal notranslate"><span class="pre">--temp-
 <li><p><code class="docutils literal notranslate"><span class="pre">:rename</span></code> and <code class="docutils literal notranslate"><span class="pre">mark-rename</span></code> commands to rename files starting from a common base.</p></li>
 <li><p>Panning images with the left mouse button.</p></li>
 <li><p>Zooming images with control+mouse-wheel.</p></li>
+<li><p>Path focus synchronization between all modes. Library and thumbnail mode are always
+synchronized. To keep the image synchronized with the others, either the <code class="docutils literal notranslate"><span class="pre">n</span></code> and
+<code class="docutils literal notranslate"><span class="pre">p</span></code> bindings can be used in the library, or the image can be opened explicitly. This
+behaviour is intended as opening a new image for every scroll in library/thumbnail
+would degrade performance significantly.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -146,6 +151,7 @@ contrast to <code class="docutils literal notranslate"><span class="pre">--temp-
 <ul class="simple">
 <li><p>External commands started with <code class="docutils literal notranslate"><span class="pre">!</span></code> no longer run in a sub-shell. To run commands
 with a sub-shell use <code class="docutils literal notranslate"><span class="pre">:spawn</span></code> instead.</p></li>
+<li><p>The selected path in the library is centered as in thumbnail mode if possible.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
