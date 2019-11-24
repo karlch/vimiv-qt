@@ -55,7 +55,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 import string
 from typing import cast, Dict, Iterable, Tuple, Optional
 
-from PyQt5.QtCore import QSortFilterProxyModel, QRegExp, Qt
+from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 from vimiv.utils import log
@@ -90,6 +90,7 @@ class BaseFilter(QSortFilterProxyModel):
     def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
+        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
 
     def refilter(self, text: str) -> None:
         """Filter completions based on text in the command line.
@@ -103,7 +104,7 @@ class BaseFilter(QSortFilterProxyModel):
         text = self.filtertext(text)
         if settings.completion.fuzzy.value:
             text = "*".join(text)
-        self.setFilterRegExp(QRegExp(text, Qt.CaseInsensitive, QRegExp.WildcardUnix))
+        self.setFilterWildcard(text)
 
     def reset(self) -> None:
         self.setFilterRegExp("")
