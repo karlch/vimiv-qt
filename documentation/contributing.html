@@ -702,7 +702,7 @@ by the text “user: ” we run:</p>
 <p>The occurance of ‘{username}’ is then replaced by the outcome of the username()
 function defined earlier.</p>
 <p>If any other object requires the status to be updated, they should call
-<a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a>.</p>
+<a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a> passing the reason for the requested update as string.</p>
 <dl class="exception">
 <dt id="vimiv.api.status.InvalidModuleName">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">InvalidModuleName</code><a class="headerlink" href="#vimiv.api.status.InvalidModuleName" title="Permalink to this definition">¶</a></dt>
@@ -711,9 +711,14 @@ function defined earlier.</p>
 
 <dl class="function">
 <dt id="vimiv.api.status.clear">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param">reason: str = ''</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit signal to clear messages.</p>
 <p>This function can be called when any temporary logging messages should be cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> – Reason of the clearing for logging.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -754,10 +759,15 @@ text.</p>
 
 <dl class="function">
 <dt id="vimiv.api.status.update">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">reason: str = ''</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit signal to update the current status.</p>
 <p>This function can be called when an update of the status is required. It
 is, for example, always called after a command was run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> – Reason of the update for logging.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
