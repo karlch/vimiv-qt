@@ -19,6 +19,7 @@ import vimiv.gui.thumbnail
 import vimiv.gui.mainwindow
 import vimiv.gui.commandline
 import vimiv.gui.bar
+import vimiv.gui.image
 from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import statusbar
@@ -51,6 +52,11 @@ def commandline():
 @pytest.fixture()
 def bar():
     yield vimiv.gui.bar.Bar.instance
+
+
+@pytest.fixture()
+def image():
+    yield vimiv.gui.image.ScrollableImage.instance
 
 
 ###############################################################################
