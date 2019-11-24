@@ -294,7 +294,7 @@ class ScrollableImage(KeyHandler, QGraphicsView):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
         self.scale(self._scale)
-        api.status.update()  # Zoom level changes
+        api.status.update("image zoom level changed")
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""
@@ -313,6 +313,6 @@ class ScrollableImage(KeyHandler, QGraphicsView):
             scale = 1.03 ** event.angleDelta().y()
             self._scale_to_float(self.zoom_level * scale)
             self._scale = ImageScaleFloat(self.zoom_level)
-            api.status.update()
+            api.status.update("image zoom level changed")
         else:
             super().wheelEvent(event)

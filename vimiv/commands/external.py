@@ -133,7 +133,7 @@ class _ExternalRunnerImpl(QProcess):
         try:
             api.open(path for path in stdout.split("\n") if os.path.exists(path))
             _logger.debug("... opened paths from pipe")
-            api.status.update()
+            api.status.update("opened paths from pipe")
         except api.commands.CommandError:
             log.warning("%s: No paths from pipe", self.program())
 

@@ -29,7 +29,7 @@ The occurance of '{username}' is then replaced by the outcome of the username()
 function defined earlier.
 
 If any other object requires the status to be updated, they should call
-:func:`vimiv.api.status.update`.
+:func:`vimiv.api.status.update` passing the reason for the requested update as string.
 """
 
 import functools
@@ -165,20 +165,32 @@ class _Signals(QObject):
 signals = _Signals()
 
 
-def update() -> None:
+def update(reason: str = "") -> None:
     """Emit signal to update the current status.
 
     This function can be called when an update of the status is required. It
     is, for example, always called after a command was run.
+
+    Args:
+        reason: Reason of the update for logging.
     """
-    _logger.debug("Updating status")
+    if not reason:
+        # TODO remove in v0.5.0
+        _logger.warning("Not passing a reason to status.update is deprecated")
+    _logger.debug("Updating status: %s", reason)
     signals.update.emit()
 
 
-def clear() -> None:
+def clear(reason: str = "") -> None:
     """Emit signal to clear messages.
 
     This function can be called when any temporary logging messages should be cleared.
+
+    Args:
+        reason: Reason of the clearing for logging.
     """
-    _logger.debug("Clearing status")
+    if not reason:
+        # TODO remove in v0.5.0
+        _logger.warning("Not passing a reason to status.clear is deprecated")
+    _logger.debug("Clearing status messages: %s", reason)
     signals.clear.emit()

@@ -494,7 +494,7 @@ class Manipulator(QObject):
         self.pool.clear()
         self._thread_id += 1
         self._run_manipulation_thread(self._thread_id, manipulation)
-        api.status.update()  # For the "processing" indicator
+        api.status.update("manipulate processing")
 
     @utils.asyncfunc(pool=pool)
     def _run_manipulation_thread(self, thread_id, manipulation):
@@ -561,7 +561,7 @@ class Manipulator(QObject):
         thread and finally emits the signal.
         """
         self._manipulated = pixmap
-        api.status.update()
+        api.status.update("manipulate pixmap updated")
 
     def _save_changes(self):
         """Save changes according to the current manipulation."""

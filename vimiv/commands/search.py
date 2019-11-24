@@ -93,7 +93,7 @@ class Search(QObject):
         next_match, matches = _get_next_match(text, count, sorted_paths)
         index = basenames.index(next_match)
         self.new_search.emit(index, matches, mode, incremental)
-        api.status.update()
+        api.status.update("new search")
 
     def clear(self):
         """Clear search string."""

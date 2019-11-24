@@ -109,7 +109,7 @@ def init_paths(args: argparse.Namespace) -> None:
         _logger.debug("init_paths: No valid paths retrieved")
         if api.settings.startup_library.value:
             api.open([os.getcwd()])
-    api.status.update()
+    api.status.update("startup paths initialized")
 
 
 def init_ui(args: argparse.Namespace) -> None:

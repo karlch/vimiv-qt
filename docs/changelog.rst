@@ -35,6 +35,8 @@ Changed:
   the ``:`` in the command line. To simplify alignment, ``statusbar.padding`` option now
   only applies to the top and bottom.
 * The vertical scrollbar in the completion widget is now hidden.
+* A reason should now be passed to ``api.status.update`` and ``api.status.clear`` for
+  logging purposes. Not passing a reason is deprecated and will be removed in `v0.5.0`.
 
 Fixed:
 ^^^^^^

@@ -40,7 +40,7 @@ class TempKeyStorage(QTimer):
         if self.isActive():  # Reset timeout
             self.stop()
         self.start()
-        api.status.update()
+        api.status.update("added keys to temporary key storage")
 
     def get_text(self):
         """Get text from storage."""
@@ -57,7 +57,7 @@ class TempKeyStorage(QTimer):
     def on_timeout(self):
         """Clear text and update status to remove partial keys from statusbar."""
         self.clear_text()
-        api.status.update()
+        api.status.update("timeout keys from temporary key storage")
 
     def _on_timeout_changed(self, value: int):
         """Update timer interval if the keyhint timeout setting changed."""
@@ -91,7 +91,6 @@ class PartialHandler(QObject):
         """Clear count and partially matched keys."""
         self.count.clear_text()
         self.keys.clear_text()
-        api.status.update()
         self.partial_cleared.emit()
 
     def get_keys(self):
@@ -113,7 +112,6 @@ class KeyHandler:
         Args:
             event: QKeyEvent that activated the keyPressEvent.
         """
-        api.status.clear()
         mode = api.modes.current()
         try:
             keyname = keyevent_to_string(event)
@@ -128,6 +126,7 @@ class KeyHandler:
             _logger.debug("KeyPressEvent: handling <escape> key specially")
             self.partial_handler.clear_keys()
             search.search.clear()
+            api.status.update("escape pressed")
             return
         stored_keys = self.partial_handler.keys.get_text()
         keyname = stored_keys + keyname
@@ -151,8 +150,8 @@ class KeyHandler:
         else:
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # type: ignore  # pylint: disable=no-member
-            api.status.update()  # Will not be called by command
             self.partial_handler.clear_keys()
+            api.status.update("regular Qt key event")  # Will not be called by command
 
     @staticmethod
     @api.status.module("{keys}")

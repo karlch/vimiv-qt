@@ -153,7 +153,7 @@ def _run_command(
         if cmd.store:
             _last_command[mode] = LastCommand(count, cmdname, args)
         cmd(args, count=count)
-        api.status.update()
+        api.status.update("ran command")
     except api.commands.CommandNotFound as e:
         log.error(str(e))
         raise CommandPartFailed from e

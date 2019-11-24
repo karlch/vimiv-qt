@@ -178,7 +178,7 @@ class SignalHandler(QObject):
     @utils.slot
     def _on_slideshow_event(self):
         next(1)
-        api.status.update()
+        api.status.update("next image from slideshow event")
 
     @pyqtSlot(list)
     def _on_images_changed(self, paths: List[str]):
@@ -188,7 +188,7 @@ class SignalHandler(QObject):
         if paths:  # Some images on disk changed, reload all for safety
             focused_path = current()
             _load_paths(paths, focused_path)
-            api.status.update()
+            api.status.update("image filelist changed")
         else:  # No more images in the current filelist
             _clear()
 
