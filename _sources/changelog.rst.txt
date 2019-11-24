@@ -31,6 +31,10 @@ Changed:
 * The selected path in the library is centered as in thumbnail mode if possible.
 * The library always focuses the child directory when entering the parent directory via
   ``:scroll left``.
+* The completion widget no longer has padding but instead keeps one space to align with
+  the ``:`` in the command line. To simplify alignment, ``statusbar.padding`` option now
+  only applies to the top and bottom.
+* The vertical scrollbar in the completion widget is now hidden.
 
 Fixed:
 ^^^^^^
@@ -42,6 +46,11 @@ Fixed:
   by the XDG standard if they do not exist.
 * Writing image changes on quit.
 * Crash when running transform-related commands without valid pixmap.
+
+Removed:
+^^^^^^^^
+
+* All ``completion.scrollbar`` related styles as the scrollbar is now hidden.
 
 
 v0.3.0 (2019-11-01)
