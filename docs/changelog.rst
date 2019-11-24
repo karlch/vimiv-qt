@@ -17,6 +17,11 @@ Added:
 * ``:rename`` and ``mark-rename`` commands to rename files starting from a common base.
 * Panning images with the left mouse button.
 * Zooming images with control+mouse-wheel.
+* Path focus synchronization between all modes. Library and thumbnail mode are always
+  synchronized. To keep the image synchronized with the others, either the ``n`` and
+  ``p`` bindings can be used in the library, or the image can be opened explicitly. This
+  behaviour is intended as opening a new image for every scroll in library/thumbnail
+  would degrade performance significantly.
 
 Changed:
 ^^^^^^^^
