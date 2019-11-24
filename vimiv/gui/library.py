@@ -8,7 +8,7 @@
 
 import os
 from contextlib import suppress
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 
 from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -69,7 +69,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
-        self._positions: Dict[str, int] = {}
+        self._positions: Dict[str, Union[int, str]] = {}
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -168,7 +168,6 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     def _open_directory(self, path, reload_current=False):
         """Open a directory."""
-        self.store_position()
         api.working_directory.handler.chdir(path, reload_current)
 
     def _open_image(self, path, close):
@@ -218,7 +217,9 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
             self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
-            api.working_directory.handler.chdir(os.pardir)
+            parent = os.path.abspath(os.pardir)
+            self._positions[parent] = os.getcwd()
+            api.working_directory.handler.chdir(parent)
         else:
             try:
                 row = self.row()
@@ -286,11 +287,13 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     def select_stored_position(self):
         """Select the stored position for a directory if possible."""
         directory = os.getcwd()
-        row = (
-            min(self._positions[directory], self.model().rowCount() - 1)
-            if directory in self._positions
-            else 0
-        )  # Fallback to selecting the first row
+        row = 0
+        with suppress(KeyError, ValueError):
+            stored = self._positions[directory]
+            if isinstance(stored, int):
+                row = min(stored, self.model().rowCount() - 1)
+            else:
+                row = self.model().paths.index(stored)
         self._select_row(row)
 
     def _select_row(
