@@ -127,7 +127,7 @@ class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
 
     @utils.slot
     def _on_enter(self):
-        """Update widths and TODO."""
+        """Update widths and ensure that the current path is visible at the center."""
         self.update_width()
         self.scrollTo(self.currentIndex(), hint=self.PositionAtCenter)
 
