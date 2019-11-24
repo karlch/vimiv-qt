@@ -60,3 +60,9 @@ Feature: Scrolling the library.
         When I run next
         And I enter library mode
         Then the library row should be 2
+
+    Scenario: Follow thumbnail mode
+        Given I open 2 images
+        When I enter thumbnail mode
+        And I run goto 2
+        Then the library row should be 2

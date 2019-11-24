@@ -18,10 +18,10 @@ from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
-from .eventhandler import KeyHandler
+from . import eventhandler, synchronize
 
 
-class Library(KeyHandler, widgets.FlatTreeView):
+class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
     """Library widget.
 
     Attributes:
@@ -87,6 +87,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
         api.modes.LIBRARY.entered.connect(self.update_width)
         api.modes.LIBRARY.left.connect(self._on_left)
         api.signals.new_image_opened.connect(self._select_path)
+        synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
         styles.apply(self)
 
@@ -134,7 +135,7 @@ class Library(KeyHandler, widgets.FlatTreeView):
     def _select_path(self, path: str):
         """Select a specific path by name."""
         with suppress(ValueError):
-            self._select_row(self.model().paths.index(path))  # type: ignore
+            self._select_row(self.model().paths.index(path), emit=False)  # type: ignore
 
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
@@ -286,9 +287,14 @@ class Library(KeyHandler, widgets.FlatTreeView):
         )  # Fallback to selecting the first row
         self._select_row(row)
 
-    def _select_row(self, row: int, open_selected_image: bool = False):
+    def _select_row(
+        self, row: int, open_selected_image: bool = False, emit: bool = True
+    ):
         super()._select_row(row)
-        if open_selected_image and not os.path.isdir(self.current()):
+        current = self.current()
+        if emit:
+            synchronize.signals.new_library_path_selected.emit(current)
+        if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
 
 

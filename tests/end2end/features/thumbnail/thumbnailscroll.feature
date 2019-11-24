@@ -36,3 +36,8 @@ Feature: Scroll in thumbnail mode.
     Scenario: Do not move to last thumbnail when scrolling down in final row
         When I run 50scroll down
         Then the thumbnail number 9 should be selected
+
+    Scenario: Follow library mode
+        When I enter library mode
+        And I run goto 5
+        Then the thumbnail number 5 should be selected

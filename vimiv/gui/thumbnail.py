@@ -7,6 +7,7 @@
 """Thumbnail widget."""
 
 import os
+from contextlib import suppress
 from typing import List, Optional
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyqtSlot
@@ -17,13 +18,13 @@ from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search
 from vimiv.config import styles
 from vimiv.utils import create_pixmap, thumbnail_manager, clamp, log
-from .eventhandler import KeyHandler
+from . import eventhandler, synchronize
 
 
 _logger = log.module_logger(__name__)
 
 
-class ThumbnailView(KeyHandler, QListWidget):
+class ThumbnailView(eventhandler.KeyHandler, QListWidget):
     """Thumbnail widget.
 
     Attributes:
@@ -99,7 +100,7 @@ class ThumbnailView(KeyHandler, QListWidget):
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
-        api.signals.new_image_opened.connect(self._on_new_image_opened)
+        api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         search.search.new_search.connect(self._on_new_search)
@@ -109,6 +110,7 @@ class ThumbnailView(KeyHandler, QListWidget):
         self.doubleClicked.connect(self._on_activated)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
+        synchronize.signals.new_library_path_selected.connect(self._select_path)
 
         styles.apply(self)
 
@@ -144,8 +146,10 @@ class ThumbnailView(KeyHandler, QListWidget):
         self._manager.create_thumbnails_async(paths)
 
     @utils.slot
-    def _on_new_image_opened(self, path: str):
-        self._select_item(self._paths.index(path))
+    def _select_path(self, path: str):
+        """Select a specific path by name."""
+        with suppress(ValueError):
+            self._select_item(self._paths.index(path), emit=False)
 
     @utils.slot
     def _on_activated(self, _index: QModelIndex):
@@ -308,15 +312,18 @@ class ThumbnailView(KeyHandler, QListWidget):
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
         self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
-    def _select_item(self, index):
+    def _select_item(self, index, emit=True):
         """Select specific item in the ListWidget.
 
         Args:
             index: Number of the current item to select.
+            emit: Emit the new_thumbnail_path_selected signal.
         """
         _logger.debug("Selecting thumbnail number %d", index)
-        index = self.model().index(index, 0)
-        self._select_index(index)
+        model_index = self.model().index(index, 0)
+        self._select_index(model_index)
+        if emit:
+            synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
 
     def _select_index(self, index):
         """Select specific index in the ListWidget.
