@@ -51,7 +51,7 @@ from . import xdg
 
 _module_loggers: Dict[str, logging.Logger] = {}
 formatter = logging.Formatter(
-    "[{relativeCreated:.0f}] {levelname:8} {name:20} {message}", style="{"
+    "[{asctime}] {levelname:8} {name:20} {message}", datefmt="%H:%M:%S", style="{"
 )
 
 
