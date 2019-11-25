@@ -8,6 +8,7 @@
 
 import argparse
 import logging
+import os
 
 from PyQt5.QtCore import QSize
 
@@ -50,7 +51,7 @@ def test_fail_geometry():
 
 def test_existing_file(mocker):
     mocker.patch("os.path.isfile", return_value=True)
-    assert "any" == parser.existing_file("any")
+    assert os.path.abspath("any") == parser.existing_file("any")
 
 
 def test_fail_existing_file(mocker):
@@ -61,7 +62,7 @@ def test_fail_existing_file(mocker):
 
 def test_existing_path(mocker):
     mocker.patch("os.path.exists", return_value=True)
-    assert "any" == parser.existing_path("any")
+    assert os.path.abspath("any") == parser.existing_path("any")
 
 
 def test_fail_existing_path(mocker):

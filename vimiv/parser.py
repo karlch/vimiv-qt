@@ -132,9 +132,10 @@ def existing_file(value: str) -> str:
     Returns:
         Path to the file as string if it exists.
     """
-    if not os.path.isfile(os.path.expanduser(value)):
+    path = os.path.abspath(os.path.expanduser(value))
+    if not os.path.isfile(path):
         raise argparse.ArgumentTypeError(f"No file called '{value}'")
-    return value
+    return path
 
 
 def existing_path(value: str) -> str:
@@ -147,9 +148,10 @@ def existing_path(value: str) -> str:
     Returns:
         Path to the file as string if it exists.
     """
-    if not os.path.exists(os.path.expanduser(value)):
+    path = os.path.abspath(os.path.expanduser(value))
+    if not os.path.exists(path):
         raise argparse.ArgumentTypeError(f"No path called '{value}'")
-    return value
+    return path
 
 
 def loglevel(value: str) -> int:
