@@ -56,7 +56,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "-s",
         "--set",
         nargs=2,
-        default=[],
+        default=(),
         action="append",
         dest="cmd_settings",
         metavar=("OPTION", "VALUE"),
