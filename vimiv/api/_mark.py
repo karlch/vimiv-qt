@@ -76,8 +76,9 @@ class Mark(QObject):
             * ``paths``: The path(s) to mark.
         """
         _logger.debug("Marking %d paths", len(paths))
-        for path in (path for path in paths if files.is_image(path)):
-            self._toggle_mark(path)
+        for path in paths:
+            if files.is_image(path):
+                self._toggle_mark(path)
 
     @commands.register()
     def mark_clear(self) -> None:
