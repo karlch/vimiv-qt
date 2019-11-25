@@ -70,7 +70,6 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
 def setup_post_app(args: argparse.Namespace) -> None:
     """Setup performed after creating the QApplication."""
     api.working_directory.init()
-    api.mark.watch()
     imutils.init()
     init_ui(args)
     # Must be done after UI so the search signals are processed after the widgets have

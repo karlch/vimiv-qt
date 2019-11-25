@@ -20,7 +20,6 @@ def mark(qtbot, mocker):
     instance = Mark()
     instance.marked = mocker.Mock()
     instance.unmarked = mocker.Mock()
-    instance.watch()
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
     yield instance
 
