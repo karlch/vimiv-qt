@@ -9,6 +9,8 @@
 import argparse
 import logging
 
+from PyQt5.QtCore import QSize
+
 import pytest
 
 from vimiv import parser
@@ -30,7 +32,7 @@ def test_parser_description(argparser):
 def test_geometry():
     text = "300x500"
     parsed_value = parser.geometry(text)
-    assert parsed_value == parser.Geometry(300, 500)
+    assert parsed_value == QSize(300, 500)
 
 
 def test_fail_geometry():

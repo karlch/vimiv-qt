@@ -17,6 +17,7 @@ import sys
 import tempfile
 from typing import List
 
+from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins, version, gui
@@ -122,13 +123,11 @@ def init_ui(args: argparse.Namespace) -> None:
     geometry = (
         args.geometry
         if args.geometry
-        else parser.Geometry(
-            screen_geometry.width() // 2, screen_geometry.height() // 2
-        )
+        else QSize(screen_geometry.width() // 2, screen_geometry.height() // 2)
     )
-    x = screen_geometry.x() + (screen_geometry.width() - geometry.width) // 2
-    y = screen_geometry.y() + (screen_geometry.height() - geometry.height) // 2
-    mw.setGeometry(x, y, *geometry)
+    x = screen_geometry.x() + (screen_geometry.width() - geometry.width()) // 2
+    y = screen_geometry.y() + (screen_geometry.height() - geometry.height()) // 2
+    mw.setGeometry(x, y, geometry.width(), geometry.height())
     mw.show()
 
 

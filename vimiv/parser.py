@@ -10,7 +10,8 @@ import argparse
 import logging
 import os
 from contextlib import suppress
-from collections import namedtuple
+
+from PyQt5.QtCore import QSize
 
 import vimiv
 
@@ -108,10 +109,7 @@ def positive_int(value: str) -> int:
     return ivalue
 
 
-Geometry = namedtuple("Geometry", ["width", "height"])
-
-
-def geometry(value: str) -> Geometry:
+def geometry(value: str) -> QSize:
     """Check if an argument value is a valid geometry.
 
     Args:
@@ -125,7 +123,7 @@ def geometry(value: str) -> Geometry:
         raise argparse.ArgumentTypeError("Must be of the form WIDTHxHEIGHT")
     width = positive_int(lvalue[0])
     height = positive_int(lvalue[1])
-    return Geometry(width, height)
+    return QSize(width, height)
 
 
 def existing_file(value: str) -> str:
