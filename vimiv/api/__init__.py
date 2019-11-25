@@ -70,10 +70,9 @@ def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
     if images:
         working_directory.handler.chdir(os.path.dirname(images[0]))
         signals.load_images.emit(images)
-        mode = modes.IMAGE
+        modes.IMAGE.enter()
     elif directories:
         working_directory.handler.chdir(directories[0])
-        mode = modes.LIBRARY
+        modes.LIBRARY.enter()
     else:
         raise commands.CommandError("No valid paths")
-    mode.enter()
