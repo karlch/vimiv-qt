@@ -71,7 +71,6 @@ def get_argparser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--command",
-        type=str,
         action="append",
         metavar="COMMAND",
         help="Run COMMAND on startup, usable multiple times",
@@ -87,7 +86,6 @@ def get_argparser() -> argparse.ArgumentParser:
     devel.add_argument(
         "--debug",
         nargs="+",
-        type=str,
         metavar="MODULE",
         default=(),
         help="Force showing debug log messages of MODULE",
