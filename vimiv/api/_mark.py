@@ -269,9 +269,9 @@ class Tag:
 
     Attributes:
         name: Name of the tag file.
-        mode: File mode used for open.
 
         _file: The associated file handler.
+        _mode: File mode used for open.
     """
 
     COMMENTCHAR = "#"
@@ -280,11 +280,11 @@ class Tag:
         self.name = name
         abspath = Tag.path(name)
         exists = os.path.isfile(abspath)
-        self.mode = "r" if read_only else ("r+" if exists else "a+")
+        self._mode = "r" if read_only else ("r+" if exists else "a+")
         _logger.debug("Opened tag object: '%s'", self)
         xdg.makedirs(os.path.dirname(abspath))
         try:
-            self._file = open(abspath, self.mode)
+            self._file = open(abspath, self._mode)
         except FileNotFoundError:  # For read-only if the file does not exist
             raise commands.CommandError(f"No tag called '{name}'")
         except OSError as e:
@@ -305,7 +305,7 @@ class Tag:
         self._file.close()
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__qualname__}({self.name}, mode={self.mode})"
+        return f"{self.__class__.__qualname__}({self.name}, mode={self._mode})"
 
     def write(self, paths: List[str]) -> None:
         """Write paths to the tag file."""
