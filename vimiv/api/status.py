@@ -51,10 +51,6 @@ _module_expression = re.compile(r"\{.*?\}")  # Expression to match all status mo
 _logger = log.module_logger(__name__)
 
 
-class InvalidModuleName(Exception):
-    """Exception raised if the name of a status module is invalid."""
-
-
 class _Module:
     """Class to store function of one status module."""
 
@@ -102,7 +98,7 @@ def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
     def decorator(function: ModuleFunc) -> ModuleFunc:
         """Store function executable under module name."""
         if not name.startswith("{") or not name.endswith("}"):
-            raise InvalidModuleName(
+            raise ValueError(
                 f"Invalid name '{name}' for status module {function.__name__}"
             )
         _modules[name] = _Module(function)

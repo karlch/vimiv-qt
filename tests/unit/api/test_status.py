@@ -21,7 +21,7 @@ def test_add_status_module():
 
 
 def test_fail_add_status_module():
-    with pytest.raises(status.InvalidModuleName):
+    with pytest.raises(ValueError):
 
         @status.module("wrong")
         def wrong():

@@ -17,19 +17,6 @@ from vimiv.config import styles
 from .eventhandler import KeyHandler
 
 
-class UnknownPrefix(Exception):
-    """Raised if a prefix in the command line is not known."""
-
-    def __init__(self, prefix):
-        """Call the parent with a generated message.
-
-        Args:
-            prefix: The unknown prefix.
-        """
-        possible = ", ".join(str(prefix) for prefix in CommandLine.PREFIXES)
-        super().__init__(f"Unknown prefix '{prefix}', possible values: {possible}")
-
-
 class CommandLine(KeyHandler, QLineEdit):
     """Commandline widget in the bar.
 
@@ -110,7 +97,8 @@ class CommandLine(KeyHandler, QLineEdit):
         """
         prefix, command = text[0], text[1:]
         if prefix not in self.PREFIXES:
-            raise UnknownPrefix(prefix)
+            possible = ", ".join(str(prefix) for prefix in CommandLine.PREFIXES)
+            raise ValueError(f"Unknown prefix '{prefix}', possible values: {possible}")
         command = command.strip()
         return prefix, command
 
