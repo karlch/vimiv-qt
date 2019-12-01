@@ -183,7 +183,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         _logger.debug("Processing changed image file...")
         signals.image_changed.emit()
         _logger.debug("Image file updated")
-        status.update()
+        status.update("image file changed")
 
     def _emit_changes(self, images: List[str], directories: List[str]) -> None:
         """Emit changed signals if the content in the directory has changed.

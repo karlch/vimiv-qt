@@ -161,7 +161,7 @@ class _Signals(QObject):
 signals = _Signals()
 
 
-def update(reason: str = "") -> None:
+def update(reason: str) -> None:
     """Emit signal to update the current status.
 
     This function can be called when an update of the status is required. It
@@ -170,14 +170,11 @@ def update(reason: str = "") -> None:
     Args:
         reason: Reason of the update for logging.
     """
-    if not reason:
-        # TODO remove in v0.5.0
-        _logger.warning("Not passing a reason to status.update is deprecated")
     _logger.debug("Updating status: %s", reason)
     signals.update.emit()
 
 
-def clear(reason: str = "") -> None:
+def clear(reason: str) -> None:
     """Emit signal to clear messages.
 
     This function can be called when any temporary logging messages should be cleared.
@@ -185,8 +182,5 @@ def clear(reason: str = "") -> None:
     Args:
         reason: Reason of the clearing for logging.
     """
-    if not reason:
-        # TODO remove in v0.5.0
-        _logger.warning("Not passing a reason to status.clear is deprecated")
     _logger.debug("Clearing status messages: %s", reason)
     signals.clear.emit()

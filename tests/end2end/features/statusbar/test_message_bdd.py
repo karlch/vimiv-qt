@@ -20,7 +20,7 @@ def log_warning(message, qtbot):
 
 @bdd.when("I clear the status")
 def clear_status():
-    api.status.clear()
+    api.status.clear("clear in bdd step")
 
 
 @bdd.then("the bar should be visible")
