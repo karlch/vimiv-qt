@@ -4,6 +4,15 @@ Changelog
 All notable changes to vimiv are documented in this file.
 
 
+v0.4.1 (2019-12-01)
+-------------------
+
+Fixed:
+^^^^^^
+
+* Not clearing existing status messages when pressing a key.
+
+
 v0.4.0 (2019-12-01)
 -------------------
 

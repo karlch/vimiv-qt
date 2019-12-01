@@ -22,3 +22,8 @@ Feature: Push messages to the statusbar.
         And I log the warning 'this is a warning'
         And I clear the status
         Then the bar should not be visible
+
+    Scenario: Clear message after key press
+        When I log the warning 'this is a warning'
+        And I press 0
+        Then no message should be displayed
