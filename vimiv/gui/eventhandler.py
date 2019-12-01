@@ -112,6 +112,7 @@ class KeyHandler:
         Args:
             event: QKeyEvent that activated the keyPressEvent.
         """
+        api.status.clear("KeyPressEvent")
         mode = api.modes.current()
         try:
             keyname = keyevent_to_string(event)
