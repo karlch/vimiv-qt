@@ -1,6 +1,6 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIMIV" "1" "Nov 01, 2019" "" "vimiv"
+.TH "VIMIV" "1" "Dec 01, 2019" "" "vimiv"
 .SH NAME
 vimiv \- an image viewer with vim-like keybindings
 .
@@ -32,7 +32,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 ..
 .SH SYNOPSIS
 .sp
-\fBvimiv\fP [\fBPATH\fP] [\fB\-h\fP] [\fB\-\-help\fP] [\fB\-f\fP] [\fB\-\-fullscreen\fP] [\fB\-v\fP] [\fB\-\-version\fP] [\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-\-debug\fP \fIMODULE\fP]
+\fBvimiv\fP [\fBPATH\fP] [\fB\-h\fP] [\fB\-\-help\fP] [\fB\-f\fP] [\fB\-\-fullscreen\fP] [\fB\-v\fP] [\fB\-\-version\fP] [\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-b\fP \fIDIRECTORY\fP] [\fB\-\-basedir\fP \fIDIRECTORY\fP] [\fB\-\-debug\fP \fIMODULE\fP]
 .SH DESCRIPTION
 .sp
 Vimiv is an image viewer with vim\-like keybindings. It is written in python3
@@ -131,6 +131,13 @@ Set log level to LEVEL
 .INDENT 0.0
 .INDENT 3.5
 Run COMMAND on startup, usable multiple times
+.UNINDENT
+.UNINDENT
+.sp
+\fB\-b\fP \fIDIRECTORY\fP, \fB\-\-basedir\fP \fIDIRECTORY\fP
+.INDENT 0.0
+.INDENT 3.5
+Directory to use for all storage
 .UNINDENT
 .UNINDENT
 .SS development arguments
