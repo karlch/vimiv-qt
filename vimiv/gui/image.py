@@ -310,7 +310,10 @@ class ScrollableImage(KeyHandler, QGraphicsView):
     def wheelEvent(self, event):
         """Update mouse wheel to zoom with control."""
         if event.modifiers() & Qt.ControlModifier:
-            scale = 1.03 ** event.angleDelta().y()
+            # We divide by 120 as this is the regular delta multiple
+            # See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
+            steps = event.angleDelta().y() / 120
+            scale = 1.03 ** steps
             self._scale_to_float(self.zoom_level * scale)
             self._scale = ImageScaleFloat(self.zoom_level)
             api.status.update("image zoom level changed")
