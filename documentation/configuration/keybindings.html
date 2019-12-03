@@ -130,6 +130,19 @@ See
 <a class="reference external" href="https://docs.python.org/3/library/configparser.html#interpolation-of-values">the python documentation</a>
 for details.</p>
 </div>
+<p>It is also possible to bind mouse clicks and double clicks. The relevant names are
+<code class="docutils literal notranslate"><span class="pre">&lt;button-NAME&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;double-button-NAME&gt;</span></code>. Here <code class="docutils literal notranslate"><span class="pre">NAME</span></code> stands for the name of the
+mouse button to bind, e.g. <code class="docutils literal notranslate"><span class="pre">left</span></code>, <code class="docutils literal notranslate"><span class="pre">middle</span></code> or <code class="docutils literal notranslate"><span class="pre">right</span></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If you want to figure out the name of a specific key or mouse button, run vimiv with
+<code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">gui.eventhandler</span></code>. You can find the corresponding name in the first
+output line after pressing/clicking it. For example, when pressing the <code class="docutils literal notranslate"><span class="pre">q</span></code> key,
+you would retrieve something along:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DEBUG</span>    <span class="o">&lt;</span><span class="n">gui</span><span class="o">.</span><span class="n">eventhandler</span><span class="o">&gt;</span>   <span class="n">EventHandlerMixin</span><span class="p">:</span> <span class="n">handling</span> <span class="n">q</span> <span class="k">for</span> <span class="n">mode</span> <span class="n">library</span>
+</pre></div>
+</div>
+</div>
 <p>The following table lists all default keybindings.</p>
 <table class="colwidths-given docutils align-default" id="id1">
 <caption><span class="caption-text">Keybindings for global mode</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>

@@ -32,6 +32,19 @@ bind ``f : flip``. To remove a default keybinding, map the key to the special
    `the python documentation <https://docs.python.org/3/library/configparser.html#interpolation-of-values>`_
    for details.
 
+It is also possible to bind mouse clicks and double clicks. The relevant names are
+``<button-NAME>`` and ``<double-button-NAME>``. Here ``NAME`` stands for the name of the
+mouse button to bind, e.g. ``left``, ``middle`` or ``right``.
+
+.. hint::
+
+    If you want to figure out the name of a specific key or mouse button, run vimiv with
+    ``--debug gui.eventhandler``. You can find the corresponding name in the first
+    output line after pressing/clicking it. For example, when pressing the ``q`` key,
+    you would retrieve something along::
+
+        DEBUG    <gui.eventhandler>   EventHandlerMixin: handling q for mode library
+
 The following table lists all default keybindings.
 
 .. include:: keybindings_table.rstsrc
