@@ -113,14 +113,12 @@ class EventHandler:
             event: QKeyEvent that activated the keyPressEvent.
         """
         api.status.clear("KeyPressEvent")
-        mode = api.modes.current()
         try:
             keyname = keyevent_to_string(event)
         except ValueError:  # Only modifier pressed
             _logger.debug("KeyPressEvent: only modifier pressed")
             return
-        _logger.debug("KeyPressEvent: handling %s for mode %s", keyname, mode.name)
-        bindings = api.keybindings.get(mode)
+        mode = api.modes.current()
         # Handle escape separately as it affects multiple widgets and must clear partial
         # matches instead of checking for them
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
@@ -128,31 +126,52 @@ class EventHandler:
             self.partial_handler.clear_keys()
             search.search.clear()
             api.status.update("escape pressed")
-            return
-        stored_keys = self.partial_handler.keys.get_text()
-        keyname = stored_keys + keyname
-        partial_matches = bindings.partial_matches(keyname)
         # Count
-        if keyname and keyname in string.digits and mode != api.modes.COMMAND:
-            _logger.debug("KeyPressEvent: adding digits")
+        elif keyname and keyname in string.digits and mode != api.modes.COMMAND:
+            _logger.debug("KeyPressEvent: adding digits to count")
             self.partial_handler.count.add_text(keyname)
-        # Complete match => run command
-        elif keyname and keyname in bindings:
-            _logger.debug("KeyPressEvent: found command")
-            count = self.partial_handler.count.get_text()
-            cmd = bindings[keyname]
-            runners.run(cmd, count=count, mode=mode)
-            self.partial_handler.clear_keys()
-        # Partial match => store keys
-        elif partial_matches:
-            self.partial_handler.keys.add_text(keyname)
-            self.partial_handler.partial_matches.emit(keyname, partial_matches)
-        # Nothing => run default Qt bindings of parent object
-        else:
+        elif not self._process_event(keyname, mode=mode):
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # type: ignore  # pylint: disable=no-member
+
+    def _process_event(self, name: str, mode: api.modes.Mode = None) -> bool:
+        """Process event by name.
+
+        Try to (partially) match the name with the current bindings. If a complete match
+        is found, the corresponding command is run. Partial matches are displayed and
+        the corresponding keys are stored. In case there is no match, reset and return
+        False.
+
+        Args:
+            name: Event name as meaningful string.
+            mode: Mode in which the event was received. None for current mode.
+        Returns:
+            True if processing was successful, False otherwise.
+        """
+        mode = api.modes.current() if mode is None else mode
+        _logger.debug("EventHandler: handling %s for mode %s", name, mode.name)
+        bindings = api.keybindings.get(mode)
+        name = self.partial_handler.keys.get_text() + name  # Prepend stored keys
+        # Complete match => run command
+        if name and name in bindings:
+            _logger.debug("EventHandler: found command for event")
+            count = self.partial_handler.count.get_text()
+            command = bindings[name]
+            runners.run(command, count=count, mode=mode)
             self.partial_handler.clear_keys()
-            api.status.update("regular Qt key event")  # Will not be called by command
+            return True
+        # Partial match => store keys
+        partial_matches = bindings.partial_matches(name)
+        if partial_matches:
+            _logger.debug("EventHandler: event matches bindings partially")
+            self.partial_handler.keys.add_text(name)
+            self.partial_handler.partial_matches.emit(name, partial_matches)
+            return True
+        # Nothing => reset and return False
+        _logger.debug("EventHandler: no matches for event")
+        api.status.update("regular Qt event")  # Will not be called by command
+        self.partial_handler.clear_keys()
+        return False
 
     @staticmethod
     @api.status.module("{keys}")
