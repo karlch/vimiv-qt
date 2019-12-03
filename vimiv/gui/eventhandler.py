@@ -7,9 +7,10 @@
 """Handles key and mouse events."""
 
 import string
+from typing import Union
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
-from PyQt5.QtGui import QKeySequence, QKeyEvent
+from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
 
 from vimiv import api, utils
 from vimiv.commands import runners, search
@@ -180,22 +181,8 @@ class EventHandler:
         return EventHandler.partial_handler.get_keys()
 
 
-def keyevent_to_string(event):
-    """Convert QKeyEvent to meaningful string.
-
-    This gets the name of the main key and adds pressed modifiers via Mod+.
-
-    Args:
-        event: The emitted QKeyEvent.
-    Returns:
-        Name of the key pressed as meaningful string.
-    """
-    # Parse modifiers
-    modmask2str = {
-        Qt.ControlModifier: "<ctrl>",
-        Qt.AltModifier: "<alt>",
-        Qt.MetaModifier: "<meta>",
-    }
+def keyevent_to_string(event: QKeyEvent) -> str:
+    """Convert QKeyEvent to meaningful string."""
     modifiers = (
         Qt.Key_Control,
         Qt.Key_Alt,
@@ -211,11 +198,37 @@ def keyevent_to_string(event):
     )
     if event.key() in modifiers:  # Only modifier pressed
         raise ValueError("Modifiers do not have a stand-alone name")
-    # Prepend all modifiers and append keyname
-    mod = event.modifiers()
-    modifier_names = [mod_name for mask, mod_name in modmask2str.items() if mod & mask]
-    keyname = _get_keyname(event)
-    return "".join(modifier_names) + keyname
+    return _get_modifier_names(event) + _get_keyname(event)
+
+
+def mouseevent_to_string(event: QMouseEvent, prefix: str = "button") -> str:
+    """Convert QMouseEvent to meaningful string."""
+    button_names = {
+        Qt.LeftButton: "left",
+        Qt.MiddleButton: "middle",
+        Qt.RightButton: "right",
+        Qt.BackButton: "back",
+        Qt.ForwardButton: "forward",
+    }
+    button = event.button()
+    button_name = button_names[button] if button in button_names else str(button)
+    return _get_modifier_names(event) + f"<{prefix}-{button_name}>"
+
+
+def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> str:
+    """Return the names of all modifiers pressed in the event as joined string."""
+    modmask2str = {
+        Qt.ControlModifier: "<ctrl>",
+        Qt.AltModifier: "<alt>",
+        Qt.MetaModifier: "<meta>",
+    }
+    modifiers = event.modifiers()
+    modifier_names = [
+        mod_name
+        for mask, mod_name in modmask2str.items()
+        if modifiers & mask  # type: ignore
+    ]
+    return "".join(modifier_names)
 
 
 def _get_keyname(event):

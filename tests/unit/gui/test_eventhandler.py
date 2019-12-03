@@ -8,8 +8,8 @@
 
 import pytest
 
-from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtGui import QKeyEvent
+from PyQt5.QtCore import QEvent, Qt, QPoint
+from PyQt5.QtGui import QKeyEvent, QMouseEvent
 
 from vimiv.gui import eventhandler
 
@@ -78,3 +78,24 @@ def test_keyevent_to_string_for_only_modifier():
 def test_keyevent_to_string_for_colon():
     event = QKeyEvent(QEvent.KeyPress, Qt.Key_Colon, Qt.NoModifier, ":")
     assert eventhandler.keyevent_to_string(event) == "<colon>"
+
+
+def test_mouse_event_to_string():
+    event = _create_mouse_event(Qt.LeftButton)
+    assert eventhandler.mouseevent_to_string(event) == "<button-left>"
+
+
+def test_mouse_event_to_string_unnamed_button():
+    event = _create_mouse_event(Qt.ExtraButton7)
+    assert eventhandler.mouseevent_to_string(event) == f"<button-{Qt.ExtraButton7:d}>"
+
+
+def test_mouse_event_to_string_with_modifier():
+    event = _create_mouse_event(Qt.LeftButton, Qt.ControlModifier)
+    assert eventhandler.mouseevent_to_string(event) == "<ctrl><button-left>"
+
+
+def _create_mouse_event(button, modifier=Qt.NoModifier):
+    return QMouseEvent(
+        QEvent.MouseButtonPress, QPoint(0, 0), QPoint(0, 0), button, button, modifier
+    )
