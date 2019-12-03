@@ -108,11 +108,7 @@ class EventHandler:
     partial_handler = PartialHandler()
 
     def keyPressEvent(self, event: QKeyEvent):
-        """Handle key press event for the widget.
-
-        Args:
-            event: QKeyEvent that activated the keyPressEvent.
-        """
+        """Handle key press event for the widget."""
         api.status.clear("KeyPressEvent")
         try:
             keyname = keyevent_to_string(event)
@@ -134,6 +130,22 @@ class EventHandler:
         elif not self._process_event(keyname, mode=mode):
             # super() is the parent Qt widget
             super().keyPressEvent(event)  # type: ignore  # pylint: disable=no-member
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """Handle mouse press event for the widget."""
+        api.status.clear("MousePressEvent")
+        if not self._process_event(mouseevent_to_string(event)):
+            # super() is the parent Qt widget
+            super().mousePressEvent(event)  # type: ignore  # pylint: disable=no-member
+
+    def mouseDoubleClickEvent(self, event: QMouseEvent):
+        """Handle mouse press event for the widget."""
+        api.status.clear("MouseDoubleClickEvent")
+        if not self._process_event(mouseevent_to_string(event, prefix="double-button")):
+            # super() is the parent Qt widget
+            super().mouseDoubleClickEvent(  # type: ignore  # pylint: disable=no-member
+                event
+            )
 
     def _process_event(self, name: str, mode: api.modes.Mode = None) -> bool:
         """Process event by name.
