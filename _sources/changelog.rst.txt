@@ -6,6 +6,11 @@ All notable changes to vimiv are documented in this file.
 v0.5.0 (unreleased)
 -------------------
 
+Changed:
+^^^^^^^^
+
+* Saner default step for mouse zoom. Thanks @OliverLew for catching this.
+
 
 v0.4.1 (2019-12-01)
 -------------------
