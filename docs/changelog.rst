@@ -6,6 +6,13 @@ All notable changes to vimiv are documented in this file.
 v0.5.0 (unreleased)
 -------------------
 
+Added:
+^^^^^^
+
+* Basic support for binding mouse clicks and double clicks to commands. The relevant
+  names are ``<button-NAME>`` and ``<double-button-NAME>``. Here ``NAME`` stands for the
+  name of the mouse button to bind, e.g. ``left``, ``middle`` or ``right``.
+
 Changed:
 ^^^^^^^^
 
