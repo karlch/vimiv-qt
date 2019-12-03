@@ -14,10 +14,10 @@ from PyQt5.QtWidgets import QLineEdit
 from vimiv import api, utils
 from vimiv.commands import history, argtypes, runners, search
 from vimiv.config import styles
-from .eventhandler import KeyHandler
+from .eventhandler import EventHandler
 
 
-class CommandLine(KeyHandler, QLineEdit):
+class CommandLine(EventHandler, QLineEdit):
     """Commandline widget in the bar.
 
     Class Attributes:

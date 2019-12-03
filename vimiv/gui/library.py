@@ -21,7 +21,7 @@ from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
 from . import eventhandler, synchronize
 
 
-class Library(eventhandler.KeyHandler, widgets.FlatTreeView):
+class Library(eventhandler.EventHandler, widgets.FlatTreeView):
     """Library widget.
 
     Attributes:

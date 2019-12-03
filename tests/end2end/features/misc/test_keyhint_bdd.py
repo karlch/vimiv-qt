@@ -29,7 +29,7 @@ def update_keyhint():
     yield
     api.settings.keyhint.delay.value = delay
     api.settings.keyhint.timeout.value = timeout
-    eventhandler.KeyHandler.partial_handler.clear_keys()
+    eventhandler.EventHandler.partial_handler.clear_keys()
 
 
 @bdd.when("I wait for the keyhint widget")
@@ -40,7 +40,9 @@ def wait_for_keyhint_widget(keyhint, qtbot):
 
 @bdd.when("I wait for the keyhint widget timeout")
 def wait_for_keyhint_widget_timeout(qtbot):
-    with qtbot.waitSignal(eventhandler.KeyHandler.partial_handler.partial_cleared, 500):
+    with qtbot.waitSignal(
+        eventhandler.EventHandler.partial_handler.partial_cleared, 500
+    ):
         pass
 
 

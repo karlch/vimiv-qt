@@ -24,7 +24,7 @@ from vimiv import api, imutils, utils
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
 
-from .eventhandler import KeyHandler
+from .eventhandler import EventHandler
 
 # We need the check as svg support is optional
 try:
@@ -36,7 +36,7 @@ except ImportError:
 INF = float("inf")
 
 
-class ScrollableImage(KeyHandler, QGraphicsView):
+class ScrollableImage(EventHandler, QGraphicsView):
     """QGraphicsView to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.

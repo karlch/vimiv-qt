@@ -65,7 +65,7 @@ class TempKeyStorage(QTimer):
 
 
 class PartialHandler(QObject):
-    """Handle partial matches and counts for KeyHandler.
+    """Handle partial matches and counts for EventHandler.
 
     Attributes:
         count: TempKeyStorage for counts.
@@ -97,8 +97,8 @@ class PartialHandler(QObject):
         return self.count.text + self.keys.text
 
 
-class KeyHandler:
-    """Deal with keyPressEvent events for gui widgets.
+class EventHandler:
+    """Deal with key and mouse events for gui widgets.
 
     This class is used by gui classes as first parent, second being some
     QWidget, to handle the keyPressEvent slot.
@@ -158,7 +158,7 @@ class KeyHandler:
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return KeyHandler.partial_handler.get_keys()
+        return EventHandler.partial_handler.get_keys()
 
 
 def on_mouse_click(event):
