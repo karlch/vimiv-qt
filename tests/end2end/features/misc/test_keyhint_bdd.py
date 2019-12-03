@@ -5,6 +5,7 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import pytest
+import pytestqt
 import pytest_bdd as bdd
 
 from vimiv import api
@@ -54,6 +55,16 @@ def keyhint_widget_visible(keyhint):
 @bdd.then("the keyhint widget should not be visible")
 def keyhint_widget_not_visible(keyhint):
     assert not keyhint.isVisible()
+
+
+@bdd.then("the keyhint widget should not appear")
+def keyhint_widget_not_appeared(keyhint, qtbot):
+    # Required in addition to should not be visible as the timeout does not happend and
+    # waiting for the widget would raise TimeoutError
+    with pytest.raises(pytestqt.exceptions.TimeoutError):
+        timeout = 2 * api.settings.keyhint.delay.value
+        with qtbot.waitSignal(keyhint._show_timer.timeout, timeout):
+            pass
 
 
 @bdd.then(bdd.parsers.parse("the keyhint widget should contain {command}"))

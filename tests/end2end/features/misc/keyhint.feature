@@ -29,3 +29,8 @@ Feature: The keyhint overlay widget
         And I press g
         And I wait for the keyhint widget
         Then the keyhint widget should be at the bottom
+
+    Scenario: Do not show widget in command mode
+        When I run command
+        And I press <
+        Then the keyhint widget should not appear

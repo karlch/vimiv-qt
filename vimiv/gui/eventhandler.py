@@ -169,7 +169,7 @@ class EventHandlerMixin:
             self.partial_handler.clear_keys()
             return True
         # Partial match => store keys
-        partial_matches = bindings.partial_matches(name)
+        partial_matches = mode != api.modes.COMMAND and bindings.partial_matches(name)
         if partial_matches:
             _logger.debug("EventHandlerMixin: event matches bindings partially")
             self.partial_handler.keys.add_text(name)

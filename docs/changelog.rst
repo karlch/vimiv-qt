@@ -18,6 +18,11 @@ Changed:
 
 * Saner default step for mouse zoom. Thanks @OliverLew for catching this.
 
+Fixed:
+^^^^^^
+
+* Showing keyhint widget in command mode.
+
 
 v0.4.1 (2019-12-01)
 -------------------
