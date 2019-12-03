@@ -24,7 +24,7 @@ from . import eventhandler, synchronize
 _logger = log.module_logger(__name__)
 
 
-class ThumbnailView(eventhandler.EventHandler, QListWidget):
+class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     """Thumbnail widget.
 
     Attributes:

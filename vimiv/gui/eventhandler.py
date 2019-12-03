@@ -66,7 +66,7 @@ class TempKeyStorage(QTimer):
 
 
 class PartialHandler(QObject):
-    """Handle partial matches and counts for EventHandler.
+    """Handle partial matches and counts for EventHandlerMixin.
 
     Attributes:
         count: TempKeyStorage for counts.
@@ -98,11 +98,11 @@ class PartialHandler(QObject):
         return self.count.text + self.keys.text
 
 
-class EventHandler:
-    """Deal with key and mouse events for gui widgets.
+class EventHandlerMixin:
+    """Mixing to handle key and mouse events for gui widgets.
 
     This class is used by gui classes as first parent, second being some
-    QWidget, to handle the keyPressEvent slot.
+    QWidget, to handle the various input related event slots.
     """
 
     partial_handler = PartialHandler()
@@ -128,24 +128,19 @@ class EventHandler:
             _logger.debug("KeyPressEvent: adding digits to count")
             self.partial_handler.count.add_text(keyname)
         elif not self._process_event(keyname, mode=mode):
-            # super() is the parent Qt widget
-            super().keyPressEvent(event)  # type: ignore  # pylint: disable=no-member
+            super().keyPressEvent(event)  # type: ignore
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
         api.status.clear("MousePressEvent")
         if not self._process_event(mouseevent_to_string(event)):
-            # super() is the parent Qt widget
-            super().mousePressEvent(event)  # type: ignore  # pylint: disable=no-member
+            super().mousePressEvent(event)  # type: ignore
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
         api.status.clear("MouseDoubleClickEvent")
         if not self._process_event(mouseevent_to_string(event, prefix="double-button")):
-            # super() is the parent Qt widget
-            super().mouseDoubleClickEvent(  # type: ignore  # pylint: disable=no-member
-                event
-            )
+            super().mouseDoubleClickEvent(event)  # type: ignore
 
     def _process_event(self, name: str, mode: api.modes.Mode = None) -> bool:
         """Process event by name.
@@ -162,12 +157,12 @@ class EventHandler:
             True if processing was successful, False otherwise.
         """
         mode = api.modes.current() if mode is None else mode
-        _logger.debug("EventHandler: handling %s for mode %s", name, mode.name)
+        _logger.debug("EventHandlerMixin: handling %s for mode %s", name, mode.name)
         bindings = api.keybindings.get(mode)
         name = self.partial_handler.keys.get_text() + name  # Prepend stored keys
         # Complete match => run command
         if name and name in bindings:
-            _logger.debug("EventHandler: found command for event")
+            _logger.debug("EventHandlerMixin: found command for event")
             count = self.partial_handler.count.get_text()
             command = bindings[name]
             runners.run(command, count=count, mode=mode)
@@ -176,12 +171,12 @@ class EventHandler:
         # Partial match => store keys
         partial_matches = bindings.partial_matches(name)
         if partial_matches:
-            _logger.debug("EventHandler: event matches bindings partially")
+            _logger.debug("EventHandlerMixin: event matches bindings partially")
             self.partial_handler.keys.add_text(name)
             self.partial_handler.partial_matches.emit(name, partial_matches)
             return True
         # Nothing => reset and return False
-        _logger.debug("EventHandler: no matches for event")
+        _logger.debug("EventHandlerMixin: no matches for event")
         api.status.update("regular Qt event")  # Will not be called by command
         self.partial_handler.clear_keys()
         return False
@@ -190,7 +185,7 @@ class EventHandler:
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return EventHandler.partial_handler.get_keys()
+        return EventHandlerMixin.partial_handler.get_keys()
 
 
 def keyevent_to_string(event: QKeyEvent) -> str:

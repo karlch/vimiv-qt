@@ -16,10 +16,10 @@ from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
 from vimiv.utils import slot
-from .eventhandler import EventHandler
+from .eventhandler import EventHandlerMixin
 
 
-class Manipulate(EventHandler, QTabWidget):
+class Manipulate(EventHandlerMixin, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
