@@ -161,10 +161,6 @@ class EventHandler:
         return EventHandler.partial_handler.get_keys()
 
 
-def on_mouse_click(event):
-    raise NotImplementedError
-
-
 def keyevent_to_string(event):
     """Convert QKeyEvent to meaningful string.
 
