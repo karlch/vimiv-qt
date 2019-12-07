@@ -86,3 +86,12 @@ def test_log_level():
 def test_fail_log_level():
     with pytest.raises(argparse.ArgumentTypeError, match="Invalid log level"):
         parser.loglevel("other")
+
+
+def test_parse_settings(argparser):
+    settings = [["statusbar.show", "false"], ["style", "default"]]
+    arglist = []
+    for name, value in settings:
+        arglist.extend(("-s", name, value))
+    args = argparser.parse_args(arglist)
+    assert args.cmd_settings == settings
