@@ -7,7 +7,7 @@
 """Handles key and mouse events."""
 
 import string
-from typing import Union, Tuple, cast
+from typing import Union, Tuple, List, cast
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
@@ -237,8 +237,8 @@ def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> Sequen
     return (*_get_modifier_names(event), f"<{prefix}-{button_name}>")
 
 
-def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> str:
-    """Return the names of all modifiers pressed in the event as joined string."""
+def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> List[str]:
+    """Return the names of all modifiers pressed in the event."""
     modmask2str = {
         Qt.ControlModifier: "<ctrl>",
         Qt.AltModifier: "<alt>",
