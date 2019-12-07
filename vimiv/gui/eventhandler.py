@@ -220,7 +220,7 @@ def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
     )
     if event.key() in modifiers:  # Only modifier pressed
         raise ValueError("Modifiers do not have a stand-alone name")
-    return *_get_modifier_names(event), *_get_base_keysequence(event)
+    return (*_get_modifier_names(event), *_get_base_keysequence(event))
 
 
 def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> SequenceT:
@@ -234,7 +234,7 @@ def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> Sequen
     }
     button = event.button()
     button_name = button_names[button] if button in button_names else str(button)
-    return *_get_modifier_names(event), f"<{prefix}-{button_name}>"
+    return (*_get_modifier_names(event), f"<{prefix}-{button_name}>")
 
 
 def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> str:
@@ -287,9 +287,9 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         text = special_keys[event.key()]  # type: ignore
         if event.modifiers() & Qt.ShiftModifier:  # type: ignore
             return "<shift>", text
-        return (text, )
+        return (text,)
     if event.key() == Qt.Key_Colon:  # Required as : is the separator
-        return ("<colon>", )
+        return ("<colon>",)
     if event.text().isprintable():
-        return (event.text(), )
-    return (QKeySequence(event.key()).toString().lower(), )
+        return (event.text(),)
+    return (QKeySequence(event.key()).toString().lower(),)
