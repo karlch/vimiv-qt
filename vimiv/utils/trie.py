@@ -37,17 +37,19 @@ class Trie:
         self.value: Optional[str] = None
 
     def __setitem__(self, key: KeyT, value: str) -> None:
-        """Add a key, value pair to the trie ensuring validity."""
+        """Add a key, value pair to the trie logging a warning on possible clashes."""
         key = tuple(key)
         node = self
         for elem in key:
             if elem not in node.children:
                 if node.key is not None:
-                    raise ValueError(f"{''.join(key)} is hidden by shorter {node.key}")
+                    _logger.warning(
+                        "%s is hidden by shorter key %s", "".join(key), node.key
+                    )
                 node.children[elem] = Trie()
             node = node.children[elem]
         if node.children:
-            raise ValueError(f"{''.join(key)} hides longer keys")
+            _logger.warning("%s hides longer keys", "".join(key))
         node.key = "".join(key)
         node.value = value
 

@@ -20,6 +20,11 @@ def trie():
     yield vimiv.utils.trie.Trie()
 
 
+@pytest.fixture
+def mocklogger(mocker):
+    yield mocker.patch.object(vimiv.utils.trie, "_logger")
+
+
 @pytest.mark.parametrize(
     "key, value", [("a", "value"), ("abc", "value"), (("a", "bc"), "value")]
 )
@@ -33,22 +38,20 @@ def test_setitem(trie, key, value):
     assert node.key == "".join(key)
 
 
-def test_setitem_raises_for_hidden_key(trie):
+def test_setitem_warns_for_hidden_key(trie, mocklogger):
     """Ensure we cannot add keys with a base that is a full match."""
     key1 = "key"
     key2 = key1 + "1"
-    trie[key1] = "value"
-    with pytest.raises(ValueError):
-        trie[key2] = "value"
+    trie[key1] = trie[key2] = "value"
+    mocklogger.warning.assert_called_once()
 
 
-def test_setitem_raises_for_hiding_key(trie):
+def test_setitem_raises_for_hiding_key(trie, mocklogger):
     """Ensure we cannot add keys with a base shorter than a full match."""
     key1 = "key"
     key2 = key1 + "1"
-    trie[key2] = "value"
-    with pytest.raises(ValueError):
-        trie[key1] = "value"
+    trie[key2] = trie[key1] = "value"
+    mocklogger.warning.assert_called_once()
 
 
 def test_iter(trie):
