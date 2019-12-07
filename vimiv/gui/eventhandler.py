@@ -7,7 +7,7 @@
 """Handles key and mouse events."""
 
 import string
-from typing import Union, cast
+from typing import Union, Tuple, cast
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
@@ -15,6 +15,8 @@ from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
 from vimiv import api, utils
 from vimiv.commands import runners, search
 
+
+SequenceT = Tuple[str, ...]
 
 _logger = utils.log.module_logger(__name__)
 
@@ -39,9 +41,9 @@ class TempKeyStorage(QTimer):
     def text(self):
         return "".join(self._keys)
 
-    def add_key(self, key):
+    def add_keys(self, *keys):
         """Add text to storage."""
-        self._keys.append(key)
+        self._keys.extend(keys)
         if self.isActive():  # Reset timeout
             self.stop()
         self.start()
@@ -120,11 +122,12 @@ class EventHandlerMixin:
         """Handle key press event for the widget."""
         api.status.clear("KeyPressEvent")
         try:
-            keyname = keyevent_to_string(event)
+            keysequence = keyevent_to_sequence(event)
         except ValueError:  # Only modifier pressed
             _logger.debug("KeyPressEvent: only modifier pressed")
             return
         mode = api.modes.current()
+        keyname = "".join(keysequence)
         # Handle escape separately as it affects multiple widgets and must clear partial
         # matches instead of checking for them
         if keyname == "<escape>" and mode in api.modes.GLOBALS:
@@ -135,23 +138,25 @@ class EventHandlerMixin:
         # Count
         elif keyname and keyname in string.digits and mode != api.modes.COMMAND:
             _logger.debug("KeyPressEvent: adding digits to count")
-            self.partial_handler.count.add_key(keyname)
-        elif not self._process_event(keyname, mode=mode):
+            self.partial_handler.count.add_keys(keyname)
+        elif not self._process_event(keysequence, mode=mode):
             super().keyPressEvent(event)  # type: ignore
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
         api.status.clear("MousePressEvent")
-        if not self._process_event(mouseevent_to_string(event)):
+        if not self._process_event(mouseevent_to_sequence(event)):
             super().mousePressEvent(event)  # type: ignore
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
         api.status.clear("MouseDoubleClickEvent")
-        if not self._process_event(mouseevent_to_string(event, prefix="double-button")):
+        if not self._process_event(
+            mouseevent_to_sequence(event, prefix="double-button")
+        ):
             super().mouseDoubleClickEvent(event)  # type: ignore
 
-    def _process_event(self, name: str, mode: api.modes.Mode = None) -> bool:
+    def _process_event(self, sequence: SequenceT, mode: api.modes.Mode = None) -> bool:
         """Process event by name.
 
         Try to (partially) match the name with the current bindings. If a complete match
@@ -160,16 +165,17 @@ class EventHandlerMixin:
         False.
 
         Args:
-            name: Event name as meaningful string.
+            sequence: Event keys/buttons as meaningful string sequence.
             mode: Mode in which the event was received. None for current mode.
         Returns:
             True if processing was successful, False otherwise.
         """
         mode = api.modes.current() if mode is None else mode
+        name = "".join(sequence)
         _logger.debug("EventHandlerMixin: handling %s for mode %s", name, mode.name)
         bindings = api.keybindings.get(mode)
         stored_keys = self.partial_handler.keys.get_keys()
-        match = bindings.match((*stored_keys, name))
+        match = bindings.match((*stored_keys, *sequence))
         # Complete match => run command
         if match.is_full_match:
             _logger.debug("EventHandlerMixin: found command for event")
@@ -181,7 +187,7 @@ class EventHandlerMixin:
         # Partial match => store keys
         if match.is_partial_match:
             _logger.debug("EventHandlerMixin: event matches bindings partially")
-            self.partial_handler.keys.add_key(name)
+            self.partial_handler.keys.add_keys(*sequence)
             self.partial_handler.partial_matches.emit(name, match.partial)
             return True
         # Nothing => reset and return False
@@ -197,8 +203,8 @@ class EventHandlerMixin:
         return EventHandlerMixin.partial_handler.text
 
 
-def keyevent_to_string(event: QKeyEvent) -> str:
-    """Convert QKeyEvent to meaningful string."""
+def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
+    """Convert QKeyEvent to meaningful string sequence."""
     modifiers = (
         Qt.Key_Control,
         Qt.Key_Alt,
@@ -214,11 +220,11 @@ def keyevent_to_string(event: QKeyEvent) -> str:
     )
     if event.key() in modifiers:  # Only modifier pressed
         raise ValueError("Modifiers do not have a stand-alone name")
-    return _get_modifier_names(event) + _get_keyname(event)
+    return *_get_modifier_names(event), *_get_base_keysequence(event)
 
 
-def mouseevent_to_string(event: QMouseEvent, prefix: str = "button") -> str:
-    """Convert QMouseEvent to meaningful string."""
+def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> SequenceT:
+    """Convert QMouseEvent to meaningful string sequence."""
     button_names = {
         Qt.LeftButton: "left",
         Qt.MiddleButton: "middle",
@@ -228,7 +234,7 @@ def mouseevent_to_string(event: QMouseEvent, prefix: str = "button") -> str:
     }
     button = event.button()
     button_name = button_names[button] if button in button_names else str(button)
-    return _get_modifier_names(event) + f"<{prefix}-{button_name}>"
+    return *_get_modifier_names(event), f"<{prefix}-{button_name}>"
 
 
 def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> str:
@@ -239,18 +245,18 @@ def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> str:
         Qt.MetaModifier: "<meta>",
     }
     modifiers = event.modifiers()
-    modifier_names = [
+    return [
         mod_name
         for mask, mod_name in modmask2str.items()
         if modifiers & mask  # type: ignore
     ]
-    return "".join(modifier_names)
 
 
-def _get_keyname(event):
-    """Get main keyname of QKeyEvent.
+def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
+    """Get main keyname part of QKeyEvent.
 
-    Converts special keys to usable names and uses event.text() otherwise.
+    Converts special keys to usable names and uses event.text() otherwise. Is a sequence
+    to allow prepending <shift> to special keys.
 
     Args:
         event: The emitted QKeyEvent.
@@ -278,12 +284,12 @@ def _get_keyname(event):
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
-        text = special_keys[event.key()]
-        if event.modifiers() & Qt.ShiftModifier:
-            text = "<shift>" + text
-        return text
+        text = special_keys[event.key()]  # type: ignore
+        if event.modifiers() & Qt.ShiftModifier:  # type: ignore
+            return "<shift>", text
+        return (text, )
     if event.key() == Qt.Key_Colon:  # Required as : is the separator
-        return "<colon>"
+        return ("<colon>", )
     if event.text().isprintable():
-        return event.text()
-    return QKeySequence(event.key()).toString().lower()
+        return (event.text(), )
+    return (QKeySequence(event.key()).toString().lower(), )
