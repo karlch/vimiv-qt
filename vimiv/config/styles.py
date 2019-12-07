@@ -25,6 +25,7 @@ from vimiv import api
 from vimiv.utils import xdg, log, customtypes
 
 from . import read_log_exception, external_configparser
+from ._style_options import DEFAULT_OPTIONS
 
 
 NAME_DEFAULT = "default"
@@ -46,8 +47,6 @@ class Style(dict):
 
     def __init__(self, *colors: str, font: str = DEFAULT_FONT):
         """Initialize style with 16 colors for base 16 and a font."""
-        # We are mainly storing all the values here
-        # pylint: disable=too-many-statements
         super().__init__()
         _logger.debug(
             "Initializing style with colors:\n%s\nfont: %s", "\n".join(colors), font
@@ -58,81 +57,13 @@ class Style(dict):
         for i, color in enumerate(colors):
             self.check_valid_color(color)
             self[f"base{i:02x}"] = color
-        # Fill in all values
+        # Fill in all default values
         self["font"] = font
-        # Image
-        self["image.bg"] = "{base00}"
-        self["image.scrollbar.width"] = "8px"
-        self["image.scrollbar.bg"] = "{image.bg}"
-        self["image.scrollbar.fg"] = "{base03}"
-        self["image.scrollbar.padding"] = "2px"
-        # Library
-        self["library.font"] = "{font}"
-        self["library.fg"] = "{base06}"
-        self["library.padding"] = "2px"
-        self["library.directory.fg"] = "{base07}"
-        self["library.even.bg"] = "{base01}"
-        self["library.odd.bg"] = "{base01}"
-        self["library.selected.bg"] = "{base0d}"
+        for key, value in DEFAULT_OPTIONS.items():
+            self[key] = value
+        # Add values with alpha channel that require special handling
         self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
-        self["library.selected.fg"] = "{base07}"
-        self["library.search.highlighted.fg"] = "{base01}"
-        self["library.search.highlighted.bg"] = "{base04}"
-        self["library.scrollbar.width"] = "{image.scrollbar.width}"
-        self["library.scrollbar.bg"] = "{image.bg}"
-        self["library.scrollbar.fg"] = "{image.scrollbar.fg}"
-        self["library.scrollbar.padding"] = "{image.scrollbar.padding}"
-        self["library.border"] = "0px solid"
-        # Statusbar
-        self["statusbar.font"] = "{font}"
-        self["statusbar.bg"] = "{base02}"
-        self["statusbar.fg"] = "{base06}"
-        self["statusbar.error"] = "{base08}"
-        self["statusbar.warning"] = "{base09}"
-        self["statusbar.info"] = "{base0c}"
-        self["statusbar.message_border"] = "2px solid"
-        self["statusbar.padding"] = "4"
-        # Thumbnail
-        self["thumbnail.font"] = "{font}"
-        self["thumbnail.fg"] = "{library.fg}"
-        self["thumbnail.bg"] = "{image.bg}"
-        self["thumbnail.padding"] = "20"
-        self["thumbnail.selected.bg"] = "{library.selected.bg}"
-        self["thumbnail.selected.bg.unfocus"] = "{library.selected.bg.unfocus}"
-        self["thumbnail.search.highlighted.bg"] = "{library.search.highlighted.bg}"
-        self["thumbnail.default.bg"] = "{statusbar.info}"
-        self["thumbnail.error.bg"] = "{statusbar.error}"
-        self["thumbnail.frame.fg"] = "{thumbnail.fg}"
-        # Completion
-        self["completion.height"] = "16em"
-        self["completion.fg"] = "{statusbar.fg}"
-        self["completion.even.bg"] = "{statusbar.bg}"
-        self["completion.odd.bg"] = "{statusbar.bg}"
-        self["completion.selected.fg"] = "{library.selected.fg}"
-        self["completion.selected.bg"] = "{library.selected.bg}"
-        # Keyhint
-        self["keyhint.padding"] = "2px"
-        self["keyhint.border_radius"] = "10px"
-        self["keyhint.suffix_color"] = "{base0c}"
-        # Manipulate
-        self["manipulate.fg"] = "{statusbar.fg}"
-        self["manipulate.focused.fg"] = "{base0c}"
-        self["manipulate.bg"] = "{image.bg}"
-        self["manipulate.slider.left"] = "{library.selected.bg}"
-        self["manipulate.slider.handle"] = "{base04}"
-        self["manipulate.slider.right"] = "{statusbar.bg}"
-        # Manipulate image overlay
-        self["manipulate.image.border"] = "2px solid"
-        self["manipulate.image.border.color"] = "{base0c}"
-        # Mark
-        self["mark.color"] = "{base0e}"
-        # Keybindings popup
-        self["keybindings.bindings.color"] = "{keyhint.suffix_color}"
-        self["keybindings.highlight.color"] = "{mark.color}"
-        # Metadata overlay
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
-        self["metadata.padding"] = "{keyhint.padding}"
-        self["metadata.border_radius"] = "{keyhint.border_radius}"
 
     def __setitem__(self, name: str, item: str):
         """Store item automatically surrounding the name with {} if needed."""
