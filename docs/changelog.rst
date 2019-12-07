@@ -22,6 +22,7 @@ Fixed:
 ^^^^^^
 
 * Showing keyhint widget in command mode.
+* Partial matches with special keys such as ``<tab>``.
 
 
 v0.4.1 (2019-12-01)
