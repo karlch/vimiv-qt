@@ -135,7 +135,7 @@ class LazyLogger:
 
     def __init__(self, name, is_module_logger=False):
         self.handlers = []
-        self.level = logging.CRITICAL
+        self.level = logging.WARNING
         self._logger = None
         self._name = name.replace("vimiv.", "") if is_module_logger else name
         if is_module_logger:
