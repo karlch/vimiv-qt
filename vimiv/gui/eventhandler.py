@@ -7,7 +7,7 @@
 """Handles key and mouse events."""
 
 import string
-from typing import Union
+from typing import Union, cast
 
 from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
@@ -28,16 +28,20 @@ class TempKeyStorage(QTimer):
 
     def __init__(self):
         super().__init__()
-        self.text = ""
+        self._keys = []
 
         self.setSingleShot(True)
         self.setInterval(api.settings.keyhint.timeout.value)
         self.timeout.connect(self.on_timeout)
         api.settings.keyhint.timeout.changed.connect(self._on_timeout_changed)
 
-    def add_text(self, text):
+    @property
+    def text(self):
+        return "".join(self._keys)
+
+    def add_key(self, key):
         """Add text to storage."""
-        self.text += text
+        self._keys.append(key)
         if self.isActive():  # Reset timeout
             self.stop()
         self.start()
@@ -45,19 +49,23 @@ class TempKeyStorage(QTimer):
 
     def get_text(self):
         """Get text from storage."""
-        text = self.text
-        self.clear_text()
-        return text
+        return "".join(self.get_keys())
 
-    def clear_text(self):
+    def get_keys(self):
+        """Get tuple of keys from storage."""
+        keys = tuple(self._keys)
+        self.clear()
+        return keys
+
+    def clear(self):
         """Clear storage."""
         self.stop()
-        self.text = ""
+        self._keys.clear()
 
     @utils.slot
     def on_timeout(self):
         """Clear text and update status to remove partial keys from statusbar."""
-        self.clear_text()
+        self.clear()
         api.status.update("timeout keys from temporary key storage")
 
     def _on_timeout_changed(self, value: int):
@@ -75,11 +83,11 @@ class PartialHandler(QObject):
     Signals:
         partial_matches: Emitted when there are partial matches for a keybinding.
             arg1: Prefix for which partial matches exist.
-            arg2: List of partial matches.
+            arg2: Iterable of partial matches.
         partial_cleared: Emitted when the partial matches are cleared.
     """
 
-    partial_matches = pyqtSignal(str, list)
+    partial_matches = pyqtSignal(str, object)
     partial_cleared = pyqtSignal()
 
     def __init__(self):
@@ -90,11 +98,12 @@ class PartialHandler(QObject):
 
     def clear_keys(self):
         """Clear count and partially matched keys."""
-        self.count.clear_text()
-        self.keys.clear_text()
+        self.count.clear()
+        self.keys.clear()
         self.partial_cleared.emit()
 
-    def get_keys(self):
+    @property
+    def text(self):
         return self.count.text + self.keys.text
 
 
@@ -126,7 +135,7 @@ class EventHandlerMixin:
         # Count
         elif keyname and keyname in string.digits and mode != api.modes.COMMAND:
             _logger.debug("KeyPressEvent: adding digits to count")
-            self.partial_handler.count.add_text(keyname)
+            self.partial_handler.count.add_key(keyname)
         elif not self._process_event(keyname, mode=mode):
             super().keyPressEvent(event)  # type: ignore
 
@@ -159,21 +168,21 @@ class EventHandlerMixin:
         mode = api.modes.current() if mode is None else mode
         _logger.debug("EventHandlerMixin: handling %s for mode %s", name, mode.name)
         bindings = api.keybindings.get(mode)
-        name = self.partial_handler.keys.get_text() + name  # Prepend stored keys
+        stored_keys = self.partial_handler.keys.get_keys()
+        match = bindings.match((*stored_keys, name))
         # Complete match => run command
-        if name and name in bindings:
+        if match.is_full_match:
             _logger.debug("EventHandlerMixin: found command for event")
             count = self.partial_handler.count.get_text()
-            command = bindings[name]
+            command = cast(str, match.value)  # Would not be a full match otherwise
             runners.run(command, count=count, mode=mode)
             self.partial_handler.clear_keys()
             return True
         # Partial match => store keys
-        partial_matches = mode != api.modes.COMMAND and bindings.partial_matches(name)
-        if partial_matches:
+        if match.is_partial_match:
             _logger.debug("EventHandlerMixin: event matches bindings partially")
-            self.partial_handler.keys.add_text(name)
-            self.partial_handler.partial_matches.emit(name, partial_matches)
+            self.partial_handler.keys.add_key(name)
+            self.partial_handler.partial_matches.emit(name, match.partial)
             return True
         # Nothing => reset and return False
         _logger.debug("EventHandlerMixin: no matches for event")
@@ -185,7 +194,7 @@ class EventHandlerMixin:
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return EventHandlerMixin.partial_handler.get_keys()
+        return EventHandlerMixin.partial_handler.text
 
 
 def keyevent_to_string(event: QKeyEvent) -> str:

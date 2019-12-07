@@ -103,7 +103,7 @@ class KeybindingsPopUp(PopUp):
         bindings = api.keybindings.get(api.modes.current())
         formatted_bindings = [
             (utils.escape_html(binding), command)
-            for binding, command in sorted(bindings.items(), key=lambda x: x[1])
+            for binding, command in sorted(bindings, key=lambda x: x[1])
         ]
         return utils.split(formatted_bindings, self.column_count)
 

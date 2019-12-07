@@ -33,9 +33,11 @@ earth with ``ge`` we could use::
         print("hello", name)
 """
 
-from typing import Callable, ItemsView, List, Union, Tuple, Iterable
+import functools
+import re
+from typing import Callable, ItemsView, Union, Tuple, Iterable, Iterator
 
-from vimiv.utils import customtypes
+from vimiv.utils import customtypes, trie
 
 from . import commands, modes
 
@@ -56,19 +58,25 @@ def register(
             bind(keybinding, command, mode)
         else:
             for binding in keybinding:
-                bind(binding, command, mode)
+                bind(binding, command, mode, override=False)
         return function
 
     return decorator
 
 
-def bind(keybinding: str, command: str, mode: modes.Mode) -> None:
+def bind(
+    keybinding: str, command: str, mode: modes.Mode, override: bool = True
+) -> None:
     """Store keybinding in registry.
 
     See config/configcommands.bind for the corresponding command.
     """
-    _check_duplicate_binding(keybinding, command, mode)
-    _registry[mode][keybinding] = command
+    # See https://github.com/python/mypy/issues/4975
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+        bindings = _registry[submode]
+        if not override and keybinding in bindings:
+            raise ValueError(f"Duplicate keybinding for '{keybinding}'")
+        bindings[keybinding] = command
 
 
 def unbind(keybinding: str, mode: modes.Mode) -> None:
@@ -76,65 +84,48 @@ def unbind(keybinding: str, mode: modes.Mode) -> None:
 
     See config/configcommands.unbind for the corresponding command.
     """
-    if mode in modes.GLOBALS and keybinding in _registry[modes.GLOBAL]:
-        del _registry[modes.GLOBAL][keybinding]
-    elif keybinding in _registry[mode]:
-        del _registry[mode][keybinding]
-    else:
-        raise commands.CommandError(f"No binding found for '{keybinding}'")
+    # See https://github.com/python/mypy/issues/4975
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+        try:
+            del _registry[submode][keybinding]
+        except KeyError:
+            raise commands.CommandError(f"No binding found for '{keybinding}'")
 
 
-def _check_duplicate_binding(keybinding: str, command: str, mode: modes.Mode) -> None:
-    """Check if a keybinding would override an existing keybinding.
+class _BindingsTrie(trie.Trie):
+    """Trie used for keybindings which ensures valid keysequences for special keys."""
 
-    If an identical keybinding is found, a ValueError is raised.
-    """
-    existing_command = get(mode).get(keybinding)
-    if existing_command is not None:
-        raise ValueError(
-            f"Duplicate keybinding for '{keybinding}', "
-            f"'{command}' overrides '{existing_command}'"
-        )
+    SPECIAL_KEY_RE = re.compile("<.*?>")
 
+    def __setitem__(self, keybinding: str, command: str) -> None:  # type: ignore
+        super().__setitem__(self.keysequence(keybinding), command)
 
-class _Bindings(dict):
-    """Store keybindings of one mode.
+    @classmethod
+    @functools.lru_cache(None)
+    def keysequence(cls, keys: str) -> Tuple[str, ...]:
+        """Split keys into tuple of individual keys handling special keys correctly."""
 
-    Essentially a simple python dictionary which is stored in the module
-    attribute _registry at initialization so it can be accessed with the
-    get(mode) function.
-    """
+        def generator(keys: str) -> Iterator[str]:
+            while keys:
+                special_key_match = cls.SPECIAL_KEY_RE.match(keys)
+                if special_key_match is not None:
+                    special_key = special_key_match.group()
+                    yield special_key
+                    keys = keys[len(special_key) :]
+                else:
+                    yield keys[0]
+                    keys = keys[1:]
 
-    def __add__(self, other: "_Bindings") -> "_Bindings":
-        if not isinstance(other, _Bindings):
-            raise ValueError(
-                f"Cannot add type '{other.__class__.__qualname__}' "
-                f"to '{self.__class__.__qualname__}'"
-            )
-        return _Bindings({**self, **other})
-
-    def partial_matches(self, keys: str) -> List[Tuple[str, str]]:
-        """Check if keys match some of the bindings partially.
-
-        Args:
-            keys: String containing the keynames to check, e.g. "g".
-        Returns:
-            List of partial matches.
-        """
-        if not keys:
-            return []
-        return [binding for binding in self.items() if binding[0].startswith(keys)]
+        return tuple(generator(keys))
 
 
-_registry = {mode: _Bindings() for mode in modes.ALL}
+_registry = {mode: _BindingsTrie() for mode in modes.ALL}
 
 
-def get(mode: modes.Mode) -> _Bindings:
+def get(mode: modes.Mode) -> trie.Trie:
     """Return the keybindings of one specific mode."""
-    if mode in modes.GLOBALS:
-        return _registry[modes.GLOBAL] + _registry[mode]
     return _registry[mode]
 
 
-def items() -> ItemsView[modes.Mode, _Bindings]:
+def items() -> ItemsView[modes.Mode, trie.Trie]:
     return _registry.items()

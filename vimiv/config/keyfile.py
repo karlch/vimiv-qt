@@ -41,7 +41,7 @@ def get_default_parser() -> configparser.ConfigParser:
     parser.add_section("COMMAND")
     # Add default bindings
     for mode, bindings in api.keybindings.items():
-        for binding, command in bindings.items():
+        for binding, command in bindings:
             parser[mode.name.upper()][binding] = command.replace("%", "%%")
     return parser
 
@@ -51,12 +51,20 @@ def read(path: str) -> None:
     _logger.debug("Reading keybindings from '%s'", path)
     parser = KeyfileParser()
     read_log_exception(parser, _logger, path)
-    for mode, bindings in api.keybindings.items():
+    for section in parser.sections():
         try:
-            section = parser[mode.name.upper()]
-            _update_bindings(bindings, section)
-        except KeyError:
-            _logger.debug("Missing section '%s' in keys.conf", mode.name.upper())
+            _logger.debug("Reading keybindings from section '%s'", section)
+            mode = api.modes.get_by_name(section)
+            for keybinding, command in parser[section].items():
+                api.keybindings.bind(keybinding, command, mode)
+                _logger.debug(
+                    "Read keybinding '%s': '%s' for mode '%s'",
+                    keybinding,
+                    command,
+                    mode.name,
+                )
+        except api.modes.InvalidMode:
+            _logger.warning("Ignoring bindings for unknown '%s' mode", section)
     _logger.debug("Read keybindings from '%s'", path)
 
 
@@ -69,23 +77,3 @@ class KeyfileParser(configparser.ConfigParser):
     def optionxform(self, optionstr):
         """Override so the parser becomes case sensitive."""
         return optionstr
-
-
-def _update_bindings(bindings, section):
-    """Update keybindings dictionary with values from config section.
-
-    The section corresponds to one mode and the bindings dictionary is the
-    corresponding dictionary.
-
-    Args:
-        bindings: The keybindings dictionary to update.
-        section: Section in keys.conf file to read keysbindings from.
-    """
-    for keybinding, command in section.items():
-        bindings[keybinding] = command
-        _logger.debug(
-            "Read keybinding '%s': '%s' for mode '%s'",
-            keybinding,
-            command,
-            section.name,
-        )

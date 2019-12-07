@@ -6,9 +6,9 @@
 
 """Widget to display partial matches above the statusbar."""
 
-from typing import List, Tuple
+from typing import Iterator, Tuple
 
-from PyQt5.QtCore import pyqtSlot, QTimer, Qt
+from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
@@ -71,8 +71,7 @@ class KeyhintWidget(QLabel):
         y = self._mainwindow_bottom - self.height()
         self.setGeometry(0, y, self.width(), self.height())
 
-    @pyqtSlot(str, list)
-    def _on_partial_matches(self, prefix: str, matches: List[Tuple[str, str]]):
+    def _on_partial_matches(self, prefix: str, matches: Iterator[Tuple[str, str]]):
         """Initialize widget when partial matches exist.
 
         Args:
