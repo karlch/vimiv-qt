@@ -47,13 +47,13 @@ def cleanup_helper():
     before running tests.
     """
 
-    def cleanup(init_dict):
+    def cleanup(init_dict, keyupdate=lambda x: x):
         init_content = {key: dict(value) for key, value in init_dict.items()}
         yield
         new_content = {key: dict(value) for key, value in init_dict.items()}
         for key, valuedict in new_content.items():
             for elem in valuedict:
                 if elem not in init_content[key]:
-                    del init_dict[key][elem]
+                    del init_dict[key][keyupdate(elem)]
 
     return cleanup

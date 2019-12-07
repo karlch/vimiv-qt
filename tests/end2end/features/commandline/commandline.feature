@@ -30,6 +30,13 @@ Feature: Use the command line.
         And I run history next
         Then the text in the command line should be :next
 
+    Scenario: Press through history completion
+        When I run command --text=next
+        And I activate the command line
+        And I run command
+        And I press <ctrl>p
+        Then the text in the command line should be :next
+
     Scenario: Use history substring search
         When I run command --text=next
         And I activate the command line

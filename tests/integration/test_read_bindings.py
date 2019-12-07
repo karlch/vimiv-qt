@@ -27,7 +27,9 @@ UPDATED_BINDINGS = {
 @pytest.fixture(autouse=True)
 def reset_to_default(cleanup_helper):
     """Fixture to ensure everything is reset to default after testing."""
-    yield from cleanup_helper(api.keybindings._registry)
+    yield from cleanup_helper(
+        api.keybindings._registry, keyupdate=api.keybindings._BindingsTrie.keysequence
+    )
     api.settings.reset()
 
 
@@ -48,4 +50,7 @@ def test_read_bindings(keyspath):
     for modename, content in UPDATED_BINDINGS.items():
         mode = api.modes.get_by_name(modename.lower())
         for binding, command in content.items():
-            assert api.keybindings._registry[mode][binding] == command
+            keysequence = api.keybindings._BindingsTrie.keysequence(binding)
+            modes = api.modes.GLOBALS if mode == api.modes.GLOBAL else (mode,)
+            for mode in modes:
+                assert api.keybindings._registry[mode][keysequence].value == command

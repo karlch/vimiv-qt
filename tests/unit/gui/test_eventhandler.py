@@ -15,84 +15,67 @@ from vimiv.gui import eventhandler
 
 
 @pytest.fixture()
-def storage():
+def storage(qtbot):
     yield eventhandler.TempKeyStorage()
 
 
-def test_temp_key_storage_add_and_get_text(storage, mocker):
-    storage.add_text("a")
-    storage.add_text("1")
-    assert storage.get_text() == "a1"
+def test_temp_key_storage_add_keys(storage, mocker):
+    storage.add_keys("a")
+    storage.add_keys("1")
+    assert storage.text == "a1"
+
+
+def test_temp_key_storage_get_keys(storage, mocker):
+    keys = ("a", "1")
+    for key in keys:
+        storage.add_keys(key)
+    assert storage.get_keys() == keys
+    assert not storage.text  # Getting should clear
 
 
 def test_temp_key_storage_clears_text(storage, mocker, qtbot):
     storage.setInterval(1)  # We do not want to wait 2s in test
     with qtbot.waitSignal(storage.timeout, timeout=5):
-        storage.add_text("g")
+        storage.add_keys("g")
     assert storage.get_text() == ""
 
 
-def test_keyevent_to_string_for_lowercase_letter():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.NoModifier, "a")
-    assert eventhandler.keyevent_to_string(event) == "a"
+@pytest.mark.parametrize(
+    "qtkey, modifier, keyname, expected",
+    [
+        (Qt.Key_A, Qt.NoModifier, "a", ("a",)),
+        (Qt.Key_A, Qt.ShiftModifier, "A", ("A",)),
+        (Qt.Key_Tab, Qt.NoModifier, "\t", ("<tab>",)),
+        (Qt.Key_Tab, Qt.ShiftModifier, "\t", ("<shift>", "<tab>")),
+        (Qt.Key_A, Qt.ControlModifier, "a", ("<ctrl>", "a")),
+        (Qt.Key_A, Qt.AltModifier, "a", ("<alt>", "a")),
+        (Qt.Key_A, Qt.AltModifier | Qt.ControlModifier, "a", ("<ctrl>", "<alt>", "a")),
+        (Qt.Key_Colon, Qt.NoModifier, ":", ("<colon>",)),
+    ],
+)
+def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):
+    event = QKeyEvent(QEvent.KeyPress, qtkey, modifier, keyname)
+    assert eventhandler.keyevent_to_sequence(event) == expected
 
 
-def test_keyevent_to_string_for_uppercase_letter():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.ShiftModifier, "A")
-    assert eventhandler.keyevent_to_string(event) == "A"
-
-
-def test_keyevent_to_string_for_special_key():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_Tab, Qt.NoModifier, "\t")
-    assert eventhandler.keyevent_to_string(event) == "<tab>"
-
-
-def test_keyevent_to_string_for_special_key_with_shift():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_Tab, Qt.ShiftModifier, "\t")
-    assert eventhandler.keyevent_to_string(event) == "<shift><tab>"
-
-
-def test_keyevent_to_string_for_control_modifier_and_letter():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.ControlModifier, "a")
-    assert eventhandler.keyevent_to_string(event) == "<ctrl>a"
-
-
-def test_keyevent_to_string_for_alt_modifier_and_letter():
-    event = QKeyEvent(
-        QEvent.KeyPress, Qt.Key_A, Qt.AltModifier | Qt.ControlModifier, "a"
-    )
-    assert eventhandler.keyevent_to_string(event) == "<ctrl><alt>a"
-
-
-def test_keyevent_to_string_for_control_alt_modifier_and_letter():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_A, Qt.AltModifier, "a")
-    assert eventhandler.keyevent_to_string(event) == "<alt>a"
-
-
-def test_keyevent_to_string_for_only_modifier():
+def test_keyevent_to_sequence_for_only_modifier():
     with pytest.raises(ValueError):
         event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
-        eventhandler.keyevent_to_string(event) == ""
+        eventhandler.keyevent_to_sequence(event) == tuple()
 
 
-def test_keyevent_to_string_for_colon():
-    event = QKeyEvent(QEvent.KeyPress, Qt.Key_Colon, Qt.NoModifier, ":")
-    assert eventhandler.keyevent_to_string(event) == "<colon>"
-
-
-def test_mouse_event_to_string():
-    event = _create_mouse_event(Qt.LeftButton)
-    assert eventhandler.mouseevent_to_string(event) == "<button-left>"
-
-
-def test_mouse_event_to_string_unnamed_button():
-    event = _create_mouse_event(Qt.ExtraButton7)
-    assert eventhandler.mouseevent_to_string(event) == f"<button-{Qt.ExtraButton7:d}>"
-
-
-def test_mouse_event_to_string_with_modifier():
-    event = _create_mouse_event(Qt.LeftButton, Qt.ControlModifier)
-    assert eventhandler.mouseevent_to_string(event) == "<ctrl><button-left>"
+@pytest.mark.parametrize(
+    "qtbutton, modifier, expected",
+    [
+        (Qt.LeftButton, Qt.NoModifier, ("<button-left>",)),
+        (Qt.MiddleButton, Qt.NoModifier, ("<button-middle>",)),
+        (Qt.RightButton, Qt.NoModifier, ("<button-right>",)),
+        (Qt.LeftButton, Qt.ControlModifier, ("<ctrl>", "<button-left>",)),
+    ],
+)
+def test_mouse_event_to_sequence(qtbutton, modifier, expected):
+    event = _create_mouse_event(qtbutton, modifier=modifier)
+    assert eventhandler.mouseevent_to_sequence(event) == expected
 
 
 def _create_mouse_event(button, modifier=Qt.NoModifier):

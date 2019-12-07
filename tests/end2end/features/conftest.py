@@ -75,6 +75,17 @@ def key_press(qtbot, keys):
     qtbot.keyClicks(mode.widget, keys)
 
 
+@bdd.when(bdd.parsers.parse("I press <{modifier}>{keys}"))
+def key_press_modifier(qtbot, keys, modifier):
+    modifiers = {
+        "ctrl": Qt.ControlModifier,
+        "alt": Qt.AltModifier,
+        "shift": Qt.ShiftModifier,
+    }
+    mode = api.modes.current()
+    qtbot.keyClicks(mode.widget, keys, modifier=modifiers[modifier])
+
+
 @bdd.when("I activate the command line")
 def activate_commandline(commandline, qtbot):
     """Needed as passing return as a string is not possible."""
