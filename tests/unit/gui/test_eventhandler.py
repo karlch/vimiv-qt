@@ -15,20 +15,28 @@ from vimiv.gui import eventhandler
 
 
 @pytest.fixture()
-def storage():
+def storage(qtbot):
     yield eventhandler.TempKeyStorage()
 
 
-def test_temp_key_storage_add_and_get_text(storage, mocker):
-    storage.add_text("a")
-    storage.add_text("1")
-    assert storage.get_text() == "a1"
+def test_temp_key_storage_add_keys(storage, mocker):
+    storage.add_key("a")
+    storage.add_key("1")
+    assert storage.text == "a1"
+
+
+def test_temp_key_storage_get_keys(storage, mocker):
+    keys = ("a", "1")
+    for key in keys:
+        storage.add_key(key)
+    assert storage.get_keys() == keys
+    assert not storage.text  # Getting should clear
 
 
 def test_temp_key_storage_clears_text(storage, mocker, qtbot):
     storage.setInterval(1)  # We do not want to wait 2s in test
     with qtbot.waitSignal(storage.timeout, timeout=5):
-        storage.add_text("g")
+        storage.add_key("g")
     assert storage.get_text() == ""
 
 

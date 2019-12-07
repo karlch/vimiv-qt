@@ -12,29 +12,30 @@ from vimiv import api
 
 
 def test_add_keybinding():
-    @api.keybindings.register("t1", "test")
+    @api.keybindings.register("t1", "test", mode=api.modes.IMAGE)
     def test():
         pass
 
-    bindings = api.keybindings.get(api.modes.GLOBAL)
-    assert ("t1", "test") in bindings.items()
+    bindings = api.keybindings.get(api.modes.IMAGE)
+    assert bindings["t1"].value == "test"
     del bindings["t1"]
 
 
 def test_add_multiple_keybindings():
-    @api.keybindings.register(["t1", "t2"], "test")
+    @api.keybindings.register(("t1", "t2"), "test", mode=api.modes.IMAGE)
     def test():
         pass
 
-    bindings = api.keybindings.get(api.modes.GLOBAL)
-    assert ("t1", "test") in bindings.items()
-    assert ("t2", "test") in bindings.items()
+    bindings = api.keybindings.get(api.modes.IMAGE)
+    assert bindings["t1"].value == "test"
+    assert bindings["t2"].value == "test"
     del bindings["t1"]
     del bindings["t2"]
 
 
 def test_bind_unbind_keybinding():
     api.keybindings.bind("t2", "test", api.modes.IMAGE)
-    assert ("t2", "test") in api.keybindings.get(api.modes.IMAGE).items()
+    bindings = api.keybindings.get(api.modes.IMAGE)
+    assert bindings["t2"].value == "test"
     api.keybindings.unbind("t2", api.modes.IMAGE)
-    assert ("t2", "test") not in api.keybindings.get(api.modes.IMAGE).items()
+    assert "t2" not in bindings
