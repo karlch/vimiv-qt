@@ -14,9 +14,7 @@ from vimiv import api
 @pytest.fixture(autouse=True)
 def reset_to_default(cleanup_helper):
     """Fixture to ensure everything is reset to default after testing."""
-    yield from cleanup_helper(
-        api.keybindings._registry, keyupdate=api.keybindings._BindingsTrie.keysequence
-    )
+    yield from cleanup_helper(api.keybindings._registry)
     api.settings.reset()
 
 

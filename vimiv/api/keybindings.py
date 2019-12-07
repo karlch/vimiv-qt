@@ -100,6 +100,17 @@ class _BindingsTrie(trie.Trie):
     def __setitem__(self, keybinding: str, command: str) -> None:  # type: ignore
         super().__setitem__(self.keysequence(keybinding), command)
 
+    def __getitem__(self, keybinding: Iterable[str]) -> trie.Trie:
+        if isinstance(keybinding, str):
+            return super().__getitem__(self.keysequence(keybinding))
+        return super().__getitem__(keybinding)
+
+    def __delitem__(self, keybinding: Iterable[str]) -> None:
+        if isinstance(keybinding, str):
+            super().__delitem__(self.keysequence(keybinding))
+        else:
+            super().__delitem__(keybinding)
+
     @classmethod
     @functools.lru_cache(None)
     def keysequence(cls, keys: str) -> Tuple[str, ...]:
