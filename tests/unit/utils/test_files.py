@@ -6,12 +6,34 @@
 
 """Tests for vimiv.utils.files."""
 
+import imghdr
 import os
 import tarfile
+
+from PyQt5.QtGui import QImageReader
 
 import pytest
 
 from vimiv.utils import files
+
+
+SUPPORTED_IMAGE_FORMATS = ["jpg", "png", "gif", "svg", "cr2"]
+
+
+@pytest.fixture()
+def mockimghdr(mocker):
+    """Fixture to mock imghdr.tests and QImageReader supportedImageFormats."""
+    mocker.patch.object(
+        QImageReader, "supportedImageFormats", return_value=SUPPORTED_IMAGE_FORMATS
+    )
+    yield mocker.patch("imghdr.tests", [])
+
+
+@pytest.fixture()
+def tmpfile(tmpdir):
+    path = tmpdir.join("anything")
+    path.write("")
+    yield str(path)
 
 
 def test_listdir_wrapper(mocker):
@@ -125,3 +147,21 @@ def test_listfiles(tmpdir):
         os.path.join("sub1", "file0"),
     ]
     assert sorted(expected) == sorted(files.listfiles(str(tmpdir)))
+
+
+@pytest.mark.parametrize("name", SUPPORTED_IMAGE_FORMATS)
+def test_add_supported_format(mockimghdr, tmpfile, name):
+    files.add_image_format(name, _test_dummy)
+    assert mockimghdr, "No test added by add image format"
+    assert imghdr.what(tmpfile) == name
+
+
+def test_add_unsupported_format(mockimghdr, tmpfile):
+    files.add_image_format("not_a_format", _test_dummy)
+    assert imghdr.what(tmpfile) is None
+    assert not mockimghdr, "Unsupported test not removed"
+
+
+def _test_dummy(h, f):
+    """Dummy image file test that always returns True."""
+    return True

@@ -7,14 +7,11 @@
 """Functions dealing with files and paths."""
 
 import imghdr
+import functools
 import os
-from typing import List, Tuple, Optional, BinaryIO, Iterable
+from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
-# We need the check as svg support is optional
-try:
-    from PyQt5.QtSvg import QSvgWidget
-except ImportError:
-    QSvgWidget = None
+from PyQt5.QtGui import QImageReader
 
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
@@ -140,15 +137,43 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
     ]
 
 
-# Only add svg check to imghdr if svg available
-if QSvgWidget is not None:
+def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> None:
+    """Add a new image format to the checks performed in is_image.
 
-    def _test_svg(first_bytes: bytes, _reader: BinaryIO) -> Optional[str]:
-        """Check if an opened file is a svg.
+    To add a new image format:
+        1) Implement the check function. It receives the first 32 bytes of the file as
+           first argument and the open bytes file reader as second argument. Usually you
+           will want to look for specific bytes in first argument. The function must
+           return the boolean value indicating if the checked file is of this format or
+           not.
+        2) Call this function with the name of the new format as given by
+           QImageReader.supportedImageFormats() and your check function.
 
-        Appended to imghdr.tests to detect vector graphics.
-        """
-        return "svg" if _svg_encoding in first_bytes else None
+    Args:
+        name: Name of the image format, e.g. "svg".
+        check: Function used to determine if the file is of this format.
+    """
 
-    _svg_encoding = "<?xml".encode("utf-8")
-    imghdr.tests.append(_test_svg)
+    @functools.wraps(check)
+    def test(h: bytes, f: BinaryIO) -> Optional[str]:
+        if check(h, f):
+            if hasattr(test, "checked"):
+                return name
+            if name in QImageReader.supportedImageFormats():
+                setattr(test, "checked", True)
+                return name
+            imghdr.tests.remove(test)
+        return None
+
+    imghdr.tests.insert(add_image_format.index, test)  # type: ignore
+    add_image_format.index += 1  # type: ignore
+
+
+add_image_format.index = 3  # type: ignore  # Start inserting after jpg, png and gif
+
+
+def test_svg(h: bytes, _f: BinaryIO) -> bool:
+    return b"<?xml" in h
+
+
+add_image_format("svg", test_svg)
