@@ -79,7 +79,10 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Plugins</a></li>
+<li><a class="reference internal" href="#">Plugins</a><ul>
+<li><a class="reference internal" href="#imageformats">imageformats</a></li>
+</ul>
+</li>
 </ul>
 </ul>
 </li>
@@ -136,11 +139,24 @@ plugins that can be activated:</p>
 <tr class="row-even"><td><p>demo</p></td>
 <td><p>Simple hello world greeting as example plugin</p></td>
 </tr>
-<tr class="row-odd"><td><p>print</p></td>
+<tr class="row-odd"><td><p>imageformats</p></td>
+<td><p>Plugin enabling support for additional image formats</p></td>
+</tr>
+<tr class="row-even"><td><p>print</p></td>
 <td><p>Plugin enabling print support</p></td>
 </tr>
 </tbody>
 </table>
+<div class="section" id="imageformats">
+<h2>imageformats<a class="headerlink" href="#imageformats" title="Permalink to this headline">¶</a></h2>
+<p>Activate this plugin by adding <code class="docutils literal notranslate"><span class="pre">imageformats</span> <span class="pre">=</span> <span class="pre">name,</span> <span class="pre">...</span></code> to the plugins section of
+your <code class="docutils literal notranslate"><span class="pre">vimiv.conf</span></code>. Here <code class="docutils literal notranslate"><span class="pre">name,</span> <span class="pre">...</span></code> consists of the names of the image formats to
+add separated by a comma.</p>
+<p>Currently the following formats are supported:</p>
+<ul class="simple">
+<li><p>cr2 (requires <a class="reference external" href="https://gitlab.com/mardy/qtraw">qt raw</a>)</p></li>
+</ul>
+</div>
 </div>
 
 
