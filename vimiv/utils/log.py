@@ -40,7 +40,7 @@ Three log handlers are currently used:
 """
 
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -104,10 +104,10 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     # Configure app logger
     _app_logger.level = level
     _app_logger.handlers = [file_handler, console_handler, statusbar_loghandler]
+    LazyLogger.handlers = [console_handler, file_handler]
     # Setup debug logging for specific module loggers
     for name, logger in _module_loggers.items():
         logger.level = logging.DEBUG if name in debug_modules else level
-        logger.handlers = [console_handler, file_handler]
 
 
 def module_logger(name: str) -> "LazyLogger":
@@ -133,8 +133,9 @@ class LazyLogger:
     is-needed basis.
     """
 
+    handlers: List[logging.Handler] = []
+
     def __init__(self, name, is_module_logger=False):
-        self.handlers = []
         self.level = logging.WARNING
         self._logger = None
         self._name = name.replace("vimiv.", "") if is_module_logger else name
