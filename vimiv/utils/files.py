@@ -140,15 +140,6 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
 def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> None:
     """Add a new image format to the checks performed in is_image.
 
-    To add a new image format:
-        1) Implement the check function. It receives the first 32 bytes of the file as
-           first argument and the open bytes file reader as second argument. Usually you
-           will want to look for specific bytes in first argument. The function must
-           return the boolean value indicating if the checked file is of this format or
-           not.
-        2) Call this function with the name of the new format as given by
-           QImageReader.supportedImageFormats() and your check function.
-
     Args:
         name: Name of the image format, e.g. "svg".
         check: Function used to determine if the file is of this format.

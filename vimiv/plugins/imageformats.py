@@ -12,6 +12,18 @@ Activate it by adding::
 
 to the plugins section of your ``vimiv.conf``. Here name is the name of the format as
 defined by QImageReader.supportedFormats() and as listed in the FORMATS dictionary.
+
+To implement a new format::
+
+    1) Implement the test function. It receives the first 32 bytes of the file as
+       first argument and the open bytes file reader as second argument. Usually you
+       will want to look for specific bytes in first argument. The function must
+       return the boolean value indicating if the checked file is of this format or
+       not.
+
+    2) Extend the FORMATS dictionary with your format name as key and the test function
+       as value. Note that the format name must be the one given by
+       ``QImageReader.supportedImageFormats()``.
 """
 
 from typing import Any, BinaryIO
