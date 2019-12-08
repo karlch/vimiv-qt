@@ -24,3 +24,14 @@ In addition to plugins that can be added by the user, vimiv ships with a few def
 plugins that can be activated:
 
 .. include:: default_plugins.rstsrc
+
+imageformats
+^^^^^^^^^^^^
+
+Activate this plugin by adding ``imageformats = name, ...`` to the plugins section of
+your ``vimiv.conf``. Here ``name, ...`` consists of the names of the image formats to
+add separated by a comma.
+
+Currently the following formats are supported:
+
+* cr2 (requires `qt raw <https://gitlab.com/mardy/qtraw>`_)

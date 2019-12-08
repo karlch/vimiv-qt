@@ -19,3 +19,8 @@ Feature: Plugin system with default plugins
         Given I open any image
         When I run print --preview
         Then the pop up 'Print Preview' should be displayed
+
+    Scenario: Load cr2 support
+        Given I start vimiv
+        When I load the imageformats plugin with cr2
+        Then the cr2 format should be supported

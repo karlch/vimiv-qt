@@ -12,6 +12,11 @@ Added:
 * Basic support for binding mouse clicks and double clicks to commands. The relevant
   names are ``<button-NAME>`` and ``<double-button-NAME>``. Here ``NAME`` stands for the
   name of the mouse button to bind, e.g. ``left``, ``middle`` or ``right``.
+* New ``imageformats`` plugin to ease adding support for additional image formats.
+  Activate it by adding ``imageformats = name, ...`` to the plugins section of your
+  ``vimiv.conf``. Here ``name, ...`` consists of the names of the image formats to add
+  separated by a comma. Currently only the ``cr2`` raw format is implemented which
+  requires `qt raw <https://gitlab.com/mardy/qtraw>`_.
 
 Changed:
 ^^^^^^^^
