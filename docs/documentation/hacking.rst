@@ -67,7 +67,30 @@ to debug individual modules, e.g. ``--debug config.configfile``.
 Tests and Checkers
 ------------------
 
-TODO Write this once the testing routine has stabilized
+Vimiv runs it's tests using
+`tox <https://tox.readthedocs.io/en/latest/>`_. There are various different
+environments:
+
+* The standard test environment using
+  `pytest <https://docs.pytest.org/en/latest/>`_. Run it with the corresponding PyQt
+  version using e.g.::
+        tox -e pyqt513
+* A linting environment to check the code quality and style using
+  `pylint <https://www.pylint.org/>`_,
+  `pycodestyle <http://pycodestyle.pycqa.org/en/latest/>`_ and
+  `pydocstyle <http://www.pydocstyle.org/>`_. Run it with::
+        tox -e lint
+* An environment to check the package for best-practices and completeness using
+  `pyroma <https://github.com/regebro/pyroma>`_ and
+  `check-manifest <https://github.com/mgedmin/check-manifest>`_.
+  It can be run with::
+        tox -e packaging
+* The `mypy <http://www.mypy-lang.org/>`_ environment for static type checking launched
+  with::
+        tox -e mypy
+
+In case you don't want to run any of the checkers locally, you can just wait for the CI
+to run them. This is much slower and less direct though.
 
 
 Style and Formatting
@@ -85,8 +108,6 @@ is done using::
 
 For more information on the formatter as well as a few useful tips, visit
 `the project's github page <https://github.com/ambv/black>`_.
-
-TODO docstrings
 
 .. _writing_plugins:
 
