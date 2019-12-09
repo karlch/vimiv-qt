@@ -72,9 +72,9 @@ Vimiv runs it's tests using
 environments:
 
 * The standard test environment using
-  `pytest <https://docs.pytest.org/en/latest/>`_. Run it with the corresponding PyQt
-  version using e.g.::
-        tox -e pyqt513
+  `pytest <https://docs.pytest.org/en/latest/>`_. To run it with the latest PyQt
+  version, use::
+        tox -e pyqt
 * A linting environment to check the code quality and style using
   `pylint <https://www.pylint.org/>`_,
   `pycodestyle <http://pycodestyle.pycqa.org/en/latest/>`_ and
