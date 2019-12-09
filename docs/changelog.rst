@@ -17,6 +17,7 @@ Added:
   ``vimiv.conf``. Here ``name, ...`` consists of the names of the image formats to add
   separated by a comma. Currently only the ``cr2`` raw format is implemented which
   requires `qt raw <https://gitlab.com/mardy/qtraw>`_.
+* Path completion for the ``:mark`` command.
 
 Changed:
 ^^^^^^^^

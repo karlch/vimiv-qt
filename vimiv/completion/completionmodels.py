@@ -298,11 +298,11 @@ def init():
     Empty()
     CommandModel()
     ExternalCommandModel()
-    PathModel("open")
-    PathModel("delete")
     SettingsModel()
     for _, setting in api.settings.items():
         SettingsOptionModel(setting)
+    for command in ("open", "delete", "mark"):
+        PathModel(command)
     for suffix in ("delete", "load", "write"):
         TagModel(suffix)
     TrashModel()
