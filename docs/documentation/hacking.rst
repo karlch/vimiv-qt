@@ -74,19 +74,26 @@ environments:
 * The standard test environment using
   `pytest <https://docs.pytest.org/en/latest/>`_. To run it with the latest PyQt
   version, use::
+
         tox -e pyqt
+
 * A linting environment to check the code quality and style using
   `pylint <https://www.pylint.org/>`_,
   `pycodestyle <http://pycodestyle.pycqa.org/en/latest/>`_ and
   `pydocstyle <http://www.pydocstyle.org/>`_. Run it with::
+
         tox -e lint
+
 * An environment to check the package for best-practices and completeness using
   `pyroma <https://github.com/regebro/pyroma>`_ and
   `check-manifest <https://github.com/mgedmin/check-manifest>`_.
   It can be run with::
+
         tox -e packaging
+
 * The `mypy <http://www.mypy-lang.org/>`_ environment for static type checking launched
   with::
+
         tox -e mypy
 
 In case you don't want to run any of the checkers locally, you can just wait for the CI
