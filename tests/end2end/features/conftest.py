@@ -59,6 +59,34 @@ def image():
     yield vimiv.gui.image.ScrollableImage.instance
 
 
+class Counter:
+    """Counter class with the count command for simple testing of commands.
+
+    Sole purpose is to provide a command whose result, namely increasing the number, is
+    easily testable without depending on other vimiv features or commands. The number is
+    stored as class attribute to avoid having to deal with class instances in the object
+    registry.
+    """
+
+    number = 0
+
+    def __init__(self):
+        """Reset number when a new instance is created."""
+        Counter.number = 0
+
+    @staticmethod
+    @api.commands.register()
+    def count(number: int = 1, count: int = 1):
+        """Helper command to increase a counter used for testing."""
+        Counter.number += number * count
+
+
+@pytest.fixture(autouse=True)
+def counter():
+    """Fixture to provide a clean counter class with the count command."""
+    yield Counter()
+
+
 ###############################################################################
 #                                    When                                     #
 ###############################################################################
@@ -267,3 +295,8 @@ def check_directory_exists(name):
 @bdd.then(bdd.parsers.parse("the directory {name} should not exist"))
 def check_not_directory_exists(name):
     assert not os.path.isdir(name)
+
+
+@bdd.then(bdd.parsers.parse("the count should be {number:d}"))
+def check_count(counter, number):
+    assert counter.number == number
