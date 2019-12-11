@@ -62,3 +62,18 @@ img {
     background-color: #1F7DE6;
   }
 }
+
+/* Change info box color from purple to dark blue */
+.alert-info {
+    background-color: #1861B3;
+    color: #FFFFFF;
+}
+
+.alert-info a {
+    color: #999999;
+}
+
+.alert-info a:hover {
+    color: #BBBBBB;
+    text-decoration: underline;
+}
