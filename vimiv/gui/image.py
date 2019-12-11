@@ -246,7 +246,12 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     ):
         """Scale image so it fits the widget size.
 
+        The function is used to fit the image completely or only according to one of the
+        dimensions if either width or height remain None.
+
         Args:
+            width: Width of the image to consider if any.
+            height: Height of the image to consider if any.
             limit: Largest scale to apply trying to fit the widget size.
         """
         if self.scene() is None:

@@ -155,6 +155,7 @@ class ImageFileHandler(QObject):
 
         Args:
             path: Path to the image file.
+            parallel: Write the image in an additional thread.
         """
         if not api.settings.image.autowrite:
             self._reset()

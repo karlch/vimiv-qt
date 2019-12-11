@@ -361,10 +361,10 @@ class LibraryModel(QStandardItemModel):
         """Store list of indices to highlight on new search.
 
         Args:
-            index: Index to select.
+            _index: Index to select.
             matches: List of all matches of the search.
             mode: Mode for which the search was performed.
-            incremental: True if incremental search was performed.
+            _incremental: True if incremental search was performed.
         """
         if mode == api.modes.LIBRARY:
             self._highlighted = [

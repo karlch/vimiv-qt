@@ -65,9 +65,6 @@ class Search(QObject):
 
         This method is called from the command line and stores text and reverse
         for the search-next and search-prev commands.
-
-        Args:
-            text: The string to search for.
         """
         self._text = text
         self._reverse = reverse
