@@ -104,7 +104,7 @@ html_static_path = ["_static"]
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_logo = "_static/vimiv/vimiv.png"
+html_logo = "_static/vimiv/vimiv.svg"
 html_theme_options = {
     "bootswatch_theme": "cosmo",
     "navbar_title": "vimiv",
