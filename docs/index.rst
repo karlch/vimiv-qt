@@ -10,7 +10,7 @@
     there are already many improvements compared to the `gtk version
     <https://github.com/karlch/vimiv>`_. The old version is only recommended if you
     require a more stable software. In case there is anything you miss here, please
-    `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_. Check the
+    open an `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_. Check the
     :ref:`roadmap` for more details.
 
 .. include:: description.rst
