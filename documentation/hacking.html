@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hacking the Code &#8212; vimiv  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/vimiv.svg"></span>
+          vimiv</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Docs</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../changelog.html">Changelog</a></li>
+                <li><a href="contributing.html">Contributing</a></li>
+                <li><a href="https://github.com/karlch/vimiv-qt">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../roadmap.html">Roadmap</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../screenshots.html">Screenshots</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Hacking the Code</a><ul>
+<li><a class="reference internal" href="#getting-the-source-code">Getting the Source Code</a></li>
+<li><a class="reference internal" href="#submitting-changes">Submitting Changes</a></li>
+<li><a class="reference internal" href="#running-the-development-version">Running the Development Version</a></li>
+<li><a class="reference internal" href="#tests-and-checkers">Tests and Checkers</a></li>
+<li><a class="reference internal" href="#style-and-formatting">Style and Formatting</a></li>
+<li><a class="reference internal" href="#writing-plugins">Writing Plugins</a></li>
+<li><a class="reference internal" href="#source-code-hints">Source Code Hints</a><ul>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#module-vimiv.api">API Documentation</a><ul>
+<li><a class="reference internal" href="#module-vimiv.api.objreg">The Object Registry</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.modes">Modes</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.commands">Commands</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.keybindings">Keybindings</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.status">Status Modules</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.completion">Completion</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.working_directory">Working Directory</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a><ul>
+<li><a class="reference internal" href="#the-image-loading-process">The Image Loading Process</a></li>
+<li><a class="reference internal" href="#image-editing-modules">Image Editing Modules</a></li>
+<li><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension">Adding New Manipulations to the C-Extension</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="hacking-the-code">
+<span id="hacking"></span><h1><a class="toc-backref" href="#id3">Hacking the Code</a><a class="headerlink" href="#hacking-the-code" title="Permalink to this headline">¶</a></h1>
+<p>This page contains some guidelines as well as a few tips on how to get started with the
+source code. If you feel like relevant information is missing, please open an
+<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a>.</p>
+<p>If any of the following recommendations would stop you from contributing,
+please ignore them and contribute anyway. This is meant as help, not as show stopper!</p>
+<p>In case you have questions, feel free to <a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">contact me directly</a>
+or open an
+<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a>.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#hacking-the-code" id="id3">Hacking the Code</a></p>
+<ul>
+<li><p><a class="reference internal" href="#getting-the-source-code" id="id4">Getting the Source Code</a></p></li>
+<li><p><a class="reference internal" href="#submitting-changes" id="id5">Submitting Changes</a></p></li>
+<li><p><a class="reference internal" href="#running-the-development-version" id="id6">Running the Development Version</a></p></li>
+<li><p><a class="reference internal" href="#tests-and-checkers" id="id7">Tests and Checkers</a></p></li>
+<li><p><a class="reference internal" href="#style-and-formatting" id="id8">Style and Formatting</a></p></li>
+<li><p><a class="reference internal" href="#writing-plugins" id="id9">Writing Plugins</a></p></li>
+<li><p><a class="reference internal" href="#source-code-hints" id="id10">Source Code Hints</a></p>
+<ul>
+<li><p><a class="reference internal" href="#logging" id="id11">Logging</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api" id="id12">API Documentation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#module-vimiv.api.objreg" id="id13">The Object Registry</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.modes" id="id14">Modes</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.commands" id="id15">Commands</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.keybindings" id="id16">Keybindings</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.status" id="id17">Status Modules</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.completion" id="id18">Completion</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.working_directory" id="id19">Working Directory</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#module-vimiv.imutils" id="id20">Imutils Module</a></p>
+<ul>
+<li><p><a class="reference internal" href="#the-image-loading-process" id="id21">The Image Loading Process</a></p></li>
+<li><p><a class="reference internal" href="#image-editing-modules" id="id22">Image Editing Modules</a></p></li>
+<li><p><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension" id="id23">Adding New Manipulations to the C-Extension</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="getting-the-source-code">
+<h2><a class="toc-backref" href="#id4">Getting the Source Code</a><a class="headerlink" href="#getting-the-source-code" title="Permalink to this headline">¶</a></h2>
+<p>To retrieve the source code you can clone the repository using git:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt.git
+</pre></div>
+</div>
+</div>
+<div class="section" id="submitting-changes">
+<h2><a class="toc-backref" href="#id5">Submitting Changes</a><a class="headerlink" href="#submitting-changes" title="Permalink to this headline">¶</a></h2>
+<p>The preferred way to submit changes is to
+<a class="reference external" href="https://help.github.com/articles/fork-a-repo/">fork the repository</a>
+and to
+<a class="reference external" href="https://help.github.com/articles/creating-a-pull-request/">submit a merge request</a>.</p>
+</div>
+<div class="section" id="running-the-development-version">
+<h2><a class="toc-backref" href="#id6">Running the Development Version</a><a class="headerlink" href="#running-the-development-version" title="Permalink to this headline">¶</a></h2>
+<p>The arguably cleanest method is to <a class="reference internal" href="install.html#install-using-tox"><span class="std std-ref">install vimiv using tox</span></a> and use the script from the virtual environment:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
+</pre></div>
+</div>
+<p>If you have the dependencies installed globally, you have two other options:</p>
+<ol class="arabic">
+<li><p>Build the c-extension in place and run the vimiv module directly from the repository
+directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
+$ python -m vimiv
+</pre></div>
+</div>
+</li>
+<li><p>Install the development version globally using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py develop
+</pre></div>
+</div>
+<p>In contrast to the other options, this replaces your global vimiv installation
+and removes the option to have both a development and a production executable.</p>
+</li>
+</ol>
+<p>For running in a clean directory, use the <code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code> option. To change
+the log level, use the <code class="docutils literal notranslate"><span class="pre">--log-level</span></code> option, e.g. <code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">debug</span></code> to
+enable debugging messages. As this can become very noisy, the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag is useful
+to debug individual modules, e.g. <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">config.configfile</span></code>.</p>
+</div>
+<div class="section" id="tests-and-checkers">
+<h2><a class="toc-backref" href="#id7">Tests and Checkers</a><a class="headerlink" href="#tests-and-checkers" title="Permalink to this headline">¶</a></h2>
+<p>Vimiv runs it’s tests using
+<a class="reference external" href="https://tox.readthedocs.io/en/latest/">tox</a>. There are various different
+environments:</p>
+<ul>
+<li><p>The standard test environment using
+<a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a>. To run it with the latest PyQt
+version, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tox</span> <span class="o">-</span><span class="n">e</span> <span class="n">pyqt</span>
+</pre></div>
+</div>
+</li>
+<li><p>A linting environment to check the code quality and style using
+<a class="reference external" href="https://www.pylint.org/">pylint</a>,
+<a class="reference external" href="http://pycodestyle.pycqa.org/en/latest/">pycodestyle</a> and
+<a class="reference external" href="http://www.pydocstyle.org/">pydocstyle</a>. Run it with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tox</span> <span class="o">-</span><span class="n">e</span> <span class="n">lint</span>
+</pre></div>
+</div>
+</li>
+<li><p>An environment to check the package for best-practices and completeness using
+<a class="reference external" href="https://github.com/regebro/pyroma">pyroma</a> and
+<a class="reference external" href="https://github.com/mgedmin/check-manifest">check-manifest</a>.
+It can be run with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tox</span> <span class="o">-</span><span class="n">e</span> <span class="n">packaging</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <a class="reference external" href="http://www.mypy-lang.org/">mypy</a> environment for static type checking launched
+with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tox</span> <span class="o">-</span><span class="n">e</span> <span class="n">mypy</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>In case you don’t want to run any of the checkers locally, you can just wait for the CI
+to run them. This is much slower and less direct though.</p>
+</div>
+<div class="section" id="style-and-formatting">
+<h2><a class="toc-backref" href="#id8">Style and Formatting</a><a class="headerlink" href="#style-and-formatting" title="Permalink to this headline">¶</a></h2>
+<p>Vimiv uses the <a class="reference external" href="https://github.com/ambv/black">black code formatter</a> to
+automatically format the source code. To install black, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">black</span>
+</pre></div>
+</div>
+<p>or use the package manager of your OS if applicable. Formatting the source code
+is done using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">black</span> <span class="n">vimiv</span> <span class="n">tests</span>
+</pre></div>
+</div>
+<p>For more information on the formatter as well as a few useful tips, visit
+<a class="reference external" href="https://github.com/ambv/black">the project’s github page</a>.</p>
+</div>
+<div class="section" id="writing-plugins">
+<span id="id2"></span><h2><a class="toc-backref" href="#id9">Writing Plugins</a><a class="headerlink" href="#writing-plugins" title="Permalink to this headline">¶</a></h2>
+<p>A great way to contribute to vimiv without having to work with the main source code is
+to write plugins. If you end up writing a plugin, please <a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">let me know</a> so I can advertise it on the <a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">Plugins</span></a> page. The basic
+usage of plugins on described in the <a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">Plugins</span></a> page as well, some hints on the
+plugin infrastructure are given in the <code class="docutils literal notranslate"><span class="pre">vimiv.plugins</span></code> module:</p>
+<span class="target" id="module-vimiv.plugins"></span><p><cite>Interface to load and initialize plugins</cite>.</p>
+<p>Plugins are python modules that are either in <code class="docutils literal notranslate"><span class="pre">vimiv/plugins/</span></code> (app plugins) or
+<code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/plugins/</span></code> (user plugins). A possible path is to write a plugin
+in its own git repository and let the user to clone that repository into
+<code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/plugins/</span></code>. It can then be activated in the configuration file.
+A simple example to get an idea of the plugin structure is realized in the demo plugin
+<code class="docutils literal notranslate"><span class="pre">vimiv/plugins/demo.py</span></code>.</p>
+<p>There are three main components a plugin can make use of to interact with vimiv:</p>
+<ul class="simple">
+<li><p>The application api imported via <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv</span> <span class="pre">import</span> <span class="pre">api</span></code></p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">init</span></code> function of the plugin which gets called as soon as the plugin is
+loaded. It receives the information string as first argument which contains the
+additional information supplied by the user in the configuration file after the plugin
+name. This can be used to receive simple information from the user.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of the plugin which gets called when the vimiv application
+exits.</p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It is considered good practice to add <code class="docutils literal notranslate"><span class="pre">*args,</span> <span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">init</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of any plugin. This allows additional information to be passed
+via these functions at any time without breaking the plugin.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using any other imports from vimiv besides the api module is not considered stable
+and may break at any point without warning. If you require functionality that is not
+within the api, please open an issue to discuss this. This helps the api grow and
+keeps plugins stable.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Before the release of version 1.0 there may be changes to the api although it is
+tried to keep them as minimial as possible. Any breaking changes will be announced
+in advance to allow plugins to adapt.</p>
+</div>
+<p>The plugin loading process can be summarized by the following steps:</p>
+<ol class="arabic simple">
+<li><p>The ‘PLUGINS’ section of the configuration file is iterated over. Keys defined are
+the names of the plugins that should be loaded later, values can be arbitrary
+additional information.</p></li>
+<li><p>After setting up the main application, the defined plugins are loaded by the
+<a class="reference internal" href="#vimiv.plugins.load" title="vimiv.plugins.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">load()</span></code></a> function. During loading the <code class="docutils literal notranslate"><span class="pre">init</span></code> function of the plugin is called.</p></li>
+<li><p>Before the application is quit, the <code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of all loaded plugins is
+called.</p></li>
+</ol>
+<dl class="function">
+<dt id="vimiv.plugins.load">
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load plugins defined.</p>
+<p>If no plugins are passed to the function all active plugins are loaded.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>plugins</strong> – Plugin names to load.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.plugins.get_plugins">
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">get_plugins</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict[str, str]<a class="headerlink" href="#vimiv.plugins.get_plugins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve dictionary containing active plugin names and additional information.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="source-code-hints">
+<h2><a class="toc-backref" href="#id10">Source Code Hints</a><a class="headerlink" href="#source-code-hints" title="Permalink to this headline">¶</a></h2>
+<p>The following paragraphs explain some of the core concepts of the source code
+which may be useful to understand before working on bigger changes.</p>
+<div class="section" id="logging">
+<h3><a class="toc-backref" href="#id11">Logging</a><a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
+<p>Logging is handled by the <code class="docutils literal notranslate"><span class="pre">vimiv.utils.log</span></code> module which wraps around the
+<a class="reference external" href="https://docs.python.org/3/howto/logging.html">standard python logging library</a>:</p>
+<span class="target" id="module-vimiv.utils.log"></span><p><cite>Utilities related to logging</cite>.</p>
+<p>There are two different types of loggers: the application-wide logger and module
+specific loggers.</p>
+<p>The application-wide logger is used for general messages meant for the user. All log
+messages with level larger than debug are also sent to the statusbar. To send a message
+to this logger, the utility functions <code class="xref py py-func docutils literal notranslate"><span class="pre">debug()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">info()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">warning()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">error()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">critical()</span></code> can be used. They are just very thin wrapper
+functions around the python logging functions.</p>
+<p>For debugging it is recommended to use a module specific logger. This allows fine-tuning
+the amount of debug statements that should be displayed using the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag. To
+create a module logger:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.utils</span> <span class="kn">import</span> <span class="n">log</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">module_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and use this logger as usual:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing some setup&quot;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Doing the work&quot;</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Performing some clean-up&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Three log handlers are currently used:</p>
+<ul class="simple">
+<li><p>One to print to the console</p></li>
+<li><p>One to save the output in a log file located in
+<code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/vimiv.log</span></code></p></li>
+<li><p>One to print log messages to the statusbar (only for application-wide logger)</p></li>
+</ul>
+</div>
+<div class="section" id="module-vimiv.api">
+<span id="api-documentation"></span><h3><a class="toc-backref" href="#id12">API Documentation</a><a class="headerlink" href="#module-vimiv.api" title="Permalink to this headline">¶</a></h3>
+<p><cite>Utilities to interact with the application</cite>.</p>
+<p>The following paragraphs provide an overview of the modules available in the
+<code class="docutils literal notranslate"><span class="pre">api</span></code> and give examples on how to use them.</p>
+<div class="section" id="module-vimiv.api.objreg">
+<span id="the-object-registry"></span><h4><a class="toc-backref" href="#id13">The Object Registry</a><a class="headerlink" href="#module-vimiv.api.objreg" title="Permalink to this headline">¶</a></h4>
+<p><em>Storage system for objects</em>.</p>
+<p>The object registry is a storage system for long-lived objects. These objects
+are stored and identified using their type. Therefore every stored object must
+be unique in its type and only one instance of each type can be stored. It is
+mainly used by commands as well as statusbar modules to retrieve the <code class="docutils literal notranslate"><span class="pre">self</span></code>
+argument for methods that require an instance of the class.</p>
+<p>To register a new class for this purpose, the
+<a class="reference internal" href="#vimiv.api.objreg.register" title="vimiv.api.objreg.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator can be used as following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">objreg</span>
+
+<span class="k">class</span> <span class="nc">MyLongLivedClass</span><span class="p">:</span>
+
+    <span class="nd">@objreg</span><span class="o">.</span><span class="n">register</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>The first created instance is then stored in the class itself. To retrieve the instance
+of the class, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_instance</span> <span class="o">=</span> <span class="n">MyLongLivedClass</span><span class="o">.</span><span class="n">instance</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="vimiv.api.objreg.register">
+<code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">component_init: Callable</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.objreg.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to register a class for the object registry.</p>
+<p>This decorates the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the class to register. The object is
+stored in the registry right after <code class="docutils literal notranslate"><span class="pre">__init__</span></code> was called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>component_init</strong> – The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the component.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vimiv.api.modes">
+<span id="modes"></span><h4><a class="toc-backref" href="#id14">Modes</a><a class="headerlink" href="#module-vimiv.api.modes" title="Permalink to this headline">¶</a></h4>
+<p><cite>Default modes and utility functions for mode handling</cite>.</p>
+<p>Similar to vim, vimiv has the concept of <code class="docutils literal notranslate"><span class="pre">modes</span></code>. The same command or
+keybinding can perform different actions depending on the mode it is executed
+in. Each mode is assigned to a <code class="docutils literal notranslate"><span class="pre">QWidget</span></code> class which is focused when this
+mode is active. To assign a widget to a mode, the <a class="reference internal" href="#vimiv.api.modes.widget" title="vimiv.api.modes.widget"><code class="xref py py-func docutils literal notranslate"><span class="pre">widget()</span></code></a> decorator is
+used.</p>
+<p>The following modes exist:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>IMAGE</p></li>
+<li><p>LIBRARY</p></li>
+<li><p>THUMBNAIL</p></li>
+<li><p>COMMAND</p></li>
+<li><p>MANIPULATE</p></li>
+</ul>
+</div></blockquote>
+<p>In addition there is the special <code class="docutils literal notranslate"><span class="pre">GLOBAL</span></code> mode which corresponds to
+<code class="docutils literal notranslate"><span class="pre">IMAGE</span></code>, <code class="docutils literal notranslate"><span class="pre">LIBRARY</span></code> and <code class="docutils literal notranslate"><span class="pre">THUMBNAIL</span></code>. When adding commands for this mode,
+they are automatically added for each of these three modes.</p>
+<p>All modes inherit from the common <code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code> base class.</p>
+<dl class="function">
+<dt id="vimiv.api.modes.widget">
+<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">widget</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.modes.widget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to assign a widget to a mode.</p>
+<p>The decorator decorates the __init__ function of a QWidget class storing
+the created component as the widget associated to the mode. This is used
+when entering a mode to focus the widget which is assigned to this mode.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ImageWidget</span><span class="p">:</span>
+
+<span class="nd">@modes</span><span class="o">.</span><span class="n">widget</span><span class="p">(</span><span class="n">modes</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">)</span>
+<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> – The mode to associate the decorated widget with.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.modes.get_by_name">
+<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">get_by_name</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.get_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve Mode class by name.</p>
+<p>This can be used in case the python <code class="xref py py-class docutils literal notranslate"><span class="pre">vimiv.api.modes.Mode</span></code> class is
+not available, for example when running commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – Name of the mode to retrieve.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The corresponding <code class="xref py py-class docutils literal notranslate"><span class="pre">vimiv.api.modes.Mode</span></code> class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.modes.current">
+<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.current" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the currently active mode.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vimiv.api.commands">
+<span id="commands"></span><h4><a class="toc-backref" href="#id15">Commands</a><a class="headerlink" href="#module-vimiv.api.commands" title="Permalink to this headline">¶</a></h4>
+<p><cite>Command storage and initialization</cite>.</p>
+<p>The user interacts with vimiv using commands. Creating a new command is done
+using the <a class="reference internal" href="#vimiv.api.commands.register" title="vimiv.api.commands.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator. The command name is directly infered from
+the function name, the functions docstring is used to document the command. The
+arguments supported by the command are also deduced by inspecting the arguments
+the function takes. To understand these concepts, lets add a simple command
+that prints “hello earth” to the terminal:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">commands</span>
+
+<span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_earth</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello earth&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code snippet creates the command <code class="docutils literal notranslate"><span class="pre">:hello-earth</span></code> which does not accept
+any arguments. To allow greeting other planets, let’s add an argument
+<code class="docutils literal notranslate"><span class="pre">name</span></code> which defaults to earth:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;earth&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now the command <code class="docutils literal notranslate"><span class="pre">:hello-planet</span></code> is created. When called without arguments, it
+prints “hello earth” as before, but it is also possible to great other planets
+by passing their name: <code class="docutils literal notranslate"><span class="pre">:hello-planet</span> <span class="pre">--name=venus</span></code>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Type annotating the arguments is required as the type annotation is passed
+to the argument parser as type of the argument.</p>
+</div>
+<p>It is possible for commands to support the special <code class="docutils literal notranslate"><span class="pre">count</span></code> argument.
+<code class="docutils literal notranslate"><span class="pre">count</span></code> is passed by the user either by prepending it to the command like
+<code class="docutils literal notranslate"><span class="pre">:2next</span></code> or by typing numbers before calling a keybinding. Let’s update our
+<code class="docutils literal notranslate"><span class="pre">:hello-planet</span></code> command to support <code class="docutils literal notranslate"><span class="pre">count</span></code> by printing the greeting
+<code class="docutils literal notranslate"><span class="pre">count</span></code> times:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;earth&quot;</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another special argument is the <code class="docutils literal notranslate"><span class="pre">paths</span></code> argument. It will perform unix-style pattern
+matching using the <code class="docutils literal notranslate"><span class="pre">glob</span></code> module on each path given and return a list of matched
+paths. An example of this in action is the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command defined in <code class="docutils literal notranslate"><span class="pre">vimiv.app</span></code>.</p>
+<p>Each command is valid for a specific mode, the default being global. To supply
+the mode, add it to the register decorator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">Modes</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">)</span>
+<span class="k">def</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>In general commands are usable by keybindings and in the command line. If it
+makes no sense for a command to be visible in the command line, e.g. the
+<code class="docutils literal notranslate"><span class="pre">:command</span></code> command which enters the command line, the hide option can be
+passed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">hide</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>In this case it is probably smart to define a default keybinding for the
+command.</p>
+<dl class="exception">
+<dt id="vimiv.api.commands.ArgumentError">
+<em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">ArgumentError</code><a class="headerlink" href="#vimiv.api.commands.ArgumentError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a command was called with wrong arguments.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vimiv.api.commands.CommandError">
+<em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandError</code><a class="headerlink" href="#vimiv.api.commands.CommandError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a command failed to run correctly.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vimiv.api.commands.CommandInfo">
+<em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandInfo</code><a class="headerlink" href="#vimiv.api.commands.CommandInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a command wants to show the user an info.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vimiv.api.commands.CommandNotFound">
+<em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandNotFound</code><a class="headerlink" href="#vimiv.api.commands.CommandNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a command does not exist for a specific mode.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="vimiv.api.commands.CommandWarning">
+<em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandWarning</code><a class="headerlink" href="#vimiv.api.commands.CommandWarning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised if a command wants to show the user a warning.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.commands.exists">
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#vimiv.api.commands.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a command exists in the registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the command to check for.</p></li>
+<li><p><strong>mode</strong> – The mode for which the command is valid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the command exists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.commands.get">
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em><span class="sig-paren">)</span> &#x2192; vimiv.api.commands._Command<a class="headerlink" href="#vimiv.api.commands.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get one command object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – Name of the command to look for.</p></li>
+<li><p><strong>mode</strong> – Mode in which to look for the command.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Command object asserted with name and mode.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.commands.items">
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">items</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; ItemsView[str, vimiv.api.commands._Command]<a class="headerlink" href="#vimiv.api.commands.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve all items in the commands registry for iteration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> – The mode for which the commands are valid.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>typing.ItemsView allowing iteration over items.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.commands.register">
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em>, <em class="sig-param">hide: bool = False</em>, <em class="sig-param">store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to store a command in the registry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> – Mode in which the command can be executed.</p></li>
+<li><p><strong>hide</strong> – Hide command from command line.</p></li>
+<li><p><strong>store</strong> – Save command to allow repeating with ‘.’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vimiv.api.keybindings">
+<span id="keybindings"></span><h4><a class="toc-backref" href="#id16">Keybindings</a><a class="headerlink" href="#module-vimiv.api.keybindings" title="Permalink to this headline">¶</a></h4>
+<p><cite>Utilities to map commands to a sequence of keys</cite>.</p>
+<p>Adding a new default keybinding is done using the <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code> decorator.
+This decorator requires the sequence of keys to bind to as first argument, the
+command as second argument and, similar to <a class="reference internal" href="#vimiv.api.commands.register" title="vimiv.api.commands.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.commands.register()</span></code></a>
+supports the <code class="docutils literal notranslate"><span class="pre">mode</span></code> keyword to define the mode in which the keybinding is
+valid.</p>
+<p>As an example, let’s bind the <code class="docutils literal notranslate"><span class="pre">:hello-earth</span></code> command from before to the key
+sequence <code class="docutils literal notranslate"><span class="pre">ge</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">commands</span><span class="p">,</span> <span class="n">keybindings</span>
+
+<span class="nd">@keybindings</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;ge&quot;</span><span class="p">,</span> <span class="s2">&quot;hello-earth&quot;</span><span class="p">)</span>
+<span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_earth</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello earth&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If the keybinding requires passing any arguments to the command, these must be
+passed as part of the command. For example, to great venus with <code class="docutils literal notranslate"><span class="pre">gv</span></code> and
+earth with <code class="docutils literal notranslate"><span class="pre">ge</span></code> we could use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@keybindings</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;gv&quot;</span><span class="p">,</span> <span class="s2">&quot;hello-planet --name=venus&quot;</span><span class="p">)</span>
+<span class="nd">@keybindings</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;ge&quot;</span><span class="p">,</span> <span class="s2">&quot;hello-planet&quot;</span><span class="p">)</span>
+<span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">hello_planet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;earth&quot;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-vimiv.api.status">
+<span id="status-modules"></span><h4><a class="toc-backref" href="#id17">Status Modules</a><a class="headerlink" href="#module-vimiv.api.status" title="Permalink to this headline">¶</a></h4>
+<p><em>Utilities to add status modules and retrieve status text</em>.</p>
+<p>Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
+configurable using so called status modules. These are created using the
+<a class="reference internal" href="#vimiv.api.status.module" title="vimiv.api.status.module"><code class="xref py py-func docutils literal notranslate"><span class="pre">module()</span></code></a> decorator.  As an example let’s create a module that returns the
+name of the current user:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">status</span>
+
+<span class="nd">@status</span><span class="o">.</span><span class="n">module</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{username}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">username</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;USER&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A new module ‘{username}’ is now registered.</p>
+<p>Any status object can retrieve the content of statusbar modules by calling
+<a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>. To get the content of our new “{username}” module prepended
+by the text “user: ” we run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">updated_text</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;user: </span><span class="si">{username}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The occurance of ‘{username}’ is then replaced by the outcome of the username()
+function defined earlier.</p>
+<p>If any other object requires the status to be updated, they should call
+<a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a> passing the reason for the requested update as string.</p>
+<dl class="function">
+<dt id="vimiv.api.status.clear">
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param">reason: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit signal to clear messages.</p>
+<p>This function can be called when any temporary logging messages should be cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> – Reason of the clearing for logging.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.status.evaluate">
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.status.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the status modules and update text accordingly.</p>
+<p>Replaces all occurances of module names with the output of the
+corresponding function.</p>
+<p class="rubric">Example</p>
+<p>A module called {pwd} is associated with the function os.pwd. Assuming
+the output of os.pwd() is “/home/user/folder”, the text ‘Path: {pwd}’
+becomes ‘Path: /home/user/folder’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The text to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.status.module">
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Callable[[ModuleFunc], ModuleFunc]<a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator to register a function as status module.</p>
+<p>The decorated function must return a string that can be displayed as
+status. When calling <a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, any occurance of <code class="docutils literal notranslate"><span class="pre">name</span></code> will be
+replaced by the return value of the decorated function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> – Name of the module as set in the config file. Must start with ‘{‘
+and end with ‘}’ to allow differentiating modules from ordinary
+text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.status.update">
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">reason: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit signal to update the current status.</p>
+<p>This function can be called when an update of the status is required. It
+is, for example, always called after a command was run.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reason</strong> – Reason of the update for logging.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vimiv.api.completion">
+<span id="completion"></span><h4><a class="toc-backref" href="#id18">Completion</a><a class="headerlink" href="#module-vimiv.api.completion" title="Permalink to this headline">¶</a></h4>
+<p><em>Utilities to work with completion modules</em>.</p>
+<p>A completion module offers a model with options for command line completion and a filter
+that decides which results are filtered depending on the text in the command line. All
+completion models inherit from the <a class="reference internal" href="#vimiv.api.completion.BaseModel" title="vimiv.api.completion.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a> class while the filters inherit
+from <a class="reference internal" href="#vimiv.api.completion.BaseFilter" title="vimiv.api.completion.BaseFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFilter</span></code></a>.</p>
+<p>A completion module must define for which command line text it is valid. In addition, it
+can provide a custom filter as well as custom column widths for the results shown. By
+default there is only a single column which gets the complete width. Let’s start with a
+simple example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">completion</span>
+
+<span class="k">class</span> <span class="nc">UselessModel</span><span class="p">(</span><span class="n">completion</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;:useless&quot;</span><span class="p">)</span>  <span class="c1"># Gets triggered when the command line text</span>
+                                      <span class="c1"># starts with &quot;:useless&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;useless </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">),)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model defined offers the completions “useless 0”, “useless 1” and “useless 2” if the
+command line text starts with “:useless”.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The data which was set is a sequence of tuples. The tuples are required as it is
+possible to have multiple columns in the completion widget.</p>
+</div>
+<p>To include additional information on the provided completion, further columns can be
+added:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">UselessModel</span><span class="p">(</span><span class="n">completion</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;:useless&quot;</span><span class="p">,</span> <span class="n">column_widths</span><span class="o">=</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;useless </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="s2">&quot;Integer&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The offered completions now provide and additional description (which is always
+“Integer”) that is shown in a second column next to the actual completion. The
+description column is set up to take 30 % of the total width while the completion takes
+70 %.</p>
+<p>For an overview of implemented models, feel free to take a look at the ones defined in
+<code class="docutils literal notranslate"><span class="pre">vimiv.completion.completionmodels</span></code>.</p>
+<dl class="class">
+<dt id="vimiv.api.completion.BaseFilter">
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseFilter</code><a class="headerlink" href="#vimiv.api.completion.BaseFilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base filter used for completion filters.</p>
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.filtertext">
+<code class="sig-name descname">filtertext</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.completion.BaseFilter.filtertext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update text for filtering.</p>
+<p>This default implementation strips command line prefixes and leading digits. If
+the child class requires additional logic, it should override this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated text used as completion filter.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.refilter">
+<code class="sig-name descname">refilter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseFilter.refilter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter completions based on text in the command line.</p>
+<p>This updates the text according to the <code class="docutils literal notranslate"><span class="pre">filtertext</span></code> method and updates the
+filter regular expression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The current command line text.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseFilter.sourceModel">
+<code class="sig-name descname">sourceModel</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span> &#x2192; QAbstractItemModel<a class="headerlink" href="#vimiv.api.completion.BaseFilter.sourceModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="vimiv.api.completion.BaseModel">
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">text_filter: Optional[vimiv.api.completion.BaseFilter] = None</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em>, <em class="sig-param">valid_modes: Tuple[vimiv.api.modes.Mode</em>, <em class="sig-param">...] = (Mode.GLOBAL</em>, <em class="sig-param">Mode.IMAGE</em>, <em class="sig-param">Mode.LIBRARY</em>, <em class="sig-param">Mode.THUMBNAIL</em>, <em class="sig-param">Mode.COMMAND</em>, <em class="sig-param">Mode.MANIPULATE)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base model used for completion models.</p>
+<dl class="attribute">
+<dt id="vimiv.api.completion.BaseModel.column_widths">
+<code class="sig-name descname">column_widths</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.column_widths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of floats [0..1] defining the width of each column.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.api.completion.BaseModel.modes">
+<code class="sig-name descname">modes</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.modes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modes for which this completion model is valid.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.on_enter">
+<code class="sig-name descname">on_enter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the completer when this model is entered.</p>
+<p>This allows models to change their content accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The current text in the comand line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.on_text_changed">
+<code class="sig-name descname">on_text_changed</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_text_changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called by the completer when the commandline text has changed.</p>
+<p>This allows models to change their content accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> – The current text in the comand line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.api.completion.BaseModel.set_data">
+<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param">data: Iterable[Tuple]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add rows to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – List of tuples containing the data for each row.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="vimiv.api.completion.get_module">
+<code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">get_module</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; vimiv.api.completion.BaseFilter<a class="headerlink" href="#vimiv.api.completion.get_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the completion module which is valid for a given command line text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – The current command line text.</p></li>
+<li><p><strong>mode</strong> – Mode for which the module should be valid.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A completion model providing completion options.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-vimiv.api.working_directory">
+<span id="working-directory"></span><h4><a class="toc-backref" href="#id19">Working Directory</a><a class="headerlink" href="#module-vimiv.api.working_directory" title="Permalink to this headline">¶</a></h4>
+<p>Handler to take care of the current working directory.</p>
+<p>The handler stores the current working directory and provides the <code class="xref py py-func docutils literal notranslate"><span class="pre">chdir()</span></code> method
+to change it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.api</span> <span class="kn">import</span> <span class="n">working_directory</span>
+
+<span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="s2">&quot;./my/new/directory&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In addition the directory and current image is monitored using QFileSystemWatcher. Any
+changes are exposed via three signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">loaded</span></code> when the working directory has changed and the content was loaded</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">changed</span></code> when the content of the current directory has chagned</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">images_changed</span></code> when the images in the current directory where changed</p></li>
+</ul>
+<p>The first two signals are emitted with the list of images and list of directories in the
+working directory as arguments, <code class="docutils literal notranslate"><span class="pre">images_changed</span></code> only includes the list of images.
+Thus, if your custom class needs to know the current images and/or directories, it can
+connect to these signals:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">QObject</span>
+
+<span class="kn">from</span> <span class="nn">vimiv</span> <span class="kn">import</span> <span class="n">api</span>
+
+
+<span class="k">class</span> <span class="nc">MyCustomClass</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+
+    <span class="nd">@api</span><span class="o">.</span><span class="n">objreg</span><span class="o">.</span><span class="n">register</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">loaded</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_dir_loaded</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_dir_changed</span><span class="p">)</span>
+        <span class="n">api</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">handler</span><span class="o">.</span><span class="n">images_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_im_changed</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_dir_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">directories</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded new images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loaded new directories:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_dir_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">directories</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated directories:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_im_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Module Attributes:</dt><dd><p>handler: The initialized <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkingDirectoryHandler</span></code> object to interact with.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="module-vimiv.imutils">
+<span id="imutils-module"></span><h3><a class="toc-backref" href="#id20">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h3>
+<p><cite>Utilities to load, edit, navigate and save images</cite>.</p>
+<div class="section" id="the-image-loading-process">
+<h4><a class="toc-backref" href="#id21">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h4>
+<p>The image loading process is started by emitting the <code class="docutils literal notranslate"><span class="pre">load_images</span></code> signal. It is for
+example emitted by the library when a new image path was selected, in thumbnail mode
+upon selection or by the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command. There are a few different cases that are
+taken care of:</p>
+<ul class="simple">
+<li><p>Loading a single path that is already in the filelist
+In this case the filelist navigates to the appropriate index and the image is
+opened.</p></li>
+<li><p>Loading a single path that is not in the filelist
+The filelist is populated with all images in the same directory as this path and
+the path is opened.</p></li>
+<li><p>Loading multiple paths
+The filelist is populated with these paths and the first file in the list is
+opened.</p></li>
+</ul>
+<p>To open an image the <code class="docutils literal notranslate"><span class="pre">new_image_opened</span></code> signal is emitted with the absolute path to
+this image. This signal is accepted by the file handler in
+<code class="docutils literal notranslate"><span class="pre">vimiv.imutils._file_handler</span></code> which then loads the actual image from disk using
+<code class="docutils literal notranslate"><span class="pre">QImageReader</span></code>. Once the format of the image has been determined, and a displayable Qt
+widget has been created, the file handler emits one of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pixmap_loaded</span></code> for standard images</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">movie_loaded</span></code> for animated Gifs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">svg_loaded</span></code> for vector graphics</p></li>
+</ul>
+<p>The image widget in <code class="docutils literal notranslate"><span class="pre">vimiv.gui.image</span></code> connects to these signals and displays
+the appropriate Qt widget.</p>
+</div>
+<div class="section" id="image-editing-modules">
+<h4><a class="toc-backref" href="#id22">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this headline">¶</a></h4>
+<p>This section gives a quick overview of the modules that deal with image editing and how
+to add new functionality to manipulate images.</p>
+<span class="target" id="module-vimiv.imutils.imtransform"></span><p><em>imtransform - transformations such as rotate and flip</em>.</p>
+<span class="target" id="module-vimiv.imutils.immanipulate"></span><p><em>immanipulate - more complex image manipulations like brightness and contrast</em>.</p>
+<p>The module includes classes in a hierarchical structure where each following class
+includes components of the previous class in the hierarchy.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulation</span></code> stores a single manipulation such as brightness.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ManipulationGroup</span></code> stores manipulations that are applied together such as
+brightness and contrast.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulations</span></code> stores all manipulation groups and provides commands to apply them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Manipulator</span></code> stores the manipulations class and interfaces it with the
+application.</p></li>
+</ol>
+<p id="adding-new-manipulation">Adding new manipulations is done by implementing a new <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="vimiv.imutils.immanipulate.ManipulationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManipulationGroup</span></code></a> and
+adding it to the <code class="docutils literal notranslate"><span class="pre">Manipulations</span></code>.</p>
+<dl class="class">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup">
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for a group of manipulations associated to one manipulation tab.</p>
+<p>The group stores the individual manipulations, associates them to a manipulate
+function and provides a title.</p>
+<p>To implement a new manipulation group:</p>
+<ul class="simple">
+<li><p>Inherit from this base class and define an appropriate constructor</p></li>
+<li><p>Define the <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="vimiv.imutils.immanipulate.ManipulationGroup.title"><code class="xref py py-func docutils literal notranslate"><span class="pre">title()</span></code></a> property</p></li>
+<li><p>Implement the abstract method <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a></p></li>
+</ul>
+<dl class="attribute">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.manipulations">
+<code class="sig-name descname">manipulations</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.manipulations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuple of individual manipulations.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup._data">
+<code class="sig-name descname">_data</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._data" title="Permalink to this definition">¶</a></dt>
+<dd><p>bytes of the last change from this group. Must be stored as the QPixmap
+is generated directly from the bytes and needs them to stay in memory.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup._apply">
+<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em>, <em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply all manipulations of this group.</p>
+<p>Takes the image data as raw bytes, applies the changes according the current
+manipulation values and returns the updated bytes. In general this is associated
+with a call to a function implemented in the C-extension which manipulates the
+raw data.</p>
+<p>Must be implemented by the child class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – The raw image data in bytes to manipulate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The updated raw image data in bytes.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.apply">
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply manipulation function to image data if any manipulation changed.</p>
+<p>Wraps the abstract <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a> with a common setup and finalize part.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.changed">
+<em class="property">property </em><code class="sig-name descname">changed</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.changed" title="Permalink to this definition">¶</a></dt>
+<dd><p>True if any manipulation has been changed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="vimiv.imutils.immanipulate.ManipulationGroup.title">
+<em class="property">abstract property </em><code class="sig-name descname">title</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title of the manipulation group as referred to in its tab.</p>
+<p>Must be defined by the child class.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="adding-new-manipulations-to-the-c-extension">
+<span id="c-extension"></span><h4><a class="toc-backref" href="#id23">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this headline">¶</a></h4>
+<p>To add new manipulations to the C-extension, two things must be done.</p>
+<p>First, you implement a new manipulate function in its own header such as
+<code class="docutils literal notranslate"><span class="pre">brightness_contrast.h</span></code>. The function should take the image data as pure bytes, the
+size of the data array as well as your new manipulation values as arguments. Task of the
+function is to update the data with the manipulation values accordingly. For this it
+needs to iterate over the data and update each pixel and channel (RGBA) accordingly.</p>
+<p>Once you are happy with your manipulate function, it needs to be registered in
+<code class="docutils literal notranslate"><span class="pre">manipulate.c</span></code>. First you write a wrapper function that converts the python arguments
+to C arguments, runs the manipulate function you just implemented and returns the
+manipulated data back to python. How this is done can be seen in <code class="docutils literal notranslate"><span class="pre">manipulate_bc</span></code> and
+<code class="docutils literal notranslate"><span class="pre">manipulate_hsl</span></code>. The basic structure should be very similar for any case. Finally you
+add the python wrapper function to the <code class="docutils literal notranslate"><span class="pre">ManipulateMethods</span></code> definition. Here you define
+the name of the function as seen by python, pass your function, the calling convention
+and finally a short docstring.</p>
+<p>For much more information on extending python with C see
+<a class="reference external" href="https://docs.python.org/3/extending/extending.html">the python documentation</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      
+      <a href="#">Back to top</a>
+      
+
+
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/documentation/hacking.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2019, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>
