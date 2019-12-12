@@ -35,7 +35,7 @@ earth with ``ge`` we could use::
 
 import functools
 import re
-from typing import Callable, ItemsView, Union, Tuple, Iterable, Iterator
+from typing import Callable, Union, Tuple, Iterable, Iterator
 
 from vimiv.utils import customtypes, trie
 
@@ -138,5 +138,24 @@ def get(mode: modes.Mode) -> trie.Trie:
     return _registry[mode]
 
 
-def items() -> ItemsView[modes.Mode, trie.Trie]:
-    return _registry.items()
+def items() -> Iterator[Tuple[modes.Mode, Iterable[Tuple[str, str]]]]:
+    """Iterator to retrieve the sorted, unique bindings per mode.
+
+    Bindings that are in the global modes will be associated with the global mode. All
+    remaining bindings are part of their respective mode.
+    """
+    global_bindings = (
+        set(get(modes.IMAGE)) & set(get(modes.LIBRARY)) & set(get(modes.THUMBNAIL))
+    )
+
+    def sort(bindings: Iterable[Tuple[str, str]]) -> Iterable[Tuple[str, str]]:
+        """Sort by command, then keys."""
+        return sorted(bindings, key=lambda x: tuple(reversed(x)))
+
+    for mode in modes.ALL:
+        if mode == modes.GLOBAL:
+            yield mode, sort(global_bindings)
+        elif mode in modes.GLOBALS:
+            yield mode, sort(set(get(mode)) - global_bindings)
+        else:
+            yield mode, sort(get(mode))

@@ -32,15 +32,9 @@ def dump(path: str):
 def get_default_parser() -> configparser.ConfigParser:
     """Retrieve configparser with default keybindings."""
     parser = KeyfileParser(delimiters=":")
-    # Add sections
-    parser.add_section("GLOBAL")
-    parser.add_section("IMAGE")
-    parser.add_section("LIBRARY")
-    parser.add_section("THUMBNAIL")
-    parser.add_section("MANIPULATE")
-    parser.add_section("COMMAND")
     # Add default bindings
     for mode, bindings in api.keybindings.items():
+        parser.add_section(mode.name.upper())
         for binding, command in bindings:
             parser[mode.name.upper()][binding] = command.replace("%", "%%")
     return parser

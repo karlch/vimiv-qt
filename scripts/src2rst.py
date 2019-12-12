@@ -76,37 +76,18 @@ def generate_keybindings():
     """Generate table overview of default keybindings."""
     print("generating keybindings...")
     filename = "docs/documentation/configuration/keybindings_table.rstsrc"
-    # Check for bindings in global mode to avoid duplication
-    bindings = dict(api.keybindings.items())
-    global_bindings = bindings[api.modes.GLOBAL]
-    image_bindings = bindings[api.modes.IMAGE]
-    library_bindings = bindings[api.modes.LIBRARY]
-    thumbnail_bindings = bindings[api.modes.THUMBNAIL]
-    for binding, command in dict(image_bindings).items():
-        with suppress(KeyError, AttributeError):
-            if (
-                library_bindings[binding].value
-                == thumbnail_bindings[binding].value
-                == command
-            ):
-                global_bindings[binding] = command
-                del image_bindings[binding]
-                del library_bindings[binding]
-                del thumbnail_bindings[binding]
-    # Write to file
     with RSTFile(filename) as f:
-        for mode, mode_bindings in bindings.items():
-            rows = _gen_keybinding_rows(mode_bindings)
+        for mode, bindings in api.keybindings.items():
+            rows = _gen_keybinding_rows(bindings)
             title = "Keybindings for %s mode" % (mode.name)
             f.write_table(rows, title=title, widths="20 80")
 
 
 def _gen_keybinding_rows(bindings):
     """Generate rows for keybindings table."""
-    rows = [("Keybinding", "Command")]
-    for binding, command in bindings:
-        rows.append(("\\%s" % (binding), command))
-    return sorted(rows, key=lambda row: row[1])
+    header = [("Keybinding", "Command")]
+    rows = [(rf"\{binding}", command) for binding, command in bindings]
+    return header + rows
 
 
 def generate_commandline_options():
