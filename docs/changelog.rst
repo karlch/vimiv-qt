@@ -22,7 +22,8 @@ Added:
 Changed:
 ^^^^^^^^
 
-* Saner default step for mouse zoom. Thanks @OliverLew for catching this.
+* Saner default step for mouse zoom. Thanks
+  `@OliverLew <https://github.com/OliverLew>`_ for catching this.
 
 Fixed:
 ^^^^^^
