@@ -22,7 +22,8 @@ Added:
 Changed:
 ^^^^^^^^
 
-* Saner default step for mouse zoom. Thanks @OliverLew for catching this.
+* Saner default step for mouse zoom. Thanks
+  `@OliverLew <https://github.com/OliverLew>`_ for catching this.
 
 Fixed:
 ^^^^^^
@@ -30,6 +31,8 @@ Fixed:
 * Showing keyhint widget in command mode.
 * Partial matches with special keys such as ``<tab>``.
 * The ``-s`` command line option to temporarily set an option. Broken since v0.4.0.
+* Support for some jpg files not recognized by the ``imghdr`` module. Thanks
+  `@maximbaz <https://github.com/maximbaz>`_ for the help.
 
 
 v0.4.1 (2019-12-01)
