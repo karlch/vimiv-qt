@@ -9,7 +9,6 @@
 import logging
 import os
 
-from PyQt5.QtCore import pyqtBoundSignal, QObject
 from PyQt5.QtGui import QPixmap
 
 import pytest
@@ -47,7 +46,6 @@ def cleanup():
     utils.Pool.wait(5000)
     api.settings.reset()
     api.mark.mark_clear()
-    disconnect_custom_signals(api.signals)
     runners._last_command.clear()
     filelist._paths = []
     filelist._index = 0
@@ -152,11 +150,3 @@ def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
         QPixmap(*size).save(path, imgformat)
         paths.append(path)
     return paths
-
-
-def disconnect_custom_signals(obj: QObject):
-    """Disconnect all slots from custom signals in obj."""
-    for name in dir(obj):
-        elem = getattr(obj, name)
-        if isinstance(elem, pyqtBoundSignal) and name not in dir(QObject):
-            elem.disconnect()
