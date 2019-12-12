@@ -168,3 +168,26 @@ def test_svg(h: bytes, _f: BinaryIO) -> bool:
 
 
 add_image_format("svg", test_svg)
+
+
+# We now directly override the jpg part of imghdr as it has some known limitations
+# See e.g. https://bugs.python.org/issue16512
+def test_jpg(h: bytes, _f: BinaryIO) -> Optional[str]:
+    """Custom jpg test function.
+
+    The one from the imghdr module fails with some jpgs that include ICC_PROFILE data.
+    """
+    if h[6:10] in (b"JFIF", b"Exif"):
+        return "jpg"
+    if h[:2] == b"\xff\xd8" and (b"JFIF" in h or b"8BIM" in h):
+        return "jpg"
+    return None
+
+
+def test_jpg_fallback(h: bytes, _f: BinaryIO) -> Optional[str]:
+    """Fallback test for jpg files with no headers, only the two starting bits."""
+    return "jpg" if h[:2] == b"\xff\xd8" else None
+
+
+imghdr.tests[0] = test_jpg
+imghdr.tests.append(test_jpg_fallback)
