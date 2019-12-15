@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import QApplication
 from vimiv import app, api, parser, imutils, plugins, version, gui
 from vimiv.commands import runners, search
 from vimiv.config import configfile, keyfile, styles
-from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes
+from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
 
 # Must be imported to create the commands using the decorators
 from vimiv.commands import misccommands  # pylint: disable=unused-import
@@ -60,6 +60,7 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     if args.version:
         print(version.info(), version.paths(), sep="\n\n")
         sys.exit(customtypes.Exit.success)
+    migration.run()
     init_directories(args)
     log.setup_logging(args.log_level, *args.debug)
     _logger.debug("Start: vimiv %s", " ".join(argv))
