@@ -43,6 +43,7 @@ def mock_gtk_version(tmpdir, monkeypatch):
             f.write("test_{i:02d}.jpg\n")
 
     yield
+    migration.WelcomePopUp.gtk_installed = False
 
 
 @pytest.fixture
@@ -57,12 +58,14 @@ def test_run(mock_gtk_version, mock_backup):
     migration.run()
     migration.backup.assert_called_once()
     migration.migrate_tags.assert_called_once()
+    assert migration.WelcomePopUp.gtk_installed
 
 
 def test_do_not_run(mocker, mock_backup):
     mocker.patch.object(migration, "gtk_version_installed", return_value=False)
     migration.run()
     migration.backup.assert_not_called()
+    assert not migration.WelcomePopUp.gtk_installed
 
 
 def test_backup_directories(mock_gtk_version):

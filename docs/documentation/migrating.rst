@@ -155,3 +155,4 @@ When you first launch the qt version and you had a local ``vimivrc`` of the gtk 
 
 * All ``vimiv`` folders are backed up to ``vimiv-gtk-backup``.
 * Your tags are migrated accordingly.
+* A welcome pop-up with the most important information is shown.

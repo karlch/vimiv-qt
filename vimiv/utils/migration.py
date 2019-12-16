@@ -10,6 +10,11 @@ import os
 import shutil
 from typing import NamedTuple, Optional, List
 
+from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+
+import vimiv
+from vimiv.widgets import PopUp
+
 from . import xdg
 
 
@@ -35,6 +40,7 @@ def run() -> None:
     backup_dirs = backup()
     if backup_dirs.data_dir is not None:  # Error creating backup
         migrate_tags(backup_dirs.data_dir)
+    WelcomePopUp.gtk_installed = True
 
 
 def backup() -> XdgDirectories:
@@ -67,3 +73,42 @@ def migrate_tags(gtk_data_dir: str) -> None:
     if os.path.isdir(gtk_tagdir):
         shutil.copytree(gtk_tagdir, xdg.vimiv_data_dir("tags"))
         print("... Moved tag directory")
+
+
+def run_welcome_popup(parent: QWidget = None) -> None:
+    """Show pop up at startup if the gtk version was installed."""
+    if WelcomePopUp.gtk_installed:
+        WelcomePopUp(parent=parent)
+
+
+class WelcomePopUp(PopUp):
+    """Pop up that displays a short welcome message for users coming from gtk."""
+
+    gtk_installed = False
+
+    def __init__(self, parent=None):
+        super().__init__(f"{vimiv.__name__} - welcome to qt", parent=parent)
+        url = "https://karlch.github.io/vimiv-qt/documentation/migrating.html"
+        gh_url = "https://github.com/karlch/vimiv-qt/issues"
+        layout = QVBoxLayout()
+        label = QLabel()
+        label.setText(
+            "<h2>Welcome to the new qt version!</h2>"
+            "Looks like this is your first time running the new qt version.<br>"
+            "Following is some information to get you started.<br>"
+            "Much more details on migration are "
+            f"<a href='{url}'>available online</a>.<br><br>"
+            "A backup of your vimiv directories was created and your tags have been<br>"
+            "migrated. Keybindings and commands have largely changed, so<br>"
+            "unfortunately any custom changes are not automatically ported. The<br>"
+            "online documentation should help you migrating. Sorry for the<br>"
+            "inconvenience. I hope the large improvements here will outweigh the<br>"
+            "extra work of migration.<br><br>"
+            "If you have any problems or questions, do not hesitate to<br>"
+            f"<a href='{gh_url}'>open an issue on github</a> or to "
+            "<a href='mailto:karlch@protonmail.com'>contact me directly</a>.<br><br>"
+            "To show this message again, run ':welcome-to-qt'."
+        )
+        layout.addWidget(label)
+        self.setLayout(layout)
+        self.show()

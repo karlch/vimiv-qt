@@ -130,6 +130,7 @@ def init_ui(args: argparse.Namespace) -> None:
     y = screen_geometry.y() + (screen_geometry.height() - geometry.height()) // 2
     mw.setGeometry(x, y, geometry.width(), geometry.height())
     mw.show()
+    migration.run_welcome_popup(parent=mw)
 
 
 def update_settings(args: argparse.Namespace) -> None:
