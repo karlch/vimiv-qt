@@ -18,6 +18,11 @@ Added:
   separated by a comma. Currently only the ``cr2`` raw format is implemented which
   requires `qt raw <https://gitlab.com/mardy/qtraw>`_.
 * Path completion for the ``:mark`` command.
+* Some help for migrating from the gtk version:
+
+  * All gtk directories are backed up.
+  * The tag files are migrated.
+  * A welcome pop-up linking the :ref:`documentation <migrating>` is displayed.
 
 Changed:
 ^^^^^^^^

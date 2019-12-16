@@ -11,6 +11,7 @@ from typing import List
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
 
 from vimiv import api, utils
+from vimiv.utils import migration
 
 # Import all GUI widgets used to create the full main window
 from .bar import Bar
@@ -98,6 +99,11 @@ class MainWindow(QWidget):
             * ``--columns``: Number of columns to split the bindings in.
         """
         KeybindingsPopUp(columns, parent=self)
+
+    @api.commands.register()
+    def welcome_to_qt(self):
+        """Show a pop-up with a welcome message for users coming from gtk."""
+        migration.WelcomePopUp(parent=self)
 
     def resizeEvent(self, event):
         """Update resize event to resize overlays and library.
