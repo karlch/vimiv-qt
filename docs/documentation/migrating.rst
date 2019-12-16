@@ -1,3 +1,5 @@
+.. _migrating:
+
 Migrating from the Gtk Version to Qt
 ====================================
 
