@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Migrating from the Gtk Version to Qt &#8212; vimiv  documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Changelog" href="../changelog.html" />
+    <link rel="prev" title="Contributing Guidelines" href="contributing.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/vimiv.svg"></span>
+          vimiv</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Docs</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../changelog.html">Changelog</a></li>
+                <li><a href="contributing.html">Contributing</a></li>
+                <li><a href="https://github.com/karlch/vimiv-qt">GitHub</a></li>
+            
+            
+              
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Migrating from the Gtk Version to Qt</a><ul>
+<li><a class="reference internal" href="#major-changes">Major Changes</a><ul>
+<li><a class="reference internal" href="#key-sequences">Key Sequences</a></li>
+<li><a class="reference internal" href="#keybinding-names">Keybinding Names</a></li>
+<li><a class="reference internal" href="#command-names">Command Names</a></li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+<li><a class="reference internal" href="#marks-and-tags">Marks and Tags</a></li>
+<li><a class="reference internal" href="#manipulate">Manipulate</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#migration">Migration</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="migrating-from-the-gtk-version-to-qt">
+<span id="migrating"></span><h1><a class="toc-backref" href="#id4">Migrating from the Gtk Version to Qt</a><a class="headerlink" href="#migrating-from-the-gtk-version-to-qt" title="Permalink to this headline">¶</a></h1>
+<p>Some time ago I decided to rewrite vimiv completely in Qt because I was not happy with
+the Gtk version and the source code. For some more details, you can check
+<a class="reference external" href="https://github.com/karlch/vimiv/issues/61">the corresponding issue on github</a>.</p>
+<p>Besides the maintenance improvements for me and cleaner code + tests which should make
+contributing easier, there were a number of major improvements and new feature
+including:</p>
+<ul class="simple">
+<li><p>Much better performance, especially in thumbnail mode.</p></li>
+<li><p>Complete customization with <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a>.</p></li>
+<li><p>The possibility to bind key sequences like <code class="docutils literal notranslate"><span class="pre">gg</span></code>.</p></li>
+<li><p>A keyhint widget popping up after 500 ms to help you with finding the missing part of
+key sequences.</p></li>
+<li><p>Customization of the statusbar with <a class="reference internal" href="configuration/statusbar.html#statusbar"><span class="std std-ref">status modules</span></a>.</p></li>
+<li><p>A plugin system enabling print support.</p></li>
+<li><p>Automatic reload when the image / directory was changed from the outside.</p></li>
+<li><p>Better synchronization between the various modes.</p></li>
+</ul>
+<p>Overall I hope that the improvements of the Qt version outweigh the inconvenience of a
+lot of breaking changes. The following sections summarize some of the major changes to
+give you a feeling of what will break when migrating. If you have any questions or need
+help, please do not hesitate to open an
+<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a> or
+<a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">contact me directly</a>.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#migrating-from-the-gtk-version-to-qt" id="id4">Migrating from the Gtk Version to Qt</a></p>
+<ul>
+<li><p><a class="reference internal" href="#major-changes" id="id5">Major Changes</a></p>
+<ul>
+<li><p><a class="reference internal" href="#key-sequences" id="id6">Key Sequences</a></p></li>
+<li><p><a class="reference internal" href="#keybinding-names" id="id7">Keybinding Names</a></p></li>
+<li><p><a class="reference internal" href="#command-names" id="id8">Command Names</a></p></li>
+<li><p><a class="reference internal" href="#settings" id="id9">Settings</a></p></li>
+<li><p><a class="reference internal" href="#marks-and-tags" id="id10">Marks and Tags</a></p></li>
+<li><p><a class="reference internal" href="#manipulate" id="id11">Manipulate</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#migration" id="id12">Migration</a></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="major-changes">
+<h2><a class="toc-backref" href="#id5">Major Changes</a><a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="key-sequences">
+<h3><a class="toc-backref" href="#id6">Key Sequences</a><a class="headerlink" href="#key-sequences" title="Permalink to this headline">¶</a></h3>
+<p>It is now possible to bind key sequences like <code class="docutils literal notranslate"><span class="pre">gg</span></code>. This possibility changed the
+default bindings for switching modes. The library is entered with <code class="docutils literal notranslate"><span class="pre">gl</span></code> and toggled
+with <code class="docutils literal notranslate"><span class="pre">tl</span></code>. Same holds for thumbnail and manipulate mode with <code class="docutils literal notranslate"><span class="pre">t</span></code> as suffix instead
+of <code class="docutils literal notranslate"><span class="pre">l</span></code>. Image mode can only be entered with <code class="docutils literal notranslate"><span class="pre">gi</span></code>, not toggled, as it is the “normal”
+mode of vimiv. To help you with partial matches, a keyhint widget pops up 500 ms after
+the first key press.</p>
+</div>
+<div class="section" id="keybinding-names">
+<h3><a class="toc-backref" href="#id7">Keybinding Names</a><a class="headerlink" href="#keybinding-names" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Naming of modifiers has changed to account for key sequences and for consistency.</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">Shift+</span></code> is largely replaced by the actual character, e.g. <code class="docutils literal notranslate"><span class="pre">Shift+w</span></code> becomes
+<code class="docutils literal notranslate"><span class="pre">W</span></code>. Where this is not possible, use <code class="docutils literal notranslate"><span class="pre">&lt;shift&gt;</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">&lt;shift&gt;&lt;tab&gt;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">^q</span></code> becomes <code class="docutils literal notranslate"><span class="pre">&lt;ctrl&gt;q</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Alt+l</span></code> becomes <code class="docutils literal notranslate"><span class="pre">&lt;alt&gt;l</span></code>.</p></li>
+</ul>
+</li>
+<li><p>If keys have a string representation, this is their keybinding. So <code class="docutils literal notranslate"><span class="pre">+</span></code>, <code class="docutils literal notranslate"><span class="pre">/</span></code> and so
+forth are the valid keybindings, not <code class="docutils literal notranslate"><span class="pre">plus</span></code> or <code class="docutils literal notranslate"><span class="pre">slash</span></code>. Only exception is
+<code class="docutils literal notranslate"><span class="pre">&lt;colon&gt;</span></code> for <code class="docutils literal notranslate"><span class="pre">:</span></code> as this is a valid separator for the configuration file.</p></li>
+<li><p>Special keys with no string representation are always surrounded in <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> brackets
+and are lower-case.  Therefore <code class="docutils literal notranslate"><span class="pre">Escape</span></code> becomes <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">Return</span></code>
+<code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code> and so forth.</p></li>
+</ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>If you want to figure out the name of a specific key or mouse button, run vimiv with
+<code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">gui.eventhandler</span></code>. You can find the corresponding name in the first
+output line after pressing/clicking it. For example, when pressing the <code class="docutils literal notranslate"><span class="pre">q</span></code> key,
+you would retrieve something along:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DEBUG</span>    <span class="o">&lt;</span><span class="n">gui</span><span class="o">.</span><span class="n">eventhandler</span><span class="o">&gt;</span>   <span class="n">EventHandlerMixin</span><span class="p">:</span> <span class="n">handling</span> <span class="n">q</span> <span class="k">for</span> <span class="n">mode</span> <span class="n">library</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="command-names">
+<h3><a class="toc-backref" href="#id8">Command Names</a><a class="headerlink" href="#command-names" title="Permalink to this headline">¶</a></h3>
+<p>Command handling has been redesigned for better scalability. This means that many names
+and/or arguments have changed. You can find
+<a class="reference internal" href="commands.html#commands"><span class="std std-ref">a complete overview of the current commands</span></a> in the documentation.
+If you have trouble finding out how a previous command changed or are missing something,
+please do not hesitate to open an
+<a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a> or
+<a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">contact me directly</a>.</p>
+</div>
+<div class="section" id="settings">
+<h3><a class="toc-backref" href="#id9">Settings</a><a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h3>
+<p>The rewrite has been used to rethink various settings. I hope the names are now clearer
+and the handling is more consistent. This is a brief overview of what happened to the
+settings that were available in the gtk version. The word before the <code class="docutils literal notranslate"><span class="pre">.</span></code> indicates the
+section, the one after is the option name.</p>
+<table class="colwidths-given docutils align-default" id="id3">
+<caption><span class="caption-text">Overview of settings changes</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Change</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>general.start_fullscreen</p></td>
+<td><p>Removed, use the <code class="docutils literal notranslate"><span class="pre">--fullscreen</span></code> command line flag instead</p></td>
+</tr>
+<tr class="row-odd"><td><p>general.start_slideshow</p></td>
+<td><p>Removed, use <code class="docutils literal notranslate"><span class="pre">--command</span> <span class="pre">slideshow</span></code> instead</p></td>
+</tr>
+<tr class="row-even"><td><p>general.slideshow_delay</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">slideshow.delay</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>general.shuffle</p></td>
+<td><p>Remains the same</p></td>
+</tr>
+<tr class="row-even"><td><p>general.display_bar</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">statusbar.show</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>general.default_thumbsize</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">thumbnail.size</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>general.geometry</p></td>
+<td><p>Removed, use <code class="docutils literal notranslate"><span class="pre">--geometry</span></code> instead</p></td>
+</tr>
+<tr class="row-odd"><td><p>general.recursive</p></td>
+<td><p>Removed, use the corresponding shell tools instead</p></td>
+</tr>
+<tr class="row-even"><td><p>general.rescale_svg</p></td>
+<td><p>Removed, this is always done as it is now performant</p></td>
+</tr>
+<tr class="row-odd"><td><p>general.overzoom</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">image.overzoom</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>general.search_case_sensitive</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">search.ignore_case</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>general.incsearch</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">search.incremental</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>general.copy_to_primary</p></td>
+<td><p>Removed, the <code class="docutils literal notranslate"><span class="pre">:copy-name</span></code> command has an optional <code class="docutils literal notranslate"><span class="pre">--primary</span></code> flag instead</p></td>
+</tr>
+<tr class="row-odd"><td><p>general.commandline_padding</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-even"><td><p>general.thumb_padding</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-odd"><td><p>general.completion_height</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-even"><td><p>general.play_animations</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">image.autoplay</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>library.start_show_library</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">general.startup_library</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>library.library_width</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-even"><td><p>library.expand_lib</p></td>
+<td><p>Removed, please open an issue if you miss this feature</p></td>
+</tr>
+<tr class="row-odd"><td><p>library.border_width</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-even"><td><p>library.markup</p></td>
+<td><p>Removed, use <a class="reference internal" href="configuration/style.html#styles"><span class="std std-ref">styles</span></a> instead</p></td>
+</tr>
+<tr class="row-odd"><td><p>library.show_hidden</p></td>
+<td><p>Remains the same</p></td>
+</tr>
+<tr class="row-even"><td><p>library.desktop_start_dir</p></td>
+<td><p>Removed, please open an issue if you miss this feature</p></td>
+</tr>
+<tr class="row-odd"><td><p>library.file_check_amount</p></td>
+<td><p>Removed, we use the total number of files instead</p></td>
+</tr>
+<tr class="row-even"><td><p>library.tilde_in_statusbar</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">statusbar.collapse_home</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><div class="line-block">
+<div class="line"><br /></div>
+</div>
+</td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>edit.autosave_images</p></td>
+<td><p>Moved to <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="marks-and-tags">
+<h3><a class="toc-backref" href="#id10">Marks and Tags</a><a class="headerlink" href="#marks-and-tags" title="Permalink to this headline">¶</a></h3>
+<p>Your tag files are migrated and should continue working as is. However, the behaviour of
+marks and tags has changed in some ways.</p>
+<ul>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:mark</span></code> command can now take any number of paths as argument. This includes
+typical shell wildcards and replaces the unorthodox behaviour of <code class="docutils literal notranslate"><span class="pre">:mark-between</span></code>. To
+mark a list of images, pass them or the corresponding wildcard to <code class="docutils literal notranslate"><span class="pre">:mark</span></code>, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">:</span><span class="n">mark</span> <span class="n">images_1</span><span class="o">*.</span><span class="n">jpg</span>
+</pre></div>
+</div>
+</li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">mark</span></code> command now toggles the mark status of the paths passed. The default
+binding <code class="docutils literal notranslate"><span class="pre">m</span></code> is therefore equivalent to the old <code class="docutils literal notranslate"><span class="pre">:mark_toggle</span></code> bound to <code class="docutils literal notranslate"><span class="pre">M</span></code>.</p></li>
+<li><p>Calling <code class="docutils literal notranslate"><span class="pre">:tag-load</span></code> now marks all images in the tag instead of loading them into
+image mode. To open them in image mode, call <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">%m</span></code> afterwards.</p></li>
+</ul>
+</div>
+<div class="section" id="manipulate">
+<h3><a class="toc-backref" href="#id11">Manipulate</a><a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h3>
+<p>Navigation in manipulate mode has been redesigned for better scalability. The one letter
+shortcuts to manipulation names were unfortunately rather limiting…</p>
+<ul class="simple">
+<li><p>To focus the next/previous manipulation in the current tab, use <code class="docutils literal notranslate"><span class="pre">n</span></code>/<code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
+<li><p>To focus the next/previous tab, use <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code>/<code class="docutils literal notranslate"><span class="pre">&lt;shift&gt;&lt;tab&gt;</span></code>.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="migration">
+<h2><a class="toc-backref" href="#id12">Migration</a><a class="headerlink" href="#migration" title="Permalink to this headline">¶</a></h2>
+<p>When you first launch the qt version and you had a local <code class="docutils literal notranslate"><span class="pre">vimivrc</span></code> of the gtk version:</p>
+<ul class="simple">
+<li><p>All <code class="docutils literal notranslate"><span class="pre">vimiv</span></code> folders are backed up to <code class="docutils literal notranslate"><span class="pre">vimiv-gtk-backup</span></code>.</p></li>
+<li><p>Your tags are migrated accordingly.</p></li>
+<li><p>A welcome pop-up with the most important information is shown.</p></li>
+</ul>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      
+      <a href="contributing.html" title="Previous Chapter: Contributing Guidelines"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Contributing ...</span>
+      </a>
+      &nbsp;
+      &nbsp;
+      <a href="#">Back to top</a>
+      &nbsp;
+      &nbsp;
+      <a href="../changelog.html" title="Next Chapter: Changelog"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Changelog &raquo;</span>
+      </a>
+      
+
+
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/documentation/migrating.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018-2019, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

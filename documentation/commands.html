@@ -102,6 +102,7 @@
 <li><a class="reference internal" href="#unbind">unbind</a></li>
 <li><a class="reference internal" href="#undelete">undelete</a></li>
 <li><a class="reference internal" href="#version">version</a></li>
+<li><a class="reference internal" href="#welcome-to-qt">welcome-to-qt</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#image">Image</a><ul>
@@ -131,7 +132,7 @@
 <li><a class="reference internal" href="#ref-thumbnail-zoom">zoom</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7">Command</a><ul>
+<li><a class="reference internal" href="#id8">Command</a><ul>
 <li><a class="reference internal" href="#complete">complete</a></li>
 <li><a class="reference internal" href="#history">history</a></li>
 <li><a class="reference internal" href="#history-substr-search">history-substr-search</a></li>
@@ -181,7 +182,7 @@
     <div class="body col-md-12 content" role="main">
       
   <div class="section" id="commands">
-<h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
 <p>In vimiv all keybindings are mapped to commands.</p>
 <p>Most of the commands can also be run from the command line but some are hidden
 as they are not useful to run by hand. A typical example is the <code class="docutils literal notranslate"><span class="pre">:command</span></code>
@@ -195,8 +196,8 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <p>Below is a complete list of all commands in every mode.</p>
 <div class="section" id="global">
 <h2>Global<a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id18">
-<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id18" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id19">
+<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id19" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -314,6 +315,9 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
 <td><p>Show a pop-up with version information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-welcome-to-qt"><span class="std std-ref">welcome-to-qt</span></a></p></td>
+<td><p>Show a pop-up with a welcome message for users coming from gtk.</p></td>
 </tr>
 </tbody>
 </table>
@@ -750,11 +754,15 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </dd>
 </dl>
 </div>
+<div class="section" id="welcome-to-qt">
+<span id="ref-global-welcome-to-qt"></span><h3>welcome-to-qt<a class="headerlink" href="#welcome-to-qt" title="Permalink to this headline">¶</a></h3>
+<p>Show a pop-up with a welcome message for users coming from gtk.</p>
+</div>
 </div>
 <div class="section" id="image">
 <h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id19">
-<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id19" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id20">
+<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -905,8 +913,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </div>
 <div class="section" id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id20">
-<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id21">
+<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -929,7 +937,7 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </tbody>
 </table>
 <div class="section" id="ref-library-goto">
-<span id="id1"></span><h3>goto<a class="headerlink" href="#ref-library-goto" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3>goto<a class="headerlink" href="#ref-library-goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific row in current filelist.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">row</span></code></p>
 <dl class="simple">
@@ -962,7 +970,7 @@ a directory, the library is loaded for this directory.</p>
 </dl>
 </div>
 <div class="section" id="ref-library-scroll">
-<span id="id2"></span><h3>scroll<a class="headerlink" href="#ref-library-scroll" title="Permalink to this headline">¶</a></h3>
+<span id="id3"></span><h3>scroll<a class="headerlink" href="#ref-library-scroll" title="Permalink to this headline">¶</a></h3>
 <p>Scroll the library in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
 <p>The behaviour is similar to the file manager ranger.</p>
@@ -986,8 +994,8 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <div class="section" id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id21">
-<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id22">
+<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id22" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1013,7 +1021,7 @@ a directory, the library is loaded for this directory.</p>
 </tbody>
 </table>
 <div class="section" id="ref-thumbnail-goto">
-<span id="id3"></span><h3>goto<a class="headerlink" href="#ref-thumbnail-goto" title="Permalink to this headline">¶</a></h3>
+<span id="id4"></span><h3>goto<a class="headerlink" href="#ref-thumbnail-goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific thumbnail in current filelist.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
 <dl class="simple">
@@ -1029,11 +1037,11 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> Select [count]th thubnail instead.</p>
 </div>
 <div class="section" id="ref-thumbnail-open-selected">
-<span id="id4"></span><h3>open-selected<a class="headerlink" href="#ref-thumbnail-open-selected" title="Permalink to this headline">¶</a></h3>
+<span id="id5"></span><h3>open-selected<a class="headerlink" href="#ref-thumbnail-open-selected" title="Permalink to this headline">¶</a></h3>
 <p>Open the currently selected thumbnail in image mode.</p>
 </div>
 <div class="section" id="ref-thumbnail-scroll">
-<span id="id5"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Permalink to this headline">¶</a></h3>
+<span id="id6"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Permalink to this headline">¶</a></h3>
 <p>Scroll to another thumbnail in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
 <dl class="simple">
@@ -1045,7 +1053,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-thumbnail-zoom">
-<span id="id6"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Permalink to this headline">¶</a></h3>
+<span id="id7"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Permalink to this headline">¶</a></h3>
 <p>Zoom the current widget.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
 <dl class="simple">
@@ -1057,10 +1065,10 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 </div>
-<div class="section" id="id7">
-<h2>Command<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id22">
-<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id22" title="Permalink to this table">¶</a></caption>
+<div class="section" id="id8">
+<h2>Command<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default" id="id23">
+<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id23" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1126,7 +1134,7 @@ a directory, the library is loaded for this directory.</p>
 <p>Leave command mode.</p>
 </div>
 <div class="section" id="ref-command-nop">
-<span id="id8"></span><h3>nop<a class="headerlink" href="#ref-command-nop" title="Permalink to this headline">¶</a></h3>
+<span id="id9"></span><h3>nop<a class="headerlink" href="#ref-command-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove default keybindings by explicitly binding them to
 nop.</p>
@@ -1134,8 +1142,8 @@ nop.</p>
 </div>
 <div class="section" id="manipulate">
 <h2>Manipulate<a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h2>
-<table class="colwidths-given docutils align-default" id="id23">
-<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id23" title="Permalink to this table">¶</a></caption>
+<table class="colwidths-given docutils align-default" id="id24">
+<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id24" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 25%" />
 <col style="width: 75%" />
@@ -1198,7 +1206,7 @@ nop.</p>
 <p>Leave manipulate applying the changes to file.</p>
 </div>
 <div class="section" id="ref-manipulate-command">
-<span id="id9"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Permalink to this headline">¶</a></h3>
+<span id="id10"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Permalink to this headline">¶</a></h3>
 <p>Enter command mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
 <dl class="simple">
@@ -1225,11 +1233,11 @@ nop.</p>
 <p>Discard any changes and leave manipulate.</p>
 </div>
 <div class="section" id="ref-manipulate-fullscreen">
-<span id="id10"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Permalink to this headline">¶</a></h3>
+<span id="id11"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
 </div>
 <div class="section" id="ref-manipulate-goto">
-<span id="id11"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Permalink to this headline">¶</a></h3>
+<span id="id12"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Permalink to this headline">¶</a></h3>
 <p>Set the value of the current manipulation.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">value</span></code></p>
 <dl class="simple">
@@ -1241,7 +1249,7 @@ nop.</p>
 <p><strong>count:</strong> Set the manipulation to [count] instead.</p>
 </div>
 <div class="section" id="ref-manipulate-help">
-<span id="id12"></span><h3>help<a class="headerlink" href="#ref-manipulate-help" title="Permalink to this headline">¶</a></h3>
+<span id="id13"></span><h3>help<a class="headerlink" href="#ref-manipulate-help" title="Permalink to this headline">¶</a></h3>
 <p>Show help on a command or setting.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:help</span> <span class="pre">topic</span></code></p>
 <dl class="simple">
@@ -1268,7 +1276,7 @@ nop.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-manipulate-keybindings">
-<span id="id13"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Permalink to this headline">¶</a></h3>
+<span id="id14"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with keybindings information.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
 <dl class="simple">
@@ -1279,7 +1287,7 @@ nop.</p>
 </dl>
 </div>
 <div class="section" id="ref-manipulate-next">
-<span id="id14"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
+<span id="id15"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
 <p>Focus the next manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
@@ -1289,13 +1297,13 @@ nop.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-manipulate-nop">
-<span id="id15"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
+<span id="id16"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove default keybindings by explicitly binding them to
 nop.</p>
 </div>
 <div class="section" id="ref-manipulate-prev">
-<span id="id16"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
+<span id="id17"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
 <p>Focus the previous manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
@@ -1305,7 +1313,7 @@ nop.</p>
 <p><strong>count:</strong> multiplier</p>
 </div>
 <div class="section" id="ref-manipulate-set">
-<span id="id17"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
+<span id="id18"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
 <p>Set an option.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
 <dl class="simple">

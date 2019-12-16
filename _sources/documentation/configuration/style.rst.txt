@@ -1,3 +1,5 @@
+.. _styles:
+
 Style
 =====
 There are two default styles: a light and a dark one. They are both based upon

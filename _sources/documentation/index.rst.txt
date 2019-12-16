@@ -11,6 +11,7 @@ The following documents are available:
    commands
    configuration/index
    contributing
+   migrating
 
 .. include:: getting_help.rst
 
