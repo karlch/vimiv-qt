@@ -13,7 +13,6 @@ from contextlib import contextmanager
 from pstats import Stats
 from typing import Any, Iterator
 
-from . import log
 from .customtypes import FuncT
 
 
@@ -26,7 +25,7 @@ def timed(function: FuncT) -> FuncT:
         start = time.time()
         return_value = function(*args, **kwargs)
         elapsed_in_ms = (time.time() - start) * 1000
-        log.info("%s: took %.3f ms", function.__qualname__, elapsed_in_ms)
+        print(f"{function.__qualname__}: took {elapsed_in_ms:.3f} ms")
         return return_value
 
     # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
