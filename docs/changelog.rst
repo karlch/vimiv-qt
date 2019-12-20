@@ -38,6 +38,8 @@ Fixed:
 * The ``-s`` command line option to temporarily set an option. Broken since v0.4.0.
 * Support for some jpg files not recognized by the ``imghdr`` module. Thanks
   `@maximbaz <https://github.com/maximbaz>`_ for the help.
+* Undefined behaviour when running ``:enter command``. This now displays an error
+  message and hints that ``:command`` or ``:search`` should be used instead.
 
 
 v0.4.1 (2019-12-01)
