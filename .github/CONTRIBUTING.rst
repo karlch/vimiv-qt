@@ -49,7 +49,7 @@ If you want to find something to do, check the
 As this is my first larger project, comments and improvements to the existing
 code base are more than welcome.
 
-`writing plugins <https://karlch.github.io/vimiv-qt/documentation/hacking#writing-plugins>`_
+`Writing plugins <https://karlch.github.io/vimiv-qt/documentation/hacking#writing-plugins>`_
 is also a great option without having to work with the vimiv
 codebase. For some inspiration you could take a look at
 `issues that could be realized using plugins <https://github.com/karlch/vimiv-qt/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin>`_.
