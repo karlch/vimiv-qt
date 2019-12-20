@@ -11,13 +11,24 @@ import pytest
 from vimiv.api import status
 
 
-def test_add_status_module():
-    @status.module("{dummy}")
-    def dummy_method():
-        return "dummy"
+@pytest.fixture()
+def dummy_module():
+    """Fixture to create and clean-up a valid status module."""
+    name = "{dummy}"
+    content = "dummy"
 
-    assert status.evaluate("Dummy: {dummy}") == "Dummy: dummy"
-    del status._modules["{dummy}"]  # Cleanup
+    @status.module(name)
+    def dummy_method():
+        return content
+
+    yield name, content
+
+    del status._modules[name]
+
+
+def test_evaluate_status_module(dummy_module):
+    name, content = dummy_module
+    assert status.evaluate(f"Dummy: {name}") == f"Dummy: {content}"
 
 
 def test_fail_add_status_module():
@@ -28,7 +39,6 @@ def test_fail_add_status_module():
             return "wrong"
 
 
-def test_log_unknown_module(mocker):
-    mocker.patch.object(status, "_log_unknown_module")
-    assert status.evaluate("Dummy: {unknown}") == "Dummy: "
-    assert status._log_unknown_module.call_count == 1
+def test_evaluate_unknown_module(mocker):
+    name = "{unknown-module}"
+    assert status.evaluate(f"Dummy: {name}") == "Dummy: "
