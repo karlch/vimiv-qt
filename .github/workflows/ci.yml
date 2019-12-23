@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toxenv: [pyqt513-cov, lint, packaging, mypy]
+        toxenv: [pyqt513, pyqt514-cov, lint, packaging, mypy]
       fail-fast: false
     steps:
     - uses: actions/checkout@v1
@@ -61,4 +61,4 @@ jobs:
         codecov -X gcov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.toxenv == 'pyqt513-cov'
+      if: matrix.toxenv == 'pyqt514-cov'
