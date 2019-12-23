@@ -14,9 +14,11 @@ from vimiv import plugins
 
 
 @pytest.fixture
-def mock_plugin():
+def mock_plugin(mocker):
     name = "mock_plugin"
     info = "useful"
+    mocker.patch("mock_plugin.init")
+    mocker.patch("mock_plugin.cleanup")
     plugins._load_plugin(name, info, os.path.abspath("."))
     plugins.cleanup()
     yield plugins._loaded_plugins[name], info

@@ -6,8 +6,10 @@
 
 """Mock plugin to test loading a plugin."""
 
-from unittest import mock
+
+def init(_info: str, *args, **kwargs):
+    pass
 
 
-init = mock.MagicMock()
-cleanup = mock.MagicMock()
+def cleanup(*args, **kwargs):
+    pass
