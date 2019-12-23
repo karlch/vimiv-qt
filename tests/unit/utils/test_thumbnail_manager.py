@@ -48,5 +48,5 @@ def check_thumbails_created(qtbot, manager, n_paths):
     def wait_thread():
         assert manager.pool.activeThreadCount() == 0
 
-    qtbot.waitUntil(wait_thread)
+    qtbot.waitUntil(wait_thread, timeout=30000)
     assert len(os.listdir(manager.directory)) == n_paths

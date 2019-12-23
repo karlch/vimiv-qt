@@ -155,7 +155,7 @@ def wait_for_external_command(qtbot):
     def external_finished():
         assert runner.state() == QProcess.NotRunning, "external command timed out"
 
-    qtbot.waitUntil(external_finished, timeout=100)
+    qtbot.waitUntil(external_finished, timeout=30000)
 
 
 @bdd.when("I wait for the working directory handler")

@@ -77,6 +77,7 @@ Feature: Run search in different modes.
         And I run open-selected
         Then there should be 0 search matches
 
+    @flaky
     Scenario: Re-run search when working directory was updated
         Given I open a directory with 5 paths
         When I search for 1
