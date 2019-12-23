@@ -12,34 +12,24 @@ import time
 
 import pytest
 
-from PyQt5.QtCore import QThreadPool
-from PyQt5.QtWidgets import QApplication
-
 import vimiv.app
 from vimiv.utils import asyncrun
 
 
-@pytest.fixture()
-def app(mocker):
-    mocker.patch.object(QApplication, "exit")  # Do not want to quit the global app
-    instance = vimiv.app.Application()
-    QThreadPool.globalInstance().waitForDone()  # Ensure parallel tasks are done
-    yield instance
-    instance.quit()
-    QApplication.exit.assert_called_with(0)
-
-
 @pytest.mark.ci_skip
-def test_load_icon(app):
-    assert not app.windowIcon().isNull()
+def test_load_icon(qtbot):
+    icon = vimiv.app.Application.get_icon()
+    assert not icon.isNull()
 
 
-def test_wait_for_running_processes(mocker, app):
+def test_wait_for_running_processes(mocker):
+    """Ensure any running threads are completed before the app exits."""
+
     def process():
         time.sleep(0.001)
         callback()
 
     callback = mocker.Mock()
     asyncrun(process)
-    app.quit()
+    vimiv.app.Application.preexit(0)
     callback.assert_called_once()

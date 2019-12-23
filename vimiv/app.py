@@ -55,17 +55,24 @@ class Application(QApplication):
     @utils.asyncfunc()
     def _set_icon(self) -> None:
         """Set window icon of vimiv."""
+        icon = self.get_icon()
+        if icon.isNull():
+            utils.log.error("Failed loading icon")
+        else:
+            self.setWindowIcon(icon)
+
+    @classmethod
+    def get_icon(cls) -> QIcon:  # pragma: no cover  # Async
+        """Retrieve window icon of vimiv from theme or project directory."""
         _logger.debug("Trying to retrieve icon from theme")
         icon = QIcon.fromTheme(vimiv.__name__)
         if icon.isNull():
             _logger.debug("Trying to retrieve icon from project directory")
-            icon = self._icon_from_project_directory()
-            if icon.isNull():
-                utils.log.error("Failed loading icon")
-                return
-        self.setWindowIcon(icon)
+            icon = cls._icon_from_project_directory()
+        return icon
 
-    def _icon_from_project_directory(self) -> QIcon:  # pragma: no cover  # Async
+    @classmethod
+    def _icon_from_project_directory(cls) -> QIcon:  # pragma: no cover  # Async
         """Try to retrieve the icon from the icons folder.
 
         Useful if vimiv was not installed but is used from the git project.
