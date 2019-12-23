@@ -62,7 +62,7 @@ class Application(QApplication):
             self.setWindowIcon(icon)
 
     @classmethod
-    def get_icon(cls) -> QIcon:
+    def get_icon(cls) -> QIcon:  # pragma: no cover  # Async
         """Retrieve window icon of vimiv from theme or project directory."""
         _logger.debug("Trying to retrieve icon from theme")
         icon = QIcon.fromTheme(vimiv.__name__)
@@ -72,7 +72,7 @@ class Application(QApplication):
         return icon
 
     @classmethod
-    def _icon_from_project_directory(cls) -> QIcon:
+    def _icon_from_project_directory(cls) -> QIcon:  # pragma: no cover  # Async
         """Try to retrieve the icon from the icons folder.
 
         Useful if vimiv was not installed but is used from the git project.
