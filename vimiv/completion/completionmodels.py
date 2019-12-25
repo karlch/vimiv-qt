@@ -16,13 +16,6 @@ from vimiv.commands import aliases
 from vimiv.utils import files, trash_manager, escape_ws, unescape_ws
 
 
-class Empty(api.completion.BaseModel):
-    """Empty completion model used as fallback."""
-
-    def __init__(self):
-        super().__init__("")
-
-
 class CommandModel(api.completion.BaseModel):
     """Completion model filled with commands and descriptions."""
 
@@ -271,7 +264,6 @@ class HelpModel(api.completion.BaseModel):
 
 def init():
     """Create completion models."""
-    Empty()
     CommandModel()
     ExternalCommandModel()
     SettingsModel()

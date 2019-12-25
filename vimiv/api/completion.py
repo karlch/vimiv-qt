@@ -94,6 +94,7 @@ class FilterProxyModel(QSortFilterProxyModel):
     Attributes:
         unmatched: Unmatched part of the commandline text to insert when accepting a
             completion.
+        _empty: Empty completion model used as fallback.
     """
 
     FILTER_RE = re.compile(r"(.)( *\d* *)(.*)")
@@ -103,6 +104,7 @@ class FilterProxyModel(QSortFilterProxyModel):
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
         self.unmatched = ""
+        self._empty = BaseModel("")
 
     def refilter(self, text: str) -> None:
         """Filter completions based on text in the command line.
@@ -156,7 +158,7 @@ class FilterProxyModel(QSortFilterProxyModel):
         """Reset regular expression, unmatched string and source model."""
         self.setFilterRegExp("")
         self.unmatched = ""
-        self.setSourceModel(BaseModel(""))
+        self.setSourceModel(self._empty)
 
     def sourceModel(self) -> "BaseModel":
         # We know we are only using the BaseFilter with BaseModel

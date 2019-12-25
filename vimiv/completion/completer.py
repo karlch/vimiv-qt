@@ -44,6 +44,10 @@ class Completer(QObject):
     def model(self) -> api.completion.BaseModel:
         return self.proxy_model.sourceModel()
 
+    @property
+    def has_completions(self) -> bool:
+        return self.proxy_model.rowCount() > 0
+
     @utils.slot
     def _init_models(self):
         completionmodels.init()
@@ -53,9 +57,7 @@ class Completer(QObject):
         # Set model according to text, defaults are not possible as
         # :command accepts arbitrary text as argument
         self._update_proxy_model(text)
-        # Show if the model is not empty
-        self._maybe_show()
-        self._completion.raise_()
+        self._show_unless_empty()
 
     @utils.slot
     def _on_text_changed(self, text: str):
@@ -65,6 +67,7 @@ class Completer(QObject):
         # Update model
         self._update_proxy_model(text)
         self.model.on_text_changed(text)
+        self._show_unless_empty()
 
     @utils.slot
     def _on_editing_finished(self):
@@ -86,13 +89,16 @@ class Completer(QObject):
             self._completion.update_column_widths()
         self.proxy_model.refilter(text)
 
-    def _maybe_show(self):
-        """Show completion widget if the model is not empty."""
-        if not isinstance(self._proxy_model.sourceModel(), completionmodels.Empty):
-            self._completion.show()
-
     @utils.slot
     def _complete(self, text: str):
         """Set commandline text including unmatched part (e.g. count) on completion."""
         prefix, textpart = text[0], text[1:]
         self._cmd.setText(prefix + self.proxy_model.unmatched + textpart)
+
+    def _show_unless_empty(self):
+        """Show completion widget if there are completions, hide it otherwise."""
+        if not self.has_completions:
+            self._completion.hide()
+        elif not self._completion.isVisible():
+            self._completion.show()
+            self._completion.raise_()
