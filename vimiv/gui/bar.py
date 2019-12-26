@@ -97,7 +97,6 @@ class Bar(QWidget):
     def _on_editing_finished(self):
         """Leave command mode on the editingFinished signal."""
         self._commandline.setText("")
-        self._completer.reset()
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
         api.modes.COMMAND.leave()

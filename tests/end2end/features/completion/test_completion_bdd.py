@@ -38,7 +38,7 @@ def check_completion_model(completer, model):
         "tag": completionmodels.TagModel,
         "help": completionmodels.HelpModel,
     }
-    assert isinstance(completer._proxy_model.sourceModel(), models[model])
+    assert isinstance(completer.model, models[model])
 
 
 @bdd.then(bdd.parsers.parse("the model mode should be {mode}"))

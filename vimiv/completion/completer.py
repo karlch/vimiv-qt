@@ -22,14 +22,12 @@ class Completer(QObject):
     Attributes:
         _cmd: CommandLine object.
         _completion: CompletionWidget object.
-        _proxy_model: The completion filter used.
     """
 
     @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__()
 
-        self._proxy_model = None
         self._cmd = commandline
         self._completion = completion
 
@@ -37,6 +35,14 @@ class Completer(QObject):
         api.modes.COMMAND.first_entered.connect(self._init_models)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
+
+    @property
+    def proxy_model(self) -> api.completion.FilterProxyModel:
+        return self._completion.model()
+
+    @property
+    def model(self) -> api.completion.BaseModel:
+        return self.proxy_model.sourceModel()
 
     @utils.slot
     def _init_models(self):
@@ -51,10 +57,6 @@ class Completer(QObject):
         self._maybe_show()
         self._completion.raise_()
 
-    def reset(self):
-        """Reset completion to empty model when leaving."""
-        self._proxy_model = api.completion.get_module("", api.modes.current())
-
     @utils.slot
     def _on_text_changed(self, text: str):
         """Update completions when text changed."""
@@ -62,13 +64,13 @@ class Completer(QObject):
         self._completion.selectionModel().clear()
         # Update model
         self._update_proxy_model(text)
-        self._proxy_model.sourceModel().on_text_changed(text)
+        self.model.on_text_changed(text)
 
     @utils.slot
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
         self._completion.selectionModel().clear()
-        self._proxy_model.reset()
+        self.proxy_model.reset()
         self._completion.hide()
 
     def _update_proxy_model(self, text: str):
@@ -77,13 +79,12 @@ class Completer(QObject):
         Args:
             text: Text in the commandline which defines the model.
         """
-        proxy_model = api.completion.get_module(text, api.modes.COMMAND.last)
-        if proxy_model != self._proxy_model:
-            proxy_model.sourceModel().on_enter(text)
-            self._proxy_model = proxy_model
-            self._completion.setModel(proxy_model)
+        model = api.completion.get_model(text, api.modes.COMMAND.last)
+        if model != self.model:
+            model.on_enter(text)
+            self.proxy_model.setSourceModel(model)
             self._completion.update_column_widths()
-        self._proxy_model.refilter(text)
+        self.proxy_model.refilter(text)
 
     def _maybe_show(self):
         """Show completion widget if the model is not empty."""
@@ -94,4 +95,4 @@ class Completer(QObject):
     def _complete(self, text: str):
         """Set commandline text including unmatched part (e.g. count) on completion."""
         prefix, textpart = text[0], text[1:]
-        self._cmd.setText(prefix + self._proxy_model.unmatched + textpart)
+        self._cmd.setText(prefix + self.proxy_model.unmatched + textpart)
