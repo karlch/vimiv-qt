@@ -280,7 +280,10 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
 
         **count:** Select [count]th thubnail instead.
         """
-        index = number_for_command(index, count, max_count=self.count())
+        try:
+            index = number_for_command(index, count, max_count=self.count())
+        except ValueError:
+            raise api.commands.CommandError("Either index or count is required")
         self._select_item(index)
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)

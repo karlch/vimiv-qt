@@ -23,3 +23,8 @@ from vimiv import commands
 )
 def test_number_for_command(number, count, max_count, expected):
     assert commands.number_for_command(number, count, max_count=max_count) == expected
+
+
+def test_fail_number_for_command():
+    with pytest.raises(ValueError):
+        commands.number_for_command(None, None, max_count=42)

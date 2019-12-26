@@ -236,7 +236,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
     @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def goto(self, row: int, open_selected: bool = False, count: Optional[int] = None):
+    def goto(
+        self,
+        row: Optional[int],
+        open_selected: bool = False,
+        count: Optional[int] = None,
+    ):
         """Select specific row in current filelist.
 
         **syntax:** ``:goto row``
@@ -251,7 +256,10 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         **count:** Select [count]th element instead.
         """
-        row = number_for_command(row, count, max_count=self.model().rowCount())
+        try:
+            row = number_for_command(row, count, max_count=self.model().rowCount())
+        except ValueError:
+            raise api.commands.CommandError("Either row or count is required")
         self._select_row(row, open_selected_image=open_selected)
 
     def update_width(self):

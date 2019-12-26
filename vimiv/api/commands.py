@@ -250,6 +250,8 @@ class _CommandArguments(argparse.ArgumentParser):
             }
         if argtype == typing.List[str]:
             return {"type": str, "nargs": "*"}
+        if not optional and argtype == typing.Optional[int]:  # Can be replaced by count
+            return {"type": int, "nargs": "?", "default": None}
         if optional and argtype is bool:
             return {"action": "store_true"}
         if optional:

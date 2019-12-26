@@ -72,3 +72,15 @@ Feature: Scrolling the library.
         When I enter thumbnail mode
         And I run goto 2
         Then the library row should be 2
+
+    Scenario: Select row with goto using only count
+        Given I open a directory with 2 paths
+        When I run 2goto
+        Then the library row should be 2
+
+    Scenario: Display error when neither row nor count is passed to goto
+        Given I open a directory with 2 paths
+        When I run goto
+        Then the message
+            'goto: Either row or count is required'
+            should be displayed
