@@ -8,8 +8,7 @@
 
 A completion module offers a model with options for command line completion and a filter
 that decides which results are filtered depending on the text in the command line. All
-completion models inherit from the :class:`BaseModel` class while the filters inherit
-from :class:`BaseFilter`.
+completion models inherit from the :class:`BaseModel` class.
 
 A completion module must define for which command line text it is valid. In addition, it
 can provide a custom filter as well as custom column widths for the results shown. By
@@ -52,8 +51,8 @@ For an overview of implemented models, feel free to take a look at the ones defi
 ``vimiv.completion.completionmodels``.
 """
 
-import string
-from typing import cast, Dict, Iterable, Tuple, Optional
+import re
+from typing import cast, Dict, Iterable, Tuple
 
 from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -65,8 +64,8 @@ from . import modes, settings
 _logger = log.module_logger(__name__)
 
 
-def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
-    """Return the completion module which is valid for a given command line text.
+def get_model(text: str, mode: modes.Mode) -> "BaseModel":
+    """Return the completion model which is valid for a given command line text.
 
     Args:
         text: The current command line text.
@@ -74,53 +73,92 @@ def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
     Returns:
         A completion model providing completion options.
     """
-    best_match, best_match_size = cast(BaseFilter, None), -1
-    for required_text, module in _modules.items():
-        if mode in module.sourceModel().modes:
+    best_match, best_match_size = cast(BaseModel, None), -1
+    for required_text, model in _models.items():
+        if mode in model.modes:
             match_size = len(required_text)
             if text.startswith(required_text) and len(required_text) > best_match_size:
-                best_match, best_match_size = module, match_size
-    _logger.debug("Model '%s' for text '%s'", best_match.sourceModel(), text)
+                best_match, best_match_size = model, match_size
+    _logger.debug("Model '%s' for text '%s'", best_match, text)
     return best_match
 
 
-class BaseFilter(QSortFilterProxyModel):
-    """Base filter used for completion filters."""
+class FilterProxyModel(QSortFilterProxyModel):
+    """Proxy model to filter completions from a model using a regular expression.
+
+    Class Attributes:
+        FILTER_RE: Regular expression used to separate prefix, unmatched and command.
+            The command and prefix are used for matching, the unmatched part is ignored
+            and includes additional whitespace and the count.
+
+    Attributes:
+        unmatched: Unmatched part of the commandline text to insert when accepting a
+            completion.
+        _empty: Empty completion model used as fallback.
+    """
+
+    FILTER_RE = re.compile(r"(.)( *\d* *)(.*)")
 
     def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.unmatched = ""
+        self._empty = BaseModel("")
 
     def refilter(self, text: str) -> None:
         """Filter completions based on text in the command line.
 
-        This updates the text according to the ``filtertext`` method and updates the
-        filter regular expression.
+        The regular expression used for filtering:
+        * Matches prefix
+        * Ignores whitespace between prefix and the command
+        * Ignores count between prefix and command
+
+        For usual completion:
+        * Matches all words of the command before the last one exactly
+        * Matches inside the last word of the command
+
+        For fuzzy completion:
+        * Matches all characters in the command
 
         Args:
             text: The current command line text.
         """
-        text = self.filtertext(text)
+        match = self.FILTER_RE.match(text)
+        if match is None:  # Only happens when there is no prefix
+            self.reset()
+            return
+        prefix, self.unmatched, command = match.groups()
         if settings.completion.fuzzy.value:
-            text = "*".join(text)
-        self.setFilterWildcard(text)
+            self._set_fuzzy_completion_regex(prefix, command)
+        else:
+            self._set_completion_regex(prefix, command)
+
+    def _set_completion_regex(self, prefix: str, command: str) -> None:
+        """Set regular expression for filtering completions.
+
+        Prefix and all words except for the last one in the command are matched exactly.
+        The last word in the command must only be matched inside.
+
+        Args:
+            prefix: Current command line prefix character.
+            command: Current command text in the command line.
+        """
+        parts = command.split()
+        if len(parts) > 1:
+            prefix = prefix + " ".join(parts[:-1])
+            command = parts[-1]
+        regex = prefix + f" *.*{command}.*"
+        self.setFilterRegExp(regex)
+
+    def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
+        self.setFilterRegExp(".*".join(prefix + command))
 
     def reset(self) -> None:
+        """Reset regular expression, unmatched string and source model."""
         self.setFilterRegExp("")
-
-    def filtertext(self, text: str) -> str:
-        """Update text for filtering.
-
-        This default implementation strips command line prefixes and leading digits. If
-        the child class requires additional logic, it should override this method.
-
-        Args:
-            text: The current command line text.
-        Returns:
-            The updated text used as completion filter.
-        """
-        return text.lstrip(":/?" + string.digits)
+        self.unmatched = ""
+        self.setSourceModel(self._empty)
 
     def sourceModel(self) -> "BaseModel":
         # We know we are only using the BaseFilter with BaseModel
@@ -138,7 +176,6 @@ class BaseModel(QStandardItemModel):
     def __init__(
         self,
         text: str,
-        text_filter: Optional[BaseFilter] = None,
         column_widths: Tuple[float, ...] = (1,),
         valid_modes: Tuple[modes.Mode, ...] = modes.ALL,
     ):
@@ -146,17 +183,13 @@ class BaseModel(QStandardItemModel):
 
         Args:
             text: The text in the commandline for which this module is valid.
-            text_filter: Filter class used to filter valid completions.
             column_widths: Width of each column shown in the completion widget.
             valid_modes: Modes for which this completion model is valid.
         """
         super().__init__()
         self.column_widths = column_widths
         self.modes = valid_modes
-        # Register module using the filter
-        text_filter = text_filter if text_filter is not None else BaseFilter()
-        text_filter.setSourceModel(self)
-        _modules[text] = text_filter
+        _models[text] = self
 
     def __str__(self) -> str:
         return self.__class__.__qualname__
@@ -185,6 +218,7 @@ class BaseModel(QStandardItemModel):
         Args:
             data: List of tuples containing the data for each row.
         """
+        self.clear()
         for item in data:
             row = (
                 QStandardItem(" " + elem if i == 0 else elem)
@@ -194,4 +228,4 @@ class BaseModel(QStandardItemModel):
         self.sort(0)  # Sort according to the actual text
 
 
-_modules: Dict[str, BaseFilter] = {}
+_models: Dict[str, BaseModel] = {}

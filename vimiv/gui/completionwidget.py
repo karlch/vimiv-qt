@@ -48,6 +48,7 @@ class CompletionView(widgets.FlatTreeView):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setEditTriggers(self.NoEditTriggers)
+        self.setModel(api.completion.FilterProxyModel())
 
         self.hide()
 

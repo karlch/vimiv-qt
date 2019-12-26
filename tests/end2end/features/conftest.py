@@ -131,13 +131,6 @@ def leave_mode(mode):
     api.modes.get_by_name(mode).leave()
 
 
-@bdd.when(bdd.parsers.parse('I enter command mode with "{text}"'))
-def enter_command_with_text(commandline, text):
-    api.modes.COMMAND.enter()
-    commandline.setText(":" + text)
-    commandline.textEdited.emit(":" + text)
-
-
 @bdd.when(bdd.parsers.parse("I resize the window to {size}"))
 def resize_main_window(mainwindow, size):
     width = int(size.split("x")[0])
@@ -300,3 +293,8 @@ def check_not_directory_exists(name):
 @bdd.then(bdd.parsers.parse("the count should be {number:d}"))
 def check_count(counter, number):
     assert counter.number == number
+
+
+@bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
+def check_commandline_text(commandline, text):
+    assert commandline.text() == text

@@ -7,19 +7,13 @@
 """Various completion models for command line completion."""
 
 import os
+import re
 from functools import lru_cache
 from typing import List, Set, Tuple
 
 from vimiv import api
 from vimiv.commands import aliases
 from vimiv.utils import files, trash_manager, escape_ws, unescape_ws
-
-
-class Empty(api.completion.BaseModel):
-    """Empty completion model used as fallback."""
-
-    def __init__(self):
-        super().__init__("")
 
 
 class CommandModel(api.completion.BaseModel):
@@ -30,7 +24,6 @@ class CommandModel(api.completion.BaseModel):
 
     def on_enter(self, _text: str) -> None:
         """Create command list for appropriate mode when commandline is entered."""
-        self.clear()
         mode = api.modes.COMMAND.last
         self.set_data(self.formatted_commands(mode) + self.formatted_aliases(mode))
 
@@ -38,7 +31,7 @@ class CommandModel(api.completion.BaseModel):
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [
-            (name, command.description)
+            (f":{name}", command.description)
             for name, command in api.commands.items(mode)
             if not command.hide
         ]
@@ -66,7 +59,7 @@ class ExternalCommandModel(api.completion.BaseModel):
         if self._initialized:
             return
         executables = self._get_executables()
-        self.set_data((f"!{cmd}",) for cmd in executables if not cmd.startswith("."))
+        self.set_data((f":!{cmd}",) for cmd in executables if not cmd.startswith("."))
         self._initialized = True
 
     def _get_executables(self) -> List[str]:
@@ -85,22 +78,6 @@ class ExternalCommandModel(api.completion.BaseModel):
         return []
 
 
-class StripFilter(api.completion.BaseFilter):
-    """Completion filter used for the :command type completions.
-
-    Attributes:
-        _command: The command for which this filter is valid.
-    """
-
-    def __init__(self, command):
-        super().__init__()
-        self._command = command
-
-    def filtertext(self, text: str) -> str:
-        """Additionally strip command to allow match inside word."""
-        return super().filtertext(text.replace(f"{self._command} ", ""))
-
-
 class PathModel(api.completion.BaseModel):
     """Completion model filled with valid paths for path-like commands.
 
@@ -110,10 +87,9 @@ class PathModel(api.completion.BaseModel):
     """
 
     def __init__(self, command, valid_modes=api.modes.GLOBALS):
-        super().__init__(
-            f":{command} ", text_filter=StripFilter(command), valid_modes=valid_modes
-        )
+        super().__init__(f":{command} ", valid_modes=valid_modes)
         self._command = command
+        self._directory_re = re.compile(rf"(: *{command} *)(.*)")
         self._last_directory = ""
 
     def on_enter(self, text: str) -> None:
@@ -128,45 +104,41 @@ class PathModel(api.completion.BaseModel):
             return
         # Prepare
         self._last_directory = os.path.abspath(directory)
-        self.clear()
         # No completinos for non-existent directory
         if not os.path.isdir(os.path.expanduser(directory)):
             return
         # Retrieve supported paths
         images, directories = files.supported(files.listdir(directory))
         # Format data
-        data = [
+        self.set_data(
             self._create_row(os.path.join(directory, os.path.basename(path)))
             for path in images + directories
-        ]
-        self.set_data(data)
+        )
 
     def _create_row(self, path):
-        return (f"{self._command} {escape_ws(path)}",)
+        return (f":{self._command} {escape_ws(path)}",)
 
-    @staticmethod
-    def _get_directory(text: str) -> str:
+    def _get_directory(self, text: str) -> str:
         """Retrieve directory for which the path completion is created."""
-        if not text:
+        match = self._directory_re.match(text)
+        if not match:
             return "."
-        if "/" not in text:
-            return unescape_ws(text) if os.path.isdir(text) else "."
-        return unescape_ws(os.path.dirname(text))
+        _prefix, directory = match.groups()
+        if "/" not in directory:
+            return unescape_ws(directory) if os.path.isdir(directory) else "."
+        return unescape_ws(os.path.dirname(directory))
 
 
 class SettingsModel(api.completion.BaseModel):
     """Completion model filled with valid options for the :set command."""
 
     def __init__(self):
-        super().__init__(
-            ":set ", text_filter=StripFilter("set"), column_widths=(0.4, 0.1, 0.5)
-        )
-        data = [
-            (f"set {name}", str(setting), setting.desc)
+        super().__init__(":set ", column_widths=(0.4, 0.1, 0.5))
+        self.set_data(
+            (f":set {name}", str(setting), setting.desc)
             for name, setting in api.settings.items()
             if not setting.hidden
-        ]
-        self.set_data(data)
+        )
 
 
 class SettingsOptionModel(api.completion.BaseModel):
@@ -178,9 +150,7 @@ class SettingsOptionModel(api.completion.BaseModel):
 
     def __init__(self, setting: api.settings.Setting):
         super().__init__(
-            f":set {setting.name}",
-            text_filter=StripFilter(f"set {setting.name}"),
-            column_widths=(0.5, 0.5),
+            f":set {setting.name}", column_widths=(0.5, 0.5),
         )
         self._setting = setting
         self.setSortRole(3)
@@ -195,15 +165,13 @@ class SettingsOptionModel(api.completion.BaseModel):
         }
         for i, suggestion in enumerate(self._setting.suggestions(), start=1):
             values[f"suggestion {i}"] = suggestion
-        data = [
-            (f"set {self._setting.name} {value}", option)
+        self.set_data(
+            (f":set {self._setting.name} {value}", option)
             for option, value in values.items()
-        ]
-        self.set_data(data)
+        )
 
     def _on_changed(self, _value):
         """Update data if the value of the setting has changed."""
-        self.clear()
         self._update_data()
 
 
@@ -215,15 +183,13 @@ class TrashModel(api.completion.BaseModel):
             ":undelete ",
             column_widths=(0.4, 0.45, 0.15),
             valid_modes=api.modes.GLOBALS,
-            text_filter=StripFilter("undelete"),
         )
 
     def on_enter(self, text: str) -> None:
         """Update trash model on enter to include any newly un-/deleted paths."""
-        self.clear()
         data = []
         for path in files.listdir(trash_manager.files_directory()):
-            cmd = f"undelete {os.path.basename(path)}"
+            cmd = f":undelete {os.path.basename(path)}"
             # Get info and format it neatly
             original, date = trash_manager.trash_info(path)
             original = original.replace(os.path.expanduser("~"), "~")
@@ -250,35 +216,28 @@ class TagModel(api.completion.BaseModel):
     def __init__(self, suffix):
         self._command = f"tag-{suffix}"
         super().__init__(
-            f":{self._command} ",
-            valid_modes=api.modes.GLOBALS,
-            text_filter=StripFilter(self._command),
+            f":{self._command} ", valid_modes=api.modes.GLOBALS,
         )
 
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
-        self.clear()
-        data = (
-            (f"{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
+        self.set_data(
+            (f":{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
         )
-        self.set_data(data)
 
 
 class HelpModel(api.completion.BaseModel):
     """Completion model filled with options for :help."""
 
     def __init__(self):
-        super().__init__(
-            ":help", column_widths=(0.3, 0.7), text_filter=StripFilter("help")
-        )
-        self._general = [("help  vimiv", "General information")]
+        super().__init__(":help", column_widths=(0.3, 0.7))
+        self._general = [(":help  vimiv", "General information")]
         self._formatted_settings = [
-            (f"help {name}", setting.desc) for name, setting in api.settings.items()
+            (f":help {name}", setting.desc) for name, setting in api.settings.items()
         ]
 
     def on_enter(self, _text: str) -> None:
         """Create help list for appropriate mode when model is entered."""
-        self.clear()
         mode = api.modes.COMMAND.last
         self.set_data(
             self._general + self.formatted_commands(mode) + self._formatted_settings
@@ -288,14 +247,13 @@ class HelpModel(api.completion.BaseModel):
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [
-            (f"help :{name}", command.description)
+            (f":help :{name}", command.description)
             for name, command in api.commands.items(mode)
         ]
 
 
 def init():
     """Create completion models."""
-    Empty()
     CommandModel()
     ExternalCommandModel()
     SettingsModel()

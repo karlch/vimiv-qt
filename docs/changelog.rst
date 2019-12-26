@@ -29,6 +29,10 @@ Changed:
 
 * Saner default step for mouse zoom. Thanks
   `@OliverLew <https://github.com/OliverLew>`_ for catching this.
+* Completion api no longer provides a ``BaseFilter`` class. Instead, the
+  ``FilterProxyModel`` is always used for completion filtering. Customization can only
+  be done by adding new completion models inheriting from ``BaseModel``.
+* Completion widget is now shown/hidden depending on if there are completions or not.
 
 Fixed:
 ^^^^^^
@@ -38,6 +42,8 @@ Fixed:
 * The ``-s`` command line option to temporarily set an option. Broken since v0.4.0.
 * Support for some jpg files not recognized by the ``imghdr`` module. Thanks
   `@maximbaz <https://github.com/maximbaz>`_ for the help.
+* Undefined behaviour when running ``:enter command``. This now displays an error
+  message and hints that ``:command`` or ``:search`` should be used instead.
 
 
 v0.4.1 (2019-12-01)

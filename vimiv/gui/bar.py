@@ -19,6 +19,7 @@ class Bar(QWidget):
 
     Attributes:
         _commandline: Commandline widget in the bar.
+        _completer: Completer to handle interaction between command line and completion.
         _stack: QStackedLayout containing statusbar and commandline.
     """
 
@@ -32,7 +33,7 @@ class Bar(QWidget):
         self._commandline = commandline.CommandLine()
         completion_widget = completionwidget.CompletionView(mainwindow)
         mainwindow.add_overlay(completion_widget, resize=False)
-        completer.Completer(self._commandline, completion_widget)
+        self._completer = completer.Completer(self._commandline, completion_widget)
 
         self._stack = QStackedLayout(self)
         self._stack.addWidget(statusbar.statusbar)
@@ -82,8 +83,9 @@ class Bar(QWidget):
         """Enter command mode setting the text to text."""
         self.show()
         self._stack.setCurrentWidget(self._commandline)
-        self._commandline.setText(text)
         api.modes.COMMAND.enter()
+        self._commandline.setText(text)
+        self._completer.initialize(text)
 
     @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)

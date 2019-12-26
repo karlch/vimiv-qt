@@ -41,7 +41,12 @@ def enter(mode: str) -> None:
     positional arguments:
         * ``mode``: The mode to enter (image/library/thumbnail/manipulate).
     """
-    api.modes.get_by_name(mode).enter()
+    modeobj = api.modes.get_by_name(mode)
+    if modeobj == api.modes.COMMAND:
+        raise api.commands.CommandError(
+            "Entering command mode is ambiguous, please use :command or :search"
+        )
+    modeobj.enter()
 
 
 @api.keybindings.register("tm", "toggle manipulate")

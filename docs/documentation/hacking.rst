@@ -187,6 +187,7 @@ Completion
 
 .. automodule:: vimiv.api.completion
    :members:
+    BaseModel
 
 Working Directory
 """""""""""""""""

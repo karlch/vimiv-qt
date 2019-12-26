@@ -31,11 +31,6 @@ def run_help(topic):
     runners.run(f"help {topic}", mode=api.modes.current())
 
 
-@bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
-def check_commandline_text(commandline, text):
-    assert commandline.text() == text
-
-
 @bdd.then("the mode should not be command")
 def check_commandline_closed():
     assert api.modes.current() != api.modes.COMMAND

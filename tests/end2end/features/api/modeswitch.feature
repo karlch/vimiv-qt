@@ -39,3 +39,13 @@ Feature: Switching between different modes.
         Given I start vimiv
         When I run enter invalid
         Then no crash should happen
+
+    # This is ambiguous as we do not know if the user wishes to search or to enter a
+    # command
+    Scenario: Do not allow entering command mode using enter
+        Given I start vimiv
+        When I run enter command
+        Then the mode should be library
+        And the message
+            'enter: Entering command mode is ambiguous, please use :command or :search'
+            should be displayed
