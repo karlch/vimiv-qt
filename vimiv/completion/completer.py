@@ -33,7 +33,7 @@ class Completer(QObject):
         self._cmd = commandline
         self._completion = completion
 
-        self._completion.activated.connect(self._on_completion)
+        self._completion.activated.connect(self._complete)
         api.modes.COMMAND.first_entered.connect(self._init_models)
         self._cmd.textEdited.connect(self._on_text_changed)
         self._cmd.editingFinished.connect(self._on_editing_finished)
@@ -62,9 +62,7 @@ class Completer(QObject):
         self._completion.selectionModel().clear()
         # Update model
         self._update_proxy_model(text)
-        self._proxy_model.sourceModel().on_text_changed(
-            self._proxy_model.filtertext(text)
-        )
+        self._proxy_model.sourceModel().on_text_changed(text)
 
     @utils.slot
     def _on_editing_finished(self):
@@ -81,7 +79,7 @@ class Completer(QObject):
         """
         proxy_model = api.completion.get_module(text, api.modes.COMMAND.last)
         if proxy_model != self._proxy_model:
-            proxy_model.sourceModel().on_enter(proxy_model.filtertext(text))
+            proxy_model.sourceModel().on_enter(text)
             self._proxy_model = proxy_model
             self._completion.setModel(proxy_model)
             self._completion.update_column_widths()
@@ -93,18 +91,7 @@ class Completer(QObject):
             self._completion.show()
 
     @utils.slot
-    def _on_completion(self, text: str):
-        """Set commandline text when completion was activated.
-
-        Args:
-            text: Suggested text from completion.
-        """
-        # Get prefix and prepended digits
-        cmdtext = self._cmd.text()
-        prefix, cmdtext = cmdtext[0], cmdtext[1:]
-        digits = ""
-        while cmdtext and cmdtext[0].isdigit():
-            digits += cmdtext[0]
-            cmdtext = cmdtext[1:]
-        # Set text in commandline
-        self._cmd.setText(prefix + digits + text)
+    def _complete(self, text: str):
+        """Set commandline text including unmatched part (e.g. count) on completion."""
+        prefix, textpart = text[0], text[1:]
+        self._cmd.setText(prefix + self._proxy_model.unmatched + textpart)

@@ -52,7 +52,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 ``vimiv.completion.completionmodels``.
 """
 
-import string
+import re
 from typing import cast, Dict, Iterable, Tuple, Optional
 
 from PyQt5.QtCore import QSortFilterProxyModel, Qt
@@ -87,40 +87,65 @@ def get_module(text: str, mode: modes.Mode) -> "BaseFilter":
 class BaseFilter(QSortFilterProxyModel):
     """Base filter used for completion filters."""
 
+    FILTER_RE = re.compile(r"(.)( *\d* *)(.*)")
+
     def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.unmatched = ""
 
     def refilter(self, text: str) -> None:
         """Filter completions based on text in the command line.
 
-        This updates the text according to the ``filtertext`` method and updates the
-        filter regular expression.
+        The regular expression used for filtering:
+        * Matches prefix
+        * Ignores whitespace between prefix and the command
+        * Ignores count between prefix and command
+
+        For usual completion:
+        * Matches all words of the command before the last one exactly
+        * Matches inside the last word of the command
+
+        For fuzzy completion:
+        * Matches all characters in the command
 
         Args:
             text: The current command line text.
         """
-        text = self.filtertext(text)
+        match = self.FILTER_RE.match(text)
+        if match is None:  # Only happens when there is no prefix
+            self.reset()
+            return
+        prefix, self.unmatched, command = match.groups()
         if settings.completion.fuzzy.value:
-            text = "*".join(text)
-        self.setFilterWildcard(text)
+            self._set_fuzzy_completion_regex(prefix, command)
+        else:
+            self._set_completion_regex(prefix, command)
+
+    def _set_completion_regex(self, prefix: str, command: str) -> None:
+        """Set regular expression for filtering completions.
+
+        Prefix and all words except for the last one in the command are matched exactly.
+        The last word in the command must only be matched inside.
+
+        Args:
+            prefix: Current command line prefix character.
+            command: Current command text in the command line.
+        """
+        parts = command.split()
+        if len(parts) > 1:
+            prefix = prefix + " ".join(parts[:-1])
+            command = parts[-1]
+        regex = prefix + f" *.*{command}.*"
+        self.setFilterRegExp(regex)
+
+    def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
+        self.setFilterRegExp(".*".join(prefix + command))
 
     def reset(self) -> None:
         self.setFilterRegExp("")
-
-    def filtertext(self, text: str) -> str:
-        """Update text for filtering.
-
-        This default implementation strips command line prefixes and leading digits. If
-        the child class requires additional logic, it should override this method.
-
-        Args:
-            text: The current command line text.
-        Returns:
-            The updated text used as completion filter.
-        """
-        return text.lstrip(":/?" + string.digits)
+        self.unmatched = ""
 
     def sourceModel(self) -> "BaseModel":
         # We know we are only using the BaseFilter with BaseModel
