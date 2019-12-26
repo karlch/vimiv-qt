@@ -110,11 +110,10 @@ class PathModel(api.completion.BaseModel):
         # Retrieve supported paths
         images, directories = files.supported(files.listdir(directory))
         # Format data
-        data = [
+        self.set_data(
             self._create_row(os.path.join(directory, os.path.basename(path)))
             for path in images + directories
-        ]
-        self.set_data(data)
+        )
 
     def _create_row(self, path):
         return (f":{self._command} {escape_ws(path)}",)
@@ -135,12 +134,11 @@ class SettingsModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(":set ", column_widths=(0.4, 0.1, 0.5))
-        data = [
+        self.set_data(
             (f":set {name}", str(setting), setting.desc)
             for name, setting in api.settings.items()
             if not setting.hidden
-        ]
-        self.set_data(data)
+        )
 
 
 class SettingsOptionModel(api.completion.BaseModel):
@@ -167,11 +165,10 @@ class SettingsOptionModel(api.completion.BaseModel):
         }
         for i, suggestion in enumerate(self._setting.suggestions(), start=1):
             values[f"suggestion {i}"] = suggestion
-        data = [
+        self.set_data(
             (f":set {self._setting.name} {value}", option)
             for option, value in values.items()
-        ]
-        self.set_data(data)
+        )
 
     def _on_changed(self, _value):
         """Update data if the value of the setting has changed."""
@@ -224,10 +221,9 @@ class TagModel(api.completion.BaseModel):
 
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
-        data = (
+        self.set_data(
             (f":{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
         )
-        self.set_data(data)
 
 
 class HelpModel(api.completion.BaseModel):
