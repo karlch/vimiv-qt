@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
-from vimiv.commands import argtypes, search
+from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
 from . import eventhandler, synchronize
@@ -236,7 +236,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
     @api.keybindings.register("G", "goto -1", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def goto(self, row: int, open_selected: bool = False, count: Optional[int] = None):
+    def goto(
+        self,
+        row: Optional[int],
+        open_selected: bool = False,
+        count: Optional[int] = None,
+    ):
         """Select specific row in current filelist.
 
         **syntax:** ``:goto row``
@@ -251,13 +256,11 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         **count:** Select [count]th element instead.
         """
-        if row == -1:
-            row = self.model().rowCount()
-        row = count if count is not None else row  # Prefer count
-        if row > 0:
-            row -= 1  # Start indexing at 1
-        row = clamp(row, 0, self.model().rowCount() - 1)
-        self._select_row(row, open_selected)
+        try:
+            row = number_for_command(row, count, max_count=self.model().rowCount())
+        except ValueError:
+            raise api.commands.CommandError("Either row or count is required")
+        self._select_row(row, open_selected_image=open_selected)
 
     def update_width(self):
         """Resize width and columns when main window width changes."""

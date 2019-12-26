@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDel
 from PyQt5.QtGui import QColor, QIcon
 
 from vimiv import api, utils, imutils
-from vimiv.commands import argtypes, search
+from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
 from vimiv.utils import create_pixmap, thumbnail_manager, clamp, log
 from . import eventhandler, synchronize
@@ -280,10 +280,10 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
 
         **count:** Select [count]th thubnail instead.
         """
-        index = count if count is not None else index  # Prefer count
-        if index > 0:
-            index -= 1  # Start indexing at 1
-        index = index % self.count()
+        try:
+            index = number_for_command(index, count, max_count=self.count())
+        except ValueError:
+            raise api.commands.CommandError("Either index or count is required")
         self._select_item(index)
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
