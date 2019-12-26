@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
-from vimiv.commands import argtypes, search
+from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
 from . import eventhandler, synchronize
@@ -251,13 +251,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         **count:** Select [count]th element instead.
         """
-        if row == -1:
-            row = self.model().rowCount()
-        row = count if count is not None else row  # Prefer count
-        if row > 0:
-            row -= 1  # Start indexing at 1
-        row = clamp(row, 0, self.model().rowCount() - 1)
-        self._select_row(row, open_selected)
+        row = number_for_command(row, count, max_count=self.model().rowCount())
+        self._select_row(row, open_selected_image=open_selected)
 
     def update_width(self):
         """Resize width and columns when main window width changes."""

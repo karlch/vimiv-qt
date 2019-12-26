@@ -17,7 +17,7 @@ from typing import List, Iterable, Optional
 from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
-from vimiv.commands import search
+from vimiv.commands import search, number_for_command
 from vimiv.utils import files, log
 from .slideshow import Slideshow
 
@@ -65,10 +65,8 @@ def goto(index: int, count: Optional[int] = None) -> None:
 
     **count:** Select [count]th image instead.
     """
-    index = count if count is not None else index
-    if index > 0:
-        index -= 1
-    _set_index(index % len(_paths))
+    index = number_for_command(index, count, max_count=len(_paths))
+    _set_index(index)
 
 
 @api.status.module("{abspath}")
