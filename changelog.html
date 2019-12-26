@@ -155,6 +155,9 @@ requires <a class="reference external" href="https://gitlab.com/mardy/qtraw">qt 
 <code class="docutils literal notranslate"><span class="pre">FilterProxyModel</span></code> is always used for completion filtering. Customization can only
 be done by adding new completion models inheriting from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p></li>
 <li><p>Completion widget is now shown/hidden depending on if there are completions or not.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:goto</span></code> command can now be run with count only, e.g. <code class="docutils literal notranslate"><span class="pre">:2goto</span></code>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:goto</span></code> command now consistently uses the modulo operator in all modes if the
+passed number is larger than the allowed maximum.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
