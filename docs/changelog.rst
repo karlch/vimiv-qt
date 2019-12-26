@@ -29,6 +29,10 @@ Changed:
 
 * Saner default step for mouse zoom. Thanks
   `@OliverLew <https://github.com/OliverLew>`_ for catching this.
+* Completion api no longer provides a ``BaseFilter`` class. Instead, the
+  ``FilterProxyModel`` is always used for completion filtering. Customization can only
+  be done by adding new completion models inheriting from ``BaseModel``.
+* Completion widget is now shown/hidden depending on if there are completions or not.
 
 Fixed:
 ^^^^^^
