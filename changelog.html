@@ -151,6 +151,10 @@ requires <a class="reference external" href="https://gitlab.com/mardy/qtraw">qt 
 <ul class="simple">
 <li><p>Saner default step for mouse zoom. Thanks
 <a class="reference external" href="https://github.com/OliverLew">&#64;OliverLew</a> for catching this.</p></li>
+<li><p>Completion api no longer provides a <code class="docutils literal notranslate"><span class="pre">BaseFilter</span></code> class. Instead, the
+<code class="docutils literal notranslate"><span class="pre">FilterProxyModel</span></code> is always used for completion filtering. Customization can only
+be done by adding new completion models inheriting from <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code>.</p></li>
+<li><p>Completion widget is now shown/hidden depending on if there are completions or not.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
@@ -161,6 +165,8 @@ requires <a class="reference external" href="https://gitlab.com/mardy/qtraw">qt 
 <li><p>The <code class="docutils literal notranslate"><span class="pre">-s</span></code> command line option to temporarily set an option. Broken since v0.4.0.</p></li>
 <li><p>Support for some jpg files not recognized by the <code class="docutils literal notranslate"><span class="pre">imghdr</span></code> module. Thanks
 <a class="reference external" href="https://github.com/maximbaz">&#64;maximbaz</a> for the help.</p></li>
+<li><p>Undefined behaviour when running <code class="docutils literal notranslate"><span class="pre">:enter</span> <span class="pre">command</span></code>. This now displays an error
+message and hints that <code class="docutils literal notranslate"><span class="pre">:command</span></code> or <code class="docutils literal notranslate"><span class="pre">:search</span></code> should be used instead.</p></li>
 </ul>
 </div>
 </div>
