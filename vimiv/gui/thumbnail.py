@@ -267,7 +267,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def goto(self, index: int, count: Optional[int] = None):
+    def goto(self, index: Optional[int], count: Optional[int] = None):
         """Select specific thumbnail in current filelist.
 
         **syntax:** ``:goto index``

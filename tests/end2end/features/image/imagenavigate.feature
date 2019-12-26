@@ -31,5 +31,5 @@ Feature: Navigating through the displayed images
         Then the image should have the index 1
 
     Scenario: Move to specific image using goto with count
-        When I run 3goto 1
+        When I run 3goto
         Then the image should have the index 3

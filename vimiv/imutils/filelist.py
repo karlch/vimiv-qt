@@ -53,7 +53,7 @@ def prev(count: int = 1) -> None:
 @api.keybindings.register(["G", "<end>"], "goto -1", mode=api.modes.IMAGE)
 @api.keybindings.register(["gg", "<home>"], "goto 1", mode=api.modes.IMAGE)
 @api.commands.register(mode=api.modes.IMAGE)
-def goto(index: int, count: Optional[int] = None) -> None:
+def goto(index: Optional[int], count: Optional[int] = None) -> None:
     """Select specific image in current filelist.
 
     **syntax:** ``:goto index``

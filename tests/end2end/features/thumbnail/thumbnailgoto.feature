@@ -14,5 +14,5 @@ Feature: Select a specific thumbnail using the :goto command.
         Then the thumbnail number 1 should be selected
 
     Scenario: Select specific thumbnail using count
-        When I run 3goto 1
+        When I run 3goto
         Then the thumbnail number 3 should be selected
