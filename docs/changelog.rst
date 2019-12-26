@@ -34,7 +34,7 @@ Changed:
   be done by adding new completion models inheriting from ``BaseModel``.
 * Completion widget is now shown/hidden depending on if there are completions or not.
 * The ``:goto`` command can now be run with count only, e.g. ``:2goto``.
-* The ``:goto`` command now consistently uses the module operator in all modes if the
+* The ``:goto`` command now consistently uses the modulo operator in all modes if the
   passed number is larger than the allowed maximum.
 
 Fixed:
