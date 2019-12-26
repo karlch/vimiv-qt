@@ -293,3 +293,8 @@ def check_not_directory_exists(name):
 @bdd.then(bdd.parsers.parse("the count should be {number:d}"))
 def check_count(counter, number):
     assert counter.number == number
+
+
+@bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
+def check_commandline_text(commandline, text):
+    assert commandline.text() == text

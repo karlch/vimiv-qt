@@ -159,3 +159,10 @@ Feature: Using completion.
         And I run command
         Then the completion model should be command
         And a possible completion should contain open-selected
+
+    Scenario: Command completion with count
+        Given I start vimiv
+        When I run command
+        And I press 2got
+        And I run complete
+        Then the text in the command line should be :2goto
