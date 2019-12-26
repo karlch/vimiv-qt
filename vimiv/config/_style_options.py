@@ -44,7 +44,6 @@ DEFAULT_OPTIONS = {
     "thumbnail.bg": "{image.bg}",
     "thumbnail.padding": "20",
     "thumbnail.selected.bg": "{library.selected.bg}",
-    "thumbnail.selected.bg.unfocus": "{library.selected.bg.unfocus}",
     "thumbnail.search.highlighted.bg": "{library.search.highlighted.bg}",
     "thumbnail.default.bg": "{statusbar.info}",
     "thumbnail.error.bg": "{statusbar.error}",
