@@ -6,10 +6,7 @@
 
 """Tests for vimiv.utils.debug"""
 
-import time
 import re
-
-import pytest
 
 from vimiv.utils import debug
 
@@ -23,11 +20,9 @@ def test_profiler(capsys):
 def test_timed(mocker, capsys):
     mocker.patch("vimiv.utils.log.info")
     expected = 42
-    sleep_time_ms = 1
 
     @debug.timed
     def func():
-        time.sleep(sleep_time_ms / 1000)
         return expected
 
     result = func()
@@ -38,5 +33,3 @@ def test_timed(mocker, capsys):
     # Ensure the message contains the elapsed time
     time_match = re.search(r"\d+.\d+", captured.out)
     assert time_match is not None, "No time logged"
-    message_time = float(time_match.group())
-    assert message_time == pytest.approx(sleep_time_ms, sleep_time_ms)
