@@ -24,7 +24,6 @@ class CommandModel(api.completion.BaseModel):
 
     def on_enter(self, _text: str) -> None:
         """Create command list for appropriate mode when commandline is entered."""
-        self.clear()
         mode = api.modes.COMMAND.last
         self.set_data(self.formatted_commands(mode) + self.formatted_aliases(mode))
 
@@ -105,7 +104,6 @@ class PathModel(api.completion.BaseModel):
             return
         # Prepare
         self._last_directory = os.path.abspath(directory)
-        self.clear()
         # No completinos for non-existent directory
         if not os.path.isdir(os.path.expanduser(directory)):
             return
@@ -177,7 +175,6 @@ class SettingsOptionModel(api.completion.BaseModel):
 
     def _on_changed(self, _value):
         """Update data if the value of the setting has changed."""
-        self.clear()
         self._update_data()
 
 
@@ -193,7 +190,6 @@ class TrashModel(api.completion.BaseModel):
 
     def on_enter(self, text: str) -> None:
         """Update trash model on enter to include any newly un-/deleted paths."""
-        self.clear()
         data = []
         for path in files.listdir(trash_manager.files_directory()):
             cmd = f":undelete {os.path.basename(path)}"
@@ -228,7 +224,6 @@ class TagModel(api.completion.BaseModel):
 
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
-        self.clear()
         data = (
             (f":{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
         )
@@ -247,7 +242,6 @@ class HelpModel(api.completion.BaseModel):
 
     def on_enter(self, _text: str) -> None:
         """Create help list for appropriate mode when model is entered."""
-        self.clear()
         mode = api.modes.COMMAND.last
         self.set_data(
             self._general + self.formatted_commands(mode) + self._formatted_settings

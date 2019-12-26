@@ -218,6 +218,7 @@ class BaseModel(QStandardItemModel):
         Args:
             data: List of tuples containing the data for each row.
         """
+        self.clear()
         for item in data:
             row = (
                 QStandardItem(" " + elem if i == 0 else elem)
