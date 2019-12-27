@@ -55,6 +55,12 @@ Feature: Using completion.
         And a possible completion should contain library.width
         And a possible completion should contain vimiv
 
+    Scenario: Using external command completion
+        Given I open any directory
+        When I run command --text="!"
+        Then the completion model should be external
+        And a possible completion should contain !ls
+
     Scenario: Crash on path completion with non-existent directory
         Given I open any directory
         When I run command --text="open /not/a/valid/path"
