@@ -8,7 +8,7 @@
 
 import os
 from contextlib import suppress
-from typing import List, Optional
+from typing import List, Optional, Iterator, cast
 
 from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
@@ -28,8 +28,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     """Thumbnail widget.
 
     Attributes:
-        _default_icon: Thumbnail icon to display before thumbnails were generated.
-        _highlighted: List of indices that are highlighted as search results.
         _manager: ThumbnailManager class to create thumbnails asynchronously.
         _paths: Last paths loaded to avoid duplicate loading.
         _sizes: Dictionary of thumbnail sizes with integer size as key and
@@ -72,15 +70,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._default_icon = QIcon(
-            create_pixmap(
-                color=styles.get("thumbnail.default.bg"),
-                frame_color=styles.get("thumbnail.frame.fg"),
-                size=256,
-                frame_size=10,
-            )
-        )
-        self._highlighted: List[int] = []
         self._paths: List[str] = []
         self._sizes = {64: "small", 128: "normal", 256: "large", 512: "x-large"}
 
@@ -114,6 +103,13 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
 
         styles.apply(self)
 
+    def __iter__(self) -> Iterator["ThumbnailItem"]:
+        for index in range(self.count()):
+            yield self.item(index)
+
+    def item(self, index: int) -> "ThumbnailItem":
+        return cast(ThumbnailItem, super().item(index))
+
     @pyqtSlot(list)
     def _on_new_images_opened(self, paths: List[str]):
         """Load new paths into thumbnail widget.
@@ -138,9 +134,8 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         for i, path in enumerate(paths):
             if path not in self._paths:
                 _logger.debug("Adding new thumbnail '%s'", path)
-                text = "1" if path in api.mark.paths else ""
-                item = QListWidgetItem(self._default_icon, text, self, i)
-                item.setSizeHint(size_hint)
+                marked = path in api.mark.paths
+                ThumbnailItem(self, i, marked=marked, size_hint=size_hint)
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
@@ -184,18 +179,17 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             mode: Mode for which the search was performed.
             _incremental: True if incremental search was performed.
         """
-        self._highlighted = []
         if self._paths and mode == api.modes.THUMBNAIL:
             self._select_item(index)
-            for i, path in enumerate(self._paths):
-                if os.path.basename(path) in matches:
-                    self._highlighted.append(i)
+            for item, path in zip(self, self._paths):
+                item.highlighted = os.path.basename(path) in matches
             self.repaint()
 
     @utils.slot
     def _on_search_cleared(self):
         """Reset highlighted and force repaint when search results cleared."""
-        self._highlighted = []
+        for item in self:
+            item.highlighted = False
         self.repaint()
 
     def _mark_highlight(self, path: str, marked: bool = True):
@@ -211,12 +205,8 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             _logger.debug("Ignoring mark as thumbnails have not been created")
             return
         item = self.item(index)
-        # Set arbitrary text as the mark is highlighted by a rectangle
-        item.setText("1" if marked else "")
-
-    def is_highlighted(self, index):
-        """Return True if the index is highlighted as search result."""
-        return index.row() in self._highlighted
+        item.marked = marked
+        self.repaint()
 
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
@@ -419,10 +409,11 @@ class ThumbnailDelegate(QStyledItemDelegate):
             option: The QStyleOptionViewItem.
             index: The QModelIndex.
         """
-        self._draw_background(painter, option, index)
-        self._draw_pixmap(painter, option, index)
+        item = self.parent().item(index.row())
+        self._draw_background(painter, option, item)
+        self._draw_pixmap(painter, option, item)
 
-    def _draw_background(self, painter, option, index):
+    def _draw_background(self, painter, option, item):
         """Draw the background rectangle of the thumbnail.
 
         The color depends on whether the item is selected and on whether it is
@@ -431,16 +422,16 @@ class ThumbnailDelegate(QStyledItemDelegate):
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            index: The QModelIndex.
+            item: The ThumbnailItem.
         """
-        color = self._get_background_color(index, option.state)
+        color = self._get_background_color(item, option.state)
         painter.save()
         painter.setBrush(color)
         painter.setPen(Qt.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
-    def _draw_pixmap(self, painter, option, index):
+    def _draw_pixmap(self, painter, option, item):
         """Draw the actual pixmap of the thumbnail.
 
         This calculates the size of the pixmap, applies padding and
@@ -449,11 +440,11 @@ class ThumbnailDelegate(QStyledItemDelegate):
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            index: The QModelIndex.
+            item: The ThumbnailItem.
         """
         painter.save()
         # Original thumbnail pixmap
-        pixmap = self.parent().item(index.row()).icon().pixmap(256)
+        pixmap = item.icon().pixmap(256)
         # Rectangle that can be filled by the pixmap
         rect = QRect(
             option.rect.x() + self.padding,
@@ -471,19 +462,19 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Draw
         painter.drawPixmap(x, y, size.width(), size.height(), pixmap)
         painter.restore()
-        self._draw_mark(painter, index, option, x + size.width(), y + size.height())
+        self._draw_mark(painter, item, option, x + size.width(), y + size.height())
 
-    def _draw_mark(self, painter, index, option, x, y):
+    def _draw_mark(self, painter, item, option, x, y):
         """Draw small rectangle as mark indicator if the image is marked.
 
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            index: The QModelIndex.
+            item: The ThumbnailItem storing mark status.
             x: x-coordinate at which the pixmap ends.
             y: y-coordinate at which the pixmap ends.
         """
-        if not index.model().data(index):  # Thumbnail not marked
+        if not item.marked:
             return
         # Try to set 5 % of width, reduce to padding if this is smaller
         # At least 4px width
@@ -494,19 +485,45 @@ class ThumbnailDelegate(QStyledItemDelegate):
         painter.drawRect(x - 0.5 * width, y - 0.5 * width, width, width)
         painter.restore()
 
-    def _get_background_color(self, index, state):
+    def _get_background_color(self, item, state):
         """Return the background color of an item.
 
         The color depends on selected and highlighted as search result.
 
         Args:
-            index: Index of the element indicating even/odd/highlighted.
+            item: The ThumbnailItem storing highlight status.
             state: State of the index indicating selected.
         """
         if state & QStyle.State_Selected:
             if api.modes.current() == api.modes.THUMBNAIL:
                 return self.selection_bg
             return self.selection_bg_unfocus
-        if self.parent().is_highlighted(index):
+        if item.highlighted:
             return self.search_bg
         return self.bg
+
+
+class ThumbnailItem(QListWidgetItem):
+    """Item storing a single thumbnail and it's search and mark status."""
+
+    _default_icon = None
+
+    def __init__(self, parent, index, highlighted=False, marked=False, size_hint=None):
+        super().__init__(self.default_icon, "", parent, index)
+        self.highlighted = highlighted
+        self.marked = marked
+        self.setSizeHint(size_hint)
+
+    @property
+    def default_icon(self):
+        """Default icon if the thumbnail has not been created."""
+        if self._default_icon is None:
+            self._default_icon = QIcon(
+                create_pixmap(
+                    color=styles.get("thumbnail.default.bg"),
+                    frame_color=styles.get("thumbnail.frame.fg"),
+                    size=256,
+                    frame_size=10,
+                )
+            )
+        return self._default_icon
