@@ -10,7 +10,7 @@ import os
 from contextlib import suppress
 from typing import List, Optional, Dict, Union
 
-from PyQt5.QtCore import Qt, QSize, QModelIndex, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
@@ -78,8 +78,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         self.setItemDelegate(LibraryDelegate())
         self.hide()
 
-        self.activated.connect(self._on_activated)
-        self.doubleClicked.connect(self._on_activated)
+        self.activated.connect(self.open_selected)
+        self.doubleClicked.connect(self.open_selected)
         api.settings.library.width.changed.connect(self._on_width_changed)
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
@@ -90,18 +90,6 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
         styles.apply(self)
-
-    @utils.slot
-    def _on_activated(self, _index: QModelIndex):
-        """Open path correctly on activate.
-
-        If the path activated is an image, it is opened in image mode. If it is
-        a directory, the library is loaded for this directory.
-
-        Args:
-            _index: The QModelIndex activated which is always the currently selected.
-        """
-        self.open_selected()
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(

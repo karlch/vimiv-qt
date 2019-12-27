@@ -10,7 +10,7 @@ import os
 from contextlib import suppress
 from typing import List, Optional, Iterator, cast
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QModelIndex, QRect, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
@@ -92,8 +92,8 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
-        self.activated.connect(self._on_activated)
-        self.doubleClicked.connect(self._on_activated)
+        self.activated.connect(self.open_selected)
+        self.doubleClicked.connect(self.open_selected)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
         synchronize.signals.new_library_path_selected.connect(self._select_path)
@@ -136,15 +136,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         # Update paths and create thumbnails
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
-
-    @utils.slot
-    def _on_activated(self, _model_index: QModelIndex):
-        """Emit signal to update image index on activated.
-
-        Args:
-            _model_index: The QModelIndex activated which is the currently selected.
-        """
-        self.open_selected()
 
     @utils.slot
     def _on_thumbnail_created(self, index: int, icon: QIcon):
