@@ -30,8 +30,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     Attributes:
         _manager: ThumbnailManager class to create thumbnails asynchronously.
         _paths: Last paths loaded to avoid duplicate loading.
-        _sizes: Dictionary of thumbnail sizes with integer size as key and
-            string name of the size as value.
     """
 
     STYLESHEET = """
@@ -71,7 +69,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     def __init__(self):
         super().__init__()
         self._paths: List[str] = []
-        self._sizes = {64: "small", 128: "normal", 256: "large", 512: "x-large"}
 
         fail_pixmap = create_pixmap(
             color=styles.get("thumbnail.error.bg"),
@@ -358,7 +355,8 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     @api.status.module("{thumbnail-size}")
     def size(self):
         """Current thumbnail size (small/normal/large/x-large)."""
-        return self._sizes[self.iconSize().width()]
+        sizes = {64: "small", 128: "normal", 256: "large", 512: "x-large"}
+        return sizes[self.iconSize().width()]
 
     @api.status.module("{thumbnail-index}")
     def current_index(self):
