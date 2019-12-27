@@ -141,17 +141,11 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         self._manager.create_thumbnails_async(paths)
 
     @utils.slot
-    def _select_path(self, path: str):
-        """Select a specific path by name."""
-        with suppress(ValueError):
-            self._select_item(self._paths.index(path), emit=False)
-
-    @utils.slot
-    def _on_activated(self, _index: QModelIndex):
+    def _on_activated(self, _model_index: QModelIndex):
         """Emit signal to update image index on activated.
 
         Args:
-            _index: The QModelIndex activated which is always the currently selected.
+            _model_index: The QModelIndex activated which is the currently selected.
         """
         self.open_selected()
 
@@ -180,7 +174,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             _incremental: True if incremental search was performed.
         """
         if self._paths and mode == api.modes.THUMBNAIL:
-            self._select_item(index)
+            self._select_index(index)
             for item, path in zip(self, self._paths):
                 item.highlighted = os.path.basename(path) in matches
             self.repaint()
@@ -252,7 +246,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         else:
             current -= self.columns() * count
             current = max(column, current)
-        self._select_item(current)
+        self._select_index(current)
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
@@ -274,7 +268,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             index = number_for_command(index, count, max_count=self.count())
         except ValueError:
             raise api.commands.CommandError("Either index or count is required")
-        self._select_item(index)
+        self._select_index(index)
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
@@ -302,7 +296,13 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
         self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
 
-    def _select_item(self, index, emit=True):
+    @utils.slot
+    def _select_path(self, path: str):
+        """Select a specific path by name."""
+        with suppress(ValueError):
+            self._select_index(self._paths.index(path), emit=False)
+
+    def _select_index(self, index: int, emit: bool = True) -> None:
         """Select specific item in the ListWidget.
 
         Args:
@@ -311,19 +311,11 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         """
         _logger.debug("Selecting thumbnail number %d", index)
         model_index = self.model().index(index, 0)
-        self._select_index(model_index)
+        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
+        self.selectionModel().setCurrentIndex(model_index, selmod)  # type: ignore
+        self.scrollTo(model_index, hint=self.PositionAtCenter)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
-
-    def _select_index(self, index):
-        """Select specific index in the ListWidget.
-
-        Args:
-            index: QModelIndex to select.
-        """
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(index, selmod)
-        self.scrollTo(index, hint=self.PositionAtCenter)
 
     def _on_size_changed(self, value: int):
         _logger.debug("Setting size to %d", value)
@@ -369,7 +361,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         return self._sizes[self.iconSize().width()]
 
     @api.status.module("{thumbnail-index}")
-    def index(self):
+    def current_index(self):
         """Index of the currently selected thumbnail."""
         return str(self.currentRow() + 1)
 
@@ -401,15 +393,15 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = int(styles.get("thumbnail.padding"))
 
-    def paint(self, painter, option, index):
+    def paint(self, painter, option, model_index):
         """Override the QStyledItemDelegate paint function.
 
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            index: The QModelIndex.
+            model_index: The QModelIndex.
         """
-        item = self.parent().item(index.row())
+        item = self.parent().item(model_index.row())
         self._draw_background(painter, option, item)
         self._draw_pixmap(painter, option, item)
 
@@ -492,7 +484,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
 
         Args:
             item: The ThumbnailItem storing highlight status.
-            state: State of the index indicating selected.
+            state: State of the model index indicating selected.
         """
         if state & QStyle.State_Selected:
             if api.modes.current() == api.modes.THUMBNAIL:
