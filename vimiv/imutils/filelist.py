@@ -29,8 +29,8 @@ _logger = log.module_logger(__name__)
 
 # We want to use the name next here as it is the best name for the command
 @api.keybindings.register(["n", "<page-down>"], "next", mode=api.modes.IMAGE)
-@api.commands.register()
-def next(count: int = 1) -> None:  # pylint: disable=redefined-builtin
+@api.commands.register(name="next")
+def next_path(count: int = 1) -> None:
     """Select next image.
 
     **count:** multiplier
@@ -40,8 +40,8 @@ def next(count: int = 1) -> None:  # pylint: disable=redefined-builtin
 
 
 @api.keybindings.register(["p", "<page-up>"], "prev", mode=api.modes.IMAGE)
-@api.commands.register()
-def prev(count: int = 1) -> None:
+@api.commands.register(name="prev")
+def prev_path(count: int = 1) -> None:
     """Select previous image.
 
     **count:** multiplier
@@ -178,7 +178,7 @@ class SignalHandler(QObject):
 
     @utils.slot
     def _on_slideshow_event(self):
-        next(1)
+        next_path()
         api.status.update("next image from slideshow event")
 
     @pyqtSlot(list)

@@ -17,9 +17,9 @@ from vimiv import api
 @api.keybindings.register("L", "set library.width +0.05", mode=api.modes.LIBRARY)
 @api.keybindings.register("b", "set statusbar.show!", mode=api.modes.MANIPULATE)
 @api.keybindings.register("b", "set statusbar.show!")
-@api.commands.register(mode=api.modes.MANIPULATE)
-@api.commands.register()
-def set(name: str, value: List[str]):  # pylint: disable=redefined-builtin
+@api.commands.register(mode=api.modes.MANIPULATE, name="set")
+@api.commands.register(name="set")
+def set_command(name: str, value: List[str]):
     """Set an option.
 
     **syntax:** ``:set name [value]``

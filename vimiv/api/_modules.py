@@ -102,9 +102,9 @@ def paste_name(primary: bool = True) -> None:
 
 
 # We want to use the name help here as it is the best name for the command
-@api.commands.register(mode=api.modes.MANIPULATE)
-@api.commands.register()
-def help(topic: str) -> None:  # pylint: disable=redefined-builtin
+@api.commands.register(mode=api.modes.MANIPULATE, name="help")
+@api.commands.register(name="help")
+def help_command(topic: str) -> None:
     """Show help on a command or setting.
 
     **syntax:** ``:help topic``
