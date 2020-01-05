@@ -94,7 +94,10 @@ _logger = log.module_logger(__name__)
 
 
 def register(
-    mode: modes.Mode = modes.GLOBAL, hide: bool = False, store: bool = True,
+    mode: modes.Mode = modes.GLOBAL,
+    hide: bool = False,
+    store: bool = True,
+    name: str = None,
 ) -> typing.Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to store a command in the registry.
 
@@ -102,10 +105,11 @@ def register(
         mode: Mode in which the command can be executed.
         hide: Hide command from command line.
         store: Save command to allow repeating with '.'.
+        name: Name of the command if it should not be inferred from the function name.
     """
 
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
-        _Command(func, mode=mode, hide=hide, store=store)
+        _Command(func, mode=mode, hide=hide, store=store, name=name)
         return func
 
     return decorator
@@ -281,9 +285,10 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         mode: modes.Mode = modes.GLOBAL,
         hide: bool = False,
         store: bool = True,
+        name: str = None,
     ):
         self._argparser: typing.Optional[_CommandArguments] = None
-        self.name = _get_command_name(func)
+        self.name = _get_command_name(func) if name is None else name
         self.func = func
         self.mode = mode
         self.hide = hide

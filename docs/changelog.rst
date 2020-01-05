@@ -6,6 +6,12 @@ All notable changes to vimiv are documented in this file.
 v0.6.0 (unreleased)
 -------------------
 
+Added:
+^^^^^^
+
+* Command names can now be overridden by passing the ``name`` keyword to
+  ``api.commands.register``.
+
 Changed:
 ^^^^^^^^
 
