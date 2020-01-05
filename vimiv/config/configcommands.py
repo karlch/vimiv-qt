@@ -91,7 +91,7 @@ def unbind(keybinding: str, mode: str = None):
 
 @api.commands.register(mode=api.modes.MANIPULATE)
 @api.commands.register(mode=api.modes.COMMAND)
-@api.commands.register()
+@api.commands.register(hide=True)
 def nop():
     """Do nothing.
 

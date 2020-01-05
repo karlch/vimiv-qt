@@ -10,6 +10,7 @@ Changed:
 ^^^^^^^^
 
 * Removed prepended whitespace from completion options.
+* The ``:nop`` command is now hidden from the completion.
 
 
 v0.5.0 (2020-01-05)
