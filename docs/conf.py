@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This file is part of vimiv.
-# Copyright 2017-2019 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 #
@@ -54,7 +54,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "vimiv"
-copyright = "2018-2019, Christian Karl"
+copyright = "2018-2020, Christian Karl"
 author = "Christian Karl"
 html_favicon = "_static/favicon.ico"
 
