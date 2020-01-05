@@ -54,7 +54,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "vimiv"
-copyright = "2018-2020, Christian Karl"
+copyright = "2017-2020, Christian Karl"
 author = "Christian Karl"
 html_favicon = "_static/favicon.ico"
 
