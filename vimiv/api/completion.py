@@ -220,11 +220,7 @@ class BaseModel(QStandardItemModel):
         """
         self.clear()
         for item in data:
-            row = (
-                QStandardItem(" " + elem if i == 0 else elem)
-                for i, elem in enumerate(item)
-            )
-            self.appendRow(row)
+            self.appendRow(QStandardItem(elem) for elem in item)
         self.sort(0)  # Sort according to the actual text
 
 
