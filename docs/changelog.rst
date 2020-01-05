@@ -17,6 +17,9 @@ Changed:
 
 * Removed prepended whitespace from completion options.
 * The ``:nop`` command is now hidden from the completion.
+* The function ``api.open`` had been renamed to ``api.open_paths`` to remove the clash
+  with the python builtin. Using ``api.open`` directly is deprecated and will be removed
+  in `v0.7.0`.
 
 
 v0.5.0 (2020-01-05)

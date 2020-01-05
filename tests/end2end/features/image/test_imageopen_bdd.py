@@ -29,4 +29,4 @@ def _open_file(tmpdir, data):
     with open(path, "wb") as f:
         f.write(data)
     assert imghdr.what(path) is not None, "Invalid magic bytes in test setup"
-    api.open([path])
+    api.open_paths([path])

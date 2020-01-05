@@ -131,7 +131,7 @@ class _ExternalRunnerImpl(QProcess):
         _logger.debug("Opening paths from '%s'...", self.program())
         stdout = str(self.readAllStandardOutput(), "utf-8")  # type: ignore
         try:
-            api.open(path for path in stdout.split("\n") if os.path.exists(path))
+            api.open_paths(path for path in stdout.split("\n") if os.path.exists(path))
             _logger.debug("... opened paths from pipe")
             api.status.update("opened paths from pipe")
         except api.commands.CommandError:

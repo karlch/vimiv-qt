@@ -9,7 +9,7 @@
 import os
 from typing import List, Iterable
 
-from vimiv.utils import files
+from vimiv.utils import files, log
 
 from . import (
     commands,
@@ -52,10 +52,9 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
     return mode.pathlist
 
 
-# We want to use the name open here as it is the best name for the command
 @keybindings.register("o", "command --text='open '")
-@commands.register()
-def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
+@commands.register(name="open")
+def open_paths(paths: Iterable[str]) -> None:
     """Open one or more paths.
 
     **syntax:** ``:open path [path ...]``
@@ -76,3 +75,12 @@ def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
         modes.LIBRARY.enter()
     else:
         raise commands.CommandError("No valid paths")
+
+
+def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
+    """Deprecated open function for backwards compatibility."""
+    # TODO remove in v0.7.0
+    log.warning(
+        "Calling 'api.open' directly is deprecated, use 'api.open_paths' instead"
+    )
+    open_paths(paths)

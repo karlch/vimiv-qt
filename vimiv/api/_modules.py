@@ -98,7 +98,7 @@ def paste_name(primary: bool = True) -> None:
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
-    api.open([clipboard.text(mode=mode)])
+    api.open_paths([clipboard.text(mode=mode)])
 
 
 # We want to use the name help here as it is the best name for the command
