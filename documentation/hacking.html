@@ -619,7 +619,7 @@ command.</p>
 
 <dl class="function">
 <dt id="vimiv.api.commands.register">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em>, <em class="sig-param">hide: bool = False</em>, <em class="sig-param">store: bool = True</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em>, <em class="sig-param">hide: bool = False</em>, <em class="sig-param">store: bool = True</em>, <em class="sig-param">name: str = None</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to store a command in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -627,6 +627,7 @@ command.</p>
 <li><p><strong>mode</strong> – Mode in which the command can be executed.</p></li>
 <li><p><strong>hide</strong> – Hide command from command line.</p></li>
 <li><p><strong>store</strong> – Save command to allow repeating with ‘.’.</p></li>
+<li><p><strong>name</strong> – Name of the command if it should not be inferred from the function name.</p></li>
 </ul>
 </dd>
 </dl>
