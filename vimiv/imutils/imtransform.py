@@ -7,11 +7,34 @@
 """*imtransform - transformations such as rotate and flip*."""
 
 import weakref
+from typing import Optional
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTransform
 
 from vimiv import api
+from vimiv.utils import log
+
+
+_logger = log.module_logger(__name__)
+
+
+class Scale:
+    """Helper class to store the current scale of an image."""
+
+    def __init__(self):
+        self.x = self.y = 1
+
+    @property
+    def changed(self) -> bool:
+        return self.x != 1 or self.y != 1
+
+    def rescale(self, dx: float, dy: float):
+        self.x *= dx
+        self.y *= dy
+
+    def reset(self):
+        self.x = self.y = 1
 
 
 class Transform:
@@ -34,6 +57,7 @@ class Transform:
         self._transform = QTransform()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
+        self._scale = Scale()
 
     @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
     @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
@@ -85,6 +109,42 @@ class Transform:
             else:
                 self._flip_horizontal = not self._flip_horizontal
 
+    @api.commands.register(mode=api.modes.IMAGE)
+    def resize(self, width: int, height: Optional[int]):
+        """Resize the original image to a new size.
+
+        **syntax:** ``:resize width [height]``
+
+        positional arguments:
+            * ``width``: Width in pixels to resize the image to.
+            * ``height``: Height in pixels to resize the image to. If not given, the
+              aspectratio is preserved.
+
+        .. note:: This transforms the original image and writes to disk.
+        """
+        dx = width / self._handler().transformed.width()
+        dy = dx if height is None else height / self._handler().transformed.height()
+        self.rescale(dx, dy)
+
+    @api.commands.register(mode=api.modes.IMAGE)
+    def rescale(self, dx: float, dy: Optional[float]):
+        """Rescale the original image to a new size.
+
+        **syntax:** ``:rescale dx [dy]``
+
+        positional arguments:
+            * ``dx``: Factor in x direction to scale the image by.
+            * ``dy``: Factor in y direction to scale the image by. If not given, the
+              aspectratio is preserved.
+
+        .. note:: This transforms the original image and writes to disk.
+        """
+        dy = dy if dy is not None else dx
+        self._transform.scale(dx, dy)
+        if self._apply_transformations():
+            self._scale.rescale(dx, dy)
+            _logger.debug("Updated scale to %.2fx%.2f", self._scale.x, self._scale.y)
+
     def _apply_transformations(self) -> bool:
         """Apply all transformations to the original pixmap.
 
@@ -100,9 +160,8 @@ class Transform:
                 "Is the resulting image too large? Zero?."
             )
             return False
-        else:
-            self._handler().transformed = transformed
-            return True
+        self._handler().transformed = transformed
+        return True
 
     def _ensure_editable(self):
         if not self._handler().editable:
@@ -111,10 +170,16 @@ class Transform:
     @property
     def changed(self):
         """True if transformations have been applied."""
-        return self._rotation_angle or self._flip_horizontal or self._flip_vertical
+        return (
+            self._rotation_angle
+            or self._flip_horizontal
+            or self._flip_vertical
+            or self._scale.changed
+        )
 
     def reset(self):
         """Reset transformations."""
         self._transform.reset()
         self._rotation_angle = 0
         self._flip_horizontal = self._flip_vertical = False
+        self._scale.reset()

@@ -20,3 +20,23 @@ Feature: Transform an image.
         Given I open any image of size 200x300
         When I run 3rotate --counter-clockwise
         Then the orientation should be landscape
+
+    Scenario: Rescale image
+        Given I open any image of size 300x200
+        When I run rescale 2
+        Then the image size should be 600x400
+
+    Scenario: Rescale image changing the aspect ratio
+        Given I open any image of size 300x200
+        When I run rescale 2 1
+        Then the image size should be 600x200
+
+    Scenario: Resize image
+        Given I open any image of size 300x200
+        When I run resize 150
+        Then the image size should be 150x100
+
+    Scenario: Resize image changing the aspect ratio
+        Given I open any image of size 300x200
+        When I run resize 150 200
+        Then the image size should be 150x200

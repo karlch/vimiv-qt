@@ -6,6 +6,8 @@
 
 import pytest_bdd as bdd
 
+from vimiv.parser import geometry
+
 
 bdd.scenarios("transform.feature")
 
@@ -20,3 +22,11 @@ def ensure_orientation(image, orientation):
         assert scenerect.height() > scenerect.width()
     else:
         raise ValueError(f"Unkown orientation {orientation}")
+
+
+@bdd.then(bdd.parsers.parse("the image size should be {size}"))
+def ensure_size(size, image):
+    expected = geometry(size)
+    image_rect = image.sceneRect()
+    assert expected.width() == image_rect.width()
+    assert expected.height() == image_rect.height()
