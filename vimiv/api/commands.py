@@ -298,7 +298,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         # Retrieve description from docstring
         docstr = inspect.getdoc(func)
         if docstr is None:
-            log.error("Command %s for %s is missing docstring.", self.name, func)
+            _logger.error("Command %s for %s is missing docstring.", self.name, func)
             self.description = self.long_description = ""
         else:
             self.description = docstr.split("\n", maxsplit=1)[0]
