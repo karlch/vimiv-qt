@@ -50,9 +50,9 @@ class Transform:
         """
         self._ensure_editable()
         angle = 90 * count * -1 if counter_clockwise else 90 * count
-        self._rotation_angle = (self._rotation_angle + angle) % 360
         self._transform.rotate(angle)
-        self._apply_transformations()
+        if self._apply_transformations():
+            self._rotation_angle = (self._rotation_angle + angle) % 360
 
     @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
     @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
@@ -78,18 +78,31 @@ class Transform:
         # Standard horizontal flip
         else:
             self._transform.scale(-1, 1)
-        self._apply_transformations()
-        # Store changes
-        if vertical:
-            self._flip_vertical = not self._flip_vertical
-        else:
-            self._flip_horizontal = not self._flip_horizontal
+        if self._apply_transformations():
+            # Store changes
+            if vertical:
+                self._flip_vertical = not self._flip_vertical
+            else:
+                self._flip_horizontal = not self._flip_horizontal
 
-    def _apply_transformations(self):
-        """Apply all transformations to the original pixmap."""
-        self._handler().transformed = self._handler().original.transformed(
+    def _apply_transformations(self) -> bool:
+        """Apply all transformations to the original pixmap.
+
+        Returns:
+            True if the application was successfull, False otherwise.
+        """
+        transformed = self._handler().original.transformed(
             self._transform, mode=Qt.SmoothTransformation
         )
+        if transformed.isNull():
+            log.error(
+                "Error transforming image, ignoring transformation.\n"
+                "Is the resulting image too large? Zero?."
+            )
+            return False
+        else:
+            self._handler().transformed = transformed
+            return True
 
     def _ensure_editable(self):
         if not self._handler().editable:
