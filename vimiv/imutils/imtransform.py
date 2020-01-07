@@ -149,9 +149,7 @@ class Transform(QTransform):
         return not self.isIdentity()
 
     @api.commands.register(mode=api.modes.IMAGE)
-    def reset_transformations(self):
-        """Reset all performed transformations to default."""
-        # We call reset and update the handler as reset is usually called by the handler
-        # which updates the images itself
+    def undo_transformations(self):
+        """Undo any transformation applied to the current image."""
         self.reset()
         self._handler().transformed = self._handler().original

@@ -41,8 +41,8 @@ Feature: Transform an image.
         When I run resize 150 200
         Then the image size should be 150x200
 
-    Scenario: Reset transformations
+    Scenario: Undo transformations
         Given I open any image of size 300x200
         When I run resize 150
-        And I run reset-transformations
+        And I run undo-transformations
         Then the image size should be 300x200
