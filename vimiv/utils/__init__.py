@@ -11,7 +11,18 @@ import inspect
 import re
 from abc import ABCMeta
 from contextlib import suppress
-from typing import Callable, Optional, List, Any, Iterator, Dict, Iterable, Union, cast
+from typing import (
+    Callable,
+    Optional,
+    List,
+    Any,
+    Iterator,
+    Dict,
+    Iterable,
+    Union,
+    Type,
+    cast,
+)
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -385,6 +396,22 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
         stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
         raise OSError(stderr)
     return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
+
+
+def is_optional_type(typ: Any) -> bool:
+    """Return True if typ is of type Optional."""
+    origin = getattr(typ, "__origin__", None)
+    types = getattr(typ, "__args__", ())
+    return origin is Union and isinstance(None, types)
+
+
+def type_of_optional(typ: Type) -> Any:
+    """Return T if typ is of type Optional[T]."""
+    types = getattr(typ, "__args__", ())
+    for elem in types:
+        if not isinstance(elem, type(None)):
+            return elem
+    raise TypeError("{typ} is not of Optional type")
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):

@@ -85,6 +85,8 @@ from vimiv.utils import (
     log,
     customtypes,
     escape_glob,
+    is_optional_type,
+    type_of_optional,
 )
 
 from . import modes
@@ -254,8 +256,8 @@ class _CommandArguments(argparse.ArgumentParser):
             }
         if argtype == typing.List[str]:
             return {"type": str, "nargs": "*"}
-        if not optional and argtype == typing.Optional[int]:  # Can be replaced by count
-            return {"type": int, "nargs": "?", "default": None}
+        if not optional and is_optional_type(argtype):
+            return {"type": type_of_optional(argtype), "nargs": "?", "default": None}
         if optional and argtype is bool:
             return {"action": "store_true"}
         if optional:
@@ -296,7 +298,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         # Retrieve description from docstring
         docstr = inspect.getdoc(func)
         if docstr is None:
-            log.error("Command %s for %s is missing docstring.", self.name, func)
+            _logger.error("Command %s for %s is missing docstring.", self.name, func)
             self.description = self.long_description = ""
         else:
             self.description = docstr.split("\n", maxsplit=1)[0]

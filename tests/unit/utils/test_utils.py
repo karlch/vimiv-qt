@@ -8,6 +8,7 @@
 
 import os
 import inspect
+import typing
 from collections import namedtuple
 
 import pytest
@@ -243,3 +244,21 @@ def test_run_qprocess_in_other_dir(tmpdir):
 def test_fail_run_qprocess_raises_oserror():
     with pytest.raises(OSError):
         utils.run_qprocess("NoTaCoMmAnD")
+
+
+@pytest.mark.parametrize("typ", (int, float, str, bool))
+def test_is_optional_type(typ):
+    optional_type = typing.Optional[typ]
+    assert utils.is_optional_type(optional_type)
+    assert not utils.is_optional_type(typ)
+
+
+@pytest.mark.parametrize("typ", (int, float, str, bool))
+def test_type_of_optional(typ):
+    optional_type = typing.Optional[typ]
+    assert utils.type_of_optional(optional_type) == typ
+
+
+def test_fail_type_of_optional():
+    with pytest.raises(TypeError, match="is not of Optional type"):
+        assert utils.type_of_optional(int)

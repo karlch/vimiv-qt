@@ -6,39 +6,63 @@
 
 """*imtransform - transformations such as rotate and flip*."""
 
+import functools
+import math
 import weakref
+from typing import Optional
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTransform
 
 from vimiv import api
+from vimiv.utils import log
 
 
-class Transform:
+_logger = log.module_logger(__name__)
+
+
+def register_transform_command(**kwargs):
+    """Wrap commands.register to ensure image is editable and apply transformations."""
+
+    def decorator(func):
+        @functools.wraps(func)
+        def inner(self, *args, **kwargs):
+            # Only used to wrap methods of transform
+            # pylint: disable=protected-access
+            self._ensure_editable()
+            func(self, *args, **kwargs)
+            self._apply_transformations()
+
+        return api.commands.register(mode=api.modes.IMAGE, **kwargs)(inner)
+
+    return decorator
+
+
+class Transform(QTransform):
     """Apply transformations to an image.
 
-    Provides the :rotate and :flip commands and applies transformations to a
-    given pixmap.
+    Provides the commands related to transformation such as rotate and flip and is used
+    to apply these transformations to the pixmap given by the handler.
 
     Attributes:
         _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
-        _transform: QTransform object used to apply transformations.
-        _rotation_angle: Currently applied rotation angle in degrees.
-        _flip_horizontal: Flip the image horizontally.
-        _flip_vertical: Flip the image vertically.
     """
 
     @api.objreg.register
     def __init__(self, handler):
+        super().__init__()
         self._handler = weakref.ref(handler)
-        self._transform = QTransform()
-        self._rotation_angle = 0
-        self._flip_horizontal = self._flip_vertical = False
+
+    @property
+    def angle(self) -> int:
+        """Current rotation angle in degrees."""
+        x, y = self.map(0, 1)
+        return int(math.atan2(x, y) / math.pi * 180)
 
     @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
     @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
-    @api.commands.register(mode=api.modes.IMAGE)
-    def rotate(self, counter_clockwise: bool = False, count: int = 1):
+    @register_transform_command(name="rotate")
+    def rotate_command(self, counter_clockwise: bool = False, count: int = 1):
         """Rotate the image.
 
         **syntax:** ``:rotate [--counter-clockwise]``
@@ -48,15 +72,12 @@ class Transform:
 
         **count:** multiplier
         """
-        self._ensure_editable()
-        angle = 90 * count * -1 if counter_clockwise else 90 * count
-        self._rotation_angle = (self._rotation_angle + angle) % 360
-        self._transform.rotate(angle)
-        self._apply_transformations()
+        angle = 90 * count
+        self.rotate(-angle if counter_clockwise else angle)
 
     @api.keybindings.register("_", "flip --vertical", mode=api.modes.IMAGE)
     @api.keybindings.register("|", "flip", mode=api.modes.IMAGE)
-    @api.commands.register(mode=api.modes.IMAGE)
+    @register_transform_command()
     def flip(self, vertical: bool = False):
         """Flip the image.
 
@@ -65,31 +86,58 @@ class Transform:
         optional arguments:
             * ``--vertical``: Flip image vertically instead of horizontally.
         """
-        self._ensure_editable()
-        # Vertical flip but image rotated by 90 degrees
-        if vertical and self._rotation_angle % 180:
-            self._transform.scale(-1, 1)
-        # Standard vertical flip
-        elif vertical:
-            self._transform.scale(1, -1)
-        # Horizontal flip but image rotated by 90 degrees
-        elif self._rotation_angle % 180:
-            self._transform.scale(1, -1)
-        # Standard horizontal flip
-        else:
-            self._transform.scale(-1, 1)
-        self._apply_transformations()
-        # Store changes
+        # Change direction if image is rotated by 90/270 degrees
+        if self.angle % 180:
+            vertical = not vertical
         if vertical:
-            self._flip_vertical = not self._flip_vertical
+            self.scale(1, -1)
         else:
-            self._flip_horizontal = not self._flip_horizontal
+            self.scale(-1, 1)
+
+    @register_transform_command()
+    def resize(self, width: int, height: Optional[int]):
+        """Resize the original image to a new size.
+
+        **syntax:** ``:resize width [height]``
+
+        positional arguments:
+            * ``width``: Width in pixels to resize the image to.
+            * ``height``: Height in pixels to resize the image to. If not given, the
+              aspectratio is preserved.
+
+        .. note:: This transforms the original image and writes to disk.
+        """
+        dx = width / self._handler().transformed.width()
+        dy = dx if height is None else height / self._handler().transformed.height()
+        self.scale(dx, dy)
+
+    @register_transform_command()
+    def rescale(self, dx: float, dy: Optional[float]):
+        """Rescale the original image to a new size.
+
+        **syntax:** ``:rescale dx [dy]``
+
+        positional arguments:
+            * ``dx``: Factor in x direction to scale the image by.
+            * ``dy``: Factor in y direction to scale the image by. If not given, the
+              aspectratio is preserved.
+
+        .. note:: This transforms the original image and writes to disk.
+        """
+        dy = dy if dy is not None else dx
+        self.scale(dx, dy)
 
     def _apply_transformations(self):
         """Apply all transformations to the original pixmap."""
-        self._handler().transformed = self._handler().original.transformed(
-            self._transform, mode=Qt.SmoothTransformation
+        transformed = self._handler().original.transformed(
+            self, mode=Qt.SmoothTransformation
         )
+        if transformed.isNull():
+            raise api.commands.CommandError(
+                "Error transforming image, ignoring transformation.\n"
+                "Is the resulting image too large? Zero?."
+            )
+        self._handler().transformed = transformed
 
     def _ensure_editable(self):
         if not self._handler().editable:
@@ -98,10 +146,10 @@ class Transform:
     @property
     def changed(self):
         """True if transformations have been applied."""
-        return self._rotation_angle or self._flip_horizontal or self._flip_vertical
+        return not self.isIdentity()
 
-    def reset(self):
-        """Reset transformations."""
-        self._transform.reset()
-        self._rotation_angle = 0
-        self._flip_horizontal = self._flip_vertical = False
+    @api.commands.register(mode=api.modes.IMAGE)
+    def undo_transformations(self):
+        """Undo any transformation applied to the current image."""
+        self.reset()
+        self._handler().transformed = self._handler().original
