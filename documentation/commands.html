@@ -111,10 +111,13 @@
 <li><a class="reference internal" href="#goto">goto</a></li>
 <li><a class="reference internal" href="#play-or-pause">play-or-pause</a></li>
 <li><a class="reference internal" href="#reload">reload</a></li>
+<li><a class="reference internal" href="#rescale">rescale</a></li>
+<li><a class="reference internal" href="#resize">resize</a></li>
 <li><a class="reference internal" href="#rotate">rotate</a></li>
 <li><a class="reference internal" href="#scroll">scroll</a></li>
 <li><a class="reference internal" href="#scroll-edge">scroll-edge</a></li>
 <li><a class="reference internal" href="#slideshow">slideshow</a></li>
+<li><a class="reference internal" href="#undo-transformations">undo-transformations</a></li>
 <li><a class="reference internal" href="#write">write</a></li>
 <li><a class="reference internal" href="#zoom">zoom</a></li>
 </ul>
@@ -788,6 +791,12 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
 <td><p>Reload the current image.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rescale"><span class="std std-ref">rescale</span></a></p></td>
+<td><p>Rescale the original image to a new size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-resize"><span class="std std-ref">resize</span></a></p></td>
+<td><p>Resize the original image to a new size.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
 <td><p>Rotate the image.</p></td>
 </tr>
@@ -800,10 +809,13 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
 <td><p>Toggle slideshow.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-undo-transformations"><span class="std std-ref">undo-transformations</span></a></p></td>
+<td><p>Undo any transformation applied to the current image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
 <td><p>Save the current image to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
 <td><p>Zoom the current widget.</p></td>
 </tr>
 </tbody>
@@ -847,6 +859,40 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <span id="ref-image-reload"></span><h3>reload<a class="headerlink" href="#reload" title="Permalink to this headline">¶</a></h3>
 <p>Reload the current image.</p>
 </div>
+<div class="section" id="rescale">
+<span id="ref-image-rescale"></span><h3>rescale<a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h3>
+<p>Rescale the original image to a new size.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rescale</span> <span class="pre">dx</span> <span class="pre">[dy]</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dx</span></code>: Factor in x direction to scale the image by.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dy</span></code>: Factor in y direction to scale the image by. If not given, the
+aspectratio is preserved.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This transforms the original image and writes to disk.</p>
+</div>
+</div>
+<div class="section" id="resize">
+<span id="ref-image-resize"></span><h3>resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h3>
+<p>Resize the original image to a new size.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:resize</span> <span class="pre">width</span> <span class="pre">[height]</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code>: Width in pixels to resize the image to.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height</span></code>: Height in pixels to resize the image to. If not given, the
+aspectratio is preserved.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This transforms the original image and writes to disk.</p>
+</div>
+</div>
 <div class="section" id="rotate">
 <span id="ref-image-rotate"></span><h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
 <p>Rotate the image.</p>
@@ -886,6 +932,10 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <span id="ref-image-slideshow"></span><h3>slideshow<a class="headerlink" href="#slideshow" title="Permalink to this headline">¶</a></h3>
 <p>Toggle slideshow.</p>
 <p><strong>count:</strong> Set slideshow delay to count instead.</p>
+</div>
+<div class="section" id="undo-transformations">
+<span id="ref-image-undo-transformations"></span><h3>undo-transformations<a class="headerlink" href="#undo-transformations" title="Permalink to this headline">¶</a></h3>
+<p>Undo any transformation applied to the current image.</p>
 </div>
 <div class="section" id="write">
 <span id="ref-image-write"></span><h3>write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>

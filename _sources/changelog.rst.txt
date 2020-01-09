@@ -11,6 +11,9 @@ Added:
 
 * Command names can now be overridden by passing the ``name`` keyword to
   ``api.commands.register``.
+* The ``:resize`` and ``:rescale`` commands to change the dimension of the original
+  image. These are transformations and can be written to file.
+* The ``:undo-transformations`` command to reset the image to the original.
 
 Changed:
 ^^^^^^^^
