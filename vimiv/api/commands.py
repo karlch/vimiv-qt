@@ -196,8 +196,9 @@ class _CommandArguments(argparse.ArgumentParser):
             function: Function to inspect for arguments.
         """
         super().__init__(prog=cmdname, description=description)
+        annotations = typing.get_type_hints(function)
         for argument in inspect.signature(function).parameters.values():
-            self._add_argument(argument)
+            self._add_argument(argument, annotations.get(argument.name, None))
 
     def print_help(self, _file: typing.IO = None) -> typing.NoReturn:
         """Override help message to display in statusbar."""
@@ -221,14 +222,14 @@ class _CommandArguments(argparse.ArgumentParser):
         message = message.capitalize()
         raise ArgumentError(message)
 
-    def _add_argument(self, argument: inspect.Parameter) -> None:
-        """Add an argument to argparse created from an inspect parameter."""
+    def _add_argument(self, argument: inspect.Parameter, typ: typing.Type) -> None:
+        """Add an argument to argparse using the information given in the function."""
         optional = argument.default != inspect.Parameter.empty
         name = self._argument_name(argument, optional)
         # Dealt with later as we do not have an instance yet
         if name == "self":
             return
-        kwargs = self._gen_kwargs(argument, optional)
+        kwargs = self._gen_kwargs(argument, optional, typ)
         self.add_argument(name, **kwargs)
 
     @staticmethod
@@ -239,14 +240,13 @@ class _CommandArguments(argparse.ArgumentParser):
 
     @staticmethod
     def _gen_kwargs(
-        argument: inspect.Parameter, optional: bool
+        argument: inspect.Parameter, optional: bool, typ: typing.Type
     ) -> typing.Dict[str, typing.Any]:
         """Create keyword arguments for argparse from inspect parameter.
 
         This checks for the type and possible default arguments and applies
         'nargs': '*' if the type is a List.
         """
-        argtype = argument.annotation
         if argument.name == "paths":
             return {
                 "type": lambda x: glob.glob(
@@ -254,15 +254,16 @@ class _CommandArguments(argparse.ArgumentParser):
                 ),
                 "nargs": "+",
             }
-        if argtype == typing.List[str]:
+        if typ == typing.List[str]:
             return {"type": str, "nargs": "*"}
-        if not optional and is_optional_type(argtype):
-            return {"type": type_of_optional(argtype), "nargs": "?", "default": None}
-        if optional and argtype is bool:
+        if not optional and is_optional_type(typ):
+            return {"type": type_of_optional(typ), "nargs": "?", "default": None}
+        if optional and typ is bool:
             return {"action": "store_true"}
         if optional:
-            return {"type": argtype, "default": argument.default}
-        return {"type": argtype}
+            typ = type_of_optional(typ) if is_optional_type(typ) else typ
+            return {"type": typ, "default": argument.default}
+        return {"type": typ}
 
 
 # The class is still rather simple but many things need to be stored for various places
