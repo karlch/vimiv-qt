@@ -399,7 +399,7 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
     for elem in types:
         if not isinstance(elem, type(None)):
             return elem
-    raise TypeError("{typ} is not of Optional type")
+    raise TypeError(f"{typ} is not of Optional type")
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):
