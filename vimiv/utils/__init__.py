@@ -10,14 +10,13 @@ import functools
 import inspect
 import re
 from abc import ABCMeta
-from contextlib import suppress
+import typing
 from typing import (
     Callable,
     Optional,
     List,
     Any,
     Iterator,
-    Dict,
     Iterable,
     Union,
     Type,
@@ -151,36 +150,6 @@ class AnnotationNotFound(Exception):
         super().__init__(message)
 
 
-def _slot_args(argspec: inspect.FullArgSpec, function: Callable) -> List[type]:
-    """Create arguments for pyqtSlot from function arguments.
-
-    Args:
-        argspec: Function arguments retrieved via inspect.
-        function: The python function for which the arguments are created.
-    Returns:
-        List of types of the function arguments as arguments for pyqtSlot.
-    """
-    slot_args = []
-    for argument in argspec.args:
-        has_annotation = argument in argspec.annotations
-        if argument == "self" and not has_annotation:
-            continue
-        if not has_annotation:
-            raise AnnotationNotFound(argument, function)
-        annotation = argspec.annotations[argument]
-        slot_args.append(annotation)
-    return slot_args
-
-
-def _slot_kwargs(argspec: inspect.FullArgSpec) -> Dict[str, Any]:
-    """Add return type to slot kwargs if it exists."""
-    with suppress(KeyError):
-        return_type = argspec.annotations["return"]
-        if return_type is not None:
-            return {"result": return_type}
-    return {}
-
-
 def slot(function: FuncT) -> FuncT:
     """Annotation based slot decorator using pyqtSlot.
 
@@ -192,10 +161,36 @@ def slot(function: FuncT) -> FuncT:
         def function(self, x: int, y: int) -> None:
         ...
     """
-    argspec = inspect.getfullargspec(function)
-    slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
-    pyqtSlot(*slot_args, **slot_kwargs)(function)
+    annotations = typing.get_type_hints(function)
+    pyqtSlot(*_slot_args(function, annotations), **_slot_kwargs(annotations))(function)
     return function
+
+
+def _slot_args(function, annotations):
+    """Create arguments for pyqtSlot from function arguments.
+
+    Args:
+        function: The python function for which the arguments are created.
+        annotations: Function type annotations.
+    Returns:
+        List of types of the function arguments as arguments for pyqtSlot.
+    """
+    signature = inspect.signature(function)
+    slot_args = []
+    for parameter in signature.parameters:
+        annotation = annotations.get(parameter, None)
+        if parameter == "self" and annotation is None:
+            continue
+        if annotation is None:
+            raise AnnotationNotFound(parameter, function)
+        slot_args.append(annotation)
+    return slot_args
+
+
+def _slot_kwargs(annotations):
+    """Add return type to slot kwargs if it exists."""
+    return_type = annotations.get("return", None)
+    return {} if return_type is None else {"result": return_type}
 
 
 class GenericRunnable(QRunnable):
