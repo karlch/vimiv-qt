@@ -97,7 +97,8 @@ def test_clamp_with_none():
     assert utils.clamp(2, None, None) == 2
 
 
-def test_slot():
+@pytest.mark.parametrize("type_hint", ("int", int))
+def test_slot(type_hint):
     class Dummy(QObject):
 
         signal = pyqtSignal(int)
@@ -109,7 +110,7 @@ def test_slot():
     dummy = Dummy()
 
     @utils.slot
-    def test(x: int):
+    def test(x: type_hint):
         dummy.value = x
 
     dummy.signal.connect(test)
