@@ -7,9 +7,9 @@
 """Tests for vimiv.utils"""
 
 import os
-import inspect
 import typing
 from collections import namedtuple
+from typing import get_type_hints
 
 import pytest
 from PyQt5.QtCore import pyqtSignal, QObject
@@ -97,7 +97,8 @@ def test_clamp_with_none():
     assert utils.clamp(2, None, None) == 2
 
 
-def test_slot():
+@pytest.mark.parametrize("type_hint", ("int", int))
+def test_slot(type_hint):
     class Dummy(QObject):
 
         signal = pyqtSignal(int)
@@ -109,7 +110,7 @@ def test_slot():
     dummy = Dummy()
 
     @utils.slot
-    def test(x: int):
+    def test(x: type_hint):
         dummy.value = x
 
     dummy.signal.connect(test)
@@ -121,7 +122,7 @@ def test_slot_ignore_self():
     def test(self, name: str):
         ...
 
-    slot_args = utils._slot_args(inspect.getfullargspec(test), test)
+    slot_args = utils._slot_args(test, get_type_hints(test))
     assert slot_args == [str]
 
 
@@ -129,7 +130,7 @@ def test_slot_add_returntype():
     def test(self, name: str) -> str:
         ...
 
-    slot_kwargs = utils._slot_kwargs(inspect.getfullargspec(test))
+    slot_kwargs = utils._slot_kwargs(get_type_hints(test))
     assert slot_kwargs == {"result": str}
 
 

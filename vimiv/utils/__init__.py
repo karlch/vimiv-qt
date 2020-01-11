@@ -10,19 +10,7 @@ import functools
 import inspect
 import re
 from abc import ABCMeta
-from contextlib import suppress
-from typing import (
-    Callable,
-    Optional,
-    List,
-    Any,
-    Iterator,
-    Dict,
-    Iterable,
-    Union,
-    Type,
-    cast,
-)
+import typing
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
 from PyQt5.QtGui import QPixmap, QColor, QPainter
@@ -84,20 +72,22 @@ def escape_glob(text: str) -> str:
     return re.sub(r"\\[\*\?\[\]]", escape_char, text)
 
 
-def contains_any(sequence: Iterable[AnyT], elems: Union[Iterable[AnyT], AnyT]) -> bool:
+def contains_any(
+    sequence: typing.Iterable[AnyT], elems: typing.Union[typing.Iterable[AnyT], AnyT]
+) -> bool:
     """Return True if the sequence contains any of the elems."""
     if not sequence:
         return False
     try:
-        elems = cast(Iterable[AnyT], elems)
+        elems = typing.cast(typing.Iterable[AnyT], elems)
         iter(elems)
         return bool(set(sequence) & set(elems))
     except TypeError:
-        return cast(AnyT, elems) in sequence
+        return typing.cast(AnyT, elems) in sequence
 
 
 def clamp(
-    value: NumberT, minimum: Optional[NumberT], maximum: Optional[NumberT]
+    value: NumberT, minimum: typing.Optional[NumberT], maximum: typing.Optional[NumberT]
 ) -> NumberT:
     """Clamp a value so it does not exceed boundaries."""
     if minimum is not None:
@@ -116,7 +106,7 @@ def class_that_defined_method(method):
     return getattr(inspect.getmodule(method), method.__qualname__.split(".")[0])
 
 
-def is_method(func: Callable) -> bool:
+def is_method(func: typing.Callable) -> bool:
     """Return True if func is a method owned by a class.
 
     This is used by the decorators for statusbar and command, when the class is
@@ -143,42 +133,12 @@ def cached_method(func):
 class AnnotationNotFound(Exception):
     """Raised if a there is no type annotation to use."""
 
-    def __init__(self, name: str, function: Callable):
+    def __init__(self, name: str, function: typing.Callable):
         message = (
             f"Missing type annotation for parameter '{name}' "
             f"in function '{function.__qualname__}'"
         )
         super().__init__(message)
-
-
-def _slot_args(argspec: inspect.FullArgSpec, function: Callable) -> List[type]:
-    """Create arguments for pyqtSlot from function arguments.
-
-    Args:
-        argspec: Function arguments retrieved via inspect.
-        function: The python function for which the arguments are created.
-    Returns:
-        List of types of the function arguments as arguments for pyqtSlot.
-    """
-    slot_args = []
-    for argument in argspec.args:
-        has_annotation = argument in argspec.annotations
-        if argument == "self" and not has_annotation:
-            continue
-        if not has_annotation:
-            raise AnnotationNotFound(argument, function)
-        annotation = argspec.annotations[argument]
-        slot_args.append(annotation)
-    return slot_args
-
-
-def _slot_kwargs(argspec: inspect.FullArgSpec) -> Dict[str, Any]:
-    """Add return type to slot kwargs if it exists."""
-    with suppress(KeyError):
-        return_type = argspec.annotations["return"]
-        if return_type is not None:
-            return {"result": return_type}
-    return {}
 
 
 def slot(function: FuncT) -> FuncT:
@@ -192,16 +152,42 @@ def slot(function: FuncT) -> FuncT:
         def function(self, x: int, y: int) -> None:
         ...
     """
-    argspec = inspect.getfullargspec(function)
-    slot_args, slot_kwargs = _slot_args(argspec, function), _slot_kwargs(argspec)
-    pyqtSlot(*slot_args, **slot_kwargs)(function)
+    annotations = typing.get_type_hints(function)
+    pyqtSlot(*_slot_args(function, annotations), **_slot_kwargs(annotations))(function)
     return function
+
+
+def _slot_args(function, annotations):
+    """Create arguments for pyqtSlot from function arguments.
+
+    Args:
+        function: The python function for which the arguments are created.
+        annotations: Function type annotations.
+    Returns:
+        List of types of the function arguments as arguments for pyqtSlot.
+    """
+    signature = inspect.signature(function)
+    slot_args = []
+    for parameter in signature.parameters:
+        annotation = annotations.get(parameter, None)
+        if parameter == "self" and annotation is None:
+            continue
+        if annotation is None:
+            raise AnnotationNotFound(parameter, function)
+        slot_args.append(annotation)
+    return slot_args
+
+
+def _slot_kwargs(annotations):
+    """Add return type to slot kwargs if it exists."""
+    return_type = annotations.get("return", None)
+    return {} if return_type is None else {"result": return_type}
 
 
 class GenericRunnable(QRunnable):
     """Generic QRunnable to run an arbitrary function on a QThreadPool."""
 
-    def __init__(self, function: Callable, *args, **kwargs):
+    def __init__(self, function: typing.Callable, *args, **kwargs):
         super().__init__()
         self.function = function
         self.args = args
@@ -211,19 +197,21 @@ class GenericRunnable(QRunnable):
         self.function(*self.args, **self.kwargs)
 
 
-def asyncrun(function: Callable, *args, pool: QThreadPool = None, **kwargs) -> None:
+def asyncrun(
+    function: typing.Callable, *args, pool: QThreadPool = None, **kwargs
+) -> None:
     """Run function with args and kwargs in parallel on a QThreadPool."""
     pool = pool if pool is not None else Pool.get()
     runnable = GenericRunnable(function, *args, **kwargs)
     pool.start(runnable)
 
 
-def asyncfunc(pool: QThreadPool = None) -> Callable[[FuncNoneT], FuncNoneT]:
+def asyncfunc(pool: QThreadPool = None) -> typing.Callable[[FuncNoneT], FuncNoneT]:
     """Decorator to run function in parallel on a QThreadPool."""
 
     def decorator(function: FuncNoneT) -> FuncNoneT:
         @functools.wraps(function)
-        def inner(*args: Any, **kwargs: Any) -> None:
+        def inner(*args: typing.Any, **kwargs: typing.Any) -> None:
             asyncrun(function, *args, pool=pool, **kwargs)
 
         # Mypy seems to disapprove the *args, **kwargs, but we just wrap the function
@@ -271,12 +259,12 @@ class Pool:
             pool.clear()
 
 
-def flatten(list_of_lists: Iterable[Iterable[AnyT]]) -> List[AnyT]:
+def flatten(list_of_lists: typing.Iterable[typing.Iterable[AnyT]]) -> typing.List[AnyT]:
     """Flatten a list of lists into a single list with all elements."""
     return [elem for sublist in list_of_lists for elem in sublist]
 
 
-def split(a: List[AnyT], n: int) -> Iterator[List[AnyT]]:
+def split(a: typing.List[AnyT], n: int) -> typing.Iterator[typing.List[AnyT]]:
     """Split list into n parts of approximately equal length.
 
     See https://stackoverflow.com/questions/2130016 for details.
@@ -286,8 +274,8 @@ def split(a: List[AnyT], n: int) -> Iterator[List[AnyT]]:
 
 
 def recursive_split(
-    text: str, separator: str, updater: Callable[[str], str]
-) -> List[str]:
+    text: str, separator: str, updater: typing.Callable[[str], str]
+) -> typing.List[str]:
     """Recursively split a string at separator applying an update callable.
 
     The string is split into parts and the update callable is applied to each part. The
@@ -398,20 +386,20 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
 
 
-def is_optional_type(typ: Any) -> bool:
+def is_optional_type(typ: typing.Any) -> bool:
     """Return True if typ is of type Optional."""
     origin = getattr(typ, "__origin__", None)
     types = getattr(typ, "__args__", ())
-    return origin is Union and isinstance(None, types)
+    return origin is typing.Union and isinstance(None, types)
 
 
-def type_of_optional(typ: Type) -> Any:
+def type_of_optional(typ: typing.Type) -> typing.Any:
     """Return T if typ is of type Optional[T]."""
     types = getattr(typ, "__args__", ())
     for elem in types:
         if not isinstance(elem, type(None)):
             return elem
-    raise TypeError("{typ} is not of Optional type")
+    raise TypeError(f"{typ} is not of Optional type")
 
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):
