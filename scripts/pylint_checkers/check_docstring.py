@@ -21,6 +21,7 @@ class CommandMissingDocumentation(BaseChecker):
     __implements__ = IAstroidChecker
 
     name_ambiguous = "ambiguous-register"
+    name_missing = "docstr-missing"
     name_syntax = "command-bad-syntax"
     name_count = "command-bad-count"
     name_argument_missing = "command-arg-missing-doc"
@@ -48,6 +49,11 @@ class CommandMissingDocumentation(BaseChecker):
             name_argument_bad,
             "All command arguments should be documented in the "
             "**posional/optional** arguments section**",
+        ),
+        "E9005": (
+            "Command '%s' missing docstring",
+            name_missing,
+            "All commands must have a docstring for documentation",
         ),
         "W9001": (
             "Ambiguous register decorator, use module.register instead",
@@ -150,6 +156,10 @@ class CommandMissingDocumentation(BaseChecker):
         Returns:
             Set of all documented argument names.
         """
+        docstr = node.doc
+        if docstr is None:
+            self.add_message(self.name_missing, node=node, args=(node.name,))
+            return set()
         lines = [line.strip() for line in node.doc.split("\n")]
 
         def _get_args(identifier, pattern):
