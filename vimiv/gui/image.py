@@ -9,7 +9,7 @@
 from contextlib import suppress
 from typing import List, Union
 
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, pyqtSignal
 from PyQt5.QtWidgets import (
     QGraphicsView,
     QGraphicsScene,
@@ -45,6 +45,9 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
     Attributes:
         _scale: ImageScale defining how to scale image on resize.
+
+    Signals:
+        resized: Emitted after every resizeEvent.
     """
 
     STYLESHEET = """
@@ -53,6 +56,8 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         border: none;
     }
     """
+
+    resized = pyqtSignal()
 
     MAX_SCALE = 8
     MIN_SCALE = 1 / 8
@@ -298,6 +303,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         if self.items():
             self.scale(self._scale)
             api.status.update("image zoom level changed")
+            self.resized.emit()
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""

@@ -36,7 +36,6 @@ class StraightenWidget(QWidget):
         super().__init__(parent=image)
         self.setObjectName(self.__class__.__qualname__)
         self.setWindowFlags(Qt.SubWindow)
-        self.setFixedSize(image.size())
         self.setFocus()
 
         self.bindings = {
@@ -44,7 +43,8 @@ class StraightenWidget(QWidget):
             Qt.Key_Return: functools.partial(self.leave, accept=True),
         }
 
-        image.resized.connect(self.resize)
+        image.resized.connect(self.update_geometry)
+        self.update_geometry()
         self.show()
 
     def leave(self, accept: bool = False):
@@ -57,13 +57,21 @@ class StraightenWidget(QWidget):
             raise NotImplementedError("TODO")
         self.parent().setFocus()  # type: ignore
 
-    def resize(self):
-        self.setFixedSize(self.parent().size())
+    def update_geometry(self):
+        """Update geometry of the grid to overlay the image."""
+        image_size = self.parent().sceneRect()
+        image_width = int(image_size.width() * self.parent().zoom_level)
+        image_height = int(image_size.height() * self.parent().zoom_level)
+        self.setFixedSize(image_width, image_height)
+        x = (self.parent().width() - image_width) // 2
+        y = (self.parent().height() - image_height) // 2
+        self.move(x, y)
 
     def keyPressEvent(self, event):
         """Prefer custom bindings, fall back to the parent (image) widget."""
         binding = self.bindings.get(event.key())
         if binding is not None:
+            api.status.clear("straighten binding")
             binding()
             api.status.update("straighten binding")
         else:
