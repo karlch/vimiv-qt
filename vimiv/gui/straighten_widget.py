@@ -91,11 +91,15 @@ class StraightenWidget(QWidget):
     def update_geometry(self):
         """Update geometry of the grid to overlay the image."""
         image_size = self.parent().sceneRect()
-        image_width = int(image_size.width() * self.parent().zoom_level)
-        image_height = int(image_size.height() * self.parent().zoom_level)
-        self.setFixedSize(image_width, image_height)
-        x = (self.parent().width() - image_width) // 2
-        y = (self.parent().height() - image_height) // 2
+        width = min(
+            int(image_size.width() * self.parent().zoom_level), self.parent().width()
+        )
+        height = min(
+            int(image_size.height() * self.parent().zoom_level), self.parent().height()
+        )
+        self.setFixedSize(width, height)
+        x = (self.parent().width() - width) // 2
+        y = (self.parent().height() - height) // 2
         self.move(x, y)
 
     def keyPressEvent(self, event):
