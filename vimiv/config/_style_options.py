@@ -77,4 +77,6 @@ DEFAULT_OPTIONS = {
     # Metadata overlay
     "metadata.padding": "{keyhint.padding}",
     "metadata.border_radius": "{keyhint.border_radius}",
+    # Straighten widget
+    "image.straighten.color": "{base0a}",
 }

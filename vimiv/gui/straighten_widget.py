@@ -10,11 +10,12 @@ import enum
 import functools
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen
+from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QWidget, QStyleOption
 
 from vimiv import api
 from vimiv.imutils import imtransform
+from vimiv.config import styles
 
 
 class Direction(enum.IntEnum):
@@ -55,6 +56,7 @@ class StraightenWidget(QWidget):
                 self.rotate, direction=Direction.CounterClockwise
             ),
         }
+        self.color = QColor(styles.get("image.straighten.color"))
         self.transform = imtransform.Transform.instance
         self.previous_matrix = self.transform.matrix
         self.total_angle = 0
@@ -111,7 +113,7 @@ class StraightenWidget(QWidget):
         opt = QStyleOption()
         opt.initFrom(self)
         painter = QPainter(self)
-        pen = QPen(Qt.black)
+        pen = QPen(self.color)
         for fraction, style, width in self.LINES:
             pen.setStyle(style)
             pen.setWidth(width)
