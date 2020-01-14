@@ -6,6 +6,7 @@
 
 """Widget to display a grid for straightening and interact with image and transform."""
 
+import enum
 import functools
 
 from PyQt5.QtCore import Qt
@@ -13,6 +14,14 @@ from PyQt5.QtGui import QPainter, QPen
 from PyQt5.QtWidgets import QWidget, QStyleOption
 
 from vimiv import api
+from vimiv.imutils import imtransform
+
+
+class Direction(enum.IntEnum):
+    """Enum defining valid rotation directions."""
+
+    Clockwise = 0
+    CounterClockwise = 1
 
 
 class StraightenWidget(QWidget):
@@ -41,7 +50,14 @@ class StraightenWidget(QWidget):
         self.bindings = {
             Qt.Key_Escape: self.leave,
             Qt.Key_Return: functools.partial(self.leave, accept=True),
+            Qt.Key_L: functools.partial(self.rotate, direction=Direction.Clockwise),
+            Qt.Key_H: functools.partial(
+                self.rotate, direction=Direction.CounterClockwise
+            ),
         }
+        self.transform = imtransform.Transform.instance
+        self.previous_matrix = self.transform.matrix
+        self.total_angle = 0
 
         image.resized.connect(self.update_geometry)
         self.update_geometry()
@@ -53,9 +69,22 @@ class StraightenWidget(QWidget):
         Args:
             accept: If True, keep the straightening as transformation.
         """
-        if accept:
-            raise NotImplementedError("TODO")
+        if not accept:
+            self.transform.setMatrix(*self.previous_matrix)
+            self.transform.apply()
         self.parent().setFocus()  # type: ignore
+
+    def rotate(self, direction: Direction):
+        """Rotate the image in the given direction to perform straightening.
+
+        The heavy lifting is done by transform, this function only provides the binding
+        link to user-interaction and the GUI.
+        """
+        angle = 1 if direction == Direction.Clockwise else -1
+        self.transform.setMatrix(*self.previous_matrix)  # Reset any performed changes
+        self.total_angle += angle
+        self.transform.straighten(angle=self.total_angle)
+        self.update_geometry()
 
     def update_geometry(self):
         """Update geometry of the grid to overlay the image."""
