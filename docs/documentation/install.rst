@@ -15,6 +15,14 @@ and the
 `git development version <https://aur.archlinux.org/packages/vimiv-qt-git/>`_
 is available in the AUR.
 
+Fedora
+------
+
+The `stable release <https://apps.fedoraproject.org/packages/vimiv-qt/overview/>`_ is available in the Fedora repositories.
+It can be installed using the standard GUI software installers (Gnome
+Software/Discover/Dnfdragora) and also using `dnf`::
+
+    $ sudo dnf install vimiv-qt
 
 Using pip
 ---------
@@ -127,7 +135,9 @@ Arch Linux:
     * python-piexif (optional)
 
 Fedora:
-    * TODO
+    * Build time dependencies: `sudo dnf builddep vimiv-qt`.
+    * python3-qt5
+    * python3-piexif
 
 Debian/Ubuntu:
     * python3-pyqt5
