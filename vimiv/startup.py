@@ -20,7 +20,7 @@ from typing import List
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
-from vimiv import app, api, parser, imutils, plugins, version, gui
+from vimiv import app, api, parser, imutils, plugins, gui
 from vimiv.commands import runners, search
 from vimiv.config import configfile, keyfile, styles
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
@@ -58,7 +58,9 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     """
     args = parser.get_argparser().parse_args(argv)
     if args.version:
-        print(version.info(), version.paths(), sep="\n\n")
+        import vimiv.version
+
+        print(vimiv.version.info(), vimiv.version.paths(), sep="\n\n")
         sys.exit(customtypes.Exit.success)
     migration.run()
     init_directories(args)

@@ -9,7 +9,6 @@
 from PyQt5.QtCore import QObject
 
 from vimiv import api, utils
-from vimiv.completion import completionmodels
 
 
 class Completer(QObject):
@@ -50,6 +49,9 @@ class Completer(QObject):
 
     @utils.slot
     def _init_models(self):
+        """Initialize all completionmodels from the corresponding module."""
+        from vimiv.completion import completionmodels
+
         completionmodels.init()
 
     def initialize(self, text: str):

@@ -16,7 +16,7 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.imutils import imtransform, immanipulate
+from vimiv.imutils import imtransform
 from vimiv.utils import files, log, asyncrun
 
 # We need the check as svg support is optional
@@ -171,6 +171,9 @@ class ImageFileHandler(QObject):
 
     @utils.slot
     def _init_manipulate(self):
+        """Initialize the Manipulator widget from the immanipulate module."""
+        from vimiv.imutils import immanipulate
+
         self.manipulate = immanipulate.Manipulator(self)
 
     def _load(self, path: str, reload_only: bool):

@@ -9,7 +9,7 @@
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton
 from PyQt5.QtGui import QGuiApplication
 
-import vimiv
+import vimiv.version
 from vimiv.widgets import PopUp
 
 
