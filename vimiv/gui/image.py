@@ -298,8 +298,9 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
-        self.scale(self._scale)
-        api.status.update("image zoom level changed")
+        if self.items():
+            self.scale(self._scale)
+            api.status.update("image zoom level changed")
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""
