@@ -12,14 +12,9 @@ piexif (https://github.com/hMatoba/Piexif).
 
 from contextlib import suppress
 
-from vimiv.utils import log
+from vimiv.utils import log, lazy
 
-# We need the check as exif support is optional
-try:
-    import piexif
-except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
-    piexif = None
-
+piexif = lazy.import_module("piexif", optional=True)
 
 _logger = log.module_logger(__name__)
 
