@@ -17,7 +17,7 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
-from vimiv.utils import create_pixmap, thumbnail_manager, clamp, log
+from vimiv.utils import create_pixmap, thumbnail_manager, log
 from . import eventhandler, synchronize
 
 
@@ -272,10 +272,10 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         **count:** multiplier
         """
         _logger.debug("Zooming in direction '%s'", direction)
-        size = self.iconSize().width()
-        size = size // 2 if direction == direction.Out else size * 2
-        size = clamp(size, 64, 512)
-        api.settings.thumbnail.size.value = size
+        if direction == direction.In:
+            api.settings.thumbnail.size.increase()
+        else:
+            api.settings.thumbnail.size.decrease()
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
