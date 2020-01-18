@@ -263,3 +263,22 @@ def test_type_of_optional(typ):
 def test_fail_type_of_optional():
     with pytest.raises(TypeError, match="is not of Optional type"):
         assert utils.type_of_optional(int)
+
+
+@pytest.mark.parametrize("n_calls", (1, 16, 1000))
+def test_call_throttled_function_once(qtbot, n_calls):
+    """Ensure throttled function is only executed for the call."""
+    calls = []
+
+    @utils.throttled(delay_ms=1)
+    def local_task(call_id):
+        nonlocal calls
+        calls.append(call_id)
+
+    def check_calls():
+        assert calls == [n_calls]
+
+    for i in range(1, n_calls + 1):
+        local_task(i)
+
+    qtbot.waitUntil(check_calls)

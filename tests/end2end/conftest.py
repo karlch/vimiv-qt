@@ -42,6 +42,7 @@ def mock_directories(tmpdir):
 def cleanup():
     """Fixture to reset various vimiv properties at the end of each test."""
     yield
+    utils.Throttle.stop_all()
     utils.Pool.clear()
     utils.Pool.wait(5000)
     api.settings.reset()
@@ -64,7 +65,7 @@ def cleanup_module():
 @pytest.fixture(autouse=True, scope="session")
 def faster_wait_times():
     """Fixture to set faster wait times for testing."""
-    api.working_directory.WorkingDirectoryHandler.WAIT_TIME = 0
+    utils.Throttle.unthrottle()
     immanipulate.WAIT_TIME = 0
 
 
