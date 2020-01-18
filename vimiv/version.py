@@ -18,18 +18,10 @@ from typing import Optional
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
-from vimiv.utils import xdg, run_qprocess
+from vimiv.utils import xdg, run_qprocess, lazy
 
-# Optional imports to check if these features are supported
-try:
-    from PyQt5.QtSvg import QSvgWidget
-except ImportError:
-    QSvgWidget = None
-
-try:
-    import piexif
-except ImportError:
-    piexif = None
+QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
+piexif = lazy.import_module("piexif", optional=True)
 
 
 def info() -> str:
@@ -49,7 +41,7 @@ def info() -> str:
         f"Python: {_python_version()}\n"
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
-        f"Svg Support: {bool(QSvgWidget)} \n"
+        f"Svg Support: {bool(QtSvg)} \n"
         f"Piexif: {piexif.VERSION if piexif is not None else None}"
     )
 

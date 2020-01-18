@@ -17,17 +17,13 @@ from vimiv import version
 
 
 @pytest.fixture
-def no_svg_support():
-    initial_value, version.QSvgWidget = version.QSvgWidget, None
-    yield
-    version.QSvgWidget = initial_value
+def no_svg_support(monkeypatch):
+    monkeypatch.setattr(version, "QtSvg", None)
 
 
 @pytest.fixture
-def no_exif_support():
-    initial_value, version.piexif = version.piexif, None
-    yield
-    version.piexif = initial_value
+def no_exif_support(monkeypatch):
+    monkeypatch.setattr(version, "piexif", None)
 
 
 @pytest.mark.optional
