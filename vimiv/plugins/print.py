@@ -13,14 +13,10 @@ from PyQt5.QtCore import QObject, Qt, QSize, pyqtSignal
 from PyQt5.QtGui import QPixmap, QMovie, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 
-# We need the check as svg support is optional
-try:
-    from PyQt5.QtSvg import QSvgWidget
-except ImportError:
-    QSvgWidget = None
-
 from vimiv import api
-from vimiv.utils import slot, log
+from vimiv.utils import slot, log, lazy
+
+QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 _logger = log.module_logger(__name__)
@@ -89,7 +85,7 @@ class PrintHandler(QObject):
 
     @slot
     def _on_svg_loaded(self, path: str) -> None:
-        self._widget = PrintSvg(QSvgWidget(path))
+        self._widget = PrintSvg(QtSvg.QSvgWidget(path))
 
     @slot
     def _on_movie_loaded(self, movie: QMovie) -> None:
@@ -143,7 +139,7 @@ class PrintPixmap(PrintWidget):
 class PrintSvg(PrintWidget):
     """Print class for svg vector graphics."""
 
-    def __init__(self, svg_widget: QSvgWidget):
+    def __init__(self, svg_widget: "QtSvg.QSvgWidget"):  # type: ignore
         self._widget = svg_widget
 
     def paint(self, printer: QPrinter) -> None:
