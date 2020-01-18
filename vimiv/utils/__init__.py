@@ -434,7 +434,7 @@ class Throttle(QTimer):
 
     Attributes:
         _func: The throttled function wrapped.
-        _args: Args and kwargs of the last function call.
+        _args: Args and kwargs of the last function call if any.
     """
 
     throttles: typing.List["Throttle"] = []
@@ -442,7 +442,7 @@ class Throttle(QTimer):
     def __init__(self, func, *, delay_ms: int):
         super().__init__()
         self._func = func
-        self._args = tuple(), dict()  # type: ignore
+        self._args = None
         self.setInterval(delay_ms)
         self.setSingleShot(True)
         self.throttles.append(self)
@@ -450,14 +450,15 @@ class Throttle(QTimer):
         def process():
             args, kwargs = self._args
             self._func(*args, **kwargs)
+            self._args = None
 
         self.timeout.connect(process)
 
     def __call__(self, *args, **kwargs):
         """Store arguments of function call and (re-)start the timer."""
-        self._args = args, kwargs
         if self.isActive():
             self.stop()
+        self._args = args, kwargs
         self.start()
 
     @classmethod

@@ -19,7 +19,7 @@ import mockdecorators
 with mockdecorators.apply():
     from vimiv import api, startup, utils
     from vimiv.commands import runners
-    from vimiv.imutils import filelist, immanipulate
+    from vimiv.imutils import filelist
 
 
 ########################################################################################
@@ -66,7 +66,6 @@ def cleanup_module():
 def faster_wait_times():
     """Fixture to set faster wait times for testing."""
     utils.Throttle.unthrottle()
-    immanipulate.WAIT_TIME = 0
 
 
 ###############################################################################

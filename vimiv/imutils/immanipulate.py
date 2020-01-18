@@ -24,7 +24,6 @@ adding it to the ``Manipulations``.
 
 import abc
 import copy
-import time
 import weakref
 from typing import Optional, NamedTuple, List
 
@@ -39,7 +38,6 @@ from vimiv.config import styles
 from vimiv.imutils import _c_manipulate  # type: ignore
 
 
-WAIT_TIME = 0.3
 _logger = utils.log.module_logger(__name__)
 
 
@@ -349,7 +347,6 @@ class Manipulator(QObject):
         _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
-        _thread_id: ID of the current manipulation thread.
 
     Signals:
         updated: Emitted when the manipulated pixmap was changed.
@@ -372,7 +369,6 @@ class Manipulator(QObject):
         self._current.focus()
         self._handler = weakref.ref(handler)
         self._pixmap = self._manipulated = None
-        self._thread_id = 0
 
         api.modes.MANIPULATE.entered.connect(self._on_enter)
         api.modes.MANIPULATE.left.connect(self.reset)
@@ -492,21 +488,19 @@ class Manipulator(QObject):
         """Apply changes to displayed image according to an updated manipulation."""
         self._focus(manipulation)
         self.pool.clear()
-        self._thread_id += 1
-        self._run_manipulation_thread(self._thread_id, manipulation)
+        self._run_manipulation_thread(manipulation)
         api.status.update("manipulate processing")
 
+    @utils.throttled(delay_ms=300)
     @utils.asyncfunc(pool=pool)
-    def _run_manipulation_thread(self, thread_id, manipulation):
+    def _run_manipulation_thread(self, manipulation):
         """Run manipulation in the thread pool.
 
-        Some time is waited before running the manipulation, to keep the number of
-        manipulations done reasonable in case of dragging the slider or keeping a key
-        repeat.
+        The function is throttled to keep the number of manipulations done reasonable in
+        case of dragging the slider or keeping a key repeat.
         """
-        time.sleep(WAIT_TIME)
         # self._pixmap is None if manipulate mode has been left
-        if self._pixmap is not None and thread_id == self._thread_id:
+        if self._pixmap is not None:
             pixmap = self.manipulations.apply(self._pixmap, manipulation)
             self.updated.emit(pixmap)
 
