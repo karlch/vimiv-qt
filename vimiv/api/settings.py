@@ -178,7 +178,7 @@ class BoolSetting(Setting):
         return "Bool"
 
 
-class NumberSetting(Setting):
+class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstract class
     """Used as ABC for Int and Float settings.
 
     This allows using isinstance(setting, NumberSetting) for add_to and
@@ -204,13 +204,15 @@ class NumberSetting(Setting):
         self.min_value = min_value
         self.max_value = max_value
 
-    @abstractmethod
     def __iadd__(self, value: customtypes.NumberStr) -> "NumberSetting":
-        """Must be implemented by child."""
+        """Add a value to the currently stored number."""
+        self.value += self.convert(value)
+        return self
 
-    @abstractmethod
     def __imul__(self, value: customtypes.NumberStr) -> "NumberSetting":
-        """Must be implemented by child."""
+        """Multiply the currently stored number with a value."""
+        self.value *= self.convert(value)
+        return self
 
     def hook(self, value: customtypes.NumberStr) -> customtypes.Number:
         return clamp(self.convert(value), self.min_value, self.max_value)
@@ -221,24 +223,6 @@ class IntSetting(NumberSetting):
 
     typ = int
 
-    def __iadd__(self, value: customtypes.NumberStr) -> "IntSetting":
-        """Add a value to the currently stored integer.
-
-        Args:
-            value: The integer value to add as string.
-        """
-        self.value = self.value + self.convert(value)
-        return self
-
-    def __imul__(self, value: customtypes.NumberStr) -> "IntSetting":
-        """Multiply the currently stored integer with a value.
-
-        Args:
-            value: The value to multiply with as string.
-        """
-        self.value = self.value * self.convert(value)
-        return self
-
     def __str__(self) -> str:
         return "Integer"
 
@@ -247,24 +231,6 @@ class FloatSetting(NumberSetting):
     """Stores a float setting."""
 
     typ = float
-
-    def __iadd__(self, value: customtypes.NumberStr) -> "FloatSetting":
-        """Add a value to the currently stored float.
-
-        Args:
-            value: The float value to add as string.
-        """
-        self.value = self.value + self.convert(value)
-        return self
-
-    def __imul__(self, value: customtypes.NumberStr) -> "FloatSetting":
-        """Multiply the currently stored float with a value.
-
-        Args:
-            value: The value to multiply with as string.
-        """
-        self.value = self.value * self.convert(value)
-        return self
 
     def __str__(self) -> str:
         return "Float"
