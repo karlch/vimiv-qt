@@ -67,9 +67,11 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     Attributes:
         name: Name of the setting as string.
+        desc: Description of the setting.
         hidden: True if the setting should not be visible in the :set completion.
 
         _default: Default value of the setting stored in its python type.
+        _suggestions: List of useful values to show in completion widget.
         _value: Value of the setting stored in its python type.
 
     Signals:
@@ -88,19 +90,13 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
     ):
         """Initialize attributes with default values.
 
-        Args:
-            name: Name of the setting to initialize.
-            default_value: Default value of the setting to start with.
-            desc: Description of the setting.
-            suggestions: List of useful values to show in completion widget.
-            hidden: True if the setting should not be visible in the :set completion.
+        See the class attributes section for a description of the arguments.
         """
         super().__init__()
         self.name = name
-        self._default = default_value
-        self._value = default_value
         self.desc = desc
         self.hidden = hidden
+        self._value = self._default = default_value
         self._suggestions = suggestions if suggestions is not None else []
         _storage[name] = self  # Store setting in storage
 
@@ -134,10 +130,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         return self._suggestions
 
     def convert(self, value: Any) -> Any:
-        """Convert value to setting type before using it.
-
-        Must be implemented by the child as it knows which type to require.
-        """
+        """Convert value to setting type before using it."""
         with suppress(ValueError):  # We re-raise later with a consistent message
             if isinstance(value, str):
                 return self.convertstr(value)
