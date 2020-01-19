@@ -141,12 +141,14 @@ class EventHandlerMixin:
             self.partial_handler.count.add_keys(keyname)
         elif not self._process_event(keysequence, mode=mode):
             super().keyPressEvent(event)  # type: ignore
+            api.status.update("regular Qt event")
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
         api.status.clear("MousePressEvent")
         if not self._process_event(mouseevent_to_sequence(event)):
             super().mousePressEvent(event)  # type: ignore
+            api.status.update("regular Qt event")
 
     def mouseDoubleClickEvent(self, event: QMouseEvent):
         """Handle mouse press event for the widget."""
@@ -155,6 +157,7 @@ class EventHandlerMixin:
             mouseevent_to_sequence(event, prefix="double-button")
         ):
             super().mouseDoubleClickEvent(event)  # type: ignore
+            api.status.update("regular Qt event")
 
     def _process_event(self, sequence: SequenceT, mode: api.modes.Mode = None) -> bool:
         """Process event by name.
@@ -192,7 +195,6 @@ class EventHandlerMixin:
             return True
         # Nothing => reset and return False
         _logger.debug("EventHandlerMixin: no matches for event")
-        api.status.update("regular Qt event")  # Will not be called by command
         self.partial_handler.clear_keys()
         return False
 
