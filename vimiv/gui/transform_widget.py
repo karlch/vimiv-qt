@@ -42,6 +42,8 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         self.transform = imtransform.Transform.instance
         self.previous_matrix = self.transform.matrix
 
+        image.transformation_module = self.status_info
+
         image.resized.connect(self.update_geometry)
         self.update_geometry()
         self.show()
@@ -49,6 +51,10 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     @abc.abstractmethod
     def update_geometry(self):
         """Update geometry of the widget."""
+
+    def status_info(self) -> str:
+        """Can be overridden by the child to display information in the status bar."""
+        return ""
 
     def leave(self, accept: bool = False):
         """Leave the transform widget for image mode.
@@ -59,6 +65,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         if not accept:
             self.reset_transformations()
             self.transform.apply()
+        self.parent().transformation_module = None  # type: ignore
         self.parent().setFocus()  # type: ignore
         self.deleteLater()
         api.status.update("transform widget left")

@@ -97,6 +97,10 @@ class StraightenWidget(TransformWidget):
         y = (self.parent().height() - height) // 2
         self.move(x, y)
 
+    def status_info(self):
+        """Display current rotation angle in the status bar."""
+        return f"angle: {self.angle:+.1f}°"
+
     def paintEvent(self, _event):
         """Paint a grid of helper lines."""
         opt = QStyleOption()
