@@ -24,6 +24,11 @@ Changed:
   with the python builtin. Using ``api.open`` directly is deprecated and will be removed
   in `v0.7.0`.
 
+Fixed:
+^^^^^^
+
+* Always writing changed images to disk regardless of the ``image.autowrite`` setting.
+
 
 v0.5.0 (2020-01-05)
 -------------------

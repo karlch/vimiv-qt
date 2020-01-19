@@ -28,6 +28,7 @@ def test_set_bool_setting(mocker, value):
     b = settings.BoolSetting("bool", True)
     b.value = value
     assert not b.value
+    assert not b
 
 
 def test_toggle_bool_setting():

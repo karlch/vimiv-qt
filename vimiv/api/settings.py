@@ -163,6 +163,9 @@ class BoolSetting(Setting):
     def __str__(self) -> str:
         return "Bool"
 
+    def __bool__(self) -> bool:
+        return self.value
+
 
 class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstract class
     """Used as ABC for Int and Float settings.
