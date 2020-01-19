@@ -16,14 +16,10 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.imutils import imtransform, immanipulate
-from vimiv.utils import files, log, asyncrun
+from vimiv.imutils import imtransform
+from vimiv.utils import files, log, asyncrun, lazy
 
-# We need the check as svg support is optional
-try:
-    from PyQt5.QtSvg import QSvgWidget
-except ImportError:
-    QSvgWidget = None
+QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 _logger = log.module_logger(__name__)
@@ -171,6 +167,9 @@ class ImageFileHandler(QObject):
 
     @utils.slot
     def _init_manipulate(self):
+        """Initialize the Manipulator widget from the immanipulate module."""
+        from vimiv.imutils import immanipulate
+
         self.manipulate = immanipulate.Manipulator(self)
 
     def _load(self, path: str, reload_only: bool):
@@ -191,7 +190,7 @@ class ImageFileHandler(QObject):
             log.error("Cannot read image %s", path)
             return
         # SVG
-        if file_format == "svg" and QSvgWidget:
+        if file_format == "svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             self.original = None

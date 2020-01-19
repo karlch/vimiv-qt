@@ -18,11 +18,8 @@ from .bar import Bar
 from .image import ScrollableImage
 from .keyhint_widget import KeyhintWidget
 from .library import Library
-from .manipulate import Manipulate, ManipulateImage
 from .thumbnail import ThumbnailView
-from .version_popup import VersionPopUp
 from .metadata_widget import MetadataWidget
-from .keybindings_popup import KeybindingsPopUp
 
 
 class MainWindow(QWidget):
@@ -59,6 +56,8 @@ class MainWindow(QWidget):
     @utils.slot
     def _init_manipulate(self):
         """Create UI widgets related to manipulate mode."""
+        from .manipulate import Manipulate, ManipulateImage
+
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
         self.add_overlay(ManipulateImage(self, manipulate_widget))
@@ -83,6 +82,8 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--copy``: Copy version information to clipboard instead.
         """
+        from .version_popup import VersionPopUp
+
         if copy:
             VersionPopUp.copy_to_clipboard()
         else:
@@ -98,6 +99,8 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--columns``: Number of columns to split the bindings in.
         """
+        from .keybindings_popup import KeybindingsPopUp
+
         KeybindingsPopUp(columns, parent=self)
 
     @api.commands.register()

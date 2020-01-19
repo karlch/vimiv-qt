@@ -55,11 +55,11 @@ Module Attributes:
 """
 
 import os
-from typing import cast, List, Tuple, Generator
+from typing import cast, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
-from vimiv.utils import files, slot, log, task
+from vimiv.utils import files, slot, log, throttled
 from . import settings, signals, status
 
 
@@ -82,7 +82,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             arg1: List of images in the working directory.
 
     Class Attributes:
-        WAIT_TIME: Time to wait before emitting *_changed signals.
+        WAIT_TIME_MS: Time in milliseconds to wait before emitting *_changed signals.
 
     Attributes:
         _dir: The current working directory.
@@ -94,7 +94,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     changed = pyqtSignal(list, list)
     images_changed = pyqtSignal(list)
 
-    WAIT_TIME = 0.3
+    WAIT_TIME_MS = 300
 
     def __init__(self) -> None:
         super().__init__()
@@ -148,11 +148,10 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._images, self._directories = self._get_content(directory)
         self.loaded.emit(self._images, self._directories)
 
-    @task.register(single=True)
-    def _reload_directory(self, _path: str) -> Generator:
+    @throttled(delay_ms=WAIT_TIME_MS)
+    def _reload_directory(self, _path: str) -> None:
         """Load new supported files when directory content has changed."""
         _logger.debug("Reloading working directory")
-        yield task.sleep(self.WAIT_TIME)
         self._emit_changes(*self._get_content(self._dir))
 
     @slot
@@ -171,15 +170,13 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 self.addPath(path)
             self._maybe_emit_image_changed()
 
-    @task.register(single=True)
-    def _maybe_emit_image_changed(self) -> Generator:
+    @throttled(delay_ms=WAIT_TIME_MS)
+    def _maybe_emit_image_changed(self) -> None:
         """Emit image changed after waiting unless additional changes were made.
 
         This is required as images may be written in parts and loading every
         single step is neither possible nor wanted.
         """
-        # Async sleep to keep GUI responsive
-        yield task.sleep(self.WAIT_TIME)
         _logger.debug("Processing changed image file...")
         signals.image_changed.emit()
         _logger.debug("Image file updated")

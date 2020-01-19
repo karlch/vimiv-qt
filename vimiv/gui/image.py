@@ -23,14 +23,11 @@ from PyQt5.QtGui import QMovie, QPixmap
 from vimiv import api, imutils, utils
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
+from vimiv.utils import lazy
 
 from .eventhandler import EventHandlerMixin
 
-# We need the check as svg support is optional
-try:
-    from PyQt5.QtSvg import QGraphicsSvgItem
-except ImportError:
-    QGraphicsSvgItem = None
+QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 INF = float("inf")
@@ -79,7 +76,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
         api.signals.pixmap_loaded.connect(self._load_pixmap)
         api.signals.movie_loaded.connect(self._load_movie)
-        if QGraphicsSvgItem is not None:
+        if QtSvg is not None:
             api.signals.svg_loaded.connect(self._load_svg)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
 
@@ -111,7 +108,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
     def _load_svg(self, path: str, reload_only: bool) -> None:
         """Load new vector graphic into the graphics scene."""
-        item = QGraphicsSvgItem(path)
+        item = QtSvg.QGraphicsSvgItem(path)
         self._update_scene(item, item.boundingRect(), reload_only)
 
     def _update_scene(
@@ -298,8 +295,9 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
-        self.scale(self._scale)
-        api.status.update("image zoom level changed")
+        if self.items():
+            self.scale(self._scale)
+            api.status.update("image zoom level changed")
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""

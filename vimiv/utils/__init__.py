@@ -12,7 +12,7 @@ import re
 from abc import ABCMeta
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess
+from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
 from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
@@ -404,3 +404,71 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
 
 class AbstractQObjectMeta(wrappertype, ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
+
+
+def throttled(*, delay_ms: int):
+    """Decorator to throttle function and only execute the final call after delay_ms.
+
+    The implementation uses a QTimer to wait for the delay and therefore does not block
+    the GUI. The final function call is executed upon timeout.
+    """
+
+    def decorator(func):
+        throttle = Throttle(func, delay_ms=delay_ms)
+
+        @functools.wraps(func)
+        def inner(*args, **kwargs):
+            """Additional wrapper required to correctly treat self."""
+            throttle(*args, **kwargs)
+
+        return inner
+
+    return decorator
+
+
+class Throttle(QTimer):
+    """Timer class used as throttle for the throttled decorator.
+
+    Class Attributes:
+        throttles: List of all created instances.
+
+    Attributes:
+        _func: The throttled function wrapped.
+        _args: Args and kwargs of the last function call if any.
+    """
+
+    throttles: typing.List["Throttle"] = []
+
+    def __init__(self, func, *, delay_ms: int):
+        super().__init__()
+        self._func = func
+        self._args = None
+        self.setInterval(delay_ms)
+        self.setSingleShot(True)
+        self.throttles.append(self)
+
+        def process():
+            args, kwargs = self._args
+            self._func(*args, **kwargs)
+            self._args = None
+
+        self.timeout.connect(process)
+
+    def __call__(self, *args, **kwargs):
+        """Store arguments of function call and (re-)start the timer."""
+        if self.isActive():
+            self.stop()
+        self._args = args, kwargs
+        self.start()
+
+    @classmethod
+    def unthrottle(cls):
+        """Unthrottle all functions by setting timer interval to zero."""
+        for throttle in cls.throttles:
+            throttle.setInterval(0)
+
+    @classmethod
+    def stop_all(cls):
+        """Stop all running throttles."""
+        for throttle in cls.throttles:
+            throttle.stop()
