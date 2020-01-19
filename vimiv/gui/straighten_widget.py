@@ -6,8 +6,8 @@
 
 """Widget to display a grid for straightening and interact with image and transform."""
 
-import enum
 import functools
+from contextlib import suppress
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
@@ -17,12 +17,7 @@ from vimiv import api
 from vimiv.imutils import imtransform
 from vimiv.config import styles
 
-
-class Direction(enum.IntEnum):
-    """Enum defining valid rotation directions."""
-
-    Clockwise = 0
-    CounterClockwise = 1
+from .eventhandler import keyevent_to_sequence
 
 
 class StraightenWidget(QWidget):
@@ -49,13 +44,14 @@ class StraightenWidget(QWidget):
         self.setFocus()
 
         self.bindings = {
-            Qt.Key_Escape: self.leave,
-            Qt.Key_Return: functools.partial(self.leave, accept=True),
-            Qt.Key_L: functools.partial(self.rotate, direction=Direction.Clockwise),
-            Qt.Key_H: functools.partial(
-                self.rotate, direction=Direction.CounterClockwise
-            ),
+            ("<escape>",): self.leave,
+            ("<return>",): functools.partial(self.leave, accept=True),
         }
+        self._add_rotate_binding("l", ">", angle=0.2)
+        self._add_rotate_binding("L", angle=1.0)
+        self._add_rotate_binding("h", "<", counter_clockwise=True, angle=0.2)
+        self._add_rotate_binding("H", counter_clockwise=True, angle=1.0)
+
         self.color = QColor(styles.get("image.straighten.color"))
         self.transform = imtransform.Transform.instance
         self.previous_matrix = self.transform.matrix
@@ -64,6 +60,22 @@ class StraightenWidget(QWidget):
         image.resized.connect(self.update_geometry)
         self.update_geometry()
         self.show()
+
+    def _add_rotate_binding(
+        self, *keys: str, counter_clockwise: bool = False, angle: float
+    ) -> None:
+        """Add keybindings for the rotate command.
+
+        Args:
+            keys: Tuple of keys to bind to this command.
+            counter_clockwise: True for rotating counter clockwise.
+            angle: Angle in degrees by which the command rotates.
+        """
+        func = functools.partial(
+            self.rotate, counter_clockwise=counter_clockwise, angle=angle
+        )
+        for key in keys:
+            self.bindings[(key,)] = func
 
     def leave(self, accept: bool = False):
         """Leave the straighten widget for image mode.
@@ -76,13 +88,13 @@ class StraightenWidget(QWidget):
             self.transform.apply()
         self.parent().setFocus()  # type: ignore
 
-    def rotate(self, direction: Direction):
+    def rotate(self, *, counter_clockwise: bool = False, angle: float = 1.0):
         """Rotate the image in the given direction to perform straightening.
 
         The heavy lifting is done by transform, this function only provides the binding
         link to user-interaction and the GUI.
         """
-        angle = 1 if direction == Direction.Clockwise else -1
+        angle = -angle if counter_clockwise else angle
         self.transform.setMatrix(*self.previous_matrix)  # Reset any performed changes
         self.total_angle += angle
         self.transform.straighten(angle=self.total_angle)
@@ -104,13 +116,12 @@ class StraightenWidget(QWidget):
 
     def keyPressEvent(self, event):
         """Prefer custom bindings, fall back to the parent (image) widget."""
-        binding = self.bindings.get(event.key())
-        if binding is not None:
+        with suppress(ValueError, KeyError):
+            keysequence = keyevent_to_sequence(event)
+            binding = self.bindings[keysequence]
             api.status.clear("straighten binding")
             binding()
             api.status.update("straighten binding")
-        else:
-            self.parent().keyPressEvent(event)
 
     def paintEvent(self, _event):
         """Paint a grid of helper lines."""
