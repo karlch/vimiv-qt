@@ -54,10 +54,10 @@ class Transform(QTransform):
         self._handler = weakref.ref(handler)
 
     @property
-    def angle(self) -> int:
+    def angle(self) -> float:
         """Current rotation angle in degrees."""
-        x, y = self.map(0, 1)
-        return int(math.atan2(x, y) / math.pi * 180)
+        x, y = self.map(1.0, 0.0)
+        return (math.atan2(y, x) / math.pi * 180) % 360
 
     @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
     @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
