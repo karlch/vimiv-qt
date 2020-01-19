@@ -7,20 +7,18 @@
 """Widget to display a grid for straightening and interact with image and transform."""
 
 import functools
-from contextlib import suppress
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtWidgets import QWidget, QStyleOption
+from PyQt5.QtWidgets import QStyleOption
 
-from vimiv import api, utils
-from vimiv.imutils import imtransform
+from vimiv import utils
 from vimiv.config import styles
 
-from .eventhandler import keyevent_to_sequence
+from .transform_widget import TransformWidget
 
 
-class StraightenWidget(QWidget):
+class StraightenWidget(TransformWidget):
     """Widget to display a grid for straightening and interact with image and transform.
 
     The grid is a visual helper for the user to straighten the image. An interaction
@@ -28,7 +26,8 @@ class StraightenWidget(QWidget):
     display the transformation is performed with this class acting as man-in-the-middle.
 
     Attributes:
-        bindings: Dictionary of keybindings required for straightening.
+        color: Color of the grid lines.
+        angle: Current rotation angle in degrees.
     """
 
     LINES = (
@@ -38,28 +37,14 @@ class StraightenWidget(QWidget):
     )
 
     def __init__(self, image):
-        super().__init__(parent=image)
-        self.setObjectName(self.__class__.__qualname__)
-        self.setWindowFlags(Qt.SubWindow)
-        self.setFocus()
-
-        self.bindings = {
-            ("<escape>",): self.leave,
-            ("<return>",): functools.partial(self.leave, accept=True),
-        }
+        super().__init__(image)
         self._add_rotate_binding("l", ">", angle=0.2)
         self._add_rotate_binding("L", angle=1.0)
         self._add_rotate_binding("h", "<", counter_clockwise=True, angle=0.2)
         self._add_rotate_binding("H", counter_clockwise=True, angle=1.0)
 
         self.color = QColor(styles.get("image.straighten.color"))
-        self.transform = imtransform.Transform.instance
-        self.previous_matrix = self.transform.matrix
-        self.total_angle = 0
-
-        image.resized.connect(self.update_geometry)
-        self.update_geometry()
-        self.show()
+        self.angle = 0
 
     def _add_rotate_binding(
         self, *keys: str, counter_clockwise: bool = False, angle: float
@@ -77,17 +62,6 @@ class StraightenWidget(QWidget):
         for key in keys:
             self.bindings[(key,)] = func
 
-    def leave(self, accept: bool = False):
-        """Leave the straighten widget for image mode.
-
-        Args:
-            accept: If True, keep the straightening as transformation.
-        """
-        if not accept:
-            self.transform.setMatrix(*self.previous_matrix)
-            self.transform.apply()
-        self.parent().setFocus()  # type: ignore
-
     def rotate(self, *, counter_clockwise: bool = False, angle: float = 1.0):
         """Rotate the image in the given direction to perform straightening.
 
@@ -95,7 +69,7 @@ class StraightenWidget(QWidget):
         link to user-interaction and the GUI.
         """
         angle = -angle if counter_clockwise else angle
-        self.total_angle += angle
+        self.angle += angle
         self._perform_rotate()
 
     @utils.throttled(delay_ms=0)
@@ -105,8 +79,8 @@ class StraightenWidget(QWidget):
         The throttling keeps the UI responsive and stops the CPU from going wild when
         holding down any of the rotate keys.
         """
-        self.transform.setMatrix(*self.previous_matrix)  # Reset any performed changes
-        self.transform.straighten(angle=self.total_angle)
+        self.reset_transformations()
+        self.transform.straighten(angle=self.angle)
         self.update_geometry()
 
     def update_geometry(self):
@@ -123,15 +97,6 @@ class StraightenWidget(QWidget):
         y = (self.parent().height() - height) // 2
         self.move(x, y)
 
-    def keyPressEvent(self, event):
-        """Prefer custom bindings, fall back to the parent (image) widget."""
-        with suppress(ValueError, KeyError):
-            keysequence = keyevent_to_sequence(event)
-            binding = self.bindings[keysequence]
-            api.status.clear("straighten binding")
-            binding()
-            api.status.update("straighten binding")
-
     def paintEvent(self, _event):
         """Paint a grid of helper lines."""
         opt = QStyleOption()
@@ -146,8 +111,3 @@ class StraightenWidget(QWidget):
             y_fraction = int(self.height() * fraction)
             painter.drawLine(0, y_fraction, self.width(), y_fraction)
             painter.drawLine(x_fraction, 0, x_fraction, self.height())
-
-    def focusOutEvent(self, event):
-        """Delete the widget when focusing out."""
-        self.deleteLater()
-        super().focusOutEvent(event)
