@@ -13,7 +13,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QPen, QColor
 from PyQt5.QtWidgets import QWidget, QStyleOption
 
-from vimiv import api
+from vimiv import api, utils
 from vimiv.imutils import imtransform
 from vimiv.config import styles
 
@@ -95,8 +95,17 @@ class StraightenWidget(QWidget):
         link to user-interaction and the GUI.
         """
         angle = -angle if counter_clockwise else angle
-        self.transform.setMatrix(*self.previous_matrix)  # Reset any performed changes
         self.total_angle += angle
+        self._perform_rotate()
+
+    @utils.throttled(delay_ms=0)
+    def _perform_rotate(self):
+        """Throttled implementation of the actual rotate.
+
+        The throttling keeps the UI responsive and stops the CPU from going wild when
+        holding down any of the rotate keys.
+        """
+        self.transform.setMatrix(*self.previous_matrix)  # Reset any performed changes
         self.transform.straighten(angle=self.total_angle)
         self.update_geometry()
 
