@@ -10,10 +10,11 @@ import inspect
 import importlib
 import os
 import sys
-from contextlib import suppress
 
 # Startup is imported to create all the commands and keybindings via their decorators
 from vimiv import api, parser, startup  # pylint: disable=unused-import
+from vimiv.imutils import immanipulate  # pylint: disable=unused-import
+from vimiv.gui import manipulate  # pylint: disable=unused-import
 
 from rstutils import RSTFile
 
