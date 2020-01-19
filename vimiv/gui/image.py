@@ -7,9 +7,9 @@
 """QtWidgets for IMAGE mode."""
 
 from contextlib import suppress
-from typing import List, Union
+from typing import List, Union, Optional, Callable
 
-from PyQt5.QtCore import Qt, QRectF
+from PyQt5.QtCore import Qt, QRectF, pyqtSignal
 from PyQt5.QtWidgets import (
     QGraphicsView,
     QGraphicsScene,
@@ -44,7 +44,13 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         MAX_SCALE: Maximum scale to scale an image to.
 
     Attributes:
+        transformation_module: Function returning additional information on current
+            more complex transformation such as straighten if any.
+
         _scale: ImageScale defining how to scale image on resize.
+
+    Signals:
+        resized: Emitted after every resizeEvent.
     """
 
     STYLESHEET = """
@@ -53,6 +59,8 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         border: none;
     }
     """
+
+    resized = pyqtSignal()
 
     MAX_SCALE = 8
     MIN_SCALE = 1 / 8
@@ -64,6 +72,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         styles.apply(self)
 
         self._scale = ImageScaleFloat(1.0)
+        self.transformation_module: Optional[Callable[[], str]] = None
 
         self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -292,12 +301,32 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             movie = widget.movie()
             movie.setPaused(not movie.state() == QMovie.Paused)
 
+    @api.commands.register(mode=api.modes.IMAGE)
+    def straighten(self):
+        """Display a grid to straighten the current image.
+
+        The image can then be straightened clockwise using the ``l``, ``>`` and ``L``
+        keys and counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with
+        ``<return>`` and reject them with ``<escape>``.
+        """
+        from .straighten_widget import StraightenWidget
+
+        StraightenWidget(self)
+
+    @api.status.module("{transformation-info}")
+    def transformation_info(self) -> str:
+        """Additional information on image transformations such as straightening."""
+        if self.transformation_module is None:
+            return ""
+        return self.transformation_module()  # pylint: disable=not-callable
+
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
         if self.items():
             self.scale(self._scale)
             api.status.update("image zoom level changed")
+            self.resized.emit()
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""

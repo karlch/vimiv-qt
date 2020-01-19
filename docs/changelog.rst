@@ -14,6 +14,11 @@ Added:
 * The ``:resize`` and ``:rescale`` commands to change the dimension of the original
   image. These are transformations and can be written to file.
 * The ``:undo-transformations`` command to reset the image to the original.
+* The ``:straighten`` command which displays a grid to straighten the current image.
+  The image can then be straightened clockwise using the ``l``, ``>`` and ``L`` keys and
+  counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with ``<return>``
+  and reject them with ``<escape>``. It comes ith the ``{transformation-info}`` status
+  module that displays the current straightening angle in degrees.
 
 Changed:
 ^^^^^^^^

@@ -11,7 +11,7 @@ import math
 import weakref
 from typing import Optional
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRect, QSize
 from PyQt5.QtGui import QTransform
 
 from vimiv import api
@@ -31,7 +31,7 @@ def register_transform_command(**kwargs):
             # pylint: disable=protected-access
             self._ensure_editable()
             func(self, *args, **kwargs)
-            self._apply_transformations()
+            self.apply()
 
         return api.commands.register(mode=api.modes.IMAGE, **kwargs)(inner)
 
@@ -54,10 +54,10 @@ class Transform(QTransform):
         self._handler = weakref.ref(handler)
 
     @property
-    def angle(self) -> int:
+    def angle(self) -> float:
         """Current rotation angle in degrees."""
-        x, y = self.map(0, 1)
-        return int(math.atan2(x, y) / math.pi * 180)
+        x, y = self.map(1.0, 0.0)
+        return (math.atan2(y, x) / math.pi * 180) % 360
 
     @api.keybindings.register("<", "rotate --counter-clockwise", mode=api.modes.IMAGE)
     @api.keybindings.register(">", "rotate", mode=api.modes.IMAGE)
@@ -127,11 +127,30 @@ class Transform(QTransform):
         dy = dy if dy is not None else dx
         self.scale(dx, dy)
 
-    def _apply_transformations(self):
+    def apply(self):
         """Apply all transformations to the original pixmap."""
-        transformed = self._handler().original.transformed(
-            self, mode=Qt.SmoothTransformation
+        original = self._handler().original
+        self._apply(original.transformed(self, mode=Qt.SmoothTransformation))
+
+    def straighten(self, *, angle: int):
+        """Straighten the original image.
+
+        This rotates the image by the total angle and crops the valid, axis-aligned
+        rectangle from the rotated image.
+
+        Args:
+            angle: Rotation angle to straighten the original image by.
+        """
+        original = self._handler().original
+        self.rotate(angle)
+        transformed = original.transformed(self, mode=Qt.SmoothTransformation)
+        rect = self.largest_rect_in_rotated(
+            original=original.size(), rotated=transformed.size(), angle=angle
         )
+        self._apply(transformed.copy(rect))
+
+    def _apply(self, transformed):
+        """Check the transformed pixmap for validity and apply it to the handler."""
         if transformed.isNull():
             raise api.commands.CommandError(
                 "Error transforming image, ignoring transformation.\n"
@@ -148,8 +167,57 @@ class Transform(QTransform):
         """True if transformations have been applied."""
         return not self.isIdentity()
 
+    @property
+    def matrix(self):
+        """Tuple of matrix elements defining the current transformation matrix."""
+        # fmt: off
+        return (
+            self.m11(), self.m12(), self.m13(),
+            self.m21(), self.m22(), self.m23(),
+            self.m31(), self.m32(), self.m33(),
+        )
+        # fmt: on
+
     @api.commands.register(mode=api.modes.IMAGE)
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
         self._handler().transformed = self._handler().original
+
+    @classmethod
+    def largest_rect_in_rotated(
+        cls, *, original: QSize, rotated: QSize, angle: float
+    ) -> QRect:
+        """Return largest possible axis-aligned rectangle in rotated rectangle.
+
+        See https://stackoverflow.com/a/16778797 for the implementation details.
+
+        Args:
+            original: Size of the original (unrotated) rectangle.
+            rotated: Size of the rotated and padded rectangle (larger than original).
+            angle: Rotation angle in degrees.
+        Returns:
+            Rectangle with the coordinates and size within the rotated rectangle.
+        """
+        # Not beautiful, but also not much nicer if we refactor this into multiple
+        # functions
+        # pylint: disable=too-many-locals
+        rad = angle / 180 * math.pi
+        is_portrait = original.height() > original.width()
+        short = original.width() if is_portrait else original.height()
+        long = original.height() if is_portrait else original.width()
+        sin_a = abs(math.sin(rad))
+        cos_a = abs(math.cos(rad))
+
+        if short <= 2.0 * sin_a * cos_a * long or abs(sin_a - cos_a) < 1e-10:
+            s = 0.5 * short
+            wr, hr = (s / cos_a, s / sin_a) if is_portrait else (s / sin_a, s / cos_a)
+        else:
+            cos_2a = cos_a ** 2 - sin_a ** 2
+            wr = (original.width() * cos_a - original.height() * sin_a) / cos_2a
+            hr = (original.height() * cos_a - original.width() * sin_a) / cos_2a
+
+        x = (rotated.width() - wr) // 2
+        y = (rotated.height() - hr) // 2
+
+        return QRect(int(x), int(y), int(wr), int(hr))

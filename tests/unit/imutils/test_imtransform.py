@@ -70,3 +70,9 @@ def test_change_and_reset(action, transform):
     assert transform.changed
     transform.reset()
     assert not transform.changed
+
+
+@pytest.mark.parametrize("angle", range(0, 360, 15))
+def test_rotate_angle(transform, angle):
+    transform.rotate(angle)
+    assert transform.angle == pytest.approx(angle)
