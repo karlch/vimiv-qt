@@ -113,28 +113,14 @@ def test_fail_set_thumbnail_setting_wrong_int(mocker):
         t.value = 13
 
 
-def test_increase_thumbnail_size():
-    t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.increase()
-    assert t.value == 256
-
-
-def test_increase_thumbnail_size_at_limit():
-    t = settings.ThumbnailSizeSetting("thumb", 512)
-    t.increase()
-    assert t.value == 512
-
-
-def test_decrease_thumbnail_size():
-    t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.decrease()
-    assert t.value == 64
-
-
-def test_decrease_thumbnail_size_at_limit():
-    t = settings.ThumbnailSizeSetting("thumb", 64)
-    t.decrease()
-    assert t.value == 64
+@pytest.mark.parametrize(
+    "start, up, expected",
+    [(128, True, 256), (512, True, 512), (128, False, 64), (64, False, 64)],
+)
+def test_step_thumbnail_size(start, up, expected):
+    t = settings.ThumbnailSizeSetting("thumb", start)
+    t.step(up=up)
+    assert t.value == expected
 
 
 def test_set_str_setting():

@@ -272,10 +272,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         **count:** multiplier
         """
         _logger.debug("Zooming in direction '%s'", direction)
-        if direction == direction.In:
-            api.settings.thumbnail.size.increase()
-        else:
-            api.settings.thumbnail.size.decrease()
+        api.settings.thumbnail.size.step(up=direction == direction.In)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""

@@ -245,18 +245,10 @@ class ThumbnailSizeSetting(Setting):
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
         return ivalue
 
-    def increase(self) -> None:
-        """Increase thumbnail size."""
-        index = self.ALLOWED_VALUES.index(self.value)
-        index += 1
-        index = min(index, len(self.ALLOWED_VALUES) - 1)
-        self.value = self.ALLOWED_VALUES[index]
-
-    def decrease(self) -> None:
-        """Decrease thumbnail size."""
-        index = self.ALLOWED_VALUES.index(self.value)
-        index -= 1
-        index = max(index, 0)
+    def step(self, up: bool = True) -> None:
+        """Change thumbnail size by one step up if up else down."""
+        index = self.ALLOWED_VALUES.index(self.value) + (1 if up else -1)
+        index = clamp(index, 0, len(self.ALLOWED_VALUES) - 1)
         self.value = self.ALLOWED_VALUES[index]
 
     def suggestions(self) -> List[str]:
