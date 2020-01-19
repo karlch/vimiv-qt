@@ -60,6 +60,8 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
             self.reset_transformations()
             self.transform.apply()
         self.parent().setFocus()  # type: ignore
+        self.deleteLater()
+        api.status.update("transform widget left")
 
     def reset_transformations(self):
         self.transform.setMatrix(*self.previous_matrix)
@@ -69,11 +71,11 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         with suppress(ValueError, KeyError):
             keysequence = keyevent_to_sequence(event)
             binding = self.bindings[keysequence]
-            api.status.clear("straighten binding")
+            api.status.clear("transform binding")
             binding()
-            api.status.update("straighten binding")
+            api.status.update("transform binding")
 
     def focusOutEvent(self, event):
-        """Delete the widget when focusing out."""
-        self.deleteLater()
-        super().focusOutEvent(event)
+        """Leave the widget when focusing another widget."""
+        if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
+            self.leave(accept=False)
