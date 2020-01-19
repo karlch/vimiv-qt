@@ -199,6 +199,9 @@ class Transform(QTransform):
         Returns:
             Rectangle with the coordinates and size within the rotated rectangle.
         """
+        # Not beautiful, but also not much nicer if we refactor this into multiple
+        # functions
+        # pylint: disable=too-many-locals
         rad = angle / 180 * math.pi
         is_portrait = original.height() > original.width()
         short = original.width() if is_portrait else original.height()
