@@ -145,12 +145,6 @@ def test_set_str_setting():
     assert s.value == "new"
 
 
-def test_fail_set_str_setting():
-    s = settings.StrSetting("string", "default")
-    with pytest.raises(ValueError, match="can only convert String"):
-        s.value = 12
-
-
 def test_fail_get_unstored_setting():
     with pytest.raises(KeyError):
         settings.get("any")

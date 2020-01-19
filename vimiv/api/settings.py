@@ -11,6 +11,7 @@ Module attributes:
 """
 
 from abc import abstractmethod
+from contextlib import suppress
 from typing import Any, Dict, ItemsView, List, Callable, TypeVar
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -56,37 +57,6 @@ def reset() -> None:
 
 def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
-
-
-def ensure_type(*types: type) -> Callable[[MethodT[SettingT]], MethodT[SettingT]]:
-    """Decorator to ensure type of value argument is compatible with setting.
-
-    If the value is one of types, it is returned without conversion as these are the
-    types supported by the setting. If it is of type string, the method convert of the
-    setting is used to try to convert it.
-
-    Args:
-        types: Supported types of the setting.
-    Raises:
-        ValueError: If the conversion fails.
-    """
-
-    def decorator(methodconvert: MethodT[SettingT]) -> MethodT[SettingT]:
-        def convert(self: Any, value: Any) -> Any:
-            if isinstance(value, types):
-                return value
-            if isinstance(value, str):
-                try:
-                    return methodconvert(self, value)
-                except ValueError:
-                    raise ValueError(f"Cannot convert '{value}' to {self}")
-            raise ValueError(
-                f"{self.__class__.__qualname__} can only convert String and {self}"
-            )
-
-        return convert
-
-    return decorator
 
 
 class Setting(QObject, metaclass=AbstractQObjectMeta):
@@ -135,6 +105,11 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         _storage[name] = self  # Store setting in storage
 
     @property
+    @abstractmethod
+    def typ(self) -> type:
+        """The python type of this setting defined by the child class."""
+
+    @property
     def default(self) -> Any:
         return self._default
 
@@ -161,12 +136,19 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         """
         return self._suggestions
 
-    @abstractmethod
     def convert(self, value: Any) -> Any:
         """Convert value to setting type before using it.
 
         Must be implemented by the child as it knows which type to require.
         """
+        with suppress(ValueError):  # We re-raise later with a consistent message
+            if isinstance(value, str):
+                return self.convertstr(value)
+            return self.typ(value)
+        raise ValueError(f"Cannot convert '{value}' to {self}")
+
+    def convertstr(self, value: str) -> Any:
+        return self.typ(value)
 
     def hook(self, value: Any) -> Any:
         """Function called before a value is set."""
@@ -176,14 +158,15 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 class BoolSetting(Setting):
     """Stores a boolean setting."""
 
+    typ = bool
+
     def toggle(self) -> None:
         self.value = not self.value
 
     def suggestions(self) -> List[str]:
         return ["True", "False"]
 
-    @ensure_type(bool)
-    def convert(self, text: str) -> bool:
+    def convertstr(self, text: str) -> bool:
         text = text.lower()
         if text in ("yes", "true", "1"):
             return True
@@ -236,9 +219,7 @@ class NumberSetting(Setting):
 class IntSetting(NumberSetting):
     """Stores an integer setting."""
 
-    @ensure_type(int)
-    def convert(self, text: str) -> int:
-        return int(text)
+    typ = int
 
     def __iadd__(self, value: customtypes.NumberStr) -> "IntSetting":
         """Add a value to the currently stored integer.
@@ -265,9 +246,7 @@ class IntSetting(NumberSetting):
 class FloatSetting(NumberSetting):
     """Stores a float setting."""
 
-    @ensure_type(float, int)
-    def convert(self, text: str) -> float:
-        return float(text)
+    typ = float
 
     def __iadd__(self, value: customtypes.NumberStr) -> "FloatSetting":
         """Add a value to the currently stored float.
@@ -298,6 +277,7 @@ class ThumbnailSizeSetting(Setting):
     512.
     """
 
+    typ = int
     ALLOWED_VALUES = 64, 128, 256, 512
 
     def hook(self, value: customtypes.IntStr) -> int:
@@ -305,10 +285,6 @@ class ThumbnailSizeSetting(Setting):
         if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
         return ivalue
-
-    @ensure_type(int)
-    def convert(self, value: customtypes.IntStr) -> int:
-        return int(value)
 
     def increase(self) -> None:
         """Increase thumbnail size."""
@@ -334,9 +310,7 @@ class ThumbnailSizeSetting(Setting):
 class StrSetting(Setting):
     """Stores a string setting."""
 
-    @ensure_type(str)
-    def convert(self, value: str) -> str:
-        return str(value)
+    typ = str
 
     def __str__(self) -> str:
         return "String"
