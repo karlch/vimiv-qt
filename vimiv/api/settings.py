@@ -119,7 +119,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     @value.setter
     def value(self, value: Any) -> Any:
-        self._value = self.hook(value)
+        self._value = self.convert(value)
         _logger.debug("Setting '%s' to '%s'", self.name, value)
         self.changed.emit(self._value)
 
@@ -146,10 +146,6 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     def convertstr(self, value: str) -> Any:
         return self.typ(value)
-
-    def hook(self, value: Any) -> Any:
-        """Function called before a value is set."""
-        return self.convert(value)
 
 
 class BoolSetting(Setting):
@@ -203,16 +199,16 @@ class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstra
 
     def __iadd__(self, value: customtypes.NumberStr) -> "NumberSetting":
         """Add a value to the currently stored number."""
-        self.value += self.convert(value)
+        self.value += super().convert(value)
         return self
 
     def __imul__(self, value: customtypes.NumberStr) -> "NumberSetting":
         """Multiply the currently stored number with a value."""
-        self.value *= self.convert(value)
+        self.value *= super().convert(value)
         return self
 
-    def hook(self, value: customtypes.NumberStr) -> customtypes.Number:
-        return clamp(self.convert(value), self.min_value, self.max_value)
+    def convert(self, value: customtypes.NumberStr) -> customtypes.Number:
+        return clamp(super().convert(value), self.min_value, self.max_value)
 
 
 class IntSetting(NumberSetting):
@@ -243,8 +239,8 @@ class ThumbnailSizeSetting(Setting):
     typ = int
     ALLOWED_VALUES = 64, 128, 256, 512
 
-    def hook(self, value: customtypes.IntStr) -> int:
-        ivalue = self.convert(value)
+    def convert(self, value: customtypes.IntStr) -> int:
+        ivalue = super().convert(value)
         if ivalue not in self.ALLOWED_VALUES:
             raise ValueError("Thumbnail size must be one of 64, 128, 256, 512")
         return ivalue
