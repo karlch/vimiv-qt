@@ -15,26 +15,20 @@ def test_init_setting():
     b = settings.BoolSetting("bool", True)
     assert b.default
     assert b.value
-    assert b.is_default()
 
 
 def test_check_default_after_change_for_setting(mocker):
     b = settings.BoolSetting("bool", True)
     b.value = False
-    assert not b.is_default()
     assert b.default
 
 
-def test_set_bool_setting(mocker):
+@pytest.mark.parametrize("value", (False, "False", "no"))
+def test_set_bool_setting(mocker, value):
     b = settings.BoolSetting("bool", True)
-    b.value = False
+    b.value = value
     assert not b.value
-
-
-def test_set_bool_setting_str(mocker):
-    b = settings.BoolSetting("bool", True)
-    b.value = "False"
-    assert not b.value
+    assert not b
 
 
 def test_toggle_bool_setting():
@@ -43,15 +37,10 @@ def test_toggle_bool_setting():
     assert b.value
 
 
-def test_set_int_setting(mocker):
+@pytest.mark.parametrize("value", (2, "2", 2.0))
+def test_set_int_setting(mocker, value):
     i = settings.IntSetting("int", 1)
-    i.value = 2
-    assert i.value == 2
-
-
-def test_set_int_setting_str(mocker):
-    i = settings.IntSetting("int", 1)
-    i.value = "2"
+    i.value = value
     assert i.value == 2
 
 
@@ -67,15 +56,10 @@ def test_multiply_int_setting(mocker):
     assert i.value == 10
 
 
-def test_set_float_setting(mocker):
+@pytest.mark.parametrize("value", (3.3, "3.3"))
+def test_set_float_setting(mocker, value):
     f = settings.FloatSetting("float", 2.2)
-    f.value = 3.3
-    assert f.value == pytest.approx(3.3)
-
-
-def test_set_float_setting_str(mocker):
-    f = settings.FloatSetting("float", 2.2)
-    f.value = "3.3"
+    f.value = value
     assert f.value == pytest.approx(3.3)
 
 
@@ -91,15 +75,10 @@ def test_multiply_float_setting(mocker):
     assert f.value == pytest.approx(2.1)
 
 
-def test_set_thumbnail_setting(mocker):
+@pytest.mark.parametrize("value", (64, "64"))
+def test_set_thumbnail_setting(mocker, value):
     t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.value = 64
-    assert t.value == 64
-
-
-def test_set_thumbnail_setting_str(mocker):
-    t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.value = "64"
+    t.value = value
     assert t.value == 64
 
 
@@ -115,40 +94,20 @@ def test_fail_set_thumbnail_setting_wrong_int(mocker):
         t.value = 13
 
 
-def test_increase_thumbnail_size():
-    t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.increase()
-    assert t.value == 256
-
-
-def test_increase_thumbnail_size_at_limit():
-    t = settings.ThumbnailSizeSetting("thumb", 512)
-    t.increase()
-    assert t.value == 512
-
-
-def test_decrease_thumbnail_size():
-    t = settings.ThumbnailSizeSetting("thumb", 128)
-    t.decrease()
-    assert t.value == 64
-
-
-def test_decrease_thumbnail_size_at_limit():
-    t = settings.ThumbnailSizeSetting("thumb", 64)
-    t.decrease()
-    assert t.value == 64
+@pytest.mark.parametrize(
+    "start, up, expected",
+    [(128, True, 256), (512, True, 512), (128, False, 64), (64, False, 64)],
+)
+def test_step_thumbnail_size(start, up, expected):
+    t = settings.ThumbnailSizeSetting("thumb", start)
+    t.step(up=up)
+    assert t.value == expected
 
 
 def test_set_str_setting():
     s = settings.StrSetting("string", "default")
     s.value = "new"
     assert s.value == "new"
-
-
-def test_fail_set_str_setting():
-    s = settings.StrSetting("string", "default")
-    with pytest.raises(ValueError, match="can only convert String"):
-        s.value = 12
 
 
 def test_fail_get_unstored_setting():
