@@ -28,6 +28,7 @@ Changed:
 * The function ``api.open`` had been renamed to ``api.open_paths`` to remove the clash
   with the python builtin. Using ``api.open`` directly is deprecated and will be removed
   in `v0.7.0`.
+* The slideshow is always stopped when the image is unfocused.
 
 Fixed:
 ^^^^^^
