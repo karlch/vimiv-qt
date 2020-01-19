@@ -123,9 +123,6 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         _logger.debug("Setting '%s' to '%s'", self.name, value)
         self.changed.emit(self._value)
 
-    def is_default(self) -> bool:
-        return self.value == self.default
-
     def set_to_default(self) -> None:
         self._value = self.default
 

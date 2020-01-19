@@ -116,4 +116,5 @@ def test_read_invalid_setting(mock_logger, configpath):
         assert set(args) & setting_names
     # Ensure all settings are at default value
     for name in setting_names:
-        assert api.settings.get(name).is_default()
+        setting = api.settings.get(name)
+        assert setting.value == setting.default

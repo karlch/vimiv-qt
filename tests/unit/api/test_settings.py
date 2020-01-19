@@ -15,13 +15,11 @@ def test_init_setting():
     b = settings.BoolSetting("bool", True)
     assert b.default
     assert b.value
-    assert b.is_default()
 
 
 def test_check_default_after_change_for_setting(mocker):
     b = settings.BoolSetting("bool", True)
     b.value = False
-    assert not b.is_default()
     assert b.default
 
 
