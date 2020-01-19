@@ -303,8 +303,12 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
     @api.commands.register(mode=api.modes.IMAGE)
     def straighten(self):
-        """Display a widget to straighten the current image."""
-        # TODO extend this docstring explaining the functionality once this has settled
+        """Display a grid to straighten the current image.
+
+        The image can then be straightened clockwise using the ``l``, ``>`` and ``L``
+        keys and counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with
+        ``<return>`` and reject them with ``<escape>``.
+        """
         from .straighten_widget import StraightenWidget
 
         StraightenWidget(self)
