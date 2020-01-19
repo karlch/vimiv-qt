@@ -26,7 +26,6 @@ from vimiv.config import styles
 from vimiv.utils import lazy
 
 from .eventhandler import EventHandlerMixin
-from .straighten_widget import StraightenWidget
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
@@ -302,6 +301,8 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     def straighten(self):
         """Display a widget to straighten the current image."""
         # TODO extend this docstring explaining the functionality once this has settled
+        from .straighten_widget import StraightenWidget
+
         StraightenWidget(self)
 
     def resizeEvent(self, event):
