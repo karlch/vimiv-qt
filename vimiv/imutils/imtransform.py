@@ -143,7 +143,7 @@ class Transform(QTransform):
         """
         original = self._handler().original
         self.rotate(angle)
-        transformed = original.transformed(self, mode=Qt.FastTransformation)
+        transformed = original.transformed(self, mode=Qt.SmoothTransformation)
         rect = self.largest_rect_in_rotated(
             original=original.size(), rotated=transformed.size(), angle=angle
         )
