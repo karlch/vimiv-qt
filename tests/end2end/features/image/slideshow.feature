@@ -33,3 +33,9 @@ Feature: Play a slideshow.
     Scenario: Start slideshow upon startup
         Given I open 5 images with --command slideshow
         Then the slideshow should be playing
+
+    Scenario: Leave slideshow when image is unfocused
+        Given I open any image
+        When I run slideshow
+        And I unfocus the image
+        Then the slideshow should not be playing

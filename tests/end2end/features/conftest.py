@@ -9,6 +9,7 @@
 import os
 
 from PyQt5.QtCore import Qt, QProcess
+from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QApplication
 
 import pytest
@@ -155,6 +156,19 @@ def wait_for_external_command(qtbot):
 def wait_for_working_directory_handler(qtbot):
     with qtbot.waitSignal(api.working_directory.handler.changed):
         pass
+
+
+@bdd.when(bdd.parsers.parse("I unfocus {widget_name}"))
+def focus_widget(image, library, widget_name):
+    names = {"the library": library, "the image": image}
+    try:
+        widget = names[widget_name]
+    except KeyError:
+        raise KeyError(
+            f"Unknown widget '{widget_name}'. Currently supported: {', '.join(names)}"
+        )
+    event = QFocusEvent(QFocusEvent.FocusOut)
+    widget.focusOutEvent(event)
 
 
 ###############################################################################
