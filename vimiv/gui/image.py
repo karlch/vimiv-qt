@@ -351,3 +351,10 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             api.status.update("image zoom level changed")
         else:
             super().wheelEvent(event)
+
+    def focusOutEvent(self, event):
+        """Stop slideshow when focusing another widget."""
+        if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
+            slideshow = imutils.slideshow.Slideshow.instance
+            if slideshow is not None and slideshow.isActive():
+                slideshow.stop()
