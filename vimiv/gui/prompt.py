@@ -33,13 +33,13 @@ class Prompt(QLabel):
 
     STYLESHEET = """
     QLabel {
-        font: {statusbar.font};
-        background-color: {statusbar.bg};
-        padding: {keyhint.padding};
-        color: {statusbar.fg};
-        border-top-right-radius: {keyhint.border_radius};
-        border-top: {statusbar.message_border} {statusbar.info};
-        border-right: {statusbar.message_border} {statusbar.info};
+        font: {prompt.font};
+        color: {prompt.fg};
+        background-color: {prompt.bg};
+        padding: {prompt.padding};
+        border-top-right-radius: {prompt.border_radius};
+        border-top: {prompt.border} {prompt.border.color};
+        border-right: {prompt.border} {prompt.border.color};
     }
     """
 

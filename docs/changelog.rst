@@ -20,7 +20,10 @@ Added:
   and reject them with ``<escape>``. It comes ith the ``{transformation-info}`` status
   module that displays the current straightening angle in degrees.
 * The option to prompt the user for an answer using ``api.prompt.ask_question``. This
-  comes with a blocking prompt which can be answered using key presses.
+  comes with a blocking prompt which can be answered using key presses. The prompt can
+  be styled with the ``prompt.font``, ``prompt.fg``, ``prompt.bg``,
+  ``prompt.padding``, ``prompt.border_radius``, ``prompt.border`` and
+  ``prompt.border.color`` styles.
 * A new ``PromptSetting`` type which is essentially a boolean setting with the
   additional ``ask`` value. If the value is ``ask``, the user is prompted everytime the
   boolean state of this setting is requested.
