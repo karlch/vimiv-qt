@@ -194,6 +194,12 @@ Working Directory
 
 .. automodule:: vimiv.api.working_directory
 
+Prompt
+""""""
+.. automodule:: vimiv.api.prompt
+    :members:
+     ask_question
+
 Imutils Module
 ^^^^^^^^^^^^^^
 

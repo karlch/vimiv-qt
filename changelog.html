@@ -144,6 +144,14 @@ The image can then be straightened clockwise using the <code class="docutils lit
 counter-clockwise with <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">H</span></code>. Accept the changes with <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code>
 and reject them with <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code>. It comes ith the <code class="docutils literal notranslate"><span class="pre">{transformation-info}</span></code> status
 module that displays the current straightening angle in degrees.</p></li>
+<li><p>The option to prompt the user for an answer using <code class="docutils literal notranslate"><span class="pre">api.prompt.ask_question</span></code>. This
+comes with a blocking prompt which can be answered using key presses. The prompt can
+be styled with the <code class="docutils literal notranslate"><span class="pre">prompt.font</span></code>, <code class="docutils literal notranslate"><span class="pre">prompt.fg</span></code>, <code class="docutils literal notranslate"><span class="pre">prompt.bg</span></code>,
+<code class="docutils literal notranslate"><span class="pre">prompt.padding</span></code>, <code class="docutils literal notranslate"><span class="pre">prompt.border_radius</span></code>, <code class="docutils literal notranslate"><span class="pre">prompt.border</span></code> and
+<code class="docutils literal notranslate"><span class="pre">prompt.border.color</span></code> styles.</p></li>
+<li><p>A new <code class="docutils literal notranslate"><span class="pre">PromptSetting</span></code> type which is essentially a boolean setting with the
+additional <code class="docutils literal notranslate"><span class="pre">ask</span></code> value. If the value is <code class="docutils literal notranslate"><span class="pre">ask</span></code>, the user is prompted everytime the
+boolean state of this setting is requested.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -154,6 +162,9 @@ module that displays the current straightening angle in degrees.</p></li>
 <li><p>The function <code class="docutils literal notranslate"><span class="pre">api.open</span></code> had been renamed to <code class="docutils literal notranslate"><span class="pre">api.open_paths</span></code> to remove the clash
 with the python builtin. Using <code class="docutils literal notranslate"><span class="pre">api.open</span></code> directly is deprecated and will be removed
 in <cite>v0.7.0</cite>.</p></li>
+<li><p>The slideshow is always stopped when the image is unfocused.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code> setting is now <code class="docutils literal notranslate"><span class="pre">ask</span></code> by default. This should prevent
+surprises in case the changes are written to disk or discarded.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">

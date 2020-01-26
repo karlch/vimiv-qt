@@ -79,6 +79,7 @@
 <li><a class="reference internal" href="#module-vimiv.api.status">Status Modules</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.completion">Completion</a></li>
 <li><a class="reference internal" href="#module-vimiv.api.working_directory">Working Directory</a></li>
+<li><a class="reference internal" href="#module-vimiv.api.prompt">Prompt</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-vimiv.imutils">Imutils Module</a><ul>
@@ -145,13 +146,14 @@ or open an
 <li><p><a class="reference internal" href="#module-vimiv.api.status" id="id17">Status Modules</a></p></li>
 <li><p><a class="reference internal" href="#module-vimiv.api.completion" id="id18">Completion</a></p></li>
 <li><p><a class="reference internal" href="#module-vimiv.api.working_directory" id="id19">Working Directory</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.prompt" id="id20">Prompt</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#module-vimiv.imutils" id="id20">Imutils Module</a></p>
+<li><p><a class="reference internal" href="#module-vimiv.imutils" id="id21">Imutils Module</a></p>
 <ul>
-<li><p><a class="reference internal" href="#the-image-loading-process" id="id21">The Image Loading Process</a></p></li>
-<li><p><a class="reference internal" href="#image-editing-modules" id="id22">Image Editing Modules</a></p></li>
-<li><p><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension" id="id23">Adding New Manipulations to the C-Extension</a></p></li>
+<li><p><a class="reference internal" href="#the-image-loading-process" id="id22">The Image Loading Process</a></p></li>
+<li><p><a class="reference internal" href="#image-editing-modules" id="id23">Image Editing Modules</a></p></li>
+<li><p><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension" id="id24">Adding New Manipulations to the C-Extension</a></p></li>
 </ul>
 </li>
 </ul>
@@ -900,12 +902,38 @@ connect to these signals:</p>
 </dd>
 </dl>
 </div>
+<div class="section" id="module-vimiv.api.prompt">
+<span id="prompt"></span><h4><a class="toc-backref" href="#id20">Prompt</a><a class="headerlink" href="#module-vimiv.api.prompt" title="Permalink to this headline">¶</a></h4>
+<p>Prompt the user for a question.</p>
+<dl class="function">
+<dt id="vimiv.api.prompt.ask_question">
+<code class="sig-prename descclassname">vimiv.api.prompt.</code><code class="sig-name descname">ask_question</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">title: str</em>, <em class="sig-param">body: str</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#vimiv.api.prompt.ask_question" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompt the user to answer a question.</p>
+<p>This emits the question_asked signal which leads to a gui prompt being displayed.
+The UI is blocked until the question was answered or aborted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> – Title of the question.</p></li>
+<li><p><strong>body</strong> – Sentence body representing the actual question.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Answer given by the user if any.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>answer</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 <div class="section" id="module-vimiv.imutils">
-<span id="imutils-module"></span><h3><a class="toc-backref" href="#id20">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h3>
+<span id="imutils-module"></span><h3><a class="toc-backref" href="#id21">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h3>
 <p><cite>Utilities to load, edit, navigate and save images</cite>.</p>
 <div class="section" id="the-image-loading-process">
-<h4><a class="toc-backref" href="#id21">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id22">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h4>
 <p>The image loading process is started by emitting the <code class="docutils literal notranslate"><span class="pre">load_images</span></code> signal. It is for
 example emitted by the library when a new image path was selected, in thumbnail mode
 upon selection or by the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command. There are a few different cases that are
@@ -935,7 +963,7 @@ widget has been created, the file handler emits one of:</p>
 the appropriate Qt widget.</p>
 </div>
 <div class="section" id="image-editing-modules">
-<h4><a class="toc-backref" href="#id22">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id23">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this headline">¶</a></h4>
 <p>This section gives a quick overview of the modules that deal with image editing and how
 to add new functionality to manipulate images.</p>
 <span class="target" id="module-vimiv.imutils.imtransform"></span><p><em>imtransform - transformations such as rotate and flip</em>.</p>
@@ -1020,7 +1048,7 @@ raw data.</p>
 
 </div>
 <div class="section" id="adding-new-manipulations-to-the-c-extension">
-<span id="c-extension"></span><h4><a class="toc-backref" href="#id23">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this headline">¶</a></h4>
+<span id="c-extension"></span><h4><a class="toc-backref" href="#id24">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this headline">¶</a></h4>
 <p>To add new manipulations to the C-extension, two things must be done.</p>
 <p>First, you implement a new manipulate function in its own header such as
 <code class="docutils literal notranslate"><span class="pre">brightness_contrast.h</span></code>. The function should take the image data as pure bytes, the
