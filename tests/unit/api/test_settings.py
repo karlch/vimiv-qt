@@ -11,6 +11,17 @@ import pytest
 from vimiv.api import settings
 
 
+@pytest.fixture()
+def prompt_setting():
+    """Fixture to retrieve a clean prompt setting."""
+    yield settings.PromptSetting(
+        "prompt",
+        settings.PromptSetting.Options.ask,
+        question_title="Title",
+        question_body="What are we doing?",
+    )
+
+
 def test_init_setting():
     b = settings.BoolSetting("bool", True)
     assert b.default
@@ -113,3 +124,30 @@ def test_set_str_setting():
 def test_fail_get_unstored_setting():
     with pytest.raises(KeyError):
         settings.get("any")
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    (
+        ("true", settings.PromptSetting.Options.true),
+        ("Yes", settings.PromptSetting.Options.true),
+        ("1", settings.PromptSetting.Options.true),
+        ("false", settings.PromptSetting.Options.false),
+        ("NO", settings.PromptSetting.Options.false),
+        ("0", settings.PromptSetting.Options.false),
+        ("AsK", settings.PromptSetting.Options.ask),
+    ),
+)
+def test_set_prompt_setting(prompt_setting, value, expected):
+    prompt_setting.value = value
+    assert prompt_setting.value == expected
+
+
+@pytest.mark.parametrize("answer", (True, False))
+def test_ask_prompt_setting(mocker, prompt_setting, answer):
+    def ask_question(*args, **kwargs):
+        return answer
+
+    mocker.patch("vimiv.api.prompt.ask_question", ask_question)
+
+    assert bool(prompt_setting) == answer

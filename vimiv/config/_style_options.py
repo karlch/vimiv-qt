@@ -79,4 +79,12 @@ DEFAULT_OPTIONS = {
     "metadata.border_radius": "{keyhint.border_radius}",
     # Straighten widget
     "image.straighten.color": "{base0a}",
+    # Prompt
+    "prompt.font": "{statusbar.font}",
+    "prompt.fg": "{statusbar.fg}",
+    "prompt.bg": "{statusbar.bg}",
+    "prompt.padding": "{keyhint.padding}",
+    "prompt.border_radius": "{keyhint.border_radius}",
+    "prompt.border": "{statusbar.message_border}",
+    "prompt.border.color": "{statusbar.info}",
 }
