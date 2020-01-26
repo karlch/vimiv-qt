@@ -52,6 +52,7 @@ class MainWindow(QWidget):
         api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
+        api.prompt.question_asked.connect(self._run_prompt)
 
     @utils.slot
     def _init_manipulate(self):
@@ -155,6 +156,15 @@ class MainWindow(QWidget):
         except KeyError:
             title = api.settings.get_value("title.fallback")
         self.setWindowTitle(api.status.evaluate(title))
+
+    @utils.slot
+    def _run_prompt(self, question: api.prompt.Question) -> None:
+        """Display a UI blocking prompt when a question was asked."""
+        from .prompt import Prompt
+
+        prompt = Prompt(question, parent=self)
+        prompt.update_geometry(self.width(), self.bottom)
+        prompt.run()
 
 
 class ImageThumbnailStack(QStackedWidget):
