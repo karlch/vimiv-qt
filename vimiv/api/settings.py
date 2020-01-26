@@ -10,6 +10,7 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
+import enum
 from abc import abstractmethod
 from contextlib import suppress
 from typing import Any, Dict, ItemsView, List, Callable, TypeVar
@@ -17,6 +18,7 @@ from typing import Any, Dict, ItemsView, List, Callable, TypeVar
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
+from . import prompt
 
 
 SettingT = TypeVar("SettingT", bound="Setting")
@@ -165,6 +167,58 @@ class BoolSetting(Setting):
 
     def __bool__(self) -> bool:
         return self.value
+
+
+class PromptSetting(Setting):
+    """Stores a boolean setting with the additional ask option.
+
+    When the value of this setting is ask, the user is prompted everytime the boolean
+    state of this setting is requested.
+
+    Attributes:
+        _title: Title of the question the user is prompted with.
+        _question: Actual question the user is prompted with.
+    """
+
+    class Options(enum.Enum):
+        """Enum of valid options for this setting."""
+
+        true = "true"
+        false = "false"
+        ask = "ask"
+
+        def __str__(self) -> str:
+            return self.value
+
+    typ = Options
+
+    def __init__(
+        self, *args: Any, question_title: str, question_body: str, **kwargs: Any
+    ):
+        super().__init__(*args, **kwargs)
+        self._title = question_title
+        self._question = question_body
+
+    def suggestions(self) -> List[str]:
+        return ["true", "prompt", "false"]
+
+    def convertstr(self, text: str) -> "PromptSetting.Options":
+        text = text.lower()
+        if text in ("yes", "1"):
+            return self.Options.true
+        if text in ("no", "0"):
+            return self.Options.false
+        return self.Options(text)
+
+    def __str__(self) -> str:
+        return "Prompt"
+
+    def __bool__(self) -> bool:
+        if self.value == self.Options.ask:
+            return bool(prompt.ask_question(title=self._title, body=self._question))
+        if self.value == self.Options.false:
+            return False
+        return True
 
 
 class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstract class
