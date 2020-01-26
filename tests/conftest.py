@@ -7,6 +7,7 @@
 """Fixtures for pytest."""
 
 import os
+import logging
 
 import pytest
 
@@ -57,3 +58,30 @@ def cleanup_helper():
                     del init_dict[key][elem]
 
     return cleanup
+
+
+class StubStream:
+    """Dummy stream class that does nothing on write and friends."""
+
+    def stub(self, *args, **kwargs):
+        """Method that accepts anything and does nothing."""
+
+    write = writelines = close = stub
+
+
+class DevNullLogHandler(logging.StreamHandler):
+    """Stub log handler that redirects everything to the black hole."""
+
+    def __init__(self, *args, **kwargs):
+        self.devnull = StubStream()
+        super().__init__(self.devnull)
+
+
+@pytest.fixture(autouse=True)
+def mock_file_handler(monkeypatch):
+    """Fixture to monkeypatch the logging file handler.
+
+    It is not required in any testing here and we do not want to write the test log
+    statements to file.
+    """
+    monkeypatch.setattr(logging, "FileHandler", DevNullLogHandler)
