@@ -49,10 +49,11 @@ import vimiv
 from . import xdg
 
 
-_module_loggers: Dict[str, logging.Logger] = {}
+_module_loggers: Dict[str, "LazyLogger"] = {}
 formatter = logging.Formatter(
     "[{asctime}] {levelname:8} {name:20} {message}", datefmt="%H:%M:%S", style="{"
 )
+_debug_loggers: List[str] = []
 
 
 def debug(msg: str, *args, **kwargs):
@@ -106,6 +107,7 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     _app_logger.handlers = [file_handler, console_handler, statusbar_loghandler]
     LazyLogger.handlers = [console_handler, file_handler]
     # Setup debug logging for specific module loggers
+    _debug_loggers.extend(debug_modules)
     for name, logger in _module_loggers.items():
         logger.level = logging.DEBUG if name in debug_modules else level
 
@@ -122,7 +124,11 @@ def module_logger(name: str) -> "LazyLogger":
     Returns:
         The created logger object.
     """
-    return LazyLogger(name, is_module_logger=True)
+    name = name.replace("vimiv.", "")
+    level = logging.DEBUG if name in _debug_loggers else _app_logger.level
+    logger = LazyLogger(name, level=level)
+    _module_loggers[name] = logger
+    return logger
 
 
 class LazyLogger:
@@ -135,12 +141,10 @@ class LazyLogger:
 
     handlers: List[logging.Handler] = []
 
-    def __init__(self, name, is_module_logger=False):
-        self.level = logging.WARNING
+    def __init__(self, name, level=logging.WARNING):
+        self.level = level
         self._logger = None
-        self._name = name.replace("vimiv.", "") if is_module_logger else name
-        if is_module_logger:
-            _module_loggers[self._name] = self
+        self._name = name
 
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         """Log a message creating the logger instance if needed."""
