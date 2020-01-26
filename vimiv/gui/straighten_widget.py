@@ -44,7 +44,7 @@ class StraightenWidget(TransformWidget):
         self._add_rotate_binding("H", counter_clockwise=True, angle=1.0)
 
         self.color = QColor(styles.get("image.straighten.color"))
-        self.angle = 0
+        self.angle = 0.0
 
     def _add_rotate_binding(
         self, *keys: str, counter_clockwise: bool = False, angle: float
