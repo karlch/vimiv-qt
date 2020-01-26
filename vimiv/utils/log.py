@@ -49,7 +49,7 @@ import vimiv
 from . import xdg
 
 
-_module_loggers: Dict[str, logging.Logger] = {}
+_module_loggers: Dict[str, "LazyLogger"] = {}
 formatter = logging.Formatter(
     "[{asctime}] {levelname:8} {name:20} {message}", datefmt="%H:%M:%S", style="{"
 )
