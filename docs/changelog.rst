@@ -19,6 +19,11 @@ Added:
   counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with ``<return>``
   and reject them with ``<escape>``. It comes ith the ``{transformation-info}`` status
   module that displays the current straightening angle in degrees.
+* The option to prompt the user for an answer using ``api.prompt.ask_question``. This
+  comes with a blocking prompt which can be answered using key presses.
+* A new ``PromptSetting`` type which is essentially a boolean setting with the
+  additional ``ask`` value. If the value is ``ask``, the user is prompted everytime the
+  boolean state of this setting is requested.
 
 Changed:
 ^^^^^^^^
@@ -29,6 +34,8 @@ Changed:
   with the python builtin. Using ``api.open`` directly is deprecated and will be removed
   in `v0.7.0`.
 * The slideshow is always stopped when the image is unfocused.
+* The ``image.autowrite`` setting is now ``ask`` by default. This should prevent
+  surprises in case the changes are written to disk or discarded.
 
 Fixed:
 ^^^^^^
