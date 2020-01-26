@@ -39,6 +39,6 @@ def test_fail_add_status_module():
             return "wrong"
 
 
-def test_evaluate_unknown_module(mocker):
+def test_evaluate_unknown_module():
     name = "{unknown-module}"
     assert status.evaluate(f"Dummy: {name}") == "Dummy: "

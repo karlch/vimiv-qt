@@ -19,13 +19,13 @@ def storage(qtbot):
     yield eventhandler.TempKeyStorage()
 
 
-def test_temp_key_storage_add_keys(storage, mocker):
+def test_temp_key_storage_add_keys(storage):
     storage.add_keys("a")
     storage.add_keys("1")
     assert storage.text == "a1"
 
 
-def test_temp_key_storage_get_keys(storage, mocker):
+def test_temp_key_storage_get_keys(storage):
     keys = ("a", "1")
     for key in keys:
         storage.add_keys(key)
@@ -33,7 +33,7 @@ def test_temp_key_storage_get_keys(storage, mocker):
     assert not storage.text  # Getting should clear
 
 
-def test_temp_key_storage_clears_text(storage, mocker, qtbot):
+def test_temp_key_storage_clears_text(storage, qtbot):
     storage.setInterval(1)  # We do not want to wait 2s in test
     with qtbot.waitSignal(storage.timeout, timeout=5):
         storage.add_keys("g")

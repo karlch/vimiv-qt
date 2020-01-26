@@ -36,7 +36,7 @@ def test_image_scale_text():
     [argtypes.ImageScaleFloat(name) for name in ["fit", "fit-width", "fit-height"]]
 
 
-def test_image_scale_float(mocker):
+def test_image_scale_float():
     assert argtypes.ImageScaleFloat("0.5") == 0.5
 
 

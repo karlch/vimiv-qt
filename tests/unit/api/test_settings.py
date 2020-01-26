@@ -28,14 +28,14 @@ def test_init_setting():
     assert b.value
 
 
-def test_check_default_after_change_for_setting(mocker):
+def test_check_default_after_change_for_setting():
     b = settings.BoolSetting("bool", True)
     b.value = False
     assert b.default
 
 
 @pytest.mark.parametrize("value", (False, "False", "no"))
-def test_set_bool_setting(mocker, value):
+def test_set_bool_setting(value):
     b = settings.BoolSetting("bool", True)
     b.value = value
     assert not b.value
@@ -49,57 +49,57 @@ def test_toggle_bool_setting():
 
 
 @pytest.mark.parametrize("value", (2, "2", 2.0))
-def test_set_int_setting(mocker, value):
+def test_set_int_setting(value):
     i = settings.IntSetting("int", 1)
     i.value = value
     assert i.value == 2
 
 
-def test_add_int_setting(mocker):
+def test_add_int_setting():
     i = settings.IntSetting("int", 2)
     i += 3
     assert i.value == 5
 
 
-def test_multiply_int_setting(mocker):
+def test_multiply_int_setting():
     i = settings.IntSetting("int", 5)
     i *= 2
     assert i.value == 10
 
 
 @pytest.mark.parametrize("value", (3.3, "3.3"))
-def test_set_float_setting(mocker, value):
+def test_set_float_setting(value):
     f = settings.FloatSetting("float", 2.2)
     f.value = value
     assert f.value == pytest.approx(3.3)
 
 
-def test_add_float_setting(mocker):
+def test_add_float_setting():
     f = settings.FloatSetting("float", 1.1)
     f += 0.3
     assert f.value == pytest.approx(1.4)
 
 
-def test_multiply_float_setting(mocker):
+def test_multiply_float_setting():
     f = settings.FloatSetting("float", 4.2)
     f *= 0.5
     assert f.value == pytest.approx(2.1)
 
 
 @pytest.mark.parametrize("value", (64, "64"))
-def test_set_thumbnail_setting(mocker, value):
+def test_set_thumbnail_setting(value):
     t = settings.ThumbnailSizeSetting("thumb", 128)
     t.value = value
     assert t.value == 64
 
 
-def test_fail_set_thumbnail_setting_non_int(mocker):
+def test_fail_set_thumbnail_setting_non_int():
     t = settings.ThumbnailSizeSetting("thumb", 128)
     with pytest.raises(ValueError, match="Cannot convert 'any'"):
         t.value = "any"
 
 
-def test_fail_set_thumbnail_setting_wrong_int(mocker):
+def test_fail_set_thumbnail_setting_wrong_int():
     t = settings.ThumbnailSizeSetting("thumb", 128)
     with pytest.raises(ValueError, match="must be one of"):
         t.value = 13

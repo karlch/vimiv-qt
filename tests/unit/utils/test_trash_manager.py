@@ -26,7 +26,7 @@ def tmpfile(tmpdir):
     yield create_tmpfile(tmpdir, "file")
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def trash(monkeypatch, tmpdir):
     """Initialize trash for testing as fixture.
 
@@ -39,19 +39,19 @@ def trash(monkeypatch, tmpdir):
     yield os.path.join(str(xdg_data_home), "Trash")
 
 
-def test_delete_file(trash, tmpfile):
+def test_delete_file(tmpfile):
     trash_manager.delete([tmpfile])
     assert not os.path.exists(tmpfile)
 
 
-def test_delete_multiple_files(trash, tmpdir):
+def test_delete_multiple_files(tmpdir):
     files = [create_tmpfile(tmpdir, f"file_{i:d}") for i in range(2)]
     trash_manager.delete(files)
     for fname in files:
         assert not os.path.exists(fname)
 
 
-def test_delete_and_undelete_file(trash, tmpfile):
+def test_delete_and_undelete_file(tmpfile):
     trash_manager.delete([tmpfile])
     basename = os.path.basename(tmpfile)
     trash_manager.undelete([basename])

@@ -66,13 +66,13 @@ def test_fail_add_non_string_style_value(new_style):
         new_style["red"] = 12
 
 
-def test_replace_referenced_variables(mocker, new_style):
+def test_replace_referenced_variables(new_style):
     new_style["red"] = "#ff0000"
     new_style["error.fg"] = "{red}"
     assert new_style["{error.fg}"] == "#ff0000"
 
 
-def test_fail_get_nonexisting_style_option(mocker, new_style):
+def test_fail_get_nonexisting_style_option(new_style):
     styles._style = new_style
     assert styles.get("anything") == ""
     styles._style = None
