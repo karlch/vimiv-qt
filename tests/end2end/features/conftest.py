@@ -8,7 +8,7 @@
 
 import os
 
-from PyQt5.QtCore import Qt, QProcess
+from PyQt5.QtCore import Qt, QProcess, QTimer
 from PyQt5.QtGui import QFocusEvent
 from PyQt5.QtWidgets import QApplication
 
@@ -21,6 +21,7 @@ import vimiv.gui.mainwindow
 import vimiv.gui.commandline
 import vimiv.gui.bar
 import vimiv.gui.image
+import vimiv.gui.prompt
 from vimiv import api
 from vimiv.commands import runners
 from vimiv.gui import statusbar
@@ -86,6 +87,44 @@ class Counter:
 def counter():
     """Fixture to provide a clean counter class with the count command."""
     yield Counter()
+
+
+@pytest.fixture()
+def answer_prompt(qtbot, mainwindow):
+    """Fixture to return a function for answering the upcoming prompt.
+
+    Uses qtbot to wait for the prompt widget and then presses the key passed to the
+    function on the prompt to close it. Must be used with all prompts in one way or the
+    other as they would otherwise block the running python code.
+    """
+
+    def get_prompt():
+        """Retrieve the current prompt widget."""
+        widgets = mainwindow.findChildren(vimiv.gui.prompt.Prompt)
+        assert len(widgets) == 1, "Wrong number of prompts found"
+        return widgets[0]
+
+    def function(key):
+        keys = {
+            "y": Qt.Key_Y,
+            "n": Qt.Key_N,
+            "<return>": Qt.Key_Return,
+            "<escape>": Qt.Key_Escape,
+        }
+        try:
+            qkey = keys[key]
+        except KeyError:
+            raise KeyError(
+                f"Unexpected prompt key '{key}', expected one of: {', '.join(keys)}"
+            )
+
+        def click_prompt_key():
+            prompt = get_prompt()
+            qtbot.keyClick(prompt, qkey)
+
+        QTimer.singleShot(0, lambda: qtbot.waitUntil(click_prompt_key))
+
+    return function
 
 
 ###############################################################################
@@ -169,6 +208,11 @@ def focus_widget(image, library, widget_name):
         )
     event = QFocusEvent(QFocusEvent.FocusOut)
     widget.focusOutEvent(event)
+
+
+@bdd.when(bdd.parsers.parse("I plan to answer the prompt with {key}"))
+def run_command_answering_prompt(answer_prompt, key):
+    answer_prompt(key)
 
 
 ###############################################################################

@@ -374,7 +374,13 @@ class image:  # pylint: disable=invalid-name
     autoplay = BoolSetting(
         "image.autoplay", True, desc="Start playing animations on open"
     )
-    autowrite = BoolSetting("image.autowrite", True, desc="Save images on changes")
+    autowrite = PromptSetting(
+        "image.autowrite",
+        PromptSetting.Options.ask,
+        question_title="Image edited",
+        question_body="Do you want to write your changes to disk?",
+        desc="Save images on changes",
+    )
     overzoom = FloatSetting(
         "image.overzoom",
         1.0,

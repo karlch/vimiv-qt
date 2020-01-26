@@ -17,3 +17,10 @@ Feature: Write an image to disk
         When I add exif information
         And I write the image to new_path.jpg
         Then the image new_path.jpg should contain exif information
+
+    Scenario: Prompt for writing edited image
+        Given I open any image
+        When I run rotate
+        And I plan to answer the prompt with n
+        And I run next
+        Then no crash should happen

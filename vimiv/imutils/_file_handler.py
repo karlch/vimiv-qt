@@ -128,6 +128,11 @@ class ImageFileHandler(QObject):
         self._pixmaps.transformed = pixmap
         self.current = pixmap
 
+    @property
+    def changed(self):
+        """True if the current image was edited in any way."""
+        return self.transform.changed or (self.manipulate and self.manipulate.changed)
+
     @utils.slot
     def _on_new_image_opened(self, path: str):
         """Load proper displayable QWidget for a new image path."""
@@ -153,12 +158,12 @@ class ImageFileHandler(QObject):
             path: Path to the image file.
             parallel: Write the image in an additional thread.
         """
-        if not api.settings.image.autowrite:
-            self._reset()
-        elif self.transform.changed or (
-            self.manipulate is not None and self.manipulate.changed
-        ):
+        if not self.changed:
+            return
+        if api.settings.image.autowrite:
             self.write_pixmap(self.current, path, original_path=path, parallel=parallel)
+        else:
+            self._reset()
 
     @utils.slot
     def _on_quit(self):
