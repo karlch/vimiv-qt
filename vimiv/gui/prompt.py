@@ -13,6 +13,9 @@ from vimiv import api, utils
 from vimiv.config import styles
 
 
+_logger = utils.log.module_logger(__name__)
+
+
 class Prompt(QLabel):
     """Blocking prompt widget asking the user a question.
 
@@ -55,11 +58,15 @@ class Prompt(QLabel):
         styles.apply(self)
         header = f"<h3>{question.title}</h3>{question.body}"
         self.setText(header + self.bindings_table())
+        _logger.debug("Initialized %s", self)
 
         self.setFocus()
         self.adjustSize()
         self.raise_()
         self.show()
+
+    def __str__(self):
+        return f"prompt for '{self.question.title}'"
 
     @classmethod
     def bindings_table(cls):
@@ -75,6 +82,7 @@ class Prompt(QLabel):
 
     def run(self):
         """Run the blocking event loop."""
+        _logger.debug("Running blocking %s", self)
         self.loop.exec_()
 
     def update_geometry(self, _width: int, bottom: int):
@@ -83,6 +91,7 @@ class Prompt(QLabel):
 
     def leave(self, *, answer=None):
         """Leave the prompt by answering the question and quitting the loop."""
+        _logger.debug("Leaving %s with '%s'", self, answer)
         self.question.answer = answer
         self.loop.quit()
         self.loop.deleteLater()

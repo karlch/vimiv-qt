@@ -10,6 +10,11 @@ import typing
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from vimiv.utils import log
+
+
+_logger = log.module_logger(__name__)
+
 
 class Question:
     """Storage class for a question to the user.
@@ -53,7 +58,9 @@ def ask_question(*, title: str, body: str) -> typing.Any:
         answer: Answer given by the user if any.
     """
     question = Question(title=title, body=body)
+    _logger.debug("Asking question '%s'", question.title)
     question_asked.emit(question)  # Enters a gui prompt widget
+    _logger.debug("Answered '%s' with '%s'", question.title, question.answer)
     return question.answer
 
 
