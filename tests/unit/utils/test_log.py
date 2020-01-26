@@ -6,6 +6,8 @@
 
 """Tests for vimiv.utils.log."""
 
+import logging
+
 import pytest
 
 from vimiv.utils import log
@@ -15,10 +17,13 @@ from vimiv.utils import log
 def clean_module_loggers():
     """Fixture to remove any created module loggers."""
     init_loggers = dict(log._module_loggers)
+    init_debug_loggers = list(log._debug_loggers)
     yield
     for logger in dict(log._module_loggers):
         if logger not in init_loggers:
             del log._module_loggers[logger]
+    for logger in set(log._debug_loggers) - set(init_debug_loggers):
+        log._debug_loggers.remove(logger)
 
 
 @pytest.fixture
@@ -57,4 +62,43 @@ def test_lazy_logger_logs(capsys, setup_logging, lazy_logger):
     assert message not in captured.err
     lazy_logger.warning(message)
     captured = capsys.readouterr()
+    assert message in captured.err
+
+
+@pytest.mark.parametrize("creation_time", ("before", "after"))
+def test_setup_logging_debug_loggers(capsys, creation_time):
+    """Ensure debug loggers are created with the debug level and log debug messages.
+
+    Creation time defines if the debug logger is created before setting up logging
+    (usual case) or afterwards (the case for lazy imported modules).
+    """
+    name = "my.module.logger"
+    if creation_time == "before":
+        module_logger = log.module_logger(name)
+    log.setup_logging(logging.WARNING, name)
+    if creation_time == "after":
+        module_logger = log.module_logger(name)
+
+    message = "Show this debug statement"
+    module_logger.debug(message)
+    captured = capsys.readouterr()
+
+    assert module_logger.level == logging.DEBUG
+    assert message in captured.err
+
+
+@pytest.mark.parametrize(
+    "level",
+    (logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR, logging.FATAL),
+)
+def test_module_logger_level_after_setup(capsys, level):
+    """Ensure module loggers are created with global app level."""
+    log.setup_logging(level)
+    module_logger = log.module_logger("my.module.logger")
+
+    message = "Show this debug statement"
+    module_logger.log(level, message)
+    captured = capsys.readouterr()
+
+    assert module_logger.level == level
     assert message in captured.err
