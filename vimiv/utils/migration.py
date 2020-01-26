@@ -86,7 +86,7 @@ class WelcomePopUp(PopUp):
 
     gtk_installed = False
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget = None):
         super().__init__(f"{vimiv.__name__} - welcome to qt", parent=parent)
         url = "https://karlch.github.io/vimiv-qt/documentation/migrating.html"
         gh_url = "https://github.com/karlch/vimiv-qt/issues"

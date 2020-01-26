@@ -40,7 +40,7 @@ Three log handlers are currently used:
 """
 
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional, Any
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
@@ -56,23 +56,23 @@ formatter = logging.Formatter(
 _debug_loggers: List[str] = []
 
 
-def debug(msg: str, *args, **kwargs):
+def debug(msg: str, *args: Any, **kwargs: Any) -> None:
     log(logging.DEBUG, msg, *args, **kwargs)
 
 
-def info(msg: str, *args, **kwargs):
+def info(msg: str, *args: Any, **kwargs: Any) -> None:
     log(logging.INFO, msg, *args, **kwargs)
 
 
-def warning(msg: str, *args, **kwargs):
+def warning(msg: str, *args: Any, **kwargs: Any) -> None:
     log(logging.WARNING, msg, *args, **kwargs)
 
 
-def error(msg: str, *args, **kwargs):
+def error(msg: str, *args: Any, **kwargs: Any) -> None:
     log(logging.ERROR, msg, *args, **kwargs)
 
 
-def critical(msg: str, *args, **kwargs):
+def critical(msg: str, *args: Any, **kwargs: Any) -> None:
     log(logging.CRITICAL, msg, *args, **kwargs)
 
 
@@ -141,12 +141,12 @@ class LazyLogger:
 
     handlers: List[logging.Handler] = []
 
-    def __init__(self, name, level=logging.WARNING):
+    def __init__(self, name: str, level: int = logging.WARNING):
         self.level = level
-        self._logger = None
+        self._logger: Optional[logging.Logger] = None
         self._name = name
 
-    def log(self, level: int, msg: str, *args, **kwargs) -> None:
+    def log(self, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
         """Log a message creating the logger instance if needed."""
         if level < self.level:
             return
@@ -156,19 +156,19 @@ class LazyLogger:
             self._logger.handlers = self.handlers
         self._logger.log(level, msg, *args, **kwargs)
 
-    def debug(self, msg: str, *args, **kwargs):
+    def debug(self, msg: str, *args: Any, **kwargs: Any) -> None:
         self.log(logging.DEBUG, msg, *args, **kwargs)
 
-    def info(self, msg: str, *args, **kwargs):
+    def info(self, msg: str, *args: Any, **kwargs: Any) -> None:
         self.log(logging.INFO, msg, *args, **kwargs)
 
-    def warning(self, msg: str, *args, **kwargs):
+    def warning(self, msg: str, *args: Any, **kwargs: Any) -> None:
         self.log(logging.WARNING, msg, *args, **kwargs)
 
-    def error(self, msg: str, *args, **kwargs):
+    def error(self, msg: str, *args: Any, **kwargs: Any) -> None:
         self.log(logging.ERROR, msg, *args, **kwargs)
 
-    def critical(self, msg: str, *args, **kwargs):
+    def critical(self, msg: str, *args: Any, **kwargs: Any) -> None:
         self.log(logging.CRITICAL, msg, *args, **kwargs)
 
     fatal = critical

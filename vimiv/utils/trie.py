@@ -9,7 +9,7 @@
 See e.g. https://en.wikipedia.org/wiki/Trie for more details.
 """
 
-from typing import NamedTuple, Iterable, Optional, Iterator, Tuple, Dict, List
+from typing import NamedTuple, Iterable, Optional, Iterator, Tuple, Dict, List, cast
 
 from . import log
 
@@ -60,18 +60,19 @@ class Trie:
             node = node.children[elem]
         return node
 
-    def __contains__(self, key: KeyT):
+    def __contains__(self, key: KeyT) -> bool:
         return not self.match(key).is_no_match
 
-    def __iter__(self):
+    def __iter__(self) -> IterResultT:
         """Iterate over all key, value pairs in the leaf nodes."""
         if self.value is None:
             for child in self.children.values():
                 yield from child
         else:
-            yield self.key, self.value
+            # We know the key is not of None type as we have a value
+            yield cast(str, self.key), self.value
 
-    def __delitem__(self, key: KeyT):
+    def __delitem__(self, key: KeyT) -> None:
         """Delete a key from the trie.
 
         Any nodes that become empty through this operation are removed from the trie.
@@ -85,7 +86,7 @@ class Trie:
             if node.children or node.value:
                 break
 
-    def update(self, **kwargs):
+    def update(self, **kwargs: str) -> None:
         """Add all key, value pairs from keyword arguments to the trie."""
         for key, value in kwargs.items():
             self[key] = value
@@ -132,13 +133,13 @@ class TrieMatch(NamedTuple):
     partial: Optional[IterResultT] = None
 
     @property
-    def is_full_match(self):
+    def is_full_match(self) -> bool:
         return self.value is not None
 
     @property
-    def is_partial_match(self):
+    def is_partial_match(self) -> bool:
         return self.partial is not None
 
     @property
-    def is_no_match(self):
+    def is_no_match(self) -> bool:
         return self.partial is self.value is None
