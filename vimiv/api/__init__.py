@@ -17,6 +17,7 @@ from . import (
     keybindings,
     modes,
     objreg,
+    prompt,
     settings,
     signals,
     status,
