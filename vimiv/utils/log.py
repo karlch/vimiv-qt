@@ -122,7 +122,10 @@ def module_logger(name: str) -> "LazyLogger":
     Returns:
         The created logger object.
     """
-    return LazyLogger(name, is_module_logger=True)
+    name = name.replace("vimiv.", "")
+    logger = LazyLogger(name)
+    _module_loggers[name] = logger
+    return logger
 
 
 class LazyLogger:
@@ -135,12 +138,10 @@ class LazyLogger:
 
     handlers: List[logging.Handler] = []
 
-    def __init__(self, name, is_module_logger=False):
+    def __init__(self, name):
         self.level = logging.WARNING
         self._logger = None
-        self._name = name.replace("vimiv.", "") if is_module_logger else name
-        if is_module_logger:
-            _module_loggers[self._name] = self
+        self._name = name
 
     def log(self, level: int, msg: str, *args, **kwargs) -> None:
         """Log a message creating the logger instance if needed."""
