@@ -26,6 +26,11 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
 
     The child class must implement update_geometry to adapt to a resized image and
     should provide additional keybindings which implement the actual transformation.
+
+    Attributes:
+        bindings: Dictionary mapping keybindings to the corresponding methods.
+        transform: Transform instance to perform the actual transformations.
+        previous_matrix: Transformation matrix before starting changes here.
     """
 
     def __init__(self, image, **bindings):
