@@ -87,4 +87,7 @@ DEFAULT_OPTIONS = {
     "prompt.border_radius": "{keyhint.border_radius}",
     "prompt.border": "{statusbar.message_border}",
     "prompt.border.color": "{statusbar.info}",
+    # Crop
+    "crop.border": "{manipulate.image.border}",
+    "crop.border.color": "{manipulate.image.border.color}",
 }
