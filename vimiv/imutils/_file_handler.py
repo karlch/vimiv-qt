@@ -131,6 +131,8 @@ class ImageFileHandler(QObject):
     @property
     def changed(self):
         """True if the current image was edited in any way."""
+        if self.original is None:
+            return False
         return self.transform.changed or (self.manipulate and self.manipulate.changed)
 
     @utils.slot

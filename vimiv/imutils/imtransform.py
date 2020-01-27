@@ -150,6 +150,9 @@ class Transform(QTransform):
         )
         self._apply(transformed.copy(rect))
 
+    def crop(self, rect):
+        self._apply(self._handler().transformed.copy(rect))
+
     def _apply(self, transformed):
         """Check the transformed pixmap for validity and apply it to the handler."""
         if transformed.isNull():
@@ -166,7 +169,9 @@ class Transform(QTransform):
     @property
     def changed(self):
         """True if transformations have been applied."""
-        return not self.isIdentity()
+        transformed = not self.isIdentity()
+        cropped = self._handler().transformed.rect() != self._handler().original.rect()
+        return transformed or cropped
 
     @property
     def matrix(self):

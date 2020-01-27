@@ -91,6 +91,12 @@ class CropWidget(TransformWidget):
         self._fractions.setHeight(event.size().height() / image_rect.height())
         api.status.update("crop widget resized")
 
+    def leave(self, accept: bool = False):
+        """Override leave to crop the image on accept."""
+        if accept:
+            self.transform.crop(self.crop_rect())
+        super().leave(accept)
+
     def mousePressEvent(self, event):
         """Start dragging the widget if we click within it."""
         if self.layout().geometry().contains(event.pos()):
