@@ -88,6 +88,10 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
             api.status.update("transform binding")
 
     def focusOutEvent(self, event):
-        """Leave the widget when focusing another widget."""
-        if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
+        """Leave the widget when the user focuses another widget."""
+        ignored_reasons = (
+            Qt.ActiveWindowFocusReason,  # Unfocused the whole window
+            Qt.OtherFocusReason,  # Unfocused explicitly during leave
+        )
+        if event.reason() not in ignored_reasons:
             self.leave(accept=False)
