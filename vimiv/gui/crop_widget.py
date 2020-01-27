@@ -6,7 +6,7 @@
 
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
-from PyQt5.QtCore import Qt, QPoint, QRectF
+from PyQt5.QtCore import Qt, QPoint, QRect, QRectF
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import (
     QApplication,
@@ -58,6 +58,17 @@ class CropWidget(TransformWidget):
         """True if the widget is currently being dragged."""
         return QApplication.overrideCursor() == Qt.ClosedHandCursor
 
+    def crop_rect(self) -> QRect:
+        """Rectangle of the image that would currently be cropped."""
+        image_rect = self.image.sceneRect()
+        fraction_contained = self._fractions & QRectF(0, 0, 1, 1)
+        return QRectF(
+            fraction_contained.x() * image_rect.width(),
+            fraction_contained.y() * image_rect.height(),
+            fraction_contained.width() * image_rect.width(),
+            fraction_contained.height() * image_rect.height(),
+        ).toAlignedRect()
+
     def update_geometry(self):
         """Update geometry to keep size and position relative to the image."""
         image_rect = self.image_rect
@@ -67,6 +78,11 @@ class CropWidget(TransformWidget):
         height = image_rect.height() * self._fractions.height()
         self.setGeometry(x, y, width, height)
         api.status.update("crop widget geometry changed")
+
+    def status_info(self) -> str:
+        """Rectangle geometry of the image that would currently be cropped."""
+        rect = self.crop_rect()
+        return f"crop: {rect.width()}x{rect.height()}+{rect.x()}+{rect.y()}"
 
     def resizeEvent(self, event):
         """Resize the rubberband rectangle and update the size fractions."""
