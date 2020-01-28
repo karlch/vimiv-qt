@@ -6,7 +6,7 @@
 
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
-from PyQt5.QtCore import Qt, QPoint, QRect, QRectF
+from PyQt5.QtCore import Qt, QPoint, QRect, QRectF, QSize
 from PyQt5.QtGui import QPainter
 from PyQt5.QtWidgets import (
     QApplication,
@@ -26,6 +26,7 @@ class CropWidget(TransformWidget):
     """Widget to display a rectangle for cropping and interact with image and transform.
 
     Attributes:
+        _aspectratio: QSize defining the fixed ratio of width to height if any.
         _fractions: Rectangle containing position and size relative to the image.
         _offset: Offset of a mouse drag with respect to the top-left corner.
     """
@@ -37,10 +38,11 @@ class CropWidget(TransformWidget):
     }
     """
 
-    def __init__(self, image):
+    def __init__(self, image, aspectratio=None):
         super().__init__(image)
         self.setMouseTracking(True)
 
+        self._aspectratio = aspectratio if aspectratio is not None else QSize()
         self._fractions = QRectF(0, 0, 0.5, 0.5)
         self._offset = QPoint(0, 0)
 
@@ -84,11 +86,15 @@ class CropWidget(TransformWidget):
         rect = self.crop_rect()
         return f"crop: {rect.width()}x{rect.height()}+{rect.x()}+{rect.y()}"
 
-    def resizeEvent(self, event):
-        """Resize the rubberband rectangle and update the size fractions."""
+    def resizeEvent(self, _event):
+        """Update size fractions ensuring aspectratio."""
+        if self._aspectratio.isValid():
+            size = QSize(self._aspectratio)
+            size.scale(self.size(), Qt.KeepAspectRatio)
+            self.resize(size)
         image_rect = self.image_rect
-        self._fractions.setWidth(event.size().width() / image_rect.width())
-        self._fractions.setHeight(event.size().height() / image_rect.height())
+        self._fractions.setWidth(self.size().width() / image_rect.width())
+        self._fractions.setHeight(self.size().height() / image_rect.height())
         api.status.update("crop widget resized")
 
     def leave(self, accept: bool = False):
