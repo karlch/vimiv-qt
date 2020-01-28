@@ -52,3 +52,19 @@ def test_command_history_direction(name):
 def test_fail_command_history_direction():
     with pytest.raises(ValueError, match="not a valid HistoryDirection"):
         argtypes.HistoryDirection("other")
+
+
+@pytest.mark.parametrize("size", ((3, 3), (4, 3), (16, 9)))
+@pytest.mark.parametrize("separator", argtypes.AspectRatio.SEPARATORS)
+def test_aspectratio(size, separator):
+    definition = separator.join(str(length) for length in size)
+    width, height = size
+    aspectratio = argtypes.AspectRatio(definition)
+    assert aspectratio.width() == int(width)
+    assert aspectratio.height() == int(height)
+
+
+@pytest.mark.parametrize("definition", ("4to3", "4:3:2", "42", "hello:world"))
+def test_fail_aspectratio(definition):
+    with pytest.raises(ValueError, match="Invalid aspectratio"):
+        argtypes.AspectRatio(definition)
