@@ -132,7 +132,7 @@ class Transform(QTransform):
         original = self._handler().original
         self._apply(original.transformed(self, mode=Qt.SmoothTransformation))
 
-    def straighten(self, *, angle: int):
+    def straighten(self, *, angle: int, original_size: QSize):
         """Straighten the original image.
 
         This rotates the image by the total angle and crops the valid, axis-aligned
@@ -140,12 +140,13 @@ class Transform(QTransform):
 
         Args:
             angle: Rotation angle to straighten the original image by.
+            original_size: Size of the original unstraightened image.
         """
         original = self._handler().original
         self.rotate(angle)
         transformed = original.transformed(self, mode=Qt.SmoothTransformation)
         rect = self.largest_rect_in_rotated(
-            original=original.size(), rotated=transformed.size(), angle=angle
+            original=original_size, rotated=transformed.size(), angle=angle
         )
         self._apply(transformed.copy(rect))
 
@@ -177,6 +178,11 @@ class Transform(QTransform):
             self.m31(), self.m32(), self.m33(),
         )
         # fmt: on
+
+    @property
+    def size(self) -> QSize:
+        """Size of the transformed image."""
+        return self._handler().transformed.size()
 
     @api.commands.register(mode=api.modes.IMAGE)
     def undo_transformations(self):

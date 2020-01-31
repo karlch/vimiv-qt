@@ -28,6 +28,8 @@ class StraightenWidget(TransformWidget):
     Attributes:
         color: Color of the grid lines.
         angle: Current rotation angle in degrees.
+
+        _init_size: Size of the initially unstraightened pixmap.
     """
 
     LINES = (
@@ -45,6 +47,7 @@ class StraightenWidget(TransformWidget):
 
         self.color = QColor(styles.get("image.straighten.color"))
         self.angle = 0.0
+        self._init_size = self.transform.size
 
     def _add_rotate_binding(
         self, *keys: str, counter_clockwise: bool = False, angle: float
@@ -80,7 +83,7 @@ class StraightenWidget(TransformWidget):
         holding down any of the rotate keys.
         """
         self.reset_transformations()
-        self.transform.straighten(angle=self.angle)
+        self.transform.straighten(angle=self.angle, original_size=self._init_size)
         self.update_geometry()
 
     def update_geometry(self):

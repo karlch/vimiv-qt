@@ -27,7 +27,9 @@ def straighten(image):
 @bdd.when(bdd.parsers.parse("I straighten by {angle:g} degree"))
 def straighten_by(qtbot, straighten, angle):
     def check():
-        assert straighten.transform.angle == pytest.approx(angle)
+        assert (straighten.transform.angle) % 90 == pytest.approx(expected_angle % 90)
+
+    expected_angle = straighten.angle + angle
 
     straighten.rotate(angle=angle)
     qtbot.waitUntil(check)

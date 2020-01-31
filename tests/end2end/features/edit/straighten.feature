@@ -1,7 +1,7 @@
 Feature: Straighten an image.
 
     Background: 
-        Given I open any image
+        Given I open any image of size 300x200
 
     Scenario: Enter straighten widget
         When I run straighten
@@ -13,16 +13,29 @@ Feature: Straighten an image.
         And I straighten by 1 degree
         And I leave the straighten widget via <escape>
         Then there should be 0 straighten widgets
-        And the image size should be 300x300
+        And the image size should be 300x200
+
+    Scenario: Straighten repeatedly
+        When I run straighten
+        And I straighten by 1 degree
+        And I straighten by 1 degree
+        Then the straighten angle should be 2.0
 
     Scenario: Leave straighten widget accepting changes
         When I run straighten
         And I straighten by 1 degree
         And I leave the straighten widget via <return>
         Then there should be 0 straighten widgets
-        And the image size should not be 300x300
+        And the image size should not be 300x200
 
     Scenario: Straighten image using keybindings
         When I run straighten
         And I hit l on the straighten widget
         Then the straighten angle should be 0.2
+
+    Scenario: Straighten already transformed image
+        When I run rotate
+        And I run straighten
+        And I straighten by 1 degree
+        And I straighten by -1 degree
+        Then the image size should be 200x300
