@@ -149,6 +149,11 @@ Feature: Using completion.
         When I run command --text="!"
         Then a possible completion should contain !ls
 
+    Scenario: Using crop completion
+        Given I open any image
+        When I run command --text="crop "
+        Then a possible completion should contain --aspectratio=keep
+
     Scenario: Reset completions when leaving command mode
         Given I open any directory
         When I run command

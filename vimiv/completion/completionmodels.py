@@ -252,6 +252,15 @@ class HelpModel(api.completion.BaseModel):
         ]
 
 
+class CropModel(api.completion.BaseModel):
+    """Completion model filled with aspectratio options for :crop."""
+
+    def __init__(self):
+        super().__init__(":crop ")
+        options = ("", "--aspectratio=keep", "--aspectratio=16:9", "--aspectratio=4:3")
+        self.set_data((f":crop {option}",) for option in options)
+
+
 def init():
     """Create completion models."""
     CommandModel()
@@ -265,3 +274,4 @@ def init():
         TagModel(suffix)
     TrashModel()
     HelpModel()
+    CropModel()
