@@ -8,17 +8,12 @@
 
 from PyQt5.QtCore import Qt, QPoint, QRect, QRectF, QSize
 from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import (
-    QApplication,
-    QHBoxLayout,
-    QSizeGrip,
-    QStyle,
-    QStyleOption,
-)
+from PyQt5.QtWidgets import QApplication, QStyle, QStyleOption
 
 from vimiv import api
 from vimiv.config import styles
 
+from .resize import ResizeLayout
 from .transform_widget import TransformWidget
 
 
@@ -46,14 +41,11 @@ class CropWidget(TransformWidget):
         self._fractions = QRectF(0, 0, 0.5, 0.5)
         self._offset = QPoint(0, 0)
 
-        layout = QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(QSizeGrip(self), 0, Qt.AlignLeft | Qt.AlignTop)
-        layout.addWidget(QSizeGrip(self), 0, Qt.AlignRight | Qt.AlignBottom)
-
         styles.apply(self)
         self.update_geometry()
         self.show()
+
+        ResizeLayout(self, fixed_aspectratio=aspectratio is not None)
 
     @property
     def moving(self) -> bool:
