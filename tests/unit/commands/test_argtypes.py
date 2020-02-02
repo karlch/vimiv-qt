@@ -62,9 +62,16 @@ def test_aspectratio(size, separator):
     aspectratio = argtypes.AspectRatio(definition)
     assert aspectratio.width() == int(width)
     assert aspectratio.height() == int(height)
+    assert not aspectratio.keep
 
 
 @pytest.mark.parametrize("definition", ("4to3", "4:3:2", "42", "hello:world"))
 def test_fail_aspectratio(definition):
     with pytest.raises(ValueError, match="Invalid aspectratio"):
         argtypes.AspectRatio(definition)
+
+
+@pytest.mark.parametrize("value", ("Keep", "keep", "keeP"))
+def test_aspectratio_keep(value):
+    aspectratio = argtypes.AspectRatio(value)
+    assert aspectratio.keep

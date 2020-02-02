@@ -69,16 +69,24 @@ class AspectRatio(QSize):
         4:3
         16,9
         5_4
+
+    Attributes:
+        keep: True if the aspectratio of the original image should be kept.
     """
 
     SEPARATORS = ":,-_"
 
     def __init__(self, aspectratio: str):
-        split_re = "|".join(self.SEPARATORS)
-        try:
-            width, height = tuple(re.split(split_re, aspectratio))
-            super().__init__(int(width), int(height))
-        except ValueError:
-            raise ValueError(
-                f"'Invalid aspectratio '{aspectratio}'. Use width:height, e.g. 4:3"
-            ) from None
+        if aspectratio.lower() == "keep":
+            self.keep = True
+            super().__init__()
+        else:
+            self.keep = False
+            split_re = "|".join(self.SEPARATORS)
+            try:
+                width, height = tuple(re.split(split_re, aspectratio))
+                super().__init__(int(width), int(height))
+            except ValueError:
+                raise ValueError(
+                    f"'Invalid aspectratio '{aspectratio}'. Use width:height, e.g. 4:3"
+                ) from None
