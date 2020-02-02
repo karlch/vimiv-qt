@@ -21,7 +21,13 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv import api, imutils, utils
-from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
+from vimiv.commands.argtypes import (
+    Direction,
+    ImageScale,
+    ImageScaleFloat,
+    Zoom,
+    AspectRatio,
+)
 from vimiv.config import styles
 from vimiv.utils import lazy
 
@@ -312,6 +318,25 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         from .straighten_widget import StraightenWidget
 
         StraightenWidget(self)
+
+    @api.commands.register(mode=api.modes.IMAGE)
+    def crop(self, aspectratio: AspectRatio = None):
+        """Display a widget to crop the current image.
+
+        **syntax:** ``crop [--aspectratio=ASPECTRATIO]``
+
+        optional arguments:
+            * ``--aspectratio``: Fix the cropping to the given aspectratio. Valid
+              options are two integers separated by ``:`` or the special ``keep`` to
+              keep the aspectratio of the current image.
+        """
+        from .crop_widget import CropWidget
+
+        self.scale(level=ImageScale.Fit)  # type: ignore
+        if aspectratio is not None and aspectratio.keep:
+            aspectratio.setWidth(int(self.sceneRect().width()))
+            aspectratio.setHeight(int(self.sceneRect().height()))
+        CropWidget(self, aspectratio=aspectratio)
 
     @api.status.module("{transformation-info}")
     def transformation_info(self) -> str:
