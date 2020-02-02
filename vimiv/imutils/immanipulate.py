@@ -394,8 +394,8 @@ class Manipulator(QObject):
                 self._handler().transformed,
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
-            self._handler().current = pixmap
             self._handler().write_pixmap(pixmap, parallel=False)
+            self._handler().original = pixmap
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
