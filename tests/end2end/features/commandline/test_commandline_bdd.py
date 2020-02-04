@@ -7,8 +7,6 @@
 import inspect
 from contextlib import suppress
 
-from PyQt5.QtCore import Qt
-
 import pytest_bdd as bdd
 
 import vimiv
@@ -18,12 +16,6 @@ from vimiv.gui import statusbar
 
 
 bdd.scenarios("commandline.feature")
-
-
-@bdd.when("I hit backspace")
-def hit_backspace(commandline, qtbot):
-    """Needed as passing backspace as a string is not possible."""
-    qtbot.keyClick(commandline, Qt.Key_Backspace)
 
 
 @bdd.when("I run help <topic>")

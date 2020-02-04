@@ -140,7 +140,19 @@ def run_command(command):
 @bdd.when(bdd.parsers.parse("I press {keys}"))
 def key_press(qtbot, keys):
     mode = api.modes.current()
-    qtbot.keyClicks(mode.widget, keys)
+    special_keys = {
+        "<escape>": Qt.Key_Escape,
+        "<return>": Qt.Key_Return,
+        "<backspace>": Qt.Key_Backspace,
+    }
+    try:
+        qkey = special_keys[keys]
+        qtbot.keyClick(mode.widget, qkey)
+        # Process commandline if needed
+        if qkey == Qt.Key_Return and mode.name == "command":
+            qtbot.wait(10)
+    except KeyError:
+        qtbot.keyClicks(mode.widget, keys)
 
 
 @bdd.when(bdd.parsers.parse("I press <{modifier}>{keys}"))
@@ -152,13 +164,6 @@ def key_press_modifier(qtbot, keys, modifier):
     }
     mode = api.modes.current()
     qtbot.keyClicks(mode.widget, keys, modifier=modifiers[modifier])
-
-
-@bdd.when("I activate the command line")
-def activate_commandline(commandline, qtbot):
-    """Needed as passing return as a string is not possible."""
-    qtbot.keyClick(commandline, Qt.Key_Return)
-    qtbot.wait(10)
 
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))

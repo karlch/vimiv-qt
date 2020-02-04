@@ -95,7 +95,7 @@ Feature: Using completion.
         When I create the directory 'path with spaces'
         And I run command --text="open pat"
         And I run complete
-        And I activate the command line
+        And I press <return>
         Then the working directory should be path with spaces
 
     Scenario: Update setting completion with newest value
@@ -137,7 +137,7 @@ Feature: Using completion.
     Scenario: Show correct completion after changing mode
         Given I open any image
         When I run command
-        And I activate the command line
+        And I press <return>
         And I enter library mode
         And I run command
         Then the completion model should be command
@@ -160,7 +160,7 @@ Feature: Using completion.
         Given I start vimiv
         When I run command
         And I press notacommand
-        And I activate the command line
+        And I press <return>
         And I run command
         Then the completion model should be command
         And a possible completion should contain open-selected
