@@ -9,7 +9,7 @@ import pytest_bdd as bdd
 
 import vimiv.imutils.immanipulate
 
-bdd.scenarios("manipulate.feature")
+bdd.scenarios("manipulate.feature", "manipulate_segfault.feature")
 
 
 @pytest.fixture()
