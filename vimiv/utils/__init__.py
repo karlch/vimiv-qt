@@ -380,7 +380,7 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     process.start(cmd, args)
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
-    if process.exitStatus() != QProcess.NormalExit:
+    if process.exitStatus() != QProcess.NormalExit or process.exitCode() != 0:
         stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
         raise OSError(stderr)
     return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore

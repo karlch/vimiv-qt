@@ -242,9 +242,12 @@ def test_run_qprocess_in_other_dir(tmpdir):
     assert utils.run_qprocess("pwd", cwd=directory) == directory
 
 
-def test_fail_run_qprocess_raises_oserror():
+@pytest.mark.parametrize(
+    "command, args", (("NoTaCoMmAnD", []), ("ls", ["--not-a-flag-for-ls"]))
+)
+def test_fail_run_qprocess_raises_oserror(command, args):
     with pytest.raises(OSError):
-        utils.run_qprocess("NoTaCoMmAnD")
+        utils.run_qprocess(command, *args)
 
 
 @pytest.mark.parametrize("typ", (int, float, str, bool))
