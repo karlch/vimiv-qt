@@ -215,6 +215,18 @@ def run_command_answering_prompt(answer_prompt, key):
     answer_prompt(key)
 
 
+@bdd.when(bdd.parsers.parse("I create the directory '{name}'"))
+def create_directory(name):
+    os.makedirs(name, mode=0o777)
+
+
+@bdd.when(bdd.parsers.parse("I create the file '{name}'"))
+def create_file(name):
+    assert not os.path.exists(name), f"Not overriding existing file '{name}'"
+    with open(name, "w") as f:
+        f.write("")
+
+
 ###############################################################################
 #                                    Then                                     #
 ###############################################################################

@@ -43,8 +43,7 @@ Feature: Open different images and image formats
 
     Scenario: Open invalid path
         Given I open any image
-        When I run !touch not_an_image
-        And I wait for the command to complete
+        When I create the file 'not_an_image'
         And I run open not_an_image
         Then no crash should happen
         And the message

@@ -4,16 +4,10 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import os
 import pytest_bdd as bdd
 
 
 bdd.scenarios("library.feature")
-
-
-@bdd.when("I add a hidden path")
-def add_hidden_path():
-    os.mkdir(".hidden_directory")
 
 
 @bdd.when("I reload the library")

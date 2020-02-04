@@ -18,8 +18,7 @@ Feature: Running external commands.
 
     @flaky
     Scenario: Pipe directory to vimiv.
-        When I run !mkdir new_directory
-        And I wait for the command to complete
+        When I create the directory 'new_directory'
         And I run !ls |
         And I wait for the command to complete
         Then the working directory should be new_directory

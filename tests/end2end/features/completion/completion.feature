@@ -92,8 +92,7 @@ Feature: Using completion.
 
     Scenario: Escape path with spaces upon completion
         Given I open any directory
-        When I run !mkdir 'path with spaces'
-        And I wait for the command to complete
+        When I create the directory 'path with spaces'
         And I run command --text="open pat"
         And I run complete
         And I activate the command line

@@ -68,8 +68,7 @@ Feature: Deleting an image in the current file list
 
     Scenario: Do not delete non-image file
         Given I start vimiv
-        When I run !touch not_an_image
-        And I wait for the command to complete
+        When I create the file 'not_an_image'
         And I run delete not_an_image
         Then the file not_an_image should exist
         And the message
