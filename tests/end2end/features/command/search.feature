@@ -84,3 +84,8 @@ Feature: Run search in different modes.
         And I run !cp -r child_01 child_11
         And I wait for the working directory handler
         Then there should be 2 search matches
+
+    Scenario: Crash when searching empty pathlist
+        Given I start vimiv
+        When I search for *
+        Then no crash should happen

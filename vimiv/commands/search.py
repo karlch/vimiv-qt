@@ -84,6 +84,8 @@ class Search(QObject):
     def _run(self, text, mode, count, reverse, incremental):
         """Implementation of running search."""
         paths = api.pathlist(mode)
+        if not paths:
+            return
         current_index = paths.index(api.current_path(mode))
         basenames = [os.path.basename(path) for path in paths]
         sorted_paths = _sort_for_search(basenames, current_index, reverse)

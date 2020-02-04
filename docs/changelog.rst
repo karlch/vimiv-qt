@@ -46,6 +46,7 @@ Fixed:
 
 * Always writing changed images to disk regardless of the ``image.autowrite`` setting.
 * Segfault when applying manipulations.
+* Crash when searching empty pathlist.
 
 
 v0.5.0 (2020-01-05)
