@@ -122,7 +122,7 @@ class Trie:
                 nodes.append(node)
                 node = node.children[elem]
             except KeyError:
-                raise KeyError(key) from None
+                raise KeyError("".join(key)) from None
         return nodes
 
 

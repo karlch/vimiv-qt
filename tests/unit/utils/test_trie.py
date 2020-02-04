@@ -115,3 +115,9 @@ def test_delitem_keeps_nonempty_nodes(trie):
         trie[key] = value
     del trie[keys[0]]
     assert list(trie) == list(zip(keys[1:], itertools.repeat(value)))
+
+
+def test_delitem_raises_keyerror_with_full_path(trie):
+    key = "abcd"
+    with pytest.raises(KeyError, match=key):
+        del trie[key]
