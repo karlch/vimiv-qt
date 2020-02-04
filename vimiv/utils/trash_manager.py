@@ -77,11 +77,11 @@ def undelete(basenames: List[str]) -> None:
         trash_filename = os.path.join(_files_directory, basename)
         info_filename = _get_info_filename(basename)
         if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
-            raise api.commands.CommandError(f"File for {basename} does not exist")
+            raise api.commands.CommandError(f"File for '{basename}' does not exist")
         original_filename, _ = trash_info(basename)
         if not os.path.isdir(os.path.dirname(original_filename)):
             raise api.commands.CommandError(
-                f"Original directory of {basename} is not accessible"
+                f"Original directory of '{basename}' is not accessible"
             )
         shutil.move(trash_filename, original_filename)
         os.remove(info_filename)

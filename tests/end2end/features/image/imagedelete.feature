@@ -54,3 +54,11 @@ Feature: Deleting an image in the current file list
         And the message
             'delete: No paths matching 'this/is/not/an/image.jpg''
             should be displayed
+
+    Scenario: Undelete basename that does not exist
+        Given I open any image
+        When I run undelete not_a_basename.jpg
+        Then no crash should happen
+        And the message
+            'undelete: File for 'not_a_basename.jpg' does not exist'
+            should be displayed
