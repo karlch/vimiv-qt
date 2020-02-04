@@ -55,8 +55,6 @@ def delete(paths: List[str]) -> None:
     _last_deleted.clear()
     for filename in paths:
         filename = os.path.abspath(filename)
-        if not os.path.exists(filename):
-            raise api.commands.CommandError(f"Path '{filename}' does not exist")
         trash_filename = _get_trash_filename(filename)
         _create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)

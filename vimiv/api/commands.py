@@ -232,15 +232,15 @@ class _CommandArguments(argparse.ArgumentParser):
         kwargs = self._gen_kwargs(argument, optional, typ)
         self.add_argument(name, **kwargs)
 
-    @staticmethod
-    def _argument_name(argument: inspect.Parameter, optional: bool) -> str:
+    @classmethod
+    def _argument_name(cls, argument: inspect.Parameter, optional: bool) -> str:
         """Create argument name from inspect parameter."""
         name = argument.name.replace("_", "-")
         return f"--{name}" if optional else name
 
-    @staticmethod
+    @classmethod
     def _gen_kwargs(
-        argument: inspect.Parameter, optional: bool, typ: typing.Type
+        cls, argument: inspect.Parameter, optional: bool, typ: typing.Type
     ) -> typing.Dict[str, typing.Any]:
         """Create keyword arguments for argparse from inspect parameter.
 
@@ -248,12 +248,7 @@ class _CommandArguments(argparse.ArgumentParser):
         'nargs': '*' if the type is a List.
         """
         if argument.name == "paths":
-            return {
-                "type": lambda x: glob.glob(
-                    os.path.expanduser(escape_glob(x)), recursive=True
-                ),
-                "nargs": "+",
-            }
+            return {"type": cls.paths_type, "nargs": "+"}
         if typ == typing.List[str]:
             return {"type": str, "nargs": "*"}
         if not optional and is_optional_type(typ):
@@ -264,6 +259,14 @@ class _CommandArguments(argparse.ArgumentParser):
             typ = type_of_optional(typ) if is_optional_type(typ) else typ
             return {"type": typ, "default": argument.default}
         return {"type": typ}
+
+    @classmethod
+    def paths_type(cls, globstr: str) -> typing.List[str]:
+        """Retrieve list of paths matching the globstr passed."""
+        paths = glob.glob(os.path.expanduser(escape_glob(globstr)), recursive=True)
+        if not paths:
+            raise ArgumentError(f"No paths matching '{globstr}'")
+        return paths
 
 
 # The class is still rather simple but many things need to be stored for various places

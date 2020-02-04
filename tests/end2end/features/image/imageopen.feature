@@ -33,9 +33,19 @@ Feature: Open different images and image formats
         When I run open image_1[01].jpg
         Then the filelist should contain 2 images
 
+    Scenario: Open path that does not exist
+        Given I open any image
+        When I run open not/a/path
+        Then no crash should happen
+        And the message
+            'open: No paths matching 'not/a/path''
+            should be displayed
+
     Scenario: Open invalid path
         Given I open any image
-        When I run open not_an_image
+        When I run !touch not_an_image
+        And I wait for the command to complete
+        And I run open not_an_image
         Then no crash should happen
         And the message
             'open: No valid paths'

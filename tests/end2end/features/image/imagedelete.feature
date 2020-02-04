@@ -46,3 +46,11 @@ Feature: Deleting an image in the current file list
         And I run undelete
         And I wait for the working directory handler
         Then the filelist should contain 3 images
+
+    Scenario: Delete file that does not exist
+        Given I open any image
+        When I run delete this/is/not/an/image.jpg
+        Then no crash should happen
+        And the message
+            'delete: No paths matching 'this/is/not/an/image.jpg''
+            should be displayed
