@@ -356,3 +356,9 @@ def check_count(counter, number):
 @bdd.then(bdd.parsers.parse("the text in the command line should be {text}"))
 def check_commandline_text(commandline, text):
     assert commandline.text() == text
+
+
+@bdd.then(bdd.parsers.parse("the boolean setting '{name}' should be '{value}'"))
+def check_boolean_setting(name, value):
+    bool_value = True if value.lower() == "true" else False
+    assert api.settings.get_value(name) is bool_value

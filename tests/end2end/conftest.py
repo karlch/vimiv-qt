@@ -77,6 +77,23 @@ def start_vimiv(tmpdir):
     start_directory(tmpdir)
 
 
+@bdd.given(bdd.parsers.parse("I start vimiv with {args}"))
+def start_vimiv_with_args(tmpdir, args):
+    start_directory(tmpdir, args=args.split())
+
+
+@bdd.given("I run vimiv --version")
+def run_vimiv_version(capsys):
+    with pytest.raises(SystemExit):
+        startup.setup_pre_app(["--version"])
+    yield capsys.readouterr().out
+
+
+@bdd.given("I start vimiv with --log-level <level>")
+def start_vimiv_log_level(tmpdir, level):
+    start_directory(tmpdir, args=["--log-level", level])
+
+
 @bdd.given("I open a directory for which I do not have access permissions")
 def start_directory_without_permission(tmpdir):
     start_directory(tmpdir, permission=0o666)
@@ -116,8 +133,9 @@ def start_n_images_with_args(tmpdir, n_images, args):
 ###############################################################################
 #                              helper functions                               #
 ###############################################################################
-def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777):
+def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777, args=None):
     """Run vimiv startup using one directory as the passed path."""
+    args = args if args is not None else []
     directory = tmpdir.mkdir("directory")
     os.chmod(str(directory), permission)
 
@@ -126,7 +144,7 @@ def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777):
 
     create_n_images(directory, n_images)
 
-    start([str(directory)])
+    start([str(directory)] + args)
 
 
 def start_image(tmpdir, n_images=1, size=(300, 300), args=None):

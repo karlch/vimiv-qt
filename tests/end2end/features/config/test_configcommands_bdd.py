@@ -6,13 +6,5 @@
 
 import pytest_bdd as bdd
 
-from vimiv import api
-
 
 bdd.scenarios("configcommands.feature")
-
-
-@bdd.then(bdd.parsers.parse("the boolean setting '{name}' should be '{value}'"))
-def check_boolean_setting(name, value):
-    bool_value = True if value.lower() == "true" else False
-    assert api.settings.get_value(name) is bool_value
