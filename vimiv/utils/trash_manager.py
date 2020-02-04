@@ -26,7 +26,7 @@ from functools import lru_cache
 from typing import cast, Tuple, List
 
 from vimiv import api
-from vimiv.utils import xdg
+from vimiv.utils import files, log, xdg
 
 
 _files_directory = cast(str, None)
@@ -45,20 +45,28 @@ def init() -> None:
 @api.keybindings.register("x", "delete %")
 @api.commands.register()
 def delete(paths: List[str]) -> None:
-    """Move one or more paths to the trash directory.
+    """Move one or more images to the trash directory.
 
     **syntax:** ``:delete path [path ...]``
 
     positional arguments:
-        * ``paths``: The path(s) to delete.
+        * ``paths``: The path(s) to the images to delete.
+
+    .. note:: This only deletes images, not any other path(s).
     """
     _last_deleted.clear()
-    for filename in paths:
+    images = [path for path in paths if files.is_image(path)]
+    n_images = len(images)
+    if n_images == 0:
+        raise api.commands.CommandError("No images to delete")
+    for filename in images:
         filename = os.path.abspath(filename)
         trash_filename = _get_trash_filename(filename)
         _create_info_file(trash_filename, filename)
         shutil.move(filename, trash_filename)
         _last_deleted.append(os.path.basename(trash_filename))
+    if n_images > 1:
+        log.info("Deleted %d images", n_images)
 
 
 @api.commands.register()

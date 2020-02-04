@@ -38,6 +38,9 @@ Feature: Deleting an image in the current file list
         Then the filelist should contain 1 images
         And image_02.jpg should not be in the filelist
         And image_03.jpg should not be in the filelist
+        And the message
+            'Deleted 2 images'
+            should be displayed
 
     Scenario: Delete and undelete multiple images
         Given I open 3 images
@@ -61,4 +64,14 @@ Feature: Deleting an image in the current file list
         Then no crash should happen
         And the message
             'undelete: File for 'not_a_basename.jpg' does not exist'
+            should be displayed
+
+    Scenario: Do not delete non-image file
+        Given I start vimiv
+        When I run !touch not_an_image
+        And I wait for the command to complete
+        And I run delete not_an_image
+        Then the file not_an_image should exist
+        And the message
+            'delete: No images to delete'
             should be displayed

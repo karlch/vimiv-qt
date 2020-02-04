@@ -27,7 +27,7 @@ def tmpfile(tmpdir):
 
 
 @pytest.fixture(autouse=True)
-def trash(monkeypatch, tmpdir):
+def trash(monkeypatch, mocker, tmpdir):
     """Initialize trash for testing as fixture.
 
     Returns:
@@ -35,6 +35,7 @@ def trash(monkeypatch, tmpdir):
     """
     xdg_data_home = tmpdir.mkdir("data")
     monkeypatch.setenv("XDG_DATA_HOME", str(xdg_data_home))
+    mocker.patch("vimiv.utils.files.is_image", return_value=True)
     trash_manager.init()
     yield os.path.join(str(xdg_data_home), "Trash")
 

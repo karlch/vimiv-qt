@@ -39,6 +39,7 @@ Changed:
 * The slideshow is always stopped when the image is unfocused.
 * The ``image.autowrite`` setting is now ``ask`` by default. This should prevent
   surprises in case the changes are written to disk or discarded.
+* ``:delete`` now only deletes images.
 
 Fixed:
 ^^^^^^
