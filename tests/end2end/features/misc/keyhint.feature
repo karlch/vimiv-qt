@@ -34,3 +34,9 @@ Feature: The keyhint overlay widget
         When I run command
         And I press <
         Then the keyhint widget should not appear
+
+    Scenario: Keyhint widget cleared and hidden after escape
+        When I press g
+        And I wait for the keyhint widget
+        And I press <escape>
+        Then the keyhint widget should not be visible
