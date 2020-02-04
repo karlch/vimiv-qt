@@ -370,7 +370,7 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
         args: Any arguments passed to the command.
         cwd: Directory of the command to run in.
     Returns:
-        The starndard output of the command.
+        The standard output of the command.
     Raises:
         OSError on failure.
     """
