@@ -35,7 +35,11 @@ class Module:
         raising ModuleNotFoundError. This method is cached so we only create one
         instance per name of a module.
         """
-        if importlib.util.find_spec(fullname) is None:
+        try:
+            found = importlib.util.find_spec(fullname)
+        except ModuleNotFoundError:  # Raised when we import e.g. optional.submodule
+            found = None
+        if found is None:
             if optional:
                 return None
             raise ModuleNotFoundError(f"No module named '{fullname}'")

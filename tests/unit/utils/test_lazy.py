@@ -6,6 +6,8 @@
 
 """Tests for vimiv.utils.lazy."""
 
+import functools
+
 import pytest
 
 from vimiv.utils import lazy
@@ -43,3 +45,14 @@ def test_lazy_module_single_instance(module):
     """Ensure we only create a single instance per module name."""
     module_second_import = lazy.import_module(MODULE_NAME)
     assert module_second_import is module
+
+
+@pytest.mark.parametrize("name", ("not_a_valid_module", "not_a_valid_module.submodule"))
+@pytest.mark.parametrize("optional", (True, False))
+def test_lazy_import_nonexisting_module(name, optional):
+    importfunc = functools.partial(lazy.import_module, name, optional=optional)
+    if optional:
+        assert importfunc() is None
+    else:
+        with pytest.raises(ModuleNotFoundError, match=name):
+            importfunc()
