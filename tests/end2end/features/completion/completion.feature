@@ -172,3 +172,14 @@ Feature: Using completion.
         And I press 2got
         And I run complete
         Then the text in the command line should be :2goto
+
+    Scenario: Ensure completion is case insensitive
+        Given I start vimiv
+        When I run command --text="Fulls"
+        Then a possible completion should contain fullscreen
+
+    Scenario: Ensure fuzzy completion is case insensitive
+        Given I start vimiv
+        When I run set completion.fuzzy true
+        And I run command --text="FLS"
+        Then a possible completion should contain fullscreen
