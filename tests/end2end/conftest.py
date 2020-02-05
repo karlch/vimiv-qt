@@ -83,10 +83,9 @@ def start_vimiv_with_args(tmpdir, args):
 
 
 @bdd.given("I run vimiv --version")
-def run_vimiv_version(capsys):
+def run_vimiv_version():
     with pytest.raises(SystemExit):
         startup.setup_pre_app(["--version"])
-    yield capsys.readouterr().out
 
 
 @bdd.given("I start vimiv with --log-level <level>")
@@ -130,8 +129,26 @@ def start_n_images_with_args(tmpdir, n_images, args):
     start_image(tmpdir, n_images=n_images, args=args.split())
 
 
+@bdd.given("I capture output")
+def output(capsys):
+    yield Output(capsys)
+
+
 ###############################################################################
-#                              helper functions                               #
+#                                  bdd Then                                   #
+###############################################################################
+@bdd.then(bdd.parsers.parse("stdout should contain '{text}'"))
+def check_stdout(output, text):
+    assert text in output.out
+
+
+@bdd.then(bdd.parsers.parse("stderr should contain '{text}'"))
+def check_stderr(output, text):
+    assert text in output.err
+
+
+###############################################################################
+#                              helpers                                        #
 ###############################################################################
 def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777, args=None):
     """Run vimiv startup using one directory as the passed path."""
@@ -168,3 +185,28 @@ def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
         QPixmap(*size).save(path, imgformat)
         paths.append(path)
     return paths
+
+
+class Output:
+    """Wrapper class around the pytest capsys fixture for ease of usage in bdd."""
+
+    def __init__(self, capsys):
+        self.capsys = capsys
+        self._out = self._err = None
+
+    @property
+    def out(self):
+        if self._out is None:
+            self._capture_output()
+        return self._out
+
+    @property
+    def err(self):
+        if self._err is None:
+            self._capture_output()
+        return self._err
+
+    def _capture_output(self):
+        captured = self.capsys.readouterr()
+        self._out = captured.out
+        self._err = captured.err

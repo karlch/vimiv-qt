@@ -18,7 +18,8 @@ Feature: Startup vimiv with various flags
         Then no crash should happen
 
     Scenario: Print version information
-        Given I run vimiv --version
+        Given I capture output
+        And I run vimiv --version
         Then the version information should be displayed
 
     Scenario Outline: Set log level
