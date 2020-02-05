@@ -66,10 +66,10 @@ class CropWidget(TransformWidget):
     def update_geometry(self):
         """Update geometry to keep size and position relative to the image."""
         image_rect = self.image_rect
-        x = image_rect.x() + image_rect.width() * self._fractions.x()
-        y = image_rect.y() + image_rect.height() * self._fractions.y()
-        width = image_rect.width() * self._fractions.width()
-        height = image_rect.height() * self._fractions.height()
+        x = int(image_rect.x() + image_rect.width() * self._fractions.x())
+        y = int(image_rect.y() + image_rect.height() * self._fractions.y())
+        width = int(image_rect.width() * self._fractions.width())
+        height = int(image_rect.height() * self._fractions.height())
         self.setGeometry(x, y, width, height)
         api.status.update("crop widget geometry changed")
 
