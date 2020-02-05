@@ -133,8 +133,18 @@ def answer_prompt(qtbot, mainwindow):
 
 
 @bdd.when(bdd.parsers.parse("I run {command}"))
-def run_command(command):
+def run_command(command, qtbot):
     runners.run(command, mode=api.modes.current())
+
+    # Wait for external command to complete if any was run
+    external_runner = runners.external._impl
+    if external_runner is not None:
+
+        def external_finished():
+            state = external_runner.state()
+            assert state == QProcess.NotRunning, "external command timed out"
+
+        qtbot.waitUntil(external_finished, timeout=30000)
 
 
 @bdd.when(bdd.parsers.parse("I press {keys}"))
@@ -182,19 +192,6 @@ def resize_main_window(mainwindow, size):
     width = int(size.split("x")[0])
     height = int(size.split("x")[1])
     mainwindow.resize(width, height)
-
-
-@bdd.when("I wait for the command to complete")
-def wait_for_external_command(qtbot):
-    """Wait until the external process has completed."""
-    runner = runners.external._impl
-    if runner is None:
-        return
-
-    def external_finished():
-        assert runner.state() == QProcess.NotRunning, "external command timed out"
-
-    qtbot.waitUntil(external_finished, timeout=30000)
 
 
 @bdd.when("I wait for the working directory handler")

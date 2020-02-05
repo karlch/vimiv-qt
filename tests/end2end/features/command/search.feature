@@ -82,7 +82,6 @@ Feature: Run search in different modes.
         Given I open a directory with 5 paths
         When I search for 1
         And I run !cp -r child_01 child_11
-        And I wait for the working directory handler
         Then there should be 2 search matches
 
     Scenario: Crash when searching empty pathlist

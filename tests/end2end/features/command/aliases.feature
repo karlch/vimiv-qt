@@ -37,5 +37,4 @@ Feature: Create and run aliases.
         Given I open a directory with 1 paths
         When I run alias copythis '!cp -r \% other_directory'
         And I run copythis
-        And I wait for the command to complete
         Then the directory other_directory should exist
