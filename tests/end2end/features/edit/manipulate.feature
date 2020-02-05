@@ -10,7 +10,7 @@ Feature: Manipulate an image.
 
     Scenario: Set value of current manipulation via keybinding
         When I enter manipulate mode
-        And I press 10gg
+        And I press '10gg'
         Then The current value should be 10
 
     Scenario: Set value using increase
@@ -20,13 +20,13 @@ Feature: Manipulate an image.
 
     Scenario: Set value using increase keybinding
         When I enter manipulate mode
-        And I press 10k
+        And I press '10k'
         Then The current value should be 10
 
     Scenario: Set value to zero via keybinding
         When I enter manipulate mode
         And I run goto 10
-        And I press 0gg
+        And I press '0gg'
         Then The current value should be 0
 
     Scenario: Focus next manipulation

@@ -9,13 +9,13 @@ Feature: Use the command line.
 
     Scenario: Run a command from the command line.
         When I run command
-        And I press fullscreen
-        And I press <return>
+        And I press 'fullscreen'
+        And I press '<return>'
         Then the window should be fullscreen
 
     Scenario: Crash on empty command.
         When I run command
-        And I press <return>
+        And I press '<return>'
         Then no crash should happen
         And the mode should not be command
 
@@ -25,23 +25,23 @@ Feature: Use the command line.
 
     Scenario: Run through history completion
         When I run command --text=next
-        And I press <return>
+        And I press '<return>'
         And I run command
         And I run history next
         Then the text in the command line should be :next
 
     Scenario: Press through history completion
         When I run command --text=next
-        And I press <return>
+        And I press '<return>'
         And I run command
-        And I press <ctrl>p
+        And I press '<ctrl>p'
         Then the text in the command line should be :next
 
     Scenario: Use history substring search
         When I run command --text=next
-        And I press <return>
+        And I press '<return>'
         And I run command --text=prev
-        And I press <return>
+        And I press '<return>'
         And I run command --text=n
         And I run history-substr-search next
         Then the text in the command line should be :next
@@ -53,19 +53,19 @@ Feature: Use the command line.
 
     Scenario: Do not mix search and command history
         When I run command --text next
-        And I press <return>
+        And I press '<return>'
         And I run search
         And I run history next
         Then the text in the command line should be /
 
     Scenario: Close command line when prefix is deleted
         When I run command
-        And I press <backspace>
+        And I press '<backspace>'
         Then the mode should not be command
 
     Scenario: Show command help on -h
         When I run command --text='open-selected -h'
-        And I press <return>
+        And I press '<return>'
         Then the help for 'open-selected' should be displayed
 
     Scenario Outline: Show help using help command

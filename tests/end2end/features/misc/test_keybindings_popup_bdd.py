@@ -22,7 +22,7 @@ def keybindings_popup(mainwindow):
     raise AssertionError("No keybindings pop-up open")
 
 
-@bdd.when(bdd.parsers.parse("I type '{keys}' in the pop up"))
+@bdd.when(bdd.parsers.parse("I press '{keys}' in the pop up"))
 def press_keys_popup(keypress, keybindings_popup, keys):
     keypress(keybindings_popup._search, keys)
 

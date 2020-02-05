@@ -33,7 +33,7 @@ def straighten_by(qtbot, straighten, angle):
     qtbot.waitUntil(check)
 
 
-@bdd.when(bdd.parsers.parse("I hit {keys} on the straighten widget"))
+@bdd.when(bdd.parsers.parse("I press '{keys}' in the straighten widget"))
 def press_key_straighten(keypress, straighten, keys):
     keypress(straighten, keys)
 

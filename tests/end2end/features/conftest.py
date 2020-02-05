@@ -179,7 +179,7 @@ def run_command(command, qtbot):
         qtbot.waitUntil(external_finished, timeout=30000)
 
 
-@bdd.when(bdd.parsers.parse("I press {keys}"))
+@bdd.when(bdd.parsers.parse("I press '{keys}'"))
 def key_press(qtbot, keypress, keys):
     mode = api.modes.current()
     keypress(mode.widget, keys)

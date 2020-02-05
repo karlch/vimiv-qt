@@ -25,5 +25,5 @@ Feature: Push messages to the statusbar.
 
     Scenario: Clear message after key press
         When I log the warning 'this is a warning'
-        And I press 0
+        And I press '0'
         Then no message should be displayed

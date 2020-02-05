@@ -13,7 +13,7 @@ Feature: Using completion.
     Scenario: Command completion with count
         Given I start vimiv
         When I run command
-        And I press 2got
+        And I press '2got'
         And I run complete
         Then the text in the command line should be :2goto
 
@@ -26,7 +26,7 @@ Feature: Using completion.
     Scenario: Show correct completion after changing mode
         Given I open any image
         When I run command
-        And I press <return>
+        And I press '<return>'
         And I enter library mode
         And I run command
         Then a possible completion should contain open-selected
@@ -34,8 +34,8 @@ Feature: Using completion.
     Scenario: Show command completion after running invalid command
         Given I start vimiv
         When I run command
-        And I press notacommand
-        And I press <return>
+        And I press 'notacommand'
+        And I press '<return>'
         And I run command
         Then a possible completion should contain open-selected
 
@@ -67,7 +67,7 @@ Feature: Using completion.
         When I create the directory 'path with spaces'
         And I run command --text="open pat"
         And I run complete
-        And I press <return>
+        And I press '<return>'
         Then the working directory should be path with spaces
 
     Scenario: Using setting completion.
@@ -160,7 +160,7 @@ Feature: Using completion.
         Given I open any directory
         When I run set completion.fuzzy true
         And I run command
-        And I press flscrn
+        And I press 'flscrn'
         Then a possible completion should contain fullscreen
 
     Scenario: Ensure completion is case insensitive

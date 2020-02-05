@@ -92,5 +92,5 @@ Feature: Run search in different modes.
     Scenario: Reset search on escape
         Given I open a directory with 5 paths
         When I search for *
-        And I press <escape>
+        And I press '<escape>'
         Then there should be 0 search matches

@@ -30,7 +30,7 @@ Feature: Create and run aliases.
         Given I start vimiv
         When I run alias listdir !ls
         And I run bind zzz listdir
-        And I press zzz
+        And I press 'zzz'
         Then no message should be displayed
 
     Scenario: Alias including wildcards
