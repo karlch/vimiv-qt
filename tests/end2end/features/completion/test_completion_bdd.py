@@ -7,44 +7,15 @@
 import pytest
 import pytest_bdd as bdd
 
-import vimiv.completion.completer
 import vimiv.gui.completionwidget
-from vimiv import api
-from vimiv.completion import completionmodels
 
 
 bdd.scenarios("completion.feature")
 
 
 @pytest.fixture()
-def completer():
-    return vimiv.completion.completer.Completer.instance
-
-
-@pytest.fixture()
 def completionwidget():
     return vimiv.gui.completionwidget.CompletionView.instance
-
-
-@bdd.then(bdd.parsers.parse("the completion model should be {model}"))
-def check_completion_model(completer, model):
-    models = {
-        "command": completionmodels.CommandModel,
-        "path": completionmodels.PathModel,
-        "external": completionmodels.ExternalCommandModel,
-        "settings": completionmodels.SettingsModel,
-        "settings_option": completionmodels.SettingsOptionModel,
-        "trash": completionmodels.TrashModel,
-        "tag": completionmodels.TagModel,
-        "help": completionmodels.HelpModel,
-    }
-    assert isinstance(completer.model, models[model])
-
-
-@bdd.then(bdd.parsers.parse("the model mode should be {mode}"))
-def check_completion_model_mode(completer, mode):
-    assert api.modes.current() == api.modes.COMMAND  # Sanity check
-    assert completer._cmd.mode == api.modes.get_by_name(mode)
 
 
 @bdd.then("no completion should be selected")
@@ -54,6 +25,7 @@ def check_no_completion_selected(completionwidget):
 
 
 @bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))
+@bdd.then("a possible completion should contain <text>")
 def check_selected_completion_text(completionwidget, text):
     model = completionwidget.model()
     completion_data = [
@@ -65,6 +37,7 @@ def check_selected_completion_text(completionwidget, text):
     assert text in completion_text
 
 
+@bdd.then(bdd.parsers.parse("there should be {number:d} completion option"))
 @bdd.then(bdd.parsers.parse("there should be {number:d} completion options"))
 def check_number_completion_suggestions(completionwidget, number):
     model = completionwidget.model()

@@ -143,6 +143,7 @@ def key_press(qtbot, keys):
     special_keys = {
         "<escape>": Qt.Key_Escape,
         "<return>": Qt.Key_Return,
+        "<space>": Qt.Key_Space,
         "<backspace>": Qt.Key_Backspace,
     }
     try:
@@ -229,6 +230,14 @@ def create_directory(name):
 def create_file(name):
     assert not os.path.exists(name), f"Not overriding existing file '{name}'"
     with open(name, "w") as f:
+        f.write("")
+
+
+@bdd.when(bdd.parsers.parse("I create the tag file '{name}'"))
+def create_tag_file(name):
+    os.makedirs(api.mark.tagdir, mode=0o700, exist_ok=True)
+    path = os.path.join(api.mark.tagdir, name)
+    with open(path, "w") as f:
         f.write("")
 
 

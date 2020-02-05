@@ -3,75 +3,19 @@ Feature: Using completion.
     Scenario: Using library command completion.
         Given I open any directory
         When I run command
-        Then the completion model should be command
-        And the model mode should be library
+        Then a possible completion should contain open-selected
 
     Scenario: Using image command completion.
         Given I open any image
         When I run command
-        Then the completion model should be command
-        And the model mode should be image
+        Then a possible completion should contain center
 
-    Scenario: Using path completion.
-        Given I open any directory
-        When I run command --text="open "
-        Then the completion model should be path
-
-    Scenario: Using setting completion.
-        Given I open any directory
-        When I run command --text="set "
-        Then the completion model should be settings
-
-    Scenario: Using setting option completion.
-        Given I open any directory
-        When I run command --text="set shuffle"
-        Then the completion model should be settings_option
-
-    Scenario: Using trash completion.
-        Given I open any directory
-        When I run command --text="undelete "
-        Then the completion model should be trash
-
-    Scenario: Using tag completion with tag-delete.
-        Given I open any directory
-        When I run command --text="tag-delete "
-        Then the completion model should be tag
-
-    Scenario: Using tag completion with tag-load.
-        Given I open any directory
-        When I run command --text="tag-load "
-        Then the completion model should be tag
-
-    Scenario: Using tag completion with tag-write.
-        Given I open any directory
-        When I run command --text="tag-write "
-        Then the completion model should be tag
-
-    Scenario: Using help completion
-        Given I open any directory
-        When I run command --text="help "
-        Then the completion model should be help
-        And a possible completion should contain :open-selected
-        And a possible completion should contain library.width
-        And a possible completion should contain vimiv
-
-    Scenario: Using external command completion
-        Given I open any directory
-        When I run command --text="!"
-        Then the completion model should be external
-        And a possible completion should contain !ls
-
-    Scenario: Crash on path completion with non-existent directory
-        Given I open any directory
-        When I run command --text="open /not/a/valid/path"
-        Then no crash should happen
-
-    Scenario: Reset completions when leaving command mode
-        Given I open any directory
+    Scenario: Command completion with count
+        Given I start vimiv
         When I run command
+        And I press 2got
         And I run complete
-        And I run leave-commandline
-        Then no completion should be selected
+        Then the text in the command line should be :2goto
 
     Scenario: Crash when completing on entered number
         Given I open any directory
@@ -79,16 +23,44 @@ Feature: Using completion.
         And I run complete
         Then no crash should happen
 
+    Scenario: Show correct completion after changing mode
+        Given I open any image
+        When I run command
+        And I press <return>
+        And I enter library mode
+        And I run command
+        Then a possible completion should contain open-selected
+
+    Scenario: Show command completion after running invalid command
+        Given I start vimiv
+        When I run command
+        And I press notacommand
+        And I press <return>
+        And I run command
+        Then a possible completion should contain open-selected
+
+    Scenario: Using path completion.
+        Given I open a directory with 2 paths
+        When I run command --text="open "
+        Then a possible completion should contain open ./child_01
+        And a possible completion should contain open ./child_02
+
+    Scenario: Relative path completion with fuzzy filtering
+        Given I open a directory with 3 paths
+        When I run set completion.fuzzy true
+        And I run command --text="open ./cld1"
+        Then there should be 1 completion option
+        And a possible completion should contain ./child_01
+
+    Scenario: Crash on path completion with non-existent directory
+        Given I open any directory
+        When I run command --text="open /not/a/valid/path"
+        Then no crash should happen
+
     Scenario: Do not use path completion on open-
         Given I open any directory
         When I run command --text="open-"
-        Then the completion model should be command
-
-    Scenario: Do not show hidden setting in completion.
-        Given I open any directory
-        When I run command --text="set history_li"
-        And I run complete
-        Then no completion should be selected
+        Then a possible completion should contain open-selected
 
     Scenario: Escape path with spaces upon completion
         Given I open any directory
@@ -98,19 +70,30 @@ Feature: Using completion.
         And I press <return>
         Then the working directory should be path with spaces
 
+    Scenario: Using setting completion.
+        Given I open any directory
+        When I run command --text="set "
+        Then a possible completion should contain set shuffle
+        And a possible completion should contain set library.width
+
+    Scenario: Do not show hidden setting in completion.
+        Given I open any directory
+        When I run command --text="set history_li"
+        And I run complete
+        Then no completion should be selected
+
+    Scenario: Using setting option completion.
+        Given I open any directory
+        When I run command --text="set shuffle"
+        Then a possible completion should contain set shuffle True
+        And a possible completion should contain set shuffle False
+
     Scenario: Update setting completion with newest value
         Given I open any directory
         When I run set slideshow.delay 42
         And I run command --text="set slideshow.delay"
         And I run complete
         Then a possible completion should contain 42
-
-    Scenario: Using fuzzy completion filtering
-        Given I open any directory
-        When I run set completion.fuzzy true
-        And I run command
-        And I press flscrn
-        Then a possible completion should contain fullscreen
 
     Scenario: Bug adding the current value multiple times to setting value suggestions
         Given I open any directory
@@ -120,57 +103,65 @@ Feature: Using completion.
         And I run complete
         Then there should be 6 completion options
 
+    Scenario: Using trash completion.
+        Given I open a directory with 2 images
+        When I run delete %
+        When I run command --text="undelete "
+        Then a possible completion should contain undelete image_01.jpg
+
     Scenario: Do not show trash completion in manipulate mode
-        Given I open any image
-        When I enter manipulate mode
+        Given I open 2 images
+        When I run delete %
+        And I enter manipulate mode
         And I run command --text="undelete "
-        Then the completion model should be command
+        Then there should be 0 completion options
 
-    Scenario: Complete an existing tag
-        Given I start vimiv
-        When I run tag-write my_tag_name
+    Scenario: Using tag completion with tag-load.
+        Given I open any directory
+        When I create the tag file 'test-tag'
         And I run command --text="tag-load "
-        Then the completion model should be tag
-        And there should be 1 completion options
-        And a possible completion should contain my_tag_name
+        Then there should be 1 completion option
+        And a possible completion should contain tag-load test-tag
 
-    Scenario: Show correct completion after changing mode
-        Given I open any image
+    Scenario: Using tag completion with tag-delete.
+        Given I open any directory
+        When I create the tag file 'test-tag'
+        And I run command --text="tag-delete "
+        Then there should be 1 completion option
+        And a possible completion should contain tag-delete test-tag
+
+    Scenario: Using tag completion with tag-write.
+        Given I open any directory
+        When I create the tag file 'test-tag'
+        And I run command --text="tag-write "
+        Then there should be 1 completion option
+        And a possible completion should contain tag-write test-tag
+
+    Scenario: Using help completion
+        Given I open any directory
+        When I run command --text="help "
+        Then a possible completion should contain help :open-selected
+        And a possible completion should contain help library.width
+        And a possible completion should contain help  vimiv
+
+    Scenario: Using external command completion
+        Given I open any directory
+        When I run command --text="!"
+        Then a possible completion should contain !ls
+
+    Scenario: Reset completions when leaving command mode
+        Given I open any directory
         When I run command
-        And I press <return>
-        And I enter library mode
-        And I run command
-        Then the completion model should be command
-        And a possible completion should contain open-selected
-
-    Scenario: Relative path completion
-        Given I open a directory with 5 paths
-        When I run command --text="open ./"
-        Then the completion model should be path
-        And a possible completion should contain ./child_01
-
-    Scenario: Relative path completion with fuzzy filtering
-        Given I open a directory with 3 paths
-        When I run set completion.fuzzy true
-        And I run command --text="open ./cld"
-        Then the completion model should be path
-        And a possible completion should contain ./child_01
-
-    Scenario: Show command completion after running invalid command
-        Given I start vimiv
-        When I run command
-        And I press notacommand
-        And I press <return>
-        And I run command
-        Then the completion model should be command
-        And a possible completion should contain open-selected
-
-    Scenario: Command completion with count
-        Given I start vimiv
-        When I run command
-        And I press 2got
         And I run complete
-        Then the text in the command line should be :2goto
+        And I run leave-commandline
+        Then no completion should be selected
+
+    Scenario: Using fuzzy completion filtering
+        Given I open any directory
+        When I run set completion.fuzzy true
+        And I run command
+        And I press flscrn
+        Then a possible completion should contain fullscreen
 
     Scenario: Ensure completion is case insensitive
         Given I start vimiv
