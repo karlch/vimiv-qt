@@ -24,3 +24,11 @@ Feature: Plugin system with default plugins
         Given I start vimiv
         When I load the imageformats plugin with cr2
         Then the cr2 format should be supported
+
+    Scenario: Load demo plugin
+        Given I start vimiv
+        And I capture output
+        When I load the demo plugin with hello demo
+        And I run hello-world
+        Then stdout should contain 'Initializing demo plugin with 'hello demo''
+        And stdout should contain 'Hello world'
