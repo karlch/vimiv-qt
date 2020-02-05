@@ -39,12 +39,14 @@ Changed:
 * The slideshow is always stopped when the image is unfocused.
 * The ``image.autowrite`` setting is now ``ask`` by default. This should prevent
   surprises in case the changes are written to disk or discarded.
+* ``:delete`` now only deletes images.
 
 Fixed:
 ^^^^^^
 
 * Always writing changed images to disk regardless of the ``image.autowrite`` setting.
 * Segfault when applying manipulations.
+* Crash when searching empty pathlist.
 
 
 v0.5.0 (2020-01-05)

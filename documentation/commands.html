@@ -225,7 +225,7 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <td><p>Copy name of current path to system clipboard.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-delete"><span class="std std-ref">delete</span></a></p></td>
-<td><p>Move one or more paths to the trash directory.</p></td>
+<td><p>Move one or more images to the trash directory.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-enter"><span class="std std-ref">enter</span></a></p></td>
 <td><p>Enter another mode.</p></td>
@@ -384,14 +384,18 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </div>
 <div class="section" id="delete">
 <span id="ref-global-delete"></span><h3>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
-<p>Move one or more paths to the trash directory.</p>
+<p>Move one or more images to the trash directory.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:delete</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to delete.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to the images to delete.</p></li>
 </ul>
 </dd>
 </dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This only deletes images, not any other path(s).</p>
+</div>
 </div>
 <div class="section" id="enter">
 <span id="ref-global-enter"></span><h3>enter<a class="headerlink" href="#enter" title="Permalink to this headline">¶</a></h3>
