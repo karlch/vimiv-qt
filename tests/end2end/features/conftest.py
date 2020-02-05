@@ -127,6 +127,38 @@ def answer_prompt(qtbot, mainwindow):
     return function
 
 
+@pytest.fixture()
+def keypress(qtbot):
+    """Fixture to press keys on a widget handling special keys appropriately."""
+    special_keys = {
+        "<escape>": Qt.Key_Escape,
+        "<return>": Qt.Key_Return,
+        "<space>": Qt.Key_Space,
+        "<backspace>": Qt.Key_Backspace,
+    }
+
+    def get_modifier(keys):
+        modifiers = {
+            "<ctrl>": Qt.ControlModifier,
+            "<alt>": Qt.AltModifier,
+            "<shift>": Qt.ShiftModifier,
+        }
+        for name, key in modifiers.items():
+            if keys.startswith(name):
+                return key, keys.replace(name, "")
+        return Qt.NoModifier, keys
+
+    def callable(widget, keys):
+        modifier, keys = get_modifier(keys)
+        try:
+            qkey = special_keys[keys]
+            qtbot.keyClick(widget, qkey, modifier=modifier)
+        except KeyError:
+            qtbot.keyClicks(widget, keys, modifier=modifier)
+
+    return callable
+
+
 ###############################################################################
 #                                    When                                     #
 ###############################################################################
@@ -148,33 +180,12 @@ def run_command(command, qtbot):
 
 
 @bdd.when(bdd.parsers.parse("I press {keys}"))
-def key_press(qtbot, keys):
+def key_press(qtbot, keypress, keys):
     mode = api.modes.current()
-    special_keys = {
-        "<escape>": Qt.Key_Escape,
-        "<return>": Qt.Key_Return,
-        "<space>": Qt.Key_Space,
-        "<backspace>": Qt.Key_Backspace,
-    }
-    try:
-        qkey = special_keys[keys]
-        qtbot.keyClick(mode.widget, qkey)
-        # Process commandline if needed
-        if qkey == Qt.Key_Return and mode.name == "command":
-            qtbot.wait(10)
-    except KeyError:
-        qtbot.keyClicks(mode.widget, keys)
-
-
-@bdd.when(bdd.parsers.parse("I press <{modifier}>{keys}"))
-def key_press_modifier(qtbot, keys, modifier):
-    modifiers = {
-        "ctrl": Qt.ControlModifier,
-        "alt": Qt.AltModifier,
-        "shift": Qt.ShiftModifier,
-    }
-    mode = api.modes.current()
-    qtbot.keyClicks(mode.widget, keys, modifier=modifiers[modifier])
+    keypress(mode.widget, keys)
+    # Process commandline if needed
+    if keys == "<return>" and mode.name == "command":
+        qtbot.wait(10)
 
 
 @bdd.when(bdd.parsers.parse("I enter {mode} mode"))

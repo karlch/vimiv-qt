@@ -1,7 +1,5 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
-from PyQt5.QtCore import Qt
-
 import pytest
 import pytest_bdd as bdd
 
@@ -35,20 +33,9 @@ def straighten_by(qtbot, straighten, angle):
     qtbot.waitUntil(check)
 
 
-@bdd.when(bdd.parsers.parse("I leave the straighten widget via {keyname}"))
-def leave_straighten_via_key(qtbot, straighten, keyname):
-    keyname = keyname.lower()
-    keys = {"<escape>": Qt.Key_Escape, "<return>": Qt.Key_Return}
-    try:
-        key = keys[keyname]
-    except KeyError:
-        raise KeyError(f"Must leave straighten widget with one of: {', '.join(keys)}")
-    qtbot.keyClick(straighten, key)
-
-
 @bdd.when(bdd.parsers.parse("I hit {keys} on the straighten widget"))
-def press_key_straighten(qtbot, straighten, keys):
-    qtbot.keyClick(straighten, keys)
+def press_key_straighten(keypress, straighten, keys):
+    keypress(straighten, keys)
 
 
 @bdd.then(bdd.parsers.parse("there should be {number:d} straighten widgets"))

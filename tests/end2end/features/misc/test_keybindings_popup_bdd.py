@@ -23,8 +23,8 @@ def keybindings_popup(mainwindow):
 
 
 @bdd.when(bdd.parsers.parse("I type '{keys}' in the pop up"))
-def press_keys_popup(keybindings_popup, qtbot, keys):
-    qtbot.keyClicks(keybindings_popup._search, keys)
+def press_keys_popup(keypress, keybindings_popup, keys):
+    keypress(keybindings_popup._search, keys)
 
 
 @bdd.then(bdd.parsers.parse("the keybindings pop up should contain '{text}'"))
