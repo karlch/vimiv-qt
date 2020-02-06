@@ -254,9 +254,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         """Resize width and columns when main window width changes."""
         width = self.parent().width() * api.settings.library.width.value
         self.setFixedWidth(int(width))
-        self.setColumnWidth(0, int(0.1 * width))
-        self.setColumnWidth(1, int(0.75 * width))
-        self.setColumnWidth(2, int(0.15 * width))
+        for i, fraction in enumerate((0.1, 0.75, 0.15)):
+            self.setColumnWidth(i, int(fraction * width))
 
     def current(self):
         """Return absolute path of currently selected path."""
@@ -335,6 +334,7 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
         self._library.select_stored_position()
+        self._library.update_width()
 
     @pyqtSlot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
