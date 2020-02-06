@@ -6,6 +6,7 @@
 
 """Tests for vimiv.utils"""
 
+import inspect
 import os
 import typing
 from collections import namedtuple
@@ -95,6 +96,12 @@ def test_clamp_with_min():
 
 def test_clamp_with_none():
     assert utils.clamp(2, None, None) == 2
+
+
+@pytest.mark.parametrize("function", (utils.is_method, utils.clamp, utils.flatten))
+def test_parameter_names(function):
+    signature = inspect.signature(function)
+    assert utils.parameter_names(function) == tuple(signature.parameters)
 
 
 @pytest.mark.parametrize("type_hint", ("int", int))

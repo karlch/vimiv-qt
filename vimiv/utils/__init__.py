@@ -97,6 +97,16 @@ def clamp(
     return value
 
 
+def parameter_names(function: typing.Callable) -> typing.Tuple[str, ...]:
+    """Fast implementation of getting the parameter names of a function.
+
+    This will fail for functions supporting *args or **kwargs. Usually this is not a
+    problem as the functions we wish to inspect are static.
+    """
+    code = function.__code__
+    return code.co_varnames[: code.co_argcount]
+
+
 def class_that_defined_method(method):
     """Return the class that defined a method.
 
@@ -112,7 +122,7 @@ def is_method(func: typing.Callable) -> bool:
     This is used by the decorators for statusbar and command, when the class is
     not yet created.
     """
-    return "self" in inspect.signature(func).parameters
+    return "self" in parameter_names(func)
 
 
 def cached_method(func):
@@ -153,8 +163,9 @@ def slot(function: FuncT) -> FuncT:
         ...
     """
     annotations = typing.get_type_hints(function)
-    pyqtSlot(*_slot_args(function, annotations), **_slot_kwargs(annotations))(function)
-    return function
+    args = _slot_args(function, annotations)
+    kwargs = _slot_kwargs(annotations)
+    return pyqtSlot(*args, **kwargs)(function)
 
 
 def _slot_args(function, annotations):
@@ -166,9 +177,8 @@ def _slot_args(function, annotations):
     Returns:
         List of types of the function arguments as arguments for pyqtSlot.
     """
-    signature = inspect.signature(function)
     slot_args = []
-    for parameter in signature.parameters:
+    for parameter in parameter_names(function):
         annotation = annotations.get(parameter, None)
         if parameter == "self" and annotation is None:
             continue
