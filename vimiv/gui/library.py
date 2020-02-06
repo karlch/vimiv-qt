@@ -10,7 +10,7 @@ import os
 from contextlib import suppress
 from typing import List, Optional, Dict, Union
 
-from PyQt5.QtCore import Qt, QSize, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
@@ -560,12 +560,6 @@ class LibraryDelegate(QStyledItemDelegate):
         # in bold
         elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
         return text.replace(html_stripped, elided)
-
-    def sizeHint(self, _option, _index):
-        """Return size of the QTextDocument as size hint."""
-        text = wrap_style_span(f"font: {self.font}", "any")
-        self.doc.setHtml(text)
-        return QSize(int(self.doc.idealWidth()), int(self.doc.size().height()))
 
 
 def strip(path: str) -> str:
