@@ -8,7 +8,7 @@
 
 import os
 
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication
 
 import vimiv
@@ -79,10 +79,9 @@ class Application(QApplication):
         """
         icon = QIcon()
         file_dir = os.path.realpath(os.path.dirname(__file__))
-        project_dir = os.path.join(file_dir, os.pardir)
+        project_dir = os.path.dirname(file_dir)
         icon_dir = os.path.join(project_dir, "icons")
         for size in (16, 32, 64, 128, 256, 512):
             path = os.path.join(icon_dir, f"vimiv_{size}x{size}.png")
-            pixmap = QPixmap(path)
-            icon.addPixmap(pixmap)
+            icon.addFile(path)
         return icon
