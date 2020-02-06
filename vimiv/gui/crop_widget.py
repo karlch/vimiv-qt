@@ -97,7 +97,7 @@ class CropWidget(TransformWidget):
 
     def mousePressEvent(self, event):
         """Start dragging the widget if we click within it."""
-        if self.layout().geometry().contains(event.pos()):
+        if self.geometry().contains(event.pos() + self.pos()):
             self._offset = event.pos()
             QApplication.setOverrideCursor(Qt.ClosedHandCursor)
 
