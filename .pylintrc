@@ -6,6 +6,7 @@ extension-pkg-whitelist=PyQt5,
 init-hook='import sys; sys.path.append("./scripts/pylint_checkers/")'
 load-plugins=check_count,
              check_docstring,
+             check_header,
              pylint.extensions.emptystring,
              pylint.extensions.check_elif,
              pylint.extensions.overlapping_exceptions,
