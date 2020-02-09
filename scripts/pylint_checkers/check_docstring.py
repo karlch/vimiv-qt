@@ -20,6 +20,8 @@ class CommandMissingDocumentation(BaseChecker):
 
     __implements__ = IAstroidChecker
 
+    name = "command-docstring"
+
     name_ambiguous = "ambiguous-register"
     name_missing = "docstr-missing"
     name_syntax = "command-bad-syntax"
