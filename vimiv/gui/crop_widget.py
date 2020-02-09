@@ -50,7 +50,10 @@ class CropWidget(TransformWidget):
     @property
     def moving(self) -> bool:
         """True if the widget is currently being dragged."""
-        return QApplication.overrideCursor() == Qt.ClosedHandCursor
+        cursor = QApplication.overrideCursor()
+        if cursor is not None:
+            return cursor.shape() == Qt.ClosedHandCursor
+        return False
 
     def crop_rect(self) -> QRect:
         """Rectangle of the image that would currently be cropped."""
