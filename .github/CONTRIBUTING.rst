@@ -59,7 +59,7 @@ If you prefer C over python, you may be interested in implementing
 Some useful tips on how you can do this can be found
 `here <https://karlch.github.io/vimiv-qt/documentation/hacking#adding-new-manipulations-to-the-c-extension>`_.
 
-If you like, you can also find some more information on 
+If you like, you can also find some more information on
 `hacking the source code <https://karlch.github.io/vimiv-qt/documentation/hacking>`_.
 
 Writing Documentation
