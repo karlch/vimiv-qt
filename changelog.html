@@ -175,6 +175,9 @@ surprises in case the changes are written to disk or discarded.</p></li>
 <li><p>Segfault when applying manipulations.</p></li>
 <li><p>Crash when searching empty pathlist.</p></li>
 <li><p>Library column widths when starting in an empty directory.</p></li>
+<li><p>Reset image filelist selection when working directory content changes. We now ensure a
+custom selection, such as after <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">%m</span></code>, is not replaced by all images in the
+working directory on a proposed reload.</p></li>
 </ul>
 </div>
 </div>

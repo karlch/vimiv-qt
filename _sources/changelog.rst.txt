@@ -48,6 +48,9 @@ Fixed:
 * Segfault when applying manipulations.
 * Crash when searching empty pathlist.
 * Library column widths when starting in an empty directory.
+* Reset image filelist selection when working directory content changes. We now ensure a
+  custom selection, such as after ``:open %m``, is not replaced by all images in the
+  working directory on a proposed reload.
 
 
 v0.5.0 (2020-01-05)

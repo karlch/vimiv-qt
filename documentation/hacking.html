@@ -868,8 +868,9 @@ changes are exposed via three signals:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">images_changed</span></code> when the images in the current directory where changed</p></li>
 </ul>
 <p>The first two signals are emitted with the list of images and list of directories in the
-working directory as arguments, <code class="docutils literal notranslate"><span class="pre">images_changed</span></code> only includes the list of images.
-Thus, if your custom class needs to know the current images and/or directories, it can
+working directory as arguments, <code class="docutils literal notranslate"><span class="pre">images_changed</span></code> includes the list of images as well
+as the list of added and removed images.</p>
+<p>Thus, if your custom class needs to know the current images and/or directories, it can
 connect to these signals:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">QObject</span>
 
@@ -893,8 +894,10 @@ connect to these signals:</p>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated directories:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_on_im_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_on_im_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_images</span><span class="p">,</span> <span class="n">added</span><span class="p">,</span> <span class="n">removed</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Updated images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">new_images</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Added images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">added</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removed images:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">removed</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="simple">
