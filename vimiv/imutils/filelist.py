@@ -181,17 +181,25 @@ class SignalHandler(QObject):
         next_path()
         api.status.update("next image from slideshow event")
 
-    @pyqtSlot(list)
-    def _on_images_changed(self, paths: List[str]):
-        """React when images were changed by another process."""
-        if os.getcwd() != os.path.dirname(current()):  # Images not in filelist
-            return
-        if paths:  # Some images on disk changed, reload all for safety
-            focused_path = current()
-            _load_paths(paths, focused_path)
-            api.status.update("image filelist changed")
-        else:  # No more images in the current filelist
+    @pyqtSlot(list, list, list)
+    def _on_images_changed(
+        self, new_paths: List[str], added: List[str], removed: List[str]
+    ):
+        """React when images were changed by another process.
+
+        Any removed paths are cleared from the image filelist. In case we had the
+        complete directory loaded, any added paths are also added to the filelist.
+        """
+        paths = [path for path in _paths if path not in removed]
+        if set(paths + added) == set(new_paths):
+            _logger.debug("Adding %s to image filelist", added)
+            paths = new_paths
+        if not paths:
             _clear()
+            api.status.update("Image filelist cleared")
+        else:
+            _load_paths(paths, current())
+            api.status.update("Image filelist changed")
 
 
 def _set_index(index: int, previous: str = None) -> None:

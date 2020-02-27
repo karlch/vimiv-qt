@@ -74,3 +74,11 @@ Feature: Deleting an image in the current file list
         And the message
             'delete: No images to delete'
             should be displayed
+
+    Scenario: Keep limited filelist when deleting images
+        Given I open 5 images
+        When I run open image_03.jpg image_04.jpg image_05.jpg
+        And I run delete %
+        And I wait for the working directory handler
+        Then the file image_03.jpg should not exist
+        And the filelist should contain 2 images

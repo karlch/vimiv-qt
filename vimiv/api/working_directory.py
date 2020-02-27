@@ -21,7 +21,9 @@ changes are exposed via three signals:
 * ``images_changed`` when the images in the current directory where changed
 
 The first two signals are emitted with the list of images and list of directories in the
-working directory as arguments, ``images_changed`` only includes the list of images.
+working directory as arguments, ``images_changed`` includes the list of images as well
+as the list of added and removed images.
+
 Thus, if your custom class needs to know the current images and/or directories, it can
 connect to these signals::
 
@@ -47,8 +49,10 @@ connect to these signals::
             print("Updated images:", *images, sep="\n", end="\n\n")
             print("Updated directories:", *directories, sep="\n", end="\n\n")
 
-        def _on_im_changed(self, images):
-            print("Updated images:", *images, sep="\n", end="\n\n")
+        def _on_im_changed(self, new_images, added, removed):
+            print("Updated images:", *new_images, sep="\n", end="\n\n")
+            print("Added images:", *added, sep="\n", end="\n\n")
+            print("Removed images:", *removed, sep="\n", end="\n\n")
 
 Module Attributes:
     handler: The initialized :class:`WorkingDirectoryHandler` object to interact with.
@@ -80,6 +84,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         images_changed: Emitted when the images in the working directory have
                 changed.
             arg1: List of images in the working directory.
+            arg2: List of images added within the change.
+            arg3: List of images removed within the change.
 
     Class Attributes:
         WAIT_TIME_MS: Time in milliseconds to wait before emitting *_changed signals.
@@ -92,7 +98,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     loaded = pyqtSignal(list, list)
     changed = pyqtSignal(list, list)
-    images_changed = pyqtSignal(list)
+    images_changed = pyqtSignal(list, list, list)
 
     WAIT_TIME_MS = 300
 
@@ -191,7 +197,13 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         # Image filelist has changed, relevant for thumbnail and image mode
         if images != self._images:
-            self.images_changed.emit(images)
+            new = set(images)
+            old = set(self._images)
+            added = sorted(new - old)
+            removed = sorted(old - new)
+            _logger.debug("Added images: %s", added)
+            _logger.debug("Removed images: %s", removed)
+            self.images_changed.emit(images, added, removed)
         # Total filelist has changed, relevant for the library
         if images != self._images or directories != self._directories:
             self._images = images
