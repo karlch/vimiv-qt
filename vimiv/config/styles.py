@@ -66,18 +66,26 @@ class Style(dict):
         self["thumbnail.selected.bg.unfocus"] = self["{library.selected.bg.unfocus}"]
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
 
+    def __getitem__(self, name: str):
+        """Retrieve item automatically surrounding the name with {} if needed."""
+        return super().__getitem__(self.key(name))
+
     def __setitem__(self, name: str, item: str):
         """Store item automatically surrounding the name with {} if needed."""
         assert isinstance(name, str), "Style options must be strings."
         assert isinstance(item, str), "Style values must be strings."
-        if not name.startswith("{"):
-            name = "{%s}" % (name)
+        key = self.key(name)
         if item in self:
-            super().__setitem__(name, self[item])
+            super().__setitem__(key, self[item])
         else:
-            if self.is_color_option(name):
+            if self.is_color_option(key):
                 self.check_valid_color(item)
-            super().__setitem__(name, item)
+            super().__setitem__(key, item)
+
+    @classmethod
+    def key(cls, name: str):
+        """Surround key name in {} if needed."""
+        return name if name.startswith("{") else f"{{{name}}}"
 
     @staticmethod
     def is_color_option(name: str) -> bool:

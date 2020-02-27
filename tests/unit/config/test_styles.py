@@ -164,3 +164,8 @@ def check_critical_error_handling(path):
     """Helper function to check for correct handling of critical errors."""
     with pytest.raises(SystemExit, match=str(customtypes.Exit.err_config)):
         styles.read(path)
+
+
+@pytest.mark.parametrize("name", ("name", "{name}"))
+def test_style_key(name):
+    assert styles.Style.key(name) == "{name}"
