@@ -8,20 +8,7 @@
 
 import pytest
 
-from vimiv import api
 from vimiv.commands import runners
-
-
-PERCENT_TEXT = "expected"
-PERCENT_M_LIST = ["mark1", "mark2", "mark3"]
-
-
-@pytest.fixture(autouse=True)
-def mock_percents(mocker):
-    """Fixture to mock objects sending % and %m."""
-    mocker.patch.object(api, "current_path", return_value=PERCENT_TEXT)
-    mock_mark = mocker.patch.object(api, "mark")
-    type(mock_mark).paths = mocker.PropertyMock(return_value=PERCENT_M_LIST)
 
 
 @pytest.mark.parametrize("text", [" ", "\n", " \n", "\t\t", "\n \t"])
@@ -49,20 +36,28 @@ def test_text_non_whitespace_with_non_whitespace(text, mocker):
     assert mock.called_once_with("txt")
 
 
-def test_expand_percent():
-    result = runners.expand_percent("command %", "any")
-    expected = result.replace("%", PERCENT_TEXT)
+@pytest.mark.parametrize("wildcard", ("%", "%m", "%wildcard", "%f"))
+@pytest.mark.parametrize("escaped", (True, False))
+@pytest.mark.parametrize(
+    "text", ("{wildcard} start", "in the {wildcard} middle", "end {wildcard}")
+)
+def test_expand_wildcard(wildcard, escaped, text):
+    text = text.format(wildcard=rf"\{wildcard}" if escaped else wildcard)
+    paths = "this", "is", "text"
+    result = runners.expand_wildcard(text, wildcard, *paths)
+
+    if escaped:
+        expected = text.replace("\\", "")
+    else:
+        expected = text.replace(wildcard, " ".join(paths))
+
     assert result == expected
 
 
-def test_expand_marked():
-    result = runners.expand_percent("command %m", "any")
-    expected = result.replace("%m", " ".join(PERCENT_M_LIST))
-    assert result == expected
-
-
-@pytest.mark.parametrize("wildcard", ("%", "%m"))
-def test_do_not_expand_escaped_wildcard(wildcard):
-    result = runners.expand_percent(f"command \\{wildcard}", "any")
-    expected = result.replace("\\", "")
+def test_recursive_wildcards():
+    """Ensure unescaping of wildcards does not lead to them being matched later."""
+    text = r"This has an escaped wildcard \%m"
+    expected = "This has an escaped wildcard %m"
+    intermediate = runners.expand_wildcard(text, "%m", "anything")
+    result = runners.expand_wildcard(intermediate, "%", "anything")
     assert result == expected

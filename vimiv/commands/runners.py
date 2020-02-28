@@ -201,14 +201,25 @@ def expand_percent(text: str, mode: api.modes.Mode) -> str:
         text: The command in which the wildcards are expanded.
         mode: Mode the command is run in to get correct path(-list).
     """
-    # Check first as the re substitutions are rather expensive
-    if "%m" in text:
-        text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
-        text = text.replace("\\%m", "%")  # Remove escape characters
-    if "%" in text:
-        current = shlex.quote(api.current_path(mode))
-        text = re.sub(r"(?<!\\)%", current, text)
-        text = text.replace("\\%", "%")  # Remove escape characters
+    text = expand_wildcard(text, "%", api.current_path(mode))
+    text = expand_wildcard(text, "%m", *api.mark.paths)
+    return text
+
+
+def expand_wildcard(text: str, wildcard: str, *paths: str) -> str:
+    """Expand a wildcard in text to the shell escaped version of paths.
+
+    The regular expression matches the wildcard in case it is not followed by any
+    letters. This ensures correct handling of overlapping wildcards such as % and %m. In
+    a first step the wildcard, if it is not escaped, is replaced by the paths. The
+    second step removes the escape character in case the wildcard was escaped with a
+    prepended backslash.
+    """
+    if wildcard in text:
+        quoted_paths = " ".join(shlex.quote(path) for path in paths)
+        re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
+        text = re.sub(rf"(?<!\\){re_wildcard}", rf"{quoted_paths}\1", text)
+        text = re.sub(rf"\\{re_wildcard}", rf"{wildcard}\1", text)
     return text
 
 
