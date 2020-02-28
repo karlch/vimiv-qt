@@ -8,7 +8,7 @@
 
 import os
 from contextlib import suppress
-from typing import List, Optional, Dict, Union
+from typing import List, Optional, Dict
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -19,6 +19,9 @@ from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
 from . import eventhandler, synchronize
+
+
+_logger = log.module_logger(__name__)
 
 
 class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
@@ -69,7 +72,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
-        self._positions: Dict[str, Union[int, str]] = {}
+        self._positions: Dict[str, str] = {}
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -80,7 +83,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         self.activated.connect(self.open_selected)
         self.doubleClicked.connect(self.open_selected)
-        api.settings.library.width.changed.connect(self._on_width_changed)
+        api.settings.library.width.changed.connect(self.update_width)
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self.repaint)
@@ -104,11 +107,9 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             _incremental: True if incremental search was performed.
         """
         if mode == api.modes.LIBRARY:
+            _logger.debug("Updating library due to new search")
             self._select_row(index)
             self.repaint()
-
-    def _on_width_changed(self, _value: int):
-        self.update_width()
 
     def _on_show_hidden_changed(self, _value: bool):
         self._open_directory(".", reload_current=True)
@@ -129,6 +130,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def _select_path(self, path: str):
         """Select a specific path by name."""
         with suppress(ValueError):
+            _logger.debug("Selecting library path '%s' via slot", path)
             self._select_row(self.model().paths.index(path), emit=False)  # type: ignore
 
     @api.commands.register(mode=api.modes.LIBRARY)
@@ -199,6 +201,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         **count:** multiplier
         """
+        _logger.debug("Scrolling in direction '%s'", direction)
         if direction == direction.Right:
             current = self.current()
             # Close library on double selection
@@ -272,24 +275,29 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def store_position(self):
         """Set the stored position for a directory if possible."""
         with suppress(IndexError):
-            self._positions[os.getcwd()] = self.row()
+            self._positions[os.getcwd()] = self.current()
 
-    def select_stored_position(self):
-        """Select the stored position for a directory if possible."""
-        directory = os.getcwd()
-        row = 0
-        with suppress(KeyError, ValueError):
-            stored = self._positions[directory]
-            if isinstance(stored, int):
-                row = min(stored, self.model().rowCount() - 1)
-            else:
-                row = self.model().paths.index(stored)
+    def load_directory(self):
+        """Update library for new or reloaded directory."""
+        _logger.debug("Updating library for new/reloaded directory")
+        try:
+            row = self._get_stored_position()
+            _logger.debug("Retrieved stored position %d", row)
+        except (KeyError, ValueError):
+            _logger.debug("No stored position, falling back to 0")
+            row = 0
         self._select_row(row)
+        self.update_width()
+
+    def _get_stored_position(self):
+        stored_path = self._positions[os.getcwd()]
+        return self.model().paths.index(stored_path)
 
     def _select_row(
         self, row: int, open_selected_image: bool = False, emit: bool = True
     ):
         super()._select_row(row)
+        _logger.debug("Selecting library row %d", row)
         current = self.current()
         if emit:
             synchronize.signals.new_library_path_selected.emit(current)
@@ -333,8 +341,7 @@ class LibraryModel(QStandardItemModel):
         self.remove_all_rows()
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
-        self._library.select_stored_position()
-        self._library.update_width()
+        self._library.load_directory()
 
     @pyqtSlot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):

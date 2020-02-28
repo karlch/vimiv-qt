@@ -51,6 +51,7 @@ Fixed:
 * Reset image filelist selection when working directory content changes. We now ensure a
   custom selection, such as after ``:open %m``, is not replaced by all images in the
   working directory on a proposed reload.
+* Selecting wrong path in library/thumbnail when deleting images in image mode.
 
 
 v0.5.0 (2020-01-05)

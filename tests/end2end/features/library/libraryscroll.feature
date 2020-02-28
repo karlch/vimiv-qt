@@ -84,3 +84,10 @@ Feature: Scrolling the library.
         Then the message
             'goto: Either row or count is required'
             should be displayed
+
+    Scenario: Keep correct selection when deleting images
+        Given I open 5 images
+        When I run goto 3
+        And I run delete %
+        And I wait for the working directory handler
+        Then the library row should be 3
