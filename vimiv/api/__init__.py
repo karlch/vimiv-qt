@@ -76,12 +76,3 @@ def open_paths(paths: Iterable[str]) -> None:
         modes.LIBRARY.enter()
     else:
         raise commands.CommandError("No valid paths")
-
-
-def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
-    """Deprecated open function for backwards compatibility."""
-    # TODO remove in v0.7.0
-    log.warning(
-        "Calling 'api.open' directly is deprecated, use 'api.open_paths' instead"
-    )
-    open_paths(paths)
