@@ -73,7 +73,7 @@ class ImageFileHandler(QObject):
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self._pixmaps.original = None
+        self._pixmaps.clear()
 
     @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
@@ -136,7 +136,7 @@ class ImageFileHandler(QObject):
         if file_format == "svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self._pixmaps.original = None
+            self._pixmaps.clear()
             api.signals.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
@@ -144,7 +144,7 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self._pixmaps.original = None
+            self._pixmaps.clear()
             api.signals.movie_loaded.emit(movie, reload_only)
         # Regular image
         else:

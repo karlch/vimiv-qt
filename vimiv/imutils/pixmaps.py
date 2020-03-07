@@ -50,3 +50,9 @@ class Pixmaps:
     def editable(self):
         """True if the currently opened image is transformable/manipulatable."""
         return self._original is not None
+
+    def clear(self):
+        self._current = self._original = None
+
+    def reset(self):
+        self.current = self._original

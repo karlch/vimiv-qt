@@ -187,7 +187,7 @@ class Transform(QTransform):
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._pixmaps.current = self._pixmaps.original
+        self._pixmaps.reset()
 
     @classmethod
     def largest_rect_in_rotated(
