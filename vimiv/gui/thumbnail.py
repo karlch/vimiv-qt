@@ -436,27 +436,25 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Draw
         painter.drawPixmap(x, y, size.width(), size.height(), pixmap)
         painter.restore()
-        self._draw_mark(painter, item, option, x + size.width(), y + size.height())
+        if item.marked:
+            self._draw_mark(painter, option, x + size.width(), y + size.height())
 
-    def _draw_mark(self, painter, item, option, x, y):
+    def _draw_mark(self, painter, option, x, y):
         """Draw small rectangle as mark indicator if the image is marked.
 
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            item: The ThumbnailItem storing mark status.
             x: x-coordinate at which the pixmap ends.
             y: y-coordinate at which the pixmap ends.
         """
-        if not item.marked:
-            return
         # Try to set 5 % of width, reduce to padding if this is smaller
         # At least 4px width
-        width = max(min(0.05 * option.rect.width(), self.padding), 4)
+        width = int(max(min(0.05 * option.rect.width(), self.padding), 4))
         painter.save()
         painter.setBrush(self.mark_bg)
         painter.setPen(Qt.NoPen)
-        painter.drawRect(x - 0.5 * width, y - 0.5 * width, width, width)
+        painter.drawRect(x - width // 2, y - width // 2, width, width)
         painter.restore()
 
     def _get_background_color(self, item, state):
