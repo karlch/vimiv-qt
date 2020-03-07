@@ -9,7 +9,7 @@
 from . import checkversion
 
 __license__ = "GPL3"
-__version_info__ = (0, 6, 0)
+__version_info__ = (0, 6, 1)
 __version__ = ".".join(str(num) for num in __version_info__)
 __author__ = "Christian Karl"
 __maintainer__ = __author__
