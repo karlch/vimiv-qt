@@ -393,7 +393,7 @@ class Manipulator(QObject):
         if self.changed:  # Only run the expensive part when needed
             self._save_changes()  # For the current manipulation
             pixmap = self.manipulations.apply_groups(
-                self._pixmaps.transformed,
+                self._pixmaps.current,
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
             self.accepted.emit(pixmap)
@@ -405,7 +405,6 @@ class Manipulator(QObject):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
         self.reset()
-        self._pixmaps.current = self._pixmaps.transformed
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -541,7 +540,7 @@ class Manipulator(QObject):
             )
             return
         screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._pixmaps.transformed.scaled(
+        self._pixmap = self._pixmaps.current.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
             aspectRatioMode=Qt.KeepAspectRatio,

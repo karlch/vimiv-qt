@@ -106,8 +106,8 @@ class Transform(QTransform):
 
         .. note:: This transforms the original image and writes to disk.
         """
-        dx = width / self._pixmaps.transformed.width()
-        dy = dx if height is None else height / self._pixmaps.transformed.height()
+        dx = width / self._pixmaps.current.width()
+        dy = dx if height is None else height / self._pixmaps.current.height()
         self.scale(dx, dy)
 
     @register_transform_command()
@@ -156,7 +156,7 @@ class Transform(QTransform):
                 "Error transforming image, ignoring transformation.\n"
                 "Is the resulting image too large? Zero?."
             )
-        self._pixmaps.transformed = transformed
+        self._pixmaps.current = transformed
 
     def _ensure_editable(self):
         if not self._pixmaps.editable:
@@ -181,13 +181,13 @@ class Transform(QTransform):
     @property
     def size(self) -> QSize:
         """Size of the transformed image."""
-        return self._pixmaps.transformed.size()
+        return self._pixmaps.current.size()
 
     @api.commands.register(mode=api.modes.IMAGE)
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._pixmaps.transformed = self._pixmaps.original
+        self._pixmaps.current = self._pixmaps.original
 
     @classmethod
     def largest_rect_in_rotated(

@@ -15,13 +15,12 @@ class Pixmaps:
     """Class to store and update the current image and the edited versions.
 
     Attributes:
-        _current: The current possibly transformed and manipulated pixmap.
+        _current: The current, possibly edited, pixmap.
         _original: The original unedited pixmap.
-        _transformed: The possibly transformed but unmanipulated pixmap.
     """
 
     def __init__(self):
-        self._current = self._original = self._transformed = None
+        self._current = self._original = None
 
     @property
     def current(self):
@@ -47,20 +46,7 @@ class Pixmaps:
 
     @original.setter
     def original(self, pixmap) -> None:
-        self._original = self._transformed = self._current = pixmap
-
-    @property
-    def transformed(self):
-        """Transformed pixmap without any manipulations applied.
-
-        Upon setting the current pixmap gets updated and shown.
-        """
-        return self._transformed
-
-    @transformed.setter
-    def transformed(self, pixmap):
-        self._transformed = pixmap
-        self.current = pixmap
+        self._original = self._current = pixmap
 
     @property
     def editable(self):
