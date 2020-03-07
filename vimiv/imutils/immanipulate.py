@@ -24,7 +24,6 @@ adding it to the ``Manipulations``.
 
 import abc
 import copy
-import weakref
 from typing import Optional, NamedTuple, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
@@ -344,11 +343,13 @@ class Manipulator(QObject):
 
         _changes: List of applied ManipulationChanges.
         _current: Currently editedfocused manipulation.
-        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
         _pixmap: Pixmap to apply current manipulation to.
+        _pixmaps: Pixmaps class to access/update the current images.
         _manipulated: Pixmap after applying current manipulation.
 
     Signals:
+        accepted: Emitted when the applied manipulations where accepted.
+            arg1: The manipulated pixmap with the accepted changes.
         updated: Emitted when the manipulated pixmap was changed.
             arg1: The new manipulated QPixmap.
     """
@@ -356,10 +357,11 @@ class Manipulator(QObject):
     pool = utils.Pool.get(globalinstance=False)
     pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
+    accepted = pyqtSignal(QPixmap)
     updated = pyqtSignal(QPixmap)
 
     @api.objreg.register
-    def __init__(self, handler):
+    def __init__(self, pixmaps):
         super().__init__()
 
         self.manipulations = Manipulations()
@@ -367,7 +369,7 @@ class Manipulator(QObject):
         self._changes: List[ManipulationChange] = []
         self._current = self.manipulations[0]  # Default manipulation
         self._current.focus()
-        self._handler = weakref.ref(handler)
+        self._pixmaps = pixmaps
         self._pixmap = self._manipulated = None
 
         api.modes.MANIPULATE.entered.connect(self._on_enter)
@@ -391,11 +393,10 @@ class Manipulator(QObject):
         if self.changed:  # Only run the expensive part when needed
             self._save_changes()  # For the current manipulation
             pixmap = self.manipulations.apply_groups(
-                self._handler().transformed,
+                self._pixmaps.transformed,
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
-            self._handler().write_pixmap(pixmap, parallel=False)
-            self._handler().original = pixmap
+            self.accepted.emit(pixmap)
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
@@ -404,7 +405,7 @@ class Manipulator(QObject):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
         self.reset()
-        self._handler().current = self._handler().transformed
+        self._pixmaps.current = self._pixmaps.transformed
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -533,14 +534,14 @@ class Manipulator(QObject):
         total screen width / height is always sufficiently large. This avoids working
         with the large original when it is not needed.
         """
-        if not self._handler().editable:
+        if not self._pixmaps.editable:
             api.modes.MANIPULATE.leave()
             QTimer.singleShot(
                 0, lambda: utils.log.error("File format does not support manipulate")
             )
             return
         screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._handler().transformed.scaled(
+        self._pixmap = self._pixmaps.transformed.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
             aspectRatioMode=Qt.KeepAspectRatio,

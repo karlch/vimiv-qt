@@ -8,7 +8,6 @@
 
 import functools
 import math
-import weakref
 from typing import Optional
 
 from PyQt5.QtCore import Qt, QRect, QSize
@@ -45,13 +44,13 @@ class Transform(QTransform):
     to apply these transformations to the pixmap given by the handler.
 
     Attributes:
-        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
+        _pixmaps: Pixmaps class to access/update the current images.
     """
 
     @api.objreg.register
-    def __init__(self, handler):
+    def __init__(self, pixmaps):
         super().__init__()
-        self._handler = weakref.ref(handler)
+        self._pixmaps = pixmaps
 
     @property
     def angle(self) -> float:
@@ -107,8 +106,8 @@ class Transform(QTransform):
 
         .. note:: This transforms the original image and writes to disk.
         """
-        dx = width / self._handler().transformed.width()
-        dy = dx if height is None else height / self._handler().transformed.height()
+        dx = width / self._pixmaps.transformed.width()
+        dy = dx if height is None else height / self._pixmaps.transformed.height()
         self.scale(dx, dy)
 
     @register_transform_command()
@@ -129,7 +128,7 @@ class Transform(QTransform):
 
     def apply(self):
         """Apply all transformations to the original pixmap."""
-        original = self._handler().original
+        original = self._pixmaps.original
         self._apply(original.transformed(self, mode=Qt.SmoothTransformation))
 
     def straighten(self, *, angle: int, original_size: QSize):
@@ -142,7 +141,7 @@ class Transform(QTransform):
             angle: Rotation angle to straighten the original image by.
             original_size: Size of the original unstraightened image.
         """
-        original = self._handler().original
+        original = self._pixmaps.original
         self.rotate(angle)
         transformed = original.transformed(self, mode=Qt.SmoothTransformation)
         rect = self.largest_rect_in_rotated(
@@ -157,10 +156,10 @@ class Transform(QTransform):
                 "Error transforming image, ignoring transformation.\n"
                 "Is the resulting image too large? Zero?."
             )
-        self._handler().transformed = transformed
+        self._pixmaps.transformed = transformed
 
     def _ensure_editable(self):
-        if not self._handler().editable:
+        if not self._pixmaps.editable:
             raise api.commands.CommandError("File format does not support transform")
 
     @property
@@ -182,13 +181,13 @@ class Transform(QTransform):
     @property
     def size(self) -> QSize:
         """Size of the transformed image."""
-        return self._handler().transformed.size()
+        return self._pixmaps.transformed.size()
 
     @api.commands.register(mode=api.modes.IMAGE)
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._handler().transformed = self._handler().original
+        self._pixmaps.transformed = self._pixmaps.original
 
     @classmethod
     def largest_rect_in_rotated(

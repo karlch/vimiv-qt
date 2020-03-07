@@ -35,7 +35,7 @@ def exif_content():
 @bdd.when("I write the image to <name>")
 def write_image(handler, name):
     handler.write_pixmap(
-        handler.current, path=name, original_path=handler._path, parallel=False
+        handler._pixmaps.current, path=name, original_path=handler._path, parallel=False
     )
 
 

@@ -15,27 +15,13 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.imutils import imtransform
+from vimiv.imutils import imtransform, pixmaps
 from vimiv.utils import files, log, asyncrun, lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 _logger = log.module_logger(__name__)
-
-
-class Pixmaps:
-    """Simple storage class for different pixmap versions.
-
-    Class Attributes:
-        current: The current possibly transformed and manipulated pixmap.
-        original: The original unedited pixmap.
-        transformed: The possibly transformed but unmanipulated pixmap.
-    """
-
-    current = None
-    original = None
-    transformed = None
 
 
 class ImageFileHandler(QObject):
@@ -59,9 +45,9 @@ class ImageFileHandler(QObject):
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._pixmaps = Pixmaps()
+        self._pixmaps = pixmaps.Pixmaps()
 
-        self.transform = imtransform.Transform(self)
+        self.transform = imtransform.Transform(self._pixmaps)
         self.manipulate = None
 
         self._path = ""
@@ -71,52 +57,6 @@ class ImageFileHandler(QObject):
         api.signals.image_changed.connect(self.reload)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
-
-    @property
-    def editable(self):
-        """True if the currently opened image is transformable/manipulatable."""
-        return isinstance(self._pixmaps.original, QPixmap)
-
-    @property
-    def current(self):
-        """The currently displayed pixmap.
-
-        Upon setting a signal to update the image shown is emitted.
-        """
-        return self._pixmaps.current
-
-    @current.setter
-    def current(self, pixmap):
-        self._pixmaps.current = pixmap
-        reload_only = True
-        api.signals.pixmap_loaded.emit(pixmap, reload_only)
-
-    @property
-    def original(self):
-        """Original pixmap without any transformation or manipulations.
-
-        Upon setting all edited pixmaps are reset as well.
-        """
-        return self._pixmaps.original
-
-    @original.setter
-    def original(self, pixmap) -> None:
-        self._pixmaps.original = (
-            self._pixmaps.transformed
-        ) = self._pixmaps.current = pixmap
-
-    @property
-    def transformed(self):
-        """Transformed pixmap without any manipulations applied.
-
-        Upon setting the current pixmap gets updated and shown.
-        """
-        return self._pixmaps.transformed
-
-    @transformed.setter
-    def transformed(self, pixmap):
-        self._pixmaps.transformed = pixmap
-        self.current = pixmap
 
     @property
     def changed(self):
@@ -133,7 +73,7 @@ class ImageFileHandler(QObject):
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self.original = None
+        self._pixmaps.original = None
 
     @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
@@ -151,7 +91,9 @@ class ImageFileHandler(QObject):
         if not self.changed:
             return
         if api.settings.image.autowrite:
-            self.write_pixmap(self.current, path, original_path=path, parallel=parallel)
+            self.write_pixmap(
+                self._pixmaps.current, path, original_path=path, parallel=parallel
+            )
         else:
             self._reset()
 
@@ -165,7 +107,13 @@ class ImageFileHandler(QObject):
         """Initialize the Manipulator widget from the immanipulate module."""
         from vimiv.imutils import immanipulate
 
-        self.manipulate = immanipulate.Manipulator(self)
+        self.manipulate = immanipulate.Manipulator(self._pixmaps)
+        self.manipulate.accepted.connect(self._on_manipulate_accepted)
+
+    @utils.slot
+    def _on_manipulate_accepted(self, pixmap: QPixmap):
+        self.write_pixmap(pixmap, parallel=False)
+        self._pixmaps.original = pixmap
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -188,7 +136,7 @@ class ImageFileHandler(QObject):
         if file_format == "svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self.original = None
+            self._pixmaps.original = None
             api.signals.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
@@ -196,16 +144,16 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self.original = movie
-            api.signals.movie_loaded.emit(self.current, reload_only)
+            self._pixmaps.original = movie
+            api.signals.movie_loaded.emit(self._pixmaps.current, reload_only)
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
             if reader.error():
                 log.error("Error reading image %s: %s", path, reader.errorString())
                 return
-            self.original = pixmap
-            api.signals.pixmap_loaded.emit(self.current, reload_only)
+            self._pixmaps.original = pixmap
+            api.signals.pixmap_loaded.emit(self._pixmaps.current, reload_only)
         self._path = path
 
     def _reset(self):
@@ -225,7 +173,7 @@ class ImageFileHandler(QObject):
         """
         assert isinstance(path, list), "Must be list from nargs"
         self.write_pixmap(
-            pixmap=self.current, path=" ".join(path), original_path=self._path
+            pixmap=self._pixmaps.current, path=" ".join(path), original_path=self._path
         )
 
     def write_pixmap(self, pixmap, path=None, original_path=None, parallel=True):
