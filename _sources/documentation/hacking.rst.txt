@@ -103,18 +103,18 @@ to run them. This is much slower and less direct though.
 Style and Formatting
 --------------------
 
-Vimiv uses the `black code formatter <https://github.com/ambv/black>`_ to
-automatically format the source code. To install black, run::
+Vimiv uses `pre-commit <https://pre-commit.com/>`_ for a consistent formatting. To
+format the python source code, the
+`black code formatter <https://github.com/ambv/black>`_ is used.
 
-   pip install black
+You can install the tools with::
 
-or use the package manager of your OS if applicable. Formatting the source code
-is done using::
+    pip install pre-commit
+    pip install black
 
-   black vimiv tests
+And setup ``pre-commit`` using::
 
-For more information on the formatter as well as a few useful tips, visit
-`the project's github page <https://github.com/ambv/black>`_.
+    pre-commit install
 
 .. _writing_plugins:
 
