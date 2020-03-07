@@ -117,25 +117,21 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         if paths == self._paths:  # Nothing to do
             _logger.debug("No new images to load")
             return
-        _logger.debug("Loading %d new images", len(paths))
-        # Delete paths that are no longer here
-        # We must go in reverse order as otherwise the indexing changes on the
-        # fly
-        for i, path in enumerate(self._paths[::-1]):
-            if path not in paths:
-                _logger.debug("Removing existing thumbnail '%s'", path)
-                if not self.takeItem(len(self._paths) - 1 - i):
-                    log.error("Error removing thumbnail for %s", path)
-        # Add new paths
+        _logger.debug("Updating thumbnails...")
+        removed = set(self._paths) - set(paths)
+        for path in removed:
+            _logger.debug("Removing existing thumbnail '%s'", path)
+            if not self.takeItem(self._paths.index(path)):
+                log.error("Error removing thumbnail for %s", path)
         size_hint = QSize(self.item_size(), self.item_size())
         for i, path in enumerate(paths):
-            if path not in self._paths:
+            if path not in self._paths:  # Add new path
                 _logger.debug("Adding new thumbnail '%s'", path)
-                marked = path in api.mark.paths
-                ThumbnailItem(self, i, marked=marked, size_hint=size_hint)
-        # Update paths and create thumbnails
+                ThumbnailItem(self, i, size_hint=size_hint)
+            self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
+        _logger.debug("... update completed")
 
     @utils.slot
     def _on_thumbnail_created(self, index: int, icon: QIcon):
