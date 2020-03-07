@@ -3,6 +3,13 @@ Changelog
 
 All notable changes to vimiv are documented in this file.
 
+v0.6.1 (2020-03-07)
+-------------------
+
+* Fix removing thumbnails when the number of thumbnails decreases. Regression since
+  v0.6.0.
+
+
 v0.6.0 (2020-03-07)
 -------------------
 
