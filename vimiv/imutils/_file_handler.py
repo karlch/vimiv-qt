@@ -40,17 +40,18 @@ class ImageFileHandler(QObject):
 
         _path: Path to the currently loaded QObject.
         _pixmaps: Pixmaps object storing different version of the loaded image.
+        _manipulated: True if manipulations of the current image have been accepted.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
         self._pixmaps = pixmaps.Pixmaps()
+        self._path = ""
+        self._manipulated = False
 
         self.transform = imtransform.Transform(self._pixmaps)
         self.manipulate = None
-
-        self._path = ""
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
@@ -61,7 +62,7 @@ class ImageFileHandler(QObject):
     @property
     def changed(self):
         """True if the current image was edited in any way."""
-        return self.transform.changed or (self.manipulate and self.manipulate.changed)
+        return self.transform.changed or self._manipulated
 
     @utils.slot
     def _on_new_image_opened(self, path: str):
@@ -112,8 +113,8 @@ class ImageFileHandler(QObject):
 
     @utils.slot
     def _on_manipulate_accepted(self, pixmap: QPixmap):
-        self.write_pixmap(pixmap, parallel=False)
-        self._pixmaps.original = pixmap
+        self._pixmaps.current = self._pixmaps.original = pixmap
+        self._manipulated = True
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -159,8 +160,7 @@ class ImageFileHandler(QObject):
     def _reset(self):
         """Reset transform and manipulate back to default."""
         self.transform.reset()
-        if self.manipulate is not None:
-            self.manipulate.reset()
+        self._manipulated = False
 
     @api.commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):

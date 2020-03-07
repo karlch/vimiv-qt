@@ -368,13 +368,13 @@ class Manipulator(QObject):
         self._pixmap = self._manipulated = None
 
         api.modes.MANIPULATE.entered.connect(self._on_enter)
-        api.modes.MANIPULATE.left.connect(self.reset)
+        api.modes.MANIPULATE.left.connect(self._reset)
         self.updated.connect(self._on_updated)
         for manipulation in self.manipulations:
             manipulation.updated.connect(self._apply_manipulation)
 
     @property
-    def changed(self):
+    def _changed(self):
         """True if anything was edited."""
         for manipulation in self.manipulations:
             if manipulation.changed:
@@ -384,8 +384,8 @@ class Manipulator(QObject):
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
-        """Leave manipulate applying the changes to file."""
-        if self.changed:  # Only run the expensive part when needed
+        """Leave manipulate accepting the applied changes."""
+        if self._changed:  # Only run the expensive part when needed
             self._save_changes()  # For the current manipulation
             pixmap = self.manipulations.apply_groups(
                 self._pixmaps.current,
@@ -399,7 +399,7 @@ class Manipulator(QObject):
     def discard(self):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
-        self.reset()
+        self._reset()
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -427,7 +427,7 @@ class Manipulator(QObject):
         )
         self._focus(group.manipulations[index])
 
-    def reset(self):
+    def _reset(self):
         """Reset manipulations to default."""
         for manipulation in self.manipulations:
             manipulation.reset()
