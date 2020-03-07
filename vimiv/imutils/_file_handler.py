@@ -144,8 +144,8 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self._pixmaps.original = movie
-            api.signals.movie_loaded.emit(self._pixmaps.current, reload_only)
+            self._pixmaps.original = None
+            api.signals.movie_loaded.emit(movie, reload_only)
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)

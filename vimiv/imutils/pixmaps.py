@@ -6,8 +6,6 @@
 
 """Pixmaps class to store and update the current image and the edited versions."""
 
-from PyQt5.QtGui import QPixmap
-
 from vimiv import api
 
 
@@ -51,4 +49,4 @@ class Pixmaps:
     @property
     def editable(self):
         """True if the currently opened image is transformable/manipulatable."""
-        return isinstance(self._original, QPixmap)
+        return self._original is not None
