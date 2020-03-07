@@ -6,7 +6,6 @@
 
 """Classes to deal with the actual image file."""
 
-import enum
 import os
 import shutil
 import tempfile
@@ -39,14 +38,6 @@ class Pixmaps:
     transformed = None
 
 
-class ImageType(enum.IntEnum):
-    """Enum class for different image widget types."""
-
-    Pixmap = 0
-    Svg = 1
-    Movie = 2
-
-
 class ImageFileHandler(QObject):
     """Handler to load and write images.
 
@@ -74,7 +65,6 @@ class ImageFileHandler(QObject):
         self.manipulate = None
 
         self._path = ""
-        self._image_type = None
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
@@ -85,7 +75,7 @@ class ImageFileHandler(QObject):
     @property
     def editable(self):
         """True if the currently opened image is transformable/manipulatable."""
-        return self._image_type == ImageType.Pixmap
+        return isinstance(self._pixmaps.original, QPixmap)
 
     @property
     def current(self):
@@ -200,7 +190,6 @@ class ImageFileHandler(QObject):
             # VectorGraphic widget needs the path in the constructor
             self.original = None
             api.signals.svg_loaded.emit(path, reload_only)
-            self._image_type = ImageType.Svg
         # Gif
         elif reader.supportsAnimation():
             movie = QMovie(path)
@@ -209,7 +198,6 @@ class ImageFileHandler(QObject):
                 return
             self.original = movie
             api.signals.movie_loaded.emit(self.current, reload_only)
-            self._image_type = ImageType.Movie
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
@@ -218,7 +206,6 @@ class ImageFileHandler(QObject):
                 return
             self.original = pixmap
             api.signals.pixmap_loaded.emit(self.current, reload_only)
-            self._image_type = ImageType.Pixmap
         self._path = path
 
     def _reset(self):
