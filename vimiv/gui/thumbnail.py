@@ -122,7 +122,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         for path in removed:
             _logger.debug("Removing existing thumbnail '%s'", path)
             if not self.takeItem(self._paths.index(path)):
-                log.error("Error removing thumbnail for %s", path)
+                _logger.error("Error removing thumbnail for '%s'", path)
         size_hint = QSize(self.item_size(), self.item_size())
         for i, path in enumerate(paths):
             if path not in self._paths:  # Add new path
