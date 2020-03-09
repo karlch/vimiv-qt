@@ -15,7 +15,6 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.imutils import imtransform, pixmaps
 from vimiv.utils import files, log, asyncrun, lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
@@ -35,34 +34,20 @@ class ImageFileHandler(QObject):
     manipulate to file if wanted.
 
     Attributes:
-        transform: Transform class to get rotate and flip from.
-        manipulate: Manipulate class for e.g. brightness.
-
-        _current_pixmap: Storage class for the current pixmap.
+        _edit_handler: Handler to interact with any changes to the current image.
         _path: Path to the currently loaded QObject.
-        _manipulated: True if manipulations of the current image have been accepted.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._current_pixmap = pixmaps.CurrentPixmap()
         self._path = ""
-        self._manipulated = False
-
-        self.transform = imtransform.Transform(self._current_pixmap)
-        self.manipulate = None
+        self._edit_handler = imutils.EditHandler()
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.signals.image_changed.connect(self.reload)
-        api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
-
-    @property
-    def changed(self):
-        """True if the current image was edited in any way."""
-        return self.transform.changed or self._manipulated
 
     @utils.slot
     def _on_new_image_opened(self, path: str):
@@ -74,7 +59,7 @@ class ImageFileHandler(QObject):
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self._current_pixmap.clear()
+        self._edit_handler.clear()
 
     @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
@@ -89,33 +74,19 @@ class ImageFileHandler(QObject):
             path: Path to the image file.
             parallel: Write the image in an additional thread.
         """
-        if not self.changed:
+        if not self._edit_handler.changed:
             return
         if api.settings.image.autowrite:
             self.write_pixmap(
-                self._current_pixmap.get(), path, original_path=path, parallel=parallel
+                self._edit_handler.pixmap, path, original_path=path, parallel=parallel
             )
         else:
-            self._reset()
+            self._edit_handler.reset()
 
     @utils.slot
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path, parallel=False)
-
-    @utils.slot
-    def _init_manipulate(self):
-        """Initialize the Manipulator widget from the immanipulate module."""
-        from vimiv.imutils import immanipulate
-
-        self.manipulate = immanipulate.Manipulator(self._current_pixmap)
-        self.manipulate.accepted.connect(self._on_manipulate_accepted)
-
-    @utils.slot
-    def _on_manipulate_accepted(self, pixmap: QPixmap):
-        self._manipulated = True
-        self._current_pixmap.update(pixmap, reload_only=True)
-        self.transform.original = pixmap
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -138,30 +109,25 @@ class ImageFileHandler(QObject):
         if file_format == "svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self._current_pixmap.clear()
             api.signals.svg_loaded.emit(path, reload_only)
+            self._edit_handler.clear()
         # Gif
         elif reader.supportsAnimation():
             movie = QMovie(path)
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self._current_pixmap.clear()
             api.signals.movie_loaded.emit(movie, reload_only)
+            self._edit_handler.clear()
         # Regular image
         else:
             pixmap = QPixmap.fromImageReader(reader)
             if reader.error():
                 log.error("Error reading image %s: %s", path, reader.errorString())
                 return
-            self._current_pixmap.update(pixmap, reload_only=reload_only)
-            self.transform.original = pixmap
+            self._edit_handler.pixmap = pixmap
+            api.signals.pixmap_loaded.emit(pixmap, reload_only)
         self._path = path
-
-    def _reset(self):
-        """Reset transform and manipulate back to default."""
-        self.transform.reset()
-        self._manipulated = False
 
     @api.commands.register(mode=api.modes.IMAGE)
     def write(self, path: List[str]):
@@ -174,7 +140,7 @@ class ImageFileHandler(QObject):
         """
         assert isinstance(path, list), "Must be list from nargs"
         self.write_pixmap(
-            pixmap=self._current_pixmap.get(),
+            pixmap=self._edit_handler.pixmap,
             path=" ".join(path),
             original_path=self._path,
         )
@@ -194,7 +160,7 @@ class ImageFileHandler(QObject):
             asyncrun(write_pixmap, pixmap, path, original_path)
         else:
             write_pixmap(pixmap, path, original_path)
-        self._reset()
+        self._edit_handler.reset()
 
 
 def write_pixmap(pixmap, path, original_path):

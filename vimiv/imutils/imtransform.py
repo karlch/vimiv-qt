@@ -55,7 +55,7 @@ class Transform(QTransform):
 
     @property
     def current(self):
-        return self._current.get()
+        return self._current.pixmap
 
     @property
     def original(self):
@@ -168,7 +168,7 @@ class Transform(QTransform):
                 "Error transforming image, ignoring transformation.\n"
                 "Is the resulting image too large? Zero?."
             )
-        self._current.update(transformed, reload_only=True)
+        self._current.update(transformed)
 
     def _ensure_editable(self):
         if not self._current.editable:
@@ -199,7 +199,7 @@ class Transform(QTransform):
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._current.update(self.original, reload_only=True)
+        self._current.update(self.original)
 
     @classmethod
     def largest_rect_in_rotated(

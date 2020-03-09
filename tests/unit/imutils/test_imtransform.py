@@ -30,8 +30,7 @@ def transform(qtbot, mocker):
     pixmap = QPixmap(300, 300)
     current_pixmap = pixmaps.CurrentPixmap()
     transform = imtransform.Transform(current_pixmap)
-    current_pixmap.update(pixmap, reload_only=False)
-    transform.original = pixmap
+    current_pixmap.pixmap = transform.original = pixmap
     return transform
 
 

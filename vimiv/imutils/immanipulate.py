@@ -388,7 +388,7 @@ class Manipulator(QObject):
         if self._changed:  # Only run the expensive part when needed
             self._save_changes()  # For the current manipulation
             pixmap = self.manipulations.apply_groups(
-                self._current_pixmap.get(),
+                self._current_pixmap.pixmap,
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
             self.accepted.emit(pixmap)
@@ -535,7 +535,7 @@ class Manipulator(QObject):
             )
             return
         screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._current_pixmap.get().scaled(
+        self._pixmap = self._current_pixmap.pixmap.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
             aspectRatioMode=Qt.KeepAspectRatio,

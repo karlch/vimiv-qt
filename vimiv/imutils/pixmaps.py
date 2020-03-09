@@ -15,23 +15,18 @@ class CurrentPixmap:
     """Class to store and retrieve the current pixmap for editing, saving and so forth.
 
     Attributes:
-        _pixmap: The current, possibly edited, pixmap.
+        pixmap: The current, possibly edited, pixmap.
     """
 
     def __init__(self):
-        self._pixmap = QPixmap()
+        self.pixmap = QPixmap()
 
-    def get(self) -> QPixmap:
-        return self._pixmap
-
-    def update(self, pixmap: QPixmap, *, reload_only: bool) -> None:
-        self._pixmap = pixmap
+    def update(self, pixmap: QPixmap) -> None:
+        self.pixmap = pixmap
+        reload_only = True
         api.signals.pixmap_loaded.emit(pixmap, reload_only)
 
     @property
     def editable(self) -> bool:
         """True if the currently opened image is transformable/manipulatable."""
-        return not self._pixmap.isNull()
-
-    def clear(self) -> None:
-        self._pixmap = QPixmap()
+        return not self.pixmap.isNull()
