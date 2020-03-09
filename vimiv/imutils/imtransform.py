@@ -10,8 +10,8 @@ import functools
 import math
 from typing import Optional
 
-from PyQt5.QtCore import Qt, QRect, QSize
-from PyQt5.QtGui import QTransform
+from PyQt5.QtCore import Qt, QRect, QSize, QObject, pyqtSignal
+from PyQt5.QtGui import QTransform, QPixmap
 
 from vimiv import api
 from vimiv.utils import log
@@ -46,6 +46,14 @@ class Transform(QTransform):
     Attributes:
         _pixmaps: Pixmaps class to access/update the current images.
     """
+
+    class Signals(QObject):
+        """Signals for transformed required as QTransform is not a QObject."""
+
+        transformed = pyqtSignal(QPixmap)
+
+    _signals = Signals()
+    transformed = _signals.transformed
 
     @api.objreg.register
     def __init__(self, current_pixmap):
@@ -168,7 +176,7 @@ class Transform(QTransform):
                 "Error transforming image, ignoring transformation.\n"
                 "Is the resulting image too large? Zero?."
             )
-        self._current.update(transformed)
+        self.transformed.emit(transformed)
 
     def _ensure_editable(self):
         if not self._current.editable:
@@ -199,7 +207,7 @@ class Transform(QTransform):
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._current.update(self.original)
+        self.transformed.emit(self.original)
 
     @classmethod
     def largest_rect_in_rotated(

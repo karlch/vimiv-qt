@@ -8,8 +8,6 @@
 
 from PyQt5.QtGui import QPixmap
 
-from vimiv import api
-
 
 class CurrentPixmap:
     """Class to store and retrieve the current pixmap for editing, saving and so forth.
@@ -20,11 +18,6 @@ class CurrentPixmap:
 
     def __init__(self):
         self.pixmap = QPixmap()
-
-    def update(self, pixmap: QPixmap) -> None:
-        self.pixmap = pixmap
-        reload_only = True
-        api.signals.pixmap_loaded.emit(pixmap, reload_only)
 
     @property
     def editable(self) -> bool:

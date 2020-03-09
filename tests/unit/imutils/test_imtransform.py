@@ -26,7 +26,6 @@ ACTIONS = (
 @pytest.fixture(scope="function")
 def transform(qtbot, mocker):
     """Fixture to retrieve a clean Transform instance."""
-    mocker.patch("vimiv.api.signals")
     pixmap = QPixmap(300, 300)
     current_pixmap = pixmaps.CurrentPixmap()
     transform = imtransform.Transform(current_pixmap)

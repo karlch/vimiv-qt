@@ -32,6 +32,7 @@ class EditHandler(QObject):
         self.transform = imtransform.Transform(self._current_pixmap)
         self.manipulate = None
 
+        self.transform.transformed.connect(self._change_current)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
 
     @property
@@ -59,6 +60,13 @@ class EditHandler(QObject):
         self._current_pixmap.pixmap = QPixmap()
 
     @utils.slot
+    def _change_current(self, pixmap: QPixmap):
+        """Update the current pixmap emitting the pixmap_loaded signal reload-only."""
+        self._current_pixmap.pixmap = pixmap
+        reload_only = True
+        api.signals.pixmap_loaded.emit(pixmap, reload_only)
+
+    @utils.slot
     def _init_manipulate(self):
         """Initialize the Manipulator widget from the immanipulate module."""
         from vimiv.imutils import immanipulate
@@ -69,6 +77,6 @@ class EditHandler(QObject):
     @utils.slot
     def _on_manipulate_accepted(self, pixmap: QPixmap):
         """Update pixmaps and store the status when manipulations were accepted."""
+        self._change_current(pixmap)
         self._manipulated = True
-        self._current_pixmap.update(pixmap)
         self.transform.original = pixmap
