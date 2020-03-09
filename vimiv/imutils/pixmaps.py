@@ -6,53 +6,32 @@
 
 """Pixmaps class to store and update the current image and the edited versions."""
 
+from PyQt5.QtGui import QPixmap
+
 from vimiv import api
 
 
-class Pixmaps:
-    """Class to store and update the current image and the edited versions.
+class CurrentPixmap:
+    """Class to store and retrieve the current pixmap for editing, saving and so forth.
 
     Attributes:
-        _current: The current, possibly edited, pixmap.
-        _original: The original unedited pixmap.
+        _pixmap: The current, possibly edited, pixmap.
     """
 
     def __init__(self):
-        self._current = self._original = None
+        self._pixmap = QPixmap()
 
-    @property
-    def current(self):
-        """The currently displayed pixmap.
+    def get(self) -> QPixmap:
+        return self._pixmap
 
-        Upon setting a signal to update the image shown is emitted.
-        """
-        return self._current
-
-    @current.setter
-    def current(self, pixmap):
-        self._current = pixmap
-        reload_only = True
+    def update(self, pixmap: QPixmap, *, reload_only: bool) -> None:
+        self._pixmap = pixmap
         api.signals.pixmap_loaded.emit(pixmap, reload_only)
 
     @property
-    def original(self):
-        """Original pixmap without any transformation or manipulations.
-
-        Upon setting all edited pixmaps are reset as well.
-        """
-        return self._original
-
-    @original.setter
-    def original(self, pixmap) -> None:
-        self._original = self._current = pixmap
-
-    @property
-    def editable(self):
+    def editable(self) -> bool:
         """True if the currently opened image is transformable/manipulatable."""
-        return self._original is not None
+        return not self._pixmap.isNull()
 
-    def clear(self):
-        self._current = self._original = None
-
-    def reset(self):
-        self.current = self._original
+    def clear(self) -> None:
+        self._pixmap = QPixmap()

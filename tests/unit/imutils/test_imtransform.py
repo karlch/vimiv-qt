@@ -7,40 +7,12 @@
 """Tests for vimiv.imutils.imtransform."""
 
 from functools import partial
-from unittest import mock
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 
 import pytest
 
-from vimiv.imutils import imtransform
-
-
-class MockHandler(mock.MagicMock):
-    """Stub used as file handler for Transform.
-
-    Provides a generic pixmap for all pixmaps and is always editable.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self._pixmap = QPixmap(300, 300)
-        self._pixmap.fill(Qt.black)
-
-    @property
-    def editable(self):
-        return True
-
-    @property
-    def transformed(self):
-        return self._pixmap
-
-    @transformed.setter
-    def transformed(self, value):
-        pass
-
-    original = current = transformed
+from vimiv.imutils import imtransform, pixmaps
 
 
 ACTIONS = (
@@ -52,10 +24,15 @@ ACTIONS = (
 
 
 @pytest.fixture(scope="function")
-def transform(qtbot):
+def transform(qtbot, mocker):
     """Fixture to retrieve a clean Transform instance."""
-    transform.handler = MockHandler()  # Keep as reference here due to weakref
-    return imtransform.Transform(transform.handler)
+    mocker.patch("vimiv.api.signals")
+    pixmap = QPixmap(300, 300)
+    current_pixmap = pixmaps.CurrentPixmap()
+    transform = imtransform.Transform(current_pixmap)
+    current_pixmap.update(pixmap, reload_only=False)
+    transform.original = pixmap
+    return transform
 
 
 @pytest.fixture(params=ACTIONS)

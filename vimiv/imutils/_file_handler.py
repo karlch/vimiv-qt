@@ -38,19 +38,19 @@ class ImageFileHandler(QObject):
         transform: Transform class to get rotate and flip from.
         manipulate: Manipulate class for e.g. brightness.
 
+        _current_pixmap: Storage class for the current pixmap.
         _path: Path to the currently loaded QObject.
-        _pixmaps: Pixmaps object storing different version of the loaded image.
         _manipulated: True if manipulations of the current image have been accepted.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._pixmaps = pixmaps.Pixmaps()
+        self._current_pixmap = pixmaps.CurrentPixmap()
         self._path = ""
         self._manipulated = False
 
-        self.transform = imtransform.Transform(self._pixmaps)
+        self.transform = imtransform.Transform(self._current_pixmap)
         self.manipulate = None
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
@@ -74,7 +74,7 @@ class ImageFileHandler(QObject):
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self._pixmaps.clear()
+        self._current_pixmap.clear()
 
     @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
@@ -93,7 +93,7 @@ class ImageFileHandler(QObject):
             return
         if api.settings.image.autowrite:
             self.write_pixmap(
-                self._pixmaps.current, path, original_path=path, parallel=parallel
+                self._current_pixmap.get(), path, original_path=path, parallel=parallel
             )
         else:
             self._reset()
@@ -108,13 +108,14 @@ class ImageFileHandler(QObject):
         """Initialize the Manipulator widget from the immanipulate module."""
         from vimiv.imutils import immanipulate
 
-        self.manipulate = immanipulate.Manipulator(self._pixmaps)
+        self.manipulate = immanipulate.Manipulator(self._current_pixmap)
         self.manipulate.accepted.connect(self._on_manipulate_accepted)
 
     @utils.slot
     def _on_manipulate_accepted(self, pixmap: QPixmap):
-        self._pixmaps.current = self._pixmaps.original = pixmap
         self._manipulated = True
+        self._current_pixmap.update(pixmap, reload_only=True)
+        self.transform.original = pixmap
 
     def _load(self, path: str, reload_only: bool):
         """Load proper displayable QWidget for a path.
@@ -137,7 +138,7 @@ class ImageFileHandler(QObject):
         if file_format == "svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self._pixmaps.clear()
+            self._current_pixmap.clear()
             api.signals.svg_loaded.emit(path, reload_only)
         # Gif
         elif reader.supportsAnimation():
@@ -145,7 +146,7 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self._pixmaps.clear()
+            self._current_pixmap.clear()
             api.signals.movie_loaded.emit(movie, reload_only)
         # Regular image
         else:
@@ -153,8 +154,8 @@ class ImageFileHandler(QObject):
             if reader.error():
                 log.error("Error reading image %s: %s", path, reader.errorString())
                 return
-            self._pixmaps.original = pixmap
-            api.signals.pixmap_loaded.emit(self._pixmaps.current, reload_only)
+            self._current_pixmap.update(pixmap, reload_only=reload_only)
+            self.transform.original = pixmap
         self._path = path
 
     def _reset(self):
@@ -173,7 +174,9 @@ class ImageFileHandler(QObject):
         """
         assert isinstance(path, list), "Must be list from nargs"
         self.write_pixmap(
-            pixmap=self._pixmaps.current, path=" ".join(path), original_path=self._path
+            pixmap=self._current_pixmap.get(),
+            path=" ".join(path),
+            original_path=self._path,
         )
 
     def write_pixmap(self, pixmap, path=None, original_path=None, parallel=True):
