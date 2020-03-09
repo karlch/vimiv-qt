@@ -338,7 +338,7 @@ class Manipulator(QObject):
 
         _changes: List of applied ManipulationChanges.
         _current_manipulation: Currently edited/focused manipulation.
-        _current_pixmap: Class to access the current images.
+        _current_pixmap: Class to access the currently displayed pixmap.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
 

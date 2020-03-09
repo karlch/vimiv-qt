@@ -4,13 +4,17 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Pixmaps class to store and update the current image and the edited versions."""
+"""Storage class for the current pixmap."""
 
 from PyQt5.QtGui import QPixmap
 
 
 class CurrentPixmap:
-    """Class to store and retrieve the current pixmap for editing, saving and so forth.
+    """Storage class for the current pixmap shared between various edit-related classes.
+
+    We do not use a simple QPixmap as we would have to update various attributes of the
+    classes that wish to access the pixmap simultaneously. Like this they can all share
+    this class and access the pixmap through it.
 
     Attributes:
         pixmap: The current, possibly edited, pixmap.

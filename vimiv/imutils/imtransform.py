@@ -44,7 +44,11 @@ class Transform(QTransform):
     to apply these transformations to the pixmap given by the handler.
 
     Attributes:
-        _pixmaps: Pixmaps class to access/update the current images.
+        _current: Class to access the currently displayed pixmap.
+        _original: The original, untransformed, pixmap.
+
+    Signals:
+        transformed: Emitted with the transformed pixmap upon changes.
     """
 
     class Signals(QObject):
