@@ -99,6 +99,16 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         """List of current paths for image mode."""
         return imutils.pathlist()
 
+    @property
+    def focalpoint(self):
+        """The center of the currently visible part of the scene."""
+        return self.visible_rect.center()
+
+    @property
+    def visible_rect(self):
+        """The currently visible part of the scene in the image coordinates."""
+        return self.mapToScene(self.viewport().rect()).boundingRect() & self.sceneRect()
+
     def _load_pixmap(self, pixmap: QPixmap, reload_only: bool) -> None:
         """Load new pixmap into the graphics scene."""
         item = QGraphicsPixmapItem()
