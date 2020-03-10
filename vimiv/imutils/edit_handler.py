@@ -10,7 +10,7 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QPixmap
 
 from vimiv import api, utils
-from vimiv.imutils import imtransform, pixmaps
+from vimiv.imutils import current_pixmap, imtransform
 
 
 class EditHandler(QObject):
@@ -26,7 +26,7 @@ class EditHandler(QObject):
 
     def __init__(self):
         super().__init__()
-        self._current_pixmap = pixmaps.CurrentPixmap()
+        self._current_pixmap = current_pixmap.CurrentPixmap()
         self._manipulated = False
 
         self.transform = imtransform.Transform(self._current_pixmap)

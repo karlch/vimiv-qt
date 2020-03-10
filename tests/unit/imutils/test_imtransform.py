@@ -12,7 +12,7 @@ from PyQt5.QtGui import QPixmap
 
 import pytest
 
-from vimiv.imutils import imtransform, pixmaps
+from vimiv.imutils import current_pixmap, imtransform
 
 
 ACTIONS = (
@@ -27,9 +27,9 @@ ACTIONS = (
 def transform(qtbot, mocker):
     """Fixture to retrieve a clean Transform instance."""
     pixmap = QPixmap(300, 300)
-    current_pixmap = pixmaps.CurrentPixmap()
-    transform = imtransform.Transform(current_pixmap)
-    current_pixmap.pixmap = transform.original = pixmap
+    current_pm = current_pixmap.CurrentPixmap()
+    transform = imtransform.Transform(current_pm)
+    current_pm.pixmap = transform.original = pixmap
     return transform
 
 
