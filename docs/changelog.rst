@@ -3,6 +3,17 @@ Changelog
 
 All notable changes to vimiv are documented in this file.
 
+v0.7.0 (2020-03-07)
+-------------------
+
+Changed:
+^^^^^^^^
+
+* Manipulations are no longer directly written to file when running ``:accept``.
+  Instead, they behave according to the ``image.autowrite`` setting just like
+  transformations.
+
+
 v0.6.1 (2020-03-07)
 -------------------
 

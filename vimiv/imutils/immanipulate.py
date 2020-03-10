@@ -24,7 +24,6 @@ adding it to the ``Manipulations``.
 
 import abc
 import copy
-import weakref
 from typing import Optional, NamedTuple, List
 
 from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
@@ -148,14 +147,10 @@ class ManipulationGroup(abc.ABC):
 
     Attributes:
         manipulations: Tuple of individual manipulations.
-
-        _data: bytes of the last change from this group. Must be stored as the QPixmap
-            is generated directly from the bytes and needs them to stay in memory.
     """
 
     def __init__(self, *manipulations: Manipulation):
         self.manipulations = manipulations
-        self._data = bytes()
 
     def __iter__(self):
         yield from self.manipulations
@@ -183,8 +178,7 @@ class ManipulationGroup(abc.ABC):
         """
         if not self.changed:
             return data
-        self._data = self._apply(data, *self.manipulations)
-        return self._data
+        return self._apply(data, *self.manipulations)
 
     @property
     @abc.abstractmethod
@@ -316,7 +310,7 @@ class Manipulations(list):
         image = QImage(
             data, image.width(), image.height(), image.bytesPerLine(), image.format()
         )
-        return QPixmap(image)
+        return QPixmap(image.copy())  # copy ensures correct data storage via Qt
 
     def apply(self, pixmap: QPixmap, manipulation: Manipulation) -> QPixmap:
         """Manipulate pixmap according to single manipulation."""
@@ -343,12 +337,14 @@ class Manipulator(QObject):
         manipulations: Manipulations class storing all manipulations.
 
         _changes: List of applied ManipulationChanges.
-        _current: Currently editedfocused manipulation.
-        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
+        _current_manipulation: Currently edited/focused manipulation.
+        _current_pixmap: Class to access the currently displayed pixmap.
         _pixmap: Pixmap to apply current manipulation to.
         _manipulated: Pixmap after applying current manipulation.
 
     Signals:
+        accepted: Emitted when the applied manipulations where accepted.
+            arg1: The manipulated pixmap with the accepted changes.
         updated: Emitted when the manipulated pixmap was changed.
             arg1: The new manipulated QPixmap.
     """
@@ -356,28 +352,29 @@ class Manipulator(QObject):
     pool = utils.Pool.get(globalinstance=False)
     pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
+    accepted = pyqtSignal(QPixmap)
     updated = pyqtSignal(QPixmap)
 
     @api.objreg.register
-    def __init__(self, handler):
+    def __init__(self, current_pixmap):
         super().__init__()
 
         self.manipulations = Manipulations()
 
         self._changes: List[ManipulationChange] = []
-        self._current = self.manipulations[0]  # Default manipulation
-        self._current.focus()
-        self._handler = weakref.ref(handler)
+        self._current_manipulation = self.manipulations[0]  # Default manipulation
+        self._current_manipulation.focus()
+        self._current_pixmap = current_pixmap
         self._pixmap = self._manipulated = None
 
-        api.modes.MANIPULATE.entered.connect(self._on_enter)
-        api.modes.MANIPULATE.left.connect(self.reset)
+        api.modes.MANIPULATE.entered.connect(self._enter)
+        api.modes.MANIPULATE.left.connect(self._reset)
         self.updated.connect(self._on_updated)
         for manipulation in self.manipulations:
             manipulation.updated.connect(self._apply_manipulation)
 
     @property
-    def changed(self):
+    def _changed(self):
         """True if anything was edited."""
         for manipulation in self.manipulations:
             if manipulation.changed:
@@ -387,15 +384,14 @@ class Manipulator(QObject):
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def accept(self):
-        """Leave manipulate applying the changes to file."""
-        if self.changed:  # Only run the expensive part when needed
+        """Leave manipulate accepting the applied changes."""
+        if self._changed:  # Only run the expensive part when needed
             self._save_changes()  # For the current manipulation
             pixmap = self.manipulations.apply_groups(
-                self._handler().transformed,
+                self._current_pixmap.pixmap,
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
-            self._handler().write_pixmap(pixmap, parallel=False)
-            self._handler().original = pixmap
+            self.accepted.emit(pixmap)
         api.modes.MANIPULATE.leave()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
@@ -403,8 +399,7 @@ class Manipulator(QObject):
     def discard(self):
         """Discard any changes and leave manipulate."""
         api.modes.MANIPULATE.leave()
-        self.reset()
-        self._handler().current = self._handler().transformed
+        self._reset()
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -426,13 +421,13 @@ class Manipulator(QObject):
 
     def _navigate_in_tab(self, count):
         """Navigate by count steps in current tab."""
-        group = self.manipulations.group(self._current)
-        index = (group.manipulations.index(self._current) + count) % len(
+        group = self.manipulations.group(self._current_manipulation)
+        index = (group.manipulations.index(self._current_manipulation) + count) % len(
             group.manipulations
         )
         self._focus(group.manipulations[index])
 
-    def reset(self):
+    def _reset(self):
         """Reset manipulations to default."""
         for manipulation in self.manipulations:
             manipulation.reset()
@@ -452,7 +447,7 @@ class Manipulator(QObject):
 
         **count:** multiplier
         """
-        self._current.value += value * count
+        self._current_manipulation.value += value * count
 
     @api.keybindings.register(("J", "H"), "decrease 10", mode=api.modes.MANIPULATE)
     @api.keybindings.register(("j", "h"), "decrease 1", mode=api.modes.MANIPULATE)
@@ -467,7 +462,7 @@ class Manipulator(QObject):
 
         **count:** multiplier
         """
-        self._current.value -= value * count
+        self._current_manipulation.value -= value * count
 
     @api.keybindings.register("gg", "goto -127", mode=api.modes.MANIPULATE)
     @api.keybindings.register("G", "goto 127", mode=api.modes.MANIPULATE)
@@ -482,7 +477,7 @@ class Manipulator(QObject):
 
         **count:** Set the manipulation to [count] instead.
         """
-        self._current.value = count if count is not None else value
+        self._current_manipulation.value = count if count is not None else value
 
     def _apply_manipulation(self, manipulation: Manipulation):
         """Apply changes to displayed image according to an updated manipulation."""
@@ -513,7 +508,7 @@ class Manipulator(QObject):
 
     def _focus(self, focused_manipulation: Manipulation):
         """Focus the manipulation and unfocus all others."""
-        self._current = focused_manipulation
+        self._current_manipulation = focused_manipulation
         focused_manipulation.focus()
         for manipulation in self.manipulations:
             if manipulation != focused_manipulation:
@@ -526,21 +521,21 @@ class Manipulator(QObject):
             return "processing..."
         return ""
 
-    def _on_enter(self):
+    def _enter(self):
         """Create manipulate pixmap when entering manipulate mode.
 
         As the pixmap is only displayed in the bottom right, scaling it to be half the
         total screen width / height is always sufficiently large. This avoids working
         with the large original when it is not needed.
         """
-        if not self._handler().editable:
+        if not self._current_pixmap.editable:
             api.modes.MANIPULATE.leave()
             QTimer.singleShot(
                 0, lambda: utils.log.error("File format does not support manipulate")
             )
             return
         screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._handler().transformed.scaled(
+        self._pixmap = self._current_pixmap.pixmap.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
             aspectRatioMode=Qt.KeepAspectRatio,
@@ -561,7 +556,7 @@ class Manipulator(QObject):
         """Save changes according to the current manipulation."""
         if self._manipulated is None:  # Nothing changed
             return
-        current_group = self.manipulations.group(self._current)
+        current_group = self.manipulations.group(self._current_manipulation)
         self._changes.append(
             ManipulationChange(self._manipulated, copy.copy(current_group))
         )

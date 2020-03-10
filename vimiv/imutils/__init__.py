@@ -39,6 +39,7 @@ the appropriate Qt widget.
 """
 
 from . import exif
+from .edit_handler import EditHandler
 from .filelist import current, pathlist
 from .filelist import SignalHandler as _FilelistSignalHandler
 from ._file_handler import ImageFileHandler as _ImageFileHandler

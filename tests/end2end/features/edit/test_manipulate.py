@@ -19,7 +19,7 @@ def manipulator():
 
 @pytest.fixture()
 def manipulation(manipulator):
-    yield manipulator._current
+    yield manipulator._current_manipulation
 
 
 @bdd.when("I apply any manipulation")
