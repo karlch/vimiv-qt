@@ -17,6 +17,9 @@ Changed:
 v0.6.1 (2020-03-07)
 -------------------
 
+Fixed:
+^^^^^^
+
 * Fix removing thumbnails when the number of thumbnails decreases. Regression since
   v0.6.0.
 
