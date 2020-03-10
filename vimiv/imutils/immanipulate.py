@@ -367,7 +367,7 @@ class Manipulator(QObject):
         self._current_pixmap = current_pixmap
         self._pixmap = self._manipulated = None
 
-        api.modes.MANIPULATE.entered.connect(self._on_enter)
+        api.modes.MANIPULATE.entered.connect(self._enter)
         api.modes.MANIPULATE.left.connect(self._reset)
         self.updated.connect(self._on_updated)
         for manipulation in self.manipulations:
@@ -521,7 +521,7 @@ class Manipulator(QObject):
             return "processing..."
         return ""
 
-    def _on_enter(self):
+    def _enter(self):
         """Create manipulate pixmap when entering manipulate mode.
 
         As the pixmap is only displayed in the bottom right, scaling it to be half the
