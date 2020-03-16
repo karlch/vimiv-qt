@@ -71,8 +71,7 @@ def bind(
 
     See config/configcommands.bind for the corresponding command.
     """
-    # See https://github.com/python/mypy/issues/4975
-    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):
         bindings = _registry[submode]
         if not override and keybinding in bindings:
             raise ValueError(f"Duplicate keybinding for '{keybinding}'")
@@ -84,8 +83,7 @@ def unbind(keybinding: str, mode: modes.Mode) -> None:
 
     See config/configcommands.unbind for the corresponding command.
     """
-    # See https://github.com/python/mypy/issues/4975
-    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):
         try:
             del _registry[submode][keybinding]
         except KeyError:

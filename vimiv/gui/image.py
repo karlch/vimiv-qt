@@ -242,7 +242,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         elif level == ImageScale.FitHeight:
             self._scale_to_fit(height=rect.height())
         elif isinstance(level, float):
-            level *= count  # Required so it is stored correctly later
+            level *= count  # type: ignore  # Required so it is stored correctly later
             self._scale_to_float(level)
         self._scale = level
         self.center()
