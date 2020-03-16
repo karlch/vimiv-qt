@@ -12,6 +12,13 @@ Changed:
 * Manipulations are no longer directly written to file when running ``:accept``.
   Instead, they behave according to the ``image.autowrite`` setting just like
   transformations.
+* Zooming now always uses the center of the currently visible area as focal-point.
+
+Fixed:
+^^^^^^
+
+* Centering the image on any type of resize, even when the user explicitly changed the
+  scroll position.
 
 
 v0.6.1 (2020-03-07)
