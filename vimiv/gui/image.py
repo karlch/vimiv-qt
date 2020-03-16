@@ -99,6 +99,16 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         """List of current paths for image mode."""
         return imutils.pathlist()
 
+    @property
+    def focalpoint(self):
+        """The center of the currently visible part of the scene."""
+        return self.visible_rect.center()
+
+    @property
+    def visible_rect(self):
+        """The currently visible part of the scene in the image coordinates."""
+        return self.mapToScene(self.viewport().rect()).boundingRect() & self.sceneRect()
+
     def _load_pixmap(self, pixmap: QPixmap, reload_only: bool) -> None:
         """Load new pixmap into the graphics scene."""
         item = QGraphicsPixmapItem()
@@ -131,6 +141,10 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             self.scene().addWidget(item)
         self.scene().setSceneRect(rect)
         self.scale(self._scale if reload_only else ImageScale.Overzoom)  # type: ignore
+        self._update_focalpoint()
+
+    def _update_focalpoint(self):
+        self.centerOn(self.focalpoint)
 
     def _on_images_cleared(self) -> None:
         self.scene().clear()
@@ -165,8 +179,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     @api.commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
-        rect = self.scene().sceneRect()
-        self.centerOn(rect.width() / 2, rect.height() / 2)
+        self.centerOn(self.sceneRect().center())
 
     @api.keybindings.register("K", "scroll-edge up", mode=api.modes.IMAGE)
     @api.keybindings.register("J", "scroll-edge down", mode=api.modes.IMAGE)
@@ -245,7 +258,6 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             level *= count  # type: ignore  # Required so it is stored correctly later
             self._scale_to_float(level)
         self._scale = level
-        self.center()
 
     def _scale_to_fit(
         self, width: float = None, height: float = None, limit: float = INF
@@ -274,7 +286,10 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             level: Size to scale to. 1 is the original image size.
         """
         level = utils.clamp(level, self.MIN_SCALE, self.MAX_SCALE)
-        super().scale(level / self.zoom_level, level / self.zoom_level)
+        factor = level / self.zoom_level
+        super().scale(factor, factor)
+        if factor < 1:
+            self._update_focalpoint()
 
     @property
     def zoom_level(self) -> float:
