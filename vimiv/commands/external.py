@@ -107,8 +107,7 @@ class _ExternalRunnerImpl(QProcess):
             self.close()
         self._pipe = pipe
         arglist: List[str] = flatten(
-            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,)  # type: ignore
-            for arg in args
+            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,) for arg in args
         )
         _logger.debug("Running external command '%s' with '%r'", command, arglist)
         self.start(command, arglist)
