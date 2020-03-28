@@ -82,14 +82,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     @property
     def image_rect(self) -> QRect:
         """Rectangle occupied by the image within the parent widget."""
-        image_size = self.image.sceneRect()
-        width = min(int(image_size.width() * self.image.zoom_level), self.image.width())
-        height = min(
-            int(image_size.height() * self.image.zoom_level), self.image.height()
-        )
-        x = (self.image.width() - width) // 2
-        y = (self.image.height() - height) // 2
-        return QRect(x, y, width, height)
+        return self.image.mapFromScene(self.image.sceneRect()).boundingRect()
 
     def keyPressEvent(self, event):
         """Run binding from bindings dictionary."""

@@ -90,9 +90,7 @@ class StraightenWidget(transformwidget.TransformWidget):
 
     def update_geometry(self):
         """Update geometry of the grid to overlay the image."""
-        rect = self.image_rect
-        self.setFixedSize(rect.width(), rect.height())
-        self.move(rect.x(), rect.y())
+        self.setGeometry(self.image_rect)
 
     def status_info(self):
         """Display current rotation angle in the status bar."""
