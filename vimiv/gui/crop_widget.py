@@ -22,8 +22,8 @@ class CropWidget(TransformWidget):
 
     Attributes:
         _aspectratio: QSize defining the fixed ratio of width to height if any.
-        _fractions: Rectangle containing position and size relative to the image.
         _offset: Offset of a mouse drag with respect to the top-left corner.
+        _selected_rect: Rectangle containing position and size relative to the image.
     """
 
     STYLESHEET = """
@@ -38,8 +38,10 @@ class CropWidget(TransformWidget):
         self.setMouseTracking(True)
 
         self._aspectratio = aspectratio if aspectratio is not None else QSize()
-        self._fractions = QRectF(0, 0, 0.5, 0.5)
         self._offset = QPoint(0, 0)
+
+        scene_rect = self.image.sceneRect()
+        self._selected_rect = QRectF(scene_rect.topLeft(), scene_rect.center())
 
         styles.apply(self)
         self.update_geometry()
@@ -51,30 +53,20 @@ class CropWidget(TransformWidget):
     def moving(self) -> bool:
         """True if the widget is currently being dragged."""
         cursor = QApplication.overrideCursor()
-        if cursor is not None:
-            return cursor.shape() == Qt.ClosedHandCursor
-        return False
+        return cursor is not None and cursor.shape() == Qt.ClosedHandCursor
 
     def crop_rect(self) -> QRect:
         """Rectangle of the image that would currently be cropped."""
-        image_rect = self.image.sceneRect()
-        fraction_contained = self._fractions & QRectF(0, 0, 1, 1)
-        return QRectF(
-            fraction_contained.x() * image_rect.width(),
-            fraction_contained.y() * image_rect.height(),
-            fraction_contained.width() * image_rect.width(),
-            fraction_contained.height() * image_rect.height(),
-        ).toAlignedRect()
+        return (self._selected_rect & self.image.sceneRect()).toRect()
 
     def update_geometry(self):
         """Update geometry to keep size and position relative to the image."""
-        image_rect = self.image_rect
-        x = int(image_rect.x() + image_rect.width() * self._fractions.x())
-        y = int(image_rect.y() + image_rect.height() * self._fractions.y())
-        width = int(image_rect.width() * self._fractions.width())
-        height = int(image_rect.height() * self._fractions.height())
-        self.setGeometry(x, y, width, height)
+        geometry = self.image.mapFromScene(self._selected_rect).boundingRect()
+        self.setGeometry(geometry)
         api.status.update("crop widget geometry changed")
+
+    def update_selected_rect(self):
+        self._selected_rect = self.image.mapToScene(self.geometry()).boundingRect()
 
     def status_info(self) -> str:
         """Rectangle geometry of the image that would currently be cropped."""
@@ -87,9 +79,7 @@ class CropWidget(TransformWidget):
             size = QSize(self._aspectratio)
             size.scale(self.size(), Qt.KeepAspectRatio)
             self.resize(size)
-        image_rect = self.image_rect
-        self._fractions.setWidth(self.size().width() / image_rect.width())
-        self._fractions.setHeight(self.size().height() / image_rect.height())
+        self.update_selected_rect()
         api.status.update("crop widget resized")
 
     def leave(self, accept: bool = False):
@@ -117,13 +107,7 @@ class CropWidget(TransformWidget):
                 return
             point = event_pos - origin - self._offset
             self.move(point)
-            image_rect = self.image_rect
-            self._fractions.setRect(
-                (point.x() - image_rect.x()) / image_rect.width(),
-                (point.y() - image_rect.y()) / image_rect.height(),
-                self._fractions.width(),
-                self._fractions.height(),
-            )
+            self.update_selected_rect()
             api.status.update("crop widget moved")
 
     def mouseReleaseEvent(self, _event):

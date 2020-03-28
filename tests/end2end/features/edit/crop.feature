@@ -1,17 +1,17 @@
 Feature: Crop an image.
 
-    Background: 
+    Background:
         Given I open any image of size 300x200
 
     Scenario: Enter crop widget
         When I run crop
         Then there should be 1 crop widget
-        And the center status should include crop: 150x100+0+0
+        And the center status should include crop:
 
     Scenario: Enter crop widget with fixed aspectratio
         When I run crop --aspectratio=1:1
         Then there should be 1 crop widget
-        And the center status should include crop: 100x100+0+0
+        And the center status should include crop:
 
     Scenario: Leave crop widget without changes
         When I run crop
