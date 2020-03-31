@@ -44,3 +44,9 @@ Feature: Expand wildcards when running commands
         Given I open a directory with 1 paths
         When I run !cp -r % \~
         Then the directory ~ should exist
+
+    Scenario: Expand %f to the list of paths in the library
+        Given I open a directory with 2 paths
+        When I run !rmdir *
+        Then the directory child_01 should not exist
+        And the directory child_02 should not exist

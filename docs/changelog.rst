@@ -11,6 +11,8 @@ Added:
 
 * The tilde character ``~`` is now also expanded to the user's home directory when
   running external commands started via ``!``.
+* The ``%f`` wildcard to match the current filelist. This is useful in addition to ``*``
+  as the filelist does not have to be equal to all files in the currently directory.
 
 Changed:
 ^^^^^^^^

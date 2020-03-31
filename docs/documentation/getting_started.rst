@@ -104,8 +104,9 @@ completion is also supported.
 
 Unix style pattern matching including ``*`` and ``?`` can be used. Recursive matching is
 also possible using ``**`` but please note that this can become slow in large directory
-trees. In addition ``%`` gets replaced with the currently selected file and ``%m`` by
-all marked images. See :ref:`marks_and_tags` for more information on this.
+trees. In addition ``%`` gets replaced with the currently selected file, ``%f`` by all
+files in the current filelist and ``%m`` by all marked images. See :ref:`marks_and_tags`
+for more information on this.
 
 Prepending a command with ``!`` lets vimiv interpret the command as an external
 command. This becomes especially useful in combination with the patterns described

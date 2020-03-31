@@ -204,6 +204,7 @@ def expand_percent(text: str, mode: api.modes.Mode) -> str:
         mode: Mode the command is run in to get correct path(-list).
     """
     text = expand_wildcard(text, "%", api.current_path, mode)
+    text = expand_wildcard(text, "%f", api.pathlist, mode)
     text = expand_wildcard(text, "%m", lambda: api.mark.paths)
     return text
 
