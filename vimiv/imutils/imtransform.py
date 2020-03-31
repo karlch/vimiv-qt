@@ -129,8 +129,6 @@ class Transform(QTransform):
             * ``width``: Width in pixels to resize the image to.
             * ``height``: Height in pixels to resize the image to. If not given, the
               aspectratio is preserved.
-
-        .. note:: This transforms the original image and writes to disk.
         """
         dx = width / self.current.width()
         dy = dx if height is None else height / self.current.height()
@@ -146,8 +144,6 @@ class Transform(QTransform):
             * ``dx``: Factor in x direction to scale the image by.
             * ``dy``: Factor in y direction to scale the image by. If not given, the
               aspectratio is preserved.
-
-        .. note:: This transforms the original image and writes to disk.
         """
         dy = dy if dy is not None else dx
         self.scale(dx, dy)
