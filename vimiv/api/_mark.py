@@ -168,7 +168,7 @@ class Mark(QObject):
         .. hint:: You can open all marked images with ``:open %m``.
 
         positional arguments:
-            * ``name``: Name of the tag to delete.
+            * ``name``: Name of the tag to load.
         """
         _logger.debug("Loading tag '%s'", name)
         with Tag(name) as tag:
