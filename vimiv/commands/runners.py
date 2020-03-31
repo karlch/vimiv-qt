@@ -15,7 +15,7 @@ Module Attributes:
 import os
 import re
 import shlex
-from typing import Dict, List, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple, Callable, Union, Iterable
 
 from vimiv import api, utils
 from vimiv.utils import log, customtypes
@@ -23,6 +23,7 @@ from vimiv.commands import aliases
 
 from .external import ExternalRunner
 
+WildcardCallbackT = Callable[..., Union[str, Iterable[str]]]
 
 SEPARATOR = "&&"
 external = ExternalRunner()
@@ -96,7 +97,7 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external.run(expand_wildcard(text.lstrip("!"), "~", os.path.expanduser("~")))
+        external.run(expand_wildcard(text.lstrip("!"), "~", os.path.expanduser, "~"))
     else:
         command(count + text, mode)
 
@@ -202,12 +203,14 @@ def expand_percent(text: str, mode: api.modes.Mode) -> str:
         text: The command in which the wildcards are expanded.
         mode: Mode the command is run in to get correct path(-list).
     """
-    text = expand_wildcard(text, "%", api.current_path(mode))
-    text = expand_wildcard(text, "%m", *api.mark.paths)
+    text = expand_wildcard(text, "%", api.current_path, mode)
+    text = expand_wildcard(text, "%m", lambda: api.mark.paths)
     return text
 
 
-def expand_wildcard(text: str, wildcard: str, *paths: str) -> str:
+def expand_wildcard(
+    text: str, wildcard: str, callback: WildcardCallbackT, *args, **kwargs
+) -> str:
     """Expand a wildcard in text to the shell escaped version of paths.
 
     The regular expression matches the wildcard in case it is not followed by any
@@ -215,8 +218,15 @@ def expand_wildcard(text: str, wildcard: str, *paths: str) -> str:
     a first step the wildcard, if it is not escaped, is replaced by the paths. The
     second step removes the escape character in case the wildcard was escaped with a
     prepended backslash.
+
+    Args:
+        text: The command in which the wildcards are expanded.
+        wildcard: The wildcard string to expand if not escaped.
+        callback: Function called with args and kwargs to retrieve the wildcard value.
     """
     if wildcard in text:
+        paths = callback(*args, **kwargs)
+        paths = (paths,) if isinstance(paths, str) else paths
         quoted_paths = " ".join(shlex.quote(path) for path in paths)
         re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
         text = re.sub(rf"(?<!\\){re_wildcard}", rf"{quoted_paths}\1", text)
