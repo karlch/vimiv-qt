@@ -101,7 +101,6 @@ def paste_name(primary: bool = True) -> None:
     api.open_paths([clipboard.text(mode=mode)])
 
 
-# We want to use the name help here as it is the best name for the command
 @api.commands.register(mode=api.modes.MANIPULATE, name="help")
 @api.commands.register(name="help")
 def help_command(topic: str) -> None:
