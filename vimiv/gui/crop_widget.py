@@ -7,8 +7,8 @@
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
 from PyQt5.QtCore import Qt, QPoint, QRect, QRectF, QSize
-from PyQt5.QtGui import QPainter
-from PyQt5.QtWidgets import QApplication, QStyle, QStyleOption
+from PyQt5.QtGui import QPainter, QColor, QImage
+from PyQt5.QtWidgets import QApplication, QStyle, QStyleOption, QWidget
 
 from vimiv import api
 from vimiv.config import styles
@@ -23,13 +23,17 @@ class CropWidget(TransformWidget):
     Attributes:
         _aspectratio: QSize defining the fixed ratio of width to height if any.
         _offset: Offset of a mouse drag with respect to the top-left corner.
+        _overlay: Overlay to darken the unselected crop region.
         _selected_rect: Rectangle containing position and size relative to the image.
     """
 
     STYLESHEET = """
     QWidget {
-        background-color: {crop.bg};
         border: {crop.border} {crop.border.color};
+    }
+
+    QSizeGrip {
+        background-color: {crop.bg};
     }
     """
 
@@ -39,15 +43,17 @@ class CropWidget(TransformWidget):
 
         self._aspectratio = aspectratio if aspectratio is not None else QSize()
         self._offset = QPoint(0, 0)
+        self._overlay = CropOverlay(image)
 
         scene_rect = self.image.sceneRect()
         self._selected_rect = QRectF(scene_rect.topLeft(), scene_rect.center())
 
+        ResizeLayout(self, fixed_aspectratio=aspectratio is not None)
+
         styles.apply(self)
         self.update_geometry()
         self.show()
-
-        ResizeLayout(self, fixed_aspectratio=aspectratio is not None)
+        self.raise_()
 
     @property
     def moving(self) -> bool:
@@ -66,7 +72,10 @@ class CropWidget(TransformWidget):
         api.status.update("crop widget geometry changed")
 
     def update_selected_rect(self):
+        """Store selected rectangle in scene coordinates and update the overlay."""
         self._selected_rect = self.image.mapToScene(self.geometry()).boundingRect()
+        scene_rect = self.image.mapFromScene(self.image.sceneRect()).boundingRect()
+        self._overlay.update_geometry(scene_rect, self.geometry())
 
     def status_info(self) -> str:
         """Rectangle geometry of the image that would currently be cropped."""
@@ -86,6 +95,7 @@ class CropWidget(TransformWidget):
         """Override leave to crop the image on accept."""
         if accept:
             self.transform.crop(self.crop_rect())
+        self._overlay.deleteLater()
         super().leave(accept)
 
     def mousePressEvent(self, event):
@@ -120,3 +130,41 @@ class CropWidget(TransformWidget):
         opt.initFrom(self)
         painter = QPainter(self)
         self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+
+
+class CropOverlay(QWidget):
+    """Overlay widget to darken the unselected crop region.
+
+    Attributes:
+        _draw_buffer: QImage to paint dark region and clear the selection.
+        _selected_rect: Region selected for cropping in own coordinates.
+    """
+
+    DARK = QColor(0, 0, 0, 160)
+
+    def __init__(self, image):
+        super().__init__(parent=image)
+        self._selected_rect = QRect()
+        self._draw_buffer = QImage()
+        self.show()
+
+    def update_geometry(self, rect, selected_rect):
+        """Set own size to the full image and store the selected region for painting."""
+        selected_rect.moveTopLeft(selected_rect.topLeft() - rect.topLeft())
+        self._selected_rect = selected_rect
+        if rect.size() != self._draw_buffer.size():
+            self._draw_buffer = QImage(rect.size(), QImage.Format_ARGB32_Premultiplied)
+        self.setGeometry(rect)
+
+    def paintEvent(self, _event):
+        """Paint dark rectangle over image and then clear the selection."""
+        painter = QPainter(self._draw_buffer)
+        painter.setPen(Qt.NoPen)
+
+        painter.setBrush(self.DARK)
+        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.drawRect(self.rect())
+
+        painter.setCompositionMode(QPainter.CompositionMode_Clear)
+        painter.drawRect(self._selected_rect)
+        QPainter(self).drawImage(0, 0, self._draw_buffer)
