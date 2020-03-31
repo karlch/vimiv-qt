@@ -31,8 +31,11 @@ Feature: Crop an image.
         Then the crop rectangle should be <geometry>
 
         Examples:
-            | dx   | dy   | geometry      |
-            | 30   | 20   | 150x100+30+20 |
-            | 200  | 0    | 100x100+200+0 |
-            | 0    | -50  | 150x50+0+0    |
-            | 1000 | 1000 | 150x100+0+0   |
+            | dx   | dy   | geometry        |
+            | 30   | 20   | 150x100+30+20   |
+            # dx only as far as the image allows
+            | 200  | 0    | 150x100+150+0   |
+            # dy ignored as it would move the selection out of the image
+            | 10    | -50  | 150x100+10+0     |
+            # Ignored as dx/dy are outside of the image
+            | 1000 | 1000 | 150x100+0+0     |

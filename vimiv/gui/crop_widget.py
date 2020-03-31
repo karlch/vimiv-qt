@@ -63,7 +63,7 @@ class CropWidget(TransformWidget):
 
     def crop_rect(self) -> QRect:
         """Rectangle of the image that would currently be cropped."""
-        return (self._selected_rect & self.image.sceneRect()).toRect()
+        return self._selected_rect.toRect()
 
     def update_geometry(self):
         """Update geometry to keep size and position relative to the image."""
@@ -74,8 +74,7 @@ class CropWidget(TransformWidget):
     def update_selected_rect(self):
         """Store selected rectangle in scene coordinates and update the overlay."""
         self._selected_rect = self.image.mapToScene(self.geometry()).boundingRect()
-        scene_rect = self.image.mapFromScene(self.image.sceneRect()).boundingRect()
-        self._overlay.update_geometry(scene_rect, self.geometry())
+        self._overlay.update_geometry(self.image_rect, self.geometry())
 
     def status_info(self) -> str:
         """Rectangle geometry of the image that would currently be cropped."""
@@ -88,6 +87,7 @@ class CropWidget(TransformWidget):
             size = QSize(self._aspectratio)
             size.scale(self.size(), Qt.KeepAspectRatio)
             self.resize(size)
+        self.setGeometry(self.geometry() & self.image_rect)
         self.update_selected_rect()
         api.status.update("crop widget resized")
 
@@ -119,6 +119,15 @@ class CropWidget(TransformWidget):
             self.move(point)
             self.update_selected_rect()
             api.status.update("crop widget moved")
+
+    def move(self, point):
+        """Move crop rectangle ensuring it stays within the displayed image."""
+        resulting_rect = QRect(point.x(), point.y(), self.width(), self.height())
+        image_rect = self.image_rect
+        bound = resulting_rect | image_rect
+        point -= bound.topLeft() - image_rect.topLeft()
+        point -= bound.bottomRight() - image_rect.bottomRight()
+        super().move(point)
 
     def mouseReleaseEvent(self, _event):
         """Stop dragging the widget."""
