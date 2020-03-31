@@ -6,6 +6,12 @@ All notable changes to vimiv are documented in this file.
 v0.7.0 (unreleased)
 -------------------
 
+Added:
+^^^^^^
+
+* The tilde character ``~`` is now also expanded to the user's home directory when
+  running external commands started via ``!``.
+
 Changed:
 ^^^^^^^^
 

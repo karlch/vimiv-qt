@@ -12,6 +12,7 @@ Module Attributes:
     _last_command: Dictionary storing the last command for each mode.
 """
 
+import os
 import re
 import shlex
 from typing import Dict, List, NamedTuple, Tuple
@@ -95,7 +96,7 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external.run(text.lstrip("!"))
+        external.run(expand_wildcard(text.lstrip("!"), "~", os.path.expanduser("~")))
     else:
         command(count + text, mode)
 
