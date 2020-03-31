@@ -88,6 +88,7 @@ DEFAULT_OPTIONS = {
     "prompt.border": "{statusbar.message_border}",
     "prompt.border.color": "{statusbar.info}",
     # Crop
+    "crop.shading": "#88000000",
     "crop.border": "{manipulate.image.border}",
-    "crop.border.color": "{manipulate.image.border.color}",
+    "crop.border.color": "#88FFFFFF",
 }

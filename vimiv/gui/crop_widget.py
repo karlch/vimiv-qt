@@ -33,7 +33,7 @@ class CropWidget(TransformWidget):
     }
 
     QSizeGrip {
-        background-color: {crop.bg};
+        background-color: {crop.border.color};
     }
     """
 
@@ -146,15 +146,15 @@ class CropOverlay(QWidget):
 
     Attributes:
         _draw_buffer: QImage to paint dark region and clear the selection.
+        _shading_color: Color used for the dark unselected region.
         _selected_rect: Region selected for cropping in own coordinates.
     """
 
-    DARK = QColor(0, 0, 0, 160)
-
     def __init__(self, image):
         super().__init__(parent=image)
-        self._selected_rect = QRect()
         self._draw_buffer = QImage()
+        self._selected_rect = QRect()
+        self._shading_color = QColor(styles.get("crop.shading"))
         self.show()
 
     def update_geometry(self, rect, selected_rect):
@@ -170,7 +170,7 @@ class CropOverlay(QWidget):
         painter = QPainter(self._draw_buffer)
         painter.setPen(Qt.NoPen)
 
-        painter.setBrush(self.DARK)
+        painter.setBrush(self._shading_color)
         painter.setCompositionMode(QPainter.CompositionMode_Source)
         painter.drawRect(self.rect())
 

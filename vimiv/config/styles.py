@@ -63,7 +63,6 @@ class Style(dict):
         self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
         self["thumbnail.selected.bg.unfocus"] = self["{library.selected.bg.unfocus}"]
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
-        self["crop.bg"] = self.add_alpha(self["{crop.border.color}"], "44")
 
     def __getitem__(self, name: str):
         """Retrieve item automatically surrounding the name with {} if needed."""
