@@ -34,6 +34,9 @@ def check_help(topic):
     if topic == "vimiv":
         assert vimiv.__description__ in statusbar.statusbar.message.text()
         return
+    if topic == "wildcards":
+        assert "wildcards" in statusbar.statusbar.message.text().lower()
+        return
     topic = topic.lower().lstrip(":")
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())

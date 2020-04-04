@@ -10,7 +10,7 @@ from contextlib import suppress
 
 import vimiv
 from vimiv import api
-from vimiv.utils import log
+from vimiv.utils import log, add_html
 
 
 @api.commands.register(mode=api.modes.MANIPULATE, name="help")
@@ -26,8 +26,12 @@ def help_command(topic: str) -> None:
     .. hint:: For commands ``help :command`` is the same as ``command -h``.
     """
     topic = topic.lower().lstrip(":")
-    if topic == "vimiv":
-        return _general_help()
+    general_topics = {
+        "vimiv": _general_help,
+        "wildcards": _wildcard_help,
+    }
+    with suppress(KeyError):
+        return general_topics[topic]()
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
         # This raises an exception and leaves this command
@@ -60,3 +64,33 @@ def _setting_help(setting: api.settings.Setting) -> None:
         setting.default,
         ", ".join(setting.suggestions()),
     )
+
+
+def _wildcard_help() -> None:
+    """Display information on various wildcards and their usage."""
+
+    def format_table_row(wildcard: str, description: str) -> str:
+        return (
+            "<tr>"
+            f"<td>{wildcard}</td>"
+            f"<td style='padding-left: 2ex'>{description}</td>"
+            "</tr>"
+        )
+
+    description = (
+        "Symbols used to refer to paths or path-lists within vimiv. "
+        "These work in addition to the standard unix-shell wildcards * and ?."
+    )
+    # TODO retrieve wildcards from commands module so we do not need to store them twice
+    wildcards = (
+        ("%", "currently focused path or image"),
+        ("%f", "all paths in the current file list"),
+        ("%m", "all marked paths"),
+    )
+    table = add_html("\n".join(format_table_row(w, d) for w, d in wildcards), "table")
+    _format_help(title="wildcards", description=description, text=table)
+
+
+def _format_help(*, title: str, description: str, text: str) -> None:
+    header = add_html(title.capitalize(), "h3")
+    log.info("%s\n%s<br>%s<br>", header, description, text)
