@@ -60,6 +60,7 @@ class StatusBar(QWidget):
 
         self.status = StatusLabels()
         self.message = QLabel()
+        self.message.setWordWrap(True)
 
         self.stack = QStackedLayout(self)
         self.stack.addWidget(self.status)
