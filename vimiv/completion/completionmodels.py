@@ -261,7 +261,7 @@ def init():
         SettingsOptionModel(setting)
     for command in ("open", "delete", "mark"):
         PathModel(command)
-    for suffix in ("delete", "load", "write"):
+    for suffix in ("delete", "load", "write", "open"):
         TagModel(suffix)
     TrashModel()
     HelpModel()

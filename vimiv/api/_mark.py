@@ -178,6 +178,22 @@ class Mark(QObject):
             self.marked.emit(path)
             _logger.debug("Marked '%s'", path)
 
+    @commands.register()
+    def tag_open(self, name: str) -> None:
+        """Open images from a tag in image mode.
+
+        **syntax:** ``tag-open name``
+
+        .. hint:: This is equivalent to ``:tag-load name && open %m``.
+
+        positional arguments:
+            * ``name``: Name of the tag to open.
+        """
+        from . import open_paths  # Otherwise we have a circular import
+
+        self.tag_load(name)
+        open_paths(self._marked)
+
     @status.module("{mark-indicator}")
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""

@@ -13,6 +13,8 @@ Added:
   running external commands started via ``!``.
 * The ``%f`` wildcard to match the current filelist. This is useful in addition to ``*``
   as the filelist does not have to be equal to all files in the currently directory.
+* The ``:tag-open`` command equivalent to ``:tag-load`` followed by ``:open %m`` for
+  convenience.
 
 Changed:
 ^^^^^^^^
