@@ -97,6 +97,7 @@
 <li><a class="reference internal" href="#spawn">spawn</a></li>
 <li><a class="reference internal" href="#tag-delete">tag-delete</a></li>
 <li><a class="reference internal" href="#tag-load">tag-load</a></li>
+<li><a class="reference internal" href="#tag-open">tag-open</a></li>
 <li><a class="reference internal" href="#tag-write">tag-write</a></li>
 <li><a class="reference internal" href="#toggle">toggle</a></li>
 <li><a class="reference internal" href="#unbind">unbind</a></li>
@@ -305,22 +306,25 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
 <td><p>Load images from a tag into the current mark list.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-open"><span class="std std-ref">tag-open</span></a></p></td>
+<td><p>Open images from a tag in image mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
 <td><p>Write marked paths to a tag.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
 <td><p>Toggle one mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
 <td><p>Unbind a keybinding.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
 <td><p>Restore a file from the trash directory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
 <td><p>Show a pop-up with version information.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-welcome-to-qt"><span class="std std-ref">welcome-to-qt</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-welcome-to-qt"><span class="std std-ref">welcome-to-qt</span></a></p></td>
 <td><p>Show a pop-up with a welcome message for users coming from gtk.</p></td>
 </tr>
 </tbody>
@@ -687,7 +691,22 @@ general for performance and security reasons.</p>
 </div>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to delete.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to load.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="tag-open">
+<span id="ref-global-tag-open"></span><h3>tag-open<a class="headerlink" href="#tag-open" title="Permalink to this headline">¶</a></h3>
+<p>Open images from a tag in image mode.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">tag-open</span> <span class="pre">name</span></code></p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This is equivalent to <code class="docutils literal notranslate"><span class="pre">:tag-load</span> <span class="pre">name</span> <span class="pre">&amp;&amp;</span> <span class="pre">open</span> <span class="pre">%m</span></code>.</p>
+</div>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the tag to open.</p></li>
 </ul>
 </dd>
 </dl>
@@ -879,10 +898,6 @@ aspectratio is preserved.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This transforms the original image and writes to disk.</p>
-</div>
 </div>
 <div class="section" id="resize">
 <span id="ref-image-resize"></span><h3>resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h3>
@@ -896,10 +911,6 @@ aspectratio is preserved.</p></li>
 </ul>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This transforms the original image and writes to disk.</p>
-</div>
 </div>
 <div class="section" id="rotate">
 <span id="ref-image-rotate"></span><h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
