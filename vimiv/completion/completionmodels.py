@@ -104,7 +104,7 @@ class PathModel(api.completion.BaseModel):
             return
         # Prepare
         self._last_directory = os.path.abspath(directory)
-        # No completinos for non-existent directory
+        # No completions for non-existent directory
         if not os.path.isdir(os.path.expanduser(directory)):
             return
         # Retrieve supported paths
