@@ -27,29 +27,36 @@ def help_command(topic: str) -> None:
     """
     topic = topic.lower().lstrip(":")
     if topic == "vimiv":
-        log.info(
-            "%s: %s\n\n"
-            "Website: %s\n\n"
-            "For an overview of keybindings, run :keybindings.\n"
-            "To retrieve help on a command or setting run :help topic.",
-            vimiv.__name__,
-            vimiv.__description__,
-            vimiv.__url__,
-        )
-        return
+        return _general_help()
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
         # This raises an exception and leaves this command
         command(["-h"], "")
     with suppress(KeyError):
-        setting = api.settings.get(topic)
-        log.info(
-            "%s: %s\n\nType: %s\nDefault: %s\nSuggestions: %s",
-            setting.name,
-            setting.desc,
-            setting,
-            setting.default,
-            ", ".join(setting.suggestions()),
-        )
-        return
+        return _setting_help(api.settings.get(topic))
     raise api.commands.CommandError(f"Unknown topic '{topic}'")
+
+
+def _general_help() -> None:
+    """Display general vimiv information."""
+    log.info(
+        "%s: %s\n\n"
+        "Website: %s\n\n"
+        "For an overview of keybindings, run :keybindings.\n"
+        "To retrieve help on a command or setting run :help topic.",
+        vimiv.__name__,
+        vimiv.__description__,
+        vimiv.__url__,
+    )
+
+
+def _setting_help(setting: api.settings.Setting) -> None:
+    """Display information on this setting."""
+    log.info(
+        "%s: %s\n\nType: %s\nDefault: %s\nSuggestions: %s",
+        setting.name,
+        setting.desc,
+        setting,
+        setting.default,
+        ", ".join(setting.suggestions()),
+    )
