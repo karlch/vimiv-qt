@@ -231,7 +231,10 @@ class HelpModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(":help", column_widths=(0.3, 0.7))
-        self._general = [(":help  vimiv", "General information")]
+        self._general = [
+            (":help  vimiv", "General information"),
+            (":help  wildcards", "Information on various wildcards available"),
+        ]
         self._formatted_settings = [
             (f":help {name}", setting.desc) for name, setting in api.settings.items()
         ]

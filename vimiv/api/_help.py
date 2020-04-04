@@ -6,6 +6,7 @@
 
 """Functions to format and retrieve text for the :help command."""
 
+import typing
 from contextlib import suppress
 
 import vimiv
@@ -33,9 +34,7 @@ def help_command(topic: str) -> None:
     with suppress(KeyError):
         return general_topics[topic]()
     with suppress(api.commands.CommandNotFound):
-        command = api.commands.get(topic, mode=api.modes.current())
-        # This raises an exception and leaves this command
-        command(["-h"], "")
+        return _command_help(api.commands.get(topic, mode=api.modes.current()))
     with suppress(KeyError):
         return _setting_help(api.settings.get(topic))
     raise api.commands.CommandError(f"Unknown topic '{topic}'")
@@ -43,54 +42,68 @@ def help_command(topic: str) -> None:
 
 def _general_help() -> None:
     """Display general vimiv information."""
-    log.info(
-        "%s: %s\n\n"
-        "Website: %s\n\n"
-        "For an overview of keybindings, run :keybindings.\n"
-        "To retrieve help on a command or setting run :help topic.",
-        vimiv.__name__,
-        vimiv.__description__,
-        vimiv.__url__,
+    text = (
+        f"<br>Website: {vimiv.__url__}<br><br>"
+        "For an overview of keybindings, run :keybindings.<br>"
+        "To retrieve help on a command, setting or other topic run :help topic."
     )
+    _format_help(title=vimiv.__name__, description=vimiv.__description__, text=text)
+
+
+# TODO Expose a public command class so the pylint suppression is no longer required
+def _command_help(
+    command: api.commands._Command,  # pylint: disable=protected-access
+) -> None:
+    """Display information on this command."""
+    description = command.long_description.replace("\n", "<br>")
+    _format_help(title=command.name, description=description)
 
 
 def _setting_help(setting: api.settings.Setting) -> None:
     """Display information on this setting."""
-    log.info(
-        "%s: %s\n\nType: %s\nDefault: %s\nSuggestions: %s",
-        setting.name,
-        setting.desc,
-        setting,
-        setting.default,
-        ", ".join(setting.suggestions()),
-    )
+    suggestions = ", ".join(setting.suggestions())
+    content = [
+        ("type", str(setting)),
+        ("default", setting.default),
+    ]
+    if suggestions:
+        content.append(("suggestions", suggestions))
+    table = _format_table(*content)
+    _format_help(title=setting.name, description=setting.desc, text=table)
 
 
 def _wildcard_help() -> None:
     """Display information on various wildcards and their usage."""
-
-    def format_table_row(wildcard: str, description: str) -> str:
-        return (
-            "<tr>"
-            f"<td>{wildcard}</td>"
-            f"<td style='padding-left: 2ex'>{description}</td>"
-            "</tr>"
-        )
 
     description = (
         "Symbols used to refer to paths or path-lists within vimiv. "
         "These work in addition to the standard unix-shell wildcards * and ?."
     )
     # TODO retrieve wildcards from commands module so we do not need to store them twice
-    wildcards = (
+    table = _format_table(
         ("%", "currently focused path or image"),
         ("%f", "all paths in the current file list"),
         ("%m", "all marked paths"),
     )
-    table = add_html("\n".join(format_table_row(w, d) for w, d in wildcards), "table")
     _format_help(title="wildcards", description=description, text=table)
 
 
-def _format_help(*, title: str, description: str, text: str) -> None:
+def _format_table(*content: typing.Tuple[str, str]) -> str:
+    """Format a nice html table for content in the form of key, value."""
+
+    def format_row(key: str, value: str) -> str:
+        return (
+            "<tr>"
+            f"<td>{key}</td>"
+            f"<td style='padding-left: 2ex'>{value}</td>"
+            "</tr>"
+        )
+
+    return add_html("\n".join(format_row(k, v) for k, v in content), "table")
+
+
+def _format_help(*, title: str, description: str, text: str = None) -> None:
+    """Helper function to unify formatting of help texts."""
     header = add_html(title.capitalize(), "h3")
-    log.info("%s\n%s<br>%s<br>", header, description, text)
+    text = f"{text}<br>" if text is not None else ""
+    log.info("%s\n%s<br>%s", header, description, text)
