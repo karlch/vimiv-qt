@@ -11,13 +11,11 @@ corresponding objects.
 """
 
 import os
-from contextlib import suppress
 from typing import List
 
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
-import vimiv
 from vimiv import api
 from vimiv.utils import files, log
 
@@ -99,48 +97,6 @@ def paste_name(primary: bool = True) -> None:
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
     api.open_paths([clipboard.text(mode=mode)])
-
-
-@api.commands.register(mode=api.modes.MANIPULATE, name="help")
-@api.commands.register(name="help")
-def help_command(topic: str) -> None:
-    """Show help on a command or setting.
-
-    **syntax:** ``:help topic``
-
-    positional arguments:
-        * ``topic``: Either a valid :command or a valid setting name.
-
-    .. hint:: For commands ``help :command`` is the same as ``command -h``.
-    """
-    topic = topic.lower().lstrip(":")
-    if topic == "vimiv":
-        log.info(
-            "%s: %s\n\n"
-            "Website: %s\n\n"
-            "For an overview of keybindings, run :keybindings.\n"
-            "To retrieve help on a command or setting run :help topic.",
-            vimiv.__name__,
-            vimiv.__description__,
-            vimiv.__url__,
-        )
-        return
-    with suppress(api.commands.CommandNotFound):
-        command = api.commands.get(topic, mode=api.modes.current())
-        # This raises an exception and leaves this command
-        command(["-h"], "")
-    with suppress(KeyError):
-        setting = api.settings.get(topic)
-        log.info(
-            "%s: %s\n\nType: %s\nDefault: %s\nSuggestions: %s",
-            setting.name,
-            setting.desc,
-            setting,
-            setting.default,
-            ", ".join(setting.suggestions()),
-        )
-        return
-    raise api.commands.CommandError(f"Unknown topic '{topic}'")
 
 
 @api.commands.register()
