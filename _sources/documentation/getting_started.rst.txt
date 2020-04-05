@@ -171,7 +171,8 @@ be parsed as usual.
 
 Loading a tag is done with ``:tag-load my_fancy_tag`` which loads all images from the
 tag into the list of marked images. To then open them in image mode we can refer to them
-with ``%m`` in the open command: ``:open %m``.
+with ``%m`` in the open command: ``:open %m``. As this is such a frequent usecase, there
+is the ``tag-open my_fancy_tag`` command which is equivalent, but saves one command.
 
 Deleting a tag is done with ``:tag-delete my_fancy_tag``.
 
