@@ -15,6 +15,10 @@ Added:
   as the filelist does not have to be equal to all files in the current directory.
 * The ``:tag-open`` command equivalent to ``:tag-load`` followed by ``:open %m`` for
   convenience.
+* Various small improvements to the ``:help`` command:
+
+  * Consistent cleaner formatting using the html-subset of ``QLabel``.
+  * New ``wildcards`` topic.
 
 Changed:
 ^^^^^^^^
