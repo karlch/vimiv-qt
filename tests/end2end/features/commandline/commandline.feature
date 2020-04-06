@@ -77,7 +77,7 @@ Feature: Use the command line.
             | :open-selected |
             | vimiv          |
             | library.width  |
-            | wildcards  |
+            | wildcards      |
 
     Scenario: Fail help command with unknown topic
         When I run help invalid_topic
