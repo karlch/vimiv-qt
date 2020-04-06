@@ -22,6 +22,7 @@ from . import (
     signals,
     status,
     working_directory,
+    _help,
     _mark,
     _modules,
 )

@@ -4,7 +4,6 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import inspect
 from contextlib import suppress
 
 import pytest_bdd as bdd
@@ -34,11 +33,13 @@ def check_help(topic):
     if topic == "vimiv":
         assert vimiv.__description__ in statusbar.statusbar.message.text()
         return
+    if topic == "wildcards":
+        assert "wildcards" in statusbar.statusbar.message.text().lower()
+        return
     topic = topic.lower().lstrip(":")
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
-        docstring = inspect.getdoc(command.func)
-        assert docstring in statusbar.statusbar.message.text()
+        assert command.description in statusbar.statusbar.message.text()
         return
     with suppress(KeyError):
         setting = api.settings.get(topic)
