@@ -104,6 +104,6 @@ def _format_table(*content: typing.Tuple[str, str]) -> str:
 
 def _format_help(*, title: str, description: str, text: str = None) -> None:
     """Helper function to unify formatting of help texts."""
-    header = add_html(title.capitalize(), "h3")
+    header = add_html(title, "h3")
     text = f"{text}<br>" if text is not None else ""
     log.info("%s\n%s<br>%s", header, description, text)
