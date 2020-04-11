@@ -11,6 +11,7 @@ from contextlib import suppress
 
 import vimiv
 from vimiv import api
+from vimiv.commands import wildcards
 from vimiv.utils import log, add_html
 
 
@@ -68,7 +69,7 @@ def _setting_help(setting: api.settings.Setting) -> None:
     ]
     if suggestions:
         content.append(("suggestions", suggestions))
-    table = _format_table(*content)
+    table = _format_table(content)
     _format_help(title=setting.name, description=setting.desc, text=table)
 
 
@@ -79,16 +80,13 @@ def _wildcard_help() -> None:
         "Symbols used to refer to paths or path-lists within vimiv. "
         "These work in addition to the standard unix-shell wildcards * and ?."
     )
-    # TODO retrieve wildcards from commands module so we do not need to store them twice
     table = _format_table(
-        ("%", "currently focused path or image"),
-        ("%f", "all paths in the current file list"),
-        ("%m", "all marked paths"),
+        (wildcard.wildcard, wildcard.description) for wildcard in wildcards.INTERNAL
     )
     _format_help(title="wildcards", description=description, text=table)
 
 
-def _format_table(*content: typing.Tuple[str, str]) -> str:
+def _format_table(content: typing.Iterable[typing.Tuple[str, str]]) -> str:
     """Format a nice html table for content in the form of key, value."""
 
     def format_row(key: str, value: str) -> str:
