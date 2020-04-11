@@ -13,17 +13,14 @@ Module Attributes:
 """
 
 import os
-import re
 import shlex
-from typing import Dict, List, NamedTuple, Tuple, Callable, Union, Iterable
+from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
 from vimiv.utils import log, customtypes
-from vimiv.commands import aliases
+from vimiv.commands import aliases, wildcards
 
 from .external import ExternalRunner
-
-WildcardCallbackT = Callable[..., Union[str, Iterable[str]]]
 
 SEPARATOR = "&&"
 external = ExternalRunner()
@@ -75,7 +72,7 @@ def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
         """Update aliases and % in final parts without seperator."""
         if SEPARATOR in text:
             return text
-        return expand_percent(alias(text.strip(), mode), mode)
+        return wildcards.expand_internal(alias(text.strip(), mode), mode)
 
     textparts = utils.recursive_split(text, SEPARATOR, update_part)
     _logger.debug("Split text into parts '%s'", textparts)
@@ -97,7 +94,7 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external.run(expand_wildcard(text.lstrip("!"), "~", os.path.expanduser, "~"))
+        external.run(wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~"))
     else:
         command(count + text, mode)
 
@@ -196,45 +193,6 @@ def _parse(text: str) -> Tuple[str, str, List[str]]:
     return count, cmdname, args
 
 
-def expand_percent(text: str, mode: api.modes.Mode) -> str:
-    """Expand % to the corresponding path and %m to all marked paths.
-
-    Args:
-        text: The command in which the wildcards are expanded.
-        mode: Mode the command is run in to get correct path(-list).
-    """
-    text = expand_wildcard(text, "%", api.current_path, mode)
-    text = expand_wildcard(text, "%f", api.pathlist, mode)
-    text = expand_wildcard(text, "%m", lambda: api.mark.paths)
-    return text
-
-
-def expand_wildcard(
-    text: str, wildcard: str, callback: WildcardCallbackT, *args, **kwargs
-) -> str:
-    """Expand a wildcard in text to the shell escaped version of paths.
-
-    The regular expression matches the wildcard in case it is not followed by any
-    letters. This ensures correct handling of overlapping wildcards such as % and %m. In
-    a first step the wildcard, if it is not escaped, is replaced by the paths. The
-    second step removes the escape character in case the wildcard was escaped with a
-    prepended backslash.
-
-    Args:
-        text: The command in which the wildcards are expanded.
-        wildcard: The wildcard string to expand if not escaped.
-        callback: Function called with args and kwargs to retrieve the wildcard value.
-    """
-    if wildcard in text:
-        paths = callback(*args, **kwargs)
-        paths = (paths,) if isinstance(paths, str) else paths
-        quoted_paths = " ".join(shlex.quote(path) for path in paths)
-        re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
-        text = re.sub(rf"(?<!\\){re_wildcard}", rf"{quoted_paths}\1", text)
-        text = re.sub(rf"\\{re_wildcard}", rf"{wildcard}\1", text)
-    return text
-
-
 def alias(text: str, mode: api.modes.Mode) -> str:
     """Replace alias with the actual command.
 
@@ -244,5 +202,5 @@ def alias(text: str, mode: api.modes.Mode) -> str:
     cmd = text.split()[0]
     if cmd in aliases.get(mode):
         text = text.replace(cmd, aliases.get(mode)[cmd])
-        return expand_percent(text, mode)
+        return wildcards.expand_internal(text, mode)
     return text

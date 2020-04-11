@@ -34,30 +34,3 @@ def test_text_non_whitespace_with_non_whitespace(text, mocker):
 
     function(text)
     assert mock.called_once_with("txt")
-
-
-@pytest.mark.parametrize("wildcard", ("%", "%m", "%wildcard", "%f"))
-@pytest.mark.parametrize("escaped", (True, False))
-@pytest.mark.parametrize(
-    "text", ("{wildcard} start", "in the {wildcard} middle", "end {wildcard}")
-)
-def test_expand_wildcard(wildcard, escaped, text):
-    text = text.format(wildcard=rf"\{wildcard}" if escaped else wildcard)
-    paths = "this", "is", "text"
-    result = runners.expand_wildcard(text, wildcard, lambda: paths)
-
-    if escaped:
-        expected = text.replace("\\", "")
-    else:
-        expected = text.replace(wildcard, " ".join(paths))
-
-    assert result == expected
-
-
-def test_recursive_wildcards():
-    """Ensure unescaping of wildcards does not lead to them being matched later."""
-    text = r"This has an escaped wildcard \%m"
-    expected = "This has an escaped wildcard %m"
-    intermediate = runners.expand_wildcard(text, "%m", lambda: "anything")
-    result = runners.expand_wildcard(intermediate, "%", lambda: "anything")
-    assert result == expected
