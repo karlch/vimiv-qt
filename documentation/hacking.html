@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>Hacking the Code &#8212; vimiv  documentation</title>
@@ -310,7 +310,7 @@ additional information.</p></li>
 <li><p>Before the application is quit, the <code class="docutils literal notranslate"><span class="pre">cleanup</span></code> function of all loaded plugins is
 called.</p></li>
 </ol>
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.plugins.load">
 <code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.plugins.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load plugins defined.</p>
@@ -322,9 +322,9 @@ called.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.plugins.get_plugins">
-<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">get_plugins</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict[str, str]<a class="headerlink" href="#vimiv.plugins.get_plugins" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.plugins.</code><code class="sig-name descname">get_plugins</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><a class="headerlink" href="#vimiv.plugins.get_plugins" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve dictionary containing active plugin names and additional information.</p>
 </dd></dl>
 
@@ -398,9 +398,9 @@ of the class, use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_instance</span> <span class="o">=</span> <span class="n">MyLongLivedClass</span><span class="o">.</span><span class="n">instance</span>
 </pre></div>
 </div>
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.objreg.register">
-<code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">component_init: Callable</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.objreg.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.objreg.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">component_init</span><span class="p">:</span> <span class="n">Callable</span></em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.objreg.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to register a class for the object registry.</p>
 <p>This decorates the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function of the class to register. The object is
 stored in the registry right after <code class="docutils literal notranslate"><span class="pre">__init__</span></code> was called.</p>
@@ -434,9 +434,9 @@ used.</p>
 <code class="docutils literal notranslate"><span class="pre">IMAGE</span></code>, <code class="docutils literal notranslate"><span class="pre">LIBRARY</span></code> and <code class="docutils literal notranslate"><span class="pre">THUMBNAIL</span></code>. When adding commands for this mode,
 they are automatically added for each of these three modes.</p>
 <p>All modes inherit from the common <code class="xref py py-class docutils literal notranslate"><span class="pre">Mode</span></code> base class.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.modes.widget">
-<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">widget</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.modes.widget" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">widget</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">vimiv.api.modes.Mode</span></em><span class="sig-paren">)</span> &#x2192; Callable<a class="headerlink" href="#vimiv.api.modes.widget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to assign a widget to a mode.</p>
 <p>The decorator decorates the __init__ function of a QWidget class storing
 the created component as the widget associated to the mode. This is used
@@ -456,9 +456,9 @@ when entering a mode to focus the widget which is assigned to this mode.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.modes.get_by_name">
-<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">get_by_name</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.get_by_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">get_by_name</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.get_by_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve Mode class by name.</p>
 <p>This can be used in case the python <code class="xref py py-class docutils literal notranslate"><span class="pre">vimiv.api.modes.Mode</span></code> class is
 not available, for example when running commands.</p>
@@ -472,7 +472,7 @@ not available, for example when running commands.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.modes.current">
 <code class="sig-prename descclassname">vimiv.api.modes.</code><code class="sig-name descname">current</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; vimiv.api.modes.Mode<a class="headerlink" href="#vimiv.api.modes.current" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the currently active mode.</p>
@@ -541,39 +541,39 @@ passed:</p>
 </div>
 <p>In this case it is probably smart to define a default keybinding for the
 command.</p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="vimiv.api.commands.ArgumentError">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">ArgumentError</code><a class="headerlink" href="#vimiv.api.commands.ArgumentError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a command was called with wrong arguments.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="vimiv.api.commands.CommandError">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandError</code><a class="headerlink" href="#vimiv.api.commands.CommandError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a command failed to run correctly.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="vimiv.api.commands.CommandInfo">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandInfo</code><a class="headerlink" href="#vimiv.api.commands.CommandInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a command wants to show the user an info.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="vimiv.api.commands.CommandNotFound">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandNotFound</code><a class="headerlink" href="#vimiv.api.commands.CommandNotFound" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a command does not exist for a specific mode.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="vimiv.api.commands.CommandWarning">
 <em class="property">exception </em><code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">CommandWarning</code><a class="headerlink" href="#vimiv.api.commands.CommandWarning" title="Permalink to this definition">¶</a></dt>
 <dd><p>Raised if a command wants to show the user a warning.</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.commands.exists">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#vimiv.api.commands.exists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">exists</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">vimiv.api.modes.Mode</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#vimiv.api.commands.exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a command exists in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -588,9 +588,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.commands.get">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">name: str</em>, <em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em><span class="sig-paren">)</span> &#x2192; vimiv.api.commands._Command<a class="headerlink" href="#vimiv.api.commands.get" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">vimiv.api.modes.Mode</span> <span class="o">=</span> <span class="default_value">Mode.GLOBAL</span></em><span class="sig-paren">)</span> &#x2192; vimiv.api.commands._Command<a class="headerlink" href="#vimiv.api.commands.get" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get one command object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -605,9 +605,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.commands.items">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">items</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode</em><span class="sig-paren">)</span> &#x2192; ItemsView[str, vimiv.api.commands._Command]<a class="headerlink" href="#vimiv.api.commands.items" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">items</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">vimiv.api.modes.Mode</span></em><span class="sig-paren">)</span> &#x2192; ItemsView<span class="p">[</span>str<span class="p">, </span>vimiv.api.commands._Command<span class="p">]</span><a class="headerlink" href="#vimiv.api.commands.items" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve all items in the commands registry for iteration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -619,9 +619,9 @@ command.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.commands.register">
-<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param">mode: vimiv.api.modes.Mode = Mode.GLOBAL</em>, <em class="sig-param">hide: bool = False</em>, <em class="sig-param">store: bool = True</em>, <em class="sig-param">name: str = None</em><span class="sig-paren">)</span> &#x2192; Callable[[FuncT], FuncT]<a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.commands.</code><code class="sig-name descname">register</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">vimiv.api.modes.Mode</span> <span class="o">=</span> <span class="default_value">Mode.GLOBAL</span></em>, <em class="sig-param"><span class="n">hide</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">store</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>FuncT<span class="p">]</span><span class="p">, </span>FuncT<span class="p">]</span><a class="headerlink" href="#vimiv.api.commands.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to store a command in the registry.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -690,9 +690,9 @@ by the text “user: ” we run:</p>
 function defined earlier.</p>
 <p>If any other object requires the status to be updated, they should call
 <a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a> passing the reason for the requested update as string.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.status.clear">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param">reason: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">clear</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit signal to clear messages.</p>
 <p>This function can be called when any temporary logging messages should be cleared.</p>
 <dl class="field-list simple">
@@ -702,9 +702,9 @@ function defined earlier.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.status.evaluate">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.status.evaluate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.status.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the status modules and update text accordingly.</p>
 <p>Replaces all occurances of module names with the output of the
 corresponding function.</p>
@@ -722,9 +722,9 @@ becomes ‘Path: /home/user/folder’.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.status.module">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param">name: str</em><span class="sig-paren">)</span> &#x2192; Callable[[ModuleFunc], ModuleFunc]<a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>ModuleFunc<span class="p">]</span><span class="p">, </span>ModuleFunc<span class="p">]</span><a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to register a function as status module.</p>
 <p>The decorated function must return a string that can be displayed as
 status. When calling <a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, any occurance of <code class="docutils literal notranslate"><span class="pre">name</span></code> will be
@@ -738,9 +738,9 @@ text.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.status.update">
-<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param">reason: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reason</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.status.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit signal to update the current status.</p>
 <p>This function can be called when an update of the status is required. It
 is, for example, always called after a command was run.</p>
@@ -796,25 +796,25 @@ description column is set up to take 30 % of the total width while the completio
 70 %.</p>
 <p>For an overview of implemented models, feel free to take a look at the ones defined in
 <code class="docutils literal notranslate"><span class="pre">vimiv.completion.completionmodels</span></code>.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="vimiv.api.completion.BaseModel">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param">text: str</em>, <em class="sig-param">column_widths: Tuple[float</em>, <em class="sig-param">...] = (1</em>, <em class="sig-param">)</em>, <em class="sig-param">valid_modes: Tuple[vimiv.api.modes.Mode</em>, <em class="sig-param">...] = (Mode.GLOBAL</em>, <em class="sig-param">Mode.IMAGE</em>, <em class="sig-param">Mode.LIBRARY</em>, <em class="sig-param">Mode.THUMBNAIL</em>, <em class="sig-param">Mode.COMMAND</em>, <em class="sig-param">Mode.MANIPULATE)</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.api.completion.</code><code class="sig-name descname">BaseModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">column_widths</span><span class="p">:</span> <span class="n">Tuple[float, …]</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">valid_modes</span><span class="p">:</span> <span class="n">Tuple[vimiv.api.modes.Mode, …]</span> <span class="o">=</span> <span class="default_value">Mode.GLOBAL, Mode.IMAGE, Mode.LIBRARY, Mode.THUMBNAIL, Mode.COMMAND, Mode.MANIPULATE</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.api.completion.BaseModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base model used for completion models.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="vimiv.api.completion.BaseModel.column_widths">
 <code class="sig-name descname">column_widths</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.column_widths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tuple of floats [0..1] defining the width of each column.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="vimiv.api.completion.BaseModel.modes">
 <code class="sig-name descname">modes</code><a class="headerlink" href="#vimiv.api.completion.BaseModel.modes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Modes for which this completion model is valid.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.api.completion.BaseModel.on_enter">
-<code class="sig-name descname">on_enter</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_enter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_enter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the completer when this model is entered.</p>
 <p>This allows models to change their content accordingly.</p>
 <dl class="field-list simple">
@@ -824,9 +824,9 @@ description column is set up to take 30 % of the total width while the completio
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.api.completion.BaseModel.on_text_changed">
-<code class="sig-name descname">on_text_changed</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_text_changed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_text_changed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.on_text_changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called by the completer when the commandline text has changed.</p>
 <p>This allows models to change their content accordingly.</p>
 <dl class="field-list simple">
@@ -836,9 +836,9 @@ description column is set up to take 30 % of the total width while the completio
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.api.completion.BaseModel.set_data">
-<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param">data: Iterable[Tuple]</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span>Tuple<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#vimiv.api.completion.BaseModel.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add rows to the model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -908,9 +908,9 @@ connect to these signals:</p>
 <div class="section" id="module-vimiv.api.prompt">
 <span id="prompt"></span><h4><a class="toc-backref" href="#id20">Prompt</a><a class="headerlink" href="#module-vimiv.api.prompt" title="Permalink to this headline">¶</a></h4>
 <p>Prompt the user for a question.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="vimiv.api.prompt.ask_question">
-<code class="sig-prename descclassname">vimiv.api.prompt.</code><code class="sig-name descname">ask_question</code><span class="sig-paren">(</span><em class="sig-param">*</em>, <em class="sig-param">title: str</em>, <em class="sig-param">body: str</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#vimiv.api.prompt.ask_question" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">vimiv.api.prompt.</code><code class="sig-name descname">ask_question</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">title</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">body</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#vimiv.api.prompt.ask_question" title="Permalink to this definition">¶</a></dt>
 <dd><p>Prompt the user to answer a question.</p>
 <p>This emits the question_asked signal which leads to a gui prompt being displayed.
 The UI is blocked until the question was answered or aborted.</p>
@@ -983,9 +983,9 @@ application.</p></li>
 </ol>
 <p id="adding-new-manipulation">Adding new manipulations is done by implementing a new <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="vimiv.imutils.immanipulate.ManipulationGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">ManipulationGroup</span></code></a> and
 adding it to the <code class="docutils literal notranslate"><span class="pre">Manipulations</span></code>.</p>
-<dl class="class">
+<dl class="py class">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup">
-<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">vimiv.imutils.immanipulate.</code><code class="sig-name descname">ManipulationGroup</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">manipulations</span><span class="p">:</span> <span class="n">vimiv.imutils.immanipulate.Manipulation</span></em><span class="sig-paren">)</span><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for a group of manipulations associated to one manipulation tab.</p>
 <p>The group stores the individual manipulations, associates them to a manipulate
 function and provides a title.</p>
@@ -995,15 +995,15 @@ function and provides a title.</p>
 <li><p>Define the <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="vimiv.imutils.immanipulate.ManipulationGroup.title"><code class="xref py py-func docutils literal notranslate"><span class="pre">title()</span></code></a> property</p></li>
 <li><p>Implement the abstract method <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a></p></li>
 </ul>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup.manipulations">
 <code class="sig-name descname">manipulations</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.manipulations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tuple of individual manipulations.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup._apply">
-<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em>, <em class="sig-param">*manipulations: vimiv.imutils.immanipulate.Manipulation</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">_apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">bytes</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">manipulations</span><span class="p">:</span> <span class="n">vimiv.imutils.immanipulate.Manipulation</span></em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply all manipulations of this group.</p>
 <p>Takes the image data as raw bytes, applies the changes according the current
 manipulation values and returns the updated bytes. In general this is associated
@@ -1020,20 +1020,20 @@ raw data.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup.apply">
-<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param">data: bytes</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.apply" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">apply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">bytes</span></em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.apply" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply manipulation function to image data if any manipulation changed.</p>
 <p>Wraps the abstract <a class="reference internal" href="#vimiv.imutils.immanipulate.ManipulationGroup._apply" title="vimiv.imutils.immanipulate.ManipulationGroup._apply"><code class="xref py py-func docutils literal notranslate"><span class="pre">_apply()</span></code></a> with a common setup and finalize part.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup.changed">
 <em class="property">property </em><code class="sig-name descname">changed</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.changed" title="Permalink to this definition">¶</a></dt>
 <dd><p>True if any manipulation has been changed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="vimiv.imutils.immanipulate.ManipulationGroup.title">
 <em class="property">abstract property </em><code class="sig-name descname">title</code><a class="headerlink" href="#vimiv.imutils.immanipulate.ManipulationGroup.title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Title of the manipulation group as referred to in its tab.</p>
@@ -1090,7 +1090,7 @@ and finally a short docstring.</p>
     </p>
     <p>
         &copy; Copyright 2017-2020, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.1.<br/>
     </p>
   </div>
 </footer>
