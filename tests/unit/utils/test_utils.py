@@ -55,6 +55,19 @@ def test_wrap_style_span():
     )
 
 
+@pytest.mark.parametrize("escaped", (True, False))
+def test_replace_unless_escaped(escaped):
+    pattern = " "
+    repl = "&nbsp;"
+    text = f"before{pattern}after"
+    if escaped:
+        expected = text
+        text = text.replace(pattern, rf"\{pattern}")
+    else:
+        expected = text.replace(pattern, repl)
+    assert utils.replace_unless_escaped(pattern, repl, text) == expected
+
+
 @pytest.mark.parametrize(
     "sequence, elems, expected",
     [

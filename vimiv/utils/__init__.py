@@ -24,6 +24,10 @@ except ImportError:  # pragma: no cover  # Covered in a different tox env during
     from sip import wrappertype  # type: ignore
 
 
+RE_STR_NOT_ESCAPED = r"(?<!\\)"
+RE_STR_ESCAPED = r"\\"
+
+
 def add_html(text: str, *tags: str) -> str:
     """Surround text html tags.
 
@@ -70,6 +74,13 @@ def escape_glob(text: str) -> str:
         return f"[{char}]"
 
     return re.sub(r"\\[\*\?\[\]]", escape_char, text)
+
+
+def replace_unless_escaped(pattern: str, repl: str, text: str):
+    """Replace pattern with repl in text unless prefixed by a backslash."""
+    text = re.sub(RE_STR_NOT_ESCAPED + pattern, repl, text)
+    text = re.sub(RE_STR_ESCAPED + pattern, pattern, text)
+    return text
 
 
 def contains_any(
