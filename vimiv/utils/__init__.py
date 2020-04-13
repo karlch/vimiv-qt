@@ -63,7 +63,11 @@ def strip_html(text: str) -> str:
 
 
 def escape_html(text: str) -> str:
-    return text.replace("<", "&lt;").replace(">", "&gt;")
+    """Replace chars that have a special meaning in html with their html variant."""
+    replacements = ("<", "&lt;"), (">", "&gt;"), (" ", "&nbsp;")
+    for pattern, repl in replacements:
+        text = replace_unless_escaped(pattern, repl, text)
+    return text
 
 
 def escape_glob(text: str) -> str:
