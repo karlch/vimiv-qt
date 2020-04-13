@@ -14,7 +14,7 @@ import re
 import shlex
 import typing
 
-from vimiv import api
+from vimiv import api, utils
 
 WildcardReturnT = typing.Union[str, typing.Iterable[str]]
 WildcardCallbackT = typing.Callable[..., WildcardReturnT]
@@ -85,6 +85,8 @@ def expand(
         paths = (paths,) if isinstance(paths, str) else paths
         quoted_paths = " ".join(shlex.quote(path) for path in paths)
         re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
-        text = re.sub(rf"(?<!\\){re_wildcard}", rf"{quoted_paths}\1", text)
-        text = re.sub(rf"\\{re_wildcard}", rf"{wildcard}\1", text)
+        text = re.sub(
+            utils.RE_STR_NOT_ESCAPED + re_wildcard, rf"{quoted_paths}\1", text
+        )
+        text = re.sub(utils.RE_STR_ESCAPED + re_wildcard, rf"{wildcard}\1", text)
     return text
