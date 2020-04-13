@@ -14,6 +14,7 @@ Module Attributes:
     statusbar: The statusbar object
 """
 
+import re
 from typing import cast
 
 from PyQt5.QtCore import Qt, QTimer
@@ -119,7 +120,11 @@ class StatusBar(QWidget):
             text = api.settings.get_value(f"statusbar.{position}_{mode}")
         except KeyError:
             text = api.settings.get_value(f"statusbar.{position}")
-        return api.status.evaluate(text.replace(" ", "&nbsp;"))
+        return api.status.evaluate(self._escape_subsequent_space_for_html(text))
+
+    @classmethod
+    def _escape_subsequent_space_for_html(cls, text):
+        return re.sub(r" {2,}", lambda m: m.group().replace(" ", "&nbsp;"), text)
 
     def _set_severity_style(self, severity):
         """Set the style of the statusbar for a temporary message.

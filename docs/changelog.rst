@@ -27,6 +27,10 @@ Changed:
   Instead, they behave according to the ``image.autowrite`` setting just like
   transformations.
 * Zooming now always uses the center of the currently visible area as focal-point.
+* Spaces in statusbar settings such as ``statusbar.left`` are now only replaced by
+  the html-equivalent ``&nbsp;`` if there are multiple subsequent spaces. This keeps
+  wanted additional spacing while allowing to use html code such as
+  ``<span style='color: #8FBCBB; font-weight: bold;'>colored and bold</span>``.
 
 Fixed:
 ^^^^^^
