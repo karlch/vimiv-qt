@@ -82,6 +82,8 @@ class KeyhintWidget(QLabel):
         text = ""
         for keybinding, command in matches:
             suffix = keybinding[len(prefix) :]
+            prefix = utils.escape_html(prefix)
+            suffix = utils.escape_html(suffix)
             text += (
                 "<tr>"
                 f"<td>{prefix}</td>"

@@ -33,6 +33,8 @@ Fixed:
 
 * Centering the image on any type of resize, even when the user explicitly changed the
   scroll position.
+* Displaying bindings containing special html characters such as '<' or '>' in keyhint
+  widget.
 
 
 v0.6.1 (2020-03-07)

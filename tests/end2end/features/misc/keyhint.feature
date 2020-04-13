@@ -40,3 +40,10 @@ Feature: The keyhint overlay widget
         And I wait for the keyhint widget
         And I press '<escape>'
         Then the keyhint widget should not be visible
+
+    Scenario: Keyhint widget displays partial matches of special keys
+        When I run bind g<space> log info space
+        And I run bind g<tab> log info tab
+        And I press 'g'
+        Then the keyhint widget should contain &lt;space&gt;
+        And the keyhint widget should contain &lt;tab&gt;
