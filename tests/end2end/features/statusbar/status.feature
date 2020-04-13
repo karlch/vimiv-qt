@@ -27,3 +27,9 @@ Feature: Display status information in the statusbar
         When I run set statusbar.left {filesize}
         And I run command
         Then no crash should happen
+
+    Scenario: Correctly escape html for keybindings
+        Given I start vimiv
+        When I run bind << scroll down
+        And I press '<'
+        Then the right status should include &lt;

@@ -202,7 +202,7 @@ class EventHandlerMixin:
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return EventHandlerMixin.partial_handler.text
+        return utils.escape_html(EventHandlerMixin.partial_handler.text)
 
 
 def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
