@@ -165,6 +165,10 @@ convenience.</p></li>
 Instead, they behave according to the <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code> setting just like
 transformations.</p></li>
 <li><p>Zooming now always uses the center of the currently visible area as focal-point.</p></li>
+<li><p>Spaces in statusbar settings such as <code class="docutils literal notranslate"><span class="pre">statusbar.left</span></code> are now only replaced by
+the html-equivalent <code class="docutils literal notranslate"><span class="pre">&amp;nbsp;</span></code> if there are multiple subsequent spaces. This keeps
+wanted additional spacing while allowing to use html code such as
+<code class="docutils literal notranslate"><span class="pre">&lt;span</span> <span class="pre">style='color:</span> <span class="pre">#8FBCBB;</span> <span class="pre">font-weight:</span> <span class="pre">bold;'&gt;colored</span> <span class="pre">and</span> <span class="pre">bold&lt;/span&gt;</span></code>.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
@@ -172,6 +176,8 @@ transformations.</p></li>
 <ul class="simple">
 <li><p>Centering the image on any type of resize, even when the user explicitly changed the
 scroll position.</p></li>
+<li><p>Displaying bindings containing special html characters such as ‘&lt;’ or ‘&gt;’ in the
+keyhint widget and in the <code class="docutils literal notranslate"><span class="pre">{keys}</span></code> status module.</p></li>
 </ul>
 </div>
 </div>

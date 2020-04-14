@@ -27,12 +27,18 @@ Changed:
   Instead, they behave according to the ``image.autowrite`` setting just like
   transformations.
 * Zooming now always uses the center of the currently visible area as focal-point.
+* Spaces in statusbar settings such as ``statusbar.left`` are now only replaced by
+  the html-equivalent ``&nbsp;`` if there are multiple subsequent spaces. This keeps
+  wanted additional spacing while allowing to use html code such as
+  ``<span style='color: #8FBCBB; font-weight: bold;'>colored and bold</span>``.
 
 Fixed:
 ^^^^^^
 
 * Centering the image on any type of resize, even when the user explicitly changed the
   scroll position.
+* Displaying bindings containing special html characters such as '<' or '>' in the
+  keyhint widget and in the ``{keys}`` status module.
 
 
 v0.6.1 (2020-03-07)
