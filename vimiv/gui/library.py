@@ -212,10 +212,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             self._positions[parent] = os.getcwd()
             api.working_directory.handler.chdir(parent)
         else:
-            try:
-                row = self.row()
-            # Directory is empty
-            except IndexError:
+            row = self.row()
+            if row == -1:  # Directory is empty
                 raise api.commands.CommandWarning("Directory is empty")
             if direction == direction.Up:
                 row -= count
@@ -263,7 +261,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def current(self):
         """Return absolute path of currently selected path."""
         with suppress(IndexError):  # No path selected
-            basename = self.selectionModel().selectedIndexes()[1].data()
+            basename = self.selectedIndexes()[1].data()
             basename = strip(basename)
             return os.path.abspath(basename)
         return ""

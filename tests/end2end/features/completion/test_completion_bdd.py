@@ -20,8 +20,7 @@ def completionwidget():
 
 @bdd.then("no completion should be selected")
 def check_no_completion_selected(completionwidget):
-    with pytest.raises(IndexError):
-        completionwidget.row()
+    assert not completionwidget.selectedIndexes()
 
 
 @bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))

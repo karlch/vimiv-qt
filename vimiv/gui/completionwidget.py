@@ -81,7 +81,7 @@ class CompletionView(widgets.FlatTreeView):
             return
         row = row % self.model().rowCount()
         self._select_row(row)
-        index = self.selectionModel().selectedIndexes()[0]
+        index = self.currentIndex()
         completion = index.data()
         self.activated.emit(completion.lstrip())
 

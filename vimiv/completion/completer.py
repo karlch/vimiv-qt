@@ -64,8 +64,7 @@ class Completer(QObject):
     @utils.slot
     def _on_text_changed(self, text: str):
         """Update completions when text changed."""
-        # Clear selection
-        self._completion.selectionModel().clear()
+        self._completion.clearSelection()
         # Update model
         self._update_proxy_model(text)
         self.model.on_text_changed(text)
@@ -74,7 +73,7 @@ class Completer(QObject):
     @utils.slot
     def _on_editing_finished(self):
         """Reset filter and hide completion widget."""
-        self._completion.selectionModel().clear()
+        self._completion.clearSelection()
         self.proxy_model.reset()
         self._completion.hide()
 

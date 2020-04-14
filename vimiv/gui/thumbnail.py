@@ -10,7 +10,7 @@ import os
 from contextlib import suppress
 from typing import List, Optional, Iterator, cast
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QRect, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
@@ -294,9 +294,8 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         """
         _logger.debug("Selecting thumbnail number %d", index)
         model_index = self.model().index(index, 0)
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(model_index, selmod)  # type: ignore
         self.scrollTo(model_index, hint=self.PositionAtCenter)
+        self.setCurrentIndex(model_index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
 

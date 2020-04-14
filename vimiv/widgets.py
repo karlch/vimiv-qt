@@ -6,7 +6,7 @@
 
 """Miscellaneous QtWidgets."""
 
-from PyQt5.QtCore import QItemSelectionModel, Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
@@ -46,14 +46,12 @@ class FlatTreeView(QTreeView):
         Args:
             index: QModelIndex to select.
         """
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(index, selmod)
         self.scrollTo(index, hint=self.PositionAtCenter)
+        self.setCurrentIndex(index)
 
     def row(self):
         """Return the currently selected row."""
-        selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
-        return selected_indexes[0].row()
+        return self.currentIndex().row()
 
 
 class SliderWithValue(QSlider):
