@@ -127,7 +127,7 @@ class ManipulateImage(QLabel):
         self._pixmap: Optional[QPixmap] = None
         styles.apply(self)
 
-        api.modes.MANIPULATE.left.connect(self._on_left)
+        api.modes.MANIPULATE.closed.connect(self._on_left)
         immanipulate.Manipulator.instance.updated.connect(self._update_pixmap)
 
         self.hide()

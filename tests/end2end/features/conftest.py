@@ -193,9 +193,9 @@ def enter_mode(mode):
     api.modes.get_by_name(mode).enter()
 
 
-@bdd.when(bdd.parsers.parse("I leave {mode} mode"))
+@bdd.when(bdd.parsers.parse("I close {mode} mode"))
 def leave_mode(mode):
-    api.modes.get_by_name(mode).leave()
+    api.modes.get_by_name(mode).close()
 
 
 @bdd.when(bdd.parsers.parse("I resize the window to {size}"))

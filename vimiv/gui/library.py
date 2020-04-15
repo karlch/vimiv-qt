@@ -88,7 +88,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self.repaint)
         api.modes.LIBRARY.entered.connect(self._on_enter)
-        api.modes.LIBRARY.left.connect(self._on_left)
+        api.modes.LIBRARY.closed.connect(self._on_closed)
         api.signals.new_image_opened.connect(self._select_path)
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
@@ -120,8 +120,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         self.update_width()
 
     @utils.slot
-    def _on_left(self):
-        """Hide library widget if library mode was left."""
+    def _on_closed(self):
+        """Hide library widget if library mode was clsed."""
         self.hide()
         self._last_selected = ""
 
@@ -166,7 +166,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             api.signals.load_images.emit([path])
         self._last_selected = path
         if close:
-            api.modes.LIBRARY.leave()
+            api.modes.LIBRARY.close()
 
     @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)

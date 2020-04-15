@@ -22,7 +22,7 @@ COLOR = QColor("#888888")
 @pytest.fixture()
 def edit(mocker, qtbot):
     mocker.patch("vimiv.api.signals")
-    mocker.patch("vimiv.api.modes.Mode.leave")
+    mocker.patch("vimiv.api.modes.Mode.close")
     mocker.patch.object(styles, "_style", styles.create_default())
     handler = edit_handler.EditHandler()
     handler._init_manipulate()

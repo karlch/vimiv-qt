@@ -63,12 +63,12 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     Signals:
         first_entered: Emitted before the mode is entered the first time.
         entered: Emitted when this mode is entered.
-        left: Emitted when this mode is left.
+        closed: Emitted when this mode is closed.
     """
 
     first_entered = pyqtSignal()
     entered = pyqtSignal()
-    left = pyqtSignal()
+    closed = pyqtSignal()
 
     _ID = 0
     active = cast("Mode", None)  # Initialized during reading of the module
@@ -109,10 +109,10 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         self.entered.emit()
         _logger.debug("Entered mode %s", self)
 
-    def leave(self) -> None:
-        """Leave this mode for the last mode."""
+    def close(self) -> None:
+        """Close this mode and enter the last mode if this mode is active."""
+        self.closed.emit()
         self.last.enter()
-        self.left.emit()
         # Reset the last mode when leaving a specific mode as leaving means closing
         # the widget and we do not want to re-open a closed widget implicitly
         self.last.reset_last()
@@ -120,10 +120,10 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     def toggle(self) -> None:
         """Toggle this mode.
 
-        If the mode is currently visible, leave it. Otherwise enter it.
+        If the mode is currently visible, close it. Otherwise enter it.
         """
         if self.widget.isVisible():
-            self.leave()
+            self.close()
         else:
             self.enter()
 

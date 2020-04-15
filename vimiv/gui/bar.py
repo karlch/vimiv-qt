@@ -95,11 +95,11 @@ class Bar(QWidget):
 
     @utils.slot
     def _on_editing_finished(self):
-        """Leave command mode on the editingFinished signal."""
+        """Close command line on the editingFinished signal."""
         self._commandline.setText("")
         self._stack.setCurrentWidget(statusbar.statusbar)
         self._maybe_hide()
-        api.modes.COMMAND.leave()
+        api.modes.COMMAND.close()
 
     def _on_show_changed(self, value: bool):
         statusbar.statusbar.setVisible(value)

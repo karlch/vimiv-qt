@@ -49,7 +49,7 @@ class MainWindow(QWidget):
         # Connect signals
         api.status.signals.update.connect(self._set_title)
         api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
-        api.modes.COMMAND.left.connect(self._update_overlay_geometry)
+        api.modes.COMMAND.closed.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         api.prompt.question_asked.connect(self._run_prompt)
@@ -185,8 +185,8 @@ class ImageThumbnailStack(QStackedWidget):
         api.modes.IMAGE.entered.connect(self._enter_image)
         api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
         # This is required in addition to the setting when entering image mode as it is
-        # possible to leave for the library
-        api.modes.THUMBNAIL.left.connect(self._enter_image)
+        # possible to close thumbnail mode and enter the library
+        api.modes.THUMBNAIL.closed.connect(self._enter_image)
 
     @utils.slot
     def _enter_thumbnail(self):

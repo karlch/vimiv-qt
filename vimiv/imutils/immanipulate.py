@@ -368,7 +368,7 @@ class Manipulator(QObject):
         self._pixmap = self._manipulated = None
 
         api.modes.MANIPULATE.entered.connect(self._enter)
-        api.modes.MANIPULATE.left.connect(self._reset)
+        api.modes.MANIPULATE.closed.connect(self._reset)
         self.updated.connect(self._on_updated)
         for manipulation in self.manipulations:
             manipulation.updated.connect(self._apply_manipulation)
@@ -392,13 +392,13 @@ class Manipulator(QObject):
                 *[change.manipulations for change in self._changes],
             )  # Apply all changes to the full-scale pixmap
             self.accepted.emit(pixmap)
-        api.modes.MANIPULATE.leave()
+        api.modes.MANIPULATE.close()
 
     @api.keybindings.register("<escape>", "discard", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
     def discard(self):
         """Discard any changes and leave manipulate."""
-        api.modes.MANIPULATE.leave()
+        api.modes.MANIPULATE.close()
         self._reset()
 
     @api.keybindings.register("n", "next", mode=api.modes.MANIPULATE)
@@ -529,7 +529,7 @@ class Manipulator(QObject):
         with the large original when it is not needed.
         """
         if not self._current_pixmap.editable:
-            api.modes.MANIPULATE.leave()
+            api.modes.MANIPULATE.close()
             QTimer.singleShot(
                 0, lambda: utils.log.error("File format does not support manipulate")
             )

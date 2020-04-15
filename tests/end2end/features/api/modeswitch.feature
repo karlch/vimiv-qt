@@ -5,10 +5,10 @@ Feature: Switching between different modes.
         When I enter command mode
         Then the mode should be command
 
-    Scenario: Enter and leave command mode from library
+    Scenario: Enter and close command mode from library
         Given I open any directory
         When I enter command mode
-        And I leave command mode
+        And I close command mode
         Then the mode should be library
 
     Scenario: Enter image mode from library
