@@ -40,6 +40,7 @@ Fixed:
 * Displaying bindings containing special html characters such as '<' or '>' in the
   keyhint widget and in the ``{keys}`` status module.
 * Crash when scrolling thumbnail mode with empty thumbnail list.
+* Crash when running ``:goto`` without valid paths/images/thumbnails.
 
 
 v0.6.1 (2020-03-07)

@@ -245,9 +245,15 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         **count:** Select [count]th element instead.
         """
         try:
-            row = number_for_command(row, count, max_count=self.model().rowCount())
-        except ValueError:
-            raise api.commands.CommandError("Either row or count is required")
+            row = number_for_command(
+                row,
+                count,
+                max_count=self.model().rowCount(),
+                number_name="row",
+                elem_name="path",
+            )
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
         self._select_row(row, open_selected_image=open_selected)
 
     def update_width(self):

@@ -66,9 +66,11 @@ def goto(index: Optional[int], count: Optional[int] = None) -> None:
     **count:** Select [count]th image instead.
     """
     try:
-        index = number_for_command(index, count, max_count=len(_paths))
-    except ValueError:
-        raise api.commands.CommandError("Either index or count is required")
+        index = number_for_command(
+            index, count, max_count=len(_paths), elem_name="image"
+        )
+    except ValueError as e:
+        raise api.commands.CommandError(str(e))
     _set_index(index)
 
 

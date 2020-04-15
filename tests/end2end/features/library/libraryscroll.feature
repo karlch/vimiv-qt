@@ -91,3 +91,11 @@ Feature: Scrolling the library.
         And I run delete %
         And I wait for the working directory handler
         Then the library row should be 3
+
+    Scenario: Crash on goto in empty directory
+        Given I start vimiv
+        When I run goto 3
+        Then no crash should happen
+        And the message
+            'goto: No path in list'
+            should be displayed

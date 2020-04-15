@@ -253,9 +253,11 @@ class ThumbnailView(
         **count:** Select [count]th thubnail instead.
         """
         try:
-            index = number_for_command(index, count, max_count=self.count())
-        except ValueError:
-            raise api.commands.CommandError("Either index or count is required")
+            index = number_for_command(
+                index, count, max_count=self.count(), elem_name="thumbnail"
+            )
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
         self._select_index(index)
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
