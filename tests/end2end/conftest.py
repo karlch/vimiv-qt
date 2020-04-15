@@ -50,8 +50,10 @@ def cleanup():
     runners._last_command.clear()
     filelist._paths = []
     filelist._index = 0
+    api.modes.Mode.active = api.modes.IMAGE
     for mode in api.modes.ALL:
         mode._entered = False
+        mode.last = api.modes.IMAGE if mode != api.modes.IMAGE else api.modes.LIBRARY
 
 
 @pytest.fixture(autouse=True, scope="module")

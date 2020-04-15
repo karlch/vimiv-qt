@@ -49,3 +49,18 @@ Feature: Switching between different modes.
         And the message
             'enter: Entering command mode is ambiguous, please use :command or :search'
             should be displayed
+
+    Scenario: Do not switch mode when toggling inactive library mode
+        Given I start vimiv
+        When I toggle thumbnail mode
+        # This used to enter image as image was the mode "before" library
+        And I toggle library mode
+        Then the mode should be thumbnail
+
+    Scenario: Do not switch mode when toggling inactive thumbnail mode
+        Given I open 2 images
+        When I toggle thumbnail mode
+        When I toggle library mode
+        # This used to enter image as image was the mode "before" thumbnail
+        And I toggle thumbnail mode
+        Then the mode should be library

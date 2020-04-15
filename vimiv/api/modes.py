@@ -112,10 +112,11 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     def close(self) -> None:
         """Close this mode and enter the last mode if this mode is active."""
         self.closed.emit()
-        self.last.enter()
-        # Reset the last mode when leaving a specific mode as leaving means closing
-        # the widget and we do not want to re-open a closed widget implicitly
-        self.last.reset_last()
+        if Mode.active == self:
+            self.last.enter()
+            # Reset the last mode when leaving a specific mode as leaving means closing
+            # the widget and we do not want to re-open a closed widget implicitly
+            self.last.reset_last()
 
     def toggle(self) -> None:
         """Toggle this mode.
