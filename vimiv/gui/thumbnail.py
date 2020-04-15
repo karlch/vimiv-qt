@@ -294,6 +294,8 @@ class ThumbnailView(
             index: Number of the current item to select.
             emit: Emit the new_thumbnail_path_selected signal.
         """
+        if not self._paths:
+            raise api.commands.CommandWarning("Thumbnail list is empty")
         _logger.debug("Selecting thumbnail number %d", index)
         model_index = self.model().index(index, 0)
         self.setCurrentIndex(model_index)

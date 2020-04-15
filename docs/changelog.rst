@@ -39,6 +39,7 @@ Fixed:
   scroll position.
 * Displaying bindings containing special html characters such as '<' or '>' in the
   keyhint widget and in the ``{keys}`` status module.
+* Crash when scrolling thumbnail mode with empty thumbnail list.
 
 
 v0.6.1 (2020-03-07)
