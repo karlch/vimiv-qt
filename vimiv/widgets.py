@@ -14,7 +14,14 @@ from vimiv.config import styles
 from vimiv.utils import cached_method
 
 
-class FlatTreeView(QTreeView):
+class ScrollToCenterMixin:
+    """Mixin class to ensure the selected index stays at the center when scrolling."""
+
+    def scrollTo(self, index, _hint=None):
+        super().scrollTo(index, self.PositionAtCenter)
+
+
+class FlatTreeView(ScrollToCenterMixin, QTreeView):
     """QTreeView without expandable items."""
 
     def __init__(self, parent=None):
@@ -46,7 +53,6 @@ class FlatTreeView(QTreeView):
         Args:
             index: QModelIndex to select.
         """
-        self.scrollTo(index, hint=self.PositionAtCenter)
         self.setCurrentIndex(index)
 
     def row(self):

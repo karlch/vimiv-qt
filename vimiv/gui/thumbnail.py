@@ -14,7 +14,7 @@ from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
 from vimiv.utils import create_pixmap, thumbnail_manager, log
@@ -24,7 +24,9 @@ from . import eventhandler, synchronize
 _logger = log.module_logger(__name__)
 
 
-class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
+class ThumbnailView(
+    eventhandler.EventHandlerMixin, widgets.ScrollToCenterMixin, QListWidget
+):
     """Thumbnail widget.
 
     Attributes:
@@ -277,7 +279,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         for i in range(self.count()):
             item = self.item(i)
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
-        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
+        self.scrollTo(self.currentIndex())
 
     @utils.slot
     def _select_path(self, path: str):
@@ -294,7 +296,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         """
         _logger.debug("Selecting thumbnail number %d", index)
         model_index = self.model().index(index, 0)
-        self.scrollTo(model_index, hint=self.PositionAtCenter)
         self.setCurrentIndex(model_index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
@@ -356,7 +357,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     def resizeEvent(self, event):
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
-        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
+        self.scrollTo(self.currentIndex())
 
 
 class ThumbnailDelegate(QStyledItemDelegate):
