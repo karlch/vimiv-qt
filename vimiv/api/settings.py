@@ -13,16 +13,12 @@ Module attributes:
 import enum
 from abc import abstractmethod
 from contextlib import suppress
-from typing import Any, Dict, ItemsView, List, Callable, TypeVar
+from typing import Any, Dict, ItemsView, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
 from . import prompt
-
-
-SettingT = TypeVar("SettingT", bound="Setting")
-MethodT = Callable[[SettingT, Any], Any]
 
 
 _storage: Dict[str, "Setting"] = {}
