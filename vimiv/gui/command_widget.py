@@ -6,6 +6,7 @@
 
 """Command widget at the bottom including commandline and completion widget."""
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
 
 from vimiv import api, utils
@@ -40,6 +41,7 @@ class CommandWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._completion_widget)
         layout.addWidget(self._commandline)
+        layout.setAlignment(Qt.AlignBottom)
 
         self._commandline.editingFinished.connect(self._on_editing_finished)
 
