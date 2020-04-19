@@ -9,7 +9,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
 
-from vimiv import api, utils
+from vimiv import api
 from vimiv.completion import completer
 
 from . import commandline, completionwidget
@@ -43,7 +43,7 @@ class CommandWidget(QWidget):
         layout.addWidget(self._commandline)
         layout.setAlignment(Qt.AlignBottom)
 
-        self._commandline.editingFinished.connect(self._on_editing_finished)
+        self._commandline.editingFinished.connect(self.leave_commandline)
 
         self.hide()
 
@@ -90,12 +90,8 @@ class CommandWidget(QWidget):
     @api.commands.register(mode=api.modes.COMMAND)
     def leave_commandline(self):
         """Leave command mode."""
-        self._commandline.editingFinished.emit()
-
-    @utils.slot
-    def _on_editing_finished(self):
-        """Close command line on the editingFinished signal."""
-        self._commandline.setText("")
+        self._commandline.leave()
+        self._completer.reset()
         self.hide()
         api.modes.COMMAND.close()
 

@@ -55,7 +55,6 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         self.mode: api.modes.Mode = api.modes.IMAGE
 
         self.returnPressed.connect(self._on_return_pressed)
-        self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
@@ -74,6 +73,10 @@ class CommandLine(EventHandlerMixin, QLineEdit):
     def enter(self, text: str):
         self.setText(text)
         self.mode = api.modes.COMMAND.last
+
+    def leave(self):
+        self.clear()
+        self._history.reset()
 
     @utils.slot
     def _on_return_pressed(self) -> None:
