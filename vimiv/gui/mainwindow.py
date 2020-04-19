@@ -19,6 +19,7 @@ from .image import ScrollableImage
 from .keyhint_widget import KeyhintWidget
 from .library import Library
 from .thumbnail import ThumbnailView
+from .message import Message
 from .metadata_widget import MetadataWidget
 
 
@@ -44,6 +45,7 @@ class MainWindow(QWidget):
         grid.addWidget(self._bar, 1, 0, 1, 2)
         # Add overlay widgets
         self._overlays.append(KeyhintWidget(self))
+        self._overlays.append(Message(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
         # Connect signals
