@@ -67,6 +67,11 @@ def message_widget(mainwindow):
     return get_overlay(mainwindow, vimiv.gui.message.Message)
 
 
+@pytest.fixture()
+def overlay(mainwindow):
+    return lambda typ: get_overlay(mainwindow, typ)
+
+
 def get_overlay(mainwindow, typ):
     for overlay in mainwindow._overlays:
         if isinstance(overlay, typ):

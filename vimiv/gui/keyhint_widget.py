@@ -38,7 +38,6 @@ class KeyhintWidget(QLabel):
     }
     """
 
-    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
         self._show_timer = QTimer(self)

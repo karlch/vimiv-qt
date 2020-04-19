@@ -13,8 +13,8 @@ from vimiv.gui import keyhint_widget, eventhandler
 
 
 @pytest.fixture()
-def keyhint():
-    return keyhint_widget.KeyhintWidget.instance
+def keyhint(overlay):
+    return overlay(keyhint_widget.KeyhintWidget)
 
 
 bdd.scenarios("keyhint.feature")

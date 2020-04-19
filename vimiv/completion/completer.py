@@ -23,7 +23,6 @@ class Completer(QObject):
         _completion: CompletionWidget object.
     """
 
-    @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__()
 
