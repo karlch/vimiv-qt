@@ -80,7 +80,7 @@ class CommandWidget(QWidget):
     def _enter_command_mode(self, text):
         """Enter command mode setting the text to text."""
         api.modes.COMMAND.enter()
-        self._commandline.setText(text)
+        self._commandline.enter(text)
         self._completer.initialize(text)
         self.raise_()
         self.show()
