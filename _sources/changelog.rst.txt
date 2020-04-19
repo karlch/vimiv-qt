@@ -31,6 +31,10 @@ Changed:
   the html-equivalent ``&nbsp;`` if there are multiple subsequent spaces. This keeps
   wanted additional spacing while allowing to use html code such as
   ``<span style='color: #8FBCBB; font-weight: bold;'>colored and bold</span>``.
+* Both the command line and the widget to display status messages are now overlay
+  widgets instead of being integrated with the bar. This decouples them from the main
+  grid layout and better reflects their role as they are being shown temporarily over
+  the current widget/image.
 
 Fixed:
 ^^^^^^
@@ -42,6 +46,7 @@ Fixed:
 * Crash when scrolling thumbnail mode with empty thumbnail list.
 * Crash when running ``:goto`` without valid paths/images/thumbnails.
 * Switching mode when toggling an inactive mode.
+* Displaying status messages larger than one line in manipulate mode.
 
 
 v0.6.1 (2020-03-07)

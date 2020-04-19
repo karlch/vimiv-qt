@@ -169,6 +169,10 @@ transformations.</p></li>
 the html-equivalent <code class="docutils literal notranslate"><span class="pre">&amp;nbsp;</span></code> if there are multiple subsequent spaces. This keeps
 wanted additional spacing while allowing to use html code such as
 <code class="docutils literal notranslate"><span class="pre">&lt;span</span> <span class="pre">style='color:</span> <span class="pre">#8FBCBB;</span> <span class="pre">font-weight:</span> <span class="pre">bold;'&gt;colored</span> <span class="pre">and</span> <span class="pre">bold&lt;/span&gt;</span></code>.</p></li>
+<li><p>Both the command line and the widget to display status messages are now overlay
+widgets instead of being integrated with the bar. This decouples them from the main
+grid layout and better reflects their role as they are being shown temporarily over
+the current widget/image.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
@@ -181,6 +185,7 @@ keyhint widget and in the <code class="docutils literal notranslate"><span class
 <li><p>Crash when scrolling thumbnail mode with empty thumbnail list.</p></li>
 <li><p>Crash when running <code class="docutils literal notranslate"><span class="pre">:goto</span></code> without valid paths/images/thumbnails.</p></li>
 <li><p>Switching mode when toggling an inactive mode.</p></li>
+<li><p>Displaying status messages larger than one line in manipulate mode.</p></li>
 </ul>
 </div>
 </div>
