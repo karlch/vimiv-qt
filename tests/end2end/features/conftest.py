@@ -18,13 +18,14 @@ import pytest_bdd as bdd
 import vimiv.gui.library
 import vimiv.gui.thumbnail
 import vimiv.gui.mainwindow
+import vimiv.gui.message
 import vimiv.gui.commandline
-import vimiv.gui.bar
+import vimiv.gui.command_widget
 import vimiv.gui.image
 import vimiv.gui.prompt
+import vimiv.gui.statusbar
 from vimiv import api
 from vimiv.commands import runners
-from vimiv.gui import statusbar
 from vimiv.imutils import filelist
 
 
@@ -52,13 +53,30 @@ def commandline():
 
 
 @pytest.fixture()
-def bar():
-    yield vimiv.gui.bar.Bar.instance
+def statusbar(mainwindow):
+    yield mainwindow._statusbar
 
 
 @pytest.fixture()
 def image():
     yield vimiv.gui.image.ScrollableImage.instance
+
+
+@pytest.fixture()
+def message_widget(mainwindow):
+    return get_overlay(mainwindow, vimiv.gui.message.Message)
+
+
+@pytest.fixture()
+def overlay(mainwindow):
+    return lambda typ: get_overlay(mainwindow, typ)
+
+
+def get_overlay(mainwindow, typ):
+    for overlay in mainwindow._overlays:
+        if isinstance(overlay, typ):
+            return overlay
+    raise ValueError(f"{typ} not found")
 
 
 class Counter:
@@ -260,49 +278,42 @@ def no_crash(qtbot):
     qtbot.wait(1)
 
 
-@bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
-def check_statusbar_message(qtbot, message):
-    bar = statusbar.statusbar
-
-    def check_status():
-        assert message == bar.message.text(), "Message expected: '{message}'"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.message
-
-
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
-def check_left_status(qtbot, position, text):
-    bar = statusbar.statusbar
+def check_status_text(qtbot, statusbar, position, text):
     message = f"statusbar {position} should include {text}"
 
     def check_status():
-        assert text in getattr(bar.status, position).text(), message
+        assert text in getattr(statusbar, position).text(), message
 
     qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.status
+    assert statusbar.isVisible()
+
+
+@bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
+def check_message(qtbot, message_widget, message):
+    def check():
+        assert message == message_widget.text(), "Message expected: '{message}'"
+
+    qtbot.waitUntil(check, timeout=100)
+    assert message_widget.isVisible()
 
 
 @bdd.then("a message should be displayed")
-def check_a_statusbar_message(qtbot):
-    bar = statusbar.statusbar
+def check_any_message(qtbot, message_widget):
+    def check():
+        assert message_widget.text(), "Any message expected"
 
-    def check_status():
-        assert bar.message.text(), "Any message expected"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.message
+    qtbot.waitUntil(check, timeout=100)
+    assert message_widget.isVisible()
 
 
 @bdd.then("no message should be displayed")
-def check_no_statusbar_message(qtbot):
-    bar = statusbar.statusbar
+def check_no_message(qtbot, message_widget):
+    def check():
+        assert not message_widget.text(), "No message expected"
 
-    def check_status():
-        assert not bar.message.text(), "No message expected"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.status
+    qtbot.waitUntil(check, timeout=100)
+    assert not message_widget.isVisible()
 
 
 @bdd.then(bdd.parsers.parse("the working directory should be {basename}"))

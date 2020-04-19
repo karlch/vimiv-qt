@@ -52,17 +52,15 @@ class CommandLine(EventHandlerMixin, QLineEdit):
             history.read(),
             max_items=api.settings.command.history_limit.value,
         )
-        self.mode = api.modes.IMAGE
+        self.mode: api.modes.Mode = api.modes.IMAGE
 
         self.returnPressed.connect(self._on_return_pressed)
-        self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(  # type: ignore
             self._on_app_quit
         )
-        api.modes.COMMAND.entered.connect(self._on_entered)
 
         styles.apply(self)
 
@@ -71,6 +69,14 @@ class CommandLine(EventHandlerMixin, QLineEdit):
 
     def current(self):
         return api.modes.COMMAND.last.widget.current()
+
+    def enter(self, text: str):
+        self.setText(text)
+        self.mode = api.modes.COMMAND.last
+
+    def leave(self):
+        self.clear()
+        self._history.reset()
 
     @utils.slot
     def _on_return_pressed(self) -> None:
@@ -162,8 +168,3 @@ class CommandLine(EventHandlerMixin, QLineEdit):
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
-
-    @utils.slot
-    def _on_entered(self):
-        """Store mode from which the command line was entered."""
-        self.mode = api.modes.COMMAND.last

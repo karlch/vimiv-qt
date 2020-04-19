@@ -11,7 +11,6 @@ import pytest_bdd as bdd
 import vimiv
 from vimiv import api
 from vimiv.commands import runners
-from vimiv.gui import statusbar
 
 
 bdd.scenarios("commandline.feature")
@@ -29,20 +28,20 @@ def check_commandline_closed():
 
 @bdd.then(bdd.parsers.parse("the help for '{topic}' should be displayed"))
 @bdd.then("the help for '<topic>' should be displayed")
-def check_help(topic):
+def check_help(message_widget, topic):
     if topic == "vimiv":
-        assert vimiv.__description__ in statusbar.statusbar.message.text()
+        assert vimiv.__description__ in message_widget.text()
         return
     if topic == "wildcards":
-        assert "wildcards" in statusbar.statusbar.message.text().lower()
+        assert "wildcards" in message_widget.text().lower()
         return
     topic = topic.lower().lstrip(":")
     with suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
-        assert command.description in statusbar.statusbar.message.text()
+        assert command.description in message_widget.text()
         return
     with suppress(KeyError):
         setting = api.settings.get(topic)
-        assert setting.desc in statusbar.statusbar.message.text()
+        assert setting.desc in message_widget.text()
         return
     raise AssertionError(f"Topic '{topic}' not found")

@@ -23,7 +23,6 @@ class Completer(QObject):
         _completion: CompletionWidget object.
     """
 
-    @api.objreg.register
     def __init__(self, commandline, completion):
         super().__init__()
 
@@ -33,7 +32,6 @@ class Completer(QObject):
         self._completion.activated.connect(self._complete)
         api.modes.COMMAND.first_entered.connect(self._init_models)
         self._cmd.textEdited.connect(self._on_text_changed)
-        self._cmd.editingFinished.connect(self._on_editing_finished)
 
     @property
     def proxy_model(self) -> api.completion.FilterProxyModel:
@@ -46,6 +44,11 @@ class Completer(QObject):
     @property
     def has_completions(self) -> bool:
         return self.proxy_model.rowCount() > 0
+
+    def reset(self):
+        """Reset completion and models."""
+        self._completion.clearSelection()
+        self.proxy_model.reset()
 
     @utils.slot
     def _init_models(self):
@@ -69,13 +72,6 @@ class Completer(QObject):
         self._update_proxy_model(text)
         self.model.on_text_changed(text)
         self._show_unless_empty()
-
-    @utils.slot
-    def _on_editing_finished(self):
-        """Reset filter and hide completion widget."""
-        self._completion.clearSelection()
-        self.proxy_model.reset()
-        self._completion.hide()
 
     def _update_proxy_model(self, text: str):
         """Update completion proxy model depending on text.

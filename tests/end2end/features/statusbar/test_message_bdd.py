@@ -21,13 +21,3 @@ def log_warning(message, qtbot):
 @bdd.when("I clear the status")
 def clear_status():
     api.status.clear("clear in bdd step")
-
-
-@bdd.then("the bar should be visible")
-def check_bar_visible(bar):
-    assert bar.isVisible()
-
-
-@bdd.then("the bar should not be visible")
-def check_bar_not_visible(bar):
-    assert not bar.isVisible()
