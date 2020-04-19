@@ -52,8 +52,6 @@ class MainWindow(QWidget):
             self._overlays.append(MetadataWidget(self))
         # Connect signals
         api.status.signals.update.connect(self._set_title)
-        api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
-        api.modes.COMMAND.closed.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         api.prompt.question_asked.connect(self._run_prompt)
