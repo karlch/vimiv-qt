@@ -7,7 +7,6 @@
 """Completion widget in the bar."""
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv import api, widgets
 from vimiv.config import styles
@@ -45,19 +44,11 @@ class CompletionView(widgets.FlatTreeView):
     def __init__(self, parent):
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setEditTriggers(self.NoEditTriggers)
         self.setModel(api.completion.FilterProxyModel())
 
-        self.hide()
-
         styles.apply(self)
-
-    def update_geometry(self, window_width, window_height):
-        """Rescale width when main window was resized."""
-        y = window_height - self.height()
-        self.setGeometry(0, y, window_width, self.height())
 
     @api.keybindings.register(
         "<shift><tab>", "complete --inverse", mode=api.modes.COMMAND

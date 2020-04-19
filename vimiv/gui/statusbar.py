@@ -15,16 +15,12 @@ Module Attributes:
 """
 
 import re
-from typing import cast
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
 
 from vimiv import api, utils
 from vimiv.config import styles
-
-
-statusbar = cast("StatusBar", None)
 
 
 class StatusBar(QWidget):
@@ -59,6 +55,10 @@ class StatusBar(QWidget):
 
         styles.apply(self)
         api.status.signals.update.connect(self._update_status)
+        api.settings.statusbar.show.changed.connect(self._on_show_changed)
+
+        if not api.settings.statusbar.show.value:
+            self.hide()
 
     def __iter__(self):
         yield from zip(
@@ -99,7 +99,5 @@ class StatusBar(QWidget):
     def _escape_subsequent_space_for_html(cls, text):
         return re.sub(r" {2,}", lambda m: m.group().replace(" ", "&nbsp;"), text)
 
-
-def init():
-    global statusbar
-    statusbar = StatusBar()
+    def _on_show_changed(self, value: bool):
+        self.setVisible(value)

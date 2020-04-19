@@ -73,9 +73,9 @@ def keyhint_widget_contains(keyhint, command):
 
 
 @bdd.then("the keyhint widget should be above the statusbar")
-def keyhint_widget_above_bar(keyhint, bar):
+def keyhint_widget_above_bar(keyhint, statusbar):
     keyhint_bottom = keyhint.y() + keyhint.height()
-    bar_top = bar.y()
+    bar_top = statusbar.y()
     assert keyhint_bottom == bar_top
 
 

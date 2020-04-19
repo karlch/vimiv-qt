@@ -14,20 +14,21 @@ from vimiv import api, utils
 from vimiv.utils import migration
 
 # Import all GUI widgets used to create the full main window
-from .bar import Bar
+from .command_widget import CommandWidget
 from .image import ScrollableImage
 from .keyhint_widget import KeyhintWidget
 from .library import Library
 from .thumbnail import ThumbnailView
 from .message import Message
 from .metadata_widget import MetadataWidget
+from .statusbar import StatusBar
 
 
 class MainWindow(QWidget):
     """QMainWindow which groups all the other widgets.
 
     Attributes:
-        _bar: bar.Bar object containing statusbar and command line.
+        _statusbar: Statusbar object displayed at the bottom.
         _overlays: List of overlay widgets.
     """
 
@@ -36,16 +37,17 @@ class MainWindow(QWidget):
         super().__init__()
         self._overlays: List[QWidget] = []
         # Create main widgets and add them to the grid layout
-        self._bar = Bar(self)
+        self._statusbar = StatusBar()
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
         grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
         grid.addWidget(Library(self), 0, 0, 1, 1)
-        grid.addWidget(self._bar, 1, 0, 1, 2)
+        grid.addWidget(self._statusbar, 1, 0, 1, 2)
         # Add overlay widgets
         self._overlays.append(KeyhintWidget(self))
         self._overlays.append(Message(self))
+        self._overlays.append(CommandWidget(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
         # Connect signals
@@ -129,8 +131,8 @@ class MainWindow(QWidget):
     @property
     def bottom(self):
         """Bottom of the main window respecting the status bar height."""
-        if self._bar.isVisible():
-            return self.height() - self._bar.height()
+        if self._statusbar.isVisible():
+            return self.height() - self._statusbar.height()
         return self.height()
 
     def add_overlay(self, widget, resize=True):

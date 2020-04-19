@@ -20,12 +20,12 @@ import vimiv.gui.thumbnail
 import vimiv.gui.mainwindow
 import vimiv.gui.message
 import vimiv.gui.commandline
-import vimiv.gui.bar
+import vimiv.gui.command_widget
 import vimiv.gui.image
 import vimiv.gui.prompt
+import vimiv.gui.statusbar
 from vimiv import api
 from vimiv.commands import runners
-from vimiv.gui import statusbar
 from vimiv.imutils import filelist
 
 
@@ -53,8 +53,8 @@ def commandline():
 
 
 @pytest.fixture()
-def bar():
-    yield vimiv.gui.bar.Bar.instance
+def statusbar(mainwindow):
+    yield mainwindow._statusbar
 
 
 @pytest.fixture()
@@ -64,10 +64,14 @@ def image():
 
 @pytest.fixture()
 def message_widget(mainwindow):
+    return get_overlay(mainwindow, vimiv.gui.message.Message)
+
+
+def get_overlay(mainwindow, typ):
     for overlay in mainwindow._overlays:
-        if isinstance(overlay, vimiv.gui.message.Message):
+        if isinstance(overlay, typ):
             return overlay
-    raise ValueError("Message widget not found")
+    raise ValueError(f"{typ} not found")
 
 
 class Counter:
@@ -270,15 +274,14 @@ def no_crash(qtbot):
 
 
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
-def check_status_text(qtbot, position, text):
-    bar = statusbar.statusbar
+def check_status_text(qtbot, statusbar, position, text):
     message = f"statusbar {position} should include {text}"
 
     def check_status():
-        assert text in getattr(bar, position).text(), message
+        assert text in getattr(statusbar, position).text(), message
 
     qtbot.waitUntil(check_status, timeout=100)
-    assert bar.isVisible()
+    assert statusbar.isVisible()
 
 
 @bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))

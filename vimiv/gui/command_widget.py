@@ -4,47 +4,46 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Bar widget at the bottom including statusbar and commandline."""
+"""Command widget at the bottom including commandline and completion widget."""
 
-from PyQt5.QtWidgets import QWidget, QStackedLayout, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
 
 from vimiv import api, utils
 from vimiv.completion import completer
 
-from . import statusbar, commandline, completionwidget
+from . import commandline, completionwidget
 
 
-class Bar(QWidget):
-    """Bar at the bottom including statusbar and commandline.
+class CommandWidget(QWidget):
+    """Command widget at the bottom including commandline and completion widget.
 
     Attributes:
-        _commandline: Commandline widget in the bar.
+        _commandline: Commandline widget to enter text.
         _completer: Completer to handle interaction between command line and completion.
-        _stack: QStackedLayout containing statusbar and commandline.
+        _completion_widget: Completion widget to display completions.
     """
 
     @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
-        statusbar.init()
 
         self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
 
         self._commandline = commandline.CommandLine()
-        completion_widget = completionwidget.CompletionView(mainwindow)
-        mainwindow.add_overlay(completion_widget, resize=False)
-        self._completer = completer.Completer(self._commandline, completion_widget)
+        self._completion_widget = completionwidget.CompletionView(mainwindow)
+        self._completer = completer.Completer(
+            self._commandline, self._completion_widget
+        )
 
-        self._stack = QStackedLayout(self)
-        self._stack.addWidget(statusbar.statusbar)
-        self._stack.addWidget(self._commandline)
-        self._stack.setCurrentWidget(statusbar.statusbar)
+        layout = QVBoxLayout(self)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self._completion_widget)
+        layout.addWidget(self._commandline)
 
         self._commandline.editingFinished.connect(self._on_editing_finished)
-        api.settings.statusbar.show.changed.connect(self._on_show_changed)
 
-        if not api.settings.statusbar.show.value:
-            self.hide()
+        self.hide()
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")
@@ -78,11 +77,12 @@ class Bar(QWidget):
 
     def _enter_command_mode(self, text):
         """Enter command mode setting the text to text."""
-        self.show()
-        self._stack.setCurrentWidget(self._commandline)
         api.modes.COMMAND.enter()
         self._commandline.setText(text)
         self._completer.initialize(text)
+        self.raise_()
+        self.show()
+        self.update_geometry(self.parentWidget().width(), self.parentWidget().height())
 
     @api.keybindings.register("<escape>", "leave-commandline", mode=api.modes.COMMAND)
     @api.commands.register(mode=api.modes.COMMAND)
@@ -94,18 +94,12 @@ class Bar(QWidget):
     def _on_editing_finished(self):
         """Close command line on the editingFinished signal."""
         self._commandline.setText("")
-        self._stack.setCurrentWidget(statusbar.statusbar)
-        self._maybe_hide()
+        self.hide()
         api.modes.COMMAND.close()
 
-    def _on_show_changed(self, value: bool):
-        statusbar.statusbar.setVisible(value)
-        self._maybe_hide()
-
-    def _maybe_hide(self):
-        """Hide bar if statusbar is not visible and not in command mode."""
-        always_show = api.settings.statusbar.show.value
-        if not always_show and not self._commandline.hasFocus():
-            self.hide()
-        else:
-            self.show()
+    def update_geometry(self, window_width, window_height):
+        """Update the size and position of the command widgets."""
+        self_height = self._commandline.height() + self._completion_widget.height()
+        minimum_height = self.parentWidget().height() - window_height
+        height = max(self_height, minimum_height)
+        self.setGeometry(0, self.parentWidget().height() - height, window_width, height)
