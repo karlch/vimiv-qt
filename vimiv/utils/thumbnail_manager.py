@@ -121,7 +121,7 @@ class ThumbnailCreator(QRunnable):
 
     def _get_thumbnail_filename(self, path: str) -> str:
         uri = self._get_source_uri(path)
-        return hashlib.md5(bytes(uri, "UTF-8")).hexdigest() + ".png"
+        return hashlib.md5(uri.encode()).hexdigest() + ".png"
 
     @staticmethod
     def _get_source_mtime(path: str) -> int:
