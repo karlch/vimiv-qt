@@ -387,6 +387,10 @@ def create_pixmap(
     return pixmap
 
 
+def qbytearray_to_str(qbytearray) -> str:
+    return qbytearray.data().decode()
+
+
 def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     """Run a shell command synchronously using QProcess.
 
@@ -406,9 +410,9 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
     if process.exitStatus() != QProcess.NormalExit or process.exitCode() != 0:
-        stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
+        stderr = qbytearray_to_str(process.readAllStandardError()).strip()
         raise OSError(stderr)
-    return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
+    return qbytearray_to_str(process.readAllStandardOutput()).strip()
 
 
 def is_optional_type(typ: typing.Any) -> bool:

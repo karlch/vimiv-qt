@@ -14,7 +14,7 @@ from typing import List
 from PyQt5.QtCore import QProcess, QCoreApplication
 
 from vimiv import api
-from vimiv.utils import log, flatten, contains_any, escape_glob
+from vimiv.utils import log, flatten, contains_any, escape_glob, qbytearray_to_str
 
 
 _logger = log.module_logger(__name__)
@@ -118,7 +118,7 @@ class _ExternalRunnerImpl(QProcess):
             log.error(
                 "Error running external process '%s':\n%s",
                 self.program(),
-                str(self.readAllStandardError(), "utf-8").strip(),
+                qbytearray_to_str(self.readAllStandardError()).strip(),
             )
         elif self._pipe:
             self._process_pipe()
@@ -128,7 +128,7 @@ class _ExternalRunnerImpl(QProcess):
     def _process_pipe(self) -> None:
         """Open paths from stdout."""
         _logger.debug("Opening paths from '%s'...", self.program())
-        stdout = str(self.readAllStandardOutput(), "utf-8")  # type: ignore
+        stdout = qbytearray_to_str(self.readAllStandardOutput())
         try:
             api.open_paths(path for path in stdout.split("\n") if os.path.exists(path))
             _logger.debug("... opened paths from pipe")

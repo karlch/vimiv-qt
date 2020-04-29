@@ -13,7 +13,7 @@ from collections import namedtuple
 from typing import get_type_hints
 
 import pytest
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QByteArray
 
 from vimiv import utils
 
@@ -251,6 +251,12 @@ def test_cached_calls_expensive_once(cached_method_cls):
     cached_method_cls.method()
     cached_method_cls.method()
     cached_method_cls.mock.assert_called_once()
+
+
+def test_qbytearray_to_str():
+    text = "text"
+    qbytearray = QByteArray(text.encode())
+    assert utils.qbytearray_to_str(qbytearray) == text
 
 
 def test_run_qprocess():
