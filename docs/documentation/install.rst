@@ -129,6 +129,7 @@ Installing the following packages should pull in all necessary dependencies for
 building and running vimiv.
 
 Arch Linux:
+    * qt5-imageformats (optional)
     * qt5-svg (optional)
     * python-pyqt5
     * python-setuptools
