@@ -186,6 +186,9 @@ keyhint widget and in the <code class="docutils literal notranslate"><span class
 <li><p>Crash when running <code class="docutils literal notranslate"><span class="pre">:goto</span></code> without valid paths/images/thumbnails.</p></li>
 <li><p>Switching mode when toggling an inactive mode.</p></li>
 <li><p>Displaying status messages larger than one line in manipulate mode.</p></li>
+<li><p>Resetting settings to ther default value via <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">setting.name</span></code>. The value of the
+setting was changed accordingly, but the <code class="docutils literal notranslate"><span class="pre">changed</span></code> signal was not emitted which
+means nothing actually happened.</p></li>
 </ul>
 </div>
 </div>
