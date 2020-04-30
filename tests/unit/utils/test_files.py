@@ -105,6 +105,12 @@ def test_is_image_on_error(tmpdir):
     assert files.is_image(path) is False
 
 
+def test_is_image_on_fifo_file(qtbot, tmpdir):
+    path = tmpdir.join("my_file")
+    os.mkfifo(path)
+    assert files.is_image(path) is False
+
+
 @pytest.mark.parametrize(
     "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024 ** 8, "3.0Y")]
 )
