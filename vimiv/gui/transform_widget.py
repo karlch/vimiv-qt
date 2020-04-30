@@ -33,7 +33,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         previous_matrix: Transformation matrix before starting changes here.
     """
 
-    def __init__(self, image, **bindings):
+    def __init__(self, image):
         super().__init__(parent=image)
         self.setObjectName(self.__class__.__qualname__)
         self.setWindowFlags(Qt.SubWindow)
@@ -42,7 +42,6 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         self.bindings = {
             ("<escape>",): self.leave,
             ("<return>",): functools.partial(self.leave, accept=True),
-            **bindings,
         }
         self.transform = imtransform.Transform.instance
         self.previous_matrix = self.transform.matrix
