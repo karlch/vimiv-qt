@@ -61,11 +61,10 @@ class MainWindow(QWidget):
     @utils.slot
     def _init_manipulate(self):
         """Create UI widgets related to manipulate mode."""
-        from .manipulate import Manipulate, ManipulateImage
+        from .manipulate import Manipulate
 
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
-        self.add_overlay(ManipulateImage(self, manipulate_widget))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
