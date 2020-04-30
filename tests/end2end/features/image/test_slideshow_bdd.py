@@ -16,7 +16,9 @@ bdd.scenarios("slideshow.feature")
 
 @pytest.fixture
 def sshow():
-    return slideshow.Slideshow.instance
+    instance = slideshow.Slideshow.instance
+    yield instance
+    instance.stop()
 
 
 @bdd.given(bdd.parsers.parse("I forcefully set the slideshow delay to {N:d}ms"))
