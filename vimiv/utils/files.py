@@ -116,7 +116,7 @@ def is_image(filename: str) -> bool:
         filename: Name of file to check.
     """
     try:
-        return imghdr.what(filename) is not None
+        return os.path.isfile(filename) and imghdr.what(filename) is not None
     except OSError:
         return False
 
