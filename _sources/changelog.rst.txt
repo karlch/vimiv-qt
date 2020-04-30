@@ -50,6 +50,7 @@ Fixed:
 * Resetting settings to ther default value via ``:set setting.name``. The value of the
   setting was changed accordingly, but the ``changed`` signal was not emitted which
   means nothing actually happened.
+* Hanging when a FIFO file is in the current directory.
 
 
 v0.6.1 (2020-03-07)
