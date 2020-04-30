@@ -8,7 +8,7 @@
 
 import os
 from contextlib import suppress
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -22,6 +22,18 @@ from . import eventhandler, synchronize
 
 
 _logger = log.module_logger(__name__)
+
+
+class Position(NamedTuple):
+    """Storage class for a position in the library.
+
+    Attributes:
+        path: Path of the stored position.
+        row: Row of the stored position used in case the path is no longer available.
+    """
+
+    path: str
+    row: int = 0
 
 
 class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
@@ -72,7 +84,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self._last_selected = ""
-        self._positions: Dict[str, str] = {}
+        self._positions: Dict[str, Position] = {}
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -208,7 +220,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
-            self._positions[parent] = os.getcwd()
+            self._positions[parent] = Position(os.getcwd())
             api.working_directory.handler.chdir(parent)
         else:
             row = self.row()
@@ -278,23 +290,29 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def store_position(self):
         """Set the stored position for a directory if possible."""
         with suppress(IndexError):
-            self._positions[os.getcwd()] = self.current()
+            self._positions[os.getcwd()] = Position(self.current(), self.row())
 
     def load_directory(self):
         """Update library for new or reloaded directory."""
         _logger.debug("Updating library for new/reloaded directory")
-        try:
-            row = self._get_stored_position()
-            _logger.debug("Retrieved stored position %d", row)
-        except (KeyError, ValueError):
-            _logger.debug("No stored position, falling back to 0")
-            row = 0
+        row = self._get_stored_position()
         self._select_row(row)
         self.update_width()
 
     def _get_stored_position(self):
-        stored_path = self._positions[os.getcwd()]
-        return self.model().paths.index(stored_path)
+        """Retrieve row of stored path with various fallback options."""
+        stored_position = self._positions.get(os.getcwd())
+        if stored_position is not None:
+            try:
+                row = self.model().paths.index(stored_position.path)
+                _logger.debug("Retrieved stored position from path: %d", row)
+                return row
+            except ValueError:  # stored_path no longer exists
+                row = min(stored_position.row, self.model().rowCount() - 1)
+                _logger.debug("Stored position longer exists, using fallback %d", row)
+                return row
+        _logger.debug("No stored position, falling back to 0")
+        return 0
 
     def _select_row(
         self, row: int, open_selected_image: bool = False, emit: bool = True

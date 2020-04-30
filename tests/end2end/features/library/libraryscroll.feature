@@ -92,6 +92,18 @@ Feature: Scrolling the library.
         And I wait for the working directory handler
         Then the library row should be 3
 
+    Scenario: Keep correct selection when deleting directories
+        Given I open a directory with 5 paths
+        When I run goto 3
+        And I run !rmdir %
+        Then the library row should be 3
+
+    Scenario: Keep correct selection when deleting last directory
+        Given I open a directory with 5 paths
+        When I run goto 5
+        And I run !rmdir %
+        Then the library row should be 4
+
     Scenario: Crash on goto in empty directory
         Given I start vimiv
         When I run goto 3
