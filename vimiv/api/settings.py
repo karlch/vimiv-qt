@@ -118,7 +118,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         self.changed.emit(self._value)
 
     def set_to_default(self) -> None:
-        self._value = self.default
+        self.value = self.default
 
     def suggestions(self) -> List[str]:
         """Return a list of valid or useful suggestions for the setting.

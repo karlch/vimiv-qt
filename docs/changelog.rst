@@ -47,6 +47,9 @@ Fixed:
 * Crash when running ``:goto`` without valid paths/images/thumbnails.
 * Switching mode when toggling an inactive mode.
 * Displaying status messages larger than one line in manipulate mode.
+* Resetting settings to ther default value via ``:set setting.name``. The value of the
+  setting was changed accordingly, but the ``changed`` signal was not emitted which
+  means nothing actually happened.
 
 
 v0.6.1 (2020-03-07)

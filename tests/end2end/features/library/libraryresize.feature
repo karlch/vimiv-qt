@@ -22,3 +22,8 @@ Feature: Resize the library.
     Scenario: Increase to maximum size.
         When I run set library.width 1
         Then the library width should be 0.95
+
+    Scenario: Increase and reset to default size.
+        When I run set library.width 1
+        And I run set library.width
+        Then the library width should be 0.3
