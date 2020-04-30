@@ -23,7 +23,7 @@ class Manipulate(EventHandlerMixin, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
-        _error: String containing the current error message.
+        _image: ManipulateImage displayed at the top right of the manipulate widget.
     """
 
     STYLESHEET = """
@@ -131,7 +131,7 @@ class ManipulateImage(QLabel):
     It is shown once manipulate mode is entered and hides afterwards.
 
     Attributes:
-        _manipulate: The manipulate widget to retrieve y-coordinate.
+        _bottom_right: Point describing the expected bottom right of this widget.
         _max_size: Maximum size to use up which corresponds to half the window size.
         _pixmap: The manipulated pixmap to display.
     """
