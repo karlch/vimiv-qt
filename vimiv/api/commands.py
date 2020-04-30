@@ -75,12 +75,8 @@ import inspect
 import os
 import typing
 from contextlib import suppress
-from functools import partial
 
 from vimiv.utils import (
-    class_that_defined_method,
-    cached_method,
-    is_method,
     flatten,
     log,
     customtypes,
@@ -89,7 +85,7 @@ from vimiv.utils import (
     type_of_optional,
 )
 
-from . import modes
+from . import modes, objreg
 
 
 _logger = log.module_logger(__name__)
@@ -320,7 +316,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         parsed_args = self.argparser.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
-        func = self._create_func(self.func)
+        func = objreg._apply_instance(self.func)
         func(**kwargs)
 
     @property
@@ -342,24 +338,6 @@ class _Command:  # pylint: disable=too-many-instance-attributes
 
     def __repr__(self) -> str:
         return f"Command('{self.name}', '{self.func}')"
-
-    @cached_method
-    def _create_func(self, func: typing.Callable) -> typing.Callable:
-        """Create function to call for a command function.
-
-        This retrieves the instance of a class object for methods and sets it as first
-        argument (the 'self' argument) of a lambda. For standard functions nothing is
-        done.
-
-        Returns:
-            A function to be called with any keyword arguments.
-        """
-        _logger.debug("Creating function for command '%s'", func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            instance = cls.instance
-            return partial(func, instance)
-        return func
 
 
 def _get_command_name(func: typing.Callable) -> str:

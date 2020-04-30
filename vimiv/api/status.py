@@ -38,7 +38,9 @@ from typing import Callable, TypeVar, Any, Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv.utils import cached_method, is_method, class_that_defined_method, log
+from vimiv.utils import log
+
+from . import objreg
 
 
 Module = Callable[[], str]
@@ -58,28 +60,11 @@ class _Module:
         self._func = func
 
     def __call__(self) -> str:
-        func = self._create_func(self._func)
+        func = objreg._apply_instance(self._func)
         return func()
 
     def __repr__(self) -> str:
         return f"StatusModule('{self._func.__name__}')"
-
-    @cached_method
-    def _create_func(self, func: Callable[..., str]) -> Module:
-        """Create function to call for a status module.
-
-        This retrieves the instance of a class object for methods and sets it
-        as first argument (the 'self' argument) of a lambda. For standard
-        functions nothing is done.
-
-        Returns:
-            A function to be called without arguments.
-        """
-        _logger.debug("Creating function for status module '%s'", func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            return functools.partial(func, cls.instance)
-        return func
 
 
 def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:

@@ -29,9 +29,10 @@ of the class, use::
     my_instance = MyLongLivedClass.instance
 """
 
+import functools
 from typing import Any, Callable
 
-from vimiv.utils import log
+from vimiv.utils import log, is_method, class_that_defined_method
 
 _logger = log.module_logger(__name__)
 
@@ -58,3 +59,15 @@ def register(component_init: Callable) -> Callable:
         component_init(component, *args, **kwargs)
 
     return inside
+
+
+@functools.lru_cache(None)
+def _apply_instance(func: Callable) -> Callable:
+    """Apply instance as self argument to func if func is a method."""
+    if is_method(func):
+        _logger.debug(
+            "Applying self from instance in objreg to '%s'", func.__qualname__
+        )
+        cls = class_that_defined_method(func)
+        return functools.partial(func, cls.instance)
+    return func
