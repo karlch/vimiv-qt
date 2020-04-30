@@ -16,7 +16,7 @@ bdd.scenarios("slideshow.feature")
 
 @pytest.fixture
 def sshow():
-    instance = slideshow.Slideshow.instance
+    instance = slideshow._timer
     yield instance
     instance.stop()
 
