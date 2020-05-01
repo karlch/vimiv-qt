@@ -37,12 +37,10 @@ def config(tmpdir):
 
 
 @pytest.fixture()
-def setup_env():
+def setup_env(monkeypatch):
     """Fixture to add and clean up an environment variable."""
     variable, value = ENV_VARIABLE
-    os.environ[variable] = value
-    yield
-    del os.environ[variable]
+    monkeypatch.setenv(variable, value)
 
 
 @pytest.mark.parametrize(
@@ -81,6 +79,6 @@ def test_fail_update_variable_from_env():
         external_configparser.ExternalInterpolation.update("${env:not_in_env}")
 
 
-def test_read_env_variable_from_config(config, parser):
+def test_read_env_variable_from_config(setup_env, config, parser):
     parser.read(config)
     assert parser.get(SECTION_NAME, OPTION_NAME) == ENV_VARIABLE.value
