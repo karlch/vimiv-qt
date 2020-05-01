@@ -38,6 +38,7 @@ def trash(monkeypatch, mocker, tmpdir):
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
     trash_manager.init()
     yield os.path.join(str(xdg_data_home), "Trash")
+    trash_manager.trash_info.cache_clear()
 
 
 def test_delete_file(tmpfile):
