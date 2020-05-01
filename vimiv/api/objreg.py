@@ -6,11 +6,11 @@
 
 """*Storage system for objects*.
 
-The object registry is a storage system for long-lived objects. These objects
-are stored and identified using their type. Therefore every stored object must
-be unique in its type and only one instance of each type can be stored. It is
-mainly used by commands as well as statusbar modules to retrieve the ``self``
-argument for methods that require an instance of the class.
+The object registry is a storage system for long-lived objects. These objects are stored
+and identified using their type. Therefore every stored object must be unique in its
+type and only one instance of each type can be stored. Purpose of this registry is to
+define an interface used by commands as well as statusbar modules to retrieve the
+``self`` argument for methods that require an instance of the class.
 
 To register a new class for this purpose, the
 :func:`register` decorator can be used as following::
@@ -23,10 +23,13 @@ To register a new class for this purpose, the
         def __init__(self):
             ...
 
-The first created instance is then stored in the class itself. To retrieve the instance
-of the class, use::
+This class is now ready to provide commands and statusbar modules using the regular
+decorators. In principle, you can now retrieve the instance of the class via::
 
     my_instance = MyLongLivedClass.instance
+
+This is not recommended though and considered an implementation detail. The preferred
+method is to keep track of the instance otherwise.
 """
 
 import functools
