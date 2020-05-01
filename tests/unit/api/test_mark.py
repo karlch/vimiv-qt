@@ -12,16 +12,19 @@ from collections import namedtuple
 
 import pytest
 
+from vimiv import api
 from vimiv.api._mark import Mark, Tag
 
 
 @pytest.fixture
-def mark(qtbot, mocker):
+def mark(qtbot, mocker, monkeypatch):
     instance = Mark()
-    instance.marked = mocker.Mock()
-    instance.unmarked = mocker.Mock()
+    mocker.patch.object(instance, "marked")
+    mocker.patch.object(instance, "unmarked")
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
     yield instance
+    # TODO think about a proper mocking method
+    Mark.instance = api.mark  # Reset objreg instance to the one from api
 
 
 @pytest.fixture(autouse=True)
