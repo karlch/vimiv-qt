@@ -20,6 +20,7 @@ with mockdecorators.apply():
     from vimiv import api, startup, utils
     from vimiv.commands import runners
     from vimiv.imutils import filelist
+    from vimiv.gui import eventhandler
     from vimiv.utils import trash_manager
 
 
@@ -56,6 +57,7 @@ def cleanup():
         mode._entered = False
         mode.last = api.modes.IMAGE if mode != api.modes.IMAGE else api.modes.LIBRARY
     trash_manager.trash_info.cache_clear()
+    eventhandler.EventHandlerMixin.partial_handler.clear_keys()
 
 
 @pytest.fixture(autouse=True, scope="module")
