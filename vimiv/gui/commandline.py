@@ -6,7 +6,7 @@
 
 """CommandLine widget in the bar."""
 
-from contextlib import suppress
+import contextlib
 
 from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
@@ -120,7 +120,7 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         """Run incremental search if enabled."""
         if not search.use_incremental(self.mode):
             return
-        with suppress(IndexError):  # Not enough text
+        with contextlib.suppress(IndexError):  # Not enough text
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
                 search.search(text, self.mode, reverse=prefix == "?", incremental=True)

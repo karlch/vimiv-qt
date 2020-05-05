@@ -10,7 +10,7 @@ import functools
 import os
 import signal
 import sys
-from types import FrameType, TracebackType
+import types
 from typing import Callable, Type
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
@@ -27,9 +27,13 @@ except ImportError:
     # want to do for the optional import
     fcntl = None  # type: ignore
 
-ExceptionHandler = Callable[[Type[BaseException], BaseException, TracebackType], None]
+ExceptionHandler = Callable[
+    [Type[BaseException], BaseException, types.TracebackType], None
+]
 # See https://github.com/PyCQA/pylint/issues/2804
-SignalHandler = Callable[[signal.Signals, FrameType], None]  # pylint: disable=no-member
+SignalHandler = Callable[
+    [signal.Signals, types.FrameType], None  # pylint: disable=no-member
+]
 
 _logger = log.module_logger(__name__)
 
@@ -91,7 +95,7 @@ class CrashHandler(QObject):
         initial_handler: ExceptionHandler,
         exc_type: Type[BaseException],
         exc_value: BaseException,
-        traceback: TracebackType,
+        traceback: types.TracebackType,
     ) -> None:
         """Custom exception handler for uncaught exceptions.
 
@@ -109,7 +113,7 @@ class CrashHandler(QObject):
             log.fatal("Exception: %r", e)
             sys.exit(customtypes.Exit.err_suicide)
 
-    def handle_interrupt(self, signum: int, _frame: FrameType) -> None:
+    def handle_interrupt(self, signum: int, _frame: types.FrameType) -> None:
         """Initial handler for interrupt signals to exit gracefully.
 
         Args:
@@ -124,7 +128,7 @@ class CrashHandler(QObject):
             0, functools.partial(self._app.exit, customtypes.Exit.signal + signum)
         )
 
-    def handle_interrupt_forcefully(self, signum: int, _frame: FrameType) -> None:
+    def handle_interrupt_forcefully(self, signum: int, _frame: types.FrameType) -> None:
         """Second handler for interrupt signals to exit forcefully.
 
         Args:

@@ -12,10 +12,10 @@ with the index and the QPixmap of the generated thumbnail for the thumbnail
 widget to update.
 """
 
+import contextlib
 import hashlib
 import os
 import tempfile
-from contextlib import suppress
 from typing import Dict, List
 
 from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, Qt
@@ -103,7 +103,7 @@ class ThumbnailCreator(QRunnable):
     def run(self) -> None:
         """Create thumbnail and emit the managers created signal."""
         thumbnail_path = self._get_thumbnail_path(self._path)
-        with suppress(FileNotFoundError):
+        with contextlib.suppress(FileNotFoundError):
             pixmap = (
                 self._maybe_recreate_thumbnail(self._path, thumbnail_path)
                 if os.path.exists(thumbnail_path)

@@ -4,7 +4,7 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-from contextlib import suppress
+import contextlib
 
 import pytest_bdd as bdd
 
@@ -36,11 +36,11 @@ def check_help(message_widget, topic):
         assert "wildcards" in message_widget.text().lower()
         return
     topic = topic.lower().lstrip(":")
-    with suppress(api.commands.CommandNotFound):
+    with contextlib.suppress(api.commands.CommandNotFound):
         command = api.commands.get(topic, mode=api.modes.current())
         assert command.description in message_widget.text()
         return
-    with suppress(KeyError):
+    with contextlib.suppress(KeyError):
         setting = api.settings.get(topic)
         assert setting.desc in message_widget.text()
         return

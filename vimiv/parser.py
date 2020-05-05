@@ -7,9 +7,9 @@
 """The commandline argument parser and related functions."""
 
 import argparse
+import contextlib
 import logging
 import os
-from contextlib import suppress
 
 from PyQt5.QtCore import QSize
 
@@ -162,6 +162,6 @@ def loglevel(value: str) -> int:
     Returns:
         value as logging level.
     """
-    with suppress(AttributeError):
+    with contextlib.suppress(AttributeError):
         return getattr(logging, value.upper())
     raise argparse.ArgumentTypeError(f"Invalid log level '{value}'")

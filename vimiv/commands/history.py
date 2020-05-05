@@ -6,9 +6,9 @@
 
 """Functions to read and write command history."""
 
+import collections
 import enum
 import os
-from collections import deque
 from typing import Iterable, Optional, Deque, List
 
 from vimiv.commands import argtypes
@@ -46,7 +46,7 @@ class CycleMode(enum.Enum):
     Substring = 1
 
 
-class History(deque):
+class History(collections.deque):
     """Store and interact with command line history.
 
     Implemented as a deque which stores the commands in the history. Commands with
@@ -128,7 +128,7 @@ class History(deque):
         """
         if self._tmpdeque is None or mode != self._mode:
             self._mode = mode
-            self._tmpdeque = deque(
+            self._tmpdeque = collections.deque(
                 cmd for cmd in self if cmd.startswith(match) and cmd != text
             )
             self._tmpdeque.appendleft(text)

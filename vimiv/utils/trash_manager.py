@@ -18,11 +18,11 @@ Module Attributes:
 """
 
 import configparser
+import functools
 import os
 import shutil
 import tempfile
 import time
-from functools import lru_cache
 from typing import cast, Tuple, List
 
 from vimiv import api
@@ -140,7 +140,7 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
     shutil.move(temp_path, info_path)
 
 
-@lru_cache(None)
+@functools.lru_cache(None)
 def trash_info(filename: str) -> Tuple[str, str]:
     """Get information stored in the .trashinfo file.
 

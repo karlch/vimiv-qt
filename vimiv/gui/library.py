@@ -6,8 +6,8 @@
 
 """Library widget with model and delegate."""
 
+import contextlib
 import os
-from contextlib import suppress
 from typing import List, Optional, Dict, NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -140,7 +140,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     @utils.slot
     def _select_path(self, path: str):
         """Select a specific path by name."""
-        with suppress(ValueError):
+        with contextlib.suppress(ValueError):
             _logger.debug("Selecting library path '%s' via slot", path)
             self._select_row(self.model().paths.index(path), emit=False)  # type: ignore
 
@@ -277,7 +277,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     def current(self):
         """Return absolute path of currently selected path."""
-        with suppress(IndexError):  # No path selected
+        with contextlib.suppress(IndexError):  # No path selected
             basename = self.selectedIndexes()[1].data()
             basename = strip(basename)
             return os.path.abspath(basename)
@@ -289,7 +289,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     def store_position(self):
         """Set the stored position for a directory if possible."""
-        with suppress(IndexError):
+        with contextlib.suppress(IndexError):
             self._positions[os.getcwd()] = Position(self.current(), self.row())
 
     def load_directory(self):
@@ -439,7 +439,7 @@ class LibraryModel(QStandardItemModel):
                 name = utils.add_html(name + "/", "b")
             if path in api.mark.paths:
                 name = mark_prefix + name
-            with suppress(FileNotFoundError):  # Has been deleted in the meantime
+            with contextlib.suppress(FileNotFoundError):  # Deleted in the meantime
                 size = get_size(path)
                 self.appendRow(
                     (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size),)

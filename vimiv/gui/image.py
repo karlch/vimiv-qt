@@ -6,7 +6,7 @@
 
 """QtWidgets for IMAGE mode."""
 
-from contextlib import suppress
+import contextlib
 from typing import List, Union, Optional, Callable
 
 from PyQt5.QtCore import Qt, QRectF, pyqtSignal
@@ -312,7 +312,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
         """Toggle betwen play and pause of animation."""
-        with suppress(IndexError, AttributeError):  # No items loaded, not a movie
+        with contextlib.suppress(IndexError, AttributeError):  # No items, not a movie
             widget = self.items()[0].widget()
             movie = widget.movie()
             movie.setPaused(not movie.state() == QMovie.Paused)

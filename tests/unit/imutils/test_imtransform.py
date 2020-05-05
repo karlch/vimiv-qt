@@ -6,7 +6,7 @@
 
 """Tests for vimiv.imutils.imtransform."""
 
-from functools import partial
+import functools
 
 from PyQt5.QtGui import QPixmap
 
@@ -18,8 +18,8 @@ from vimiv.imutils import current_pixmap, imtransform
 ACTIONS = (
     imtransform.Transform.rotate_command,
     imtransform.Transform.flip,
-    partial(imtransform.Transform.resize, width=400, height=400),
-    partial(imtransform.Transform.rescale, dx=2, dy=2),
+    functools.partial(imtransform.Transform.resize, width=400, height=400),
+    functools.partial(imtransform.Transform.rescale, dx=2, dy=2),
 )
 
 
@@ -36,7 +36,7 @@ def transform(qtbot, mocker):
 @pytest.fixture(params=ACTIONS)
 def action(transform, request):
     action = request.param
-    return partial(action, self=transform)
+    return functools.partial(action, self=transform)
 
 
 def test_change_and_reset(action, transform):

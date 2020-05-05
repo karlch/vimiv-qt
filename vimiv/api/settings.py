@@ -10,9 +10,9 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
+import abc
+import contextlib
 import enum
-from abc import abstractmethod
-from contextlib import suppress
 from typing import Any, Dict, ItemsView, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -99,7 +99,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         _storage[name] = self  # Store setting in storage
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def typ(self) -> type:
         """The python type of this setting defined by the child class."""
 
@@ -131,7 +131,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     def convert(self, value: Any) -> Any:
         """Convert value to setting type before using it."""
-        with suppress(ValueError):  # We re-raise later with a consistent message
+        with contextlib.suppress(ValueError):  # Re-raise later with consistent message
             if isinstance(value, str):
                 return self.convertstr(value)
             return self.typ(value)

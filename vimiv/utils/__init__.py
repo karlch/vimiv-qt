@@ -6,10 +6,10 @@
 
 """Various utility functions."""
 
+import abc
 import functools
 import inspect
 import re
-from abc import ABCMeta
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
@@ -431,7 +431,7 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
     raise TypeError(f"{typ} is not of Optional type")
 
 
-class AbstractQObjectMeta(wrappertype, ABCMeta):
+class AbstractQObjectMeta(wrappertype, abc.ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 

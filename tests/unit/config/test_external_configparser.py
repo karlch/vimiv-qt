@@ -6,16 +6,17 @@
 
 """Unit tests for vimiv.config.external_configparser."""
 
+import collections
 import configparser
-import os
-from collections import namedtuple
 
 import pytest
 
 from vimiv.config import external_configparser
 
 
-ENV_VARIABLE = namedtuple("EnvironmentVariable", ["name", "value"])("COLOR0", "#121212")
+ENV_VARIABLE = collections.namedtuple("EnvironmentVariable", ["name", "value"])(
+    "COLOR0", "#121212"
+)
 SECTION_NAME = "default".upper()
 OPTION_NAME = ENV_VARIABLE.name.lower()
 

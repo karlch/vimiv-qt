@@ -6,10 +6,10 @@
 
 """Tests for vimiv.utils"""
 
+import collections
 import inspect
 import os
 import typing
-from collections import namedtuple
 from typing import get_type_hints
 
 import pytest
@@ -202,7 +202,8 @@ def test_remove_prefix_not_found():
 )
 def escape_ws(request):
     """Fixture to yield different tuples of escaped and unescaped text."""
-    yield namedtuple("EscapeWSInput", ["unescaped", "escaped"])(*request.param)
+    result_tuple = collections.namedtuple("EscapeWSInput", ["unescaped", "escaped"])
+    yield result_tuple(*request.param)
 
 
 def test_escape_ws(escape_ws):

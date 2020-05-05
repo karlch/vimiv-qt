@@ -4,8 +4,8 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import contextlib
 import imghdr
-from contextlib import suppress
 
 import pytest_bdd as bdd
 
@@ -23,7 +23,7 @@ def load_plugin(name, info):
 @bdd.then(bdd.parsers.parse("The {name} format should be supported"))
 def check_format_supported(name):
     for func in imghdr.tests:
-        with suppress(IndexError):
+        with contextlib.suppress(IndexError):
             format_name = func.__name__.split("_")[-1]
             if format_name == name:
                 return

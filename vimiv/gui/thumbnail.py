@@ -6,8 +6,8 @@
 
 """Thumbnail widget."""
 
+import contextlib
 import os
-from contextlib import suppress
 from typing import List, Optional, Iterator, cast
 
 from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
@@ -286,7 +286,7 @@ class ThumbnailView(
     @utils.slot
     def _select_path(self, path: str):
         """Select a specific path by name."""
-        with suppress(ValueError):
+        with contextlib.suppress(ValueError):
             self._select_index(self._paths.index(path), emit=False)
 
     def _select_index(self, index: int, emit: bool = True) -> None:

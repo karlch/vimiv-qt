@@ -10,7 +10,7 @@ All exif related tasks are implemented in this module. The heavy lifting is done
 piexif (https://github.com/hMatoba/Piexif).
 """
 
-from contextlib import suppress
+import contextlib
 
 from vimiv.utils import log, lazy
 
@@ -56,7 +56,7 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
     try:
         exif_dict = piexif.load(src)
         if reset_orientation:
-            with suppress(KeyError):
+            with contextlib.suppress(KeyError):
                 exif_dict["0th"][piexif.ImageIFD.Orientation] = ExifOrientation.Normal
         exif_bytes = piexif.dump(exif_dict)
         piexif.insert(exif_bytes, dest)
@@ -70,7 +70,7 @@ def copy_exif(src: str, dest: str, reset_orientation: bool = True) -> None:
 @check_piexif("")
 def exif_date_time(filename) -> str:
     """Exif creation date and time of filename."""
-    with suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
+    with contextlib.suppress(piexif.InvalidImageDataError, FileNotFoundError, KeyError):
         exif_dict = piexif.load(filename)
         return exif_dict["0th"][piexif.ImageIFD.DateTime].decode()
     return ""
@@ -118,19 +118,19 @@ class ExifInformation(dict):
 
     def _add_bytes_info(self, name, ifd, key):
         """Add exif information of type bytes to the dictionary."""
-        with suppress(KeyError):
+        with contextlib.suppress(KeyError):
             self[name] = self._exif[ifd][key].decode()
 
     def _add_fraction(self, name, ifd, key, suffix="", prefix=""):
         """Add exif information as fraction of two numbers to the dictionary."""
-        with suppress(KeyError):
+        with contextlib.suppress(KeyError):
             value_tuple = self._exif[ifd][key]
             fraction = value_tuple[0] / value_tuple[1]
             self[name] = f"{prefix}{fraction:.2f}{suffix}"
 
     def _add_two_digits(self, name, ifd, key, separator="/", suffix="", prefix=""):
         """Add exif information as two numbers to the dictionary."""
-        with suppress(KeyError):
+        with contextlib.suppress(KeyError):
             value_tuple = self._exif[ifd][key]
             self[name] = f"{prefix}%s{separator}%s{suffix}" % value_tuple
 

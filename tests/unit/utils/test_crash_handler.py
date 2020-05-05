@@ -6,11 +6,11 @@
 
 """Tests for vimiv.utils.crash_handler."""
 
+import collections
 import functools
 import signal
 import sys
 import types
-from collections import namedtuple
 
 import pytest
 
@@ -34,7 +34,7 @@ def handler(mocker, print_logging):
     sys.excepthook = mock_excepthook
     app = mocker.Mock()
     instance = crash_handler.CrashHandler(app)
-    yield namedtuple("HandlerFixture", ["instance", "app", "excepthook"])(
+    yield collections.namedtuple("HandlerFixture", ["instance", "app", "excepthook"])(
         instance, app, mock_excepthook
     )
     sys.excepthook = initial_excepthook

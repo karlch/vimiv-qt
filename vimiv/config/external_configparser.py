@@ -19,9 +19,9 @@ To add more resources::
 """
 
 import configparser
+import functools
 import os
 import re
-from functools import lru_cache
 
 from vimiv.utils import log
 
@@ -62,7 +62,7 @@ class ExternalInterpolation(configparser.Interpolation):
         return self.update(value)
 
     @staticmethod
-    @lru_cache(None)
+    @functools.lru_cache(None)
     def update(value: str) -> str:
         """Update value from configfile with external resources.
 

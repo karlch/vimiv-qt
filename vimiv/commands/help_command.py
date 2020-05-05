@@ -6,8 +6,8 @@
 
 """Functions to format and retrieve text for the :help command."""
 
+import contextlib
 import typing
-from contextlib import suppress
 
 import vimiv
 from vimiv import api
@@ -32,11 +32,11 @@ def help_command(topic: str) -> None:
         "vimiv": _general_help,
         "wildcards": _wildcard_help,
     }
-    with suppress(KeyError):
+    with contextlib.suppress(KeyError):
         return general_topics[topic]()
-    with suppress(api.commands.CommandNotFound):
+    with contextlib.suppress(api.commands.CommandNotFound):
         return _command_help(api.commands.get(topic, mode=api.modes.current()))
-    with suppress(KeyError):
+    with contextlib.suppress(KeyError):
         return _setting_help(api.settings.get(topic))
     raise api.commands.CommandError(f"Unknown topic '{topic}'")
 

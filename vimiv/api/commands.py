@@ -70,11 +70,11 @@ command.
 """
 
 import argparse
+import contextlib
 import glob
 import inspect
 import os
 import typing
-from contextlib import suppress
 
 from vimiv.utils import (
     flatten,
@@ -203,7 +203,7 @@ class _CommandArguments(argparse.ArgumentParser):
     def parse_args(self, args: typing.List[str]) -> argparse.Namespace:  # type: ignore
         """Override parse_args to sort and flatten paths list in addition."""
         parsed_args = super().parse_args(args)
-        with suppress(AttributeError):
+        with contextlib.suppress(AttributeError):
             parsed_args.paths = [
                 os.path.abspath(path) for path in sorted(flatten(parsed_args.paths))
             ]

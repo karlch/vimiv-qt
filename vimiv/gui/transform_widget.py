@@ -7,8 +7,8 @@
 """Base class for widgets which provide a gui for more complex transformations."""
 
 import abc
+import contextlib
 import functools
-from contextlib import suppress
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget
@@ -79,7 +79,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
 
     def keyPressEvent(self, event):
         """Run binding from bindings dictionary."""
-        with suppress(ValueError, KeyError):
+        with contextlib.suppress(ValueError, KeyError):
             keysequence = keyevent_to_sequence(event)
             binding = self.bindings[keysequence]
             api.status.clear("transform binding")

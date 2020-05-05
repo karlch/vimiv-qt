@@ -10,9 +10,9 @@ Module Attributes:
     _license_str: GPL boilerplate including the licensing information.
 """
 
+import functools
 import os
 import sys
-from functools import lru_cache
 from typing import Optional
 
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
@@ -71,7 +71,7 @@ def _python_version() -> str:
     return "{info.major}.{info.minor}.{info.micro}".format(info=sys.version_info)
 
 
-@lru_cache(1)
+@functools.lru_cache(1)
 def _git_info() -> Optional[str]:
     """Return git current commit information if possible else None."""
     gitdir = os.path.realpath(

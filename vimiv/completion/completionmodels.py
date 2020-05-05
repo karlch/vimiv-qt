@@ -6,9 +6,9 @@
 
 """Various completion models for command line completion."""
 
+import functools
 import os
 import re
-from functools import lru_cache
 from typing import List, Set, Tuple
 
 from vimiv import api
@@ -27,7 +27,7 @@ class CommandModel(api.completion.BaseModel):
         mode = api.modes.COMMAND.last
         self.set_data(self.formatted_commands(mode) + self.formatted_aliases(mode))
 
-    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    @functools.lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [
@@ -246,7 +246,7 @@ class HelpModel(api.completion.BaseModel):
             self._general + self.formatted_commands(mode) + self._formatted_settings
         )
 
-    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    @functools.lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [

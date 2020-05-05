@@ -6,9 +6,9 @@
 
 """Tests for vimiv.api._mark."""
 
+import collections
 import os
 import re
-from collections import namedtuple
 
 import pytest
 
@@ -41,7 +41,7 @@ def tagwrite(tagdir):
     with Tag(name, read_only=False) as tag:
         tag.write(paths)
     path = os.path.join(tagdir, name)
-    yield namedtuple("tagwrite", ["path", "content"])(path, paths)
+    yield collections.namedtuple("tagwrite", ["path", "content"])(path, paths)
 
 
 def test_mark_single_image(mark):

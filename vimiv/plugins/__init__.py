@@ -65,7 +65,7 @@ Module Attributes:
 import importlib
 import os
 import sys
-from types import ModuleType
+import types
 from typing import Dict, List
 
 from vimiv.utils import xdg, log
@@ -76,7 +76,7 @@ _user_plugin_directory = xdg.vimiv_data_dir("plugins")
 _plugins: Dict[str, str] = {
     "print": "default"
 }  # key: name, value: additional information
-_loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
+_loaded_plugins: Dict[str, types.ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
 
 

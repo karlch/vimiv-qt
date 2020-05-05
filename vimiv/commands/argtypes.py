@@ -11,11 +11,11 @@ Example for scroll direction:
         ...
 """
 
-from contextlib import suppress
-from enum import Enum
+import contextlib
+import enum
 
 
-class Direction(Enum):
+class Direction(enum.Enum):
     """Valid arguments for directional commands."""
 
     Left = "left"
@@ -24,14 +24,14 @@ class Direction(Enum):
     Down = "down"
 
 
-class Zoom(Enum):
+class Zoom(enum.Enum):
     """Valid arguments for zooming."""
 
     In = "in"
     Out = "out"
 
 
-class ImageScale(str, Enum):
+class ImageScale(str, enum.Enum):
     """Valid arguments for image scaling."""
 
     Overzoom = "overzoom"
@@ -44,12 +44,12 @@ class ImageScaleFloat:
     """Valid arguments for image scaling including float and ImageScale."""
 
     def __new__(cls, value):
-        with suppress(ValueError):
+        with contextlib.suppress(ValueError):
             return float(value)
         return ImageScale(value)
 
 
-class HistoryDirection(Enum):
+class HistoryDirection(enum.Enum):
     """Valid arguments for the jumping through history."""
 
     Next = "next"

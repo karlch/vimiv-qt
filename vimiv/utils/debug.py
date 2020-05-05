@@ -6,11 +6,11 @@
 
 """Various utility functions for debugging and profiling."""
 
+import contextlib
 import cProfile
 import functools
+import pstats
 import time
-from contextlib import contextmanager
-from pstats import Stats
 from typing import Any, Iterator
 
 from .customtypes import FuncT
@@ -32,7 +32,7 @@ def timed(function: FuncT) -> FuncT:
     return inner  # type: ignore
 
 
-@contextmanager
+@contextlib.contextmanager
 def profile(amount: int = 15) -> Iterator[None]:
     """Contextmanager to profile code secions.
 
@@ -52,6 +52,6 @@ def profile(amount: int = 15) -> Iterator[None]:
     cprofile.enable()
     yield
     cprofile.disable()
-    stats = Stats(cprofile)
+    stats = pstats.Stats(cprofile)
     stats.sort_stats("cumulative").print_stats(amount)
     stats.sort_stats("time").print_stats(amount)
