@@ -36,6 +36,7 @@ import functools
 from typing import Any, Callable
 
 from vimiv.utils import log, is_method, class_that_defined_method
+from vimiv.utils.customtypes import AnyT
 
 _logger = log.module_logger(__name__)
 
@@ -64,13 +65,22 @@ def register(component_init: Callable) -> Callable:
     return inside
 
 
+def _call_with_instance(func: Callable[..., AnyT], *args: Any, **kwargs: Any) -> AnyT:
+    """Call function with current objreg instance as self argument if it is a method."""
+    cls = __get_class(func)
+    if cls is not None:
+        return func(cls.instance, *args, **kwargs)
+    return func(*args, **kwargs)
+
+
 @functools.lru_cache(None)
-def _apply_instance(func: Callable) -> Callable:
-    """Apply instance as self argument to func if func is a method."""
+def __get_class(func: Callable) -> Any:
+    """Helper method to retrieve the class defining func if any.
+
+    We define this simple wrapper to be able to cache this as it is called for every
+    command / status module and should thus be as fast as possible.
+    """
     if is_method(func):
-        _logger.debug(
-            "Applying self from instance in objreg to '%s'", func.__qualname__
-        )
-        cls = class_that_defined_method(func)
-        return functools.partial(func, cls.instance)
-    return func
+        _logger.debug("Retrieving instance from objreg for '%s'", func.__qualname__)
+        return class_that_defined_method(func)
+    return None

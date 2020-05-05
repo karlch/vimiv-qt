@@ -316,8 +316,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         parsed_args = self.argparser.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
-        func = objreg._apply_instance(self.func)
-        func(**kwargs)
+        objreg._call_with_instance(self.func, **kwargs)
 
     @property
     def argparser(self) -> _CommandArguments:

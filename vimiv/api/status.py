@@ -60,8 +60,7 @@ class _Module:
         self._func = func
 
     def __call__(self) -> str:
-        func = objreg._apply_instance(self._func)
-        return func()
+        return objreg._call_with_instance(self._func)
 
     def __repr__(self) -> str:
         return f"StatusModule('{self._func.__name__}')"

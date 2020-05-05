@@ -47,7 +47,6 @@ def cleanup():
     utils.Throttle.stop_all()
     utils.Pool.clear()
     utils.Pool.wait(5000)
-    api.objreg._apply_instance.cache_clear()
     api.settings.reset()
     api.mark.mark_clear()
     runners._last_command.clear()
