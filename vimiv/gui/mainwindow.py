@@ -28,8 +28,9 @@ class MainWindow(QWidget):
     """QMainWindow which groups all the other widgets.
 
     Attributes:
-        _statusbar: Statusbar object displayed at the bottom.
+        _library: Library object at the left of the grid.
         _overlays: List of overlay widgets.
+        _statusbar: Statusbar object displayed at the bottom.
     """
 
     @api.objreg.register
@@ -42,7 +43,8 @@ class MainWindow(QWidget):
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
         grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
-        grid.addWidget(Library(self), 0, 0, 1, 1)
+        self._library = Library(self)
+        grid.addWidget(self._library, 0, 0, 1, 1)
         grid.addWidget(self._statusbar, 1, 0, 1, 2)
         # Add overlay widgets
         self._overlays.append(KeyhintWidget(self))
@@ -59,11 +61,10 @@ class MainWindow(QWidget):
     @utils.slot
     def _init_manipulate(self):
         """Create UI widgets related to manipulate mode."""
-        from .manipulate import Manipulate, ManipulateImage
+        from .manipulate import Manipulate
 
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
-        self.add_overlay(ManipulateImage(self, manipulate_widget))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
@@ -119,7 +120,7 @@ class MainWindow(QWidget):
         """
         super().resizeEvent(event)
         self._update_overlay_geometry()
-        Library.instance.update_width()
+        self._library.update_width()
 
     def show(self):
         """Update show to resize overlays."""

@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv import api, imutils, utils
+from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
 from vimiv.utils import lazy
@@ -370,6 +371,4 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     def focusOutEvent(self, event):
         """Stop slideshow when focusing another widget."""
         if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
-            slideshow = imutils.slideshow.Slideshow.instance
-            if slideshow is not None and slideshow.isActive():
-                slideshow.stop()
+            slideshow.stop()

@@ -33,7 +33,5 @@ def mockregister_cleanup():
 @contextmanager
 def apply():
     """Contextmanager to mock relevant vimiv decorators and restore state."""
-    with mock.patch("vimiv.utils.cached_method", lambda x: x), mock.patch(
-        "vimiv.api.objreg.register", mockregister
-    ):
+    with mock.patch("vimiv.api.objreg.register", mockregister):
         yield
