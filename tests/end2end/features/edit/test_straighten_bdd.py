@@ -7,14 +7,14 @@
 import pytest
 import pytest_bdd as bdd
 
-import vimiv.gui.straighten_widget
+import vimiv.gui.straightenwidget
 
 
 bdd.scenarios("straighten.feature")
 
 
 def find_straighten_widgets(image):
-    return image.findChildren(vimiv.gui.straighten_widget.StraightenWidget)
+    return image.findChildren(vimiv.gui.straightenwidget.StraightenWidget)
 
 
 @pytest.fixture()

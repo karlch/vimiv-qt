@@ -20,7 +20,6 @@ import vimiv.gui.thumbnail
 import vimiv.gui.mainwindow
 import vimiv.gui.message
 import vimiv.gui.commandline
-import vimiv.gui.command_widget
 import vimiv.gui.image
 import vimiv.gui.prompt
 import vimiv.gui.statusbar

@@ -324,7 +324,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         keys and counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with
         ``<return>`` and reject them with ``<escape>``.
         """
-        from vimiv.gui.straighten_widget import StraightenWidget
+        from vimiv.gui.straightenwidget import StraightenWidget
 
         StraightenWidget(self)
 

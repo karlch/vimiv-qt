@@ -9,12 +9,12 @@ import pytestqt
 import pytest_bdd as bdd
 
 from vimiv import api
-from vimiv.gui import keyhint_widget, eventhandler
+from vimiv.gui import keyhintwidget, eventhandler
 
 
 @pytest.fixture()
 def keyhint(overlay):
-    return overlay(keyhint_widget.KeyhintWidget)
+    return overlay(keyhintwidget.KeyhintWidget)
 
 
 bdd.scenarios("keyhint.feature")

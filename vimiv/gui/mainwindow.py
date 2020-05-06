@@ -14,13 +14,13 @@ from vimiv import api, utils
 from vimiv.utils import migration
 
 # Import all GUI widgets used to create the full main window
-from vimiv.gui.command_widget import CommandWidget
+from vimiv.gui.commandwidget import CommandWidget
 from vimiv.gui.image import ScrollableImage
-from vimiv.gui.keyhint_widget import KeyhintWidget
+from vimiv.gui.keyhintwidget import KeyhintWidget
 from vimiv.gui.library import Library
 from vimiv.gui.thumbnail import ThumbnailView
 from vimiv.gui.message import Message
-from vimiv.gui.metadata_widget import MetadataWidget
+from vimiv.gui.metadatawidget import MetadataWidget
 from vimiv.gui.statusbar import StatusBar
 
 
