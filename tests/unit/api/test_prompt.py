@@ -36,6 +36,6 @@ def test_ask_question(answer):
     title = "Question"
     body = "Does this test work?"
     answerer = QuestionAnswerer(title=title, body=body, answer=answer)
-    answer = prompt.ask_question(title=title, body=body)
+    received_answer = prompt.ask_question(title=title, body=body)
     assert answerer.answered
-    assert answer == answer
+    assert received_answer == answer

@@ -165,7 +165,7 @@ def keypress(qtbot):
                 return key, keys.replace(name, "")
         return Qt.NoModifier, keys
 
-    def callable(widget, keys):
+    def press_impl(widget, keys):
         modifier, keys = get_modifier(keys)
         try:
             qkey = special_keys[keys]
@@ -173,7 +173,7 @@ def keypress(qtbot):
         except KeyError:
             qtbot.keyClicks(widget, keys, modifier=modifier)
 
-    return callable
+    return press_impl
 
 
 ###############################################################################
@@ -352,9 +352,9 @@ def enter_thumbnail(thumbnail):
     thumbnail.setFixedWidth(400)  # Make sure width is as expected
 
 
-@bdd.then(bdd.parsers.parse("the thumbnail number {N:d} should be selected"))
-def check_selected_thumbnail(thumbnail, qtbot, N):
-    assert thumbnail.currentRow() + 1 == N
+@bdd.then(bdd.parsers.parse("the thumbnail number {number:d} should be selected"))
+def check_selected_thumbnail(thumbnail, qtbot, number):
+    assert thumbnail.currentRow() + 1 == number
 
 
 @bdd.then(bdd.parsers.parse("the pop up '{title}' should be displayed"))
@@ -404,5 +404,5 @@ def check_commandline_text(commandline, text):
 
 @bdd.then(bdd.parsers.parse("the boolean setting '{name}' should be '{value}'"))
 def check_boolean_setting(name, value):
-    bool_value = True if value.lower() == "true" else False
+    bool_value = value.lower() == "true"
     assert api.settings.get_value(name) is bool_value

@@ -6,8 +6,9 @@
 
 """Unit tests for vimiv.checkversion."""
 
-import pytest
 import sys
+
+import pytest
 
 from vimiv import checkversion
 

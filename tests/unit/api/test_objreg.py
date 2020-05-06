@@ -10,8 +10,9 @@ from vimiv.api import objreg
 
 
 class DummyObject:
-
     """DummyObject to store in the registry."""
+
+    instance = None
 
     @objreg.register
     def __init__(self):

@@ -12,8 +12,9 @@ import os
 import typing
 from typing import get_type_hints
 
-import pytest
 from PyQt5.QtCore import pyqtSignal, QObject, QByteArray
+
+import pytest
 
 from vimiv import utils
 
@@ -158,7 +159,8 @@ def test_slot_fails_without_type_annotations():
     with pytest.raises(utils.AnnotationNotFound):
 
         @utils.slot
-        def test(x):
+        def dummy(x):  # pylint: disable=unused-variable
+            """Dummy function to check for raising the exception."""
             ...
 
 

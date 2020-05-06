@@ -16,7 +16,7 @@ def test_text_non_whitespace_with_whitespace(text):
     """Ensure the decorated function is not called with plain whitespace."""
 
     @runners.text_non_whitespace
-    def function(input):
+    def function(text):
         raise AssertionError("The function should not be called")
 
     function(text)
@@ -29,8 +29,8 @@ def test_text_non_whitespace_with_non_whitespace(text, mocker):
     mock = mocker.Mock()
 
     @runners.text_non_whitespace
-    def function(input):
-        mock(input)
+    def function(text):
+        mock(text)
 
     function(text)
     assert mock.called_once_with("txt")

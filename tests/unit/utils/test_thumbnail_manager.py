@@ -6,9 +6,9 @@
 
 import os
 
-import pytest
-
 from PyQt5.QtGui import QPixmap
+
+import pytest
 
 from vimiv.utils import thumbnail_manager
 

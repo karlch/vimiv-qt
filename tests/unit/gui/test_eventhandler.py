@@ -6,10 +6,10 @@
 
 """Tests for vimiv.gui.eventhandler."""
 
-import pytest
-
 from PyQt5.QtCore import QEvent, Qt, QPoint
 from PyQt5.QtGui import QKeyEvent, QMouseEvent
+
+import pytest
 
 from vimiv.gui import eventhandler
 
@@ -61,7 +61,7 @@ def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):
 def test_keyevent_to_sequence_for_only_modifier():
     with pytest.raises(ValueError):
         event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
-        eventhandler.keyevent_to_sequence(event) == tuple()
+        assert eventhandler.keyevent_to_sequence(event) == tuple()
 
 
 @pytest.mark.parametrize(

@@ -13,6 +13,7 @@ from vimiv.commands import argtypes
 
 def test_scroll_direction():
     # Would raise exception if a name is invalid
+    # pylint: disable=expression-not-assigned
     [argtypes.Direction(name) for name in ["left", "right", "up", "down"]]
 
 
@@ -23,6 +24,7 @@ def test_fail_scroll_direction():
 
 def test_zoom():
     # Would raise exception if a name is invalid
+    # pylint: disable=expression-not-assigned
     [argtypes.Zoom(name) for name in ["in", "out"]]
 
 
@@ -33,6 +35,7 @@ def test_fail_zoom():
 
 def test_image_scale_text():
     # Would raise exception if a name is invalid
+    # pylint: disable=expression-not-assigned
     [argtypes.ImageScaleFloat(name) for name in ["fit", "fit-width", "fit-height"]]
 
 
@@ -42,6 +45,7 @@ def test_image_scale_float():
 
 def test_command_history_direction():
     # Would raise exception if a name is invalid
+    # pylint: disable=expression-not-assigned
     [argtypes.HistoryDirection(name) for name in ["next", "prev"]]
 
 

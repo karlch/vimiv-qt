@@ -21,7 +21,7 @@ def dummy_module():
     def dummy_method():
         return content
 
-    yield name, content
+    yield name, dummy_method()
 
     del status._modules[name]
 
@@ -35,7 +35,8 @@ def test_fail_add_status_module():
     with pytest.raises(ValueError):
 
         @status.module("wrong")
-        def wrong():
+        def wrong():  # pylint: disable=unused-variable
+            """Status module with an invalid name."""
             return "wrong"
 
 

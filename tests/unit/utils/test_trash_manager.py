@@ -61,7 +61,7 @@ def test_delete_and_undelete_file(tmpfile):
 
 
 def test_do_not_override_existing_file_in_trash(trash, tmpdir):
-    for i in range(2):
+    for _ in range(2):
         path = create_tmpfile(tmpdir, "new_file")
         trash_manager.delete([path])
     trashdir = os.path.join(trash, "files")
@@ -70,7 +70,7 @@ def test_do_not_override_existing_file_in_trash(trash, tmpdir):
 
 
 def test_create_trash_info_file(trash, tmpdir):
-    for i in range(2):
+    for _ in range(2):
         path = create_tmpfile(tmpdir, "new_file")
         trash_manager.delete([path])
     infodir = os.path.join(trash, "info")
