@@ -17,8 +17,8 @@ from PyQt5.QtGui import QColor, QIcon
 from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
+from vimiv.gui import eventhandler, synchronize
 from vimiv.utils import create_pixmap, thumbnail_manager, log
-from . import eventhandler, synchronize
 
 
 _logger = log.module_logger(__name__)

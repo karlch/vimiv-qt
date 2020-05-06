@@ -15,11 +15,11 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
+from vimiv.gui import eventhandler
 from vimiv.utils import slot
-from .eventhandler import EventHandlerMixin
 
 
-class Manipulate(EventHandlerMixin, QTabWidget):
+class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:

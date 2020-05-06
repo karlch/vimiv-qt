@@ -63,8 +63,8 @@ from typing import cast, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
+from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
-from . import settings, signals, status
 
 
 _logger = log.module_logger(__name__)

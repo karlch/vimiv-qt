@@ -187,7 +187,7 @@ def run_command(command, qtbot):
     runners.run(command, mode=api.modes.current())
 
     # Wait for external command to complete if any was run
-    external_runner = runners.external._impl
+    external_runner = runners.external_runner._impl
     if external_runner is not None:
 
         def external_finished():

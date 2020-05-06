@@ -5,5 +5,3 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """GUI widgets using Qt5."""
-
-from .mainwindow import MainWindow

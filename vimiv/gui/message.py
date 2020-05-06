@@ -11,8 +11,7 @@ from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles
-
-from .statusbar import StatusBar
+from vimiv.gui import statusbar
 
 
 class Message(QLabel):
@@ -26,7 +25,7 @@ class Message(QLabel):
         _timer: QTimer used to hide the widget upon timeout.
     """
 
-    STYLESHEET = StatusBar.STYLESHEET
+    STYLESHEET = statusbar.StatusBar.STYLESHEET
 
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)

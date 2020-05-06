@@ -20,9 +20,10 @@ from typing import List
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QApplication
 
-from vimiv import app, api, parser, imutils, plugins, gui
+from vimiv import app, api, parser, imutils, plugins
 from vimiv.commands import runners, search
 from vimiv.config import configfile, keyfile, styles
+from vimiv.gui import mainwindow
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
 
 # Must be imported to create the commands using the decorators
@@ -118,7 +119,7 @@ def init_paths(args: argparse.Namespace) -> None:
 def init_ui(args: argparse.Namespace) -> None:
     """Initialize the Qt UI."""
     _logger.debug("Initializing UI")
-    mw = gui.MainWindow()
+    mw = mainwindow.MainWindow()
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size

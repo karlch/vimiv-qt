@@ -24,9 +24,8 @@ from vimiv import api, imutils, utils
 from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
+from vimiv.gui import eventhandler
 from vimiv.utils import lazy
-
-from .eventhandler import EventHandlerMixin
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
@@ -34,7 +33,7 @@ QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 INF = float("inf")
 
 
-class ScrollableImage(EventHandlerMixin, QGraphicsView):
+class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     """QGraphicsView to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.
@@ -325,7 +324,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         keys and counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with
         ``<return>`` and reject them with ``<escape>``.
         """
-        from .straighten_widget import StraightenWidget
+        from vimiv.gui.straighten_widget import StraightenWidget
 
         StraightenWidget(self)
 

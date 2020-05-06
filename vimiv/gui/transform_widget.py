@@ -17,8 +17,7 @@ from vimiv.imutils import imtransform
 
 # See https://github.com/PyCQA/pylint/issues/3202
 from vimiv import api, utils  # pylint: disable=unused-import
-
-from .eventhandler import keyevent_to_sequence
+from vimiv.gui import eventhandler
 
 
 class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
@@ -80,7 +79,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def keyPressEvent(self, event):
         """Run binding from bindings dictionary."""
         with contextlib.suppress(ValueError, KeyError):
-            keysequence = keyevent_to_sequence(event)
+            keysequence = eventhandler.keyevent_to_sequence(event)
             binding = self.bindings[keysequence]
             api.status.clear("transform binding")
             binding()

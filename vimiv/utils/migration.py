@@ -13,9 +13,8 @@ from typing import NamedTuple, Optional, List
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 import vimiv
+from vimiv.utils import xdg
 from vimiv.widgets import PopUp
-
-from . import xdg
 
 
 class XdgDirectories(NamedTuple):

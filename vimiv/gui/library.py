@@ -17,8 +17,8 @@ from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
+from vimiv.gui import eventhandler, synchronize
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
-from . import eventhandler, synchronize
 
 
 _logger = log.module_logger(__name__)

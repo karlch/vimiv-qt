@@ -76,6 +76,7 @@ import inspect
 import os
 import typing
 
+from vimiv.api import modes, objreg
 from vimiv.utils import (
     flatten,
     log,
@@ -84,8 +85,6 @@ from vimiv.utils import (
     is_optional_type,
     type_of_optional,
 )
-
-from . import modes, objreg
 
 
 _logger = log.module_logger(__name__)

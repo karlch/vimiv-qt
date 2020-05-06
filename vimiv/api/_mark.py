@@ -13,9 +13,9 @@ from typing import Any, Callable, List, Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
 
+from vimiv.api import commands, keybindings, objreg, status, settings, modes
 from vimiv.config import styles
 from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
-from . import commands, keybindings, objreg, status, settings, modes
 
 
 _logger = log.module_logger(__name__)
@@ -189,7 +189,7 @@ class Mark(QObject):
         positional arguments:
             * ``name``: Name of the tag to open.
         """
-        from . import open_paths  # Otherwise we have a circular import
+        from vimiv.api import open_paths  # Otherwise we have a circular import
 
         self.tag_load(name)
         open_paths(self._marked)

@@ -13,7 +13,7 @@ import pstats
 import time
 from typing import Any, Iterator
 
-from .customtypes import FuncT
+from vimiv.utils.customtypes import FuncT
 
 
 def timed(function: FuncT) -> FuncT:

@@ -9,9 +9,9 @@
 import os
 from typing import List, Iterable
 
-from vimiv.utils import files, log
+from vimiv.utils import files
 
-from . import (
+from vimiv.api import (
     commands,
     completion,
     keybindings,

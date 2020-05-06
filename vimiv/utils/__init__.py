@@ -15,7 +15,7 @@ import typing
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
-from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
+from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
 
 # Different location under PyQt < 5.11
 try:

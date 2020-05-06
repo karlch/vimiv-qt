@@ -57,8 +57,8 @@ from typing import cast, Dict, Iterable, Tuple
 from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
+from vimiv.api import modes, settings
 from vimiv.utils import log
-from . import modes, settings
 
 
 _logger = log.module_logger(__name__)

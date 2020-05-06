@@ -46,7 +46,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 
 import vimiv
 
-from . import xdg
+from vimiv.utils import xdg
 
 
 _module_loggers: Dict[str, "LazyLogger"] = {}

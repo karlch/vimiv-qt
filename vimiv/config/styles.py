@@ -22,10 +22,8 @@ import sys
 from typing import cast
 
 from vimiv import api
+from vimiv.config import read_log_exception, external_configparser, _style_options
 from vimiv.utils import xdg, log, customtypes
-
-from . import read_log_exception, external_configparser
-from ._style_options import DEFAULT_OPTIONS
 
 
 NAME_DEFAULT = "default"
@@ -59,7 +57,7 @@ class Style(dict):
             self[f"base{i:02x}"] = color
         # Fill in all default values
         self["font"] = font
-        for key, value in DEFAULT_OPTIONS.items():
+        for key, value in _style_options.DEFAULT_OPTIONS.items():
             self[key] = value
         # Add values with alpha channel that require special handling
         self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")

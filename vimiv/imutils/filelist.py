@@ -18,8 +18,8 @@ from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command
+from vimiv.imutils import slideshow
 from vimiv.utils import files, log
-from . import slideshow
 
 
 _paths: List[str] = []

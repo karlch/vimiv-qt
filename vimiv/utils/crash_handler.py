@@ -16,7 +16,7 @@ from typing import Callable, Type
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
 from PyQt5.QtWidgets import QApplication
 
-from . import log, customtypes
+from vimiv.utils import log, customtypes
 
 # Fails on windows
 # We do not officially support windows currently, but might do so in the future

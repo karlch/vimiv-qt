@@ -17,8 +17,8 @@ from typing import Any, Dict, ItemsView, List
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
+from vimiv.api import prompt
 from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
-from . import prompt
 
 
 _storage: Dict[str, "Setting"] = {}

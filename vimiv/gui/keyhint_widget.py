@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles
-from .eventhandler import EventHandlerMixin
+from vimiv.gui import eventhandler
 
 
 class KeyhintWidget(QLabel):
@@ -52,7 +52,7 @@ class KeyhintWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
         self.setTextFormat(Qt.RichText)
 
-        partial_handler = EventHandlerMixin.partial_handler
+        partial_handler = eventhandler.EventHandlerMixin.partial_handler
         partial_handler.partial_matches.connect(self._on_partial_matches)
         partial_handler.partial_cleared.connect(self._on_partial_cleared)
         api.settings.keyhint.delay.changed.connect(self._on_delay_changed)

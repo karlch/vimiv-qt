@@ -8,10 +8,8 @@
 
 import configparser
 
-from vimiv import api
+from vimiv import api, config
 from vimiv.utils import log
-
-from . import read_log_exception, parse_config
 
 
 _logger = log.module_logger(__name__)
@@ -19,7 +17,7 @@ _logger = log.module_logger(__name__)
 
 def parse(cli_path: str):
     """Parse keybindings from the keys.conf into the keybindings registry."""
-    parse_config(cli_path, "keys.conf", read, dump)
+    config.parse_config(cli_path, "keys.conf", read, dump)
 
 
 def dump(path: str):
@@ -44,7 +42,7 @@ def read(path: str) -> None:
     """Read keybindings from path into the keybindings registry."""
     _logger.debug("Reading keybindings from '%s'", path)
     parser = KeyfileParser()
-    read_log_exception(parser, _logger, path)
+    config.read_log_exception(parser, _logger, path)
     for section in parser.sections():
         try:
             _logger.debug("Reading keybindings from section '%s'", section)

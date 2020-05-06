@@ -6,7 +6,7 @@
 
 """An image viewer with vim-like keybindings based on PyQt5."""
 
-from . import checkversion
+import vimiv.checkversion
 
 __license__ = "GPL3"
 __version_info__ = (0, 7, 0)

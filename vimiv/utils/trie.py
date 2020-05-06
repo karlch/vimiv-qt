@@ -11,7 +11,7 @@ See e.g. https://en.wikipedia.org/wiki/Trie for more details.
 
 from typing import NamedTuple, Iterable, Optional, Iterator, Tuple, Dict, List, cast
 
-from . import log
+from vimiv.utils import log
 
 KeyT = Iterable[str]
 IterResultT = Iterator[Tuple[str, str]]

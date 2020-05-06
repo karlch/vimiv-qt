@@ -14,11 +14,10 @@ from PyQt5.QtWidgets import QStyleOption
 
 from vimiv import utils
 from vimiv.config import styles
+from vimiv.gui import transform_widget
 
-from .transform_widget import TransformWidget
 
-
-class StraightenWidget(TransformWidget):
+class StraightenWidget(transform_widget.TransformWidget):
     """Widget to display a grid for straightening and interact with image and transform.
 
     The grid is a visual helper for the user to straighten the image. An interaction

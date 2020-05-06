@@ -18,12 +18,10 @@ from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
 from vimiv.utils import log, customtypes
-from vimiv.commands import aliases, wildcards
-
-from .external import ExternalRunner
+from vimiv.commands import aliases, external, wildcards
 
 SEPARATOR = "&&"
-external = ExternalRunner()
+external_runner = external.ExternalRunner()
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
 _logger = log.module_logger(__name__)
@@ -94,7 +92,9 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external.run(wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~"))
+        external_runner.run(
+            wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~")
+        )
     else:
         command(count + text, mode)
 

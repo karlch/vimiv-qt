@@ -37,9 +37,8 @@ import functools
 import re
 from typing import Callable, Union, Tuple, Iterable, Iterator
 
+from vimiv.api import commands, modes
 from vimiv.utils import customtypes, trie
-
-from . import commands, modes
 
 
 def register(

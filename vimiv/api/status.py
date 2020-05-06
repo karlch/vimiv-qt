@@ -38,9 +38,8 @@ from typing import Callable, TypeVar, Any, Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
+from vimiv.api import objreg
 from vimiv.utils import log
-
-from . import objreg
 
 
 Module = Callable[[], str]

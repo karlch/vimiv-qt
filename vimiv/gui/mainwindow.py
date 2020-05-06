@@ -14,14 +14,14 @@ from vimiv import api, utils
 from vimiv.utils import migration
 
 # Import all GUI widgets used to create the full main window
-from .command_widget import CommandWidget
-from .image import ScrollableImage
-from .keyhint_widget import KeyhintWidget
-from .library import Library
-from .thumbnail import ThumbnailView
-from .message import Message
-from .metadata_widget import MetadataWidget
-from .statusbar import StatusBar
+from vimiv.gui.command_widget import CommandWidget
+from vimiv.gui.image import ScrollableImage
+from vimiv.gui.keyhint_widget import KeyhintWidget
+from vimiv.gui.library import Library
+from vimiv.gui.thumbnail import ThumbnailView
+from vimiv.gui.message import Message
+from vimiv.gui.metadata_widget import MetadataWidget
+from vimiv.gui.statusbar import StatusBar
 
 
 class MainWindow(QWidget):
@@ -61,7 +61,7 @@ class MainWindow(QWidget):
     @utils.slot
     def _init_manipulate(self):
         """Create UI widgets related to manipulate mode."""
-        from .manipulate import Manipulate
+        from vimiv.gui.manipulate import Manipulate
 
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
@@ -86,7 +86,7 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--copy``: Copy version information to clipboard instead.
         """
-        from .version_popup import VersionPopUp
+        from vimiv.gui.version_popup import VersionPopUp
 
         if copy:
             VersionPopUp.copy_to_clipboard()
@@ -103,7 +103,7 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--columns``: Number of columns to split the bindings in.
         """
-        from .keybindings_popup import KeybindingsPopUp
+        from vimiv.gui.keybindings_popup import KeybindingsPopUp
 
         KeybindingsPopUp(columns, parent=self)
 
@@ -163,7 +163,7 @@ class MainWindow(QWidget):
     @utils.slot
     def _run_prompt(self, question: api.prompt.Question) -> None:
         """Display a UI blocking prompt when a question was asked."""
-        from .prompt import Prompt
+        from vimiv.gui.prompt import Prompt
 
         prompt = Prompt(question, parent=self)
         prompt.update_geometry(self.width(), self.bottom)

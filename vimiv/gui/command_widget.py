@@ -11,8 +11,7 @@ from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
 
 from vimiv import api
 from vimiv.completion import completer
-
-from . import commandline, completionwidget
+from vimiv.gui import commandline, completionwidget
 
 
 class CommandWidget(QWidget):
