@@ -148,7 +148,7 @@ class Mark(QObject):
             try:
                 operation(abspath)
             except PermissionError:
-                raise commands.CommandError(f"Permission denied")
+                raise commands.CommandError("Permission denied")
 
         if os.path.isfile(abspath):
             safe_delete(os.remove)
