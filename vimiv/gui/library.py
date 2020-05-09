@@ -142,7 +142,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         """Select a specific path by name."""
         with contextlib.suppress(ValueError):
             _logger.debug("Selecting library path '%s' via slot", path)
-            self._select_row(self.model().paths.index(path), emit=False)  # type: ignore
+            self._select_row(self.model().paths.index(path), emit=False)
 
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):

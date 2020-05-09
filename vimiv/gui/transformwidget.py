@@ -68,7 +68,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
             self.reset_transformations()
             self.transform.apply()
         self.parent().transformation_module = None  # type: ignore
-        self.parent().setFocus()  # type: ignore
+        self.parent().setFocus()
         self.deleteLater()
         api.status.update("transform widget left")
 
