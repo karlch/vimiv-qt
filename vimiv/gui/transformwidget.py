@@ -15,8 +15,7 @@ from PyQt5.QtWidgets import QWidget
 
 from vimiv.imutils import imtransform
 
-# See https://github.com/PyCQA/pylint/issues/3202
-from vimiv import api, utils  # pylint: disable=unused-import
+from vimiv import api, utils
 from vimiv.gui import eventhandler
 
 

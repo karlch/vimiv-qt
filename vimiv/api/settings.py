@@ -186,7 +186,7 @@ class PromptSetting(Setting):
         ask = "ask"
 
         def __str__(self) -> str:
-            return self.value
+            return str(self.value)
 
     typ = Options
 
