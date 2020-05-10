@@ -101,38 +101,28 @@ class ExifInformation(dict):
             self._exif = piexif.load(filename)
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
-        # Read information from 0th IFD
-        ifd = piexif.ImageIFD
-        self._add_bytes_info("Make", "0th", ifd.Make)
-        self._add_bytes_info("Model", "0th", ifd.Model)
-        self._add_bytes_info("DateTime", "0th", ifd.DateTime)
-        # Read information from Exif IFD
-        ifd = piexif.ExifIFD
-        self._add_two_digits("ExposureTime", "Exif", ifd.ExposureTime, suffix=" s")
-        self._add_fraction("FNumber", "Exif", ifd.FNumber, prefix="f/")
-        self._add_fraction("ShutterSpeedValue", "Exif", ifd.ShutterSpeedValue, " EV")
-        self._add_fraction("ApertureValue", "Exif", ifd.ApertureValue, " EV")
-        self._add_fraction("ExposureBiasValue", "Exif", ifd.ExposureBiasValue, " EV")
-        self._add_fraction("FocalLength", "Exif", ifd.FocalLength, " mm")
-        _logger.debug("%s initialized, content:\n%r", self.__class__.__qualname__, self)
 
-    def _add_bytes_info(self, name, ifd, key):
-        """Add exif information of type bytes to the dictionary."""
-        with contextlib.suppress(KeyError):
-            self[name] = self._exif[ifd][key].decode()
+        for ifd in self._exif:
+            if ifd == "thumbnail":
+                continue
 
-    def _add_fraction(self, name, ifd, key, suffix="", prefix=""):
-        """Add exif information as fraction of two numbers to the dictionary."""
-        with contextlib.suppress(KeyError):
-            value_tuple = self._exif[ifd][key]
-            fraction = value_tuple[0] / value_tuple[1]
-            self[name] = f"{prefix}{fraction:.2f}{suffix}"
-
-    def _add_two_digits(self, name, ifd, key, separator="/", suffix="", prefix=""):
-        """Add exif information as two numbers to the dictionary."""
-        with contextlib.suppress(KeyError):
-            value_tuple = self._exif[ifd][key]
-            self[name] = f"{prefix}%s{separator}%s{suffix}" % value_tuple
+            for tag in self._exif[ifd]:
+                keyname = piexif.TAGS[ifd][tag]["name"]
+                keytype = piexif.TAGS[ifd][tag]["type"]
+                val = self._exif[ifd][tag]
+                _logger.debug(f'name: {keytype} type: {keyname} value: {val}')
+                if keytype in (1, 3, 4, 9) : # integer
+                    with contextlib.suppress(KeyError):
+                        self[keyname] = val
+                elif keytype == 2: # byte encoded ascii
+                    with contextlib.suppress(KeyError):
+                        self[keyname] = val.decode()
+                elif keytype in (5, 10): # (int, int) <=> numerator, denominator
+                    with contextlib.suppress(KeyError):
+                        self[keyname] = f"{val[0]}/{val[1]}"
+                elif keytype == 7: # byte
+                    with contextlib.suppress(KeyError):
+                        self[keyname] = val.decode()
 
 
 class ExifOrientation:
