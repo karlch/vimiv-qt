@@ -19,7 +19,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command
 from vimiv.imutils import slideshow
-from vimiv.utils import files, log
+from vimiv.utils import log
 
 
 _paths: List[str] = []
@@ -224,9 +224,7 @@ def _load_single(path: str) -> None:
     if path in _paths:
         goto(_paths.index(path) + 1)  # goto is indexed from 1
     else:
-        directory = os.path.dirname(path)
-        paths, _ = files.supported(files.listdir(directory))
-        _load_paths(paths, path)
+        _load_paths(api.working_directory.handler.images, path)
 
 
 def _load_paths(paths: Iterable[str], focused_path: str) -> None:

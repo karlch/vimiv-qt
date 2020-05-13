@@ -114,6 +114,11 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self.fileChanged.connect(self._on_file_changed)  # type: ignore
         signals.new_image_opened.connect(self._on_new_image)
 
+    @property
+    def images(self) -> List[str]:
+        """List of images in the current working directory."""
+        return self._images
+
     def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
         directory = os.path.abspath(directory)
