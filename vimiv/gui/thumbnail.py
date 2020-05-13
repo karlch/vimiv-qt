@@ -487,16 +487,16 @@ class ThumbnailItem(QListWidgetItem):
     _default_icon = None
 
     def __init__(self, parent, index, highlighted=False, marked=False, size_hint=None):
-        super().__init__(self.default_icon, "", parent, index)
+        super().__init__(self.default_icon(), "", parent, index)
         self.highlighted = highlighted
         self.marked = marked
         self.setSizeHint(size_hint)
 
-    @property
-    def default_icon(self):
+    @classmethod
+    def default_icon(cls):
         """Default icon if the thumbnail has not been created."""
-        if self._default_icon is None:
-            self._default_icon = QIcon(
+        if cls._default_icon is None:
+            cls._default_icon = QIcon(
                 create_pixmap(
                     color=styles.get("thumbnail.default.bg"),
                     frame_color=styles.get("thumbnail.frame.fg"),
@@ -504,4 +504,4 @@ class ThumbnailItem(QListWidgetItem):
                     frame_size=10,
                 )
             )
-        return self._default_icon
+        return cls._default_icon
