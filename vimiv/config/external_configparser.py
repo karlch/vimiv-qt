@@ -23,7 +23,7 @@ import functools
 import os
 import re
 
-from vimiv.utils import log
+from vimiv.utils import log, quotedjoin
 
 _logger = log.module_logger(__name__)
 VARIABLE_RE = re.compile(r"\${(.*)}")
@@ -51,19 +51,17 @@ class ExternalInterpolation(configparser.Interpolation):
 
     Class Attributes:
         CONVERTERS: Dictionary mapping variable prefixes to converter functions.
-        PREFIXES: List of all valid variable converter prefixes.
     """
 
     CONVERTERS = {"env:": getenv}
-    PREFIXES = ", ".join(CONVERTERS)
 
     def before_get(self, _parser, _section, _option, value: str, _defaults) -> str:
         """Update value from configfile with external resources."""
         return self.update(value)
 
-    @staticmethod
+    @classmethod
     @functools.lru_cache(None)
-    def update(value: str) -> str:
+    def update(cls, value: str) -> str:
         """Update value from configfile with external resources.
 
         If the value contains a variable with a valid converter prefix, the variable is
@@ -94,5 +92,5 @@ class ExternalInterpolation(configparser.Interpolation):
 
         raise configparser.Error(
             f"Invalid variable name '{variable}', "
-            f"must start with one of '{ExternalInterpolation.PREFIXES}'"
+            f"must start with one of: {quotedjoin(cls.CONVERTERS)}"
         )

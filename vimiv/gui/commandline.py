@@ -103,7 +103,7 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         """
         prefix, command = text[0], text[1:]
         if prefix not in self.PREFIXES:
-            possible = ", ".join(str(prefix) for prefix in CommandLine.PREFIXES)
+            possible = utils.quotedjoin(self.PREFIXES)
             raise ValueError(f"Unknown prefix '{prefix}', possible values: {possible}")
         command = command.strip()
         return prefix, command

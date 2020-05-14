@@ -11,7 +11,7 @@ import configparser
 from vimiv import api, plugins
 from vimiv.commands import aliases
 from vimiv.config import read_log_exception, parse_config, external_configparser
-from vimiv.utils import log
+from vimiv.utils import log, quotedjoin
 
 
 _logger = log.module_logger(__name__)
@@ -138,5 +138,5 @@ def _read_plugins(pluginsection):
     Args:
         pluginsection: PLUGINS section in the config file.
     """
-    _logger.debug("Plugins in config: %s", ", ".join(pluginsection))
+    _logger.debug("Plugins in config: %s", quotedjoin(pluginsection))
     plugins.add_plugins(**pluginsection)
