@@ -68,7 +68,7 @@ import sys
 import types
 from typing import Dict, List
 
-from vimiv.utils import xdg, log
+from vimiv.utils import xdg, log, quotedjoin
 
 
 _app_plugin_directory = os.path.dirname(__file__)
@@ -92,16 +92,25 @@ def load() -> None:
     sys.path.insert(0, _app_plugin_directory)
     sys.path.insert(0, _user_plugin_directory)
     app_plugins = _get_plugins(_app_plugin_directory)
-    _logger.debug("Available app plugins: %s", ", ".join(app_plugins))
+    _logger.debug("Available app plugins: %s", quotedjoin(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
-    _logger.debug("Available user plugins: %s", ", ".join(user_plugins))
+    _logger.debug("Available user plugins: %s", quotedjoin(user_plugins))
     for plugin, info in _plugins.items():
         if plugin in app_plugins:
             _load_plugin(plugin, info, _app_plugin_directory)
         elif plugin in user_plugins:
             _load_plugin(plugin, info, _user_plugin_directory)
         else:
-            _logger.debug("Unable to find plugin '%s', ignoring", plugin)
+            _logger.error(
+                "Unable to find plugin '%s', ignoring.\n"
+                "    Available app plugins: %s\n"
+                "    Available user plugins: %s\n"
+                "    User plugin directory: '%s'",
+                plugin,
+                quotedjoin(app_plugins),
+                quotedjoin(user_plugins),
+                _user_plugin_directory,
+            )
     _logger.debug("Plugin loading completed")
 
 
