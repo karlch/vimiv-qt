@@ -1,7 +1,8 @@
 Installation
 ============
 
-Table of Contents:
+This page includes instructions for installation on various platforms as well as a
+manual fallback option:
 
 .. contents:: :local:
 
@@ -29,15 +30,9 @@ Using pip
 
 You can retrieve the latest stable release using::
 
-    $ pip3 install --user vimiv
+    $ pip install --user vimiv
 
-
-.. warning::
-
-    This does not install data files such as the icons or the ``vimiv.desktop``
-    file globally. Thus e.g. file managers may not find the vimiv program as
-    expected. To get an idea on how to install these, you can take a look at
-    the Makefile located in `misc/Makefile` and read the section below.
+.. include:: datafile_warning.rst
 
 
 Manual Install
@@ -57,6 +52,8 @@ or by downloading one of the snapshots on the
    To compile the C extension, the python header files for python module development are
    required. In some distributions, e.g. Ubuntu, these are not included in the default
    python installation but another package (python-dev for Ubuntu) must be installed.
+
+.. _install_systemwide:
 
 System-Wide Installation
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -78,18 +75,14 @@ your needs. To uninstall vimiv the standard::
 
 should work.
 
+.. include:: dependency_info.rst
+
 .. _install_using_tox:
 
 Using Tox
 ^^^^^^^^^
 
-First of all get the code by cloning the git repository and switch into the
-repository folder::
-
-    $ git clone https://github.com/karlch/vimiv-qt/
-    $ cd vimiv-qt
-
-Then run tox to set up the virtual environment::
+In the repostory folder run tox to set up the virtual environment::
 
     $ tox -e mkvenv
 
@@ -104,12 +97,24 @@ e.g.  ``/usr/bin/vimiv`` or ``~/bin/vimiv``::
     #!/bin/sh
     ~/path/to/vimiv/.venv/bin/vimiv
 
-.. warning::
+.. include:: datafile_warning.rst
 
-    This does not install data files such as the icons or the ``vimiv.desktop``
-    file globally. Thus e.g. file managers may not find the vimiv program as
-    expected. To get an idea on how to install these, you can take a look at
-    the Makefile located in `misc/Makefile` and read the section above.
+Running directly in the repository
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In the repository folder build the c-extension for manipulate mode::
+
+    $ python setup.py build_ext --inplace
+
+You can now launch vimiv by running::
+
+    $ python -m vimiv
+
+.. include:: dependency_info.rst
+
+.. include:: datafile_warning.rst
+
+.. _install_dependencies:
 
 Dependencies
 ------------
