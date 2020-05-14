@@ -86,7 +86,7 @@ def test_tag_write(tagwrite):
 
 def test_tag_write_header(tagwrite):
     with open(tagwrite.path, "r") as f:
-        comment_lines = [l for l in f if l.startswith(Tag.COMMENTCHAR)]
+        comment_lines = [line for line in f if line.startswith(Tag.COMMENTCHAR)]
     assert "vimiv tag file" in comment_lines[0]
     date_re = re.compile(r"# created: \d\d\d\d-\d\d-\d\d \d\d:\d\d")
     assert (
@@ -96,7 +96,9 @@ def test_tag_write_header(tagwrite):
 
 def test_tag_write_paths(tagwrite):
     with open(tagwrite.path, "r") as f:
-        path_lines = [l.strip() for l in f if not l.startswith(Tag.COMMENTCHAR)]
+        path_lines = [
+            line.strip() for line in f if not line.startswith(Tag.COMMENTCHAR)
+        ]
     for path in tagwrite.content:
         assert path in path_lines
 
