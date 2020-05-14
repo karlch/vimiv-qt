@@ -101,6 +101,10 @@ def contains_any(
         return typing.cast(AnyT, elems) in sequence
 
 
+def quotedjoin(iterable: typing.Iterable[AnyT], joinchar: str = ", "):
+    return joinchar.join(f"'{elem}'" for elem in iterable)
+
+
 def clamp(
     value: NumberT, minimum: typing.Optional[NumberT], maximum: typing.Optional[NumberT]
 ) -> NumberT:

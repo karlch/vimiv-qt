@@ -86,6 +86,15 @@ def test_contains_any(sequence, elems, expected):
     assert utils.contains_any(sequence, elems) == expected
 
 
+@pytest.mark.parametrize("joinchar", (", ", ":"))
+@pytest.mark.parametrize("iterable", (range(4), "abcd"))
+def test_quotedjoin(iterable, joinchar):
+    iterable = list(iterable)
+    quoted_iterable = ("'" + str(elem) + "'" for elem in iterable)
+    expected = joinchar.join(quoted_iterable)
+    assert expected == utils.quotedjoin(iterable, joinchar=joinchar)
+
+
 @pytest.mark.parametrize("char", "*?[]")
 def test_glob_escape(char):
     assert utils.escape_glob(rf"test{char}.jpg") == f"test{char}.jpg"
