@@ -26,6 +26,17 @@
 Vimiv is an image viewer with vim-like keybindings. It is written in python3
 using the Qt5 toolkit and is free software, licensed under the GPL.
 
+### Features
+
+* Basic image operations and navigation
+* [ranger](https://github.com/ranger/ranger)-like library to browse your images
+* Thumbnail mode: navigable grid of image previews
+* Command mode with tab-completion
+* Search with pattern matching
+* Simple mark and tag system
+* Customization of keybindings, settings and style via configuration files,
+  [base-16 support](https://github.com/karlch/base16-vimiv), ...
+
 ### Install
 
 To learn how to get vimiv running on various platforms, please check out the
