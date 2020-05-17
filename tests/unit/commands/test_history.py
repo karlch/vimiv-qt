@@ -6,6 +6,7 @@
 
 """Tests for commands.history.History."""
 
+import json
 import os
 
 import pytest
@@ -17,18 +18,20 @@ from vimiv.commands.history import History
 MODES = (*api.modes.GLOBALS, api.modes.MANIPULATE)
 MAX_ITEMS = 20
 MODE_HISTORY = {
-    mode: [f":{mode.name.lower()}-{i:01d}" for i in range(MAX_ITEMS)] for mode in MODES
+    mode.name: [f":{mode.name}-{i:01d}" for i in range(MAX_ITEMS)] for mode in MODES
 }
 LEGACY_HISTORY = [f":command-{i:01d}" for i in range(MAX_ITEMS)]
 
 
 @pytest.fixture()
-def mode_based_history_files(tmpdir, mocker):
-    """Fixture to create mode-based history files to initialize History."""
-    directory = tmpdir.mkdir("history")
-    mocker.patch.object(History, "dirname", return_value=str(directory))
-    for mode, commands in MODE_HISTORY.items():
-        History._write(History.filename(mode), commands)
+def mode_based_history_file(tmpdir, mocker):
+    """Fixture to create mode-based history file to initialize History."""
+    path = tmpdir.join("history.json")
+
+    with open(path, "w") as f:
+        json.dump(MODE_HISTORY, f)
+
+    mocker.patch.object(History, "filename", return_value=str(path))
 
 
 @pytest.fixture()
@@ -36,7 +39,7 @@ def legacy_history_file(tmpdir, mocker):
     """Fixture to create legacy file to initialize History."""
     path = tmpdir.join("history")
     path.write("\n".join(LEGACY_HISTORY) + "\n")
-    mocker.patch.object(History, "dirname", return_value=str(path))
+    mocker.patch.object(History, "filename", return_value=str(path) + ".json")
 
 
 @pytest.fixture()
@@ -45,18 +48,26 @@ def history():
     yield History(":", MAX_ITEMS)
 
 
-def test_read_history(mode_based_history_files, history):
+def test_read_history(mode_based_history_file, history):
     for mode, history_deque in history.items():
-        assert list(history_deque) == MODE_HISTORY[mode]
+        assert list(history_deque) == MODE_HISTORY[mode.name]
+
+
+def test_write_history(mode_based_history_file, history):
+    for mode, history_deque in history.items():
+        history_deque.extend(MODE_HISTORY[mode.name])
+    history.write()
+
+    with open(history.filename(), "r") as f:
+        written_history = json.load(f)
+
+    assert written_history == MODE_HISTORY
 
 
 def test_migrate_history(legacy_history_file, history):
     # Correctly read into new mode - deque - structure
-    for mode, history_deque in history.items():
+    assert [mode.name for mode in history] == list(MODE_HISTORY.keys())
+    for history_deque in history.values():
         assert list(history_deque) == LEGACY_HISTORY
     # Backup created
-    assert os.path.isfile(history.dirname() + ".bak")
-    # New structure saved
-    history.write()
-    for mode in MODE_HISTORY:
-        assert os.path.isfile(history.filename(mode))
+    assert os.path.isfile(history.filename().replace(".json", ".bak"))

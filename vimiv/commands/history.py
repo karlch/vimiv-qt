@@ -8,8 +8,9 @@
 
 import collections
 import enum
+import json
 import os
-from typing import Iterable, Optional, Deque, List
+from typing import Iterable, Optional, Deque, DefaultDict
 
 from vimiv import api
 from vimiv.commands import argtypes
@@ -34,11 +35,10 @@ class History(dict):
     """
 
     def __init__(self, prefixes: str, max_items: int):
+        history = self._read(self.filename())
         super().__init__(
             {
-                mode: HistoryDeque(
-                    prefixes, self._read(self.filename(mode)), max_items=max_items
-                )
+                mode: HistoryDeque(prefixes, history[mode.name], max_items=max_items)
                 for mode in (*api.modes.GLOBALS, api.modes.MANIPULATE)
             }
         )
@@ -50,16 +50,18 @@ class History(dict):
             history_deque.reset()
 
     def write(self):
-        """Write history of each mode to the corresponding file."""
-        xdg.makedirs(self.dirname())
-        for mode, history_deque in self.items():
-            self._write(self.filename(mode), history_deque)
+        """Write history of each mode to the json file."""
+        with open(self.filename(), "w") as f:
+            json.dump(
+                {mode.name: list(value) for mode, value in self.items()}, f, indent=4
+            )
 
     def migrate_nonmode_based_history(self):
-        """Backup and read history from the old single-file history."""
-        old_path = self.dirname()
+        """Backup and read history from the old text-file history."""
+        old_path = self.filename().replace(".json", "")
         if os.path.isfile(old_path):
-            old_commands = self._read(old_path)
+            with open(old_path, "r") as f:
+                old_commands = [line.strip() for line in f]
             backup_name = old_path + ".bak"
             _logger.info(
                 "Transferring old non-mode based history file. "
@@ -71,29 +73,25 @@ class History(dict):
                 history_deque.extend(old_commands)
 
     @classmethod
-    def dirname(cls) -> str:
-        """Return absolute path to the history directory."""
-        return xdg.vimiv_data_dir("history")
-
-    @classmethod
-    def filename(cls, mode):
+    def filename(cls):
         """Return absolute path to a history file."""
-        return os.path.join(cls.dirname(), mode.name.lower())
+        return xdg.vimiv_data_dir("history.json")
 
     @classmethod
-    def _read(cls, path: str) -> List[str]:
+    def _read(cls, path: str) -> DefaultDict[str, list]:
         """Read command history from file located at path."""
-        if not os.path.isfile(path):
-            return []
-        with open(path, "r") as f:
-            return [line.strip() for line in f]
+        history: DefaultDict[str, list] = collections.defaultdict(list)
 
-    @classmethod
-    def _write(cls, path: str, commands: Iterable[str]) -> None:
-        """Write commands to file located at path."""
-        with open(path, "w") as f:
-            for command in commands:
-                f.write(command + "\n")
+        try:
+            with open(path, "r") as f:
+                history.update(json.load(f))
+            _logger.debug("Loaded history from '%s'", path)
+        except FileNotFoundError:
+            _logger.debug("No history file to read")
+        except (OSError, json.JSONDecodeError) as e:
+            _logger.error("Failed loading history from '%s': %s", path, e)
+
+        return history
 
 
 class HistoryDeque(collections.deque):
