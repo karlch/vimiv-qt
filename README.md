@@ -77,6 +77,7 @@ There are many ways to contribute, including:
 * [writing code](https://karlch.github.io/vimiv-qt/documentation/contributing.html#writing-code)
   and
 * [extending the documentation](https://karlch.github.io/vimiv-qt/documentation/contributing.html#writing-documentation).
+* spreading the word in an article, blog, reddit post, ...
 
 Need help? Feel free to
 [contact me directly](mailto:karlch@protonmail.com)
