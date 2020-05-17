@@ -9,7 +9,7 @@
 import vimiv.checkversion
 
 __license__ = "GPL3"
-__version_info__ = (0, 7, 0)
+__version_info__ = (0, 8, 0)
 __version__ = ".".join(str(num) for num in __version_info__)
 __author__ = "Christian Karl"
 __maintainer__ = __author__
