@@ -13,6 +13,7 @@ piexif (https://github.com/hMatoba/Piexif).
 import contextlib
 
 from vimiv.utils import log, lazy
+from vimiv import api, utils
 
 piexif = lazy.import_module("piexif", optional=True)
 
@@ -99,6 +100,8 @@ class ExifInformation(dict):
         """Load exif information from filename into the dictionary."""
         try:
             self._exif = piexif.load(filename)
+            desiredKeys = [e.lower().strip() for e in api.settings.get_value("metadata.keylist").split(',')]
+            _logger.debug(f'Read metadata.keylist {desiredKeys}')
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
 
@@ -110,7 +113,10 @@ class ExifInformation(dict):
                 keyname = piexif.TAGS[ifd][tag]["name"]
                 keytype = piexif.TAGS[ifd][tag]["type"]
                 val = self._exif[ifd][tag]
-                _logger.debug(f'name: {keytype} type: {keyname} value: {val}')
+                _logger.debug(f'name: {keyname} type: {keytype} value: {val} tag: {tag}')
+                if keyname.lower() not in desiredKeys:
+                    _logger.debug(f'{keyname.lower()} not in {desiredKeys}. Ignoring it')
+                    continue
                 if keytype in (1, 3, 4, 9) : # integer
                     with contextlib.suppress(KeyError):
                         self[keyname] = val
