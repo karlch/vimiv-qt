@@ -13,7 +13,7 @@ piexif (https://github.com/hMatoba/Piexif).
 import contextlib
 
 from vimiv.utils import log, lazy
-from vimiv import api, utils
+from vimiv import api
 
 piexif = lazy.import_module("piexif", optional=True)
 
@@ -117,7 +117,7 @@ class ExifInformation(dict):
                 if keyname.lower() not in desiredKeys:
                     _logger.debug(f'{keyname.lower()} not in {desiredKeys}. Ignoring it')
                     continue
-                if keytype in (1, 3, 4, 9) : # integer
+                if keytype in (1, 3, 4, 9): # integer
                     with contextlib.suppress(KeyError):
                         self[keyname] = val
                 elif keytype == 2: # byte encoded ascii
