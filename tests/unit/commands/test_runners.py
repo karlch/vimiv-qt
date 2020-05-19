@@ -23,14 +23,12 @@ def test_text_non_whitespace_with_whitespace(text):
 
 
 @pytest.mark.parametrize("text", [" txt", "\ntxt", " \ntxt", "\ttxt\t", "\n txt\t"])
-def test_text_non_whitespace_with_non_whitespace(text, mocker):
+def test_text_non_whitespace_with_non_whitespace(text):
     """Ensure the decorated function is called with stripped text."""
 
-    mock = mocker.Mock()
-
     @runners.text_non_whitespace
-    def function(text):
-        mock(text)
+    def function(stripped_text):
+        """Function to ensure any surrounding whitespace is removed."""
+        assert stripped_text == text.strip()
 
     function(text)
-    assert mock.called_once_with("txt")
