@@ -8,6 +8,7 @@ Required due to https://github.com/PyCQA/pylint/issues/352.
 
 import argparse
 import os
+import sys
 import subprocess
 from typing import List
 
@@ -48,14 +49,14 @@ def run_pylint(infiles: List[str]):
         *infiles,
     )
     print("Running pylint over tests")
-    subprocess.run(command, check=True)
+    return subprocess.run(command, check=False).returncode
 
 
 def main():
     parser = get_parser()
     args = parser.parse_args()
     infiles = get_all_python_files(args.directory)
-    run_pylint(infiles)
+    sys.exit(run_pylint(infiles))
 
 
 if __name__ == "__main__":
