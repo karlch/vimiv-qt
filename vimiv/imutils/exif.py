@@ -100,8 +100,11 @@ class ExifInformation(dict):
         """Load exif information from filename into the dictionary."""
         try:
             self._exif = piexif.load(filename)
-            desiredKeys = [e.lower().strip() for e in api.settings.get_value("metadata.keylist").split(',')]
-            _logger.debug(f'Read metadata.keylist {desiredKeys}')
+            desired_keys = [
+                e.lower().strip()
+                for e in api.settings.get_value("metadata.keylist").split(",")
+            ]
+            _logger.debug(f"Read metadata.keylist {desired_keys}")
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
 
@@ -113,20 +116,24 @@ class ExifInformation(dict):
                 keyname = piexif.TAGS[ifd][tag]["name"]
                 keytype = piexif.TAGS[ifd][tag]["type"]
                 val = self._exif[ifd][tag]
-                _logger.debug(f'name: {keyname} type: {keytype} value: {val} tag: {tag}')
-                if keyname.lower() not in desiredKeys:
-                    _logger.debug(f'{keyname.lower()} not in {desiredKeys}. Ignoring it')
+                _logger.debug(
+                    f"name: {keyname} type: {keytype} value: {val} tag: {tag}"
+                )
+                if keyname.lower() not in desired_keys:
+                    _logger.debug(
+                        f"{keyname.lower()} not in {desired_keys}. Ignoring it"
+                    )
                     continue
-                if keytype in (1, 3, 4, 9): # integer
+                if keytype in (1, 3, 4, 9):  # integer
                     with contextlib.suppress(KeyError):
                         self[keyname] = val
-                elif keytype == 2: # byte encoded ascii
+                elif keytype == 2:  # byte encoded ascii
                     with contextlib.suppress(KeyError):
                         self[keyname] = val.decode()
-                elif keytype in (5, 10): # (int, int) <=> numerator, denominator
+                elif keytype in (5, 10):  # (int, int) <=> numerator, denominator
                     with contextlib.suppress(KeyError):
                         self[keyname] = f"{val[0]}/{val[1]}"
-                elif keytype == 7: # byte
+                elif keytype == 7:  # byte
                     with contextlib.suppress(KeyError):
                         self[keyname] = val.decode()
 

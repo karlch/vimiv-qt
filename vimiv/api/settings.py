@@ -497,5 +497,5 @@ class metadata:  # pylint: disable=invalid-name
     StrSetting(
         "metadata.keylist",
         "Make, Model, DateTime, ExposureTime, FNumber, isospeedratings, FocalLength",
-        desc="Define the metadata keys to display"
+        desc="Define the metadata keys to display",
     )
