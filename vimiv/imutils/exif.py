@@ -13,6 +13,7 @@ piexif (https://github.com/hMatoba/Piexif).
 import contextlib
 
 from vimiv.utils import log, lazy
+from vimiv import api
 
 piexif = lazy.import_module("piexif", optional=True)
 
@@ -99,40 +100,48 @@ class ExifInformation(dict):
         """Load exif information from filename into the dictionary."""
         try:
             self._exif = piexif.load(filename)
+            desired_keys = [
+                e.lower().strip() for e in api.settings.metadata.keys.value.split(",")
+            ]
+            _logger.debug(f"Read metadata.keys {desired_keys}")
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
-        # Read information from 0th IFD
-        ifd = piexif.ImageIFD
-        self._add_bytes_info("Make", "0th", ifd.Make)
-        self._add_bytes_info("Model", "0th", ifd.Model)
-        self._add_bytes_info("DateTime", "0th", ifd.DateTime)
-        # Read information from Exif IFD
-        ifd = piexif.ExifIFD
-        self._add_two_digits("ExposureTime", "Exif", ifd.ExposureTime, suffix=" s")
-        self._add_fraction("FNumber", "Exif", ifd.FNumber, prefix="f/")
-        self._add_fraction("ShutterSpeedValue", "Exif", ifd.ShutterSpeedValue, " EV")
-        self._add_fraction("ApertureValue", "Exif", ifd.ApertureValue, " EV")
-        self._add_fraction("ExposureBiasValue", "Exif", ifd.ExposureBiasValue, " EV")
-        self._add_fraction("FocalLength", "Exif", ifd.FocalLength, " mm")
-        _logger.debug("%s initialized, content:\n%r", self.__class__.__qualname__, self)
 
-    def _add_bytes_info(self, name, ifd, key):
-        """Add exif information of type bytes to the dictionary."""
-        with contextlib.suppress(KeyError):
-            self[name] = self._exif[ifd][key].decode()
+        for ifd in self._exif:
+            if ifd == "thumbnail":
+                continue
 
-    def _add_fraction(self, name, ifd, key, suffix="", prefix=""):
-        """Add exif information as fraction of two numbers to the dictionary."""
-        with contextlib.suppress(KeyError):
-            value_tuple = self._exif[ifd][key]
-            fraction = value_tuple[0] / value_tuple[1]
-            self[name] = f"{prefix}{fraction:.2f}{suffix}"
-
-    def _add_two_digits(self, name, ifd, key, separator="/", suffix="", prefix=""):
-        """Add exif information as two numbers to the dictionary."""
-        with contextlib.suppress(KeyError):
-            value_tuple = self._exif[ifd][key]
-            self[name] = f"{prefix}%s{separator}%s{suffix}" % value_tuple
+            for tag in self._exif[ifd]:
+                keyname = piexif.TAGS[ifd][tag]["name"]
+                keytype = piexif.TAGS[ifd][tag]["type"]
+                val = self._exif[ifd][tag]
+                _logger.debug(
+                    f"name: {keyname} type: {keytype} value: {val} tag: {tag}"
+                )
+                if keyname.lower() not in desired_keys:
+                    _logger.debug(f"Ignoring key {keyname}")
+                    continue
+                if keytype in (
+                    piexif.TYPES.Byte,
+                    piexif.TYPES.Short,
+                    piexif.TYPES.Long,
+                    piexif.TYPES.SByte,
+                    piexif.TYPES.SShort,
+                    piexif.TYPES.SLong,
+                    piexif.TYPES.Float,
+                    piexif.TYPES.DFloat,
+                ):  # integer and float
+                    self[keyname] = val
+                elif keytype in (
+                    piexif.TYPES.Ascii,
+                    piexif.TYPES.Undefined,
+                ):  # byte encoded
+                    self[keyname] = val.decode()
+                elif keytype in (
+                    piexif.TYPES.Rational,
+                    piexif.TYPES.SRational,
+                ):  # (int, int) <=> numerator, denominator
+                    self[keyname] = f"{val[0]}/{val[1]}"
 
 
 class ExifOrientation:

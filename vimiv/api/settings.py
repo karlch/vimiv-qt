@@ -488,3 +488,14 @@ class title:  # pylint: disable=invalid-name
         desc="Default window title if no mode specific options exist",
     )
     StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")
+
+
+class metadata:  # pylint: disable=invalid-name
+    """Namespace for metadata related settings."""
+
+    # Store the keys as a comma seperated string
+    keys = StrSetting(
+        "metadata.keys",
+        "Make, Model, DateTime, ExposureTime, FNumber, isospeedratings, FocalLength",
+        desc="Define the metadata keys to display",
+    )
