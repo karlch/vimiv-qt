@@ -101,10 +101,9 @@ class ExifInformation(dict):
         try:
             self._exif = piexif.load(filename)
             desired_keys = [
-                e.lower().strip()
-                for e in api.settings.get_value("metadata.keylist").split(",")
+                e.lower().strip() for e in api.settings.metadata.keys.value.split(",")
             ]
-            _logger.debug(f"Read metadata.keylist {desired_keys}")
+            _logger.debug(f"Read metadata.keys {desired_keys}")
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
 
@@ -120,22 +119,29 @@ class ExifInformation(dict):
                     f"name: {keyname} type: {keytype} value: {val} tag: {tag}"
                 )
                 if keyname.lower() not in desired_keys:
-                    _logger.debug(
-                        f"{keyname.lower()} not in {desired_keys}. Ignoring it"
-                    )
+                    _logger.debug(f"Ignoring key {keyname}")
                     continue
-                if keytype in (1, 3, 4, 9):  # integer
-                    with contextlib.suppress(KeyError):
-                        self[keyname] = val
-                elif keytype == 2:  # byte encoded ascii
-                    with contextlib.suppress(KeyError):
-                        self[keyname] = val.decode()
-                elif keytype in (5, 10):  # (int, int) <=> numerator, denominator
-                    with contextlib.suppress(KeyError):
-                        self[keyname] = f"{val[0]}/{val[1]}"
-                elif keytype == 7:  # byte
-                    with contextlib.suppress(KeyError):
-                        self[keyname] = val.decode()
+                if keytype in (
+                    piexif.TYPES.Byte,
+                    piexif.TYPES.Short,
+                    piexif.TYPES.Long,
+                    piexif.TYPES.SByte,
+                    piexif.TYPES.SShort,
+                    piexif.TYPES.SLong,
+                    piexif.TYPES.Float,
+                    piexif.TYPES.DFloat,
+                ):  # integer and float
+                    self[keyname] = val
+                elif keytype in (
+                    piexif.TYPES.Ascii,
+                    piexif.TYPES.Undefined,
+                ):  # byte encoded
+                    self[keyname] = val.decode()
+                elif keytype in (
+                    piexif.TYPES.Rational,
+                    piexif.TYPES.SRational,
+                ):  # (int, int) <=> numerator, denominator
+                    self[keyname] = f"{val[0]}/{val[1]}"
 
 
 class ExifOrientation:
