@@ -62,6 +62,9 @@ def read(path: str) -> None:
     # Read plugins
     if "PLUGINS" in parser:
         _read_plugins(parser["PLUGINS"])
+    # Read metadata sets
+    if "METADATA" in parser:
+        _add_metadata(parser["METADATA"])
     _logger.debug("Read configuration from '%s'", path)
 
 
@@ -140,3 +143,18 @@ def _read_plugins(pluginsection):
     """
     _logger.debug("Plugins in config: %s", quotedjoin(pluginsection))
     plugins.add_plugins(**pluginsection)
+
+
+def _add_metadata(configsetion):
+    """Set available metadata sets from config file.
+
+    Args:
+        configparser: METADATA section in the config file.
+    """
+    for name, value in configsetion.items():
+        try:
+            # If keyname is int, is a metadata set
+            api.settings.metadata.keysets[int(name)] = value
+            _logger.debug("Updating keyset '%s' to '%s'", name, value)
+        except ValueError:
+            pass

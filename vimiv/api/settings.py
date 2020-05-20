@@ -499,3 +499,5 @@ class metadata:  # pylint: disable=invalid-name
         "Make, Model, DateTime, ExposureTime, FNumber, isospeedratings, FocalLength",
         desc="Define the metadata keys to display",
     )
+
+    keysets = {}
