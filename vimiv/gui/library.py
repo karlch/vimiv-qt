@@ -432,7 +432,7 @@ class LibraryModel(QStandardItemModel):
             are_directories: Whether all paths are directories.
         """
         get_size = files.get_size_directory if are_directories else files.get_size_file
-        mark_prefix = api.mark.indicator() + " "
+        mark_prefix = api.mark.indicator + " "
         for i, path in enumerate(paths, start=self.rowCount() + 1):
             name = os.path.basename(path)
             if are_directories:
@@ -472,6 +472,8 @@ class LibraryDelegate(QStyledItemDelegate):
         self.even_bg = QColor(styles.get("library.even.bg"))
         self.odd_bg = QColor(styles.get("library.odd.bg"))
         self.search_bg = QColor(styles.get("library.search.highlighted.bg"))
+
+        self.mark_str = api.mark.highlight("")
 
     def createEditor(self, *_):
         """Library is not editable by the user."""
@@ -577,13 +579,12 @@ class LibraryDelegate(QStyledItemDelegate):
         Returns:
             Elided version of the text.
         """
-        mark_str = api.mark.highlight("")
         html_stripped = strip_html(text)
         # Html only surrounds the leading mark indicator as directories are never marked
-        if text.startswith(mark_str):
-            mark_stripped = strip_html(mark_str)
+        if text.startswith(self.mark_str):
+            mark_stripped = strip_html(self.mark_str)
             elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
-            return elided.replace(mark_stripped, mark_str)
+            return elided.replace(mark_stripped, self.mark_str)
         # Html surrounds the full text as the file may be a directory which is displayed
         # in bold
         elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)

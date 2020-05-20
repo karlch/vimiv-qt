@@ -29,6 +29,7 @@ class Mark(QObject):
         unmarked: Emitted with the image path when an image was unmarked.
 
     Attributes:
+        _indicator: Attribute to cache the evaluated mark indicator string.
         _marked: List of all currently marked images.
         _last_marked: List of images that were marked before clearing.
         _watcher: QFileSystemWatcher to monitor marked paths.
@@ -40,6 +41,7 @@ class Mark(QObject):
     @objreg.register
     def __init__(self) -> None:
         super().__init__()
+        self._indicator: Optional[str] = None
         self._marked: List[str] = []
         self._last_marked: List[str] = []
         self._watcher: Optional[QFileSystemWatcher] = None
@@ -198,7 +200,7 @@ class Mark(QObject):
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""
         if modes.current().current_path in self._marked:
-            return Mark.indicator()
+            return self.indicator
         return ""
 
     @status.module("{mark-count}")
@@ -214,22 +216,23 @@ class Mark(QObject):
         """Return list of currently marked paths."""
         return self._marked
 
-    @staticmethod
-    def indicator() -> str:
+    @property
+    def indicator(self) -> str:
         """Colored mark indicator."""
-        color = styles.get("mark.color")
-        return wrap_style_span(
-            f"color: {color}", settings.statusbar.mark_indicator.value
-        )
+        if self._indicator is None:
+            color = styles.get("mark.color")
+            self._indicator = wrap_style_span(
+                f"color: {color}", settings.statusbar.mark_indicator.value
+            )
+        return self._indicator
 
-    @staticmethod
-    def highlight(text: str, marked: bool = True) -> str:
+    def highlight(self, text: str, marked: bool = True) -> str:
         """Add/remove mark indicator from text.
 
         If marked is True, then the indicator is added to the left of the text.
         Otherwise it is removed.
         """
-        mark_str = Mark.indicator() + " "
+        mark_str = self.indicator + " "
         text = remove_prefix(text, mark_str)
         return mark_str + text if marked else text
 
