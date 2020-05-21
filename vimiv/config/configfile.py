@@ -151,10 +151,14 @@ def _add_metadata(configsetion):
     Args:
         configparser: METADATA section in the config file.
     """
+    temp = {}
     for name, value in configsetion.items():
         try:
             # If keyname is int, is a metadata set
-            api.settings.metadata.keysets[int(name)] = value
-            _logger.debug("Updating keyset '%s' to '%s'", name, value)
+            temp[int(name)] = value
+            _logger.debug("Keyset '%s' found", value)
         except ValueError:
             pass
+    api.settings.metadata.keysets = [v for _, v in temp.items()]
+    if len(api.settings.metadata.keysets) > 0:
+        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[0]

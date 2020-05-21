@@ -55,10 +55,10 @@ if exif.piexif is not None:
             self._mainwindow_bottom = 0
             self._mainwindow_width = 0
             self._path = ""
-            self._loaded = False
+            self._currentSet = ""
 
             api.signals.new_image_opened.connect(self._on_image_opened)
-            api.settings.metadata.keys.changed.connect(self._update_text)
+            api.settings.metadata.current_keyset.changed.connect(self._update_text)
 
             self.hide()
 
@@ -72,21 +72,25 @@ if exif.piexif is not None:
 
             if self.isVisible():
                 if count is not None:
-                    _logger.debug(f"Given count {count}. Switch in open widget")
-                    api.settings.metadata.keys.value = api.settings.metadata.keysets[
-                        count
-                    ]
+                    if self._count_is_valid(count):
+                        _logger.debug("Switch keyset in open widget")
+                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+                            count - 1
+                        ]
+                        self._update_text()
                 else:
                     _logger.debug("Hiding widget")
                     self.hide()
             else:
                 if count is not None:
-                    _logger.debug(f"Given count {count}. Switch keyset")
-                    api.settings.metadata.keys.value = api.settings.metadata.keysets[
-                        count
-                    ]
-                else:
-                    api.settings.metadata.keys.value = api.settings.metadata.keysets[0]
+                    if self._count_is_valid(count):
+                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+                            count - 1
+                        ]
+                    else:
+                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+                            0
+                        ]
                 _logger.debug("Showing widget")
                 self._update_text()
                 self.raise_()
@@ -108,8 +112,8 @@ if exif.piexif is not None:
 
         def _update_text(self):
             """Update the metadata text if the current image has not been loaded."""
-            if self._loaded:
-                pass
+            if self._currentSet == api.settings.metadata.current_keyset.value:
+                return
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
@@ -123,15 +127,19 @@ if exif.piexif is not None:
                 )
             self.setText(f"<table>{text}</table>")
             self._update_geometry()
-            self._loaded = True
+            self._currentSet = api.settings.metadata.current_keyset.value
 
         @utils.slot
         def _on_image_opened(self, path: str):
             """Load new image and update text if the widget is currently visible."""
             self._path = path
-            self._loaded = False
+            self._currentSet = ""
             if self.isVisible():
                 self._update_text()
+
+        def _count_is_valid(self, count: int) -> bool:
+            """Check if the provided count is in a valid range"""
+            return count >= 1 and count - 1 < len(api.settings.metadata.keysets)
 
 
 else:  # No exif support

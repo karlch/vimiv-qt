@@ -494,10 +494,11 @@ class metadata:  # pylint: disable=invalid-name
     """Namespace for metadata related settings."""
 
     # Store the keys as a comma seperated string
-    keys = StrSetting(
-        "metadata.keys",
-        "Make, Model, DateTime, ExposureTime, FNumber, isospeedratings, FocalLength",
+    current_keyset = StrSetting(
+        "metadata.current_keyset",
+        "",
         desc="Define the metadata keys to display",
+        hidden=True,
     )
 
-    keysets = {}
+    keysets: List[str] = None
