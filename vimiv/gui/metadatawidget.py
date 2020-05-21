@@ -13,6 +13,7 @@ from vimiv import api, utils
 from vimiv.imutils import exif
 from vimiv.config import styles
 
+from typing import Optional
 
 _logger = utils.log.module_logger(__name__)
 
@@ -57,17 +58,35 @@ if exif.piexif is not None:
             self._loaded = False
 
             api.signals.new_image_opened.connect(self._on_image_opened)
+            api.settings.metadata.keys.changed.connect(self._update_text)
 
             self.hide()
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
-        def metadata(self):
-            """Toggle display of exif metadata of current image."""
+        def metadata(self, count: Optional[int] = None):
+            """Toggle display of exif metadata of current image and handle switching of metadata keysets.
+
+            **count:** Select the key set to display.
+            """
+
             if self.isVisible():
-                _logger.debug("Hiding widget")
-                self.hide()
+                if count is not None:
+                    _logger.debug(f"Given count {count}. Switch in open widget")
+                    api.settings.metadata.keys.value = api.settings.metadata.keysets[
+                        count
+                    ]
+                else:
+                    _logger.debug("Hiding widget")
+                    self.hide()
             else:
+                if count is not None:
+                    _logger.debug(f"Given count {count}. Switch keyset")
+                    api.settings.metadata.keys.value = api.settings.metadata.keysets[
+                        count
+                    ]
+                else:
+                    api.settings.metadata.keys.value = api.settings.metadata.keysets[0]
                 _logger.debug("Showing widget")
                 self._update_text()
                 self.raise_()
@@ -90,7 +109,7 @@ if exif.piexif is not None:
         def _update_text(self):
             """Update the metadata text if the current image has not been loaded."""
             if self._loaded:
-                return
+                pass
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
