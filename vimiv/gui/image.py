@@ -203,6 +203,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.IMAGE)
     @api.keybindings.register("+", "zoom in", mode=api.modes.IMAGE)
+    @api.keybindings.register("=", "zoom reset", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def zoom(self, direction: Zoom, count: int = 1):
         """Zoom the current widget.
@@ -210,13 +211,16 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         **syntax:** ``:zoom direction``
 
         positional arguments:
-            * ``direction``: The direction to zoom in (in/out).
+            * ``direction``: The direction to zoom in (in/out/reset).
 
         **count:** multiplier
         """
-        scale = 1.25 ** count if direction == Zoom.In else 1 / 1.25 ** count
-        self._scale_to_float(self.zoom_level * scale)
-        self._scale = ImageScaleFloat(self.zoom_level)
+        if direction == Zoom.Reset:
+            self.scale(ImageScale.Fit)
+        else:
+            scale = 1.25 ** count if direction == Zoom.In else 1 / 1.25 ** count
+            self._scale_to_float(self.zoom_level * scale)
+            self._scale = ImageScaleFloat(self.zoom_level)
 
     @api.keybindings.register("w", "scale --level=fit", mode=api.modes.IMAGE)
     @api.keybindings.register("W", "scale --level=1", mode=api.modes.IMAGE)

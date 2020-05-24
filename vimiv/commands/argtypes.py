@@ -29,6 +29,7 @@ class Zoom(enum.Enum):
 
     In = "in"
     Out = "out"
+    Reset = "reset"
 
 
 class ImageScale(str, enum.Enum):

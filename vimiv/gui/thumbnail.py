@@ -262,6 +262,7 @@ class ThumbnailView(
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("=", "zoom reset", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def zoom(self, direction: argtypes.Zoom):
         """Zoom the current widget.
@@ -269,12 +270,17 @@ class ThumbnailView(
         **syntax:** ``:zoom direction``
 
         positional arguments:
-            * ``direction``: The direction to zoom in (in/out).
+            * ``direction``: The direction to zoom in (in/out/reset).
 
         **count:** multiplier
         """
         _logger.debug("Zooming in direction '%s'", direction)
-        api.settings.thumbnail.size.step(up=direction == direction.In)
+        if direction == argtypes.Zoom.Reset:
+            api.settings.thumbnail.size.value = api.settings.thumbnail.size.ALLOWED_VALUES[
+                1
+            ]
+        else:
+            api.settings.thumbnail.size.step(up=direction == direction.In)
 
     def rescale_items(self):
         """Reset item hint when item size has changed."""
