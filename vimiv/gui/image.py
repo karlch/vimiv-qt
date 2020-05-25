@@ -218,7 +218,9 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         self._scale_to_float(self.zoom_level * scale)
         self._scale = ImageScaleFloat(self.zoom_level)
 
-    @api.keybindings.register("w", "scale --level=fit", mode=api.modes.IMAGE)
+    @api.keybindings.register(
+        ("w", "<equal>"), "scale --level=fit", mode=api.modes.IMAGE
+    )
     @api.keybindings.register("W", "scale --level=1", mode=api.modes.IMAGE)
     @api.keybindings.register("e", "scale --level=fit-width", mode=api.modes.IMAGE)
     @api.keybindings.register("E", "scale --level=fit-height", mode=api.modes.IMAGE)

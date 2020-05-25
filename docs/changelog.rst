@@ -12,6 +12,8 @@ Added:
 * The ``metadata.keys`` setting that allows configuring the set of metadata
   information displayed by ``:metadata``. Thanks
   `@jeanggi90 <https://github.com/jeanggi90>`_!
+* ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
+  `@jeanggi90 <https://github.com/jeanggi90>`_ for pointing this out!
 
 Changed:
 ^^^^^^^^
