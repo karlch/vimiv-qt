@@ -67,53 +67,54 @@
 <li><a class="reference internal" href="#">Changelog</a><ul>
 <li><a class="reference internal" href="#v0-8-0-unreleased">v0.8.0 (unreleased)</a><ul>
 <li><a class="reference internal" href="#added">Added:</a></li>
+<li><a class="reference internal" href="#changed">Changed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-7-0-2020-05-17">v0.7.0 (2020-05-17)</a><ul>
-<li><a class="reference internal" href="#id1">Added:</a></li>
-<li><a class="reference internal" href="#changed">Changed:</a></li>
+<li><a class="reference internal" href="#id2">Added:</a></li>
+<li><a class="reference internal" href="#id3">Changed:</a></li>
 <li><a class="reference internal" href="#fixed">Fixed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-6-1-2020-03-07">v0.6.1 (2020-03-07)</a><ul>
-<li><a class="reference internal" href="#id2">Fixed:</a></li>
+<li><a class="reference internal" href="#id4">Fixed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-6-0-2020-03-07">v0.6.0 (2020-03-07)</a><ul>
-<li><a class="reference internal" href="#id3">Added:</a></li>
-<li><a class="reference internal" href="#id4">Changed:</a></li>
-<li><a class="reference internal" href="#id5">Fixed:</a></li>
+<li><a class="reference internal" href="#id5">Added:</a></li>
+<li><a class="reference internal" href="#id6">Changed:</a></li>
+<li><a class="reference internal" href="#id7">Fixed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-5-0-2020-01-05">v0.5.0 (2020-01-05)</a><ul>
-<li><a class="reference internal" href="#id6">Added:</a></li>
-<li><a class="reference internal" href="#id7">Changed:</a></li>
-<li><a class="reference internal" href="#id8">Fixed:</a></li>
+<li><a class="reference internal" href="#id8">Added:</a></li>
+<li><a class="reference internal" href="#id9">Changed:</a></li>
+<li><a class="reference internal" href="#id10">Fixed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-4-1-2019-12-01">v0.4.1 (2019-12-01)</a><ul>
-<li><a class="reference internal" href="#id9">Fixed:</a></li>
+<li><a class="reference internal" href="#id11">Fixed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-4-0-2019-12-01">v0.4.0 (2019-12-01)</a><ul>
-<li><a class="reference internal" href="#id10">Added:</a></li>
-<li><a class="reference internal" href="#id11">Changed:</a></li>
-<li><a class="reference internal" href="#id12">Fixed:</a></li>
+<li><a class="reference internal" href="#id12">Added:</a></li>
+<li><a class="reference internal" href="#id13">Changed:</a></li>
+<li><a class="reference internal" href="#id14">Fixed:</a></li>
 <li><a class="reference internal" href="#removed">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-3-0-2019-11-01">v0.3.0 (2019-11-01)</a><ul>
-<li><a class="reference internal" href="#id13">Added:</a></li>
-<li><a class="reference internal" href="#id14">Changed:</a></li>
-<li><a class="reference internal" href="#id15">Fixed:</a></li>
-<li><a class="reference internal" href="#id16">Removed:</a></li>
+<li><a class="reference internal" href="#id15">Added:</a></li>
+<li><a class="reference internal" href="#id16">Changed:</a></li>
+<li><a class="reference internal" href="#id17">Fixed:</a></li>
+<li><a class="reference internal" href="#id18">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-2-0-2019-10-01">v0.2.0 (2019-10-01)</a><ul>
-<li><a class="reference internal" href="#id17">Added:</a></li>
-<li><a class="reference internal" href="#id18">Changed:</a></li>
-<li><a class="reference internal" href="#id19">Fixed:</a></li>
-<li><a class="reference internal" href="#id20">Removed:</a></li>
+<li><a class="reference internal" href="#id19">Added:</a></li>
+<li><a class="reference internal" href="#id20">Changed:</a></li>
+<li><a class="reference internal" href="#id21">Fixed:</a></li>
+<li><a class="reference internal" href="#id22">Removed:</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#v0-1-0-2019-08-15">v0.1.0 (2019-08-15)</a></li>
@@ -151,13 +152,22 @@
 <li><p>The <code class="docutils literal notranslate"><span class="pre">metadata.keys</span></code> setting that allows configuring the set of metadata
 information displayed by <code class="docutils literal notranslate"><span class="pre">:metadata</span></code>. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a>!</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code> is now bound to <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">--level=fit</span></code> in image mode. Thanks
+<a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a> for pointing this out!</p></li>
+</ul>
+</div>
+<div class="section" id="changed">
+<h3>Changed:<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">=</span></code> key can now be bound using <code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code>. Using the raw <code class="docutils literal notranslate"><span class="pre">=</span></code> character is not
+possible in <code class="docutils literal notranslate"><span class="pre">keys.conf</span></code> as it is treated as separator much like <code class="docutils literal notranslate"><span class="pre">:</span></code>.</p></li>
 </ul>
 </div>
 </div>
 <div class="section" id="v0-7-0-2020-05-17">
 <h2>v0.7.0 (2020-05-17)<a class="headerlink" href="#v0-7-0-2020-05-17" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
-<h3>Added:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Added:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The tilde character <code class="docutils literal notranslate"><span class="pre">~</span></code> is now also expanded to the user’s home directory when
 running external commands started via <code class="docutils literal notranslate"><span class="pre">!</span></code>.</p></li>
@@ -173,8 +183,8 @@ convenience.</p></li>
 </li>
 </ul>
 </div>
-<div class="section" id="changed">
-<h3>Changed:<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Changed:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Manipulations are no longer directly written to file when running <code class="docutils literal notranslate"><span class="pre">:accept</span></code>.
 Instead, they behave according to the <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code> setting just like
@@ -210,8 +220,8 @@ means nothing actually happened.</p></li>
 </div>
 <div class="section" id="v0-6-1-2020-03-07">
 <h2>v0.6.1 (2020-03-07)<a class="headerlink" href="#v0-6-1-2020-03-07" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id2">
-<h3>Fixed:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Fixed:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Fix removing thumbnails when the number of thumbnails decreases. Regression since
 v0.6.0.</p></li>
@@ -220,8 +230,8 @@ v0.6.0.</p></li>
 </div>
 <div class="section" id="v0-6-0-2020-03-07">
 <h2>v0.6.0 (2020-03-07)<a class="headerlink" href="#v0-6-0-2020-03-07" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id3">
-<h3>Added:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id5">
+<h3>Added:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Command names can now be overridden by passing the <code class="docutils literal notranslate"><span class="pre">name</span></code> keyword to
 <code class="docutils literal notranslate"><span class="pre">api.commands.register</span></code>.</p></li>
@@ -243,8 +253,8 @@ additional <code class="docutils literal notranslate"><span class="pre">ask</spa
 boolean state of this setting is requested.</p></li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h3>Changed:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id6">
+<h3>Changed:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Removed prepended whitespace from completion options.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">:nop</span></code> command is now hidden from the completion.</p></li>
@@ -257,8 +267,8 @@ surprises in case the changes are written to disk or discarded.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">:delete</span></code> now only deletes images.</p></li>
 </ul>
 </div>
-<div class="section" id="id5">
-<h3>Fixed:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Fixed:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Always writing changed images to disk regardless of the <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code> setting.</p></li>
 <li><p>Segfault when applying manipulations.</p></li>
@@ -273,8 +283,8 @@ working directory on a proposed reload.</p></li>
 </div>
 <div class="section" id="v0-5-0-2020-01-05">
 <h2>v0.5.0 (2020-01-05)<a class="headerlink" href="#v0-5-0-2020-01-05" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>Added:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>Added:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Basic support for binding mouse clicks and double clicks to commands. The relevant
 names are <code class="docutils literal notranslate"><span class="pre">&lt;button-NAME&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;double-button-NAME&gt;</span></code>. Here <code class="docutils literal notranslate"><span class="pre">NAME</span></code> stands for the
@@ -294,8 +304,8 @@ requires <a class="reference external" href="https://gitlab.com/mardy/qtraw">qt 
 </li>
 </ul>
 </div>
-<div class="section" id="id7">
-<h3>Changed:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id9">
+<h3>Changed:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Saner default step for mouse zoom. Thanks
 <a class="reference external" href="https://github.com/OliverLew">&#64;OliverLew</a> for catching this.</p></li>
@@ -308,8 +318,8 @@ be done by adding new completion models inheriting from <code class="docutils li
 passed number is larger than the allowed maximum.</p></li>
 </ul>
 </div>
-<div class="section" id="id8">
-<h3>Fixed:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id10">
+<h3>Fixed:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Showing keyhint widget in command mode.</p></li>
 <li><p>Partial matches with special keys such as <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code>.</p></li>
@@ -323,8 +333,8 @@ message and hints that <code class="docutils literal notranslate"><span class="p
 </div>
 <div class="section" id="v0-4-1-2019-12-01">
 <h2>v0.4.1 (2019-12-01)<a class="headerlink" href="#v0-4-1-2019-12-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id9">
-<h3>Fixed:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id11">
+<h3>Fixed:<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Not clearing existing status messages when pressing a key.</p></li>
 </ul>
@@ -332,8 +342,8 @@ message and hints that <code class="docutils literal notranslate"><span class="p
 </div>
 <div class="section" id="v0-4-0-2019-12-01">
 <h2>v0.4.0 (2019-12-01)<a class="headerlink" href="#v0-4-0-2019-12-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id10">
-<h3>Added:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id12">
+<h3>Added:<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The option to reference environment variables in the configuration files using
 <code class="docutils literal notranslate"><span class="pre">${env:VARIABLE}</span></code>.</p></li>
@@ -349,8 +359,8 @@ behaviour is intended as opening a new image for every scroll in library/thumbna
 would degrade performance significantly.</p></li>
 </ul>
 </div>
-<div class="section" id="id11">
-<h3>Changed:<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id13">
+<h3>Changed:<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>External commands started with <code class="docutils literal notranslate"><span class="pre">!</span></code> no longer run in a sub-shell. To run commands
 with a sub-shell use <code class="docutils literal notranslate"><span class="pre">:spawn</span></code> instead.</p></li>
@@ -365,8 +375,8 @@ only applies to the top and bottom.</p></li>
 logging purposes. Not passing a reason is deprecated and will be removed in <cite>v0.5.0</cite>.</p></li>
 </ul>
 </div>
-<div class="section" id="id12">
-<h3>Fixed:<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id14">
+<h3>Fixed:<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Fuzzy path completion.</p></li>
 <li><p>Setting <code class="docutils literal notranslate"><span class="pre">monitor_filesystem</span></code> to <code class="docutils literal notranslate"><span class="pre">false</span></code> during runtime.</p></li>
@@ -386,8 +396,8 @@ by the XDG standard if they do not exist.</p></li>
 </div>
 <div class="section" id="v0-3-0-2019-11-01">
 <h2>v0.3.0 (2019-11-01)<a class="headerlink" href="#v0-3-0-2019-11-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id13">
-<h3>Added:<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id15">
+<h3>Added:<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Elements in library and thumbnail can be selected with a mouse double click.</p></li>
 <li><p>Library and thumbnail selection color is dimmed when the corresponding widget is not
@@ -402,8 +412,8 @@ modification date and the processing indicator.</p></li>
 information.</p></li>
 </ul>
 </div>
-<div class="section" id="id14">
-<h3>Changed:<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id16">
+<h3>Changed:<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Any parsing errors when reading configuration files now log an error message and exit
 vimiv.</p></li>
@@ -420,8 +430,8 @@ by argparse.</p></li>
 usable.</p></li>
 </ul>
 </div>
-<div class="section" id="id15">
-<h3>Fixed:<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id17">
+<h3>Fixed:<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The UI no longer blocks when processing working directory changes.</p></li>
 <li><p>Search reacts appropriately when the working directory changes. If the content is
@@ -435,8 +445,8 @@ updated, search is re-run. When a new directory is opened, search is cleared.</p
 <li><p>Aliasing to commands including the <code class="docutils literal notranslate"><span class="pre">%</span></code> and <code class="docutils literal notranslate"><span class="pre">%m</span></code> wildcards.</p></li>
 </ul>
 </div>
-<div class="section" id="id16">
-<h3>Removed:<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id18">
+<h3>Removed:<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Support for colors in 3-digit hex format (#RGB), use #RRGGBB instead.</p></li>
 </ul>
@@ -444,8 +454,8 @@ updated, search is re-run. When a new directory is opened, search is cleared.</p
 </div>
 <div class="section" id="v0-2-0-2019-10-01">
 <h2>v0.2.0 (2019-10-01)<a class="headerlink" href="#v0-2-0-2019-10-01" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id17">
-<h3>Added:<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id19">
+<h3>Added:<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>A global <code class="docutils literal notranslate"><span class="pre">font</span></code> style option to set all fonts at once. If a local option such as
 <code class="docutils literal notranslate"><span class="pre">statusbar.font</span></code> is defined, it overrides the global option.</p></li>
@@ -464,8 +474,8 @@ automatically opens any selected image. Added keybindings are <code class="docut
 scrolling up/down and <code class="docutils literal notranslate"><span class="pre">go</span></code> for goto with this flag.</p></li>
 </ul>
 </div>
-<div class="section" id="id18">
-<h3>Changed:<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id20">
+<h3>Changed:<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>All styles are now based upon base16. Therefore custom styles must define the colors
 <code class="docutils literal notranslate"><span class="pre">base00</span></code> to <code class="docutils literal notranslate"><span class="pre">base0f</span></code>. All other style options are optional.</p></li>
@@ -474,8 +484,8 @@ their <code class="docutils literal notranslate"><span class="pre">init</span></
 removed in <cite>v0.3.0</cite>.</p></li>
 </ul>
 </div>
-<div class="section" id="id19">
-<h3>Fixed:<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id21">
+<h3>Fixed:<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Elided text is now calculated correctly in the library.</p></li>
 <li><p>Setting value completions are no longer appended to the existing suggestions when the
@@ -488,8 +498,8 @@ manipulate mode.</p></li>
 <li><p>Running accepted manipulations multiple times as the changes were not reset.</p></li>
 </ul>
 </div>
-<div class="section" id="id20">
-<h3>Removed:<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id22">
+<h3>Removed:<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>The <code class="docutils literal notranslate"><span class="pre">--slideshow</span></code> argument as it was broken and can easily be emulated by the new
 <code class="docutils literal notranslate"><span class="pre">--command</span></code> argument using <code class="docutils literal notranslate"><span class="pre">--command</span> <span class="pre">slideshow</span></code>.</p></li>
