@@ -53,8 +53,9 @@ Keybinding Names
   * ``^q`` becomes ``<ctrl>q``.
   * ``Alt+l`` becomes ``<alt>l``.
 * If keys have a string representation, this is their keybinding. So ``+``, ``/`` and so
-  forth are the valid keybindings, not ``plus`` or ``slash``. Only exception is
-  ``<colon>`` for ``:`` as this is a valid separator for the configuration file.
+  forth are the valid keybindings, not ``plus`` or ``slash``. Only exceptions are
+  ``<colon>`` for ``:`` and ``<equal>`` for ``=`` as these are valid separators for the
+  configuration file.
 * Special keys with no string representation are always surrounded in ``<>`` brackets
   and are lower-case.  Therefore ``Escape`` becomes ``<escape>``, ``Return``
   ``<return>`` and so forth.

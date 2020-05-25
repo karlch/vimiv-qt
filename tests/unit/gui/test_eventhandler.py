@@ -51,6 +51,7 @@ def test_temp_key_storage_clears_text(storage, qtbot):
         (Qt.Key_A, Qt.AltModifier, "a", ("<alt>", "a")),
         (Qt.Key_A, Qt.AltModifier | Qt.ControlModifier, "a", ("<ctrl>", "<alt>", "a")),
         (Qt.Key_Colon, Qt.NoModifier, ":", ("<colon>",)),
+        (Qt.Key_Equal, Qt.NoModifier, "=", ("<equal>",)),
     ],
 )
 def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):

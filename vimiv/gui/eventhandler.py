@@ -284,14 +284,18 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         Qt.Key_Home: "<home>",
         Qt.Key_End: "<end>",
     }
+    separator_keys = {
+        Qt.Key_Colon: "<colon>",
+        Qt.Key_Equal: "<equal>",
+    }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
         text = special_keys[event.key()]  # type: ignore
         if event.modifiers() & Qt.ShiftModifier:  # type: ignore
             return "<shift>", text
         return (text,)
-    if event.key() == Qt.Key_Colon:  # Required as : is the separator
-        return ("<colon>",)
+    if event.key() in separator_keys:  # Required as configparser crashes otherwise
+        return (separator_keys[event.key()],)  # type: ignore
     if event.text().isprintable():
         return (event.text(),)
     return (QKeySequence(event.key()).toString().lower(),)
