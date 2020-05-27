@@ -21,6 +21,11 @@ Changed:
 * The ``=`` key can now be bound using ``<equal>``. Using the raw ``=`` character is not
   possible in ``keys.conf`` as it is treated as separator much like ``:``.
 
+Fixed:
+^^^^^^
+
+* Various issues when handling backslash characters.
+
 
 v0.7.0 (2020-05-17)
 -------------------
