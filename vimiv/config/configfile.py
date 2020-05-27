@@ -147,14 +147,14 @@ def _read_plugins(pluginsection):
     plugins.add_plugins(**pluginsection)
 
 
-def _add_metadata(configsetion):
+def _add_metadata(configsection):
     """Set available metadata sets from config file.
 
     Args:
-        configparser: METADATA section in the config file.
+        configsection: METADATA section in the config file.
     """
     temp = {}
-    for name, value in configsetion.items():
+    for name, value in configsection.items():
         match = re.search(r"keys(\d+)", name)
         if match:
             temp[match.group(1)] = value
