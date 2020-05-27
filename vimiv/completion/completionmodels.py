@@ -13,7 +13,7 @@ from typing import List, Set, Tuple
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.utils import files, trash_manager, escape_chars, unescape_chars
+from vimiv.utils import files, trash_manager
 
 
 class CommandModel(api.completion.BaseModel):
@@ -59,7 +59,11 @@ class ExternalCommandModel(api.completion.BaseModel):
         if self._initialized:
             return
         executables = self._get_executables()
-        self.set_data((f":!{cmd}",) for cmd in executables if not cmd.startswith("."))
+        self.set_data(
+            (f":!{api.completion.escape(cmd)}",)
+            for cmd in executables
+            if not cmd.startswith(".")
+        )
         self._initialized = True
 
     def _get_executables(self) -> List[str]:
@@ -81,15 +85,10 @@ class ExternalCommandModel(api.completion.BaseModel):
 class PathModel(api.completion.BaseModel):
     """Completion model filled with valid paths for path-like commands.
 
-    Class Attributes:
-        _CHARS_TO_ESCAPE: Characters that must be escaped within paths.
-
     Attributes:
         _command: The command for which this model is valid.
         _last_directory: Last directory to avoid re-evaluating on every character.
     """
-
-    _CHARS_TO_ESCAPE = r"\\ "
 
     def __init__(self, command, valid_modes=api.modes.GLOBALS):
         super().__init__(f":{command} ", valid_modes=valid_modes)
@@ -121,7 +120,7 @@ class PathModel(api.completion.BaseModel):
         )
 
     def _create_row(self, path):
-        return (f":{self._command} {self._escape(path)}",)
+        return (f":{self._command} {api.completion.escape(path)}",)
 
     def _get_directory(self, text: str) -> str:
         """Retrieve directory for which the path completion is created."""
@@ -130,16 +129,10 @@ class PathModel(api.completion.BaseModel):
             return "."
         _prefix, directory = match.groups()
         if "/" not in directory:
-            return self._unescape(directory) if os.path.isdir(directory) else "."
-        return self._unescape(os.path.dirname(directory))
-
-    @classmethod
-    def _escape(cls, path: str) -> str:
-        return escape_chars(path, cls._CHARS_TO_ESCAPE)
-
-    @classmethod
-    def _unescape(cls, path: str) -> str:
-        return unescape_chars(path, cls._CHARS_TO_ESCAPE)
+            if os.path.isdir(directory):
+                return api.completion.unescape(directory)
+            return "."
+        return api.completion.unescape(os.path.dirname(directory))
 
 
 class SettingsModel(api.completion.BaseModel):
@@ -202,7 +195,7 @@ class TrashModel(api.completion.BaseModel):
         """Update trash model on enter to include any newly un-/deleted paths."""
         data = []
         for path in files.listdir(trash_manager.files_directory()):
-            cmd = f":undelete {os.path.basename(path)}"
+            cmd = f":undelete {api.completion.escape(os.path.basename(path))}"
             # Get info and format it neatly
             original, date = trash_manager.trash_info(path)
             original = original.replace(os.path.expanduser("~"), "~")
@@ -235,7 +228,8 @@ class TagModel(api.completion.BaseModel):
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
         self.set_data(
-            (f":{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
+            (f":{self._command} {api.completion.escape(fname)}",)
+            for fname in files.listfiles(api.mark.tagdir)
         )
 
 
