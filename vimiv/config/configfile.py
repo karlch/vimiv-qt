@@ -155,7 +155,7 @@ def _add_metadata(configsetion):
     """
     temp = {}
     for name, value in configsetion.items():
-        match = re.search("keys(\d+)", name)
+        match = re.search(r"keys(\d+)", name)
         if match:
             temp[match.group(1)] = value
             _logger.debug("Keyset '%s' found", value)
