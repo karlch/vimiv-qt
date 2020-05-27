@@ -493,12 +493,19 @@ class title:  # pylint: disable=invalid-name
 class metadata:  # pylint: disable=invalid-name
     """Namespace for metadata related settings."""
 
+    # Default sets
+    defaults = [
+        "Make, Model, DateTime, ExposureTime, FNumber, IsoSpeedRatings, FocalLength, LensMake, LensModel, PixelXDimension', 'PixelYDimension, ExposureBiasValue",
+        "ExposureTime, FNumber, IsoSpeedRatings, FocalLength",
+        "Artist, Copyright",
+    ]
+
     # Store the keys as a comma seperated string
     current_keyset = StrSetting(
         "metadata.current_keyset",
-        "",
-        desc="Define the metadata keys to display",
-        hidden=True,
+        defaults[0],
+        desc="Currently displayed metadata keyset",
+        suggestions=defaults,
     )
 
-    keysets: List[str] = None
+    keysets: List[str] = defaults
