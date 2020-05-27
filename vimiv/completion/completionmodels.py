@@ -89,7 +89,7 @@ class PathModel(api.completion.BaseModel):
         _last_directory: Last directory to avoid re-evaluating on every character.
     """
 
-    _CHARS_TO_ESCAPE = " "
+    _CHARS_TO_ESCAPE = r"\\ "
 
     def __init__(self, command, valid_modes=api.modes.GLOBALS):
         super().__init__(f":{command} ", valid_modes=valid_modes)
