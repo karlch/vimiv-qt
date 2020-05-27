@@ -6,6 +6,9 @@
 
 """Tests for vimiv.commands.wildcards."""
 
+import shlex
+import string
+
 import pytest
 
 from vimiv.commands import wildcards
@@ -26,6 +29,16 @@ def test_expand_wildcard(wildcard, escaped, text):
     else:
         expected = text.replace(wildcard, " ".join(paths))
 
+    assert result == expected
+
+
+@pytest.mark.parametrize("char", string.ascii_letters)
+@pytest.mark.parametrize("wildcard", ("%",))
+def test_expand_with_backslash(wildcard, char):
+    paths = (rf"\{char}",)
+    expected = " ".join(shlex.quote(path) for path in paths)
+
+    result = wildcards.expand(wildcard, wildcard, lambda: paths)
     assert result == expected
 
 
