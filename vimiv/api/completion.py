@@ -149,6 +149,7 @@ class FilterProxyModel(QSortFilterProxyModel):
             prefix = prefix + " ".join(parts[:-1])
             command = parts[-1]
         regex = prefix + f" *.*{command}.*"
+        regex = regex.replace("\\", "\\\\")
         self.setFilterRegExp(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
