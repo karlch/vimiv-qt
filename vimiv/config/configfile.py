@@ -6,6 +6,8 @@
 
 """Functions to read configurations from config file and update settings."""
 
+import re
+
 import configparser
 
 from vimiv import api, plugins
@@ -153,12 +155,10 @@ def _add_metadata(configsetion):
     """
     temp = {}
     for name, value in configsetion.items():
-        try:
-            # If keyname is int, is a metadata set
-            temp[int(name)] = value
+        match = re.search("keys(\d+)", name)
+        if match:
+            temp[match.group(1)] = value
             _logger.debug("Keyset '%s' found", value)
-        except ValueError:
-            pass
     api.settings.metadata.keysets = [v for _, v in temp.items()]
     if len(api.settings.metadata.keysets) > 0:
         api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[0]
