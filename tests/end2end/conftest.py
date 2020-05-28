@@ -147,6 +147,11 @@ def start_animated_gif(gif):
     start([gif])
 
 
+@bdd.given("I open a vector graphic")
+def start_vector_graphic(svg):
+    start([svg])
+
+
 @bdd.given("I capture output")
 def output(capsys):
     yield Output(capsys)
