@@ -26,6 +26,8 @@ Fixed:
 
 * Not selecting the first library row in a directory in case the directory was
   previously empty.
+* Initial selection of ``:complete --inverse``. This is now correctly the last row, not
+  the second-to-last.
 
 
 v0.7.0 (2020-05-17)
