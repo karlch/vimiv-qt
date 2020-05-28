@@ -142,6 +142,11 @@ def start_image_name(tmpdir, basename):
     start([path])
 
 
+@bdd.given("I open an animated gif")
+def start_animated_gif(gif):
+    start([gif])
+
+
 @bdd.given("I capture output")
 def output(capsys):
     yield Output(capsys)
