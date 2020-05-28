@@ -25,7 +25,7 @@ def check_no_completion_selected(completionwidget):
 
 @bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))
 @bdd.then("a possible completion should contain <text>")
-def check_selected_completion_text(completionwidget, text):
+def check_available_completion_text(completionwidget, text):
     model = completionwidget.model()
     completion_data = [
         model.index(row, column).data()
@@ -41,3 +41,10 @@ def check_selected_completion_text(completionwidget, text):
 def check_number_completion_suggestions(completionwidget, number):
     model = completionwidget.model()
     assert model.rowCount() == number
+
+
+@bdd.then(bdd.parsers.parse("the completion row number {row:d} should be selected"))
+def check_selected_completion_row(completionwidget, row):
+    if row == -1:
+        row = completionwidget.model().rowCount() - 1
+    assert completionwidget.row() == row

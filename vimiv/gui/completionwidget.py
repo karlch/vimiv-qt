@@ -63,10 +63,10 @@ class CompletionView(widgets.FlatTreeView):
         optional arguments:
             * ``--inverse``: Complete in inverse direction.
         """
-        try:
-            row = self.row() - 1 if inverse else self.row() + 1
-        except IndexError:  # First trigger of completion
+        if self.row() == -1:  # First trigger of completion
             row = -1 if inverse else 0
+        else:
+            row = self.row() - 1 if inverse else self.row() + 1
         # No suggestions
         if not self.model().rowCount():
             return

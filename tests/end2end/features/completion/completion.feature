@@ -173,3 +173,22 @@ Feature: Using completion.
         When I run set completion.fuzzy true
         And I run command --text="FLS"
         Then a possible completion should contain fullscreen
+
+    Scenario: Select first row upon complete
+        Given I start vimiv
+        When I run command
+        And I run complete
+        Then the completion row number 0 should be selected
+
+    Scenario: Select second row upon two completions
+        Given I start vimiv
+        When I run command
+        And I run complete
+        And I run complete
+        Then the completion row number 1 should be selected
+
+    Scenario: Select last row upon complete --inverse
+        Given I start vimiv
+        When I run command
+        And I run complete --inverse
+        Then the completion row number -1 should be selected
