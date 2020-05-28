@@ -1,3 +1,4 @@
+@imageformats
 Feature: Open vector graphics
 
     Background:

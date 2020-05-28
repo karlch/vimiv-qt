@@ -1,3 +1,4 @@
+@imageformats
 Feature: Open and play animated gifs
 
     Background:
