@@ -164,7 +164,7 @@ add_image_format.index = 3  # type: ignore  # Start inserting after jpg, png and
 
 
 def test_svg(h: bytes, _f: BinaryIO) -> bool:
-    return b"<?xml" in h
+    return h.startswith((b"<?xml", b"<svg"))
 
 
 add_image_format("svg", test_svg)
