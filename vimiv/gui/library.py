@@ -290,7 +290,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     def store_position(self):
         """Set the stored position for a directory if possible."""
         with contextlib.suppress(IndexError):
-            self._positions[os.getcwd()] = Position(self.current(), self.row())
+            position = Position(self.current(), self.row())
+            self._positions[os.getcwd()] = position if position.row != -1 else None
 
     def load_directory(self):
         """Update library for new or reloaded directory."""

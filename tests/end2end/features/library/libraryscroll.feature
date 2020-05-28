@@ -111,3 +111,11 @@ Feature: Scrolling the library.
         And the message
             'goto: No path in list'
             should be displayed
+
+    Scenario: Select first row of previously empty directory
+        Given I open a directory with 1 paths
+        When I run scroll right
+        And I run scroll left
+        And I create the directory 'child_01/child'
+        And I run scroll right
+        Then the library row should be 1
