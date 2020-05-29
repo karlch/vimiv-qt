@@ -885,6 +885,18 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <div class="section" id="metadata">
 <span id="ref-image-metadata"></span><h3>metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h3>
 <p>Toggle display of exif metadata of current image.</p>
+<p><strong>count:</strong> Select the key set to display instead.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>3 default key sets are provided and mapped to the counts 1-3. To
+override them or add your own, extend the METADATA section in your
+configfile like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keys2</span> <span class="o">=</span> <span class="n">Override</span><span class="p">,</span><span class="n">Second</span><span class="p">,</span><span class="n">Set</span>
+<span class="n">keys4</span> <span class="o">=</span> <span class="n">New</span><span class="p">,</span><span class="n">Fourth</span><span class="p">,</span><span class="n">Set</span>
+</pre></div>
+</div>
+<p>where the values must be a comma-separated list of valid metadata keys.</p>
+</div>
 </div>
 <div class="section" id="play-or-pause">
 <span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this headline">¶</a></h3>
