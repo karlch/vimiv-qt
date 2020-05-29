@@ -135,5 +135,5 @@ if exif.piexif is not None:
                 self._update_text()
 
 
-else:  # No exif support
+else:  # No exif support  # pragma: no cover  # Covered in another CI
     MetadataWidget = None  # type: ignore
