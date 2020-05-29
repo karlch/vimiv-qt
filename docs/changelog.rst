@@ -9,8 +9,11 @@ v0.8.0 (unreleased)
 Added:
 ^^^^^^
 
-* The ``metadata.keys`` setting that allows configuring the set of metadata
-  information displayed by ``:metadata``. Thanks
+* A customizable set of metadata key settings numbered ``metadata.keys1`` to
+  ``metadata.keys3``. The default is ``metadata.keys1``. One can switch between the sets
+  using ``[count]i``. To override one of these sets, add ``keys2 =
+  Override,SecondSet``. To add a new one, use ``keys4 = New,Fourth,Set``. Here the
+  values must be a comma-separated list of valid metadata keys. Thanks
   `@jeanggi90 <https://github.com/jeanggi90>`_!
 * ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
   `@jeanggi90 <https://github.com/jeanggi90>`_ for pointing this out!
