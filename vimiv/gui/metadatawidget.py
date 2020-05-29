@@ -121,15 +121,8 @@ if exif.piexif is not None:
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
-            text = ""
-            for tag, content in exif.ExifInformation(self._path).items():
-                text += (
-                    "<tr>"
-                    f"<td>{tag}</td>"
-                    f"<td style='padding-left: 2ex'>{content}</td>"
-                    "</tr>"
-                )
-            self.setText(f"<table>{text}</table>")
+            exif_information = exif.ExifInformation(self._path)
+            self.setText(utils.format_html_table(exif_information.items()))
             self._update_geometry()
             self._current_set = api.settings.metadata.current_keyset.value
 
