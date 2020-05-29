@@ -6,9 +6,8 @@
 
 """Functions to read configurations from config file and update settings."""
 
-import re
-
 import configparser
+import re
 
 from vimiv import api, plugins
 from vimiv.commands import aliases

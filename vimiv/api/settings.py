@@ -495,7 +495,7 @@ class metadata:  # pylint: disable=invalid-name
 
     # Default sets
     defaults = [
-        "Make, Model, DateTime, ExposureTime, FNumber, IsoSpeedRatings, FocalLength, LensMake, LensModel, PixelXDimension', 'PixelYDimension, ExposureBiasValue",
+        "Make, Model, DateTime, ExposureTime, FNumber, IsoSpeedRatings, FocalLength, LensMake, LensModel, PixelXDimension', 'PixelYDimension, ExposureBiasValue",  # pylint: disable=line-too-long,useless-suppression
         "ExposureTime, FNumber, IsoSpeedRatings, FocalLength",
         "Artist, Copyright",
     ]

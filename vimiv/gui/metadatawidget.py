@@ -6,14 +6,14 @@
 
 """Overlay widget to display image metadata."""
 
+from typing import Optional
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.imutils import exif
 from vimiv.config import styles
-
-from typing import Optional
 
 _logger = utils.log.module_logger(__name__)
 
@@ -31,7 +31,7 @@ if exif.piexif is not None:
             _mainwindow_bottom: y-coordinate of the bottom of the mainwindow.
             _mainwindow_width: width of the mainwindow.
             _path: Absolute path of the current image to load exif metadata of.
-            _loaded: True if metadata has been loaded for the current image.
+            _current_set: Holds a string of the currently selected keyset.
         """
 
         STYLESHEET = """
@@ -65,9 +65,9 @@ if exif.piexif is not None:
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
         def metadata(self, count: Optional[int] = None):
-            """Toggle display of exif metadata of current image and handle switching of metadata keysets.
+            """Toggle display of exif metadata of current image.
 
-            **count:** Select the key set to display.
+            **count:** Select the key set to display instead.
             """
 
             if self.isVisible():
