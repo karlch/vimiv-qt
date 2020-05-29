@@ -508,4 +508,4 @@ class metadata:  # pylint: disable=invalid-name
         suggestions=defaults,
     )
 
-    keysets: List[str] = defaults
+    keysets: Dict[int, str] = dict(enumerate(defaults, start=1))

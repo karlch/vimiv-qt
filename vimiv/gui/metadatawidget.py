@@ -70,27 +70,22 @@ if exif.piexif is not None:
             **count:** Select the key set to display instead.
             """
 
-            if self.isVisible():
-                if count is not None:
-                    if self._count_is_valid(count):
-                        _logger.debug("Switch keyset in open widget")
-                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
-                            count - 1
-                        ]
-                        self._update_text()
-                else:
-                    _logger.debug("Hiding widget")
-                    self.hide()
+            if count is not None:
+                try:
+                    _logger.debug("Switch keyset")
+                    api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+                        count
+                    ]
+                    if not self.isVisible():
+                        _logger.debug("Showing widget")
+                        self.raise_()
+                        self.show()
+                except KeyError:
+                    raise api.commands.CommandError(f"Invalid key set option {count}")
+            elif self.isVisible():
+                _logger.debug("Hiding widget")
+                self.hide()
             else:
-                if count is not None:
-                    if self._count_is_valid(count):
-                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
-                            count - 1
-                        ]
-                    else:
-                        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
-                            0
-                        ]
                 _logger.debug("Showing widget")
                 self._update_text()
                 self.raise_()
@@ -136,10 +131,6 @@ if exif.piexif is not None:
             self._current_set = ""
             if self.isVisible():
                 self._update_text()
-
-        def _count_is_valid(self, count: int) -> bool:
-            """Check if the provided count is in a valid range."""
-            return count >= 1 and count - 1 < len(api.settings.metadata.keysets)
 
 
 else:  # No exif support

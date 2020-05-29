@@ -152,12 +152,13 @@ def _add_metadata(configsection):
     Args:
         configsection: METADATA section in the config file.
     """
-    temp = {}
     for name, value in configsection.items():
         match = re.search(r"keys(\d+)", name)
         if match:
-            temp[match.group(1)] = value
-            _logger.debug("Keyset '%s' found", value)
-    api.settings.metadata.keysets = [v for _, v in temp.items()]
+            number = int(match.group(1))
+            api.settings.metadata.keysets[number] = value
+            _logger.debug("Keyset %d: '%s' found", number, value)
     if len(api.settings.metadata.keysets) > 0:
-        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[0]
+        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+            min(api.settings.metadata.keysets.keys())
+        ]
