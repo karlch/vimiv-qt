@@ -71,14 +71,10 @@ class Prompt(QLabel):
     @classmethod
     def bindings_table(cls):
         """Return a formatted html table with the valid keybindings."""
-        bindings = "".join(
-            "<tr>"
-            f"<td><b>{utils.escape_html(binding)}</b></td>"
-            f"<td style='padding-left: 2ex'>{command}</td>"
-            "</tr>"
+        return utils.format_html_table(
+            (f"<b>{utils.escape_html(binding)}</b>", command)
             for binding, command in cls.BINDINGS
         )
-        return f"<table>{bindings}</table>"
 
     def run(self):
         """Run the blocking event loop."""
