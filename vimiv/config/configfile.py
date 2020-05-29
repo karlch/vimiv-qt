@@ -44,6 +44,12 @@ def get_default_parser() -> configparser.ConfigParser:
     parser.add_section("PLUGINS")
     parser["PLUGINS"] = plugins.get_plugins()
     parser.add_section("ALIASES")
+    # Only write the individual key sets, not the current keyset as the first of the
+    # individual options is chosen as the current one
+    del parser["METADATA"]["current_keyset"]
+    parser["METADATA"].update(
+        {f"keys{num:d}": value for num, value in api.settings.metadata.keysets.items()}
+    )
     return parser
 
 
