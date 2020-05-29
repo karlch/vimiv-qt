@@ -150,8 +150,11 @@
 <div class="section" id="added">
 <h3>Added:<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>The <code class="docutils literal notranslate"><span class="pre">metadata.keys</span></code> setting that allows configuring the set of metadata
-information displayed by <code class="docutils literal notranslate"><span class="pre">:metadata</span></code>. Thanks
+<li><p>A customizable set of metadata key settings numbered <code class="docutils literal notranslate"><span class="pre">metadata.keys1</span></code> to
+<code class="docutils literal notranslate"><span class="pre">metadata.keys3</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">metadata.keys1</span></code>. One can switch between the sets
+using <code class="docutils literal notranslate"><span class="pre">[count]i</span></code>. To override one of these sets, add <code class="docutils literal notranslate"><span class="pre">keys2</span> <span class="pre">=</span>
+<span class="pre">Override,SecondSet</span></code>. To add a new one, use <code class="docutils literal notranslate"><span class="pre">keys4</span> <span class="pre">=</span> <span class="pre">New,Fourth,Set</span></code>. Here the
+values must be a comma-separated list of valid metadata keys. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a>!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code> is now bound to <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">--level=fit</span></code> in image mode. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a> for pointing this out!</p></li>
