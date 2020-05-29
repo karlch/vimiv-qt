@@ -56,6 +56,20 @@ def test_wrap_style_span():
     )
 
 
+@pytest.mark.parametrize("n_rows", (1, 5))
+def test_format_html_table(n_rows):
+    # Format by hand
+    iterable = list(range(n_rows))
+    row = "<tr><td>{num}</td><td style='padding-left: 2ex'>{numsq}</td></tr>"
+    text = "\n".join(row.format(num=num, numsq=num ** 2) for num in iterable)
+    expected = "<table>" + text + "</table>"
+    # Format using function
+    content = [(f"{num:d}", f"{num**2:d}") for num in iterable]
+    result = utils.format_html_table(content)
+    # Ensure equal
+    assert result == expected
+
+
 @pytest.mark.parametrize("escaped", (True, False))
 def test_replace_unless_escaped(escaped):
     pattern = " "
