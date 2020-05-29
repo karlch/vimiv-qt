@@ -68,6 +68,16 @@ if exif.piexif is not None:
             """Toggle display of exif metadata of current image.
 
             **count:** Select the key set to display instead.
+
+            .. hint::
+                3 default key sets are provided and mapped to the counts 1-3. To
+                override them or add your own, extend the METADATA section in your
+                configfile like this::
+
+                    keys2 = Override,Second,Set
+                    keys4 = New,Fourth,Set
+
+                where the values must be a comma-separated list of valid metadata keys.
             """
 
             if count is not None:
