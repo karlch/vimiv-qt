@@ -18,8 +18,12 @@ except ImportError:
 @pytest.fixture()
 def exif_content():
     yield {
-        "0th": {piexif.ImageIFD.Make: b"vimiv-testsuite"},
-        "Exif": {piexif.ExifIFD.Sharpness: 65535},
+        "0th": {
+            piexif.ImageIFD.Make: b"vimiv-testsuite",
+            piexif.ImageIFD.Model: b"image-viewer",
+            piexif.ImageIFD.Copyright: b"vimiv-AUTHORS-2020",
+        },
+        "Exif": {piexif.ExifIFD.ExposureTime: (1, 200)},
     }
 
 

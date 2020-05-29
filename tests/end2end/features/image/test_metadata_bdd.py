@@ -26,3 +26,13 @@ def check_metadata_widget_visible(metadata):
 @bdd.then("the metadata widget should not be visible")
 def check_metadata_widget_not_visible(metadata):
     assert not metadata.isVisible()
+
+
+@bdd.then(bdd.parsers.parse("the metadata text should contain '{text}'"))
+def check_text_in_metadata(metadata, text):
+    assert text in metadata.text()
+
+
+@bdd.then(bdd.parsers.parse("the metadata text should not contain '{text}'"))
+def check_text_not_in_metadata(metadata, text):
+    assert text not in metadata.text()
