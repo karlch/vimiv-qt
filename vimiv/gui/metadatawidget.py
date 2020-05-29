@@ -73,9 +73,8 @@ if exif.piexif is not None:
             if count is not None:
                 try:
                     _logger.debug("Switch keyset")
-                    api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
-                        count
-                    ]
+                    new_keyset = api.settings.metadata.keysets[count]
+                    api.settings.metadata.current_keyset.value = new_keyset
                     if not self.isVisible():
                         _logger.debug("Showing widget")
                         self.raise_()
