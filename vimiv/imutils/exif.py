@@ -101,9 +101,10 @@ class ExifInformation(dict):
         try:
             self._exif = piexif.load(filename)
             desired_keys = [
-                e.lower().strip() for e in api.settings.metadata.keys.value.split(",")
+                e.lower().strip()
+                for e in api.settings.metadata.current_keyset.value.split(",")
             ]
-            _logger.debug(f"Read metadata.keys {desired_keys}")
+            _logger.debug(f"Read metadata.current_keys {desired_keys}")
         except (piexif.InvalidImageDataError, FileNotFoundError, KeyError):
             return
 

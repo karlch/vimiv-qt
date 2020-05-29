@@ -7,6 +7,7 @@
 """Functions to read configurations from config file and update settings."""
 
 import configparser
+import re
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
@@ -62,6 +63,9 @@ def read(path: str) -> None:
     # Read plugins
     if "PLUGINS" in parser:
         _read_plugins(parser["PLUGINS"])
+    # Read metadata sets
+    if "METADATA" in parser:
+        _add_metadata(parser["METADATA"])
     _logger.debug("Read configuration from '%s'", path)
 
 
@@ -140,3 +144,21 @@ def _read_plugins(pluginsection):
     """
     _logger.debug("Plugins in config: %s", quotedjoin(pluginsection))
     plugins.add_plugins(**pluginsection)
+
+
+def _add_metadata(configsection):
+    """Set available metadata sets from config file.
+
+    Args:
+        configsection: METADATA section in the config file.
+    """
+    for name, value in configsection.items():
+        match = re.search(r"keys(\d+)", name)
+        if match:
+            number = int(match.group(1))
+            api.settings.metadata.keysets[number] = value
+            _logger.debug("Keyset %d: '%s' found", number, value)
+    if len(api.settings.metadata.keysets) > 0:
+        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+            min(api.settings.metadata.keysets.keys())
+        ]
