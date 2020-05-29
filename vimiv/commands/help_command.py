@@ -7,12 +7,11 @@
 """Functions to format and retrieve text for the :help command."""
 
 import contextlib
-import typing
 
 import vimiv
 from vimiv import api
 from vimiv.commands import wildcards
-from vimiv.utils import log, add_html
+from vimiv.utils import log, add_html, format_html_table
 
 
 @api.commands.register(mode=api.modes.MANIPULATE, name="help")
@@ -69,7 +68,7 @@ def _setting_help(setting: api.settings.Setting) -> None:
     ]
     if suggestions:
         content.append(("suggestions", suggestions))
-    table = _format_table(content)
+    table = format_html_table(content)
     _format_help(title=setting.name, description=setting.desc, text=table)
 
 
@@ -80,24 +79,10 @@ def _wildcard_help() -> None:
         "Symbols used to refer to paths or path-lists within vimiv. "
         "These work in addition to the standard unix-shell wildcards * and ?."
     )
-    table = _format_table(
+    table = format_html_table(
         (wildcard.wildcard, wildcard.description) for wildcard in wildcards.INTERNAL
     )
     _format_help(title="wildcards", description=description, text=table)
-
-
-def _format_table(content: typing.Iterable[typing.Tuple[str, str]]) -> str:
-    """Format a nice html table for content in the form of key, value."""
-
-    def format_row(key: str, value: str) -> str:
-        return (
-            "<tr>"
-            f"<td>{key}</td>"
-            f"<td style='padding-left: 2ex'>{value}</td>"
-            "</tr>"
-        )
-
-    return add_html("\n".join(format_row(k, v) for k, v in content), "table")
 
 
 def _format_help(*, title: str, description: str, text: str = None) -> None:
