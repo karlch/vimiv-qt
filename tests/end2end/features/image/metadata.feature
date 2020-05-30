@@ -48,4 +48,4 @@ Feature: Metadata widget displaying image exif information
         And I run next
         Then the metadata widget should be visible
         # The new image no longer has any exif information
-        And the metadata text should not contain 'Make'
+        And the metadata text should contain 'No matching metadata found'
