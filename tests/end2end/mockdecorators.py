@@ -7,7 +7,7 @@
 """Module to patch vimiv decorators before import."""
 
 import contextlib
-import unittest
+import unittest.mock
 
 _known_classes = set()
 
