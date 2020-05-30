@@ -28,7 +28,7 @@ with mockdecorators.apply():
 #                                   Pytest fixtures                                    #
 ########################################################################################
 @pytest.fixture(autouse=True)
-def qapp(qtbot):
+def ensureqtbot(qtbot):
     """Ensure a Qt application from qtbot is always available for end2end tests."""
 
 
