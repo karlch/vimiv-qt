@@ -34,6 +34,15 @@ UPDATED_STATUSBAR = {
 }
 
 
+UPDATED_EXIF_KEY_SETS = {
+    "METADATA": {
+        "keys2": "Override,Second,Set",
+        "keys4": "New,Fourth,Set",
+        "keys9": "New,Ninth,Set",
+    }
+}
+
+
 UPDATED_CONFIG_INVALID = {
     "GENERAL": {"shuffle": "not a bool"},
     "IMAGE": {"overzoom": "not a float"},
@@ -87,6 +96,16 @@ def test_read_aliases(configpath):
     global_aliases = aliases.get(api.modes.IMAGE)
     assert "anything" in global_aliases
     assert global_aliases["anything"] == "scroll left"
+
+
+@pytest.mark.parametrize("configpath", [UPDATED_EXIF_KEY_SETS], indirect=["configpath"])
+def test_read_exif_key_sets(configpath):
+    """Ensure new exif key sets are read correctly."""
+    keysets = api.settings.metadata.keysets
+    for key, expected in UPDATED_EXIF_KEY_SETS["METADATA"].items():
+        number = int(key.replace("keys", ""))
+        value = keysets[number]
+        assert value == expected
 
 
 @pytest.mark.parametrize("configpath", [UPDATED_STATUSBAR], indirect=["configpath"])
