@@ -133,7 +133,7 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     @utils.slot
     def _on_closed(self):
-        """Hide library widget if library mode was clsed."""
+        """Hide library widget if library mode was closed."""
         self.hide()
         self._last_selected = ""
 

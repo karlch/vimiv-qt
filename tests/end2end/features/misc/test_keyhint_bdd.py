@@ -59,7 +59,7 @@ def keyhint_widget_not_visible(keyhint):
 
 @bdd.then("the keyhint widget should not appear")
 def keyhint_widget_not_appeared(keyhint, qtbot):
-    # Required in addition to should not be visible as the timeout does not happend and
+    # Required in addition to should not be visible as the timeout does not happen and
     # waiting for the widget would raise TimeoutError
     with pytest.raises(pytestqt.exceptions.TimeoutError):
         timeout = 2 * api.settings.keyhint.delay.value

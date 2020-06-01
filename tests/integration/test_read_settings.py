@@ -83,7 +83,7 @@ def test_read_config(configpath):
     "configpath", [{"ALIASES": {"anything": "scroll left"}}], indirect=["configpath"]
 )
 def test_read_aliases(configpath):
-    """Ensure new aliaess are read correctly."""
+    """Ensure new aliases are read correctly."""
     global_aliases = aliases.get(api.modes.IMAGE)
     assert "anything" in global_aliases
     assert global_aliases["anything"] == "scroll left"

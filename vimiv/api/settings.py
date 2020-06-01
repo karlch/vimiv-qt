@@ -500,7 +500,7 @@ class metadata:  # pylint: disable=invalid-name
         "Artist, Copyright",
     ]
 
-    # Store the keys as a comma seperated string
+    # Store the keys as a comma separated string
     current_keyset = StrSetting(
         "metadata.current_keyset",
         defaults[0],

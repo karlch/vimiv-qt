@@ -312,7 +312,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     @api.keybindings.register("<space>", "play-or-pause", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
-        """Toggle betwen play and pause of animation."""
+        """Toggle between play and pause of animation."""
         with contextlib.suppress(IndexError, AttributeError):  # No items, not a movie
             widget = self.items()[0].widget()
             movie = widget.movie()

@@ -39,7 +39,7 @@ class _SignalHandler(QObject):
     # Emitted when new images should be loaded
     load_images = pyqtSignal(list)
 
-    # Emited when new image path(s) were opened
+    # Emitted when new image path(s) were opened
     new_image_opened = pyqtSignal(str)
     new_images_opened = pyqtSignal(list)
     all_images_cleared = pyqtSignal()

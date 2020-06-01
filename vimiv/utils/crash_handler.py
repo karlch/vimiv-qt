@@ -23,7 +23,7 @@ from vimiv.utils import log, customtypes
 try:
     import fcntl
 except ImportError:
-    # Mypy does not approve that we assigne None to a module but that is exactly what we
+    # Mypy does not approve that we assign None to a module but that is exactly what we
     # want to do for the optional import
     fcntl = None  # type: ignore
 

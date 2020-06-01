@@ -200,7 +200,7 @@ class BaseModel(QStandardItemModel):
         This allows models to change their content accordingly.
 
         Args:
-            text: The current text in the comand line.
+            text: The current text in the command line.
         """
 
     def on_text_changed(self, text: str) -> None:
@@ -209,7 +209,7 @@ class BaseModel(QStandardItemModel):
         This allows models to change their content accordingly.
 
         Args:
-            text: The current text in the comand line.
+            text: The current text in the command line.
         """
 
     def set_data(self, data: Iterable[Tuple]) -> None:

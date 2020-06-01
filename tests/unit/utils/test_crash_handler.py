@@ -45,7 +45,7 @@ def test_crash_handler_updates_excepthook(handler):
 
 
 def test_crash_handler_excepthook(capsys, handler):
-    # Call system exceptook with some error
+    # Call system excepthook with some error
     error = ValueError("Not a number")
     sys.excepthook(type(error), error, None)
     # Check log output
@@ -65,7 +65,7 @@ def test_crash_handler_exception_in_excepthook(capsys, handler):
         raise KeyError("I lost something")
 
     handler.app.exit = broken
-    # Call system exceptook with some error checking for system exit
+    # Call system excepthook with some error checking for system exit
     error = ValueError("Not a number")
     with pytest.raises(SystemExit, match=str(customtypes.Exit.err_suicide)):
         sys.excepthook(type(error), error, None)

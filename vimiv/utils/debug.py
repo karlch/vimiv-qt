@@ -34,7 +34,7 @@ def timed(function: FuncT) -> FuncT:
 
 @contextlib.contextmanager
 def profile(amount: int = 15) -> Iterator[None]:
-    """Contextmanager to profile code secions.
+    """Contextmanager to profile code sections.
 
     Starts a cProfile.Profile upon entry, disables it on exit and prints profiling
     information.

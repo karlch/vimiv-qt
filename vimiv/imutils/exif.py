@@ -24,7 +24,7 @@ def check_piexif(return_value=None):
     """Decorator for functions that require the optional piexif module.
 
     If piexif is not available, return_value is returned and a debug log message is
-    logged. It it is availabel, the function is called as usual.
+    logged. It it is available, the function is called as usual.
 
     Args:
         return_value: Value to return if piexif is not available.

@@ -17,7 +17,7 @@ In addition the directory and current image is monitored using QFileSystemWatche
 changes are exposed via three signals:
 
 * ``loaded`` when the working directory has changed and the content was loaded
-* ``changed`` when the content of the current directory has chagned
+* ``changed`` when the content of the current directory has changed
 * ``images_changed`` when the images in the current directory where changed
 
 The first two signals are emitted with the list of images and list of directories in the

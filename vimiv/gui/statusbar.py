@@ -26,7 +26,7 @@ from vimiv.config import styles
 class StatusBar(QWidget):
     """Statusbar widget to display permanent information to the user.
 
-    Packs three labels for permanent inforormation ("left", "center", "right") grouped
+    Packs three labels for permanent information ("left", "center", "right") grouped
     into one hbox.
 
     Attributes:

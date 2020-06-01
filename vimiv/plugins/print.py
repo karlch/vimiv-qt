@@ -25,7 +25,7 @@ _logger = log.module_logger(__name__)
 class PrintHandler(QObject):
     """Printing class which adds the :print command.
 
-    The class connects to the differend loaded signals of imutils to create the correct
+    The class connects to the different loaded signals of imutils to create the correct
     PrintWidget for the currently displayed image type. Once print is called the
     QPrint(Preview)Dialog is started and upon confirmation the widget is printed.
 
@@ -158,7 +158,7 @@ class PrintSvg(PrintWidget):
 
 
 class PrintMovie(PrintWidget):
-    """Print class for anmiations."""
+    """Print class for animations."""
 
     def __init__(self, movie: QMovie):
         self._widget = movie

@@ -39,7 +39,7 @@ There are three main components a plugin can make use of to interact with vimiv:
 .. warning::
 
     Before the release of version 1.0 there may be changes to the api although it is
-    tried to keep them as minimial as possible. Any breaking changes will be announced
+    tried to keep them as minimal as possible. Any breaking changes will be announced
     in advance to allow plugins to adapt.
 
 The plugin loading process can be summarized by the following steps:

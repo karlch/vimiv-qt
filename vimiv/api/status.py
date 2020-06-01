@@ -25,7 +25,7 @@ by the text "user: " we run::
 
     updated_text = status.evaluate("user: {username}")
 
-The occurance of '{username}' is then replaced by the outcome of the username()
+The occurrence of '{username}' is then replaced by the outcome of the username()
 function defined earlier.
 
 If any other object requires the status to be updated, they should call
@@ -69,7 +69,7 @@ def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
     """Decorator to register a function as status module.
 
     The decorated function must return a string that can be displayed as
-    status. When calling :func:`evaluate`, any occurance of ``name`` will be
+    status. When calling :func:`evaluate`, any occurrence of ``name`` will be
     replaced by the return value of the decorated function.
 
     Args:
@@ -93,7 +93,7 @@ def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
 def evaluate(text: str) -> str:
     """Evaluate the status modules and update text accordingly.
 
-    Replaces all occurances of module names with the output of the
+    Replaces all occurrences of module names with the output of the
     corresponding function.
 
     Example:

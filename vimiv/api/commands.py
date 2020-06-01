@@ -7,7 +7,7 @@
 """`Command storage and initialization`.
 
 The user interacts with vimiv using commands. Creating a new command is done
-using the :func:`register` decorator. The command name is directly infered from
+using the :func:`register` decorator. The command name is directly inferred from
 the function name, the functions docstring is used to document the command. The
 arguments supported by the command are also deduced by inspecting the arguments
 the function takes. To understand these concepts, lets add a simple command

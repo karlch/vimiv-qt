@@ -67,7 +67,7 @@ def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
     _logger.debug("Running '%s'", text)
 
     def update_part(text: str) -> str:
-        """Update aliases and % in final parts without seperator."""
+        """Update aliases and % in final parts without separator."""
         if SEPARATOR in text:
             return text
         return wildcards.expand_internal(alias(text.strip(), mode), mode)
