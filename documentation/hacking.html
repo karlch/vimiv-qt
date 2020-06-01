@@ -297,7 +297,7 @@ keeps plugins stable.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Before the release of version 1.0 there may be changes to the api although it is
-tried to keep them as minimial as possible. Any breaking changes will be announced
+tried to keep them as minimal as possible. Any breaking changes will be announced
 in advance to allow plugins to adapt.</p>
 </div>
 <p>The plugin loading process can be summarized by the following steps:</p>
@@ -485,7 +485,7 @@ not available, for example when running commands.</p>
 <span id="commands"></span><h4><a class="toc-backref" href="#id15">Commands</a><a class="headerlink" href="#module-vimiv.api.commands" title="Permalink to this headline">¶</a></h4>
 <p><cite>Command storage and initialization</cite>.</p>
 <p>The user interacts with vimiv using commands. Creating a new command is done
-using the <a class="reference internal" href="#vimiv.api.commands.register" title="vimiv.api.commands.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator. The command name is directly infered from
+using the <a class="reference internal" href="#vimiv.api.commands.register" title="vimiv.api.commands.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator. The command name is directly inferred from
 the function name, the functions docstring is used to document the command. The
 arguments supported by the command are also deduced by inspecting the arguments
 the function takes. To understand these concepts, lets add a simple command
@@ -688,7 +688,7 @@ by the text “user: ” we run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">updated_text</span> <span class="o">=</span> <span class="n">status</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="s2">&quot;user: </span><span class="si">{username}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The occurance of ‘{username}’ is then replaced by the outcome of the username()
+<p>The occurrence of ‘{username}’ is then replaced by the outcome of the username()
 function defined earlier.</p>
 <p>If any other object requires the status to be updated, they should call
 <a class="reference internal" href="#vimiv.api.status.update" title="vimiv.api.status.update"><code class="xref py py-func docutils literal notranslate"><span class="pre">vimiv.api.status.update()</span></code></a> passing the reason for the requested update as string.</p>
@@ -708,7 +708,7 @@ function defined earlier.</p>
 <dt id="vimiv.api.status.evaluate">
 <code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#vimiv.api.status.evaluate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluate the status modules and update text accordingly.</p>
-<p>Replaces all occurances of module names with the output of the
+<p>Replaces all occurrences of module names with the output of the
 corresponding function.</p>
 <p class="rubric">Example</p>
 <p>A module called {pwd} is associated with the function os.pwd. Assuming
@@ -729,7 +729,7 @@ becomes ‘Path: /home/user/folder’.</p>
 <code class="sig-prename descclassname">vimiv.api.status.</code><code class="sig-name descname">module</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Callable<span class="p">[</span><span class="p">[</span>ModuleFunc<span class="p">]</span><span class="p">, </span>ModuleFunc<span class="p">]</span><a class="headerlink" href="#vimiv.api.status.module" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to register a function as status module.</p>
 <p>The decorated function must return a string that can be displayed as
-status. When calling <a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, any occurance of <code class="docutils literal notranslate"><span class="pre">name</span></code> will be
+status. When calling <a class="reference internal" href="#vimiv.api.status.evaluate" title="vimiv.api.status.evaluate"><code class="xref py py-func docutils literal notranslate"><span class="pre">evaluate()</span></code></a>, any occurrence of <code class="docutils literal notranslate"><span class="pre">name</span></code> will be
 replaced by the return value of the decorated function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -821,7 +821,7 @@ description column is set up to take 30 % of the total width while the completio
 <p>This allows models to change their content accordingly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current text in the comand line.</p>
+<dd class="field-odd"><p><strong>text</strong> – The current text in the command line.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -833,7 +833,7 @@ description column is set up to take 30 % of the total width while the completio
 <p>This allows models to change their content accordingly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> – The current text in the comand line.</p>
+<dd class="field-odd"><p><strong>text</strong> – The current text in the command line.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -866,7 +866,7 @@ to change it:</p>
 changes are exposed via three signals:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">loaded</span></code> when the working directory has changed and the content was loaded</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">changed</span></code> when the content of the current directory has chagned</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">changed</span></code> when the content of the current directory has changed</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">images_changed</span></code> when the images in the current directory where changed</p></li>
 </ul>
 <p>The first two signals are emitted with the list of images and list of directories in the
