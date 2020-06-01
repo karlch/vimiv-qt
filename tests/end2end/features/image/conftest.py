@@ -7,7 +7,7 @@
 import pytest
 import pytest_bdd as bdd
 
-from vimiv import imutils
+from vimiv import imutils, utils
 
 try:
     import piexif
@@ -40,4 +40,7 @@ def add_exif_information(handler, exif_content):
     for ifd, ifd_dict in exif_content.items():
         for key, value in ifd_dict.items():
             exif_dict[ifd][key] = value
+    # Wait for thumbnail creation so we don't interfere with the current reading by
+    # adding more bytes
+    utils.Pool.wait(5000)
     piexif.insert(piexif.dump(exif_dict), path)
