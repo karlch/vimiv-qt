@@ -1,4 +1,4 @@
-@ci_skip @optional
+@optional
 Feature: Metadata widget displaying image exif information
 
     Scenario: Show metadata widget
