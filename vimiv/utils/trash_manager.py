@@ -103,21 +103,18 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
         trash_filename: The name of the file in self.files_directory.
         original_filename: The original name of the file.
     """
-    # Note: we cannot use configparser here as it writes keys in lowercase
-    info_path = _get_info_filename(trash_filename)
     # Write to temporary file and use shutil.move to make sure the
     # operation is an atomic operation as specified by the standard
-    fd, temp_path = tempfile.mkstemp(dir=_info_directory)
-    os.close(fd)
-    temp_file = open(temp_path, "w")
-    temp_file.write("[Trash Info]\n")
-    temp_file.write(f"Path={original_filename}\n")
-    temp_file.write("DeletionDate={date}\n".format(date=time.strftime("%Y%m%dT%H%M%S")))
-    # Make sure that all data is on disk
-    temp_file.flush()
-    os.fsync(temp_file.fileno())
-    temp_file.close()
-    shutil.move(temp_path, info_path)
+    temp_file = tempfile.NamedTemporaryFile(dir=_info_directory, delete=False, mode="w")
+    info = TrashInfoParser()
+    info["Trash Info"] = {
+        "Path": original_filename,
+        "DeletionDate": time.strftime("%Y%m%dT%H%M%S"),
+    }
+    info.write(temp_file, space_around_delimiters=False)
+    # Move to proper filename
+    info_filename = _get_info_filename(trash_filename)
+    shutil.move(temp_file.name, info_filename)
 
 
 @functools.lru_cache(None)
@@ -134,7 +131,7 @@ def trash_info(filename: str) -> Tuple[str, str]:
         deletion_date: The deletion date.
     """
     info_filename = _get_info_filename(filename)
-    info = configparser.ConfigParser(interpolation=None)
+    info = TrashInfoParser()
     info.read(info_filename)
     content = info["Trash Info"]
     original_filename = content["Path"]
@@ -144,3 +141,14 @@ def trash_info(filename: str) -> Tuple[str, str]:
 
 def files_directory() -> str:
     return _files_directory
+
+
+class TrashInfoParser(configparser.ConfigParser):
+    """Case-sensitive configparser without interpolation."""
+
+    def __init__(self):
+        super().__init__(interpolation=None)
+
+    def optionxform(self, optionstr):
+        """Override so the parser becomes case sensitive."""
+        return optionstr
