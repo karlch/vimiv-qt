@@ -31,7 +31,9 @@ Fixed:
   previously empty.
 * Initial selection of ``:complete --inverse``. This is now correctly the last row, not
   the second-to-last.
-* Various issues when handling backslash characters.
+* Various issues when handling backslash and percent characters in paths and
+  completions. Thanks
+  `@woefe <https://github.com/woefe>`_ for pointing these out!
 
 
 v0.7.0 (2020-05-17)
