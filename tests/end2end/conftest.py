@@ -135,6 +135,13 @@ def start_n_images_with_args(tmpdir, n_images, args):
     start_image(tmpdir, n_images=n_images, args=args.split())
 
 
+@bdd.given(bdd.parsers.parse("I open the image '{basename}'"))
+def start_image_name(tmpdir, basename):
+    path = str(tmpdir.join(basename))
+    create_image(path)
+    start([path])
+
+
 @bdd.given("I capture output")
 def output(capsys):
     yield Output(capsys)
@@ -188,9 +195,13 @@ def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
     for i in range(1, number + 1):
         basename = f"image.{imgformat}" if number == 1 else f"image_{i:02d}.{imgformat}"
         path = str(tmpdir.join(basename))
-        QPixmap(*size).save(path, imgformat)
+        create_image(path, size=size)
         paths.append(path)
     return paths
+
+
+def create_image(path: str, *, size=(300, 300)):
+    QPixmap(*size).save(path)
 
 
 class Output:
