@@ -83,7 +83,12 @@ def expand(
     if wildcard in text:
         paths = callback(*args, **kwargs)
         paths = (paths,) if isinstance(paths, str) else paths
-        quoted_paths = " ".join(shlex.quote(path) for path in paths)
+        quoted_paths = " ".join(
+            # We require the replace to avoid a crash in the re module
+            # See https://github.com/karlch/vimiv-qt/issues/218
+            shlex.quote(path.replace("\\", "\\\\"))
+            for path in paths
+        )
         re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
         text = re.sub(
             utils.RE_STR_NOT_ESCAPED + re_wildcard, rf"{quoted_paths}\1", text

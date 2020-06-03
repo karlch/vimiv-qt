@@ -31,6 +31,7 @@ Fixed:
   previously empty.
 * Initial selection of ``:complete --inverse``. This is now correctly the last row, not
   the second-to-last.
+* Various issues when handling backslash characters.
 
 
 v0.7.0 (2020-05-17)

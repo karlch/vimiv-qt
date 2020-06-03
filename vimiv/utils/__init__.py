@@ -338,42 +338,42 @@ def remove_prefix(text: str, prefix: str) -> str:
     return text
 
 
-def escape_ws(text: str, whitespace: str = " ", escape_char: str = "\\\\") -> str:
-    r"""Escape whitespace in a given string.
+def escape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:
+    r"""Escape set of characters in a given string.
 
     Example:
-        >>> escape_ws("some spaced text")
+        >>> escape_chars("some spaced text", " ")
         some\\ spaced\\ text
 
     Args:
         text: The text to escape whitespace in.
-        whitespace: All characters that are treated as whitespace.
+        chars: All characters that are escaped.
         escape_char: The character prepended to whitespace for escaping.
     Returns:
-        Text with the whitespace escaped.
+        Text with the characters escaped.
     """
-    # First part matches all whitespace characters that are not prepended by escape_char
-    # Second part replaces with the escape_char and the whitespace character
-    return re.sub(rf"(?<!{escape_char})([{whitespace}])", rf"{escape_char}\1", text)
+    # First part matches all chars that are not prepended by escape_char
+    # Second part replaces with the escape_char and the matched char
+    return re.sub(rf"(?<!{escape_char})([{chars}])", rf"{escape_char}\1", text)
 
 
-def unescape_ws(text: str, whitespace: str = " ", escape_char: str = "\\\\") -> str:
+def unescape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:
     r"""Undo escaping of whitespace in a given string.
 
     Example:
-        >>> unescape_ws("some\\ spaced\\ text")
+        >>> unescape_chars("some\\ spaced\\ text")
         some spaced text
 
     Args:
         text: The text to undo escaping of whitespace in.
-        whitespace: All characters that are treated as whitespace.
+        chars: All characters that are escaped.
         escape_char: The character prepended to whitespace for escaping.
     Returns:
-        Text with the whitespace escaping undone.
+        Text with the character escaping undone.
     """
-    # First part matches all whitespace characters that are prepended by escape_char
-    # Second part replaces with the whitespace character
-    return re.sub(rf"{escape_char}([{whitespace}])", r"\1", text)
+    # First part matches all chars that are prepended by escape_char
+    # Second part replaces with the matched char
+    return re.sub(rf"{escape_char}([{chars}])", r"\1", text)
 
 
 def create_pixmap(

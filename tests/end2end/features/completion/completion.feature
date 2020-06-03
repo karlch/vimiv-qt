@@ -70,6 +70,22 @@ Feature: Using completion.
         And I press '<return>'
         Then the working directory should be path with spaces
 
+    Scenario: Escape path with backslashes upon completion
+        Given I open any directory
+        When I create the directory 'path\with\backslashes'
+        And I run command --text="open pat"
+        And I run complete
+        And I press '<return>'
+        Then the working directory should be path\with\backslashes
+
+    Scenario: Complete from directory with escaped characters
+        Given I open any directory
+        When I create the directory 'path\with\backslashes/child'
+        And I run command --text="open pat"
+        And I run complete
+        And I press '/'
+        Then a possible completion should contain open ./path\\with\\backslashes/child
+
     Scenario: Using setting completion.
         Given I open any directory
         When I run command --text="set "

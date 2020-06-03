@@ -58,10 +58,11 @@ from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 from vimiv.api import modes, settings
-from vimiv.utils import log
+from vimiv.utils import log, escape_chars, unescape_chars
 
 
 _logger = log.module_logger(__name__)
+_CHARS_TO_ESCAPE = r"\\ "  # Characters that must be escaped for valid commandline usage
 
 
 def get_model(text: str, mode: modes.Mode) -> "BaseModel":
@@ -81,6 +82,16 @@ def get_model(text: str, mode: modes.Mode) -> "BaseModel":
                 best_match, best_match_size = model, match_size
     _logger.debug("Model '%s' for text '%s'", best_match, text)
     return best_match
+
+
+def escape(text: str) -> str:
+    """Escape text for valid commandline usage."""
+    return escape_chars(text, _CHARS_TO_ESCAPE)
+
+
+def unescape(text: str) -> str:
+    """Revert escaping of text for valid commandline usage."""
+    return unescape_chars(text, _CHARS_TO_ESCAPE)
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -149,6 +160,7 @@ class FilterProxyModel(QSortFilterProxyModel):
             prefix = prefix + " ".join(parts[:-1])
             command = parts[-1]
         regex = prefix + f" *.*{command}.*"
+        regex = regex.replace("\\", "\\\\")
         self.setFilterRegExp(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:

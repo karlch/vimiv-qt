@@ -6,7 +6,6 @@
 
 """Tests for vimiv.utils"""
 
-import collections
 import inspect
 import os
 import typing
@@ -217,53 +216,29 @@ def test_remove_prefix_not_found():
     assert utils.remove_prefix("start hello", "starter") == "start hello"
 
 
-@pytest.fixture(
-    params=[
-        ("a space", "a\\ space"),
-        ("more than one", "more\\ than\\ one"),
-        (" prepending", "\\ prepending"),
-        ("trailing ", "trailing\\ "),
-    ]
+@pytest.mark.parametrize(
+    "formattext",
+    ("in{char}between", "many{char}of{char}them", "{char}prepending", "trailing{char}"),
 )
-def escape_ws(request):
-    """Fixture to yield different tuples of escaped and unescaped text."""
-    result_tuple = collections.namedtuple("EscapeWSInput", ["unescaped", "escaped"])
-    yield result_tuple(*request.param)
+@pytest.mark.parametrize("char", (" ", r"\\"))
+def test_escape_unescape_chars(formattext, char):
+    text = formattext.format(char=char)
+    expected = formattext.format(char="\\" + char)
+    _run_escape_unescape(text, char, expected)
 
 
-def test_escape_ws(escape_ws):
-    assert utils.escape_ws(escape_ws.unescaped) == escape_ws.escaped
+def test_escape_unescape_multiple_chars():
+    text = "a text:with\tsome;characters"
+    expected = "a\\ text\\:with\\\tsome\\;characters"
+    chars = " :;\t"
+    _run_escape_unescape(text, chars, expected)
 
 
-def test_unescape_ws(escape_ws):
-    assert utils.unescape_ws(escape_ws.escaped) == escape_ws.unescaped
-
-
-def test_unescape_escape_ws(escape_ws):
-    """Ensure unescaping escaped whitespace returns the initial text."""
-    assert (
-        utils.unescape_ws(utils.escape_ws(escape_ws.unescaped)) == escape_ws.unescaped
-    )
-
-
-def test_escape_unescape_ws(escape_ws):
-    """Ensure escaping unescaped whitespace returns the escaped text."""
-    assert utils.escape_ws(utils.unescape_ws(escape_ws.escaped)) == escape_ws.escaped
-
-
-def test_escape_escaped_ws(escape_ws):
-    """Ensure that escaped whitespace is not escaped twice."""
-    assert utils.escape_ws(escape_ws.escaped) == escape_ws.escaped
-
-
-def test_escape_other_char():
-    assert utils.escape_ws("a space", escape_char="!") == "a! space"
-
-
-def test_escape_additional_whitespace():
-    assert utils.escape_ws("a space\nand newline", whitespace=" \n") == (
-        "a\\ space\\\nand\\ newline"
-    )
+def _run_escape_unescape(text, chars, expected):
+    escaped = utils.escape_chars(text, chars)
+    assert expected == escaped
+    unescaped = utils.unescape_chars(escaped, chars)
+    assert unescaped == text
 
 
 def test_cached_method_result(cached_method_cls):
