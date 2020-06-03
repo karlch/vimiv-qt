@@ -62,7 +62,8 @@ from vimiv.utils import log, escape_chars, unescape_chars
 
 
 _logger = log.module_logger(__name__)
-_CHARS_TO_ESCAPE = r"\\ "  # Characters that must be escaped for valid commandline usage
+# Characters that must be escaped for valid commandline usage
+_CHARS_TO_ESCAPE = r"%\\ "
 
 
 def get_model(text: str, mode: modes.Mode) -> "BaseModel":

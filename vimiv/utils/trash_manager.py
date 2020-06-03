@@ -154,7 +154,7 @@ def trash_info(filename: str) -> Tuple[str, str]:
         deletion_date: The deletion date.
     """
     info_filename = _get_info_filename(filename)
-    info = configparser.ConfigParser()
+    info = configparser.ConfigParser(interpolation=None)
     info.read(info_filename)
     content = info["Trash Info"]
     original_filename = content["Path"]

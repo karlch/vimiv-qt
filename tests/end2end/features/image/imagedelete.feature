@@ -82,3 +82,10 @@ Feature: Deleting an image in the current file list
         And I wait for the working directory handler
         Then the file image_03.jpg should not exist
         And the filelist should contain 2 images
+
+    Scenario: Undelete image with % in filename
+        Given I open the image '%.jpg'
+        When I run delete %
+        And I run undelete
+        Then no crash should happen
+        And the file %.jpg should exist
