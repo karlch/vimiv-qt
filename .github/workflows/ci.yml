@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        toxenv: [pyqt513, pyqt514-cov, no_optionals, lint, packaging, mypy]
+        toxenv: [pyqt513, pyqt514, pyqt515-cov, no_optionals, lint, packaging, mypy]
       fail-fast: false
     steps:
     - uses: actions/checkout@v1
@@ -44,7 +44,7 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        sudo apt-get install libxkbcommon-x11-0
+        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
         python -m pip install --upgrade pip
         pip install tox
     - name: Test with tox
@@ -58,4 +58,4 @@ jobs:
         codecov -X gcov
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.toxenv == 'pyqt514-cov'
+      if: matrix.toxenv == 'pyqt515-cov'
