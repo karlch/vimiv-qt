@@ -23,15 +23,13 @@ import os
 import shutil
 import tempfile
 import time
-from typing import cast, Tuple, List
+from typing import cast, Tuple
 
-from vimiv import api
-from vimiv.utils import files, log, xdg
+from vimiv.utils import xdg
 
 
 _files_directory = cast(str, None)
 _info_directory = cast(str, None)
-_last_deleted: List[str] = []
 
 
 def init() -> None:
@@ -42,57 +40,39 @@ def init() -> None:
     xdg.makedirs(_files_directory, _info_directory)
 
 
-@api.keybindings.register("x", "delete %")
-@api.commands.register()
-def delete(paths: List[str]) -> None:
-    """Move one or more images to the trash directory.
+def delete(filename: str) -> str:
+    """Move filename to the trash directory.
 
-    **syntax:** ``:delete path [path ...]``
-
-    positional arguments:
-        * ``paths``: The path(s) to the images to delete.
-
-    .. note:: This only deletes images, not any other path(s).
+    Args:
+        filename: Name of the file to move to the trash directory.
+    Returns:
+        The path to the file in the trash directory.
     """
-    _last_deleted.clear()
-    images = [path for path in paths if files.is_image(path)]
-    n_images = len(images)
-    if n_images == 0:
-        raise api.commands.CommandError("No images to delete")
-    for filename in images:
-        filename = os.path.abspath(filename)
-        trash_filename = _get_trash_filename(filename)
-        _create_info_file(trash_filename, filename)
-        shutil.move(filename, trash_filename)
-        _last_deleted.append(os.path.basename(trash_filename))
-    if n_images > 1:
-        log.info("Deleted %d images", n_images)
+    filename = os.path.abspath(filename)
+    trash_filename = _get_trash_filename(filename)
+    _create_info_file(trash_filename, filename)
+    shutil.move(filename, trash_filename)
+    return trash_filename
 
 
-@api.commands.register()
-def undelete(basenames: List[str]) -> None:
-    """Restore a file from the trash directory.
+def undelete(basename: str) -> str:
+    """Restore basename from the trash directory.
 
-    **syntax:** ``:undelete [basename ...]``
-
-    If no basename is given, the last deleted images in this session are restored.
-
-    positional arguments:
-        * ``basenames``: The basename(s) of the file in the trash directory.
+    Args:
+        basename: Basename of the file in the trash directory.
+    Returns:
+        The path to the restored file.
     """
-    basenames = basenames if basenames else _last_deleted
-    for basename in basenames:
-        trash_filename = os.path.join(_files_directory, basename)
-        info_filename = _get_info_filename(basename)
-        if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
-            raise api.commands.CommandError(f"File for '{basename}' does not exist")
-        original_filename, _ = trash_info(basename)
-        if not os.path.isdir(os.path.dirname(original_filename)):
-            raise api.commands.CommandError(
-                f"Original directory of '{basename}' is not accessible"
-            )
-        shutil.move(trash_filename, original_filename)
-        os.remove(info_filename)
+    trash_filename = os.path.join(_files_directory, basename)
+    info_filename = _get_info_filename(basename)
+    if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
+        raise FileNotFoundError(f"File for '{basename}' does not exist")
+    original_filename, _ = trash_info(basename)
+    if not os.path.isdir(os.path.dirname(original_filename)):
+        raise FileNotFoundError(f"Original directory of '{basename}' is not accessible")
+    shutil.move(trash_filename, original_filename)
+    os.remove(info_filename)
+    return original_filename
 
 
 def _get_trash_filename(filename: str) -> str:
