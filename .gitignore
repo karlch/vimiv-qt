@@ -18,3 +18,4 @@ Makefile
 **/.mypy_cache
 **/.dmypy.json
 **/*.rstsrc
+tests/data

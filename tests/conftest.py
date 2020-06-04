@@ -8,6 +8,7 @@
 
 import os
 import logging
+import urllib.request
 
 import pytest
 
@@ -85,3 +86,51 @@ def mock_file_handler(monkeypatch):
     statements to file.
     """
     monkeypatch.setattr(logging, "FileHandler", DevNullLogHandler)
+
+
+@pytest.fixture()
+def datadir():
+    """Fixture to retrieve the path to the data directory."""
+    testdir = os.path.dirname(__file__)
+    datadir = os.path.join(testdir, "data")
+    if not os.path.isdir(datadir):
+        os.makedirs(datadir, mode=0o700)
+    return datadir
+
+
+@pytest.fixture()
+def gif(datadir):
+    """Fixture to retrieve the path to a gif file.
+
+    We retrieve the file from the web if it does not exist. This should only happen once
+    per developing environment.
+    """
+    path = os.path.join(datadir, "vimiv.gif")
+    if not os.path.exists(path):
+        url = "https://i.postimg.cc/VkcPgcbR/vimiv.gif"
+        _retrieve_file_from_web(url, path)
+    return path
+
+
+@pytest.fixture()
+def svg(datadir):
+    """Fixture to retrieve the path to a svg file.
+
+    We retrieve the file from the web if it does not exist. This should only happen once
+    per developing environment.
+    """
+    path = os.path.join(datadir, "vimiv.svg")
+    if not os.path.exists(path):
+        url = "https://raw.githubusercontent.com/karlch/vimiv-qt/master/icons/vimiv.svg"
+        _retrieve_file_from_web(url, path)
+    return path
+
+
+def _retrieve_file_from_web(url: str, path: str) -> None:
+    """Helper function to write url byte data to path."""
+    print(f"Retrieving {path} from {url}")
+    with urllib.request.urlopen(url) as f:
+        data = f.read()
+    with open(path, "wb") as f:
+        f.write(data)
+    print("... success")
