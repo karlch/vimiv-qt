@@ -10,11 +10,9 @@ The functions delete and undeletes images from the user's Trash directory
 in $XDG_DATA_HOME/Trash according to the freedesktop.org trash specification.
 
 Module Attributes:
-    _files_directory: String path to the directory in which trashed files are
+    _files_directory: Path to the directory in which trashed files are stored.
+    _info_directory: Path to the directory in which info files for trashed files are
         stored.
-    _info_directory: String path to the directory in which info files for
-        trashed files are stored.
-    _last_deleted: List of last deleted images to allow undeleting them.
 """
 
 import configparser
@@ -75,48 +73,6 @@ def undelete(basename: str) -> str:
     return original_filename
 
 
-def _get_trash_filename(filename: str) -> str:
-    """Return the name of the file in self.files_directory.
-
-    Args:
-        filename: The original name of the file.
-    """
-    path = os.path.join(_files_directory, os.path.basename(filename))
-    # Ensure that we do not overwrite any files
-    extension = 2
-    original_path = path
-    while os.path.exists(path):
-        path = original_path + "." + str(extension)
-        extension += 1
-    return path
-
-
-def _get_info_filename(filename: str) -> str:
-    basename = os.path.basename(filename)
-    return os.path.join(_info_directory, basename + ".trashinfo")
-
-
-def _create_info_file(trash_filename: str, original_filename: str) -> None:
-    """Create file with information as specified by the standard.
-
-    Args:
-        trash_filename: The name of the file in self.files_directory.
-        original_filename: The original name of the file.
-    """
-    # Write to temporary file and use shutil.move to make sure the
-    # operation is an atomic operation as specified by the standard
-    temp_file = tempfile.NamedTemporaryFile(dir=_info_directory, delete=False, mode="w")
-    info = TrashInfoParser()
-    info["Trash Info"] = {
-        "Path": original_filename,
-        "DeletionDate": time.strftime("%Y%m%dT%H%M%S"),
-    }
-    info.write(temp_file, space_around_delimiters=False)
-    # Move to proper filename
-    info_filename = _get_info_filename(trash_filename)
-    shutil.move(temp_file.name, info_filename)
-
-
 @functools.lru_cache(None)
 def trash_info(filename: str) -> Tuple[str, str]:
     """Get information stored in the .trashinfo file.
@@ -141,6 +97,53 @@ def trash_info(filename: str) -> Tuple[str, str]:
 
 def files_directory() -> str:
     return _files_directory
+
+
+def _get_trash_filename(filename: str) -> str:
+    """Return the name of the file in the trash files directory.
+
+    Args:
+        filename: The original name of the file.
+    """
+    path = os.path.join(_files_directory, os.path.basename(filename))
+    # Ensure that we do not overwrite any files
+    extension = 2
+    original_path = path
+    while os.path.exists(path):
+        path = original_path + "." + str(extension)
+        extension += 1
+    return path
+
+
+def _get_info_filename(trash_filename: str) -> str:
+    """Return the name of the corresponding trashinfo file.
+
+    Args:
+        trash_filename: The name of the corresponding file in the trash files directory.
+    """
+    basename = os.path.basename(trash_filename)
+    return os.path.join(_info_directory, basename + ".trashinfo")
+
+
+def _create_info_file(trash_filename: str, original_filename: str) -> None:
+    """Create file with information as specified by the standard.
+
+    Args:
+        trash_filename: The name of the file in self.files_directory.
+        original_filename: The original name of the file.
+    """
+    # Write to temporary file and use shutil.move to make sure the
+    # operation is an atomic operation as specified by the standard
+    temp_file = tempfile.NamedTemporaryFile(dir=_info_directory, delete=False, mode="w")
+    info = TrashInfoParser()
+    info["Trash Info"] = {
+        "Path": original_filename,
+        "DeletionDate": time.strftime("%Y%m%dT%H%M%S"),
+    }
+    info.write(temp_file, space_around_delimiters=False)
+    # Move to proper filename
+    info_filename = _get_info_filename(trash_filename)
+    shutil.move(temp_file.name, info_filename)
 
 
 class TrashInfoParser(configparser.ConfigParser):
