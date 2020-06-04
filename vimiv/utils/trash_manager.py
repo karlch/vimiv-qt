@@ -149,9 +149,9 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
 class TrashInfoParser(configparser.ConfigParser):
     """Case-sensitive configparser without interpolation."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(interpolation=None)
 
-    def optionxform(self, optionstr):
+    def optionxform(self, optionstr: str) -> str:
         """Override so the parser becomes case sensitive."""
         return optionstr
