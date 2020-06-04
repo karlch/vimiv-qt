@@ -27,7 +27,11 @@ from vimiv.gui import mainwindow
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
 
 # Must be imported to create the commands using the decorators
-from vimiv.commands import misccommands, help_command  # pylint: disable=unused-import
+from vimiv.commands import (  # pylint: disable=unused-import
+    misccommands,
+    delete_command,
+    help_command,
+)
 from vimiv.config import configcommands  # pylint: disable=unused-import
 
 
