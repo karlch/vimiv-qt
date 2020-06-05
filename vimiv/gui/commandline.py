@@ -7,14 +7,18 @@
 """CommandLine widget in the bar."""
 
 import contextlib
+from typing import cast, TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv import api, utils
-from vimiv.commands import history, argtypes, runners, search
+from vimiv.commands import argtypes, runners, search
 from vimiv.config import styles
 from vimiv.gui import eventhandler
+
+if TYPE_CHECKING:
+    from vimiv.commands import history
 
 
 class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
@@ -47,10 +51,19 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
     @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
+
+        self.mode: api.modes.Mode = api.modes.IMAGE
+        self._history = cast("history.History", None)
+
+        api.modes.COMMAND.first_entered.connect(self.init)
+
+    def init(self) -> None:
+        """Lazy-initialize command-line when first entering command mode."""
+        from vimiv.commands import history
+
         self._history = history.History(
             self.PREFIXES, max_items=api.settings.command.history_limit.value,
         )
-        self.mode: api.modes.Mode = api.modes.IMAGE
 
         self.returnPressed.connect(self._on_return_pressed)
         self.textEdited.connect(self._on_text_edited)
