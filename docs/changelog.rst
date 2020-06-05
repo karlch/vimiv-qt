@@ -23,6 +23,12 @@ Changed:
 
 * The ``=`` key can now be bound using ``<equal>``. Using the raw ``=`` character is not
   possible in ``keys.conf`` as it is treated as separator much like ``:``.
+* History is now mode based. The plain-text history file is replaced by a json file
+  which stores the history of each mode. Any existing history is migrated by adding it
+  to every mode and keeping a backup of the plain-text history file at ``history.bak``.
+  The script ``scripts/vimiv_history.py`` is provided to print the history of a mode
+  line-by-line as aid in case user-scripts relied on the plain-text nature of the
+  history file.
 
 Fixed:
 ^^^^^^
