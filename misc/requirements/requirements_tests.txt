@@ -4,4 +4,4 @@ pytest-mock==3.1.0
 pytest-qt==3.3.0
 PyVirtualDisplay==0.2.5
 pytest-xvfb==1.2.0
-pytest-bdd==3.3.0
+pytest-bdd==3.4.0
