@@ -138,7 +138,7 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
     info = TrashInfoParser()
     info["Trash Info"] = {
         "Path": original_filename,
-        "DeletionDate": time.strftime("%Y%m%dT%H%M%S"),
+        "DeletionDate": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     info.write(temp_file, space_around_delimiters=False)
     # Move to proper filename
