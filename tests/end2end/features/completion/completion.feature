@@ -132,6 +132,7 @@ Feature: Using completion.
         When I run delete %
         When I run command --text="undelete "
         Then a possible completion should contain undelete image_01.jpg
+        And the trash completion for 'image_01.jpg' should show the trashinfo
 
     Scenario: Do not show trash completion in manipulate mode
         Given I open 2 images
