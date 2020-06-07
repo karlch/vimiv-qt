@@ -190,6 +190,8 @@ class TrashModel(api.completion.BaseModel):
             column_widths=(0.4, 0.45, 0.15),
             valid_modes=api.modes.GLOBALS,
         )
+        self._old_date_re = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})")
+        self._date_re = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})")
 
     def on_enter(self, text: str) -> None:
         """Update trash model on enter to include any newly un-/deleted paths."""
@@ -200,13 +202,16 @@ class TrashModel(api.completion.BaseModel):
             original, date = trash_manager.trash_info(path)
             original = original.replace(os.path.expanduser("~"), "~")
             original = os.path.dirname(original)
-            date = "%s-%s-%s %s:%s" % (
-                date[2:4],
-                date[4:6],
-                date[6:8],
-                date[9:11],
-                date[11:13],
-            )
+            date_match = self._date_re.match(date)
+            if date_match is None:
+                # Wrong date formatting that was used up to v0.7.0
+                # TODO remove after releasing v1.0.0
+                date_match = self._old_date_re.match(date)
+            if date_match is not None:
+                year, month, day, hour, minute, _ = date_match.groups()
+                date = f"{year}-{month}-{day} {hour}:{minute}"
+            else:
+                date = "date unknown"
             # Append data in column form
             data.append((cmd, original, date))
         self.set_data(data)
