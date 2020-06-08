@@ -14,9 +14,11 @@ bdd.scenarios("expand_wildcards.feature")
 
 
 @pytest.fixture(autouse=True)
-def home_directory(tmpdir, mocker):
+def home_directory(tmp_path, mocker):
     """Fixture to mock os.path.expanduser to return a different home directory."""
-    new_home = str(tmpdir.mkdir("home"))
+    directory = tmp_path / "home"
+    directory.mkdir()
+    new_home = str(directory)
 
     def expand_user(path):
         return path.replace("~", new_home)

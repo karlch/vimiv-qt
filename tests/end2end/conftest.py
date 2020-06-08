@@ -7,7 +7,6 @@
 """Fixtures and bdd-given steps related to setup and cleanup for end2end testing."""
 
 import logging
-import os
 
 from PyQt5.QtGui import QPixmap
 
@@ -33,8 +32,8 @@ def ensureqtbot(qtbot):
 
 
 @pytest.fixture(autouse=True)
-def mock_directories(tmpdir):
-    directory = tmpdir.join(".vimiv-data")
+def mock_directories(tmp_path):
+    directory = tmp_path / ".vimiv-data"
     utils.xdg.basedir = str(directory)
     yield
     utils.xdg.basedir = None
@@ -79,13 +78,13 @@ def faster_wait_times():
 ###############################################################################
 @bdd.given("I start vimiv")
 @bdd.given("I open any directory")
-def start_vimiv(tmpdir):
-    start_directory(tmpdir)
+def start_vimiv(tmp_path):
+    start_directory(tmp_path)
 
 
 @bdd.given(bdd.parsers.parse("I start vimiv with {args}"))
-def start_vimiv_with_args(tmpdir, args):
-    start_directory(tmpdir, args=args.split())
+def start_vimiv_with_args(tmp_path, args):
+    start_directory(tmp_path, args=args.split())
 
 
 @bdd.given("I run vimiv --version")
@@ -95,51 +94,51 @@ def run_vimiv_version():
 
 
 @bdd.given("I start vimiv with --log-level <level>")
-def start_vimiv_log_level(tmpdir, level):
-    start_directory(tmpdir, args=["--log-level", level])
+def start_vimiv_log_level(tmp_path, level):
+    start_directory(tmp_path, args=["--log-level", level])
 
 
 @bdd.given("I open a directory for which I do not have access permissions")
-def start_directory_without_permission(tmpdir):
-    start_directory(tmpdir, permission=0o666)
+def start_directory_without_permission(tmp_path):
+    start_directory(tmp_path, permission=0o666)
 
 
 @bdd.given(bdd.parsers.parse("I open a directory with {n_children:d} paths"))
-def start_directory_with_n_paths(tmpdir, n_children):
-    start_directory(tmpdir, n_children=n_children)
+def start_directory_with_n_paths(tmp_path, n_children):
+    start_directory(tmp_path, n_children=n_children)
 
 
 @bdd.given(bdd.parsers.parse("I open a directory with {n_images:d} images"))
-def start_directory_with_n_images(tmpdir, n_images):
-    start_directory(tmpdir, n_images=n_images)
+def start_directory_with_n_images(tmp_path, n_images):
+    start_directory(tmp_path, n_images=n_images)
 
 
 @bdd.given("I open any image")
-def start_any_image(tmpdir):
-    start_image(tmpdir)
+def start_any_image(tmp_path):
+    start_image(tmp_path)
 
 
 @bdd.given(bdd.parsers.parse("I open any image of size {size}"))
-def start_any_image_of_size(tmpdir, size):
+def start_any_image_of_size(tmp_path, size):
     size = [int(elem) for elem in size.split("x")]
-    start_image(tmpdir, size=size)
+    start_image(tmp_path, size=size)
 
 
 @bdd.given(bdd.parsers.parse("I open {n_images:d} images"))
-def start_n_images(tmpdir, n_images):
-    start_image(tmpdir, n_images=n_images)
+def start_n_images(tmp_path, n_images):
+    start_image(tmp_path, n_images=n_images)
 
 
 @bdd.given(bdd.parsers.parse("I open {n_images:d} images with {args}"))
-def start_n_images_with_args(tmpdir, n_images, args):
-    start_image(tmpdir, n_images=n_images, args=args.split())
+def start_n_images_with_args(tmp_path, n_images, args):
+    start_image(tmp_path, n_images=n_images, args=args.split())
 
 
 @bdd.given(bdd.parsers.parse("I open the image '{basename}'"))
-def start_image_name(tmpdir, basename):
-    path = str(tmpdir.join(basename))
-    create_image(path)
-    start([path])
+def start_image_name(tmp_path, basename):
+    filename = str(tmp_path / basename)
+    create_image(filename)
+    start([filename])
 
 
 @bdd.given("I open an animated gif")
@@ -173,45 +172,46 @@ def check_stderr(output, text):
 ###############################################################################
 #                              helpers                                        #
 ###############################################################################
-def start_directory(tmpdir, n_children=0, n_images=0, permission=0o777, args=None):
+def start_directory(tmp_path, n_children=0, n_images=0, permission=0o777, args=None):
     """Run vimiv startup using one directory as the passed path."""
     args = args if args is not None else []
-    directory = tmpdir.mkdir("directory")
-    os.chmod(str(directory), permission)
+    directory = tmp_path / "directory"
+    directory.mkdir(mode=permission)
 
     for i in range(n_children):
-        directory.mkdir(f"child_{i + 1:02d}")
+        (directory / f"child_{i + 1:02d}").mkdir()
 
     create_n_images(directory, n_images)
 
-    start([str(directory)] + args)
+    start([directory] + args)
 
 
-def start_image(tmpdir, n_images=1, size=(300, 300), args=None):
+def start_image(tmp_path, n_images=1, size=(300, 300), args=None):
     """Run vimiv startup using n images as the passed paths."""
-    paths = create_n_images(tmpdir, n_images, size=size)
-    args = paths if args is None else paths + args
-    start(args)
+    paths = create_n_images(tmp_path, n_images, size=size)
+    argv = paths if args is None else paths + args
+    start(argv)
 
 
 def start(argv):
     """Run vimiv startup passing argv as argument list."""
+    argv = [str(arg) for arg in argv]
     args = startup.setup_pre_app(argv)
     startup.setup_post_app(args)
 
 
-def create_n_images(tmpdir, number, size=(300, 300), imgformat="jpg"):
+def create_n_images(directory, number, size=(300, 300), imgformat="jpg"):
     paths = []
     for i in range(1, number + 1):
         basename = f"image.{imgformat}" if number == 1 else f"image_{i:02d}.{imgformat}"
-        path = str(tmpdir.join(basename))
-        create_image(path, size=size)
+        path = directory / basename
+        create_image(str(path.resolve()), size=size)
         paths.append(path)
     return paths
 
 
-def create_image(path: str, *, size=(300, 300)):
-    QPixmap(*size).save(path)
+def create_image(filename: str, *, size=(300, 300)):
+    QPixmap(*size).save(filename)
 
 
 class Output:

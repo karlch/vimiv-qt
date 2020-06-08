@@ -15,18 +15,18 @@ bdd.scenarios("imageopen.feature")
 
 
 @bdd.when("I open broken images")
-def open_broken_images(tmpdir):
-    _open_file(tmpdir, b"\211PNG\r\n\032\n")  # PNG
-    _open_file(tmpdir, b"000000JFIF")  # JPG
-    _open_file(tmpdir, b"GIF89a")  # GIF
-    _open_file(tmpdir, b"II")  # TIFF
-    _open_file(tmpdir, b"BM")  # BMP
+def open_broken_images(tmp_path):
+    _open_file(tmp_path, b"\211PNG\r\n\032\n")  # PNG
+    _open_file(tmp_path, b"000000JFIF")  # JPG
+    _open_file(tmp_path, b"GIF89a")  # GIF
+    _open_file(tmp_path, b"II")  # TIFF
+    _open_file(tmp_path, b"BM")  # BMP
 
 
-def _open_file(tmpdir, data):
+def _open_file(directory, data):
     """Open a file containing the bytes from data."""
-    path = str(tmpdir.join("broken"))
-    with open(path, "wb") as f:
-        f.write(data)
-    assert imghdr.what(path) is not None, "Invalid magic bytes in test setup"
-    api.open_paths([path])
+    path = directory / "broken"
+    path.write_bytes(data)
+    filename = str(path)
+    assert imghdr.what(filename) is not None, "Invalid magic bytes in test setup"
+    api.open_paths([filename])
