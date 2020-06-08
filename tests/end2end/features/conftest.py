@@ -7,6 +7,7 @@
 """Fixtures and bdd-like steps for usage during end2end testing."""
 
 import os
+import pathlib
 
 from PyQt5.QtCore import Qt, QProcess, QTimer
 from PyQt5.QtGui import QFocusEvent
@@ -253,17 +254,17 @@ def create_directory(name):
 
 @bdd.when(bdd.parsers.parse("I create the file '{name}'"))
 def create_file(name):
-    assert not os.path.exists(name), f"Not overriding existing file '{name}'"
-    with open(name, "w") as f:
-        f.write("")
+    path = pathlib.Path(name)
+    assert not path.exists(), f"Not overriding existing file '{name}'"
+    path.touch()
 
 
 @bdd.when(bdd.parsers.parse("I create the tag file '{name}'"))
 def create_tag_file(name):
-    os.makedirs(api.mark.tagdir, mode=0o700, exist_ok=True)
-    path = os.path.join(api.mark.tagdir, name)
-    with open(path, "w") as f:
-        f.write("")
+    directory = pathlib.Path(api.mark.tagdir)
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path = directory / name
+    path.touch()
 
 
 ###############################################################################
