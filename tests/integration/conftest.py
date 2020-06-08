@@ -24,12 +24,12 @@ def custom_configparser():
 
 
 @pytest.fixture()
-def custom_configfile(tmpdir, custom_configparser):
+def custom_configfile(tmp_path, custom_configparser):
     """Fixture to create a custom config file from a configparser."""
 
     def create_custom_configfile(basename, read, default_parser, **sections):
         parser = custom_configparser(default_parser, **sections)
-        path = tmpdir.join(basename)
+        path = tmp_path / basename
         with open(path, "w") as f:
             parser.write(f)
         read(str(path))

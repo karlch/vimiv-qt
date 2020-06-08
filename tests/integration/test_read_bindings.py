@@ -32,7 +32,7 @@ def reset_to_default(cleanup_helper):
 
 
 @pytest.fixture(scope="function")
-def keyspath(tmpdir, custom_configfile, request):
+def keyspath(custom_configfile, request):
     """Fixture to create a custom keybindings file for reading."""
     yield custom_configfile(
         "keys.conf", keyfile.read, keyfile.get_default_parser, **request.param
