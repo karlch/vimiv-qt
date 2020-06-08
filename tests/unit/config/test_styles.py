@@ -20,7 +20,7 @@ def new_style(request):
 
 
 @pytest.fixture
-def style_file(tmpdir):
+def style_file(tmp_path):
     """Fixture to create a style file with different properties."""
 
     def create_style_file(color="#FFF", font=None, n_colors=16, header=True, **options):
@@ -33,9 +33,9 @@ def style_file(tmpdir):
             header. If False, omit the STYLE section header.
             options: Further style options passed.
         """
-        path = str(tmpdir.join("style"))
+        filename = str(tmp_path / "style")
         if not header:
-            return path
+            return filename
         parser = configparser.ConfigParser()
         parser.add_section("STYLE")
         for i in range(n_colors):
@@ -44,9 +44,9 @@ def style_file(tmpdir):
             parser["STYLE"]["font"] = font
         for key, value in options.items():
             parser["STYLE"][key] = value
-        with open(path, "w") as f:
+        with open(filename, "w") as f:
             parser.write(f)
-        return path
+        return filename
 
     return create_style_file
 

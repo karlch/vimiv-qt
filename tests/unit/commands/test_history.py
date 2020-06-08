@@ -41,10 +41,10 @@ def mixed_history():
 
 
 @pytest.fixture()
-def history_file(tmpdir, mocker):
-    path = str(tmpdir.join("history"))
-    mocker.patch.object(vimiv.commands.history, "filename", return_value=path)
-    yield path
+def history_file(tmp_path, mocker):
+    filename = str(tmp_path / "history")
+    mocker.patch.object(vimiv.commands.history, "filename", return_value=filename)
+    yield filename
 
 
 def test_update_history(history):

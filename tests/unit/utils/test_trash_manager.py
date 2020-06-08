@@ -15,13 +15,13 @@ from vimiv.utils import trash_manager
 
 
 @pytest.fixture(autouse=True)
-def trash(monkeypatch, tmpdir):
+def trash(monkeypatch, tmp_path):
     """Initialize trash for testing as fixture.
 
     Returns:
         The path to the temporary trash directory.
     """
-    xdg_data_home = tmpdir.mkdir("data")
+    xdg_data_home = tmp_path / "data"
     monkeypatch.setenv("XDG_DATA_HOME", str(xdg_data_home))
     trash_manager.init()
     yield
@@ -29,8 +29,8 @@ def trash(monkeypatch, tmpdir):
 
 
 @pytest.fixture()
-def deleted_file(tmpdir):
-    original_filename = create_tmpfile(tmpdir, "file")
+def deleted_file(tmp_path):
+    original_filename = create_tmpfile(tmp_path, "file")
     trash_filename = trash_manager.delete(original_filename)
     info_filename = trash_manager._get_info_filename(original_filename)
     paths = collections.namedtuple("DeletedFile", ("original", "trash", "info"))
@@ -72,8 +72,9 @@ def test_fail_undelete_non_existing_file():
         trash_manager.undelete(os.path.join("any", "random", "file"))
 
 
-def test_fail_undelete_non_existing_original_directory(tmpdir):
-    directory = tmpdir.mkdir("directory")
+def test_fail_undelete_non_existing_original_directory(tmp_path):
+    directory = tmp_path / "directory"
+    directory.mkdir()
     original_filename = create_tmpfile(directory, "file")
     trash_filename = trash_manager.delete(original_filename)
     os.rmdir(directory)
@@ -81,8 +82,8 @@ def test_fail_undelete_non_existing_original_directory(tmpdir):
         trash_manager.undelete(os.path.basename(trash_filename))
 
 
-def create_tmpfile(tmpdir, basename):
-    """Simple function to create a temporary file using the tmpdir fixture."""
-    path = tmpdir.join(basename)
-    path.write("temporary")
+def create_tmpfile(directory, basename):
+    """Simple function to create a temporary file using pathlib."""
+    path = directory / basename
+    path.touch()
     return str(path)

@@ -17,10 +17,12 @@ TAGFILE_NAME = "tagfile"
 
 
 @pytest.fixture
-def mock_gtk_version(tmpdir, monkeypatch):
+def mock_gtk_version(tmp_path, monkeypatch):
     """Fixture to mock the xdg directories and fill them with gtk-version-like files."""
     for name in ("cache", "config", "data"):
-        monkeypatch.setenv(f"XDG_{name.upper()}_HOME", str(tmpdir.mkdir(name)))
+        directory = tmp_path / name
+        directory.mkdir()
+        monkeypatch.setenv(f"XDG_{name.upper()}_HOME", str(directory))
 
     for directory in (
         xdg.vimiv_config_dir(),
