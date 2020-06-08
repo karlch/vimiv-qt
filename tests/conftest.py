@@ -134,3 +134,9 @@ def _retrieve_file_from_web(url: str, path: str) -> None:
     with open(path, "wb") as f:
         f.write(data)
     print("... success")
+
+
+@pytest.fixture()
+def tmpdir():
+    """Override tmpdir to raise a ValueError."""
+    raise ValueError("Use the 'tmp_path' fixture instead of 'tmpdir'")
