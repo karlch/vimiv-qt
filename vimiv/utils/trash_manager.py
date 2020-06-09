@@ -86,11 +86,13 @@ def trash_info(filename: str) -> Tuple[str, str]:
         original_filename: The absolute path to the original file.
         deletion_date: The deletion date.
     """
+    from urllib.parse import unquote
+
     info_filename = _get_info_filename(filename)
     info = TrashInfoParser()
     info.read(info_filename)
     content = info["Trash Info"]
-    original_filename = content["Path"]
+    original_filename = unquote(content["Path"])
     deletion_date = content["DeletionDate"]
     return original_filename, deletion_date
 
@@ -132,13 +134,15 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
         trash_filename: The name of the file in self.files_directory.
         original_filename: The original name of the file.
     """
+    from urllib.parse import quote
+
     # Write to temporary file and use shutil.move to make sure the
     # operation is an atomic operation as specified by the standard
     temp_file = tempfile.NamedTemporaryFile(dir=_info_directory, delete=False, mode="w")
     info = TrashInfoParser()
     info["Trash Info"] = {
-        "Path": original_filename,
-        "DeletionDate": time.strftime("%Y%m%dT%H%M%S"),
+        "Path": quote(original_filename),
+        "DeletionDate": time.strftime("%Y-%m-%dT%H:%M:%S"),
     }
     info.write(temp_file, space_around_delimiters=False)
     # Move to proper filename

@@ -34,6 +34,8 @@ Fixed:
 * Various issues when handling backslash and percent characters in paths and
   completions. Thanks
   `@woefe <https://github.com/woefe>`_ for pointing these out!
+* Quoting of paths and the date format of the trashinfo file created by the ``:delete``
+  command. Thanks `@woefe <https://github.com/woefe>`_ for the bug report.
 
 
 v0.7.0 (2020-05-17)
