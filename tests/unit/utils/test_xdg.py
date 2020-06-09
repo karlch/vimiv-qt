@@ -22,9 +22,9 @@ def unset_xdg_env(monkeypatch):
 
 
 @pytest.fixture
-def mock_xdg(tmpdir, monkeypatch):
+def mock_xdg(tmp_path, monkeypatch):
     """Set XDG_* directories to a temporary directory."""
-    dirname = str(tmpdir.join("directory"))
+    dirname = str(tmp_path / "directory")
     monkeypatch.setenv("XDG_CACHE_HOME", dirname)
     monkeypatch.setenv("XDG_CONFIG_HOME", dirname)
     monkeypatch.setenv("XDG_DATA_HOME", dirname)

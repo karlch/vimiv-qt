@@ -26,7 +26,7 @@ from vimiv.utils import customtypes
         ("[SECTION]\na=0\na=1\n", "duplicate key"),
     ],
 )
-def test_sysexit_on_broken_config(mocker, tmpdir, content, message):
+def test_sysexit_on_broken_config(mocker, tmp_path, content, message):
     """Ensure SystemExit is correctly raised for various broken config files.
 
     Args:
@@ -36,8 +36,8 @@ def test_sysexit_on_broken_config(mocker, tmpdir, content, message):
     print("Ensuring system exit with", message)
     mock_logger = mocker.Mock()
     parser = configparser.ConfigParser()
-    path = tmpdir.join("configfile")
-    path.write(content)
+    path = tmp_path / "configfile"
+    path.write_text(content)
     with pytest.raises(SystemExit, match=str(customtypes.Exit.err_config)):
         config.read_log_exception(parser, mock_logger, str(path))
     mock_logger.critical.assert_called_once()

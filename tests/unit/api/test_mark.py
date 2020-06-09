@@ -28,8 +28,9 @@ def mark(qtbot, mocker, monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def tagdir(tmpdir, mocker):
-    tmp_tagdir = tmpdir.mkdir("tags")
+def tagdir(tmp_path, mocker):
+    tmp_tagdir = tmp_path / "tags"
+    tmp_tagdir.mkdir()
     mocker.patch.object(Tag, "dirname", return_value=str(tmp_tagdir))
     yield str(tmp_tagdir)
 

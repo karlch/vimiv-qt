@@ -264,9 +264,11 @@ def test_run_qprocess():
     assert utils.run_qprocess("pwd") == os.getcwd()
 
 
-def test_run_qprocess_in_other_dir(tmpdir):
-    directory = str(tmpdir.mkdir("directory"))
-    assert utils.run_qprocess("pwd", cwd=directory) == directory
+def test_run_qprocess_in_other_dir(tmp_path):
+    directory = tmp_path / "directory"
+    directory.mkdir()
+    dirname = str(directory)
+    assert utils.run_qprocess("pwd", cwd=dirname) == dirname
 
 
 @pytest.mark.parametrize(

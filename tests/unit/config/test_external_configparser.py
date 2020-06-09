@@ -27,11 +27,11 @@ def parser():
 
 
 @pytest.fixture()
-def config(tmpdir):
+def config(tmp_path):
     """Fixture to retrieve a written config file with external references."""
     parser = configparser.ConfigParser()
     parser[SECTION_NAME][OPTION_NAME] = "${env:" + ENV_VARIABLE.name + "}"
-    path = tmpdir.join("config.ini")
+    path = tmp_path / "config.ini"
     with open(path, "w") as f:
         parser.write(f)
     yield str(path)
