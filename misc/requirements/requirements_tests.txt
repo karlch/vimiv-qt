@@ -2,6 +2,5 @@ flaky==3.6.1
 pytest==5.4.3
 pytest-mock==3.1.1
 pytest-qt==3.3.0
-PyVirtualDisplay==0.2.5
-pytest-xvfb==1.2.0
+pytest-xvfb==2.0.0
 pytest-bdd==3.4.0
