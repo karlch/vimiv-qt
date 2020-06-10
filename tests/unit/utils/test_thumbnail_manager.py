@@ -4,6 +4,7 @@
 # Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import hashlib
 import os
 
 from PyQt5.QtGui import QPixmap
@@ -42,6 +43,15 @@ def test_create_thumbnails_for_non_image_path(qtbot, tmp_path, manager):
     filename = str(tmp_path / "image.jpg")
     manager.create_thumbnails_async([filename])
     check_thumbails_created(qtbot, manager, 0)
+
+
+def test_do_not_create_thumbnail_for_thumbnail(qtbot, manager):
+    filename = os.path.join(
+        manager.directory, hashlib.md5(b"thumbnail").hexdigest() + ".png"
+    )
+    QPixmap(256, 256).save(filename)
+    manager.create_thumbnails_async([filename])
+    check_thumbails_created(qtbot, manager, 1)
 
 
 def check_thumbails_created(qtbot, manager, n_paths):
