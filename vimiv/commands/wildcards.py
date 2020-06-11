@@ -62,6 +62,17 @@ def expand_internal(text: str, mode: api.modes.Mode) -> str:
     return text
 
 
+def escape_path(path: str):
+    """Escape path for wildcard expansion.
+
+    Required to avoid crashes in the re module and properly treat paths that include
+    wildcards in their name.
+
+    See https://github.com/karlch/vimiv-qt/issues/218.
+    """
+    return shlex.quote(re.sub(r"([\\%])", r"\\\1", path))
+
+
 def expand(
     text: str, wildcard: str, callback: WildcardCallbackT, *args, **kwargs
 ) -> str:
@@ -83,12 +94,7 @@ def expand(
     if wildcard in text:
         paths = callback(*args, **kwargs)
         paths = (paths,) if isinstance(paths, str) else paths
-        quoted_paths = " ".join(
-            # We require the replace to avoid a crash in the re module
-            # See https://github.com/karlch/vimiv-qt/issues/218
-            shlex.quote(path.replace("\\", "\\\\"))
-            for path in paths
-        )
+        quoted_paths = " ".join(escape_path(path) for path in paths)
         re_wildcard = f"{wildcard}([^a-zA-Z]|$)"
         text = re.sub(
             utils.RE_STR_NOT_ESCAPED + re_wildcard, rf"{quoted_paths}\1", text
