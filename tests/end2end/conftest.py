@@ -134,9 +134,10 @@ def start_n_images_with_args(tmp_path, n_images, args):
     start_image(tmp_path, n_images=n_images, args=args.split())
 
 
-@bdd.given(bdd.parsers.parse("I open the image '{basename}'"))
-def start_image_name(tmp_path, basename):
-    filename = str(tmp_path / basename)
+@bdd.given(bdd.parsers.parse("I open the image '<name>'"))
+@bdd.given(bdd.parsers.parse("I open the image '{name}'"))
+def start_image_name(tmp_path, name):
+    filename = str(tmp_path / name)
     create_image(filename)
     start([filename])
 

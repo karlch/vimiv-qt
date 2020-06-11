@@ -49,3 +49,9 @@ def test_recursive_wildcards():
     intermediate = wildcards.expand(text, "%m", lambda: "anything")
     result = wildcards.expand(intermediate, "%", lambda: "anything")
     assert result == expected
+
+
+@pytest.mark.parametrize("path", (r"\.jpg", "spaced path.jpg", r"\%.jpg"))
+def test_escape_path(path: str):
+    expected = "'" + path.replace("\\", "\\\\").replace("%", "\\%") + "'"
+    assert wildcards.escape_path(path) == expected

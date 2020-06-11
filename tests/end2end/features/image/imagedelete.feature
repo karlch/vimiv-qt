@@ -83,9 +83,30 @@ Feature: Deleting an image in the current file list
         Then the file image_03.jpg should not exist
         And the filelist should contain 2 images
 
-    Scenario: Undelete image with % in filename
-        Given I open the image '%.jpg'
+    Scenario Outline: Delete image with special characters in filename
+        Given I open the image '<name>'
+        When I run delete %
+        Then the file <name> should not exist
+
+        Examples:
+            | name    |
+            | %.jpg   |
+            | \.jpg   |
+            | \%.jpg  |
+            | \\%.jpg |
+            | \%m.jpg |
+
+    Scenario Outline: Undelete image with special characters in filename
+        Given I open the image '<name>'
         When I run delete %
         And I run undelete
         Then no crash should happen
-        And the file %.jpg should exist
+        And the file <name> should exist
+
+        Examples:
+            | name    |
+            | %.jpg   |
+            | \.jpg   |
+            | \%.jpg  |
+            | \\%.jpg |
+            | \%m.jpg |
