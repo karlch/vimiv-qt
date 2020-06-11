@@ -86,6 +86,14 @@ Feature: Using completion.
         And I press '<return>'
         Then the working directory should be directory%
 
+    Scenario: Escape path with backslash and subsequent percent upon completion
+        Given I open any directory
+        When I create the directory 'directory\%'
+        And I run command --text="open dir"
+        And I run complete
+        And I press '<return>'
+        Then the working directory should be directory\%
+
     Scenario: Complete from directory with escaped characters
         Given I open any directory
         When I create the directory 'path\with\backslashes/child'

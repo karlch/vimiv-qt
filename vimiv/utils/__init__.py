@@ -352,9 +352,9 @@ def escape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:
     Returns:
         Text with the characters escaped.
     """
-    # First part matches all chars that are not prepended by escape_char
+    # First part matches all chars
     # Second part replaces with the escape_char and the matched char
-    return re.sub(rf"(?<!{escape_char})([{chars}])", rf"{escape_char}\1", text)
+    return re.sub(rf"([{chars}])", rf"{escape_char}\1", text)
 
 
 def unescape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:

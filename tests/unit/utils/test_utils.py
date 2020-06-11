@@ -220,11 +220,19 @@ def test_remove_prefix_not_found():
     "formattext",
     ("in{char}between", "many{char}of{char}them", "{char}prepending", "trailing{char}"),
 )
-@pytest.mark.parametrize("char", (" ", r"\\"))
+@pytest.mark.parametrize("char", (" ", "%"))
 def test_escape_unescape_chars(formattext, char):
     text = formattext.format(char=char)
     expected = formattext.format(char="\\" + char)
     _run_escape_unescape(text, char, expected)
+
+
+def test_escape_unescape_backslash():
+    # Required as separate test as the char is a single backslash r"\" but the character
+    # to escape needs double backslash r"\\" for the re module
+    text = "with\\backslash"
+    expected = text.replace("\\", "\\\\")
+    _run_escape_unescape(text, r"\\", expected)
 
 
 def test_escape_unescape_multiple_chars():
