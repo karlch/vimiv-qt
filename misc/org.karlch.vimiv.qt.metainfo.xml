@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2019 Ankur Sinha <ankursinha AT fedoraproject.org> -->
+<!-- Copyright 2020 Christian Karl <karlch at protonmail dot com> -->
+<component type="desktop">
+    <id>org.karlch.vimiv.qt</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>GPL-3.0+</project_license>
+    <name>Vimiv</name>
+    <summary>An image viewer with vim-like keybindings</summary>
+    <description>
+        <p>
+            Vimiv is an image viewer with vim-like keybindings. It is written in python
+            using the Qt toolkit. Some of the defining features are the thumbnail view,
+            the simple library browser as well as the command-line with tab completion.
+        </p>
+    </description>
+    <categories>
+        <category>Graphics</category>
+    </categories>
+    <provides>
+        <binary>vimiv</binary>
+    </provides>
+    <launchable type="desktop-id">vimiv.desktop</launchable>
+    <screenshots>
+        <screenshot type="default">
+            <image>https://karlch.github.io/vimiv-qt/_images/image_dark.png </image>
+            <caption>Vimiv main image mode.</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://karlch.github.io/vimiv-qt/_images/thumbnail_dark.png </image>
+            <caption>Vimiv thumbnail view.</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://karlch.github.io/vimiv-qt/_images/library_dark.png </image>
+            <caption>Vimiv library browser.</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://karlch.github.io/vimiv-qt/_images/command_dark.png </image>
+            <caption>Vimiv command line.</caption>
+        </screenshot>
+    </screenshots>
+    <url type="homepage">https://karlch.github.io/vimiv-qt</url>
+    <url type="bugtracker">https://github.com/karlch/vimiv-qt/issues</url>
+    <url type="help">https://karlch.github.io/vimiv-qt/documentation</url>
+    <update_contact>ankursinha AT fedoraproject.org</update_contact>
+    <releases>
+        <!-- Add new releases here -->
+        <release version="0.7.0" date="2020-05-17"/>
+        <release version="0.6.1" date="2020-03-07"/>
+        <release version="0.6.0" date="2020-03-07"/>
+        <release version="0.5.0" date="2020-01-05"/>
+        <release version="0.4.0" date="2019-12-01"/>
+        <release version="0.3.0" date="2019-11-01"/>
+        <release version="0.2.0" date="2019-10-01"/>
+        <release version="0.1.0" date="2019-08-15"/>
+    </releases>
+</component>
