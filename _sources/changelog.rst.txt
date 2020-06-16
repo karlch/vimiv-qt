@@ -23,6 +23,7 @@ Changed:
 
 * The ``=`` key can now be bound using ``<equal>``. Using the raw ``=`` character is not
   possible in ``keys.conf`` as it is treated as separator much like ``:``.
+* Renamed ``vimiv.appdata.xml`` to ``org.karlch.vimiv.qt.metainfo.xml``.
 
 Fixed:
 ^^^^^^
