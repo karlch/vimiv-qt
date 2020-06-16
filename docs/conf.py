@@ -186,7 +186,7 @@ texinfo_documents = [
 
 
 def setup(app):
-    app.add_stylesheet("custom.css")
+    app.add_css_file("custom.css")
     ignore_separator = "^" + 88 * "-" + "$"
     app.connect(
         "autodoc-process-docstring", autodoc.between(ignore_separator, exclude=True)
