@@ -7,12 +7,15 @@
 """Methods to read keybindings from file and store them."""
 
 import configparser
+from typing import Iterable, Tuple
 
 from vimiv import api, config
 from vimiv.utils import log
 
 
 _logger = log.module_logger(__name__)
+
+DEL_BINDING_COMMAND = "del-binding"
 
 
 def parse(cli_path: str):
@@ -47,17 +50,35 @@ def read(path: str) -> None:
         try:
             _logger.debug("Reading keybindings from section '%s'", section)
             mode = api.modes.get_by_name(section)
-            for keybinding, command in parser[section].items():
-                api.keybindings.bind(keybinding, command, mode)
-                _logger.debug(
-                    "Read keybinding '%s': '%s' for mode '%s'",
-                    keybinding,
-                    command,
-                    mode.name,
-                )
+            _read_mode(bindings=parser[section].items(), mode=mode)
         except api.modes.InvalidMode:
             _logger.warning("Ignoring bindings for unknown '%s' mode", section)
     _logger.debug("Read keybindings from '%s'", path)
+
+
+def _read_mode(bindings: Iterable[Tuple[str, str]], mode: api.modes.Mode):
+    """Read bindings for one mode into the keybindings registry."""
+    for keybinding, command in bindings:
+        if command == DEL_BINDING_COMMAND:
+            _delete_binding(keybinding, mode)
+        else:
+            api.keybindings.bind(keybinding, command, mode)
+            _logger.debug(
+                "Read keybinding '%s': '%s' for mode '%s'",
+                keybinding,
+                command,
+                mode.name,
+            )
+
+
+def _delete_binding(keybinding: str, mode: api.modes.Mode):
+    """Remove a keybinding for this specific mode."""
+    try:
+        api.keybindings.unbind(keybinding, mode)
+    except api.commands.CommandError:
+        _logger.warning(
+            "Cannot unbind '%s' for mode '%s', no binding found.", keybinding, mode.name
+        )
 
 
 class KeyfileParser(configparser.ConfigParser):
