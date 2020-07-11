@@ -92,3 +92,16 @@ Feature: Use the command line.
         Then the message
             'help: Unknown topic 'invalid_topic''
             should be displayed
+
+    Scenario: Clear complete command history
+        When I run command --text=history-clear
+        And I populate the history
+        And I press '<return>'
+        Then the history of all modes should be empty
+
+    Scenario: Clear history of current mode
+        When I run command --text="history-clear --mode"
+        And I populate the history
+        And I press '<return>'
+        Then the history of library mode should be empty
+        And the history of image mode should not be empty

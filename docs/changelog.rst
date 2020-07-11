@@ -17,6 +17,7 @@ Added:
   `@jeanggi90 <https://github.com/jeanggi90>`_!
 * ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
   `@jeanggi90 <https://github.com/jeanggi90>`_ for pointing this out!
+* The ``:history-clear`` command to clear the command history.
 
 Changed:
 ^^^^^^^^

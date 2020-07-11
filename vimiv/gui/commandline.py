@@ -172,5 +172,23 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         """
         self.setText(self._history[self.mode].substr_cycle(direction, self.text()))
 
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register()
+    def history_clear(self, mode: bool = False):
+        """Clear the command history.
+
+        This clears the history of all modes unless ``--mode`` is passed.
+
+        **syntax:** ``:history-clear [--mode]``
+
+        optional arguments:
+            * ``--mode``: Clear the history of the current mode only.
+        """
+        if mode:
+            self._history[self.mode].clear()
+        else:
+            for historydeque in self._history.values():
+                historydeque.clear()
+
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
