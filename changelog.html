@@ -159,6 +159,7 @@ values must be a comma-separated list of valid metadata keys. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a>!</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code> is now bound to <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">--level=fit</span></code> in image mode. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a> for pointing this out!</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:history-clear</span></code> command to clear the command history.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">
@@ -167,6 +168,12 @@ values must be a comma-separated list of valid metadata keys. Thanks
 <li><p>The <code class="docutils literal notranslate"><span class="pre">=</span></code> key can now be bound using <code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code>. Using the raw <code class="docutils literal notranslate"><span class="pre">=</span></code> character is not
 possible in <code class="docutils literal notranslate"><span class="pre">keys.conf</span></code> as it is treated as separator much like <code class="docutils literal notranslate"><span class="pre">:</span></code>.</p></li>
 <li><p>Renamed <code class="docutils literal notranslate"><span class="pre">vimiv.appdata.xml</span></code> to <code class="docutils literal notranslate"><span class="pre">org.karlch.vimiv.qt.metainfo.xml</span></code>.</p></li>
+<li><p>History is now mode based. The plain-text history file is replaced by a json file
+which stores the history of each mode. Any existing history is migrated by adding it
+to every mode and keeping a backup of the plain-text history file at <code class="docutils literal notranslate"><span class="pre">history.bak</span></code>.
+The script <code class="docutils literal notranslate"><span class="pre">scripts/vimiv_history.py</span></code> is provided to print the history of a mode
+line-by-line as aid in case user-scripts relied on the plain-text nature of the
+history file.</p></li>
 </ul>
 </div>
 <div class="section" id="fixed">
