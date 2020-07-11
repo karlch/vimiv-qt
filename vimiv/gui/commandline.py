@@ -7,14 +7,18 @@
 """CommandLine widget in the bar."""
 
 import contextlib
+from typing import cast, TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv import api, utils
-from vimiv.commands import history, argtypes, runners, search
+from vimiv.commands import argtypes, runners, search
 from vimiv.config import styles
 from vimiv.gui import eventhandler
+
+if TYPE_CHECKING:
+    from vimiv.commands import history
 
 
 class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
@@ -47,12 +51,19 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
     @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
-        self._history = history.History(
-            self.PREFIXES,
-            history.read(),
-            max_items=api.settings.command.history_limit.value,
-        )
+
         self.mode: api.modes.Mode = api.modes.IMAGE
+        self._history = cast("history.History", None)
+
+        api.modes.COMMAND.first_entered.connect(self.init)
+
+    def init(self) -> None:
+        """Lazy-initialize command-line when first entering command mode."""
+        from vimiv.commands import history
+
+        self._history = history.History(
+            self.PREFIXES, max_items=api.settings.command.history_limit.value,
+        )
 
         self.returnPressed.connect(self._on_return_pressed)
         self.textEdited.connect(self._on_text_edited)
@@ -84,7 +95,7 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         prefix, command = self._split_prefix(self.text())
         if not command:  # Only prefix entered
             return
-        self._history.update(prefix + command)
+        self._history[self.mode].update(prefix + command)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         if prefix == ":":
@@ -142,7 +153,7 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         positional arguments:
             * ``direction``: The direction to cycle in (next/prev).
         """
-        self.setText(self._history.cycle(direction, self.text()))
+        self.setText(self._history[self.mode].cycle(direction, self.text()))
 
     @api.keybindings.register(
         "<up>", "history-substr-search next", mode=api.modes.COMMAND
@@ -159,12 +170,12 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         positional arguments:
             * ``direction``: The direction to cycle in (next/prev).
         """
-        self.setText(self._history.substr_cycle(direction, self.text()))
+        self.setText(self._history[self.mode].substr_cycle(direction, self.text()))
 
     @utils.slot
     def _on_app_quit(self):
         """Write command history to file on quit."""
-        history.write(self._history)
+        self._history.write()
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""

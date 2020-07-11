@@ -58,6 +58,14 @@ Feature: Use the command line.
         And I run history next
         Then the text in the command line should be /
 
+    Scenario: Do not share history between modes
+        When I run command --text=next
+        And I press '<return>'
+        And I enter image mode
+        And I run command
+        And I run history next
+        Then the text in the command line should be :
+
     Scenario: Close command line when prefix is deleted
         When I run command
         And I press '<backspace>'

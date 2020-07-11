@@ -8,35 +8,16 @@
 
 import collections
 import enum
+import json
 import os
-from typing import Iterable, Optional, Deque, List
+from typing import Iterable, Optional, Deque, DefaultDict
 
+from vimiv import api
 from vimiv.commands import argtypes
-from vimiv.utils import xdg
+from vimiv.utils import xdg, log
 
 
-def filename() -> str:
-    """Return absolute path to history file."""
-    return xdg.vimiv_data_dir("history")
-
-
-def read() -> List[str]:
-    """Read command history from file."""
-    if not os.path.isfile(filename()):
-        return []
-    with open(filename()) as f:
-        return [line.strip() for line in f]
-
-
-def write(commands: Iterable[str]):
-    """Write command history to file.
-
-    Args:
-        commands: Iterable of commands to write.
-    """
-    with open(filename(), "w") as f:
-        for command in commands:
-            f.write(command + "\n")
+_logger = log.module_logger(__name__)
 
 
 class CycleMode(enum.Enum):
@@ -46,8 +27,75 @@ class CycleMode(enum.Enum):
     Substring = 1
 
 
-class History(collections.deque):
+class History(dict):
     """Store and interact with command line history.
+
+    The history dictionary keeps the individual deques of each mode and is able to
+    read them from/write them to file.
+    """
+
+    def __init__(self, prefixes: str, max_items: int):
+        history = self._read(self.filename())
+        super().__init__(
+            {
+                mode: HistoryDeque(prefixes, history[mode.name], max_items=max_items)
+                for mode in (*api.modes.GLOBALS, api.modes.MANIPULATE)
+            }
+        )
+        self.migrate_nonmode_based_history()
+
+    def reset(self):
+        """Reset history deque of each mode."""
+        for history_deque in self.values():
+            history_deque.reset()
+
+    def write(self):
+        """Write history of each mode to the json file."""
+        with open(self.filename(), "w") as f:
+            json.dump(
+                {mode.name: list(value) for mode, value in self.items()}, f, indent=4
+            )
+
+    def migrate_nonmode_based_history(self):
+        """Backup and read history from the old text-file history."""
+        old_path = self.filename().replace(".json", "")
+        if os.path.isfile(old_path):
+            with open(old_path, "r") as f:
+                old_commands = [line.strip() for line in f]
+            backup_name = old_path + ".bak"
+            _logger.info(
+                "Transferring old non-mode based history file. "
+                "A backup is kept at '%s'.",
+                backup_name,
+            )
+            os.rename(old_path, backup_name)
+            for history_deque in self.values():
+                history_deque.extend(old_commands)
+
+    @classmethod
+    def filename(cls):
+        """Return absolute path to a history file."""
+        return xdg.vimiv_data_dir("history.json")
+
+    @classmethod
+    def _read(cls, path: str) -> DefaultDict[str, list]:
+        """Read command history from file located at path."""
+        history: DefaultDict[str, list] = collections.defaultdict(list)
+
+        try:
+            with open(path, "r") as f:
+                history.update(json.load(f))
+            _logger.debug("Loaded history from '%s'", path)
+        except FileNotFoundError:
+            _logger.debug("No history file to read")
+        except (OSError, json.JSONDecodeError) as e:
+            _logger.error("Failed loading history from '%s': %s", path, e)
+
+        return history
+
+
+class HistoryDeque(collections.deque):
+    """Store history of one mode and implement methods for cycling.
 
     Implemented as a deque which stores the commands in the history. Commands with
     different prefixes are not mixed when cycling through history.
