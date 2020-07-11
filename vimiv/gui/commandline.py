@@ -70,7 +70,7 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(  # type: ignore
-            self._on_app_quit
+            self._history.write
         )
 
         styles.apply(self)
@@ -171,11 +171,6 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
             * ``direction``: The direction to cycle in (next/prev).
         """
         self.setText(self._history[self.mode].substr_cycle(direction, self.text()))
-
-    @utils.slot
-    def _on_app_quit(self):
-        """Write command history to file on quit."""
-        self._history.write()
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
