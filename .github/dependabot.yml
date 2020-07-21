@@ -10,3 +10,10 @@ updates:
     pull-request-branch-name:
       separator: "-"
     open-pull-requests-limit: 10
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: saturday
+      time: "04:00"
