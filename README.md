@@ -2,7 +2,6 @@
 
 [![Build Status](https://github.com/karlch/vimiv-qt/workflows/CI/badge.svg)](https://github.com/karlch/vimiv-qt/actions)
 [![Codecov](https://codecov.io/github/karlch/vimiv-qt/coverage.svg?branch=master)](https://codecov.io/github/karlch/vimiv-qt?branch=master)
-![Updates](https://api.dependabot.com/badges/status?host=github&repo=karlch/vimiv-qt)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 [website](https://karlch.github.io/vimiv-qt/) |
