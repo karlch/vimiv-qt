@@ -95,6 +95,5 @@ def unbind(keybinding: str, mode: str = None):
 def nop():
     """Do nothing.
 
-    This is useful to remove default keybindings by explicitly binding them to
-    nop.
+    This is useful to remove keys bound by Qt by explicitly binding them to nop.
     """
