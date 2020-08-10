@@ -15,7 +15,7 @@ from vimiv.utils import log
 
 _logger = log.module_logger(__name__)
 
-DEL_BINDING_COMMAND = "del-binding"
+DEL_BINDING_COMMAND = "unbind"
 
 
 def parse(cli_path: str):

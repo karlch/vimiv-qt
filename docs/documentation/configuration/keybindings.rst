@@ -21,10 +21,10 @@ There are two ways to add a new keybinding:
 
 If you wish to replace a default keybinding, add a the new keybinding that
 overrides it. For example to replace the ``f : fullscreen`` binding with flip,
-bind ``f : flip``. To remove a default keybinding via ``keys.conf``, map the key to the
-special ``del-binding``. In case you would like to enforce a keybinding to do nothing,
-for example to remove a default Qt binding, use ``nop`` instead. ``:nop`` is a regular
-vimiv command that does nothing.
+bind ``f : flip``. To remove a default keybinding via ``keys.conf``, map the key to
+``unbind``. In case you would like to enforce a keybinding to do nothing, for example to
+remove a default Qt binding, use ``nop`` instead. ``:nop`` is a regular vimiv command
+that does nothing.
 
 .. note::
 

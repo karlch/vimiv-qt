@@ -17,7 +17,8 @@ Added:
   `@jeanggi90 <https://github.com/jeanggi90>`_!
 * ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
   `@jeanggi90 <https://github.com/jeanggi90>`_ for pointing this out!
-* Special ``del-binding`` mapping to remove default keybindings via ``keys.conf``.
+* Handle ``unbind`` explicitly when parsing ``keys.conf``. Instead of binding a key to
+  the ``:unbind`` command, any existing keybinding for this key is now removed.
 
 Changed:
 ^^^^^^^^
