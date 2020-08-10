@@ -160,6 +160,8 @@ values must be a comma-separated list of valid metadata keys. Thanks
 <li><p><code class="docutils literal notranslate"><span class="pre">&lt;equal&gt;</span></code> is now bound to <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">--level=fit</span></code> in image mode. Thanks
 <a class="reference external" href="https://github.com/jeanggi90">&#64;jeanggi90</a> for pointing this out!</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">:history-clear</span></code> command to clear the command history.</p></li>
+<li><p>Handle <code class="docutils literal notranslate"><span class="pre">unbind</span></code> explicitly when parsing <code class="docutils literal notranslate"><span class="pre">keys.conf</span></code>. Instead of binding a key to
+the <code class="docutils literal notranslate"><span class="pre">:unbind</span></code> command, any existing keybinding for this key is now removed.</p></li>
 </ul>
 </div>
 <div class="section" id="changed">

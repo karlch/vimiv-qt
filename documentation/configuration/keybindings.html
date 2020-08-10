@@ -106,8 +106,10 @@ to change it permanently</p></li>
 </ul>
 <p>If you wish to replace a default keybinding, add a the new keybinding that
 overrides it. For example to replace the <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">:</span> <span class="pre">fullscreen</span></code> binding with flip,
-bind <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">:</span> <span class="pre">flip</span></code>. To remove a default keybinding, map the key to the special
-<code class="docutils literal notranslate"><span class="pre">nop</span></code> command that does nothing.</p>
+bind <code class="docutils literal notranslate"><span class="pre">f</span> <span class="pre">:</span> <span class="pre">flip</span></code>. To remove a default keybinding via <code class="docutils literal notranslate"><span class="pre">keys.conf</span></code>, map the key to
+<code class="docutils literal notranslate"><span class="pre">unbind</span></code>. In case you would like to enforce a keybinding to do nothing, for example to
+remove a default Qt binding, use <code class="docutils literal notranslate"><span class="pre">nop</span></code> instead. <code class="docutils literal notranslate"><span class="pre">:nop</span></code> is a regular vimiv command
+that does nothing.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When binding a command including the “%” wildcard which stands for the current file,
