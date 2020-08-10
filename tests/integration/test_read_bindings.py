@@ -20,6 +20,8 @@ UPDATED_BINDINGS = {
     "LIBRARY": {"<return>": "open-selected --close"},
 }
 
+REMOVE_J_BINDING = {"IMAGE": {"j": keyfile.DEL_BINDING_COMMAND}}
+
 
 ########################################################################################
 #                                      Fixtures                                        #
@@ -39,6 +41,12 @@ def keyspath(custom_configfile, request):
     )
 
 
+@pytest.fixture()
+def bind_j():
+    """Fixture to ensure j is bound to a command."""
+    api.keybindings.bind("j", "scroll down", api.modes.IMAGE)
+
+
 ########################################################################################
 #                                        Tests                                         #
 ########################################################################################
@@ -51,3 +59,9 @@ def test_read_bindings(keyspath):
             modes = api.modes.GLOBALS if mode == api.modes.GLOBAL else (mode,)
             for mode in modes:
                 assert api.keybindings._registry[mode][binding].value == command
+
+
+@pytest.mark.parametrize("keyspath", [REMOVE_J_BINDING], indirect=["keyspath"])
+def test_delete_binding(bind_j, keyspath):
+    image_bindings = api.keybindings.get(api.modes.IMAGE)
+    assert "j" not in image_bindings
