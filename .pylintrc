@@ -29,6 +29,7 @@ disable=no-self-use,
         duplicate-code,
         bad-continuation,
         import-outside-toplevel,
+        raise-missing-from,
 
 [BASIC]
 function-rgx=[a-z_][a-z0-9_]{2,50}$
