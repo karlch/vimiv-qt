@@ -77,6 +77,8 @@ environments:
 
         tox -e pyqt
 
+  This requires xorg xvfb to be installed on your system.
+
 * A linting environment to check the code quality and style using
   `pylint <https://www.pylint.org/>`_,
   `pycodestyle <http://pycodestyle.pycqa.org/en/latest/>`_ and
