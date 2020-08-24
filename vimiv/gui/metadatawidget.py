@@ -122,7 +122,10 @@ if exif.piexif is not None:
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
             exif_information = exif.ExifInformation(self._path)
-            self.setText(utils.format_html_table(exif_information.items()))
+            if exif_information:
+                self.setText(utils.format_html_table(exif_information.items()))
+            else:
+                self.setText("No matching metadata found")
             self._update_geometry()
             self._current_set = api.settings.metadata.current_keyset.value
 
