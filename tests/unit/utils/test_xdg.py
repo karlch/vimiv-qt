@@ -8,9 +8,9 @@
 
 import os
 
-from vimiv.utils import xdg
-
 import pytest
+
+from vimiv.utils import xdg
 
 
 @pytest.fixture
