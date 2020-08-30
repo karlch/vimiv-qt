@@ -42,14 +42,8 @@ class Trie:
         node = self
         for elem in key:
             if elem not in node.children:
-                if node.key is not None:
-                    _logger.warning(
-                        "%s is hidden by shorter key %s", "".join(key), node.key
-                    )
                 node.children[elem] = Trie()
             node = node.children[elem]
-        if node.children:
-            _logger.warning("%s hides longer keys", "".join(key))
         node.key = "".join(key)
         node.value = value
 
@@ -125,6 +119,12 @@ class Trie:
                 raise KeyError("".join(key)) from None
         return nodes
 
+    def check(self) -> None:
+        """Checks for possible clashes and logs warnings."""
+        if self.key and self.children:
+            _logger.warning("%s hides longer keys", self.key)
+        for elem in self.children:
+            self.children[elem].check()
 
 class TrieMatch(NamedTuple):
     """Helper class as result for Trie.match, see Trie.match for details."""

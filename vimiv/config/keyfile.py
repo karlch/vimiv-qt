@@ -21,6 +21,7 @@ DEL_BINDING_COMMAND = "unbind"
 def parse(cli_path: str):
     """Parse keybindings from the keys.conf into the keybindings registry."""
     config.parse_config(cli_path, "keys.conf", read, dump)
+    api.keybindings.check()
 
 
 def dump(path: str):
