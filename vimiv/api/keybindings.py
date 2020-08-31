@@ -156,3 +156,8 @@ def items() -> Iterator[Tuple[modes.Mode, Iterable[Tuple[str, str]]]]:
             yield mode, sort(set(get(mode)) - global_bindings)
         else:
             yield mode, sort(get(mode))
+
+def check() -> None:
+    """Checks every mode for keybinding clashes and logs warnings"""
+    for mode, bindings_trie in _registry.items():
+        bindings_trie.check()
