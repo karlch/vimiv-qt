@@ -11,7 +11,7 @@ See e.g. https://en.wikipedia.org/wiki/Trie for more details.
 
 from typing import NamedTuple, Iterable, Optional, Iterator, Tuple, Dict, List, cast
 
-from vimiv.utils import log
+from vimiv.utils import log, quotedjoin
 
 KeyT = Iterable[str]
 IterResultT = Iterator[Tuple[str, str]]
@@ -122,7 +122,7 @@ class Trie:
     def check(self) -> None:
         """Checks for possible clashes and logs warnings."""
         if self.key and self.children:
-            hidden = []
+            hidden: List[str] = []
             for child in self.children.values():
                 hidden.extend(key for key, _ in child)
             _logger.warning("%s hides longer keys: %s", self.key,
