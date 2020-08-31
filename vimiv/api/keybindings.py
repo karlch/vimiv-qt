@@ -160,5 +160,5 @@ def items() -> Iterator[Tuple[modes.Mode, Iterable[Tuple[str, str]]]]:
 
 def check() -> None:
     """Checks every mode for keybinding clashes and logs warnings."""
-    for mode, bindings_trie in _registry.items():
+    for _, bindings_trie in _registry.items():
         bindings_trie.check()
