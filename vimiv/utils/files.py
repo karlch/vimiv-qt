@@ -137,6 +137,29 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
     ]
 
 
+def create_qimagereader(path: str) -> QImageReader:
+    """Create configured QImageReader for path.
+
+    The file format is passed explicitly as imghdr does a much better job at this than
+    the file name based approach of QImageReader. In addition, basic configuration and
+    sanity checks are performed.
+    """
+    error = ValueError(f"'{path}' cannot be read as image")
+    # Pass file format explicitly as imghdr does a much better job at this than the
+    # file name based approach of QImageReader
+    try:
+        file_format = imghdr.what(path)
+    except OSError:
+        raise error
+    if file_format is None:
+        raise error
+    reader = QImageReader(path, file_format.encode())
+    reader.setAutoTransform(True)  # Automatically apply exif orientation
+    if not reader.canRead():
+        raise error
+    return reader
+
+
 def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> None:
     """Add a new image format to the checks performed in is_image.
 

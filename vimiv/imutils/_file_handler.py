@@ -94,19 +94,13 @@ class ImageFileHandler(QObject):
         This reads the image using QImageReader and then emits the appropriate
         *_loaded signal to tell the image to display a new object.
         """
-        # Pass file format explicitly as imghdr does a much better job at this than the
-        # file name based approach of QImageReader
-        file_format = files.imghdr.what(path)
-        if file_format is None:
-            log.error("%s is not a valid image", path)
-            return
-        reader = QImageReader(path, file_format.encode())
-        reader.setAutoTransform(True)  # Automatically apply exif orientation
-        if not reader.canRead():
-            log.error("Cannot read image %s", path)
+        try:
+            reader = files.create_qimagereader(path)
+        except ValueError as e:
+            log.error(str(e))
             return
         # SVG
-        if file_format == "svg" and QtSvg is not None:
+        if reader.format() == b"svg" and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             api.signals.svg_loaded.emit(path, reload_only)

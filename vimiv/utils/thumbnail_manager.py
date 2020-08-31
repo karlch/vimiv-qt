@@ -19,10 +19,10 @@ import tempfile
 from typing import Dict, List
 
 from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, Qt
-from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
+from PyQt5.QtGui import QIcon, QPixmap, QImage
 
 import vimiv
-from vimiv.utils import xdg, Pool
+from vimiv.utils import files, xdg, Pool
 
 
 KEY_URI = "Thumb::URI"
@@ -140,34 +140,31 @@ class ThumbnailCreator(QRunnable):
         Returns:
             The created QPixmap.
         """
-        # Cannot access source
-        if not os.access(path, os.R_OK):
+        try:
+            reader = files.create_qimagereader(path)
+        except ValueError:
             return self._manager.fail_pixmap
         size = 256 if self._manager.large else 128
-        reader = QImageReader(path)
-        reader.setAutoTransform(True)  # Automatically apply exif orientation
-        if reader.canRead():
-            qsize = reader.size()
-            qsize.scale(size, size, Qt.KeepAspectRatio)
-            reader.setScaledSize(qsize)
-            image = reader.read()
-            # Image was deleted in the time between reader.read() and now
-            try:
-                attributes = self._get_thumbnail_attributes(path, image)
-            except FileNotFoundError:
-                return self._manager.fail_pixmap
-            for key, value in attributes.items():
-                image.setText(key, value)
-            # First create temporary file and then move it. This avoids
-            # problems with concurrent access of the thumbnail cache, since
-            # "move" is an atomic operation
-            handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
-            os.close(handle)
-            os.chmod(tmp_filename, 0o600)
-            image.save(tmp_filename, format="png")
-            os.replace(tmp_filename, thumbnail_path)
-            return QPixmap(image)
-        return self._manager.fail_pixmap
+        qsize = reader.size()
+        qsize.scale(size, size, Qt.KeepAspectRatio)
+        reader.setScaledSize(qsize)
+        image = reader.read()
+        # Image was deleted in the time between reader.read() and now
+        try:
+            attributes = self._get_thumbnail_attributes(path, image)
+        except FileNotFoundError:
+            return self._manager.fail_pixmap
+        for key, value in attributes.items():
+            image.setText(key, value)
+        # First create temporary file and then move it. This avoids
+        # problems with concurrent access of the thumbnail cache, since
+        # "move" is an atomic operation
+        handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
+        os.close(handle)
+        os.chmod(tmp_filename, 0o600)
+        image.save(tmp_filename, format="png")
+        os.replace(tmp_filename, thumbnail_path)
+        return QPixmap(image)
 
     def _get_thumbnail_attributes(self, path: str, image: QImage) -> Dict[str, str]:
         """Return a dictionary filled with thumbnail attributes.
