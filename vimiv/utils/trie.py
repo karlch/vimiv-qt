@@ -122,7 +122,11 @@ class Trie:
     def check(self) -> None:
         """Checks for possible clashes and logs warnings."""
         if self.key and self.children:
-            _logger.warning("%s hides longer keys", self.key)
+            hidden = []
+            for child in self.children.values():
+                hidden.extend(key for key, _ in child)
+            _logger.warning("%s hides longer keys: %s", self.key,
+                                                        quotedjoin(hidden))
         for elem in self.children:
             self.children[elem].check()
 
