@@ -11,7 +11,7 @@ See e.g. https://en.wikipedia.org/wiki/Trie for more details.
 
 from typing import NamedTuple, Iterable, Optional, Iterator, Tuple, Dict, List, cast
 
-from vimiv.utils import log
+from vimiv.utils import log, quotedjoin
 
 KeyT = Iterable[str]
 IterResultT = Iterator[Tuple[str, str]]
@@ -37,19 +37,13 @@ class Trie:
         self.value: Optional[str] = None
 
     def __setitem__(self, key: KeyT, value: str) -> None:
-        """Add a key, value pair to the trie logging a warning on possible clashes."""
+        """Add a key, value pair to the trie."""
         key = tuple(key)
         node = self
         for elem in key:
             if elem not in node.children:
-                if node.key is not None:
-                    _logger.warning(
-                        "%s is hidden by shorter key %s", "".join(key), node.key
-                    )
                 node.children[elem] = Trie()
             node = node.children[elem]
-        if node.children:
-            _logger.warning("%s hides longer keys", "".join(key))
         node.key = "".join(key)
         node.value = value
 
@@ -124,6 +118,18 @@ class Trie:
             except KeyError:
                 raise KeyError("".join(key)) from None
         return nodes
+
+    def check(self) -> None:
+        """Checks for possible clashes and logs warnings."""
+        if self.key and self.children:
+            hidden: List[str] = []
+            for child in self.children.values():
+                hidden.extend(key for key, _ in child)
+            _logger.warning(
+                "%s hides longer keys: %s", self.key, quotedjoin(hidden)
+            )
+        for elem in self.children:
+            self.children[elem].check()
 
 
 class TrieMatch(NamedTuple):

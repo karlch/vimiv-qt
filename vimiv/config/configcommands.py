@@ -71,6 +71,7 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     """
     modeobj = api.modes.get_by_name(mode) if mode else api.modes.current()
     api.keybindings.bind(keybinding, " ".join(command), modeobj)
+    api.keybindings.check()
 
 
 @api.commands.register()

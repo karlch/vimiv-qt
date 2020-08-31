@@ -43,6 +43,7 @@ def test_setitem_warns_for_hidden_key(trie, mocklogger):
     key1 = "key"
     key2 = key1 + "1"
     trie[key1] = trie[key2] = "value"
+    trie.check()
     mocklogger.warning.assert_called_once()
 
 
@@ -51,6 +52,7 @@ def test_setitem_raises_for_hiding_key(trie, mocklogger):
     key1 = "key"
     key2 = key1 + "1"
     trie[key2] = trie[key1] = "value"
+    trie.check()
     mocklogger.warning.assert_called_once()
 
 
