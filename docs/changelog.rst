@@ -47,6 +47,13 @@ Fixed:
 * Quoting of paths and the date format of the trashinfo file created by the ``:delete``
   command. Thanks `@woefe <https://github.com/woefe>`_ for the bug report.
 * Creating thumbnails for thumbnails.
+* Opening single hidden images when ``library.show_hidden`` is set to false. Thanks
+  `@schyzophrene-asynchrone <https://github.com/schyzophrene-asynchrone>`_ for pointing
+  this out!
+* Displaying key binding conflicts before parsing the complete ``keys.conf``. This lead
+  to scenarios in which a warning was displayed which is later resolved by the
+  corresponding ``unbind``. Thanks
+  `@schyzophrene-asynchrone <https://github.com/schyzophrene-asynchrone>`_!
 
 
 v0.7.0 (2020-05-17)
