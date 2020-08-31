@@ -118,7 +118,6 @@ class CrashHandler(QObject):
 
         Args:
             signum: Signal number of the interrupt signal retrieved.
-            _frame: Current stack frame.
         """
         _logger.debug("Interrupt handler called with signal %d", signum)
         _assign_interrupt_handler(self.handle_interrupt_forcefully)
@@ -133,7 +132,6 @@ class CrashHandler(QObject):
 
         Args:
             signum: Signal number of the interrupt signal retrieved.
-            _frame: Current stack frame.
         """
         _logger.debug("Interrupt handler called a second time with %d", signum)
         log.fatal("Forceful kill signal retrieved... Hello darkness my old friend")
