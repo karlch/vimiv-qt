@@ -19,7 +19,7 @@ from PyQt5.QtCore import QObject, pyqtSlot
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command
 from vimiv.imutils import slideshow
-from vimiv.utils import log
+from vimiv.utils import files, log
 
 
 _paths: List[str] = []
@@ -223,6 +223,8 @@ def _load_single(path: str) -> None:
     """Populate list of paths in same directory for single path."""
     if path in _paths:
         goto(_paths.index(path) + 1)  # goto is indexed from 1
+    elif path not in api.working_directory.handler.images and files.is_image(path):
+        _load_paths([path, *api.working_directory.handler.images], path)
     else:
         _load_paths(api.working_directory.handler.images, path)
 

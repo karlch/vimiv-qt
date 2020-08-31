@@ -33,3 +33,7 @@ Feature: Startup vimiv with various flags
             | warning  |
             | error    |
             | critical |
+
+    Scenario: Open hidden image upon startup
+        Given I open the image '.hidden.jpg'
+        Then the filelist should contain 1 images
