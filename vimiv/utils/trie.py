@@ -37,7 +37,7 @@ class Trie:
         self.value: Optional[str] = None
 
     def __setitem__(self, key: KeyT, value: str) -> None:
-        """Add a key, value pair to the trie logging a warning on possible clashes."""
+        """Add a key, value pair to the trie."""
         key = tuple(key)
         node = self
         for elem in key:
