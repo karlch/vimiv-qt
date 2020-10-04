@@ -7,7 +7,8 @@
 """`Utilities to interact with the application`."""
 
 import os
-from typing import List, Iterable
+from typing import List, Iterable, Dict, Callable
+from PyQt5.QtGui import QPixmap
 
 from vimiv.utils import files
 
@@ -27,6 +28,7 @@ from vimiv.api import (
 )
 
 mark = _mark.Mark()
+external_handler: Dict[str, Callable[[str], QPixmap]] = {}
 
 
 def current_path(mode: modes.Mode = None) -> str:

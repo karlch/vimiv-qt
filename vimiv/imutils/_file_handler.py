@@ -120,13 +120,22 @@ class ImageFileHandler(QObject):
             api.signals.movie_loaded.emit(movie, reload_only)
             self._edit_handler.clear()
         # Regular image
-        else:
+        elif file_format in reader.supportedImageFormats():
             pixmap = QPixmap.fromImageReader(reader)
             if reader.error():
                 log.error("Error reading image %s: %s", path, reader.errorString())
                 return
             self._edit_handler.pixmap = pixmap
             api.signals.pixmap_loaded.emit(pixmap, reload_only)
+        # Externally handled image
+        elif file_format in api.external_handler:
+            handler = api.external_handler[file_format]
+            pixmap = handler(path)
+            self._edit_handler.pixmap = pixmap
+            api.signals.pixmap_loaded.emit(pixmap, reload_only)
+        else:
+            log.error("Error reading image %s: fileformat not supported", path)
+            return
         self._path = path
 
     @api.commands.register(mode=api.modes.IMAGE)
