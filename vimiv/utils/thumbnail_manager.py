@@ -18,11 +18,11 @@ import os
 import tempfile
 from typing import Dict, List
 
-from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, Qt
+from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
 from PyQt5.QtGui import QIcon, QPixmap, QImage
 
 import vimiv
-from vimiv.utils import files, xdg, Pool
+from vimiv.utils import xdg, imagereader, Pool
 
 
 KEY_URI = "Thumb::URI"
@@ -141,14 +141,11 @@ class ThumbnailCreator(QRunnable):
             The created QPixmap.
         """
         try:
-            reader = files.create_qimagereader(path)
+            reader = imagereader.get_reader(path)
         except ValueError:
             return self._manager.fail_pixmap
         size = 256 if self._manager.large else 128
-        qsize = reader.size()
-        qsize.scale(size, size, Qt.KeepAspectRatio)
-        reader.setScaledSize(qsize)
-        image = reader.read()
+        image = reader.get_image(size)
         # Image was deleted in the time between reader.read() and now
         try:
             attributes = self._get_thumbnail_attributes(path, image)

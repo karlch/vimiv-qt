@@ -15,7 +15,7 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.utils import files, log, asyncrun, lazy
+from vimiv.utils import files, log, asyncrun, lazy, imagereader
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
@@ -95,18 +95,18 @@ class ImageFileHandler(QObject):
         *_loaded signal to tell the image to display a new object.
         """
         try:
-            reader = files.create_qimagereader(path)
+            reader = imagereader.get_reader(path)
         except ValueError as e:
             log.error(str(e))
             return
         # SVG
-        if reader.format() == b"svg" and QtSvg is not None:
+        if reader.is_vectorgraphic and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
             api.signals.svg_loaded.emit(path, reload_only)
             self._edit_handler.clear()
         # Gif
-        elif reader.supportsAnimation():
+        elif reader.is_animation:
             movie = QMovie(path)
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
@@ -114,22 +114,14 @@ class ImageFileHandler(QObject):
             api.signals.movie_loaded.emit(movie, reload_only)
             self._edit_handler.clear()
         # Regular image
-        elif file_format in reader.supportedImageFormats():
-            pixmap = QPixmap.fromImageReader(reader)
-            if reader.error():
-                log.error("Error reading image %s: %s", path, reader.errorString())
+        else:
+            try:
+                pixmap = reader.get_pixmap()
+            except ValueError as e:
+                log.error("%s", e)
                 return
             self._edit_handler.pixmap = pixmap
             api.signals.pixmap_loaded.emit(pixmap, reload_only)
-        # Externally handled image
-        elif file_format in api.external_handler:
-            handler = api.external_handler[file_format]
-            pixmap = handler(path)
-            self._edit_handler.pixmap = pixmap
-            api.signals.pixmap_loaded.emit(pixmap, reload_only)
-        else:
-            log.error("Error reading image %s: fileformat not supported", path)
-            return
         self._path = path
 
     @api.commands.register(mode=api.modes.IMAGE)
