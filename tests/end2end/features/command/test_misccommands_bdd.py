@@ -12,9 +12,9 @@ import pytest_bdd as bdd
 bdd.scenarios("misccommands.feature")
 
 
-@bdd.given("I start a timer")
+@bdd.given("I start a timer", target_fixture="starttime")
 def starttime():
-    yield time.time()
+    return time.time()
 
 
 @bdd.then(bdd.parsers.parse("at least {duration:f} seconds should have elapsed"))
