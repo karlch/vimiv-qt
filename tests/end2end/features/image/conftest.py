@@ -17,7 +17,7 @@ except ImportError:
 
 @pytest.fixture()
 def exif_content():
-    yield {
+    return {
         "0th": {
             piexif.ImageIFD.Make: b"vimiv-testsuite",
             piexif.ImageIFD.Model: b"image-viewer",
@@ -29,7 +29,7 @@ def exif_content():
 
 @pytest.fixture()
 def handler():
-    yield imutils._ImageFileHandler.instance
+    return imutils._ImageFileHandler.instance
 
 
 @bdd.when("I add exif information")

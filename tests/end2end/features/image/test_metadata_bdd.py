@@ -15,7 +15,7 @@ bdd.scenarios("metadata.feature")
 
 @pytest.fixture
 def metadata():
-    yield metadatawidget.MetadataWidget.instance
+    return metadatawidget.MetadataWidget.instance
 
 
 @bdd.then("the metadata widget should be visible")

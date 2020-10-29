@@ -34,32 +34,32 @@ from vimiv.imutils import filelist
 ########################################################################################
 @pytest.fixture()
 def library():
-    yield vimiv.gui.library.Library.instance
+    return vimiv.gui.library.Library.instance
 
 
 @pytest.fixture()
 def thumbnail():
-    yield vimiv.gui.thumbnail.ThumbnailView.instance
+    return vimiv.gui.thumbnail.ThumbnailView.instance
 
 
 @pytest.fixture()
 def mainwindow():
-    yield vimiv.gui.mainwindow.MainWindow.instance
+    return vimiv.gui.mainwindow.MainWindow.instance
 
 
 @pytest.fixture()
 def commandline():
-    yield vimiv.gui.commandline.CommandLine.instance
+    return vimiv.gui.commandline.CommandLine.instance
 
 
 @pytest.fixture()
 def statusbar(mainwindow):
-    yield mainwindow._statusbar
+    return mainwindow._statusbar
 
 
 @pytest.fixture()
 def image():
-    yield vimiv.gui.image.ScrollableImage.instance
+    return vimiv.gui.image.ScrollableImage.instance
 
 
 @pytest.fixture()
@@ -104,7 +104,7 @@ class Counter:
 @pytest.fixture(autouse=True)
 def counter():
     """Fixture to provide a clean counter class with the count command."""
-    yield Counter()
+    return Counter()
 
 
 @pytest.fixture()

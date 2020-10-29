@@ -24,7 +24,7 @@ def home_directory(tmp_path, mocker):
         return path.replace("~", new_home)
 
     mocker.patch("os.path.expanduser", new=expand_user)
-    yield new_home
+    return new_home
 
 
 @bdd.then(bdd.parsers.parse("the home directory should contain {path}"))

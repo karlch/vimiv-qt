@@ -14,12 +14,12 @@ bdd.scenarios("manipulate.feature", "manipulate_segfault.feature")
 
 @pytest.fixture()
 def manipulator():
-    yield vimiv.imutils.immanipulate.Manipulator.instance
+    return vimiv.imutils.immanipulate.Manipulator.instance
 
 
 @pytest.fixture()
 def manipulation(manipulator):
-    yield manipulator._current_manipulation
+    return manipulator._current_manipulation
 
 
 @bdd.when("I apply any manipulation")

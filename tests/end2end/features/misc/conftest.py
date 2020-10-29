@@ -12,7 +12,7 @@ import pytest_bdd as bdd
 
 @pytest.fixture()
 def clipboard():
-    yield QGuiApplication.clipboard()
+    return QGuiApplication.clipboard()
 
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain {text}"))

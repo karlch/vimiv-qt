@@ -35,7 +35,7 @@ class SearchResults:
 @pytest.fixture(autouse=True)
 def search_results():
     """Fixture to retrieve a clean helper class to store search results."""
-    yield SearchResults()
+    return SearchResults()
 
 
 @bdd.when(bdd.parsers.parse("I search for {text}"))
