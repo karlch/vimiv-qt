@@ -152,9 +152,9 @@ def start_vector_graphic(svg):
     start([svg])
 
 
-@bdd.given("I capture output")
-def output(capsys):
-    yield Output(capsys)
+@bdd.given("I capture output", target_fixture="output")
+def capture_output(capsys):
+    return Output(capsys)
 
 
 ###############################################################################
