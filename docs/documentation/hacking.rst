@@ -132,6 +132,40 @@ plugin infrastructure are given in the ``vimiv.plugins`` module:
 .. automodule:: vimiv.plugins
    :members: load, get_plugins
 
+Adding Support for New Imageformats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you would like to add support for a new image format that is not supported by Qt, you
+can also solve this using the plugin system. A nice example of how to do this is the
+`RawPrev <https://github.com/jeanggi90/RawPrev>`_ plugin which adds support for viewing
+raw images using ``dcraw``.
+
+To make this work, you need to implement two functions:
+
+#. A function which checks if a path is of your filetype. The function must be of the
+   same form as used by the standard library module
+   `imghdr <https://docs.python.org/3/library/imghdr.html>`_.
+#. The actual loading function which creates a ``QPixmap`` from the path.
+
+Finally, you tell vimiv about the newly supported filetype::
+
+    from typing import Any, BinaryIO
+
+    from PyQt5.QtGui import QPixmap
+
+    from vimiv import api
+
+
+    def test_func(header: bytes, file_handle: BinaryIO) -> bool:
+        """Return True if the file is of your format."""
+
+    def load_func(path: str) -> QPixmap:
+        """Implement your custom loading here and return the created QPixmap."""
+
+    def init(_info: str, *_args: Any, **_kwargs: Any) -> None:
+        """Setup your plugin by adding your file format to vimiv."""
+        api.add_external_format("fmt", test_func, load_func)
+
 
 Source Code Hints
 -----------------
