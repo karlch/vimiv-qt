@@ -7,10 +7,10 @@
 """`Utilities to interact with the application`."""
 
 import os
-from typing import List, Iterable, Dict, Callable
+from typing import List, Iterable, Callable, BinaryIO
 from PyQt5.QtGui import QPixmap
 
-from vimiv.utils import files
+from vimiv.utils import files, imagereader
 
 from vimiv.api import (
     commands,
@@ -28,7 +28,6 @@ from vimiv.api import (
 )
 
 mark = _mark.Mark()
-external_handler: Dict[str, Callable[[str], QPixmap]] = {}
 
 
 def current_path(mode: modes.Mode = None) -> str:
@@ -78,3 +77,19 @@ def open_paths(paths: Iterable[str]) -> None:
         modes.LIBRARY.enter()
     else:
         raise commands.CommandError("No valid paths")
+
+
+def add_external_format(
+    file_format: str,
+    test_func: Callable[[bytes, BinaryIO], bool],
+    load_func: Callable[[str], QPixmap],
+) -> None:
+    """Add support for new fileformat.
+
+    Args:
+        file_format: String value of the file type
+        test_func: Function returning a boolean depending on whether load_func supports this type
+        load_func: Function returning the a QPixmap in case the file_format is supported by load_func
+    """
+    files.add_image_format(file_format, test_func)
+    imagereader.external_handler[file_format] = load_func
