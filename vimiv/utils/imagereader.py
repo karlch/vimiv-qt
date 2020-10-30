@@ -12,8 +12,6 @@ from typing import Dict, Callable
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
 
-from vimiv import api
-
 from .files import imghdr
 
 external_handler: Dict[str, Callable[[str], QPixmap]] = {}

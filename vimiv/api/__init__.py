@@ -88,8 +88,8 @@ def add_external_format(
 
     Args:
         file_format: String value of the file type
-        test_func: Function returning a boolean depending on whether load_func supports this type
-        load_func: Function returning the a QPixmap in case the file_format is supported by load_func
+        test_func: Function returning True if load_func supports this type.
+        load_func: Function to load a QPixmap from the passed path.
     """
     files.add_image_format(file_format, test_func)
     imagereader.external_handler[file_format] = load_func

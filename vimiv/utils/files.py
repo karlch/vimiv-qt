@@ -13,7 +13,6 @@ from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
 from PyQt5.QtGui import QImageReader
 
-from vimiv import api
 from vimiv.utils import imagereader
 
 
