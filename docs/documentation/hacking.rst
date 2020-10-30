@@ -132,6 +132,9 @@ plugin infrastructure are given in the ``vimiv.plugins`` module:
 .. automodule:: vimiv.plugins
    :members: load, get_plugins
 
+
+.. _support_new_imageformats:
+
 Adding Support for New Imageformats
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
