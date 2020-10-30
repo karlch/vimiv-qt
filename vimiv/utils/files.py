@@ -14,6 +14,7 @@ from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 from PyQt5.QtGui import QImageReader
 
 from vimiv import api
+from vimiv.utils import imagereader
 
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
@@ -154,7 +155,7 @@ def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> Non
                 return name
             if (
                 name in QImageReader.supportedImageFormats()
-                or name in api.external_handler
+                or name in imagereader.external_handler
             ):
                 setattr(test, "checked", True)
                 return name

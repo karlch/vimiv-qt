@@ -7,6 +7,7 @@
 """Image reader classes to read images from file to Qt objects."""
 
 import abc
+from typing import Dict, Callable
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
@@ -14,6 +15,8 @@ from PyQt5.QtGui import QImageReader, QPixmap, QImage
 from vimiv import api
 
 from .files import imghdr
+
+external_handler: Dict[str, Callable[[str], QPixmap]] = {}
 
 
 class BaseReader(abc.ABC):
@@ -94,10 +97,10 @@ class ExternalReader(BaseReader):
 
     @classmethod
     def supports(cls, file_format: str) -> bool:
-        return file_format in api.external_handler
+        return file_format in external_handler
 
     def get_pixmap(self) -> QPixmap:
-        handler = api.external_handler[self.file_format]
+        handler = external_handler[self.file_format]
         return handler(self.path)
 
 
