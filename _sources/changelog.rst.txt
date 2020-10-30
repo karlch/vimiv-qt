@@ -20,6 +20,9 @@ Added:
 * The ``:history-clear`` command to clear the command history.
 * Handle ``unbind`` explicitly when parsing ``keys.conf``. Instead of binding a key to
   the ``:unbind`` command, any existing keybinding for this key is now removed.
+* A new api interface which enables writing plugins to support new image formats. See
+  :ref:`support_new_imageformats` for more details.
+  Thanks `@jeanggi90 <https://github.com/jeanggi90>`_!
 
 Changed:
 ^^^^^^^^

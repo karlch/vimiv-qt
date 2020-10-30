@@ -15,7 +15,8 @@ a new plugin:
 
 Currently the following user plugins are available:
 
-* None, waiting for your plugin :)
+* `RawPrev <https://github.com/jeanggi90/RawPrev>`_ for raw support based on ``dcraw``
+  instead of `qt raw <https://gitlab.com/mardy/qtraw>`_
 
 If you would like to write a plugin, some of the information on :ref:`writing_plugins`
 may be helpful to get started.
