@@ -140,7 +140,7 @@ Adding Support for New Imageformats
 
 If you would like to add support for a new image format that is not supported by Qt, you
 can also solve this using the plugin system. A nice example of how to do this is the
-`RawPrev <https://github.com/jeanggi90/RawPrev>`_ plugin which adds support for viewing
+`RawPrev <https://github.com/jcjgraf/RawPrev>`_ plugin which adds support for viewing
 raw images using ``dcraw``.
 
 To make this work, you need to implement two functions:
