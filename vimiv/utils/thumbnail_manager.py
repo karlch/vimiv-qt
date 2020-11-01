@@ -140,12 +140,12 @@ class ThumbnailCreator(QRunnable):
         Returns:
             The created QPixmap.
         """
+        size = 256 if self._manager.large else 128
         try:
             reader = imagereader.get_reader(path)
+            image = reader.get_image(size)
         except ValueError:
             return self._manager.fail_pixmap
-        size = 256 if self._manager.large else 128
-        image = reader.get_image(size)
         # Image was deleted in the time between reader.read() and now
         try:
             attributes = self._get_thumbnail_attributes(path, image)
