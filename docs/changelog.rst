@@ -14,15 +14,15 @@ Added:
   using ``[count]i``. To override one of these sets, add ``keys2 =
   Override,SecondSet``. To add a new one, use ``keys4 = New,Fourth,Set``. Here the
   values must be a comma-separated list of valid metadata keys. Thanks
-  `@jeanggi90 <https://github.com/jeanggi90>`_!
+  `@jcjgraf <https://github.com/jcjgraf>`_!
 * ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
-  `@jeanggi90 <https://github.com/jeanggi90>`_ for pointing this out!
+  `@jcjgraf <https://github.com/jcjgraf>`_ for pointing this out!
 * The ``:history-clear`` command to clear the command history.
 * Handle ``unbind`` explicitly when parsing ``keys.conf``. Instead of binding a key to
   the ``:unbind`` command, any existing keybinding for this key is now removed.
 * A new api interface which enables writing plugins to support new image formats. See
   :ref:`support_new_imageformats` for more details.
-  Thanks `@jeanggi90 <https://github.com/jeanggi90>`_!
+  Thanks `@jcjgraf <https://github.com/jcjgraf>`_!
 
 Changed:
 ^^^^^^^^
