@@ -62,3 +62,10 @@ Feature: Scroll in thumbnail mode.
         And the message
             'scroll: Thumbnail list is empty'
             should be displayed
+
+    Scenario: Remove last thumbnail
+        Given I open any image
+        When I enter thumbnail mode
+        And I run delete %
+        And I wait for the working directory handler
+        Then there should be 0 thumbnails

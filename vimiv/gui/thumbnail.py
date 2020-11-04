@@ -88,6 +88,7 @@ class ThumbnailView(
 
         self.setItemDelegate(ThumbnailDelegate(self))
 
+        api.signals.all_images_cleared.connect(self.clear)
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
