@@ -110,6 +110,11 @@ class ThumbnailView(
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
 
+    def clear(self):
+        """Override clear to also empty paths."""
+        self._paths = []
+        super().clear()
+
     @pyqtSlot(list)
     def _on_new_images_opened(self, paths: List[str]):
         """Load new paths into thumbnail widget.
