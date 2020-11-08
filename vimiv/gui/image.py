@@ -109,29 +109,29 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         """The currently visible part of the scene in the image coordinates."""
         return self.mapToScene(self.viewport().rect()).boundingRect() & self.sceneRect()
 
-    def _load_pixmap(self, pixmap: QPixmap, reload_only: bool) -> None:
+    def _load_pixmap(self, pixmap: QPixmap, keep_zoom: bool) -> None:
         """Load new pixmap into the graphics scene."""
         item = QGraphicsPixmapItem()
         item.setPixmap(pixmap)
         item.setTransformationMode(Qt.SmoothTransformation)
-        self._update_scene(item, item.boundingRect(), reload_only)
+        self._update_scene(item, item.boundingRect(), keep_zoom)
 
-    def _load_movie(self, movie: QMovie, reload_only: bool) -> None:
+    def _load_movie(self, movie: QMovie, keep_zoom: bool) -> None:
         """Load new movie into the graphics scene."""
         movie.jumpToFrame(0)
         if api.settings.image.autoplay.value:
             movie.start()
         widget = QLabel()
         widget.setMovie(movie)
-        self._update_scene(widget, QRectF(movie.currentPixmap().rect()), reload_only)
+        self._update_scene(widget, QRectF(movie.currentPixmap().rect()), keep_zoom)
 
-    def _load_svg(self, path: str, reload_only: bool) -> None:
+    def _load_svg(self, path: str, keep_zoom: bool) -> None:
         """Load new vector graphic into the graphics scene."""
         item = QtSvg.QGraphicsSvgItem(path)
-        self._update_scene(item, item.boundingRect(), reload_only)
+        self._update_scene(item, item.boundingRect(), keep_zoom)
 
     def _update_scene(
-        self, item: Union[QGraphicsItem, QLabel], rect: QRectF, reload_only: bool
+        self, item: Union[QGraphicsItem, QLabel], rect: QRectF, keep_zoom: bool
     ) -> None:
         """Update the scene with the newly loaded item."""
         self.scene().clear()
@@ -140,7 +140,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         else:
             self.scene().addWidget(item)
         self.scene().setSceneRect(rect)
-        self.scale(self._scale if reload_only else ImageScale.Overzoom)  # type: ignore
+        self.scale(self._scale if keep_zoom else ImageScale.Overzoom)  # type: ignore
         self._update_focalpoint()
 
     def _update_focalpoint(self):

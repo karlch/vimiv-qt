@@ -19,6 +19,7 @@ class _SignalHandler(QObject):
 
         new_image_opened: Emitted when the filelist loaded a new path.
             arg1: Path of the new image.
+            arg2: True if the zoom level should be kept.
         new_images_opened: Emitted when the filelist loaded new paths.
             arg1: List of new paths.
         all_images_cleared: Emitted when there are no more paths in the filelist.
@@ -40,7 +41,7 @@ class _SignalHandler(QObject):
     load_images = pyqtSignal(list)
 
     # Emitted when new image path(s) were opened
-    new_image_opened = pyqtSignal(str)
+    new_image_opened = pyqtSignal(str, bool)
     new_images_opened = pyqtSignal(list)
     all_images_cleared = pyqtSignal()
 
