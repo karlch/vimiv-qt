@@ -28,26 +28,38 @@ _logger = log.module_logger(__name__)
 
 
 # We want to use the name next here as it is the best name for the command
+@api.keybindings.register("<ctrl>n", "next --keep-zoom", mode=api.modes.IMAGE)
 @api.keybindings.register(["n", "<page-down>"], "next", mode=api.modes.IMAGE)
 @api.commands.register(name="next")
-def next_path(count: int = 1) -> None:
+def next_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select next image.
 
+    **syntax:** ``:next [--keep-zoom]``
+
+    optional arguments:
+        * ``--keep-zoom``: Keep zoom level and scroll position of the current image.
+
     **count:** multiplier
     """
     if _paths:
-        _set_index((_index + count) % len(_paths))
+        _set_index((_index + count) % len(_paths), keep_zoom=keep_zoom)
 
 
+@api.keybindings.register("<ctrl>p", "prev --keep-zoom", mode=api.modes.IMAGE)
 @api.keybindings.register(["p", "<page-up>"], "prev", mode=api.modes.IMAGE)
 @api.commands.register(name="prev")
-def prev_path(count: int = 1) -> None:
+def prev_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select previous image.
+
+    **syntax:** ``:prev [--keep-zoom]``
+
+    optional arguments:
+        * ``--keep-zoom``: Keep zoom level and scroll position of the current image.
 
     **count:** multiplier
     """
     if _paths:
-        _set_index((_index - count) % len(_paths))
+        _set_index((_index - count) % len(_paths), keep_zoom=keep_zoom)
 
 
 @api.keybindings.register(["G", "<end>"], "goto -1", mode=api.modes.IMAGE)
@@ -204,12 +216,12 @@ class SignalHandler(QObject):
             api.status.update("Image filelist changed")
 
 
-def _set_index(index: int, previous: str = None) -> None:
+def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
     """Set the global _index to index."""
     global _index
     _index = index
     if previous != current():
-        api.signals.new_image_opened.emit(current())
+        api.signals.new_image_opened.emit(current(), keep_zoom)
 
 
 def _set_paths(paths: List[str]) -> None:

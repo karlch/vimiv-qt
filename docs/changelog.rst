@@ -23,6 +23,9 @@ Added:
 * A new api interface which enables writing plugins to support new image formats. See
   :ref:`support_new_imageformats` for more details.
   Thanks `@jcjgraf <https://github.com/jcjgraf>`_!
+* New ``--keep-zoom`` flag for ``:next`` and ``:prev`` which preserves zoom level and
+  scroll position of the current image.
+  Thanks `@jcjgraf <https://github.com/jcjgraf>`_ for the idea!
 
 Changed:
 ^^^^^^^^

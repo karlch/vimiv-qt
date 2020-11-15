@@ -50,10 +50,10 @@ class ImageFileHandler(QObject):
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
     @utils.slot
-    def _on_new_image_opened(self, path: str):
+    def _on_new_image_opened(self, path: str, keep_zoom: bool):
         """Load proper displayable QWidget for a new image path."""
         self._maybe_write(self._path)
-        self._load(path, reload_only=False)
+        self._load(path, keep_zoom=keep_zoom)
 
     @utils.slot
     def _on_images_cleared(self):
@@ -65,7 +65,7 @@ class ImageFileHandler(QObject):
     @api.commands.register(mode=api.modes.IMAGE)
     def reload(self):
         """Reload the current image."""
-        self._load(self._path, reload_only=True)
+        self._load(self._path, keep_zoom=True)
 
     def _maybe_write(self, path, parallel=True):
         """Write image to disk if requested and it has changed.
@@ -88,7 +88,7 @@ class ImageFileHandler(QObject):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path, parallel=False)
 
-    def _load(self, path: str, reload_only: bool):
+    def _load(self, path: str, keep_zoom: bool):
         """Load proper displayable QWidget for a path.
 
         This reads the image using QImageReader and then emits the appropriate
@@ -103,7 +103,7 @@ class ImageFileHandler(QObject):
         if reader.is_vectorgraphic and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            api.signals.svg_loaded.emit(path, reload_only)
+            api.signals.svg_loaded.emit(path, keep_zoom)
             self._edit_handler.clear()
         # Gif
         elif reader.is_animation:
@@ -111,7 +111,7 @@ class ImageFileHandler(QObject):
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            api.signals.movie_loaded.emit(movie, reload_only)
+            api.signals.movie_loaded.emit(movie, keep_zoom)
             self._edit_handler.clear()
         # Regular image
         else:
@@ -121,7 +121,7 @@ class ImageFileHandler(QObject):
                 log.error("%s", e)
                 return
             self._edit_handler.pixmap = pixmap
-            api.signals.pixmap_loaded.emit(pixmap, reload_only)
+            api.signals.pixmap_loaded.emit(pixmap, keep_zoom)
         self._path = path
 
     @api.commands.register(mode=api.modes.IMAGE)
