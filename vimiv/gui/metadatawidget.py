@@ -123,7 +123,7 @@ if exif.piexif is not None:
             )
             exif_information = exif.ExifInformation(self._path)
             if exif_information:
-                self.setText(utils.format_html_table(exif_information.items()))
+                self.setText(utils.format_html_table(exif_information.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()
