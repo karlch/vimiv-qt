@@ -121,9 +121,9 @@ if exif.piexif is not None:
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
-            exif_information = exif.ExifInformation(self._path)
-            if exif_information:
-                self.setText(utils.format_html_table(exif_information.values()))
+            formatted_exif = exif.ExifHandler(self._path).get_formatted_exif()
+            if formatted_exif:
+                self.setText(utils.format_html_table(formatted_exif.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()

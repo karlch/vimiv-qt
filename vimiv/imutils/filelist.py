@@ -122,7 +122,7 @@ def exif_date_time() -> str:
     data in the statusbar. If there are any requests/ideas for more, this can
     be used as basis to work with.
     """
-    return imutils.exif.exif_date_time(current())
+    return imutils.exif.ExifHandler(current()).exif_date_time()
 
 
 def pathlist() -> List[str]:
