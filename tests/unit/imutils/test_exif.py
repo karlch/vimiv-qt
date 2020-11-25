@@ -12,16 +12,35 @@ from vimiv.imutils import exif
 
 
 @pytest.fixture
+def no_pyexiv2():
+    initial_pyexiv2 = exif.pyexiv2
+    exif.pyexiv2 = None
+    yield
+    exif.pyexiv2 = initial_pyexiv2
+
+
+@pytest.fixture
 def no_piexif():
+    exif.pyexiv2 = None
     initial_piexif = exif.piexif
     exif.piexif = None
     yield
     exif.piexif = initial_piexif
 
 
-def test_check_piexif(no_piexif):
-    @exif.check_piexif(return_value="")
-    def dummy_func():
-        return "this should never be returned"
+def test_check_pyexiv2(no_pyexiv2):
+    @exif.check_exif_dependancy(return_value="", check_piexif=False)
+    class DummyClass:
+        def __init__(self, *args):
+            pass
 
-    assert dummy_func() == ""
+    assert DummyClass == ""
+
+
+def test_check_piexif(no_piexif):
+    @exif.check_exif_dependancy(return_value="", check_piexif=True)
+    class DummyClass:
+        def __init__(self, *args):
+            pass
+
+    assert DummyClass == ""

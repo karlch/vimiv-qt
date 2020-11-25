@@ -22,149 +22,158 @@ piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
 
 
-def check_exif_dependancy(exif_handler, return_value=None):
+def check_exif_dependancy(return_value=None, check_piexif=True):
     """Decorator for ExifHandler which require the optional py3exiv2 module.
 
     If py3exiv2 is available the class is left as it is. If py3exiv2 is not available
     but the depreciated piexif module is, a depreciation warning is given to the user
     and a ExifHandler class supporting piexif is returned. If none of the two modules
-    is available, a dummy class or return_value is returned and a debug log is logged.
+    is available, a dummy class is returned and a debug log is logged.
 
     Args:
-        exif_handler: The ExifHandler class to be decorated.
-        return_value: Value to return if neither py3exiv2 nor piexif is not available.
+        return_value: Value to return if neither py3exiv2 nor piexif is available.
+        check_piexif: Check piexif dependency too in case py3exiv2 is not available.
     """
 
-    if pyexiv2:
-        return exif_handler
+    def decorator(handler):
 
-    if piexif:
+        if pyexiv2:
+            return handler
 
-        class ExifHandlerPiexif(exif_handler):
-            """Depreciated handler to load and copy exif information of a single image.
+        if piexif and check_piexif:
 
-            This class provides several methods for interacting with metadata of a
-            single image.
+            class ExifHandlerPiexif(handler):
+                """Depreciated handler to load and copy exif info. of a single image.
 
-            Methods:
-                get_formatted_exif: Get dict containing formatted exif values.
-                copy_exif: Copies the metadata to the src image.
-                exif_date_time: Get the datetime.
+                This class provides several methods for interacting with metadata of a
+                single image.
 
-            Attributes:
-                _metadata: Instance of the pyexiv2 metadata handler
-            """
+                Methods:
+                    get_formatted_exif: Get dict containing formatted exif values.
+                    copy_exif: Copies the metadata to the src image.
+                    exif_date_time: Get the datetime.
 
-            def __init__(self, filename):
-                super()
-                self._metadata = None
-
-                try:
-                    self._metadata = piexif.load(filename)
-                except FileNotFoundError:
-                    _logger.debug("File %s not found", filename)
-                    return
-
-            def get_formatted_exif(self) -> Dict[str, str]:
-                """Get a dict of the formatted exif value.
-
-                Returns a dictionary contain formatted exif values for the exif tags
-                defined in the config.
+                Attributes:
+                    _metadata: Instance of the pyexiv2 metadata handler
                 """
 
-                desired_keys = [
-                    e.strip()
-                    for e in api.settings.metadata.current_keyset.value.split(",")
-                ]
-                _logger.debug(f"Read metadata.current_keys {desired_keys}")
+                def __init__(self, filename):
+                    super()
+                    self._metadata = None
 
-                exif = dict()
+                    try:
+                        self._metadata = piexif.load(filename)
+                    except FileNotFoundError:
+                        _logger.debug("File %s not found", filename)
+                        return
 
-                try:
+                def get_formatted_exif(self) -> Dict[str, str]:
+                    """Get a dict of the formatted exif value.
 
-                    for ifd in self._metadata:
-                        if ifd == "thumbnail":
-                            continue
+                    Returns a dictionary contain formatted exif values for the exif tags
+                    defined in the config.
+                    """
 
-                        for tag in self._metadata[ifd]:
-                            keyname = piexif.TAGS[ifd][tag]["name"]
-                            keytype = piexif.TAGS[ifd][tag]["type"]
-                            val = self._metadata[ifd][tag]
-                            _logger.debug(
-                                f"name: {keyname} type: {keytype} value: {val} tag: {tag}"
-                            )
-                            if keyname.lower() not in desired_keys:
-                                _logger.debug(f"Ignoring key {keyname}")
+                    desired_keys = [
+                        e.strip()
+                        for e in api.settings.metadata.current_keyset.value.split(",")
+                    ]
+                    _logger.debug(f"Read metadata.current_keys {desired_keys}")
+
+                    exif = dict()
+
+                    try:
+
+                        for ifd in self._metadata:
+                            if ifd == "thumbnail":
                                 continue
-                            if keytype in (
-                                piexif.TYPES.Byte,
-                                piexif.TYPES.Short,
-                                piexif.TYPES.Long,
-                                piexif.TYPES.SByte,
-                                piexif.TYPES.SShort,
-                                piexif.TYPES.SLong,
-                                piexif.TYPES.Float,
-                                piexif.TYPES.DFloat,
-                            ):  # integer and float
-                                exif[keyname] = (keyname, val)
-                            elif keytype in (
-                                piexif.TYPES.Ascii,
-                                piexif.TYPES.Undefined,
-                            ):  # byte encoded
-                                exif[keyname] = (keyname, val.decode())
-                            elif keytype in (
-                                piexif.TYPES.Rational,
-                                piexif.TYPES.SRational,
-                            ):  # (int, int) <=> numerator, denominator
-                                exif[keyname] = (keyname, f"{val[0]}/{val[1]}")
 
-                except (piexif.InvalidImageDataError, KeyError):
-                    return None
+                            for tag in self._metadata[ifd]:
+                                keyname = piexif.TAGS[ifd][tag]["name"]
+                                keytype = piexif.TAGS[ifd][tag]["type"]
+                                val = self._metadata[ifd][tag]
+                                _logger.debug(
+                                    f"name: {keyname}\
+                                    type: {keytype}\
+                                    value: {val}\
+                                    tag: {tag}"
+                                )
+                                if keyname not in desired_keys:
+                                    _logger.debug(f"Ignoring key {keyname}")
+                                    continue
+                                if keytype in (
+                                    piexif.TYPES.Byte,
+                                    piexif.TYPES.Short,
+                                    piexif.TYPES.Long,
+                                    piexif.TYPES.SByte,
+                                    piexif.TYPES.SShort,
+                                    piexif.TYPES.SLong,
+                                    piexif.TYPES.Float,
+                                    piexif.TYPES.DFloat,
+                                ):  # integer and float
+                                    exif[keyname] = (keyname, val)
+                                elif keytype in (
+                                    piexif.TYPES.Ascii,
+                                    piexif.TYPES.Undefined,
+                                ):  # byte encoded
+                                    exif[keyname] = (keyname, val.decode())
+                                elif keytype in (
+                                    piexif.TYPES.Rational,
+                                    piexif.TYPES.SRational,
+                                ):  # (int, int) <=> numerator, denominator
+                                    exif[keyname] = (keyname, f"{val[0]}/{val[1]}")
 
-                return exif
+                    except (piexif.InvalidImageDataError, KeyError):
+                        return None
 
-            def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
-                """Copy exif information from current image to dest.
+                    return exif
 
-                Args:
-                    dest: Path to write the exif information to.
-                    reset_orientation: If true, reset the exif orientation tag to
-                        normal.
-                """
+                def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+                    """Copy exif information from current image to dest.
 
-                try:
-                    if reset_orientation:
-                        with contextlib.suppress(KeyError):
-                            self._metadata["0th"][
-                                piexif.ImageIFD.Orientation
-                            ] = ExifOrientation.Normal
-                    exif_bytes = piexif.dump(self._metadata)
-                    piexif.insert(exif_bytes, dest)
-                    _logger.debug("Succesfully wrote exif data for '%s'", dest)
-                except piexif.InvalidImageDataError:  # File is not a jpg
-                    _logger.debug("File format for '%s' does not support exif", dest)
-                except ValueError:
-                    _logger.debug("No exif data in '%s'", dest)
+                    Args:
+                        dest: Path to write the exif information to.
+                        reset_orientation: If true, reset the exif orientation tag to
+                            normal.
+                    """
 
-            def exif_date_time(self) -> str:
-                """Exif creation date and time of filename."""
+                    try:
+                        if reset_orientation:
+                            with contextlib.suppress(KeyError):
+                                self._metadata["0th"][
+                                    piexif.ImageIFD.Orientation
+                                ] = ExifOrientation.Normal
+                        exif_bytes = piexif.dump(self._metadata)
+                        piexif.insert(exif_bytes, dest)
+                        _logger.debug("Succesfully wrote exif data for '%s'", dest)
+                    except piexif.InvalidImageDataError:  # File is not a jpg
+                        _logger.debug(
+                            "File format for '%s' does not support exif", dest
+                        )
+                    except ValueError:
+                        _logger.debug("No exif data in '%s'", dest)
 
-                with contextlib.suppress(
-                    piexif.InvalidImageDataError, FileNotFoundError, KeyError
-                ):
-                    return self._metadata["0th"][piexif.ImageIFD.DateTime].decode()
-                return ""
+                def exif_date_time(self) -> str:
+                    """Exif creation date and time of filename."""
 
-        return ExifHandlerPiexif
+                    with contextlib.suppress(
+                        piexif.InvalidImageDataError, FileNotFoundError, KeyError
+                    ):
+                        return self._metadata["0th"][piexif.ImageIFD.DateTime].decode()
+                    return ""
 
-    if return_value:
-        return return_value
+            return ExifHandlerPiexif
 
-    # TODO: No exif support, return dummy class
-    return None
+        if return_value is not None:
+            return return_value
+
+        # TODO: No exif support, return dummy class
+        return None
+
+    return decorator
 
 
-@check_exif_dependancy
+@check_exif_dependancy()
 class ExifHandler:
     """Handler to load and copy exif information of a single image.
 
