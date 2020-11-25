@@ -11,6 +11,7 @@ piexif (https://github.com/hMatoba/Piexif).
 """
 
 import contextlib
+import itertools
 from typing import Dict
 
 from vimiv.utils import log, lazy
@@ -18,7 +19,6 @@ from vimiv import api
 
 pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 piexif = lazy.import_module("piexif", optional=True)
-
 _logger = log.module_logger(__name__)
 
 
@@ -36,7 +36,6 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
     """
 
     def decorator(handler):
-
         if pyexiv2:
             return handler
 
@@ -57,7 +56,7 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
                     _metadata: Instance of the pyexiv2 metadata handler
                 """
 
-                def __init__(self, filename):
+                def __init__(self, filename=""):
                     super()
                     self._metadata = None
 
@@ -145,7 +144,7 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
                                 ] = ExifOrientation.Normal
                         exif_bytes = piexif.dump(self._metadata)
                         piexif.insert(exif_bytes, dest)
-                        _logger.debug("Succesfully wrote exif data for '%s'", dest)
+                        _logger.debug("Successfully wrote exif data for '%s'", dest)
                     except piexif.InvalidImageDataError:  # File is not a jpg
                         _logger.debug(
                             "File format for '%s' does not support exif", dest
@@ -167,8 +166,35 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
         if return_value is not None:
             return return_value
 
-        # TODO: No exif support, return dummy class
-        return None
+        class NoExifHandler:
+            """Handler for exif access without hander library."""
+
+            def __init__(self, *args):
+                _logger.debug("No exif support.")
+
+            def copy_exif(self, *args) -> None:
+                """Dummy handler for copy_exif."""
+                _logger.debug(
+                    "Cannot call '%s', py3exiv2 is required for exif support",
+                    "copy_exif",
+                )
+
+            def exif_date_time(self, *args) -> None:
+                """Dummy handler for exif_date_time."""
+                _logger.debug(
+                    "Cannot call '%s', py3exiv2 is required for exif support",
+                    "exif_date_time",
+                )
+                return ""
+
+            def get_formatted_exif(self, *args) -> None:
+                """Dummy handler for get_formatted_exif."""
+                _logger.debug(
+                    "Cannot call '%s', py3exiv2 is required for exif support",
+                    "get_formatted_exif",
+                )
+
+        return NoExifHandler
 
     return decorator
 
@@ -188,7 +214,7 @@ class ExifHandler:
         _metadata: Instance of the pyexiv2 metadata handler
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename=""):
 
         try:
             self._metadata = pyexiv2.ImageMetadata(filename)
@@ -214,15 +240,17 @@ class ExifHandler:
 
         for key in desired_keys:
             try:
-                exif[key] = (
-                    self._metadata[key].name,
-                    self._metadata[key].human_value,
-                )
-            except AttributeError:
-                exif[key] = (
-                    self._metadata[key].name,
-                    self._metadata[key].raw_value,
-                )
+                key_name = self._metadata[key].name
+
+                try:
+                    key_value = self._metadata[key].human_value
+
+                # Not all metadata(iptc) provide human_value, take raw_value instead
+                except AttributeError:
+                    key_value = self._metadata[key].raw_value
+
+                exif[key] = (key_name, key_value)
+
             except KeyError:
                 _logger.debug("Key %s is invalid for the current image", key)
 
@@ -238,18 +266,29 @@ class ExifHandler:
 
         if reset_orientation:
             with contextlib.suppress(KeyError):
-                self._metadata["Exif.Image.Orientation"] = pyexiv2.ExifTag(
-                    "Exif.Image.Orientation", ExifOrientation.Normal
-                )
-        self._metadata.copy(dest)
-        _logger.debug("Succesfully wrote exif data for '%s'", dest)
+                self._metadata["Exif.Image.Orientation"] = ExifOrientation.Normal
+        try:
+            dest_image = pyexiv2.ImageMetadata(dest)
+            dest_image.read()
+
+            # File types restrict the metadata type they can store. Try copying all types one by one and skip if it fails.
+            for copy_args in set(itertools.permutations((True, False, False, False))):
+                with contextlib.suppress(ValueError):
+                    self._metadata.copy(dest_image, *copy_args)
+
+            dest_image.write()
+
+            _logger.debug("Successfully wrote exif data for '%s'", dest)
+
+        except FileNotFoundError:
+            _logger.debug("Failed to write exif data. Destination '%s' not found", dest)
+        except OSError as e:
+            _logger.debug("Failed to write exif data for '%s': '%s'", dest, str(e))
 
     def exif_date_time(self) -> str:
         """Get exif creation date and time of filename."""
 
-        with contextlib.suppress(
-            piexif.InvalidImageDataError, FileNotFoundError, KeyError
-        ):
+        with contextlib.suppress(KeyError):
             return self._metadata["Exif.Image.DateTime"].raw_value
         return ""
 

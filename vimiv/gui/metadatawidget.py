@@ -18,7 +18,7 @@ from vimiv.config import styles
 _logger = utils.log.module_logger(__name__)
 
 
-if exif.piexif is not None:
+if isinstance(exif.ExifHandler(), exif.ExifHandler):
 
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
