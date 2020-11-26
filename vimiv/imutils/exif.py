@@ -238,21 +238,26 @@ class ExifHandler:
 
         exif = dict()
 
-        for key in desired_keys:
-            try:
-                key_name = self._metadata[key].name
-
+        for base_key in desired_keys:
+            # For backwards compability, assume it has one of the following prefixes
+            for prefix in ["", "Exif.Image.", "Exif.Photo."]:
+                key = f"{prefix}{base_key}"
                 try:
-                    key_value = self._metadata[key].human_value
+                    key_name = self._metadata[key].name
 
-                # Not all metadata(iptc) provide human_value, take raw_value instead
-                except AttributeError:
-                    key_value = self._metadata[key].raw_value
+                    try:
+                        key_value = self._metadata[key].human_value
 
-                exif[key] = (key_name, key_value)
+                    # Not all metadata(iptc) provide human_value, take raw_value instead
+                    except AttributeError:
+                        key_value = self._metadata[key].raw_value
 
-            except KeyError:
-                _logger.debug("Key %s is invalid for the current image", key)
+                    exif[key] = (key_name, key_value)
+                    break
+
+                except KeyError:
+                    _logger.debug("Key %s is invalid for the current image", key)
+                    continue
 
         return exif
 
