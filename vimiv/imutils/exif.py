@@ -172,27 +172,15 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
             def __init__(self, *args):
                 _logger.debug("No exif support.")
 
-            def copy_exif(self, *args) -> None:
-                """Dummy handler for copy_exif."""
-                _logger.debug(
-                    "Cannot call '%s', py3exiv2 is required for exif support",
-                    "copy_exif",
-                )
+            def __getattribute__(self, name):
 
-            def exif_date_time(self, *args) -> None:
-                """Dummy handler for exif_date_time."""
-                _logger.debug(
-                    "Cannot call '%s', py3exiv2 is required for exif support",
-                    "exif_date_time",
-                )
-                return ""
+                if name in ["copy_exif", "exif_date_time", "get_formatted_exif"]:
+                    return lambda *args: _logger.debug(
+                        "Cannot call '%s', py3exiv2 is required for exif support", name,
+                    )
 
-            def get_formatted_exif(self, *args) -> None:
-                """Dummy handler for get_formatted_exif."""
-                _logger.debug(
-                    "Cannot call '%s', py3exiv2 is required for exif support",
-                    "get_formatted_exif",
-                )
+                else:
+                    return lambda *args: None
 
         return NoExifHandler
 
