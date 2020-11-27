@@ -64,3 +64,9 @@ Feature: Switching between different modes.
         # This used to enter image as image was the mode "before" thumbnail
         And I toggle thumbnail mode
         Then the mode should be library
+
+    Scenario: Crash when toggling manipulate mode
+        Given I open 2 images
+        When I toggle manipulate mode
+        Then no crash should happen
+        And the mode should be manipulate

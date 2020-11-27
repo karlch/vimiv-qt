@@ -123,7 +123,7 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
 
         If the mode is currently visible, close it. Otherwise enter it.
         """
-        if self.widget.isVisible():
+        if self.widget is not None and self.widget.isVisible():
             self.close()
         else:
             self.enter()
