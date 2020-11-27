@@ -60,6 +60,8 @@ Fixed:
   to scenarios in which a warning was displayed which is later resolved by the
   corresponding ``unbind``. Thanks
   `@schyzophrene-asynchrone <https://github.com/schyzophrene-asynchrone>`_!
+* Crash when toggling manipulate mode before ever entering it. Thanks
+  `@pozitron57 <https://github.com/pozitron57>`_ for pointing this out!
 
 
 v0.7.0 (2020-05-17)
