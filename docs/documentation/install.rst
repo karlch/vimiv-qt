@@ -32,6 +32,10 @@ You can retrieve the latest stable release using::
 
     $ pip install --user vimiv
 
+and the latest development version with::
+
+    $ pip install --user git+https://github.com/karlch/vimiv-qt/
+
 .. include:: datafile_warning.rst
 
 
