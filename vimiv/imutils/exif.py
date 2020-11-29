@@ -185,8 +185,8 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
 
     If py3exiv2 is available the class is left as it is. If py3exiv2 is not available
     but the depreciated piexif module is, a depreciation warning is given to the user
-    and a ExifHandlerPiexif returned. If none of the two modules is available,
-    ExifHandlerNoExif is returned and a debug log is logged.
+    and a _ExifHandlerPiexif returned. If none of the two modules is available,
+    _ExifHandlerNoExif is returned and a debug log is logged.
 
     Args:
         return_value: Value to return if neither py3exiv2 nor piexif is available.
@@ -194,7 +194,6 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
     """
 
     def decorator(handler):
-
         if pyexiv2:
             return handler
 
@@ -283,6 +282,9 @@ class ExifHandler(_ExifHandler):
         with contextlib.suppress(KeyError):
             return self._metadata["Exif.Image.DateTime"].raw_value
         return ""
+
+
+has_exif_support = not isinstance(ExifHandler(), _ExifHandlerNoExif)
 
 
 class ExifOrientation:
