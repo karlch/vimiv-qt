@@ -210,7 +210,11 @@ def _write(pixmap, path, original_path):
     os.close(handle)
     pixmap.save(filename)
     # Copy exif info from original file to new file
-    imutils.exif.ExifHandler(original_path).copy_exif(filename)
+    try:
+        imutils.exif.ExifHandler(original_path).copy_exif(filename)
+    except imutils.exif.NoExifSupport:
+        # Todo: warn user
+        pass
     shutil.move(filename, path)
     # Check if valid image was created
     if not os.path.isfile(path):

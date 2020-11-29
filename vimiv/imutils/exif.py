@@ -23,6 +23,10 @@ piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
 
 
+class NoExifSupport(Exception):
+    """Raised if vimiv has no exif support. I.e. if py3exiv2 is not installed."""
+
+
 class _ExifHandler(ABC):
     """Handler to load and copy exif information of a single image.
 
@@ -158,20 +162,22 @@ class _ExifHandlerNoExif(_ExifHandler):
         _logger.debug("No exif support.")
 
     def get_formatted_exif(self) -> Dict[str, str]:
-        _logger.debug(
-            "Cannot call '%s', py3exiv2 is required for exif support",
-            "get_formatted_exif",
-        )
+        message = self._get_log_message("get_formatted_exif")
+
+        raise NoExifSupport(message)
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
-        _logger.debug(
-            "Cannot call '%s', py3exiv2 is required for exif support", "copy_exif"
-        )
+        message = self._get_log_message("copy_exif")
+
+        raise NoExifSupport(message)
 
     def exif_date_time(self) -> str:
-        _logger.debug(
-            "Cannot call '%s', py3exiv2 is required for exif support", "exif_date_time"
-        )
+        message = self._get_log_message("exif_date_time")
+
+        raise NoExifSupport(message)
+
+    def _get_log_message(self, func_name: str) -> str:
+        return f"Cannot call '{func_name}', py3exiv2 is required for exif support"
 
 
 def check_exif_dependancy(return_value=None, check_piexif=True):
