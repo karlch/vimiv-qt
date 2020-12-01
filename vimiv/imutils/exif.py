@@ -180,7 +180,7 @@ class _ExifHandlerNoExif(_ExifHandler):
         return f"Cannot call '{func_name}', py3exiv2 is required for exif support"
 
 
-def check_exif_dependancy(return_value=None, check_piexif=True):
+def check_exif_dependancy(handler):
     """Decorator for ExifHandler which require the optional py3exiv2 module.
 
     If py3exiv2 is available the class is left as it is. If py3exiv2 is not available
@@ -189,26 +189,19 @@ def check_exif_dependancy(return_value=None, check_piexif=True):
     _ExifHandlerNoExif is returned and a debug log is logged.
 
     Args:
-        return_value: Value to return if neither py3exiv2 nor piexif is available.
-        check_piexif: Check piexif dependency too in case py3exiv2 is not available.
+        handler: The class to be decorated.
     """
 
-    def decorator(handler):
-        if pyexiv2:
-            return handler
+    if pyexiv2:
+        return handler
 
-        if piexif and check_piexif:
-            return _ExifHandlerPiexif
+    if piexif:
+        return _ExifHandlerPiexif
 
-        if return_value is not None:
-            return return_value
-
-        return _ExifHandlerNoExif
-
-    return decorator
+    return _ExifHandlerNoExif
 
 
-@check_exif_dependancy()
+@check_exif_dependancy
 class ExifHandler(_ExifHandler):
     """Main ExifHandler implementation bases on py3exiv2."""
 

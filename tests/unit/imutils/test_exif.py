@@ -29,18 +29,20 @@ def no_piexif():
 
 
 def test_check_pyexiv2(no_pyexiv2):
-    @exif.check_exif_dependancy(return_value="", check_piexif=False)
+    @exif.check_exif_dependancy
     class DummyClass:
         def __init__(self, *args):
             pass
 
-    assert DummyClass == ""
+    assert isinstance(DummyClass(), exif._ExifHandlerPiexif) or isinstance(
+        DummyClass(), exif._ExifHandlerNoExif
+    )
 
 
 def test_check_piexif(no_piexif):
-    @exif.check_exif_dependancy(return_value="", check_piexif=True)
+    @exif.check_exif_dependancy
     class DummyClass:
         def __init__(self, *args):
             pass
 
-    assert DummyClass == ""
+    assert isinstance(DummyClass(), exif._ExifHandlerNoExif)
