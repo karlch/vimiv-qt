@@ -158,7 +158,7 @@ class _ExifHandlerPiexif(_ExifHandler):
 class _ExifHandlerNoExif(_ExifHandler):
     """ExifHandler implementation for no exif support."""
 
-    def __init__(self, filename=""):
+    def __init__(self, _filename=""):
         _logger.debug("No exif support.")
 
     def get_formatted_exif(self) -> Dict[str, str]:
@@ -166,7 +166,7 @@ class _ExifHandlerNoExif(_ExifHandler):
 
         raise NoExifSupport(message)
 
-    def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+    def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
         message = self._get_log_message("copy_exif")
 
         raise NoExifSupport(message)

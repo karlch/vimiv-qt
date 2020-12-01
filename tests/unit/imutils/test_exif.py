@@ -34,9 +34,7 @@ def test_check_pyexiv2(no_pyexiv2):
         def __init__(self, *args):
             pass
 
-    assert isinstance(DummyClass(), exif._ExifHandlerPiexif) or isinstance(
-        DummyClass(), exif._ExifHandlerNoExif
-    )
+    assert isinstance(DummyClass(), (exif._ExifHandlerPiexif, exif._ExifHandlerNoExif))
 
 
 def test_check_piexif(no_piexif):
