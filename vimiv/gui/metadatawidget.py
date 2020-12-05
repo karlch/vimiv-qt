@@ -128,7 +128,6 @@ if exif.has_exif_support:
                 else:
                     self.setText("No matching metadata found")
             except exif.NoExifSupport:
-                # todo: what do not?
                 pass
             self._update_geometry()
             self._current_set = api.settings.metadata.current_keyset.value

@@ -159,7 +159,7 @@ class _ExifHandlerNoExif(_ExifHandler):
     """ExifHandler implementation for no exif support."""
 
     def __init__(self, _filename=""):
-        _logger.debug("No exif support.")
+        pass
 
     def get_formatted_exif(self) -> Dict[str, str]:
         message = self._get_log_message("get_formatted_exif")
@@ -197,6 +197,13 @@ def check_exif_dependancy(handler):
 
     if piexif:
         return _ExifHandlerPiexif
+
+    _logger.warning(
+        "There is no exif support and therfore: \
+1. Exif data is lost when writing images to disk; \
+2. The `:metadata` command and associated `i` keybinding is not available; \
+3. The {exif-date-time} statusbar module is not available"
+    )
 
     return _ExifHandlerNoExif
 
