@@ -126,7 +126,7 @@ class _ExifHandlerPiexif(_ExifHandler):
                         exif[keyname] = (keyname, f"{val[0]}/{val[1]}")
 
         except (piexif.InvalidImageDataError, KeyError):
-            return None
+            return {}
 
         return exif
 
