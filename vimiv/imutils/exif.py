@@ -13,7 +13,7 @@ piexif (https://github.com/hMatoba/Piexif).
 from abc import ABC, abstractmethod
 import contextlib
 import itertools
-from typing import Dict
+from typing import Any, Dict, Tuple
 
 from vimiv.utils import log, lazy
 from vimiv import api
@@ -21,6 +21,8 @@ from vimiv import api
 pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
+
+ExifDictT = Dict[Any, Tuple[str, str]]
 
 
 class NoExifSupport(Exception):
@@ -75,7 +77,7 @@ class _ExifHandlerPiexif(_ExifHandler):
             _logger.debug("File %s not found", filename)
             return
 
-    def get_formatted_exif(self) -> Dict[str, str]:
+    def get_formatted_exif(self) -> ExifDictT:
 
         desired_keys = [
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
@@ -113,7 +115,7 @@ class _ExifHandlerPiexif(_ExifHandler):
                         piexif.TYPES.Float,
                         piexif.TYPES.DFloat,
                     ):  # integer and float
-                        exif[keyname] = (keyname, val)
+                        exif[keyname] = (keyname, str(val))
                     elif keytype in (
                         piexif.TYPES.Ascii,
                         piexif.TYPES.Undefined,
@@ -222,7 +224,7 @@ class ExifHandler(_ExifHandler):
             _logger.debug("File %s not found", filename)
             return
 
-    def get_formatted_exif(self) -> Dict[str, str]:
+    def get_formatted_exif(self) -> ExifDictT:
 
         desired_keys = [
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
@@ -241,9 +243,15 @@ class ExifHandler(_ExifHandler):
                     try:
                         key_value = self._metadata[key].human_value
 
-                    # Not all metadata(iptc) provide human_value, take raw_value instead
+                    # Not all metadata (i.e. IPTC) provide human_value, take raw_value
                     except AttributeError:
-                        key_value = self._metadata[key].raw_value
+                        value = self._metadata[key].raw_value
+
+                        # For IPTC the raw_value is a list of strings
+                        if isinstance(value, list):
+                            key_value = ", ".join(value)
+                        else:
+                            key_value = value
 
                     exif[key] = (key_name, key_value)
                     break
@@ -263,7 +271,8 @@ class ExifHandler(_ExifHandler):
             dest_image = pyexiv2.ImageMetadata(dest)
             dest_image.read()
 
-            # File types restrict the metadata type they can store. Try copying all types one by one and skip if it fails.
+            # File types restrict the metadata type they can store.
+            # Try copying all types one by one and skip if it fails.
             for copy_args in set(itertools.permutations((True, False, False, False))):
                 with contextlib.suppress(ValueError):
                     self._metadata.copy(dest_image, *copy_args)
