@@ -11,36 +11,44 @@ import pytest
 from vimiv.imutils import exif
 
 
-@pytest.fixture
-def no_pyexiv2():
-    initial_pyexiv2 = exif.pyexiv2
-    exif.pyexiv2 = None
-    yield
-    exif.pyexiv2 = initial_pyexiv2
+@pytest.fixture(params=[exif.ExifHandler, exif._ExifHandlerPiexif])
+def exif_handler(request):
+    """Parametrized pytest fixture to yield the different exif handlers."""
+    yield request.param
 
 
-@pytest.fixture
-def no_piexif():
-    exif.pyexiv2 = None
-    initial_piexif = exif.piexif
-    exif.piexif = None
-    yield
-    exif.piexif = initial_piexif
+@pytest.fixture()
+def piexif(monkeypatch):
+    """Pytest fixture to ensure only piexif is available."""
+    monkeypatch.setattr(exif, "pyexiv2", None)
 
 
-def test_check_pyexiv2(no_pyexiv2):
-    @exif.check_exif_dependancy
-    class DummyClass:
-        def __init__(self, *args):
-            pass
-
-    assert isinstance(DummyClass(), (exif._ExifHandlerPiexif, exif._ExifHandlerNoExif))
+@pytest.fixture()
+def noexif(monkeypatch, piexif):
+    """Pytest fixture to ensure no exif library is available."""
+    monkeypatch.setattr(exif, "piexif", None)
 
 
-def test_check_piexif(no_piexif):
-    @exif.check_exif_dependancy
-    class DummyClass:
-        def __init__(self, *args):
-            pass
+def test_check_exif_dependency():
+    default = None
+    assert exif.check_exif_dependancy(default) == default
 
-    assert isinstance(DummyClass(), exif._ExifHandlerNoExif)
+
+def test_check_exif_dependency_piexif(piexif):
+    default = None
+    assert exif.check_exif_dependancy(default) == exif._ExifHandlerPiexif
+
+
+def test_check_exif_dependency_noexif(noexif):
+    default = None
+    assert exif.check_exif_dependancy(default) == exif._ExifHandlerNoExif
+
+
+@pytest.mark.parametrize(
+    "methodname", ("copy_exif", "exif_date_time", "get_formatted_exif")
+)
+def test_handler_noexif(methodname):
+    handler = exif._ExifHandlerNoExif()
+    method = getattr(handler, methodname)
+    with pytest.raises(exif.NoExifSupport):
+        method()
