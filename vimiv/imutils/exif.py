@@ -44,7 +44,7 @@ class _ExifHandler(ABC):
     """
 
     @abstractmethod
-    def get_formatted_exif(self) -> Dict[str, str]:
+    def get_formatted_exif(self) -> ExifDictT:
         """Get a dict of the formatted exif value.
 
         Returns a dictionary contain formatted exif values for the exif tags defined in
@@ -163,7 +163,7 @@ class _ExifHandlerNoExif(_ExifHandler):
     def __init__(self, _filename=""):
         pass
 
-    def get_formatted_exif(self) -> Dict[str, str]:
+    def get_formatted_exif(self) -> ExifDictT:
         message = self._get_log_message("get_formatted_exif")
 
         raise NoExifSupport(message)
