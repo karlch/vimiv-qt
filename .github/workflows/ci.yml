@@ -23,12 +23,6 @@ jobs:
         sudo apt-get install libxkbcommon-x11-0
         python -m pip install --upgrade pip
         pip install tox
-        pip install boost
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python-py36.so
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python-py37.so
-        sudo ldconfig
-        pip install wheel
-        pip install py3exiv2
     - name: Test with tox
       run: |
         tox -e ${{ matrix.toxenv }}
@@ -53,24 +47,6 @@ jobs:
         sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
         python -m pip install --upgrade pip
         pip install tox
-        pip install wheel
-        pip install boost
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python-py38.so
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python3-py38.so
-
-        sudo mkdir -p /opt/hostedtoolcache/Python/3.8.6/x86/lib
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /opt/hostedtoolcache/Python/3.8.6/x86/lib/libboost_python3-py38.so
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /opt/hostedtoolcache/Python/3.8.6/x86/lib/libboost_python-py38.so
-        ls -lah /opt/hostedtoolcache/Python/3.8.6/x86/lib
-
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/local/lib/libboost_python3-py38.so
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/local/lib/libboost_python-py38.so
-
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/libboost_python3-py38.so
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/libboost_python-py38.so
-
-        sudo ldconfig
-        pip install py3exiv2
     - name: Test with tox
       run: |
         tox -e ${{ matrix.toxenv }}
