@@ -69,16 +69,13 @@ class _ExifHandlerPiexif(_ExifHandler):
     """Implementation of ExifHandler based on depreciated piexif."""
 
     def __init__(self, filename=""):
-        self._metadata = None
-
         try:
             self._metadata = piexif.load(filename)
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
-            return
+            self._metadata = None
 
     def get_formatted_exif(self) -> ExifDictT:
-
         desired_keys = [
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
         ]
@@ -87,7 +84,6 @@ class _ExifHandlerPiexif(_ExifHandler):
         exif = dict()
 
         try:
-
             for ifd in self._metadata:
                 if ifd == "thumbnail":
                     continue
@@ -133,7 +129,6 @@ class _ExifHandlerPiexif(_ExifHandler):
         return exif
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
-
         try:
             if reset_orientation:
                 with contextlib.suppress(KeyError):
@@ -149,7 +144,6 @@ class _ExifHandlerPiexif(_ExifHandler):
             _logger.debug("No exif data in '%s'", dest)
 
     def exif_date_time(self) -> str:
-
         with contextlib.suppress(
             piexif.InvalidImageDataError, FileNotFoundError, KeyError
         ):
@@ -193,7 +187,6 @@ def check_exif_dependancy(handler):
     Args:
         handler: The class to be decorated.
     """
-
     if pyexiv2:
         return handler
 
@@ -215,17 +208,13 @@ class ExifHandler(_ExifHandler):
     """Main ExifHandler implementation bases on py3exiv2."""
 
     def __init__(self, filename=""):
-
         try:
             self._metadata = pyexiv2.ImageMetadata(filename)
             self._metadata.read()
-
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
-            return
 
     def get_formatted_exif(self) -> ExifDictT:
-
         desired_keys = [
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
         ]
@@ -258,12 +247,10 @@ class ExifHandler(_ExifHandler):
 
                 except KeyError:
                     _logger.debug("Key %s is invalid for the current image", key)
-                    continue
 
         return exif
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
-
         if reset_orientation:
             with contextlib.suppress(KeyError):
                 self._metadata["Exif.Image.Orientation"] = ExifOrientation.Normal
@@ -280,14 +267,12 @@ class ExifHandler(_ExifHandler):
             dest_image.write()
 
             _logger.debug("Successfully wrote exif data for '%s'", dest)
-
         except FileNotFoundError:
             _logger.debug("Failed to write exif data. Destination '%s' not found", dest)
         except OSError as e:
             _logger.debug("Failed to write exif data for '%s': '%s'", dest, str(e))
 
     def exif_date_time(self) -> str:
-
         with contextlib.suppress(KeyError):
             return self._metadata["Exif.Image.DateTime"].raw_value
         return ""
