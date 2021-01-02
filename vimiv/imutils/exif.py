@@ -157,23 +157,18 @@ class _ExifHandlerNoExif(_ExifHandler):
     def __init__(self, _filename=""):
         pass
 
-    def get_formatted_exif(self) -> ExifDictT:
-        message = self._get_log_message("get_formatted_exif")
-
-        raise NoExifSupport(message)
-
-    def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
-        message = self._get_log_message("copy_exif")
-
-        raise NoExifSupport(message)
+    def copy_exif(self, _dest: str = "", _reset_orientation: bool = True) -> None:
+        self.raise_exception("copy_exif")
 
     def exif_date_time(self) -> str:
-        message = self._get_log_message("exif_date_time")
+        self.raise_exception("exif_date_time")
 
-        raise NoExifSupport(message)
+    def get_formatted_exif(self):
+        self.raise_exception("get_formatted_exif")
 
-    def _get_log_message(self, func_name: str) -> str:
-        return f"Cannot call '{func_name}', py3exiv2 is required for exif support"
+    def raise_exception(self, name: str) -> str:
+        msg = f"Cannot call '{name}', py3exiv2 is required for exif support"
+        raise NoExifSupport(msg)
 
 
 def check_exif_dependancy(handler):
