@@ -7,7 +7,9 @@
 """Utility functions and classes for exif handling.
 
 All exif related tasks are implemented in this module. The heavy lifting is done using
-piexif (https://github.com/hMatoba/Piexif).
+one of the supported exif libraries, i.e.
+* piexif (https://pypi.org/project/piexif/) and
+* pyexiv2 (https://pypi.org/project/py3exiv2/).
 """
 
 from abc import ABC, abstractmethod
@@ -26,7 +28,10 @@ ExifDictT = Dict[Any, Tuple[str, str]]
 
 
 class NoExifSupport(Exception):
-    """Raised if vimiv has no exif support. I.e. if py3exiv2 is not installed."""
+    """Raised if vimiv has no exif support.
+
+    This is the case when neither pyexiv2 nor piexif are installed.
+    """
 
 
 class _ExifHandler(ABC):
@@ -66,7 +71,7 @@ class _ExifHandler(ABC):
 
 
 class _ExifHandlerPiexif(_ExifHandler):
-    """Implementation of ExifHandler based on depreciated piexif."""
+    """Implementation of ExifHandler based on deprecated piexif."""
 
     def __init__(self, filename=""):
         try:
@@ -167,15 +172,15 @@ class _ExifHandlerNoExif(_ExifHandler):
         self.raise_exception("get_formatted_exif")
 
     def raise_exception(self, name: str) -> NoReturn:
-        msg = f"Cannot call '{name}', py3exiv2 is required for exif support"
+        msg = f"Cannot call '{name}', pyexiv2 is required for exif support"
         raise NoExifSupport(msg)
 
 
 def check_exif_dependancy(handler):
-    """Decorator for ExifHandler which require the optional py3exiv2 module.
+    """Decorator for ExifHandler which requires the optional pyexiv2 module.
 
-    If py3exiv2 is available the class is left as it is. If py3exiv2 is not available
-    but the depreciated piexif module is, a depreciation warning is given to the user
+    If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
+    but the deprecated piexif module is, a deprecation warning is given to the user
     and a _ExifHandlerPiexif returned. If none of the two modules is available,
     _ExifHandlerNoExif is returned and a debug log is logged.
 
@@ -189,10 +194,10 @@ def check_exif_dependancy(handler):
         return _ExifHandlerPiexif
 
     _logger.warning(
-        "There is no exif support and therfore: \
-1. Exif data is lost when writing images to disk; \
-2. The `:metadata` command and associated `i` keybinding is not available; \
-3. The {exif-date-time} statusbar module is not available"
+        "There is no exif support and therefore:\n"
+        "1. Exif data is lost when writing images to disk.\n"
+        "2. The `:metadata` command and associated `i` keybinding is not available.\n"
+        "3. The {exif-date-time} statusbar module is not available."
     )
 
     return _ExifHandlerNoExif
@@ -200,7 +205,7 @@ def check_exif_dependancy(handler):
 
 @check_exif_dependancy
 class ExifHandler(_ExifHandler):
-    """Main ExifHandler implementation bases on py3exiv2."""
+    """Main ExifHandler implementation based on pyexiv2."""
 
     def __init__(self, filename=""):
         try:
