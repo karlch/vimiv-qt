@@ -26,7 +26,6 @@ def no_exif_support(monkeypatch):
     monkeypatch.setattr(version, "piexif", None)
 
 
-@pytest.mark.optional
 def test_svg_support_info():
     assert "svg support: true" in version.info().lower()
 
@@ -35,7 +34,7 @@ def test_no_svg_support_info(no_svg_support):
     assert "svg support: false" in version.info().lower()
 
 
-@pytest.mark.optional
+@pytest.mark.piexif
 def test_exif_support_info():
     assert piexif.VERSION in version.info()
 

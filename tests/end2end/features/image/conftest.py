@@ -33,14 +33,9 @@ def handler():
 
 
 @bdd.when("I add exif information")
-def add_exif_information(handler, exif_content):
+def add_exif_information_bdd(add_exif_information, handler, exif_content):
     assert piexif is not None, "piexif required to add exif information"
-    path = handler._path
-    exif_dict = piexif.load(path)
-    for ifd, ifd_dict in exif_content.items():
-        for key, value in ifd_dict.items():
-            exif_dict[ifd][key] = value
     # Wait for thumbnail creation so we don't interfere with the current reading by
     # adding more bytes
     utils.Pool.wait(5000)
-    piexif.insert(piexif.dump(exif_dict), path)
+    add_exif_information(handler._path, exif_content)

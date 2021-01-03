@@ -17,18 +17,6 @@ def exif_handler(request):
     yield request.param
 
 
-@pytest.fixture()
-def piexif(monkeypatch):
-    """Pytest fixture to ensure only piexif is available."""
-    monkeypatch.setattr(exif, "pyexiv2", None)
-
-
-@pytest.fixture()
-def noexif(monkeypatch, piexif):
-    """Pytest fixture to ensure no exif library is available."""
-    monkeypatch.setattr(exif, "piexif", None)
-
-
 def test_check_exif_dependency():
     default = None
     assert exif.check_exif_dependancy(default) == default
