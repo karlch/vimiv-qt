@@ -121,14 +121,11 @@ if exif.has_exif_support:
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
-            try:
-                formatted_exif = exif.ExifHandler(self._path).get_formatted_exif()
-                if formatted_exif:
-                    self.setText(utils.format_html_table(formatted_exif.values()))
-                else:
-                    self.setText("No matching metadata found")
-            except exif.NoExifSupport:
-                pass
+            formatted_exif = exif.ExifHandler(self._path).get_formatted_exif()
+            if formatted_exif:
+                self.setText(utils.format_html_table(formatted_exif.values()))
+            else:
+                self.setText("No matching metadata found")
             self._update_geometry()
             self._current_set = api.settings.metadata.current_keyset.value
 
