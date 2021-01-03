@@ -13,7 +13,7 @@ piexif (https://github.com/hMatoba/Piexif).
 from abc import ABC, abstractmethod
 import contextlib
 import itertools
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, NoReturn
 
 from vimiv.utils import log, lazy
 from vimiv import api
@@ -157,16 +157,16 @@ class _ExifHandlerNoExif(_ExifHandler):
     def __init__(self, _filename=""):
         pass
 
-    def copy_exif(self, _dest: str = "", _reset_orientation: bool = True) -> None:
+    def copy_exif(self, _dest: str = "", _reset_orientation: bool = True) -> NoReturn:
         self.raise_exception("copy_exif")
 
-    def exif_date_time(self) -> str:
+    def exif_date_time(self) -> NoReturn:
         self.raise_exception("exif_date_time")
 
-    def get_formatted_exif(self):
+    def get_formatted_exif(self) -> NoReturn:
         self.raise_exception("get_formatted_exif")
 
-    def raise_exception(self, name: str) -> str:
+    def raise_exception(self, name: str) -> NoReturn:
         msg = f"Cannot call '{name}', py3exiv2 is required for exif support"
         raise NoExifSupport(msg)
 
