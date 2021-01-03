@@ -273,7 +273,7 @@ class ExifHandler(_ExifHandler):
         return ""
 
 
-has_exif_support = not isinstance(ExifHandler(), _ExifHandlerNoExif)
+has_exif_support = ExifHandler != _ExifHandlerNoExif
 
 
 class ExifOrientation:
