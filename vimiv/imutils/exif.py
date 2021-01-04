@@ -12,7 +12,6 @@ one of the supported exif libraries, i.e.
 * pyexiv2 (https://pypi.org/project/py3exiv2/).
 """
 
-from abc import ABC, abstractmethod
 import contextlib
 import itertools
 from typing import Any, Dict, Tuple, NoReturn
@@ -27,53 +26,55 @@ _logger = log.module_logger(__name__)
 ExifDictT = Dict[Any, Tuple[str, str]]
 
 
-class NoExifSupport(Exception):
-    """Raised if vimiv has no exif support.
-
-    This is the case when neither pyexiv2 nor piexif are installed.
-    """
+class UnsupportedExifOperation(NotImplementedError):
+    """Raised if an exif operation is not supported by the used library if any."""
 
 
-class _ExifHandler(ABC):
+class _ExifHandlerBase:
     """Handler to load and copy exif information of a single image.
 
-    This class provides several methods for interacting with metadata of a single image.
-
-    Methods:
-        get_formatted_exif: Get dict containing formatted exif values.
-        copy_exif: Copies the metadata to the src image.
-        exif_date_time: Get the datetime.
-
-    Attributes:
-        _metadata: Instance of the pyexiv2 metadata handler
+    This class provides the interface for handling exif support. By default none of the
+    operations are implemented. Instead it is up to a child class which wraps around one
+    of the supported exif libraries to implement the methods it can.
     """
 
-    @abstractmethod
-    def get_formatted_exif(self) -> ExifDictT:
-        """Get a dict of the formatted exif value.
+    MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for exif support."
 
-        Returns a dictionary contain formatted exif values for the exif tags defined in
-        the config.
-        """
+    def __init__(self, _filename=""):
+        pass
 
-    @abstractmethod
-    def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+    def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
         """Copy exif information from current image to dest.
 
         Args:
             dest: Path to write the exif information to.
             reset_orientation: If true, reset the exif orientation tag to normal.
         """
+        self.raise_exception("Copying exif data")
 
-    @abstractmethod
     def exif_date_time(self) -> str:
-        """Get exif creation date and time of filename."""
+        """Get exif creation date and time as formatted string."""
+        self.raise_exception("Retrieving exif date-time")
+
+    def get_formatted_exif(self) -> ExifDictT:
+        """Get a dictionary of formatted exif values."""
+        self.raise_exception("Getting formatted exif data")
+
+    @classmethod
+    def raise_exception(cls, operation: str) -> NoReturn:
+        """Raise an exception for a not implemented exif operation."""
+        msg = f"{operation} is not supported{cls.MESSAGE_SUFFIX}"
+        # TODO log this message once
+        raise UnsupportedExifOperation(msg)
 
 
-class _ExifHandlerPiexif(_ExifHandler):
-    """Implementation of ExifHandler based on deprecated piexif."""
+class _ExifHandlerPiexif(_ExifHandlerBase):
+    """Implementation of ExifHandler based on piexif."""
+
+    MESSAGE_SUFFIX = " by piexif."
 
     def __init__(self, filename=""):
+        super().__init__(filename)
         try:
             self._metadata = piexif.load(filename)
         except FileNotFoundError:
@@ -156,33 +157,13 @@ class _ExifHandlerPiexif(_ExifHandler):
         return ""
 
 
-class _ExifHandlerNoExif(_ExifHandler):
-    """ExifHandler implementation for no exif support."""
-
-    def __init__(self, _filename=""):
-        pass
-
-    def copy_exif(self, _dest: str = "", _reset_orientation: bool = True) -> NoReturn:
-        self.raise_exception("copy_exif")
-
-    def exif_date_time(self) -> NoReturn:
-        self.raise_exception("exif_date_time")
-
-    def get_formatted_exif(self) -> NoReturn:
-        self.raise_exception("get_formatted_exif")
-
-    def raise_exception(self, name: str) -> NoReturn:
-        msg = f"Cannot call '{name}', pyexiv2 is required for exif support"
-        raise NoExifSupport(msg)
-
-
 def check_exif_dependancy(handler):
     """Decorator for ExifHandler which requires the optional pyexiv2 module.
 
     If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
-    but the deprecated piexif module is, a deprecation warning is given to the user
-    and a _ExifHandlerPiexif returned. If none of the two modules is available,
-    _ExifHandlerNoExif is returned and a debug log is logged.
+    but the less powerful piexif module is, _ExifHandlerPiexif is returned instead.
+    If none of the two modules are available, the base implementation which always
+    throws an exception is returned.
 
     Args:
         handler: The class to be decorated.
@@ -200,14 +181,17 @@ def check_exif_dependancy(handler):
         "3. The {exif-date-time} statusbar module is not available."
     )
 
-    return _ExifHandlerNoExif
+    return _ExifHandlerBase
 
 
 @check_exif_dependancy
-class ExifHandler(_ExifHandler):
+class ExifHandler(_ExifHandlerBase):
     """Main ExifHandler implementation based on pyexiv2."""
 
+    MESSAGE_SUFFIX = " by pyexiv2."
+
     def __init__(self, filename=""):
+        super().__init__(filename)
         try:
             self._metadata = pyexiv2.ImageMetadata(filename)
             self._metadata.read()
@@ -278,7 +262,7 @@ class ExifHandler(_ExifHandler):
         return ""
 
 
-has_exif_support = ExifHandler != _ExifHandlerNoExif
+has_exif_support = ExifHandler != _ExifHandlerBase
 
 
 class ExifOrientation:

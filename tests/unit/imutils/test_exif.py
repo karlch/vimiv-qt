@@ -29,14 +29,28 @@ def test_check_exif_dependency_piexif(piexif):
 
 def test_check_exif_dependency_noexif(noexif):
     default = None
-    assert exif.check_exif_dependancy(default) == exif._ExifHandlerNoExif
+    assert exif.check_exif_dependancy(default) == exif._ExifHandlerBase
 
 
 @pytest.mark.parametrize(
-    "methodname", ("copy_exif", "exif_date_time", "get_formatted_exif")
+    "methodname, args",
+    (("copy_exif", ("dest.jpg",)), ("exif_date_time", ()), ("get_formatted_exif", ())),
 )
-def test_handler_noexif(methodname):
-    handler = exif._ExifHandlerNoExif()
+def test_handler_base_raises(methodname, args):
+    handler = exif._ExifHandlerBase()
     method = getattr(handler, methodname)
-    with pytest.raises(exif.NoExifSupport):
-        method()
+    with pytest.raises(exif.UnsupportedExifOperation):
+        method(*args)
+
+
+@pytest.mark.parametrize(
+    "handler, expected_msg",
+    (
+        (exif.ExifHandler, "not supported by pyexiv2"),
+        (exif._ExifHandlerPiexif, "not supported by piexif"),
+        (exif._ExifHandlerBase, "not supported. Please install"),
+    ),
+)
+def test_handler_exception_customization(handler, expected_msg):
+    with pytest.raises(exif.UnsupportedExifOperation, match=expected_msg):
+        handler.raise_exception("test operation")
