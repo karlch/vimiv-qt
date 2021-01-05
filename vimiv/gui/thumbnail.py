@@ -99,6 +99,7 @@ class ThumbnailView(
         self.doubleClicked.connect(self.open_selected)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
+        api.mark.markdone.connect(self.repaint)
         synchronize.signals.new_library_path_selected.connect(self._select_path)
 
         styles.apply(self)
@@ -194,7 +195,6 @@ class ThumbnailView(
             return
         item = self.item(index)
         item.marked = marked
-        self.repaint()
 
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
