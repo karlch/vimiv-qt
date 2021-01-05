@@ -27,6 +27,7 @@ class Mark(QObject):
     Signals:
         marked: Emitted with the image path when an image was marked.
         unmarked: Emitted with the image path when an image was unmarked.
+        markdone: Emitted when all image of a given paths list are (un)marked.
 
     Attributes:
         _indicator: Attribute to cache the evaluated mark indicator string.
@@ -37,6 +38,7 @@ class Mark(QObject):
 
     marked = pyqtSignal(str)
     unmarked = pyqtSignal(str)
+    markdone = pyqtSignal()
 
     @objreg.register
     def __init__(self) -> None:
@@ -81,6 +83,7 @@ class Mark(QObject):
         for path in paths:
             if files.is_image(path):
                 self._toggle_mark(path)
+        self.markdone.emit()
 
     @commands.register()
     def mark_clear(self) -> None:
@@ -98,6 +101,7 @@ class Mark(QObject):
         for path in self._last_marked:
             self.unmarked.emit(path)
             _logger.debug("Unmarked '%s'", path)
+        self.markdone.emit()
 
     @commands.register()
     def mark_restore(self) -> None:
@@ -108,6 +112,7 @@ class Mark(QObject):
         for path in self._marked:
             self.marked.emit(path)
             _logger.debug("Marked '%s'", path)
+        self.markdone.emit()
 
     @commands.register()
     def tag_write(self, name: str) -> None:
@@ -179,6 +184,7 @@ class Mark(QObject):
         for path in paths:
             self.marked.emit(path)
             _logger.debug("Marked '%s'", path)
+        self.markdone.emit()
 
     @commands.register()
     def tag_open(self, name: str) -> None:
