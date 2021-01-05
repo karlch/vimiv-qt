@@ -51,7 +51,7 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
         The list of currently open paths.
     """
     mode = mode if mode else modes.current()
-    return mode.pathlist
+    return list(mode.pathlist)  # Ensure we create a copy
 
 
 @keybindings.register("o", "command --text='open '")
