@@ -81,6 +81,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             self._metadata = None
 
     def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
+        desired_keys = [key.rpartition(".")[2] for key in desired_keys]
         exif = dict()
 
         try:

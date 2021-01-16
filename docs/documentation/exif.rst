@@ -50,7 +50,8 @@ the short version of the key, e.g. ``FocalLength``, also works for the keys in
 ``Exif.Image`` or ``Exif.Photo``.
 
 `Piexif`_ unfortunately always uses the short form of the key, i.e. everything that
-comes after the last ``.`` character.
+comes after the last ``.`` character. In case you pass the full path, vimiv will remove
+everything up to and including the last ``.`` character and match only the short form.
 
 Once `issue #220 <https://github.com/karlch/vimiv-qt/issues/220>`_ has been implemented,
 you will be able to get a list of valid metadata keys for the current image using
