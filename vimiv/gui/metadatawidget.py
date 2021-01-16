@@ -121,7 +121,11 @@ if exif.has_exif_support:
             _logger.debug(
                 "%s: reading exif of %s", self.__class__.__qualname__, self._path
             )
-            formatted_exif = exif.ExifHandler(self._path).get_formatted_exif()
+            keys = [
+                e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
+            ]
+            _logger.debug(f"Read metadata.current_keys {keys}")
+            formatted_exif = exif.ExifHandler(self._path).get_formatted_exif(keys)
             if formatted_exif:
                 self.setText(utils.format_html_table(formatted_exif.values()))
             else:

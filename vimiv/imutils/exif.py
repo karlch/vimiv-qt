@@ -14,10 +14,9 @@ one of the supported exif libraries, i.e.
 
 import contextlib
 import itertools
-from typing import Any, Dict, Tuple, NoReturn
+from typing import Any, Dict, Tuple, NoReturn, Sequence
 
 from vimiv.utils import log, lazy
-from vimiv import api
 
 pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 piexif = lazy.import_module("piexif", optional=True)
@@ -56,7 +55,7 @@ class _ExifHandlerBase:
         """Get exif creation date and time as formatted string."""
         self.raise_exception("Retrieving exif date-time")
 
-    def get_formatted_exif(self) -> ExifDictT:
+    def get_formatted_exif(self, _desired_keys: Sequence[str]) -> ExifDictT:
         """Get a dictionary of formatted exif values."""
         self.raise_exception("Getting formatted exif data")
 
@@ -81,12 +80,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             _logger.debug("File %s not found", filename)
             self._metadata = None
 
-    def get_formatted_exif(self) -> ExifDictT:
-        desired_keys = [
-            e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
-        ]
-        _logger.debug(f"Read metadata.current_keys {desired_keys}")
-
+    def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
         exif = dict()
 
         try:
@@ -198,12 +192,7 @@ class ExifHandler(_ExifHandlerBase):
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
 
-    def get_formatted_exif(self) -> ExifDictT:
-        desired_keys = [
-            e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
-        ]
-        _logger.debug(f"Read metadata.current_keys {desired_keys}")
-
+    def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
         exif = dict()
 
         for base_key in desired_keys:

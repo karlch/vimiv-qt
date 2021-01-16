@@ -34,7 +34,11 @@ def test_check_exif_dependency_noexif(noexif):
 
 @pytest.mark.parametrize(
     "methodname, args",
-    (("copy_exif", ("dest.jpg",)), ("exif_date_time", ()), ("get_formatted_exif", ())),
+    (
+        ("copy_exif", ("dest.jpg",)),
+        ("exif_date_time", ()),
+        ("get_formatted_exif", ([],)),
+    ),
 )
 def test_handler_base_raises(methodname, args):
     handler = exif._ExifHandlerBase()
