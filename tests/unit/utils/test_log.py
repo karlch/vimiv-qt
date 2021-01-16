@@ -7,6 +7,7 @@
 """Tests for vimiv.utils.log."""
 
 import logging
+import re
 
 import pytest
 
@@ -102,3 +103,16 @@ def test_module_logger_level_after_setup(capsys, level):
 
     assert module_logger.level == level
     assert message in captured.err
+
+
+def test_log_once(capsys, setup_logging):
+    """Ensure we only log a message once when using the once keyword."""
+    logger = log.module_logger("test_log")
+    message = "Show this message once"
+
+    logger.error(message, once=True)
+    logger.error(message, once=True)
+    captured = capsys.readouterr()
+    matches = re.findall(message, captured.err)
+
+    assert len(matches) == 1
