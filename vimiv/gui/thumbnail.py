@@ -87,6 +87,7 @@ class ThumbnailView(
         self.setResizeMode(QListWidget.Adjust)
 
         self.setItemDelegate(ThumbnailDelegate(self))
+        self.setDragEnabled(False)
 
         api.signals.all_images_cleared.connect(self.clear)
         api.signals.new_image_opened.connect(self._select_path)
