@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Exif &#8212; vimiv  documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing Guidelines" href="contributing.html" />
+    <link rel="prev" title="Plugins" href="configuration/plugins.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/vimiv.svg"></span>
+          vimiv</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Docs</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../changelog.html">Changelog</a></li>
+                <li><a href="contributing.html">Contributing</a></li>
+                <li><a href="https://github.com/karlch/vimiv-qt">GitHub</a></li>
+            
+            
+              
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Exif</a><ul>
+<li><a class="reference internal" href="#advantages-of-the-different-exif-libraries">Advantages of the different exif libraries</a></li>
+<li><a class="reference internal" href="#moving-from-piexif-to-pyexiv2">Moving from piexif to pyexiv2</a></li>
+<li><a class="reference internal" href="#customizing-metadata-keysets">Customizing metadata keysets</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="exif">
+<h1>Exif<a class="headerlink" href="#exif" title="Permalink to this headline">¶</a></h1>
+<p>Vimiv provides optional exif support if either <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> or <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> is available. If
+this is the case:</p>
+<ol class="arabic simple">
+<li><p>Exif metadata is automatically copied from source to destination when writing images
+to disk.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command and the corresponding <code class="docutils literal notranslate"><span class="pre">i</span></code>-keybinding is available.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">{exif-date-time}</span></code> statusbar module is available.</p></li>
+</ol>
+<div class="section" id="advantages-of-the-different-exif-libraries">
+<h2>Advantages of the different exif libraries<a class="headerlink" href="#advantages-of-the-different-exif-libraries" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://pypi.org/project/pyexiv2/">Pyexiv2</a> is the more powerful of the two options. One large advantage is that with
+pyexiv2 <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> formats exif data into human readable format, for example
+<code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span> <span class="pre">mm</span></code> where <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> would only give <code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span></code>. However,
+given it is written as python bindings to the c++ api of <a class="reference external" href="https://www.exiv2.org/index.html">exiv2</a>, the installation is
+more involved compared to the pure python <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> module.</p>
+<p>We recommend to use <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> if the installation is not too involved on your system
+and <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> as a fallback solution or in case you don’t need the full power of
+<a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> and prefer something more lightweight.</p>
+</div>
+<div class="section" id="moving-from-piexif-to-pyexiv2">
+<h2>Moving from piexif to pyexiv2<a class="headerlink" href="#moving-from-piexif-to-pyexiv2" title="Permalink to this headline">¶</a></h2>
+<p>As pyexiv2 is the more powerful option compared to piexif, vimiv will prefer pyexiv2
+over piexif. Therefore, to switch to pyexiv2 simply install it on your system and vimiv
+will use it automatically. If you have defined custom metadata sets in your config, you
+may have to adjust them to use the full path to any key. See the next section for more
+information on this.</p>
+</div>
+<div class="section" id="customizing-metadata-keysets">
+<h2>Customizing metadata keysets<a class="headerlink" href="#customizing-metadata-keysets" title="Permalink to this headline">¶</a></h2>
+<p>You can configure the information displayed by the <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command by adding your
+own key sets to the <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> section in your configfile like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keys2</span> <span class="o">=</span> <span class="n">Override</span><span class="p">,</span><span class="n">Second</span><span class="p">,</span><span class="n">Set</span>
+<span class="n">keys4</span> <span class="o">=</span> <span class="n">New</span><span class="p">,</span><span class="n">Fourth</span><span class="p">,</span><span class="n">Set</span>
+</pre></div>
+</div>
+<p>where the values must be a comma-separated list of valid metadata keys.</p>
+<p>In case you are using <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> you can find a complete overview of valid keys on the
+<a class="reference external" href="https://www.exiv2.org/metadata.html">exiv2 webpage</a>. You can choose any of the exif
+or IPTC keys. It is considered best-practice to use the full path to any key, e.g.
+<code class="docutils literal notranslate"><span class="pre">Exif.Image.FocalLength</span></code>, but for convenience the short version of the key, e.g.
+<code class="docutils literal notranslate"><span class="pre">FocalLength</span></code>, also works for the keys in <code class="docutils literal notranslate"><span class="pre">Exif.Image</span></code> or <code class="docutils literal notranslate"><span class="pre">Exif.Photo</span></code>.</p>
+<p><a class="reference external" href="https://pypi.org/project/piexif/">Piexif</a> unfortunately always uses the short form of the key, i.e. everything that
+comes after the last <code class="docutils literal notranslate"><span class="pre">.</span></code> character. In case you pass the full path, vimiv will remove
+everything up to and including the last <code class="docutils literal notranslate"><span class="pre">.</span></code> character and match only the short form.</p>
+<p>Once <a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/220">issue #220</a> has been implemented,
+you will be able to get a list of valid metadata keys for the current image using
+<code class="docutils literal notranslate"><span class="pre">:metadata</span> <span class="pre">--list-keys</span></code>.</p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      
+      <a href="configuration/plugins.html" title="Previous Chapter: Plugins"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Plugins</span>
+      </a>
+      &nbsp;
+      &nbsp;
+      <a href="#">Back to top</a>
+      &nbsp;
+      &nbsp;
+      <a href="contributing.html" title="Next Chapter: Contributing Guidelines"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Contributing ... &raquo;</span>
+      </a>
+      
+
+
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/documentation/exif.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

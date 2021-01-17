@@ -409,6 +409,11 @@ create a module logger:</p>
 <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/vimiv.log</span></code></p></li>
 <li><p>One to print log messages to the statusbar (only for application-wide logger)</p></li>
 </ul>
+<p>In case you want to ensure that a log message is only logged a single time, pass
+<code class="docutils literal notranslate"><span class="pre">once=True</span></code> to your log statement:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Something happened, and may now happen very often&quot;</span><span class="p">,</span> <span class="n">once</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="module-vimiv.api">
 <span id="api-documentation"></span><h3><a class="toc-backref" href="#id13">API Documentation</a><a class="headerlink" href="#module-vimiv.api" title="Permalink to this headline">¶</a></h3>
