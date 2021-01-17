@@ -38,6 +38,7 @@ def test_check_exif_dependency_noexif(noexif):
         ("copy_exif", ("dest.jpg",)),
         ("exif_date_time", ()),
         ("get_formatted_exif", ([],)),
+        ("get_keys", ()),
     ),
 )
 def test_handler_base_raises(methodname, args):
