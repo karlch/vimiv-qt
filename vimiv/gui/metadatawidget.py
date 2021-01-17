@@ -6,6 +6,7 @@
 
 """Overlay widget to display image metadata."""
 
+import itertools
 from typing import Optional
 
 from PyQt5.QtCore import Qt
@@ -98,6 +99,39 @@ if exif.has_exif_support:
                 _logger.debug("Showing widget")
                 self._update_text()
                 self.raise_()
+                self.show()
+
+        @api.commands.register(mode=api.modes.IMAGE)
+        def metadata_list_keys(self, n_cols: int = 3, to_term: bool = False):
+            """Display a list of all valid metadata keys for the current image.
+
+            **syntax:** ``:metadata-list-keys [--n-cols=NUMBER] [--to-term]``
+
+            optional arguments:
+                * ``--n-cols``: Number of columns used to display the keys.
+                * ``--to-term``: Print the keys to the terminal instead.
+            """
+
+            def format_row(first, *other):
+                other_elems = "".join(
+                    f"<td style='padding-left: 2ex'>{elem}</td>" for elem in other
+                )
+                return f"<tr><td>{first}</td>{other_elems}</tr>"
+
+            handler = exif.ExifHandler(self._path)
+            keys = sorted(set(handler.get_keys()))
+            if to_term:
+                print(*keys, sep="\n")
+            elif n_cols < 1:
+                raise api.commands.CommandError("Number of columns must be positive")
+            else:
+                columns = list(utils.split(keys, n_cols))
+                rows = map(list, itertools.zip_longest(*columns, fillvalue=""))
+                table = utils.add_html(
+                    "\n".join(format_row(*elems) for elems in rows), "table"
+                )
+                self.setText(table)
+                self._update_geometry()
                 self.show()
 
         def update_geometry(self, window_width, window_bottom):

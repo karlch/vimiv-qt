@@ -49,3 +49,22 @@ Feature: Metadata widget displaying image exif information
         Then the metadata widget should be visible
         # The new image no longer has any exif information
         And the metadata text should contain 'No matching metadata found'
+
+    Scenario: Display list of valid metadata keys
+        Given I open any image
+        When I add exif information
+        And I run metadata-list-keys
+        Then the metadata widget should be visible
+        And the metadata text should contain 'Make'
+        And the metadata text should contain 'Model'
+        And the metadata text should contain 'Copyright'
+
+    Scenario: Print list of valid metadata keys
+        Given I open any image
+        And I capture output
+        When I add exif information
+        And I run metadata-list-keys --to-term
+        Then the metadata widget should not be visible
+        And stdout should contain 'Make'
+        And stdout should contain 'Model'
+        And stdout should contain 'Copyright'
