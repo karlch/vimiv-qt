@@ -50,18 +50,16 @@ def wrap_style_span(style: str, text: str) -> str:
     return f"<span style='{style};'>{text}</span>"
 
 
-def format_html_table(content: typing.Iterable[typing.Tuple[str, str]]) -> str:
-    """Format a nice html table for content in the form of key, value."""
+def format_html_table(content: typing.Iterable[typing.Sequence[str]]) -> str:
+    """Format a nice html table for content."""
 
-    def format_row(key: str, value: str) -> str:
-        return (
-            "<tr>"
-            f"<td>{key}</td>"
-            f"<td style='padding-left: 2ex'>{value}</td>"
-            "</tr>"
+    def format_row(first: str, *other: str) -> str:
+        other_elems = "".join(
+            f"<td style='padding-left: 2ex'>{elem}</td>" for elem in other
         )
+        return f"<tr><td>{first}</td>{other_elems}</tr>"
 
-    return add_html("\n".join(format_row(k, v) for k, v in content), "table")
+    return add_html("\n".join(format_row(*cells) for cells in content), "table")
 
 
 def strip_html(text: str) -> str:

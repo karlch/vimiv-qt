@@ -121,12 +121,6 @@ if exif.has_exif_support:
                 * ``--to-term``: Print the keys to the terminal instead.
             """
 
-            def format_row(first, *other):
-                other_elems = "".join(
-                    f"<td style='padding-left: 2ex'>{elem}</td>" for elem in other
-                )
-                return f"<tr><td>{first}</td>{other_elems}</tr>"
-
             keys = sorted(set(self.handler.get_keys()))
             if to_term:
                 print(*keys, sep="\n")
@@ -134,9 +128,8 @@ if exif.has_exif_support:
                 raise api.commands.CommandError("Number of columns must be positive")
             else:
                 columns = list(utils.split(keys, n_cols))
-                rows = map(list, itertools.zip_longest(*columns, fillvalue=""))
-                table = utils.add_html(
-                    "\n".join(format_row(*elems) for elems in rows), "table"
+                table = utils.format_html_table(
+                    itertools.zip_longest(*columns, fillvalue="")
                 )
                 self.setText(table)
                 self._update_geometry()
