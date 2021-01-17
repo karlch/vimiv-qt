@@ -67,7 +67,7 @@ if exif.has_exif_support:
 
         @property
         def handler(self) -> exif.ExifHandler:
-            """ExifHandler for the current path."""
+            """Return the ExifHandler for the current path."""
             if self._handler is None:
                 self._handler = exif.ExifHandler(self._path)
             return self._handler
