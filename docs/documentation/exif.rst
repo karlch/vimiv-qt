@@ -55,9 +55,8 @@ or IPTC keys. It is considered best-practice to use the full path to any key, e.
 comes after the last ``.`` character. In case you pass the full path, vimiv will remove
 everything up to and including the last ``.`` character and match only the short form.
 
-Once `issue #220 <https://github.com/karlch/vimiv-qt/issues/220>`_ has been implemented,
-you will be able to get a list of valid metadata keys for the current image using
-``:metadata --list-keys``.
+You can get a list of valid metadata keys for the current image using the
+``:metadata-list-keys`` command.
 
 
 .. _exiv2: https://www.exiv2.org/index.html
