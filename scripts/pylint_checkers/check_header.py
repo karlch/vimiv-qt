@@ -6,6 +6,8 @@
 
 """Checker to ensure each python file includes a modeline and copyright notice."""
 
+import datetime
+
 from pylint.interfaces import IRawChecker
 from pylint.checkers import BaseChecker
 
@@ -38,7 +40,8 @@ class FileHeaderChecker(BaseChecker):
     MODELINE = "# vim: ft=python fileencoding=utf-8 sw=4 et sts=4"
     COPYRIGHT = (
         "# This file is part of vimiv.\n"
-        "# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>\n"
+        f"# Copyright 2017-{datetime.datetime.now().year} "
+        "Christian Karl (karlch) <karlch at protonmail dot com>\n"
         '# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.\n'
     )
 
