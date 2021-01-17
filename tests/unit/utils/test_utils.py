@@ -322,3 +322,13 @@ def test_call_throttled_function_once(qtbot, n_calls):
         local_task(i)
 
     qtbot.waitUntil(check_calls)
+
+
+@pytest.mark.parametrize("text", ("0x234", "0xAC7", "0x00", "AB67", "aC9e"))
+def test_is_hex_true(text):
+    assert utils.is_hex(text)
+
+
+@pytest.mark.parametrize("text", ("00x234", "0xGC7", "not-hex", "A-67", "a:9e"))
+def test_is_hex_false(text):
+    assert not utils.is_hex(text)

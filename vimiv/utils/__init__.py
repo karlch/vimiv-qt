@@ -130,6 +130,15 @@ def clamp(
     return value
 
 
+def is_hex(text: str) -> bool:
+    """Return True if text is a hexadecimal digit."""
+    try:
+        int(text, base=16)
+        return True
+    except ValueError:
+        return False
+
+
 def parameter_names(function: typing.Callable) -> typing.Tuple[str, ...]:
     """Fast implementation of getting the parameter names of a function.
 

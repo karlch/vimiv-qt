@@ -16,7 +16,7 @@ import contextlib
 import itertools
 from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable
 
-from vimiv.utils import log, lazy
+from vimiv.utils import log, lazy, is_hex
 
 pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 piexif = lazy.import_module("piexif", optional=True)
@@ -237,16 +237,7 @@ class ExifHandler(_ExifHandlerBase):
         return exif
 
     def get_keys(self) -> Iterable[str]:
-        def is_hex(key: str) -> bool:
-            """Return True if the name of key is a hexadecimal digit."""
-            _base, _sep, name = key.rpartition(".")
-            try:
-                int(name, base=16)
-                return True
-            except ValueError:
-                return False
-
-        return (key for key in self._metadata if not is_hex(key))
+        return (key for key in self._metadata if not is_hex(key.rpartition(".")[2]))
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         if reset_orientation:
