@@ -112,6 +112,7 @@
 <li><a class="reference internal" href="#flip">flip</a></li>
 <li><a class="reference internal" href="#goto">goto</a></li>
 <li><a class="reference internal" href="#metadata">metadata</a></li>
+<li><a class="reference internal" href="#metadata-list-keys">metadata-list-keys</a></li>
 <li><a class="reference internal" href="#play-or-pause">play-or-pause</a></li>
 <li><a class="reference internal" href="#reload">reload</a></li>
 <li><a class="reference internal" href="#rescale">rescale</a></li>
@@ -843,40 +844,43 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-metadata"><span class="std std-ref">metadata</span></a></p></td>
 <td><p>Toggle display of exif metadata of current image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-metadata-list-keys"><span class="std std-ref">metadata-list-keys</span></a></p></td>
+<td><p>Display a list of all valid metadata keys for the current image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
 <td><p>Toggle between play and pause of animation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
 <td><p>Reload the current image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-rescale"><span class="std std-ref">rescale</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rescale"><span class="std std-ref">rescale</span></a></p></td>
 <td><p>Rescale the original image to a new size.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-resize"><span class="std std-ref">resize</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-resize"><span class="std std-ref">resize</span></a></p></td>
 <td><p>Resize the original image to a new size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
 <td><p>Rotate the image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
 <td><p>Scroll the image in the given direction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
 <td><p>Scroll the image to one edge.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
 <td><p>Toggle slideshow.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-straighten"><span class="std std-ref">straighten</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-straighten"><span class="std std-ref">straighten</span></a></p></td>
 <td><p>Display a grid to straighten the current image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-undo-transformations"><span class="std std-ref">undo-transformations</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-undo-transformations"><span class="std std-ref">undo-transformations</span></a></p></td>
 <td><p>Undo any transformation applied to the current image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
 <td><p>Save the current image to disk.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
 <td><p>Zoom the current widget.</p></td>
 </tr>
 </tbody>
@@ -927,6 +931,18 @@ configfile like this:</p>
 </div>
 <p>where the values must be a comma-separated list of valid metadata keys.</p>
 </div>
+</div>
+<div class="section" id="metadata-list-keys">
+<span id="ref-image-metadata-list-keys"></span><h3>metadata-list-keys<a class="headerlink" href="#metadata-list-keys" title="Permalink to this headline">¶</a></h3>
+<p>Display a list of all valid metadata keys for the current image.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:metadata-list-keys</span> <span class="pre">[--n-cols=NUMBER]</span> <span class="pre">[--to-term]</span></code></p>
+<dl class="simple">
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--n-cols</span></code>: Number of columns used to display the keys.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--to-term</span></code>: Print the keys to the terminal instead.</p></li>
+</ul>
+</dd>
+</dl>
 </div>
 <div class="section" id="play-or-pause">
 <span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this headline">¶</a></h3>
