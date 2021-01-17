@@ -63,7 +63,7 @@ class _ExifHandlerBase:
     def raise_exception(cls, operation: str) -> NoReturn:
         """Raise an exception for a not implemented exif operation."""
         msg = f"{operation} is not supported{cls.MESSAGE_SUFFIX}"
-        # TODO log this message once
+        _logger.warning(msg, once=True)
         raise UnsupportedExifOperation(msg)
 
 
