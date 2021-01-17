@@ -14,7 +14,7 @@ one of the supported exif libraries, i.e.
 
 import contextlib
 import itertools
-from typing import Any, Dict, Tuple, NoReturn, Sequence
+from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable
 
 from vimiv.utils import log, lazy
 
@@ -58,6 +58,10 @@ class _ExifHandlerBase:
     def get_formatted_exif(self, _desired_keys: Sequence[str]) -> ExifDictT:
         """Get a dictionary of formatted exif values."""
         self.raise_exception("Getting formatted exif data")
+
+    def get_keys(self) -> Iterable[str]:
+        """Retrieve the name of all exif keys available."""
+        self.raise_exception("Getting exif keys")
 
     @classmethod
     def raise_exception(cls, operation: str) -> NoReturn:
@@ -128,6 +132,14 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             return {}
 
         return exif
+
+    def get_keys(self) -> Iterable[str]:
+        return (
+            piexif.TAGS[ifd][tag]["name"]
+            for ifd in self._metadata
+            if ifd != "thumbnail"
+            for tag in self._metadata[ifd]
+        )
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         try:
@@ -223,6 +235,18 @@ class ExifHandler(_ExifHandlerBase):
                     _logger.debug("Key %s is invalid for the current image", key)
 
         return exif
+
+    def get_keys(self) -> Iterable[str]:
+        def is_hex(key: str) -> bool:
+            """Return True if the name of key is a hexadecimal digit."""
+            _base, _sep, name = key.rpartition(".")
+            try:
+                int(name, base=16)
+                return True
+            except ValueError:
+                return False
+
+        return (key for key in self._metadata if not is_hex(key))
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         if reset_orientation:
