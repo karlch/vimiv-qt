@@ -33,6 +33,7 @@ if exif.has_exif_support:
             _mainwindow_width: width of the mainwindow.
             _path: Absolute path of the current image to load exif metadata of.
             _current_set: Holds a string of the currently selected keyset.
+            _handler: ExifHandler for _path or None. Use the handler property to access.
         """
 
         STYLESHEET = """
@@ -57,11 +58,19 @@ if exif.has_exif_support:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
+            self._handler: Optional[exif.ExifHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
 
             self.hide()
+
+        @property
+        def handler(self) -> exif.ExifHandler:
+            """ExifHandler for the current path."""
+            if self._handler is None:
+                self._handler = exif.ExifHandler(self._path)
+            return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
@@ -118,8 +127,7 @@ if exif.has_exif_support:
                 )
                 return f"<tr><td>{first}</td>{other_elems}</tr>"
 
-            handler = exif.ExifHandler(self._path)
-            keys = sorted(set(handler.get_keys()))
+            keys = sorted(set(self.handler.get_keys()))
             if to_term:
                 print(*keys, sep="\n")
             elif n_cols < 1:
@@ -159,7 +167,7 @@ if exif.has_exif_support:
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            formatted_exif = exif.ExifHandler(self._path).get_formatted_exif(keys)
+            formatted_exif = self.handler.get_formatted_exif(keys)
             if formatted_exif:
                 self.setText(utils.format_html_table(formatted_exif.values()))
             else:
@@ -172,6 +180,7 @@ if exif.has_exif_support:
             """Load new image and update text if the widget is currently visible."""
             self._path = path
             self._current_set = ""
+            self._handler = None
             if self.isVisible():
                 self._update_text()
 
