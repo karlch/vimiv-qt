@@ -31,6 +31,8 @@ Added:
   exif values into a human readable format. Thanks a lot
   `@jcjgraf <https://github.com/jcjgraf>`_ for all your hard work, thoughts and comments
   on this topic!
+* New ``:metadata-list-keys`` command to display all valid exif keys for the current
+  image.
 
 Changed:
 ^^^^^^^^
