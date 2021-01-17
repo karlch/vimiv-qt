@@ -6,14 +6,10 @@
 
 """Tests for vimiv.version."""
 
-try:
-    import piexif
-except ImportError:
-    piexif = None
-
 import pytest
 
 from vimiv import version
+from vimiv.imutils import exif
 
 
 @pytest.fixture
@@ -21,12 +17,6 @@ def no_svg_support(monkeypatch):
     monkeypatch.setattr(version, "QtSvg", None)
 
 
-@pytest.fixture
-def no_exif_support(monkeypatch):
-    monkeypatch.setattr(version, "piexif", None)
-
-
-@pytest.mark.optional
 def test_svg_support_info():
     assert "svg support: true" in version.info().lower()
 
@@ -35,10 +25,16 @@ def test_no_svg_support_info(no_svg_support):
     assert "svg support: false" in version.info().lower()
 
 
-@pytest.mark.optional
-def test_exif_support_info():
-    assert piexif.VERSION in version.info()
+@pytest.mark.pyexiv2
+def test_pyexiv2_info():
+    assert exif.pyexiv2.__version__ in version.info()
 
 
-def test_no_exif_support_info(no_exif_support):
+@pytest.mark.piexif
+def test_piexif_info():
+    assert exif.piexif.VERSION in version.info()
+
+
+def test_no_exif_support_info(noexif):
     assert "piexif: none" in version.info().lower()
+    assert "pyexiv2: none" in version.info().lower()

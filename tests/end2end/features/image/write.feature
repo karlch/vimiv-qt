@@ -11,7 +11,7 @@ Feature: Write an image to disk
             | new_path.png  |
             | new_path.tiff |
 
-    @optional
+    @exif
     Scenario: Write image preserving exif information
         Given I open any image
         When I add exif information

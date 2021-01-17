@@ -495,9 +495,9 @@ class metadata:  # pylint: disable=invalid-name
 
     # Default sets
     defaults = [
-        "Make, Model, DateTime, ExposureTime, FNumber, IsoSpeedRatings, FocalLength, LensMake, LensModel, ExposureBiasValue",  # pylint: disable=line-too-long,useless-suppression
-        "ExposureTime, FNumber, IsoSpeedRatings, FocalLength",
-        "Artist, Copyright",
+        "Exif.Image.Make, Exif.Image.Model, Exif.Image.DateTime, Exif.Photo.ExposureTime, Exif.Photo.FNumber, Exif.Photo.IsoSpeedRatings, Exif.Photo.FocalLength, Exif.Photo.LensMake, Exif.Photo.LensModel, Exif.Photo.ExposureBiasValue",  # pylint: disable=line-too-long,useless-suppression
+        "Exif.Photo.ExposureTime, Exif.Photo.FNumber, Exif.Photo.IsoSpeedRatings, Exif.Photo.FocalLength",  # pylint: disable=line-too-long,useless-suppression
+        "Exif.Image.Artist, Exif.Image.Copyright",
     ]
 
     # Store the keys as a comma separated string

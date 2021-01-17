@@ -12,6 +12,8 @@ import urllib.request
 
 import pytest
 
+from vimiv.imutils import exif
+
 
 CI = "CI" in os.environ
 
@@ -20,25 +22,46 @@ PLATFORM_MARKERS = (
     ("ci", CI, "Only run on ci"),
     ("ci_skip", not CI, "Skipped on ci"),
 )
+
+EXIF_MARKERS = (
+    ("exif", exif.has_exif_support, "Only run with exif support"),
+    ("noexif", not exif.has_exif_support, "Only run without exif support"),
+    ("pyexiv2", exif.pyexiv2 is not None, "Only run with pyexiv2"),
+    ("piexif", exif.piexif is not None, "Only run with piexif"),
+)
 # fmt: on
 
 
 def apply_platform_markers(item):
     """Apply markers that skip tests depending on the current platform."""
-    for marker_name, fulfilled, reason in PLATFORM_MARKERS:
+    apply_markers_helper(item, PLATFORM_MARKERS)
+
+
+def apply_exif_markers(item):
+    """Apply markers that skip tests depending on specific exif support."""
+    if os.path.basename(item.fspath) in ("test_exif.py",):
+        for marker_name in "exif", "pyexiv2", "piexif":
+            marker = getattr(pytest.mark, marker_name)
+            item.add_marker(marker)
+    apply_markers_helper(item, EXIF_MARKERS)
+
+
+def apply_markers_helper(item, markers):
+    """Helper function to apply an iterable of markers to a test item."""
+    for marker_name, fulfilled, reason in markers:
         marker = item.get_closest_marker(marker_name)
-        if not marker or fulfilled:
-            continue
-        skipif = pytest.mark.skipif(
-            not fulfilled, *marker.args, reason=reason, **marker.kwargs
-        )
-        item.add_marker(skipif)
+        if marker is not None:
+            skipif = pytest.mark.skipif(
+                not fulfilled, *marker.args, reason=reason, **marker.kwargs
+            )
+            item.add_marker(skipif)
 
 
 def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
         apply_platform_markers(item)
+        apply_exif_markers(item)
 
 
 @pytest.fixture
@@ -140,3 +163,30 @@ def _retrieve_file_from_web(url: str, path: str) -> None:
 def tmpdir():
     """Override tmpdir to raise a ValueError."""
     raise ValueError("Use the 'tmp_path' fixture instead of 'tmpdir'")
+
+
+@pytest.fixture()
+def piexif(monkeypatch):
+    """Pytest fixture to ensure only piexif is available."""
+    monkeypatch.setattr(exif, "pyexiv2", None)
+
+
+@pytest.fixture()
+def noexif(monkeypatch, piexif):
+    """Pytest fixture to ensure no exif library is available."""
+    monkeypatch.setattr(exif, "piexif", None)
+
+
+@pytest.fixture()
+def add_exif_information():
+    """Fixture to retrieve a helper function that adds exif content to an image."""
+
+    def add_exif_information_impl(path: str, content):
+        assert exif.piexif is not None, "piexif required to add exif information"
+        exif_dict = exif.piexif.load(path)
+        for ifd, ifd_dict in content.items():
+            for key, value in ifd_dict.items():
+                exif_dict[ifd][key] = value
+        exif.piexif.insert(exif.piexif.dump(exif_dict), path)
+
+    return add_exif_information_impl
