@@ -125,9 +125,7 @@ class Trie:
             hidden: List[str] = []
             for child in self.children.values():
                 hidden.extend(key for key, _ in child)
-            _logger.warning(
-                "%s hides longer keys: %s", self.key, quotedjoin(hidden)
-            )
+            _logger.warning("%s hides longer keys: %s", self.key, quotedjoin(hidden))
         for elem in self.children:
             self.children[elem].check()
 
