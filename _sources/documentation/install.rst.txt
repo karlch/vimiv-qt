@@ -129,7 +129,8 @@ Dependencies
     - QtSvg (optional for svg support)
 * `PyQt5 <http://www.riverbankcomputing.com/software/pyqt/intro>`_  5.9.2 or newer
 * `setuptools <https://pypi.python.org/pypi/setuptools/>`_ (for installation)
-* `piexif <https://pypi.org/project/piexif/>`_ (optional for exif support)
+* `pyexiv2 <https://pypi.org/project/pyexiv2/>`_ (optional for exif support)
+* `piexif <https://pypi.org/project/piexif/>`_ (optional alternative for exif support)
 
 Package Names For Distributions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -143,6 +144,7 @@ Arch Linux:
     * python-pyqt5
     * python-setuptools
     * python-piexif (optional)
+    * python-exiv2 (optional, AUR)
 
 Fedora:
     * Build time dependencies: `sudo dnf builddep vimiv-qt`.
