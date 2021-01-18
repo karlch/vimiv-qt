@@ -25,6 +25,12 @@ from vimiv.utils import create_pixmap, thumbnail_manager, log
 _logger = log.module_logger(__name__)
 
 
+# The class is certainly very border-line in size, much like the corresponding classes
+# image.ScrollableImage and library.Library.
+# TODO consider refactoring if this improves code-clarity
+# pylint: disable=too-many-public-methods
+
+
 class ThumbnailView(
     eventhandler.EventHandlerMixin, widgets.ScrollToCenterMixin, QListWidget
 ):
@@ -280,6 +286,19 @@ class ThumbnailView(
         except ValueError as e:
             raise api.commands.CommandError(str(e))
         self._select_index(index)
+
+    @api.keybindings.register("$", "end-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def end_of_line(self):
+        """Select the last thumbnail in the current row."""
+        first_in_next_row = (self.current_row() + 1) * self.n_columns()
+        self._select_index(first_in_next_row - 1)
+
+    @api.keybindings.register("^", "first-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def first_of_line(self):
+        """Select the first thumbnail in the current row."""
+        self._select_index(self.current_row() * self.n_columns())
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)

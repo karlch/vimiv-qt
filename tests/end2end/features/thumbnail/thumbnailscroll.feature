@@ -69,3 +69,16 @@ Feature: Scroll in thumbnail mode.
         And I run delete %
         And I wait for the working directory handler
         Then there should be 0 thumbnails
+
+    Scenario: Scroll to end of line
+        Given I open 10 images
+        And I enter thumbnail mode
+        When I run end-of-line
+        Then the thumbnail number 2 should be selected
+
+    Scenario: Scroll to first of line
+        Given I open 10 images
+        And I enter thumbnail mode
+        When I run scroll right
+        And I run first-of-line
+        Then the thumbnail number 1 should be selected
