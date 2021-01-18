@@ -7,6 +7,7 @@
 """Thumbnail widget."""
 
 import contextlib
+import math
 import os
 from typing import List, Optional, Iterator, cast
 
@@ -108,6 +109,27 @@ class ThumbnailView(
     def __iter__(self) -> Iterator["ThumbnailItem"]:
         for index in range(self.count()):
             yield self.item(index)
+
+    def current_index(self) -> int:
+        """Return the index of the currently selected item."""
+        return self.currentRow()
+
+    def current_column(self) -> int:
+        """Return the column of the currently selected item."""
+        return self.current_index() % self.n_columns()
+
+    def current_row(self) -> int:
+        """Return the row of the currently selected item."""
+        return self.current_index() // self.n_columns()
+
+    def n_columns(self) -> int:
+        """Return the number of columns."""
+        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
+        return (self.width() - sb_width) // self.item_size()
+
+    def n_rows(self) -> int:
+        """Return the number of rows."""
+        return math.ceil(self.count() / self.n_columns())
 
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
@@ -220,27 +242,19 @@ class ThumbnailView(
         **count:** multiplier
         """
         _logger.debug("Scrolling in direction '%s'", direction)
-        current = self.currentRow()
-        column = current % self.columns()
+        current = self.current_index()
         if direction == argtypes.Direction.Right:
-            current += 1 * count
-            current = min(current, self.count() - 1)
+            current += count
         elif direction == argtypes.Direction.Left:
-            current -= 1 * count
-            current = max(0, current)
+            current -= count
         elif direction == argtypes.Direction.Down:
             # Do not jump between columns
-            current += self.columns() * count
-            elems_in_last_row = self.count() % self.columns()
-            if not elems_in_last_row:
-                elems_in_last_row = self.columns()
-            if column < elems_in_last_row:
-                current = min(self.count() - (elems_in_last_row - column), current)
-            else:
-                current = min(self.count() - 1, current)
+            last_in_col = (self.n_rows() - 1) * self.n_columns() + self.current_column()
+            if last_in_col > self.count() - 1:
+                last_in_col -= self.n_columns()
+            current = min(current + self.n_columns() * count, last_in_col)
         else:
-            current -= self.columns() * count
-            current = max(column, current)
+            current = max(self.current_column(), current - self.n_columns() * count)
         self._select_index(current)
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
@@ -306,8 +320,8 @@ class ThumbnailView(
         if not self._paths:
             raise api.commands.CommandWarning("Thumbnail list is empty")
         _logger.debug("Selecting thumbnail number %d", index)
-        model_index = self.model().index(index, 0)
-        self.setCurrentIndex(model_index)
+        index = utils.clamp(index, 0, self.count() - 1)
+        self.setCurrentRow(index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
 
@@ -315,11 +329,6 @@ class ThumbnailView(
         _logger.debug("Setting size to %d", value)
         self.setIconSize(QSize(value, value))
         self.rescale_items()
-
-    def columns(self):
-        """Return the number of columns."""
-        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
-        return (self.width() - sb_width) // self.item_size()
 
     def item_size(self):
         """Return the size of one icon including padding."""
@@ -330,7 +339,7 @@ class ThumbnailView(
     def _thumbnail_name(self):
         """Name of the currently selected thumbnail."""
         try:
-            abspath = self._paths[self.currentRow()]
+            abspath = self._paths[self.current_index()]
             basename = os.path.basename(abspath)
             name, _ = os.path.splitext(basename)
             return name
@@ -340,7 +349,7 @@ class ThumbnailView(
     def current(self):
         """Current path for thumbnail mode."""
         try:
-            return self._paths[self.currentRow()]
+            return self._paths[self.current_index()]
         except IndexError:
             return ""
 
@@ -356,9 +365,9 @@ class ThumbnailView(
         return sizes[self.iconSize().width()]
 
     @api.status.module("{thumbnail-index}")
-    def current_index(self):
+    def current_index_statusbar(self) -> str:
         """Index of the currently selected thumbnail."""
-        return str(self.currentRow() + 1)
+        return str(self.current_index() + 1)
 
     @api.status.module("{thumbnail-total}")
     def total(self):
