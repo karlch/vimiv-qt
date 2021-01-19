@@ -443,7 +443,7 @@ class LibraryModel(QStandardItemModel):
             with contextlib.suppress(FileNotFoundError):  # Deleted in the meantime
                 size = get_size(path)
                 self.appendRow(
-                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size),)
+                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size))
                 )
                 self.paths.append(path)
 
