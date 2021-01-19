@@ -7,8 +7,9 @@
 """Library widget with model and delegate."""
 
 import contextlib
+import math
 import os
-from typing import List, Optional, Dict, NamedTuple
+from typing import List, Optional, Dict, NamedTuple, Tuple
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -180,6 +181,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         if close:
             api.modes.LIBRARY.close()
 
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>u", "scroll half-page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
@@ -192,7 +199,10 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(
-        self, direction: argtypes.Direction, open_selected: bool = False, count=1
+        self,
+        direction: argtypes.DirectionWithPage,
+        open_selected: bool = False,
+        count=1,
     ):
         """Scroll the library in the given direction.
 
@@ -205,7 +215,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         * Scrolling up and down moves the cursor.
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         optional arguments:
             * ``--open-selected``: Automatically open any selected image.
@@ -226,11 +237,36 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             row = self.row()
             if row == -1:  # Directory is empty
                 raise api.commands.CommandWarning("Directory is empty")
-            if direction == direction.Up:
-                row -= count
-            else:
-                row += count
+            if direction.is_page_step:
+                count *= self._get_page_stepsize(half=direction.is_half_page_step)
+            if direction.is_reverse:
+                count *= -1
+            _logger.debug("Scrolling %d rows", count)
+            row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1), open_selected)
+
+    def _get_visible_range(self) -> Tuple[Optional[int], Optional[int]]:
+        """Return index of first and last visible row."""
+        index_first = index_last = None
+        view_rect = self.viewport().rect()
+        for row in range(self.model().rowCount()):
+            row_rect = self.visualRect(self.model().index(row, 0))
+            visible = row_rect.intersects(view_rect)
+            if visible:
+                if index_first is None:
+                    index_first = row
+                index_last = row
+        return index_first, index_last
+
+    def _get_page_stepsize(self, *, half: bool = False) -> int:
+        """Return the number of rows required for a (half) page step."""
+        index_first, index_last = self._get_visible_range()
+        if index_first is None or index_last is None:
+            return 0
+        stepsize = index_last - index_first
+        # We round up instead of down to ensure to half steps certainly scroll the full
+        # page once
+        return math.ceil(stepsize / 2) if half else stepsize
 
     @api.keybindings.register("go", "goto 1 --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("gg", "goto 1", mode=api.modes.LIBRARY)
