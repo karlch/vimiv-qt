@@ -32,7 +32,10 @@ _logger = log.module_logger(__name__)
 
 
 class ThumbnailView(
-    eventhandler.EventHandlerMixin, widgets.ScrollToCenterMixin, QListWidget
+    eventhandler.EventHandlerMixin,
+    widgets.GetNumVisibleMixin,
+    widgets.ScrollToCenterMixin,
+    QListWidget,
 ):
     """Thumbnail widget.
 
@@ -232,36 +235,58 @@ class ThumbnailView(
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        "<ctrl>u", "scroll half-page-up", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def scroll(self, direction: argtypes.Direction, count=1):  # type: ignore[override]
+    def scroll(  # type: ignore[override]
+        self, direction: argtypes.DirectionWithPage, count=1
+    ):
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         **count:** multiplier
         """
         _logger.debug("Scrolling in direction '%s'", direction)
         current = self.current_index()
-        if direction == argtypes.Direction.Right:
+        if direction == direction.Right:
             current += count
-        elif direction == argtypes.Direction.Left:
+        elif direction == direction.Left:
             current -= count
-        elif direction == argtypes.Direction.Down:
-            # Do not jump between columns
-            last_in_col = (self.n_rows() - 1) * self.n_columns() + self.current_column()
-            if last_in_col > self.count() - 1:
-                last_in_col -= self.n_columns()
-            current = min(current + self.n_columns() * count, last_in_col)
         else:
-            current = max(self.current_column(), current - self.n_columns() * count)
+            current = self._scroll_updown(current, direction, count)
         self._select_index(current)
+
+    def _scroll_updown(
+        self, current: int, direction: argtypes.DirectionWithPage, step: int
+    ) -> int:
+        """Helper function bundling the logic required to scroll up/down."""
+        if direction.is_page_step:
+            n_items = self._n_visible_items(contains=True)
+            factor = 0.5 if direction.is_half_page_step else 1
+            n_rows = int(n_items / self.n_columns() * factor)
+            step *= n_rows
+        if direction.is_reverse:  # Upwards
+            return max(self.current_column(), current - self.n_columns() * step)
+        # Do not jump between columns
+        last_in_col = (self.n_rows() - 1) * self.n_columns() + self.current_column()
+        if last_in_col > self.count() - 1:
+            last_in_col -= self.n_columns()
+        return min(current + self.n_columns() * step, last_in_col)
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
