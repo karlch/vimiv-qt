@@ -6,6 +6,12 @@ All notable changes to vimiv are documented in this file.
 v0.9.0 (unreleased)
 -------------------
 
+Changed:
+^^^^^^^^
+
+* New set of default metadata key sets numbered from 1 to 5. Thanks
+  `@jcjgraf <https://github.com/jcjgraf>`_!
+
 
 v0.8.0 (2021-01-18)
 -------------------
