@@ -6,6 +6,18 @@ All notable changes to vimiv are documented in this file.
 v0.9.0 (unreleased)
 -------------------
 
+Added:
+^^^^^^
+
+* More vim movement commands with corresponding keybindings, namely:
+
+  * ``:scroll page-up/page-down/half-page-up/half-page-down`` mapped to ``<ctrl>b``,
+    ``<ctrl>f``, ``<ctrl>u`` and ``<ctrl>d`` for library and thumbnail mode.
+  * ``:end-of-line`` mapped to ``$`` and ``:first-of-line`` mapped to ``^`` to select
+    the first icon of the current row in thumbnail mode.
+
+  Thanks `@jcjgraf <https://github.com/jcjgraf>`_ for the idea!
+
 Changed:
 ^^^^^^^^
 
