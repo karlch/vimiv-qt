@@ -30,8 +30,8 @@ Feature: Metadata widget displaying image exif information
         When I add exif information
         And I run 3metadata
         Then the metadata widget should be visible
-        And the metadata text should contain 'Copyright'
-        And the metadata text should contain 'vimiv-AUTHORS-2020'
+        And the metadata text should contain 'GPSAltitude'
+        And the metadata text should contain '1234'
 
     Scenario: Error message on invalid metadata key set number
         Given I open any image

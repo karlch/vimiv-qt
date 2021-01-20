@@ -24,6 +24,7 @@ def exif_content():
             piexif.ImageIFD.Copyright: b"vimiv-AUTHORS-2020",
         },
         "Exif": {piexif.ExifIFD.ExposureTime: (1, 200)},
+        "GPS": {piexif.GPSIFD.GPSAltitude: (1234, 1)},
     }
 
 
