@@ -134,6 +134,8 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#thumbnail">Thumbnail</a><ul>
+<li><a class="reference internal" href="#end-of-line">end-of-line</a></li>
+<li><a class="reference internal" href="#first-of-line">first-of-line</a></li>
 <li><a class="reference internal" href="#ref-thumbnail-goto">goto</a></li>
 <li><a class="reference internal" href="#ref-thumbnail-open-selected">open-selected</a></li>
 <li><a class="reference internal" href="#ref-thumbnail-scroll">scroll</a></li>
@@ -1123,7 +1125,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: The direction to scroll in
+(left/right/up/down/page-up/page-down/half-page-up/half-page-down).</p></li>
 </ul>
 </dd>
 <dt>optional arguments:</dt><dd><ul class="simple">
@@ -1148,6 +1151,12 @@ a directory, the library is loaded for this directory.</p>
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-end-of-line"><span class="std std-ref">end-of-line</span></a></p></td>
+<td><p>Select the last thumbnail in the current row.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-thumbnail-first-of-line"><span class="std std-ref">first-of-line</span></a></p></td>
+<td><p>Select the first thumbnail in the current row.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-goto"><span class="std std-ref">goto</span></a></p></td>
 <td><p>Select specific thumbnail in current filelist.</p></td>
 </tr>
@@ -1162,6 +1171,14 @@ a directory, the library is loaded for this directory.</p>
 </tr>
 </tbody>
 </table>
+<div class="section" id="end-of-line">
+<span id="ref-thumbnail-end-of-line"></span><h3>end-of-line<a class="headerlink" href="#end-of-line" title="Permalink to this headline">¶</a></h3>
+<p>Select the last thumbnail in the current row.</p>
+</div>
+<div class="section" id="first-of-line">
+<span id="ref-thumbnail-first-of-line"></span><h3>first-of-line<a class="headerlink" href="#first-of-line" title="Permalink to this headline">¶</a></h3>
+<p>Select the first thumbnail in the current row.</p>
+</div>
 <div class="section" id="ref-thumbnail-goto">
 <span id="id4"></span><h3>goto<a class="headerlink" href="#ref-thumbnail-goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific thumbnail in current filelist.</p>
@@ -1188,7 +1205,8 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: The direction to scroll in (left/right/up/down).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">direction</span></code>: The direction to scroll in
+(left/right/up/down/page-up/page-down/half-page-up/half-page-down).</p></li>
 </ul>
 </dd>
 </dl>
