@@ -7,6 +7,7 @@
 """Library widget with model and delegate."""
 
 import contextlib
+import math
 import os
 from typing import List, Optional, Dict, NamedTuple
 
@@ -36,7 +37,9 @@ class Position(NamedTuple):
     row: int = 0
 
 
-class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
+class Library(
+    eventhandler.EventHandlerMixin, widgets.GetNumVisibleMixin, widgets.FlatTreeView
+):
     """Library widget.
 
     Attributes:
@@ -180,6 +183,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         if close:
             api.modes.LIBRARY.close()
 
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>u", "scroll half-page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
@@ -192,7 +201,10 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(
-        self, direction: argtypes.Direction, open_selected: bool = False, count=1
+        self,
+        direction: argtypes.DirectionWithPage,
+        open_selected: bool = False,
+        count=1,
     ):
         """Scroll the library in the given direction.
 
@@ -205,7 +217,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         * Scrolling up and down moves the cursor.
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         optional arguments:
             * ``--open-selected``: Automatically open any selected image.
@@ -226,10 +239,15 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             row = self.row()
             if row == -1:  # Directory is empty
                 raise api.commands.CommandWarning("Directory is empty")
-            if direction == direction.Up:
-                row -= count
-            else:
-                row += count
+            if direction.is_page_step:
+                n_items = self._n_visible_items()
+                factor = 0.5 if direction.is_half_page_step else 1
+                stepsize = math.ceil(n_items * factor)
+                count *= stepsize
+            if direction.is_reverse:
+                count *= -1
+            _logger.debug("Scrolling %d rows", count)
+            row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1), open_selected)
 
     @api.keybindings.register("go", "goto 1 --open-selected", mode=api.modes.LIBRARY)
@@ -443,7 +461,7 @@ class LibraryModel(QStandardItemModel):
             with contextlib.suppress(FileNotFoundError):  # Deleted in the meantime
                 size = get_size(path)
                 self.appendRow(
-                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size),)
+                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size))
                 )
                 self.paths.append(path)
 

@@ -7,6 +7,7 @@
 """Thumbnail widget."""
 
 import contextlib
+import math
 import os
 from typing import List, Optional, Iterator, cast
 
@@ -24,8 +25,17 @@ from vimiv.utils import create_pixmap, thumbnail_manager, log
 _logger = log.module_logger(__name__)
 
 
+# The class is certainly very border-line in size, much like the corresponding classes
+# image.ScrollableImage and library.Library.
+# TODO consider refactoring if this improves code-clarity
+# pylint: disable=too-many-public-methods
+
+
 class ThumbnailView(
-    eventhandler.EventHandlerMixin, widgets.ScrollToCenterMixin, QListWidget
+    eventhandler.EventHandlerMixin,
+    widgets.GetNumVisibleMixin,
+    widgets.ScrollToCenterMixin,
+    QListWidget,
 ):
     """Thumbnail widget.
 
@@ -108,6 +118,27 @@ class ThumbnailView(
     def __iter__(self) -> Iterator["ThumbnailItem"]:
         for index in range(self.count()):
             yield self.item(index)
+
+    def current_index(self) -> int:
+        """Return the index of the currently selected item."""
+        return self.currentRow()
+
+    def current_column(self) -> int:
+        """Return the column of the currently selected item."""
+        return self.current_index() % self.n_columns()
+
+    def current_row(self) -> int:
+        """Return the row of the currently selected item."""
+        return self.current_index() // self.n_columns()
+
+    def n_columns(self) -> int:
+        """Return the number of columns."""
+        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
+        return (self.width() - sb_width) // self.item_size()
+
+    def n_rows(self) -> int:
+        """Return the number of rows."""
+        return math.ceil(self.count() / self.n_columns())
 
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
@@ -204,44 +235,58 @@ class ThumbnailView(
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        "<ctrl>u", "scroll half-page-up", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def scroll(self, direction: argtypes.Direction, count=1):  # type: ignore[override]
+    def scroll(  # type: ignore[override]
+        self, direction: argtypes.DirectionWithPage, count=1
+    ):
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         **count:** multiplier
         """
         _logger.debug("Scrolling in direction '%s'", direction)
-        current = self.currentRow()
-        column = current % self.columns()
-        if direction == argtypes.Direction.Right:
-            current += 1 * count
-            current = min(current, self.count() - 1)
-        elif direction == argtypes.Direction.Left:
-            current -= 1 * count
-            current = max(0, current)
-        elif direction == argtypes.Direction.Down:
-            # Do not jump between columns
-            current += self.columns() * count
-            elems_in_last_row = self.count() % self.columns()
-            if not elems_in_last_row:
-                elems_in_last_row = self.columns()
-            if column < elems_in_last_row:
-                current = min(self.count() - (elems_in_last_row - column), current)
-            else:
-                current = min(self.count() - 1, current)
+        current = self.current_index()
+        if direction == direction.Right:
+            current += count
+        elif direction == direction.Left:
+            current -= count
         else:
-            current -= self.columns() * count
-            current = max(column, current)
+            current = self._scroll_updown(current, direction, count)
         self._select_index(current)
+
+    def _scroll_updown(
+        self, current: int, direction: argtypes.DirectionWithPage, step: int
+    ) -> int:
+        """Helper function bundling the logic required to scroll up/down."""
+        if direction.is_page_step:
+            n_items = self._n_visible_items(contains=True)
+            factor = 0.5 if direction.is_half_page_step else 1
+            n_rows = int(n_items / self.n_columns() * factor)
+            step *= n_rows
+        if direction.is_reverse:  # Upwards
+            return max(self.current_column(), current - self.n_columns() * step)
+        # Do not jump between columns
+        last_in_col = (self.n_rows() - 1) * self.n_columns() + self.current_column()
+        if last_in_col > self.count() - 1:
+            last_in_col -= self.n_columns()
+        return min(current + self.n_columns() * step, last_in_col)
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
@@ -266,6 +311,19 @@ class ThumbnailView(
         except ValueError as e:
             raise api.commands.CommandError(str(e))
         self._select_index(index)
+
+    @api.keybindings.register("$", "end-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def end_of_line(self):
+        """Select the last thumbnail in the current row."""
+        first_in_next_row = (self.current_row() + 1) * self.n_columns()
+        self._select_index(first_in_next_row - 1)
+
+    @api.keybindings.register("^", "first-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def first_of_line(self):
+        """Select the first thumbnail in the current row."""
+        self._select_index(self.current_row() * self.n_columns())
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
@@ -306,8 +364,8 @@ class ThumbnailView(
         if not self._paths:
             raise api.commands.CommandWarning("Thumbnail list is empty")
         _logger.debug("Selecting thumbnail number %d", index)
-        model_index = self.model().index(index, 0)
-        self.setCurrentIndex(model_index)
+        index = utils.clamp(index, 0, self.count() - 1)
+        self.setCurrentRow(index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
 
@@ -315,11 +373,6 @@ class ThumbnailView(
         _logger.debug("Setting size to %d", value)
         self.setIconSize(QSize(value, value))
         self.rescale_items()
-
-    def columns(self):
-        """Return the number of columns."""
-        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
-        return (self.width() - sb_width) // self.item_size()
 
     def item_size(self):
         """Return the size of one icon including padding."""
@@ -330,7 +383,7 @@ class ThumbnailView(
     def _thumbnail_name(self):
         """Name of the currently selected thumbnail."""
         try:
-            abspath = self._paths[self.currentRow()]
+            abspath = self._paths[self.current_index()]
             basename = os.path.basename(abspath)
             name, _ = os.path.splitext(basename)
             return name
@@ -340,7 +393,7 @@ class ThumbnailView(
     def current(self):
         """Current path for thumbnail mode."""
         try:
-            return self._paths[self.currentRow()]
+            return self._paths[self.current_index()]
         except IndexError:
             return ""
 
@@ -356,9 +409,9 @@ class ThumbnailView(
         return sizes[self.iconSize().width()]
 
     @api.status.module("{thumbnail-index}")
-    def current_index(self):
+    def current_index_statusbar(self) -> str:
         """Index of the currently selected thumbnail."""
-        return str(self.currentRow() + 1)
+        return str(self.current_index() + 1)
 
     @api.status.module("{thumbnail-total}")
     def total(self):

@@ -6,6 +6,8 @@
 
 """Miscellaneous QtWidgets."""
 
+from typing import Optional, Tuple
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QFontMetrics
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
@@ -19,6 +21,33 @@ class ScrollToCenterMixin:
 
     def scrollTo(self, index, _hint=None):
         super().scrollTo(index, self.PositionAtCenter)
+
+
+class GetNumVisibleMixin:
+    """Mixin class to get the number of visible items in a view."""
+
+    def _visible_range(
+        self, contains: bool = False
+    ) -> Tuple[Optional[int], Optional[int]]:
+        """Return index of first and last visible row."""
+        index_first = index_last = None
+        view_rect = self.viewport().rect()  # type: ignore[attr-defined]
+        cutfunc = view_rect.contains if contains else view_rect.intersects
+        for row in range(self.model().rowCount()):  # type: ignore[attr-defined]
+            row_rect = self.visualRect(self.model().index(row, 0))  # type: ignore[attr-defined]  # pylint: disable=line-too-long,useless-suppression
+            visible = cutfunc(row_rect)
+            if visible:
+                if index_first is None:
+                    index_first = row
+                index_last = row
+        return index_first, index_last
+
+    def _n_visible_items(self, *, contains=False) -> int:
+        """Return the number of visible items in the view."""
+        index_first, index_last = self._visible_range(contains=contains)
+        if index_first is None or index_last is None:
+            return 0
+        return index_last - index_first
 
 
 class FlatTreeView(ScrollToCenterMixin, QTreeView):
