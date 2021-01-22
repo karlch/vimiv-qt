@@ -15,14 +15,13 @@ one of the supported exif libraries, i.e.
 import contextlib
 import itertools
 from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable
+from PyQt5.QtGui import QImageReader
 
-from vimiv.utils import log, lazy, is_hex
+from vimiv.utils import log, lazy, is_hex, files
 
 pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
-
-ExifDictT = Dict[Any, Tuple[str, str]]
 
 
 class UnsupportedExifOperation(NotImplementedError):
@@ -39,7 +38,15 @@ class _ExifHandlerBase:
 
     MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for exif support."
 
-    def __init__(self, _filename=""):
+    vimiv_keys = [
+        "Vimiv.FileSize",
+        "Vimiv.XDimension",
+        "Vimiv.YDimension",
+        "Vimiv.Filetype",
+    ]
+
+    def __init__(self, filename=""):
+        self.filename = filename
         pass
 
     def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
@@ -55,7 +62,40 @@ class _ExifHandlerBase:
         """Get exif creation date and time as formatted string."""
         self.raise_exception("Retrieving exif date-time")
 
-    def get_formatted_exif(self, _desired_keys: Sequence[str]) -> ExifDictT:
+    def get_formatted_metadata(
+        self, desired_keys: Sequence[str]
+    ) -> Dict[Any, Tuple[str, str]]:
+        metadata = dict()
+
+        for base_key in desired_keys:
+
+            if base_key.lower().startswith("vimiv"):
+                if base_key.lower() == "vimiv.filesize":
+                    file_size = files.get_size_file(self.filename)
+                    metadata["Vimiv.FileSize"] = ("Vimiv.FileSize", file_size)
+                    continue
+                if base_key.lower() == "vimiv.filetype":
+                    file_type = files.imghdr.what(self.filename)
+                    metadata["Vimiv.FileType"] = ("Vimiv.FileType", file_type)
+                    continue
+                if base_key.lower() == "vimiv.xdimension":
+                    x_dim = QImageReader(self.filename).size().width()
+                    metadata["Vimiv.XDimension"] = ("Vimiv.XDimension", f"{x_dim} px")
+                    continue
+                if base_key.lower() == "vimiv.ydimension":
+                    y_dim = QImageReader(self.filename).size().height()
+                    metadata["Vimiv.YDimension"] = ("Vimiv.YDimension", f"{y_dim} px")
+                    continue
+            else:
+                try:
+                    key, key_name, key_value = self._fetch_external_key(base_key)
+                    metadata[key] = (key_name, key_value)
+                except TypeError:  # function retuned None
+                    continue
+
+        return metadata
+
+    def _fetch_external_key(self, key: str) -> Tuple[str, str, str]:
         """Get a dictionary of formatted exif values."""
         self.raise_exception("Getting formatted exif data")
 
@@ -84,9 +124,8 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             _logger.debug("File %s not found", filename)
             self._metadata = None
 
-    def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
-        desired_keys = [key.rpartition(".")[2] for key in desired_keys]
-        exif = dict()
+    def _fetch_external_key(self, base_key: str) -> Tuple[str, str, str]:
+        key = base_key.rpartition(".")[2]
 
         try:
             for ifd in self._metadata:
@@ -103,8 +142,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
                         value: {val}\
                         tag: {tag}"
                     )
-                    if keyname not in desired_keys:
-                        _logger.debug(f"Ignoring key {keyname}")
+                    if keyname != key:
                         continue
                     if keytype in (
                         piexif.TYPES.Byte,
@@ -116,30 +154,32 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
                         piexif.TYPES.Float,
                         piexif.TYPES.DFloat,
                     ):  # integer and float
-                        exif[keyname] = (keyname, str(val))
+                        return (keyname, keyname, str(val))
                     elif keytype in (
                         piexif.TYPES.Ascii,
                         piexif.TYPES.Undefined,
                     ):  # byte encoded
-                        exif[keyname] = (keyname, val.decode())
+                        return (keyname, keyname, val.decode())
                     elif keytype in (
                         piexif.TYPES.Rational,
                         piexif.TYPES.SRational,
                     ):  # (int, int) <=> numerator, denominator
-                        exif[keyname] = (keyname, f"{val[0]}/{val[1]}")
+                        return (keyname, keyname, f"{val[0]}/{val[1]}")
 
         except (piexif.InvalidImageDataError, KeyError):
-            return {}
+            return None
 
-        return exif
+        return None
 
     def get_keys(self) -> Iterable[str]:
-        return (
+        piexif_keys = (
             piexif.TAGS[ifd][tag]["name"]
             for ifd in self._metadata
             if ifd != "thumbnail"
             for tag in self._metadata[ifd]
         )
+        vimiv_keys = (key for key in self.vimiv_keys)
+        return itertools.chain(vimiv_keys, piexif_keys)
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         try:
@@ -175,8 +215,6 @@ def check_exif_dependancy(handler):
     Args:
         handler: The class to be decorated.
     """
-    if pyexiv2:
-        return handler
 
     if piexif:
         return _ExifHandlerPiexif
@@ -208,39 +246,39 @@ class ExifHandler(_ExifHandlerBase):
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
 
-    def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
-        exif = dict()
+    def _fetch_external_key(self, base_key: str) -> Tuple[str, str, str]:
+        # For backwards compability, assume it has one of the following prefixes
+        for prefix in ["", "Exif.Image.", "Exif.Photo."]:
+            key = f"{prefix}{base_key}"
+            try:
+                key_name = self._metadata[key].name
 
-        for base_key in desired_keys:
-            # For backwards compability, assume it has one of the following prefixes
-            for prefix in ["", "Exif.Image.", "Exif.Photo."]:
-                key = f"{prefix}{base_key}"
                 try:
-                    key_name = self._metadata[key].name
+                    key_value = self._metadata[key].human_value
 
-                    try:
-                        key_value = self._metadata[key].human_value
+                # Not all metadata (i.e. IPTC) provide human_value, take raw_value
+                except AttributeError:
+                    value = self._metadata[key].raw_value
 
-                    # Not all metadata (i.e. IPTC) provide human_value, take raw_value
-                    except AttributeError:
-                        value = self._metadata[key].raw_value
+                    # For IPTC the raw_value is a list of strings
+                    if isinstance(value, list):
+                        key_value = ", ".join(value)
+                    else:
+                        key_value = value
 
-                        # For IPTC the raw_value is a list of strings
-                        if isinstance(value, list):
-                            key_value = ", ".join(value)
-                        else:
-                            key_value = value
+                return (key, key_name, key_value)
 
-                    exif[key] = (key_name, key_value)
-                    break
+            except KeyError:
+                _logger.debug("Key %s is invalid for the current image", key)
 
-                except KeyError:
-                    _logger.debug("Key %s is invalid for the current image", key)
-
-        return exif
+        return None
 
     def get_keys(self) -> Iterable[str]:
-        return (key for key in self._metadata if not is_hex(key.rpartition(".")[2]))
+        exiv2_keys = (
+            key for key in self._metadata if not is_hex(key.rpartition(".")[2])
+        )
+        vimiv_keys = (key for key in self.vimiv_keys)
+        return itertools.chain(vimiv_keys, exiv2_keys)
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         if reset_orientation:

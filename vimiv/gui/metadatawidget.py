@@ -160,7 +160,7 @@ if exif.has_exif_support:
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            formatted_exif = self.handler.get_formatted_exif(keys)
+            formatted_exif = self.handler.get_formatted_metadata(keys)
             if formatted_exif:
                 self.setText(utils.format_html_table(formatted_exif.values()))
             else:
