@@ -17,6 +17,10 @@ Added:
     the first icon of the current row in thumbnail mode.
 
   Thanks `@jcjgraf <https://github.com/jcjgraf>`_ for the idea!
+* The ``--action`` flag for the ``:mark`` command. ``--action toggle`` is the default
+  and keeps the previous behaviour of the mark command, i.e. inversing the mark status
+  of the passed path(s). In addition one can now use ``--action mark`` and
+  ``--action unmark`` to force (un-) marking the paths.
 
 Changed:
 ^^^^^^^^

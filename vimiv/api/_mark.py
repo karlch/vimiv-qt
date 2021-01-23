@@ -7,6 +7,7 @@
 """Mark and tag images."""
 
 
+import enum
 import os
 import shutil
 from typing import Any, Callable, List, Optional
@@ -36,6 +37,13 @@ class Mark(QObject):
         _watcher: QFileSystemWatcher to monitor marked paths.
     """
 
+    class Action(enum.Enum):
+        """Valid action options for the mark command."""
+
+        Toggle = "toggle"
+        Mark = "mark"
+        Unmark = "unmark"
+
     marked = pyqtSignal(str)
     unmarked = pyqtSignal(str)
     markdone = pyqtSignal()
@@ -47,6 +55,11 @@ class Mark(QObject):
         self._marked: List[str] = []
         self._last_marked: List[str] = []
         self._watcher: Optional[QFileSystemWatcher] = None
+        self._actions = {
+            Mark.Action.Toggle: self._toggle_mark,
+            Mark.Action.Mark: self._mark,
+            Mark.Action.Unmark: self._unmark,
+        }
 
     @property
     def tagdir(self) -> str:
@@ -65,24 +78,35 @@ class Mark(QObject):
             self._watcher.fileChanged.connect(self._on_file_changed)  # type: ignore
         return self._watcher
 
+    def is_marked(self, path: str) -> bool:
+        """Return True if the passed path is marked."""
+        return path in self._marked
+
     @keybindings.register("m", "mark %")
     @commands.register()
-    def mark(self, paths: List[str]) -> None:
+    def mark(self, paths: List[str], action: Action = Action.Toggle) -> None:
         """Mark one or more paths.
 
-        **syntax:** ``:mark path [path ...]``
-
-        If a path is currently marked, it is unmarked instead.
+        **syntax:** ``:mark path [path ...] [--action=ACTION]``
 
         .. hint:: ``:mark %`` marks the current path.
 
         positional arguments:
             * ``paths``: The path(s) to mark.
+
+        optional arguments:
+            * ``--action``: One of toggle/mark/unmark. Toggle, the default, inverses the
+              mark status of the path(s). Mark forces marking while unmark forces
+              removing the mark.
         """
-        _logger.debug("Marking %d paths", len(paths))
+        _logger.debug("Calling %s on %d paths", action.value, len(paths))
+        function = self._actions[action]
         for path in paths:
             if files.is_image(path):
-                self._toggle_mark(path)
+                try:
+                    function(path)
+                except ValueError:
+                    _logger.debug("Calling %s on '%s' failed", action.value, path)
         self.markdone.emit()
 
     @commands.register()
@@ -264,6 +288,8 @@ class Mark(QObject):
 
     def _mark(self, path: str) -> None:
         """Mark the given path."""
+        if self.is_marked(path):
+            raise ValueError(f"Path '{path}' is already marked")
         self._marked.append(path)
         self.marked.emit(path)
         self.watcher.addPath(path)

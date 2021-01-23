@@ -47,38 +47,53 @@ def tagwrite(tagdir):
 
 def test_mark_single_image(mark):
     mark.mark(["image"])
-    assert "image" in mark._marked
-    assert mark.marked.called_once_with("image")
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_once_with("image")
 
 
 def test_mark_multiple_images(mark):
-    mark.mark(["image1", "image2"])
-    assert "image1" in mark._marked
-    assert "image2" in mark._marked
-    assert mark.marked.called_with("image1")
-    assert mark.marked.called_with("image2")
+    images = ["image1", "image2"]
+    mark.mark(images)
+    for image in images:
+        assert mark.is_marked(image)
+        mark.marked.emit.assert_any_call(image)
 
 
-def test_toggle_mark(mark):
+def test_mark_action_toggle(mark):
     mark.mark(["image"])
     mark.mark(["image"])
-    assert "image" not in mark._marked
-    assert mark.unmarked.called_once_with("image")
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
+
+
+def test_mark_action_mark(mark):
+    mark.mark(["image"], action=Mark.Action.Mark)
+    mark.mark(["image"], action=Mark.Action.Mark)
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_once_with("image")
+
+
+def test_mark_action_unmark(mark):
+    mark.mark(["image"])
+    mark.mark(["image"], action=Mark.Action.Unmark)
+    mark.mark(["image"], action=Mark.Action.Unmark)
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
 
 
 def test_mark_clear(mark):
     mark.mark(["image"])
     mark.mark_clear()
-    assert "image" not in mark._marked
-    assert mark.unmarked.called_once_with("image")
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
 
 
 def test_mark_restore(mark):
     mark.mark(["image"])
     mark.mark_clear()
     mark.mark_restore()
-    assert "image" in mark._marked
-    assert mark.marked.called_with("image")
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_with("image")
 
 
 def test_tag_write(tagwrite):
