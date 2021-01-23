@@ -26,14 +26,14 @@ To implement a new format::
        ``QImageReader.supportedImageFormats()``.
 """
 
-from typing import Any, BinaryIO
+from typing import Any, Optional, BinaryIO
 
 from vimiv.utils import log, files
 
 _logger = log.module_logger(__name__)
 
 
-def test_cr2(header: bytes, _f: BinaryIO) -> bool:
+def test_cr2(header: bytes, _f: Optional[BinaryIO]) -> bool:
     return header[:2] in (b"II", b"MM") and header[8:10] == b"CR"
 
 
