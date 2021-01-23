@@ -478,8 +478,7 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <div class="section" id="mark">
 <span id="ref-global-mark"></span><h3>mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h3>
 <p>Mark one or more paths.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
-<p>If a path is currently marked, it is unmarked instead.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span> <span class="pre">[--action=ACTION]</span></code></p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p><code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">%</span></code> marks the current path.</p>
@@ -487,6 +486,12 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">paths</span></code>: The path(s) to mark.</p></li>
+</ul>
+</dd>
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--action</span></code>: One of toggle/mark/unmark. Toggle, the default, inverses the
+mark status of the path(s). Mark forces marking while unmark forces
+removing the mark.</p></li>
 </ul>
 </dd>
 </dl>
