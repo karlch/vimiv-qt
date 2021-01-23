@@ -288,6 +288,8 @@ class Mark(QObject):
 
     def _mark(self, path: str) -> None:
         """Mark the given path."""
+        if self.is_marked(path):
+            raise ValueError(f"Path '{path}' is already marked")
         self._marked.append(path)
         self.marked.emit(path)
         self.watcher.addPath(path)
