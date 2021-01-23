@@ -47,14 +47,14 @@ def tagwrite(tagdir):
 
 def test_mark_single_image(mark):
     mark.mark(["image"])
-    assert "image" in mark._marked
+    assert mark.is_marked("image")
     assert mark.marked.called_once_with("image")
 
 
 def test_mark_multiple_images(mark):
     mark.mark(["image1", "image2"])
-    assert "image1" in mark._marked
-    assert "image2" in mark._marked
+    assert mark.is_marked("image1")
+    assert mark.is_marked("image2")
     assert mark.marked.called_with("image1")
     assert mark.marked.called_with("image2")
 
@@ -62,14 +62,14 @@ def test_mark_multiple_images(mark):
 def test_mark_action_toggle(mark):
     mark.mark(["image"])
     mark.mark(["image"])
-    assert "image" not in mark._marked
+    assert not mark.is_marked("image")
     assert mark.unmarked.called_once_with("image")
 
 
 def test_mark_action_mark(mark):
     mark.mark(["image"], action=MarkAction.Mark)
     mark.mark(["image"], action=MarkAction.Mark)
-    assert "image" in mark._marked
+    assert mark.is_marked("image")
     assert mark.marked.called_once_with("image")
 
 
@@ -77,14 +77,14 @@ def test_mark_action_unmark(mark):
     mark.mark(["image"])
     mark.mark(["image"], action=MarkAction.Unmark)
     mark.mark(["image"], action=MarkAction.Unmark)
-    assert "image" not in mark._marked
+    assert not mark.is_marked("image")
     assert mark.unmarked.called_once_with("image")
 
 
 def test_mark_clear(mark):
     mark.mark(["image"])
     mark.mark_clear()
-    assert "image" not in mark._marked
+    assert not mark.is_marked("image")
     assert mark.unmarked.called_once_with("image")
 
 
@@ -92,7 +92,7 @@ def test_mark_restore(mark):
     mark.mark(["image"])
     mark.mark_clear()
     mark.mark_restore()
-    assert "image" in mark._marked
+    assert mark.is_marked("image")
     assert mark.marked.called_with("image")
 
 

@@ -79,6 +79,10 @@ class Mark(QObject):
             self._watcher.fileChanged.connect(self._on_file_changed)  # type: ignore
         return self._watcher
 
+    def is_marked(self, path: str) -> bool:
+        """Return True if the passed path is marked."""
+        return path in self._marked
+
     @keybindings.register("m", "mark %")
     @commands.register()
     def mark(self, paths: List[str], action: MarkAction = MarkAction.Toggle) -> None:
