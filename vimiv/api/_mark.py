@@ -7,6 +7,7 @@
 """Mark and tag images."""
 
 
+import enum
 import os
 import shutil
 from typing import Any, Callable, List, Optional
@@ -19,6 +20,14 @@ from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
 
 
 _logger = log.module_logger(__name__)
+
+
+class MarkAction(enum.Enum):
+    """Valid action options for the mark command."""
+
+    Toggle = "toggle"
+    Mark = "mark"
+    Unmark = "unmark"
 
 
 class Mark(QObject):
@@ -47,6 +56,11 @@ class Mark(QObject):
         self._marked: List[str] = []
         self._last_marked: List[str] = []
         self._watcher: Optional[QFileSystemWatcher] = None
+        self._actions = {
+            MarkAction.Toggle: self._toggle_mark,
+            MarkAction.Mark: self._mark,
+            MarkAction.Unmark: self._unmark,
+        }
 
     @property
     def tagdir(self) -> str:
@@ -67,22 +81,29 @@ class Mark(QObject):
 
     @keybindings.register("m", "mark %")
     @commands.register()
-    def mark(self, paths: List[str]) -> None:
+    def mark(self, paths: List[str], action: MarkAction = MarkAction.Toggle) -> None:
         """Mark one or more paths.
 
-        **syntax:** ``:mark path [path ...]``
-
-        If a path is currently marked, it is unmarked instead.
+        **syntax:** ``:mark path [path ...] [--action=ACTION]``
 
         .. hint:: ``:mark %`` marks the current path.
 
         positional arguments:
             * ``paths``: The path(s) to mark.
+
+        optional arguments:
+            * ``--action``: One of toggle/mark/unmark. Toggle, the default, inverses the
+               mark status of the path(s). Mark forces marking while unmark forces
+               removing the mark.
         """
-        _logger.debug("Marking %d paths", len(paths))
+        _logger.debug("Calling %s on %d paths", action.value, len(paths))
+        function = self._actions[action]
         for path in paths:
             if files.is_image(path):
-                self._toggle_mark(path)
+                try:
+                    function(path)
+                except ValueError:
+                    _logger.debug("Calling %s on '%s' failed", action.value, path)
         self.markdone.emit()
 
     @commands.register()

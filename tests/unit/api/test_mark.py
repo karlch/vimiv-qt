@@ -13,7 +13,7 @@ import re
 import pytest
 
 from vimiv import api
-from vimiv.api._mark import Mark, Tag
+from vimiv.api._mark import Mark, MarkAction, Tag
 
 
 @pytest.fixture
@@ -59,9 +59,24 @@ def test_mark_multiple_images(mark):
     assert mark.marked.called_with("image2")
 
 
-def test_toggle_mark(mark):
+def test_mark_action_toggle(mark):
     mark.mark(["image"])
     mark.mark(["image"])
+    assert "image" not in mark._marked
+    assert mark.unmarked.called_once_with("image")
+
+
+def test_mark_action_mark(mark):
+    mark.mark(["image"], action=MarkAction.Mark)
+    mark.mark(["image"], action=MarkAction.Mark)
+    assert "image" in mark._marked
+    assert mark.marked.called_once_with("image")
+
+
+def test_mark_action_unmark(mark):
+    mark.mark(["image"])
+    mark.mark(["image"], action=MarkAction.Unmark)
+    mark.mark(["image"], action=MarkAction.Unmark)
     assert "image" not in mark._marked
     assert mark.unmarked.called_once_with("image")
 
