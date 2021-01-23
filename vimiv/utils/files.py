@@ -16,6 +16,9 @@ from PyQt5.QtGui import QImageReader
 from vimiv.utils import imagereader
 
 
+ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]
+
+
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
 
@@ -139,7 +142,7 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
     ]
 
 
-def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> None:
+def add_image_format(name: str, check: ImghdrTestFuncT) -> None:
     """Add a new image format to the checks performed in is_image.
 
     Args:
@@ -148,7 +151,7 @@ def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> Non
     """
 
     @functools.wraps(check)
-    def test(h: bytes, f: BinaryIO) -> Optional[str]:
+    def test(h: bytes, f: Optional[BinaryIO]) -> Optional[str]:
         if check(h, f):
             if hasattr(test, "checked"):
                 return name
@@ -168,7 +171,7 @@ def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> Non
 add_image_format.index = 3  # type: ignore  # Start inserting after jpg, png and gif
 
 
-def test_svg(h: bytes, _f: BinaryIO) -> bool:
+def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
     return h.startswith((b"<?xml", b"<svg"))
 
 
