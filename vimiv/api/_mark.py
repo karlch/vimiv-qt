@@ -22,14 +22,6 @@ from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
 _logger = log.module_logger(__name__)
 
 
-class MarkAction(enum.Enum):
-    """Valid action options for the mark command."""
-
-    Toggle = "toggle"
-    Mark = "mark"
-    Unmark = "unmark"
-
-
 class Mark(QObject):
     """Handle marking and tagging of images.
 
@@ -45,6 +37,13 @@ class Mark(QObject):
         _watcher: QFileSystemWatcher to monitor marked paths.
     """
 
+    class Action(enum.Enum):
+        """Valid action options for the mark command."""
+
+        Toggle = "toggle"
+        Mark = "mark"
+        Unmark = "unmark"
+
     marked = pyqtSignal(str)
     unmarked = pyqtSignal(str)
     markdone = pyqtSignal()
@@ -57,9 +56,9 @@ class Mark(QObject):
         self._last_marked: List[str] = []
         self._watcher: Optional[QFileSystemWatcher] = None
         self._actions = {
-            MarkAction.Toggle: self._toggle_mark,
-            MarkAction.Mark: self._mark,
-            MarkAction.Unmark: self._unmark,
+            Mark.Action.Toggle: self._toggle_mark,
+            Mark.Action.Mark: self._mark,
+            Mark.Action.Unmark: self._unmark,
         }
 
     @property
@@ -85,7 +84,7 @@ class Mark(QObject):
 
     @keybindings.register("m", "mark %")
     @commands.register()
-    def mark(self, paths: List[str], action: MarkAction = MarkAction.Toggle) -> None:
+    def mark(self, paths: List[str], action: Action = Action.Toggle) -> None:
         """Mark one or more paths.
 
         **syntax:** ``:mark path [path ...] [--action=ACTION]``
@@ -97,8 +96,8 @@ class Mark(QObject):
 
         optional arguments:
             * ``--action``: One of toggle/mark/unmark. Toggle, the default, inverses the
-               mark status of the path(s). Mark forces marking while unmark forces
-               removing the mark.
+              mark status of the path(s). Mark forces marking while unmark forces
+              removing the mark.
         """
         _logger.debug("Calling %s on %d paths", action.value, len(paths))
         function = self._actions[action]
