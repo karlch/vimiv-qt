@@ -58,7 +58,7 @@ if exif.has_exif_support:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
-            self._handler: Optional[exif.ExifHandler] = None
+            self._handler: Optional[exif.MetadataHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
@@ -66,10 +66,10 @@ if exif.has_exif_support:
             self.hide()
 
         @property
-        def handler(self) -> exif.ExifHandler:
+        def handler(self) -> exif.MetadataHandler:
             """Return the ExifHandler for the current path."""
             if self._handler is None:
-                self._handler = exif.ExifHandler(self._path)
+                self._handler = exif.MetadataHandler(self._path)
             return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)

@@ -14,7 +14,7 @@ one of the supported exif libraries, i.e.
 
 import contextlib
 import itertools
-from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable
+from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable, Optional
 from PyQt5.QtGui import QImageReader
 
 from vimiv.utils import log, lazy, is_hex, files
@@ -24,11 +24,50 @@ piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
 
 
+class _InternalKeyHandler(dict):
+    def __init__(self, path: str):
+        super().__init__(
+            {
+                "vimiv.filesize": ("Vimiv.FileSize", self._get_filesize),
+                "vimiv.xdimension": ("Vimiv.XDimension", self._get_xdimension),
+                "vimiv.ydimension": ("Vimiv.YDimension", self._get_ydimension),
+                "vimiv.filetype": ("Vimiv.FileType", self._get_filetype),
+            }
+        )
+        self._path = path
+        self._reader: Optional[QImageReader] = None
+
+    @property
+    def reader(self) -> QImageReader:
+        if self._reader is None:
+            self._reader = QImageReader(self._path)
+        return self._reader
+
+    def _get_filesize(self):
+        return files.get_size_file(self._path)
+
+    def _get_filetype(self):
+        return files.imghdr.what(self._path)
+
+    def _get_xdimension(self):
+        return self.reader.size().width()
+
+    def _get_ydimension(self):
+        return self.reader.size().height()
+
+    def __getitem__(self, key: str) -> Tuple[str, str, str]:
+        key, func = super().get(key.lower())
+        return (key, key, func())
+
+    def get_keys(self) -> Iterable[str]:
+        return (key for key, _ in super().values())
+
+
 class UnsupportedExifOperation(NotImplementedError):
     """Raised if an exif operation is not supported by the used library if any."""
 
 
-class _ExifHandlerBase:
+class _ExternalKeyHandlerBase:
     """Handler to load and copy exif information of a single image.
 
     This class provides the interface for handling exif support. By default none of the
@@ -38,16 +77,8 @@ class _ExifHandlerBase:
 
     MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for exif support."
 
-    vimiv_keys = [
-        "Vimiv.FileSize",
-        "Vimiv.XDimension",
-        "Vimiv.YDimension",
-        "Vimiv.Filetype",
-    ]
-
     def __init__(self, filename=""):
         self.filename = filename
-        pass
 
     def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
         """Copy exif information from current image to dest.
@@ -58,46 +89,12 @@ class _ExifHandlerBase:
         """
         self.raise_exception("Copying exif data")
 
-    def exif_date_time(self) -> str:
+    def get_date_time(self) -> str:
         """Get exif creation date and time as formatted string."""
         self.raise_exception("Retrieving exif date-time")
 
-    def get_formatted_metadata(
-        self, desired_keys: Sequence[str]
-    ) -> Dict[Any, Tuple[str, str]]:
-        metadata = dict()
-
-        for base_key in desired_keys:
-
-            if base_key.lower().startswith("vimiv"):
-                if base_key.lower() == "vimiv.filesize":
-                    file_size = files.get_size_file(self.filename)
-                    metadata["Vimiv.FileSize"] = ("Vimiv.FileSize", file_size)
-                    continue
-                if base_key.lower() == "vimiv.filetype":
-                    file_type = files.imghdr.what(self.filename)
-                    metadata["Vimiv.FileType"] = ("Vimiv.FileType", file_type)
-                    continue
-                if base_key.lower() == "vimiv.xdimension":
-                    x_dim = QImageReader(self.filename).size().width()
-                    metadata["Vimiv.XDimension"] = ("Vimiv.XDimension", f"{x_dim} px")
-                    continue
-                if base_key.lower() == "vimiv.ydimension":
-                    y_dim = QImageReader(self.filename).size().height()
-                    metadata["Vimiv.YDimension"] = ("Vimiv.YDimension", f"{y_dim} px")
-                    continue
-            else:
-                try:
-                    key, key_name, key_value = self._fetch_external_key(base_key)
-                    metadata[key] = (key_name, key_value)
-                except TypeError:  # function retuned None
-                    continue
-
-        return metadata
-
-    def _fetch_external_key(self, key: str) -> Tuple[str, str, str]:
-        """Get a dictionary of formatted exif values."""
-        self.raise_exception("Getting formatted exif data")
+    def fetch_key(self, _base_key: str) -> Tuple[str, str, str]:
+        self.raise_exception("Getting formatted keys")
 
     def get_keys(self) -> Iterable[str]:
         """Retrieve the name of all exif keys available."""
@@ -111,7 +108,7 @@ class _ExifHandlerBase:
         raise UnsupportedExifOperation(msg)
 
 
-class _ExifHandlerPiexif(_ExifHandlerBase):
+class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
     """Implementation of ExifHandler based on piexif."""
 
     MESSAGE_SUFFIX = " by piexif."
@@ -124,7 +121,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             _logger.debug("File %s not found", filename)
             self._metadata = None
 
-    def _fetch_external_key(self, base_key: str) -> Tuple[str, str, str]:
+    def fetch_key(self, base_key: str) -> Tuple[str, str, str]:
         key = base_key.rpartition(".")[2]
 
         try:
@@ -172,16 +169,14 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
         return None
 
     def get_keys(self) -> Iterable[str]:
-        piexif_keys = (
+        return (
             piexif.TAGS[ifd][tag]["name"]
             for ifd in self._metadata
             if ifd != "thumbnail"
             for tag in self._metadata[ifd]
         )
-        vimiv_keys = (key for key in self.vimiv_keys)
-        return itertools.chain(vimiv_keys, piexif_keys)
 
-    def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
         try:
             if reset_orientation:
                 with contextlib.suppress(KeyError):
@@ -196,7 +191,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
         except ValueError:
             _logger.debug("No exif data in '%s'", dest)
 
-    def exif_date_time(self) -> str:
+    def get_date_time(self) -> str:
         with contextlib.suppress(
             piexif.InvalidImageDataError, FileNotFoundError, KeyError
         ):
@@ -204,7 +199,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
         return ""
 
 
-def check_exif_dependancy(handler):
+def check_external_dependancy(handler):
     """Decorator for ExifHandler which requires the optional pyexiv2 module.
 
     If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
@@ -216,8 +211,11 @@ def check_exif_dependancy(handler):
         handler: The class to be decorated.
     """
 
+    if pyexiv2:
+        return handler
+
     if piexif:
-        return _ExifHandlerPiexif
+        return _ExternalKeyHandlerPiexif
 
     _logger.warning(
         "There is no exif support and therefore:\n"
@@ -229,11 +227,11 @@ def check_exif_dependancy(handler):
         "https://karlch.github.io/vimiv-qt/documentation/exif.html\n"
     )
 
-    return _ExifHandlerBase
+    return _ExternalKeyHandlerBase
 
 
-@check_exif_dependancy
-class ExifHandler(_ExifHandlerBase):
+@check_external_dependancy
+class _ExternalKeyHandler(_ExternalKeyHandlerBase):
     """Main ExifHandler implementation based on pyexiv2."""
 
     MESSAGE_SUFFIX = " by pyexiv2."
@@ -246,7 +244,7 @@ class ExifHandler(_ExifHandlerBase):
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
 
-    def _fetch_external_key(self, base_key: str) -> Tuple[str, str, str]:
+    def fetch_key(self, base_key: str) -> Tuple[str, str, str]:
         # For backwards compability, assume it has one of the following prefixes
         for prefix in ["", "Exif.Image.", "Exif.Photo."]:
             key = f"{prefix}{base_key}"
@@ -274,13 +272,9 @@ class ExifHandler(_ExifHandlerBase):
         return None
 
     def get_keys(self) -> Iterable[str]:
-        exiv2_keys = (
-            key for key in self._metadata if not is_hex(key.rpartition(".")[2])
-        )
-        vimiv_keys = (key for key in self.vimiv_keys)
-        return itertools.chain(vimiv_keys, exiv2_keys)
+        return (key for key in self._metadata if not is_hex(key.rpartition(".")[2]))
 
-    def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
         if reset_orientation:
             with contextlib.suppress(KeyError):
                 self._metadata["Exif.Image.Orientation"] = ExifOrientation.Normal
@@ -302,13 +296,95 @@ class ExifHandler(_ExifHandlerBase):
         except OSError as e:
             _logger.debug("Failed to write exif data for '%s': '%s'", dest, str(e))
 
-    def exif_date_time(self) -> str:
+    def get_date_time(self) -> str:
         with contextlib.suppress(KeyError):
             return self._metadata["Exif.Image.DateTime"].raw_value
         return ""
 
 
-has_exif_support = ExifHandler != _ExifHandlerBase
+has_exif_support = _ExternalKeyHandler != _ExternalKeyHandlerBase
+
+
+class MetadataHandler:
+    """Handler to load and copy exif information of a single image.
+
+    This class provides the interface for handling exif support. By default none of the
+    operations are implemented. Instead it is up to a child class which wraps around one
+    of the supported exif libraries to implement the methods it can.
+    """
+
+    def __init__(self, filename=""):
+        self.filename = filename
+        self._internal_handler: Optional[_InternalKeyHandler] = None
+        self._external_handler: Optional[_ExternalKeyHandler] = None
+
+    @property
+    def internal_handler(self) -> _InternalKeyHandler:
+        if self._internal_handler is None:
+            self._internal_handler = _InternalKeyHandler(self.filename)
+        return self._internal_handler
+
+    @property
+    def external_handler(self) -> _ExternalKeyHandler:
+        if self._external_handler is None:
+            self._external_handler = _ExternalKeyHandler(self.filename)
+        return self._external_handler
+
+    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
+        """Copy exif information from current image to dest.
+
+        Args:
+            dest: Path to write the exif information to.
+            reset_orientation: If true, reset the exif orientation tag to normal.
+        """
+        try:
+            self.external_handler.copy(dest, reset_orientation)
+        except UnsupportedExifOperation:
+            # Todo
+            pass
+
+    def get_date_time(self) -> str:
+        """Get exif creation date and time as formatted string."""
+        try:
+            self.external_handler.get_data_time()
+        except UnsupportedExifOperation:
+            # Todo
+            pass
+
+    def get_formatted_metadata(
+        self, desired_keys: Sequence[str]
+    ) -> Dict[Any, Tuple[str, str]]:
+        metadata = dict()
+
+        for base_key in desired_keys:
+            base_key = base_key.strip()
+
+            try:
+                key, key_name, key_value = self._fetch_key(base_key)
+                metadata[key] = key_name, key_value
+            except (KeyError, TypeError):
+                _logger.debug("Invalid key '%s'", base_key)
+
+        return metadata
+
+    def get_keys(self) -> Iterable[str]:
+        """Retrieve the name of all exif keys available."""
+        try:
+            return itertools.chain(
+                self.internal_handler.get_keys(), self.external_handler.get_keys()
+            )
+        except UnsupportedExifOperation:
+            # Todo
+            pass
+
+    def _fetch_key(self, key: str) -> Tuple[str, str, str]:
+        try:
+            if key.lower().startswith("vimiv"):
+                return self.internal_handler[key]
+            return self.external_handler.fetch_key(key)
+        except UnsupportedExifOperation:
+            # Todo
+            pass
 
 
 class ExifOrientation:
