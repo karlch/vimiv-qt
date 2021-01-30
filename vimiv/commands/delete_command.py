@@ -32,8 +32,11 @@ def delete(paths: List[str]) -> None:
     if not images:
         raise api.commands.CommandError("No images to delete")
     for filename in images:
-        trash_filename = trash_manager.delete(filename)
-        _last_deleted.append(os.path.basename(trash_filename))
+        try:
+            trash_filename = trash_manager.delete(filename)
+            _last_deleted.append(os.path.basename(trash_filename))
+        except PermissionError:
+            raise api.commands.CommandError(f"No permissions to delete {filename}")
     n_images = len(images)
     if n_images > 1:
         log.info("Deleted %d images", n_images)
