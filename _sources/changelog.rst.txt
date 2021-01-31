@@ -25,8 +25,13 @@ Added:
 Changed:
 ^^^^^^^^
 
-* New set of default metadata key sets numbered from 1 to 5. Thanks
-  `@jcjgraf <https://github.com/jcjgraf>`_!
+* New set of default metadata key sets numbered from 1 to 5. Thanks `@jcjgraf`_!
+
+Fixed:
+^^^^^^
+
+* Crash when deleting images without permission. Thanks `@jcjgraf`_!
+* Undeleting symlinks. Thanks `@jcjgraf`_!
 
 
 v0.8.0 (2021-01-18)
@@ -39,23 +44,22 @@ Added:
   ``metadata.keys3``. The default is ``metadata.keys1``. One can switch between the sets
   using ``[count]i``. To override one of these sets, add ``keys2 =
   Override,SecondSet``. To add a new one, use ``keys4 = New,Fourth,Set``. Here the
-  values must be a comma-separated list of valid metadata keys. Thanks
-  `@jcjgraf <https://github.com/jcjgraf>`_!
-* ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks
-  `@jcjgraf <https://github.com/jcjgraf>`_ for pointing this out!
+  values must be a comma-separated list of valid metadata keys. Thanks `@jcjgraf`_!
+* ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks `@jcjgraf`_
+  for pointing this out!
 * The ``:history-clear`` command to clear the command history.
 * Handle ``unbind`` explicitly when parsing ``keys.conf``. Instead of binding a key to
   the ``:unbind`` command, any existing keybinding for this key is now removed.
 * A new api interface which enables writing plugins to support new image formats. See
   :ref:`support_new_imageformats` for more details.
-  Thanks `@jcjgraf <https://github.com/jcjgraf>`_!
+  Thanks `@jcjgraf`_!
 * New ``--keep-zoom`` flag for ``:next`` and ``:prev`` which preserves zoom level and
   scroll position of the current image.
-  Thanks `@jcjgraf <https://github.com/jcjgraf>`_ for the idea!
+  Thanks `@jcjgraf`_ for the idea!
 * Exif support using `pyexiv2 <https://pypi.org/project/pyexiv2/>`_. When available,
   vimiv now prefers pyexiv2 over piexif for exif support due to its ability to format
   exif values into a human readable format. Thanks a lot
-  `@jcjgraf <https://github.com/jcjgraf>`_ for all your hard work, thoughts and comments
+  `@jcjgraf`_ for all your hard work, thoughts and comments
   on this topic!
 * New ``:metadata-list-keys`` command to display all valid exif keys for the current
   image.
@@ -82,19 +86,18 @@ Fixed:
   the second-to-last.
 * Various issues when handling backslash and percent characters in paths and
   completions. Thanks
-  `@woefe <https://github.com/woefe>`_ for pointing these out!
+  `@woefe`_ for pointing these out!
 * Quoting of paths and the date format of the trashinfo file created by the ``:delete``
-  command. Thanks `@woefe <https://github.com/woefe>`_ for the bug report.
+  command. Thanks `@woefe`_ for the bug report.
 * Creating thumbnails for thumbnails.
 * Opening single hidden images when ``library.show_hidden`` is set to false. Thanks
-  `@schyzophrene-asynchrone <https://github.com/schyzophrene-asynchrone>`_ for pointing
+  `@schyzophrene-asynchrone`_ for pointing
   this out!
 * Displaying key binding conflicts before parsing the complete ``keys.conf``. This lead
   to scenarios in which a warning was displayed which is later resolved by the
-  corresponding ``unbind``. Thanks
-  `@schyzophrene-asynchrone <https://github.com/schyzophrene-asynchrone>`_!
+  corresponding ``unbind``. Thanks `@schyzophrene-asynchrone`_!
 * Crash when toggling manipulate mode before ever entering it. Thanks
-  `@pozitron57 <https://github.com/pozitron57>`_ for pointing this out!
+  `@pozitron57`_ for pointing this out!
 * Crash when dragging thumbnails.
 
 
@@ -233,8 +236,7 @@ Added:
 Changed:
 ^^^^^^^^
 
-* Saner default step for mouse zoom. Thanks
-  `@OliverLew <https://github.com/OliverLew>`_ for catching this.
+* Saner default step for mouse zoom. Thanks `@OliverLew`_ for catching this.
 * Completion api no longer provides a ``BaseFilter`` class. Instead, the
   ``FilterProxyModel`` is always used for completion filtering. Customization can only
   be done by adding new completion models inheriting from ``BaseModel``.
@@ -250,7 +252,7 @@ Fixed:
 * Partial matches with special keys such as ``<tab>``.
 * The ``-s`` command line option to temporarily set an option. Broken since v0.4.0.
 * Support for some jpg files not recognized by the ``imghdr`` module. Thanks
-  `@maximbaz <https://github.com/maximbaz>`_ for the help.
+  `@maximbaz`_ for the help.
 * Undefined behaviour when running ``:enter command``. This now displays an error
   message and hints that ``:command`` or ``:search`` should be used instead.
 
@@ -425,3 +427,11 @@ v0.1.0 (2019-08-15)
 -------------------
 
 Initial release of the Qt version.
+
+
+.. _@jcjgraf: https://github.com/jcjgraf
+.. _@woefe: https://github.com/woefe
+.. _@schyzophrene-asynchrone: https://github.com/schyzophrene-asynchrone
+.. _@pozitron57: https://github.com/pozitron57
+.. _@OliverLew: <https://github.com/OliverLew>
+.. _@maximbaz: <https://github.com/maximbaz>
