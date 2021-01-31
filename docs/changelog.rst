@@ -28,6 +28,14 @@ Changed:
 * New set of default metadata key sets numbered from 1 to 5. Thanks
   `@jcjgraf <https://github.com/jcjgraf>`_!
 
+Fixed:
+^^^^^^
+
+* Crash when deleting images without permission. Thanks
+  `@jcjgraf <https://github.com/jcjgraf>`_!
+* Undeleting symlinks. Thanks
+  `@jcjgraf <https://github.com/jcjgraf>`_!
+
 
 v0.8.0 (2021-01-18)
 -------------------
