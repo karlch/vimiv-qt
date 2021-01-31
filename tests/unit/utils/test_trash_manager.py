@@ -86,6 +86,18 @@ def test_fail_undelete_non_existing_original_directory(tmp_path):
         trash_manager.undelete(pathlib.Path(trash_filename).name)
 
 
+def test_undelete_symlink(tmp_path):
+    path = tmp_path / "file"
+    path.touch()
+    path_to_link = tmp_path / "link"
+    path_to_link.symlink_to("file")
+    trash_filename = trash_manager.delete(str(path_to_link))
+    trash_manager.undelete(trash_filename)
+    assert path_to_link.exists()
+    assert path_to_link.is_symlink()
+    assert path_to_link.resolve() == path
+
+
 def create_tmpfile(directory, basename):
     """Simple function to create a temporary file using pathlib."""
     path = directory / basename
