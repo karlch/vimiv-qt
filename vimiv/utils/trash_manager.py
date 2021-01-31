@@ -63,7 +63,9 @@ def undelete(basename: str) -> str:
     """
     trash_filename = os.path.join(_files_directory, basename)
     info_filename = _get_info_filename(basename)
-    if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
+    if not os.path.exists(info_filename) or (
+        not os.path.exists(trash_filename) and not os.path.islink(trash_filename)
+    ):
         raise FileNotFoundError(f"File for '{basename}' does not exist")
     original_filename, _ = trash_info(basename)
     if not os.path.isdir(os.path.dirname(original_filename)):
