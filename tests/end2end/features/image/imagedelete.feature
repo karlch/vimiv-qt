@@ -110,3 +110,10 @@ Feature: Deleting an image in the current file list
             | \%.jpg  |
             | \\%.jpg |
             | \%m.jpg |
+
+    Scenario: Crash when deleting image without permission
+        Given I open any image
+        When I remove move permissions
+        And I run delete %
+        Then no crash should happen
+        And the file image.jpg should exist
