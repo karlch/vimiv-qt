@@ -330,9 +330,8 @@ class MetadataHandler:
             self._ext_handler = ExternalKeyHandler(self.filename)
         return self._ext_handler
 
-    def get_formatted_metadata(
-        self, desired_keys: Sequence[str]
-    ) -> Dict[Any, Tuple[str, str]]:
+    def fetch_keys(self, desired_keys: Sequence[str]) -> Dict[Any, Tuple[str, str]]:
+        """Throws: UnsupportedExifOperation"""
         metadata = dict()
 
         for base_key in desired_keys:
@@ -355,14 +354,11 @@ class MetadataHandler:
             self._internal_handler.get_keys(), self._external_handler.get_keys()
         )
 
-    def _fetch_key(self, key: str) -> Tuple[str, str, str]:
-        try:
-            if key.lower().startswith("vimiv"):
-                return self.internal_handler[key]
-            return self.external_handler.fetch_key(key)
-        except UnsupportedExifOperation:
-            # Todo
-            pass
+    def fetch_key(self, key: str) -> Tuple[str, str, str]:
+        """Throws: UnsupportedExifOperation"""
+        if key.lower().startswith("vimiv"):
+            return self._internal_handler[key]
+        return self._external_handler.fetch_key(key)
 
 
 class ExifOrientation:
