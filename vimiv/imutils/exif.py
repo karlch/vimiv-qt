@@ -4,10 +4,10 @@
 # Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Utility functions and classes for exif handling.
+"""Utility functions and classes for metadata handling.
 
-All exif related tasks are implemented in this module. The heavy lifting is done using
-one of the supported exif libraries, i.e.
+All metadata related tasks are implemented in this module. The heavy lifting is done using
+one of the supported metadata libraries, i.e.
 * piexif (https://pypi.org/project/piexif/) and
 * pyexiv2 (https://pypi.org/project/py3exiv2/).
 """
@@ -64,30 +64,30 @@ class _InternalKeyHandler(dict):
 
 
 class UnsupportedMetadataOperation(NotImplementedError):
-    """Raised if an exif operation is not supported by the used library if any."""
+    """Raised if a metadata operation is not supported by the used library if any."""
 
 
 class _ExternalKeyHandlerBase:
-    """Handler to load and copy exif information of a single image.
+    """Handler to load and copy metadata information of a single image.
 
-    This class provides the interface for handling exif support. By default none of the
+    This class provides the interface for handling metadata support. By default none of the
     operations are implemented. Instead it is up to a child class which wraps around one
-    of the supported exif libraries to implement the methods it can.
+    of the supported metadata libraries to implement the methods it can.
     """
 
-    MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for exif support."
+    MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for metadata support."
 
     def __init__(self, filename=""):
         self.filename = filename
 
-    def copy_exif(self, _dest: str, _reset_orientation: bool = True) -> None:
-        """Copy exif information from current image to dest.
+    def copy_metadata(self, _dest: str, _reset_orientation: bool = True) -> None:
+        """Copy metadata information from current image to dest.
 
         Args:
-            dest: Path to write the exif information to.
+            dest: Path to write the metadata information to.
             reset_orientation: If true, reset the exif orientation tag to normal.
         """
-        self.raise_exception("Copying exif data")
+        self.raise_exception("Copying metadata data")
 
     def get_date_time(self) -> str:
         """Get exif creation date and time as formatted string."""
@@ -97,19 +97,19 @@ class _ExternalKeyHandlerBase:
         self.raise_exception("Getting formatted keys")
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the name of all exif keys available."""
-        self.raise_exception("Getting exif keys")
+        """Retrieve the name of all metadata keys available."""
+        self.raise_exception("Getting metadata keys")
 
     @classmethod
     def raise_exception(cls, operation: str) -> NoReturn:
-        """Raise an exception for a not implemented exif operation."""
+        """Raise an exception for a not implemented metadata operation."""
         msg = f"{operation} is not supported{cls.MESSAGE_SUFFIX}"
         _logger.warning(msg, once=True)
         raise UnsupportedMetadataOperation(msg)
 
 
 class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
-    """Implementation of ExifHandler based on piexif."""
+    """Implementation of ExternalKeyHandler based on piexif."""
 
     MESSAGE_SUFFIX = " by piexif."
 
@@ -183,13 +183,13 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
                     self._metadata["0th"][
                         piexif.ImageIFD.Orientation
                     ] = ExifOrientation.Normal
-            exif_bytes = piexif.dump(self._metadata)
-            piexif.insert(exif_bytes, dest)
-            _logger.debug("Successfully wrote exif data for '%s'", dest)
+            metadata_bytes = piexif.dump(self._metadata)
+            piexif.insert(metadata_bytes, dest)
+            _logger.debug("Successfully wrote metadata data for '%s'", dest)
         except piexif.InvalidImageDataError:  # File is not a jpg
-            _logger.debug("File format for '%s' does not support exif", dest)
+            _logger.debug("File format for '%s' does not support metadata", dest)
         except ValueError:
-            _logger.debug("No exif data in '%s'", dest)
+            _logger.debug("No metadata data in '%s'", dest)
 
     def get_date_time(self) -> str:
         with contextlib.suppress(
@@ -200,10 +200,10 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
 
 
 def check_external_dependancy(handler):
-    """Decorator for ExifHandler which requires the optional pyexiv2 module.
+    """Decorator for ExternalKeyHandler which requires the optional pyexiv2 module.
 
     If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
-    but the less powerful piexif module is, _ExifHandlerPiexif is returned instead.
+    but the less powerful piexif module is, _ExternalKeyHandlerPiexif is returned instead.
     If none of the two modules are available, the base implementation which always
     throws an exception is returned.
 
@@ -218,8 +218,8 @@ def check_external_dependancy(handler):
         return _ExternalKeyHandlerPiexif
 
     _logger.warning(
-        "There is no exif support and therefore:\n"
-        "1. Exif data is lost when writing images to disk.\n"
+        "There is no metadata support and therefore:\n"
+        "1. Exif/IPTC data is lost when writing images to disk.\n"
         "2. The `:metadata` command and associated `i` keybinding is not available.\n"
         "3. The {exif-date-time} statusbar module is not available.\n\n"
         "Please install pyexiv2 or piexif to silence this warning.\n"
@@ -232,7 +232,7 @@ def check_external_dependancy(handler):
 
 @check_external_dependancy
 class ExternalKeyHandler(_ExternalKeyHandlerBase):
-    """Main ExifHandler implementation based on pyexiv2."""
+    """Main ExternalKeyHandler implementation based on pyexiv2."""
 
     MESSAGE_SUFFIX = " by pyexiv2."
 
@@ -290,11 +290,13 @@ class ExternalKeyHandler(_ExternalKeyHandlerBase):
 
             dest_image.write()
 
-            _logger.debug("Successfully wrote exif data for '%s'", dest)
+            _logger.debug("Successfully wrote metadata data for '%s'", dest)
         except FileNotFoundError:
-            _logger.debug("Failed to write exif data. Destination '%s' not found", dest)
+            _logger.debug(
+                "Failed to write metadata data. Destination '%s' not found", dest
+            )
         except OSError as e:
-            _logger.debug("Failed to write exif data for '%s': '%s'", dest, str(e))
+            _logger.debug("Failed to write metadata data for '%s': '%s'", dest, str(e))
 
     def get_date_time(self) -> str:
         with contextlib.suppress(KeyError):
@@ -302,15 +304,15 @@ class ExternalKeyHandler(_ExternalKeyHandlerBase):
         return ""
 
 
-has_exif_support = ExternalKeyHandler != _ExternalKeyHandlerBase
+has_metadata_support = ExternalKeyHandler != _ExternalKeyHandlerBase
 
 
 class MetadataHandler:
-    """Handler to load and copy exif information of a single image.
+    """Handler to load and copy metadata information of a single image.
 
-    This class provides the interface for handling exif support. By default none of the
+    This class provides the interface for handling metadata support. By default none of the
     operations are implemented. Instead it is up to a child class which wraps around one
-    of the supported exif libraries to implement the methods it can.
+    of the supported metadata libraries to implement the methods it can.
     """
 
     def __init__(self, filename=""):
@@ -346,7 +348,7 @@ class MetadataHandler:
         return metadata
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the name of all exif keys available.
+        """Retrieve the name of all metadata keys available.
 
         Throws: UnsupportedMetadataOperation
         """
