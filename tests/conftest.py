@@ -12,7 +12,7 @@ import urllib.request
 
 import pytest
 
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 
 
 CI = "CI" in os.environ
@@ -24,10 +24,10 @@ PLATFORM_MARKERS = (
 )
 
 EXIF_MARKERS = (
-    ("exif", exif.has_exif_support, "Only run with exif support"),
-    ("noexif", not exif.has_exif_support, "Only run without exif support"),
-    ("pyexiv2", exif.pyexiv2 is not None, "Only run with pyexiv2"),
-    ("piexif", exif.piexif is not None, "Only run with piexif"),
+    ("exif", metadata.has_metadata_support, "Only run with exif support"),
+    ("noexif", not metadata.has_metadata_support, "Only run without exif support"),
+    ("pyexiv2", metadata.pyexiv2 is not None, "Only run with pyexiv2"),
+    ("piexif", metadata.piexif is not None, "Only run with piexif"),
 )
 # fmt: on
 
@@ -168,13 +168,13 @@ def tmpdir():
 @pytest.fixture()
 def piexif(monkeypatch):
     """Pytest fixture to ensure only piexif is available."""
-    monkeypatch.setattr(exif, "pyexiv2", None)
+    monkeypatch.setattr(metadata, "pyexiv2", None)
 
 
 @pytest.fixture()
 def noexif(monkeypatch, piexif):
     """Pytest fixture to ensure no exif library is available."""
-    monkeypatch.setattr(exif, "piexif", None)
+    monkeypatch.setattr(metadata, "piexif", None)
 
 
 @pytest.fixture()
@@ -182,11 +182,11 @@ def add_exif_information():
     """Fixture to retrieve a helper function that adds exif content to an image."""
 
     def add_exif_information_impl(path: str, content):
-        assert exif.piexif is not None, "piexif required to add exif information"
-        exif_dict = exif.piexif.load(path)
+        assert metadata.piexif is not None, "piexif required to add exif information"
+        exif_dict = metadata.piexif.load(path)
         for ifd, ifd_dict in content.items():
             for key, value in ifd_dict.items():
                 exif_dict[ifd][key] = value
-        exif.piexif.insert(exif.piexif.dump(exif_dict), path)
+        metadata.piexif.insert(metadata.piexif.dump(exif_dict), path)
 
     return add_exif_information_impl
