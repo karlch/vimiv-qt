@@ -347,14 +347,13 @@ class MetadataHandler:
         return metadata
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the name of all exif keys available."""
-        try:
-            return itertools.chain(
-                self.internal_handler.get_keys(), self.external_handler.get_keys()
-            )
-        except UnsupportedExifOperation:
-            # Todo
-            pass
+        """Retrieve the name of all exif keys available.
+
+        Throws: UnsupportedExifOperation
+        """
+        return itertools.chain(
+            self._internal_handler.get_keys(), self._external_handler.get_keys()
+        )
 
     def _fetch_key(self, key: str) -> Tuple[str, str, str]:
         try:

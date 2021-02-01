@@ -121,7 +121,12 @@ if exif.has_exif_support:
                 * ``--to-term``: Print the keys to the terminal instead.
             """
 
-            keys = sorted(set(self.handler.get_keys()))
+            try:
+                keys = sorted(set(self.handler.get_keys()))
+                _logger.debug("Successfully got keys")
+            except exif.UnsupportedExifOperation:
+                # TODO: should actually never happen
+                pass
             if to_term:
                 print(*keys, sep="\n")
             elif n_cols < 1:
@@ -134,6 +139,7 @@ if exif.has_exif_support:
                 self.setText(table)
                 self._update_geometry()
                 self.show()
+                _logger.debug("Displaying keys in %d columns.", columns)
 
         def update_geometry(self, window_width, window_bottom):
             """Adapt location when main window geometry changes."""
