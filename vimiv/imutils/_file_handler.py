@@ -212,7 +212,7 @@ def _write(pixmap, path, original_path):
     pixmap.save(filename)
     # Copy exif info from original file to new file
     try:
-        imutils.exif.ExifHandler(original_path).copy_exif(filename)
+        imutils.exif.ExternalKeyHandler(original_path).copy_metadata(filename)
     except imutils.exif.UnsupportedExifOperation:
         pass
     shutil.move(filename, path)
