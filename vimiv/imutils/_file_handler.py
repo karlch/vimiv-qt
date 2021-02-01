@@ -213,7 +213,7 @@ def _write(pixmap, path, original_path):
     # Copy exif info from original file to new file
     try:
         imutils.exif.ExternalKeyHandler(original_path).copy_metadata(filename)
-    except imutils.exif.UnsupportedExifOperation:
+    except imutils.exif.UnsupportedMetadataOperation:
         pass
     shutil.move(filename, path)
     # Check if valid image was created

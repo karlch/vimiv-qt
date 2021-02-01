@@ -63,7 +63,7 @@ class _InternalKeyHandler(dict):
         return (key for key, _ in super().values())
 
 
-class UnsupportedExifOperation(NotImplementedError):
+class UnsupportedMetadataOperation(NotImplementedError):
     """Raised if an exif operation is not supported by the used library if any."""
 
 
@@ -105,7 +105,7 @@ class _ExternalKeyHandlerBase:
         """Raise an exception for a not implemented exif operation."""
         msg = f"{operation} is not supported{cls.MESSAGE_SUFFIX}"
         _logger.warning(msg, once=True)
-        raise UnsupportedExifOperation(msg)
+        raise UnsupportedMetadataOperation(msg)
 
 
 class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
@@ -331,7 +331,7 @@ class MetadataHandler:
         return self._ext_handler
 
     def fetch_keys(self, desired_keys: Sequence[str]) -> Dict[Any, Tuple[str, str]]:
-        """Throws: UnsupportedExifOperation"""
+        """Throws: UnsupportedMetadataOperation"""
         metadata = dict()
 
         for base_key in desired_keys:
@@ -348,14 +348,14 @@ class MetadataHandler:
     def get_keys(self) -> Iterable[str]:
         """Retrieve the name of all exif keys available.
 
-        Throws: UnsupportedExifOperation
+        Throws: UnsupportedMetadataOperation
         """
         return itertools.chain(
             self._internal_handler.get_keys(), self._external_handler.get_keys()
         )
 
     def fetch_key(self, key: str) -> Tuple[str, str, str]:
-        """Throws: UnsupportedExifOperation"""
+        """Throws: UnsupportedMetadataOperation"""
         if key.lower().startswith("vimiv"):
             return self._internal_handler[key]
         return self._external_handler.fetch_key(key)

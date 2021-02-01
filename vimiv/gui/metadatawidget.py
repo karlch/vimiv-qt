@@ -124,7 +124,7 @@ if exif.has_exif_support:
             try:
                 keys = sorted(set(self.handler.get_keys()))
                 _logger.debug("Successfully got keys")
-            except exif.UnsupportedExifOperation:
+            except exif.UnsupportedMetadataOperation:
                 # TODO: should actually never happen
                 pass
             if to_term:
@@ -169,7 +169,7 @@ if exif.has_exif_support:
             try:
                 formatted_exif = self.handler.fetch_keys(keys)
                 _logger.degub("Fetched metadata")
-            except exif.UnsupportedExifOperation:
+            except exif.UnsupportedMetadataOperation:
                 # TODO: should never happen
                 pass
 
