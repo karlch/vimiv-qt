@@ -340,7 +340,7 @@ class MetadataHandler:
             base_key = base_key.strip()
 
             try:
-                key, key_name, key_value = self._fetch_key(base_key)
+                key, key_name, key_value = self.fetch_key(base_key)
                 metadata[key] = key_name, key_value
             except (KeyError, TypeError):
                 _logger.debug("Invalid key '%s'", base_key)

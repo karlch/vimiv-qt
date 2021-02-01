@@ -168,7 +168,7 @@ if metadata.has_metadata_support:
             _logger.debug(f"Read metadata.current_keys {keys}")
             try:
                 metadata = self.handler.fetch_keys(keys)
-                _logger.degub("Fetched metadata")
+                _logger.debug("Fetched metadata")
             except metadata.UnsupportedMetadataOperation:
                 # TODO: should never happen
                 pass
