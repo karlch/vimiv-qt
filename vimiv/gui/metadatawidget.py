@@ -13,13 +13,13 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 from vimiv.config import styles
 
 _logger = utils.log.module_logger(__name__)
 
 
-if exif.has_metadata_support:
+if metadata.has_metadata_support:
 
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
@@ -58,7 +58,7 @@ if exif.has_metadata_support:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
-            self._handler: Optional[exif.MetadataHandler] = None
+            self._handler: Optional[metadata.MetadataHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
@@ -66,10 +66,10 @@ if exif.has_metadata_support:
             self.hide()
 
         @property
-        def handler(self) -> exif.MetadataHandler:
+        def handler(self) -> metadata.MetadataHandler:
             """Return the MetadataHandler for the current path."""
             if self._handler is None:
-                self._handler = exif.MetadataHandler(self._path)
+                self._handler = metadata.MetadataHandler(self._path)
             return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
@@ -124,7 +124,7 @@ if exif.has_metadata_support:
             try:
                 keys = sorted(set(self.handler.get_keys()))
                 _logger.debug("Successfully got keys")
-            except exif.UnsupportedMetadataOperation:
+            except metadata.UnsupportedMetadataOperation:
                 # TODO: should actually never happen
                 pass
             if to_term:
@@ -169,7 +169,7 @@ if exif.has_metadata_support:
             try:
                 metadata = self.handler.fetch_keys(keys)
                 _logger.degub("Fetched metadata")
-            except exif.UnsupportedMetadataOperation:
+            except metadata.UnsupportedMetadataOperation:
                 # TODO: should never happen
                 pass
 
