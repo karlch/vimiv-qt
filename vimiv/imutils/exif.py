@@ -315,20 +315,20 @@ class MetadataHandler:
 
     def __init__(self, filename=""):
         self.filename = filename
-        self._internal_handler: Optional[_InternalKeyHandler] = None
-        self._external_handler: Optional[ExternalKeyHandler] = None
+        self._int_handler: Optional[_InternalKeyHandler] = None
+        self._ext_handler: Optional[ExternalKeyHandler] = None
 
     @property
-    def internal_handler(self) -> _InternalKeyHandler:
-        if self._internal_handler is None:
-            self._internal_handler = _InternalKeyHandler(self.filename)
-        return self._internal_handler
+    def _internal_handler(self) -> _InternalKeyHandler:
+        if self._int_handler is None:
+            self._int_handler = _InternalKeyHandler(self.filename)
+        return self._int_handler
 
     @property
-    def external_handler(self) -> ExternalKeyHandler:
-        if self._external_handler is None:
-            self._external_handler = ExternalKeyHandler(self.filename)
-        return self._external_handler
+    def _external_handler(self) -> ExternalKeyHandler:
+        if self._ext_handler is None:
+            self._ext_handler = ExternalKeyHandler(self.filename)
+        return self._ext_handler
 
     def get_formatted_metadata(
         self, desired_keys: Sequence[str]
