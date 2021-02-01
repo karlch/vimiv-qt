@@ -6,8 +6,8 @@
 
 """Utility functions and classes for metadata handling.
 
-All metadata related tasks are implemented in this module. The heavy lifting is done using
-one of the supported metadata libraries, i.e.
+All metadata related tasks are implemented in this module. The heavy lifting is done
+using one of the supported metadata libraries, i.e.
 * piexif (https://pypi.org/project/piexif/) and
 * pyexiv2 (https://pypi.org/project/py3exiv2/).
 """
@@ -70,9 +70,9 @@ class UnsupportedMetadataOperation(NotImplementedError):
 class _ExternalKeyHandlerBase:
     """Handler to load and copy metadata information of a single image.
 
-    This class provides the interface for handling metadata support. By default none of the
-    operations are implemented. Instead it is up to a child class which wraps around one
-    of the supported metadata libraries to implement the methods it can.
+    This class provides the interface for handling metadata support. By default none of
+    the operations are implemented. Instead it is up to a child class which wraps
+    around one of the supported metadata libraries to implement the methods it can.
     """
 
     MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for metadata support."
@@ -152,21 +152,21 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
                         piexif.TYPES.DFloat,
                     ):  # integer and float
                         return (keyname, keyname, str(val))
-                    elif keytype in (
+                    if keytype in (
                         piexif.TYPES.Ascii,
                         piexif.TYPES.Undefined,
                     ):  # byte encoded
                         return (keyname, keyname, val.decode())
-                    elif keytype in (
+                    if keytype in (
                         piexif.TYPES.Rational,
                         piexif.TYPES.SRational,
                     ):  # (int, int) <=> numerator, denominator
                         return (keyname, keyname, f"{val[0]}/{val[1]}")
 
         except (piexif.InvalidImageDataError, KeyError):
-            return None
+            return ("", "", "")
 
-        return None
+        return ("", "", "")
 
     def get_keys(self) -> Iterable[str]:
         return (
@@ -203,9 +203,9 @@ def check_external_dependancy(handler):
     """Decorator for ExternalKeyHandler which requires the optional pyexiv2 module.
 
     If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
-    but the less powerful piexif module is, _ExternalKeyHandlerPiexif is returned instead.
-    If none of the two modules are available, the base implementation which always
-    throws an exception is returned.
+    but the less powerful piexif module is, _ExternalKeyHandlerPiexif is returned
+    instead. If none of the two modules are available, the base implementation which
+    always throws an exception is returned.
 
     Args:
         handler: The class to be decorated.
@@ -310,9 +310,9 @@ has_metadata_support = ExternalKeyHandler != _ExternalKeyHandlerBase
 class MetadataHandler:
     """Handler to load and copy metadata information of a single image.
 
-    This class provides the interface for handling metadata support. By default none of the
-    operations are implemented. Instead it is up to a child class which wraps around one
-    of the supported metadata libraries to implement the methods it can.
+    This class provides the interface for handling metadata support. By default none of
+    the operations are implemented. Instead it is up to a child class which wraps
+    around one of the supported metadata libraries to implement the methods it can.
     """
 
     def __init__(self, filename=""):
