@@ -38,7 +38,7 @@ The image widget in ``vimiv.gui.image`` connects to these signals and displays
 the appropriate Qt widget.
 """
 
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 from vimiv.imutils.edit_handler import EditHandler
 from vimiv.imutils.filelist import current, pathlist
 from vimiv.imutils.filelist import SignalHandler as _FilelistSignalHandler

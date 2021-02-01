@@ -212,8 +212,8 @@ def _write(pixmap, path, original_path):
     pixmap.save(filename)
     # Copy metadata info from original file to new file
     try:
-        imutils.exif.ExternalKeyHandler(original_path).copy_metadata(filename)
-    except imutils.exif.UnsupportedMetadataOperation:
+        imutils.metadata.ExternalKeyHandler(original_path).copy_metadata(filename)
+    except imutils.metadata.UnsupportedMetadataOperation:
         pass
     shutil.move(filename, path)
     # Check if valid image was created
