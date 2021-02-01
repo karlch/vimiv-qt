@@ -172,7 +172,7 @@ def write_pixmap(pixmap, path, original_path):
     Args:
         pixmap: The QPixmap to write.
         path: Path to write the pixmap to.
-        original_path: Original path of the opened pixmap to retrieve metadata information.
+        original_path: Original path of the opened pixmap to retrieve metadata.
     """
     try:
         _can_write(pixmap, path)

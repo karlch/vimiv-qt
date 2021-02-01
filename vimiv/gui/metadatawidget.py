@@ -167,14 +167,14 @@ if metadata.has_metadata_support:
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
             try:
-                metadata = self.handler.fetch_keys(keys)
+                data = self.handler.fetch_keys(keys)
                 _logger.debug("Fetched metadata")
-            except metadata.UnsupportedMetadataOperation:
+            except data.UnsupportedMetadataOperation:
                 # TODO: should never happen
                 pass
 
-            if metadata:
-                self.setText(utils.format_html_table(metadata.values()))
+            if data:
+                self.setText(utils.format_html_table(data.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()
