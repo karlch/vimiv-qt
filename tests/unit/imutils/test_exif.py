@@ -4,14 +4,16 @@
 # Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Tests for vimiv.imutils.exif."""
+"""Tests for vimiv.imutils.metadata."""
 
 import pytest
 
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 
 
-@pytest.fixture(params=[exif.ExifHandler, exif._ExifHandlerPiexif])
+@pytest.fixture(
+    params=[metadata.ExternalKeyHandler, metadata._ExternalKeyHandlerPiexif]
+)
 def exif_handler(request):
     """Parametrized pytest fixture to yield the different exif handlers."""
     yield request.param
@@ -19,43 +21,48 @@ def exif_handler(request):
 
 def test_check_exif_dependency():
     default = None
-    assert exif.check_exif_dependancy(default) == default
+    assert metadata.check_external_dependancy(default) == default
 
 
 def test_check_exif_dependency_piexif(piexif):
     default = None
-    assert exif.check_exif_dependancy(default) == exif._ExifHandlerPiexif
+    assert (
+        metadata.check_external_dependancy(default)
+        == metadata._ExternalKeyHandlerPiexif
+    )
 
 
 def test_check_exif_dependency_noexif(noexif):
     default = None
-    assert exif.check_exif_dependancy(default) == exif._ExifHandlerBase
+    assert (
+        metadata.check_external_dependancy(default) == metadata._ExternalKeyHandlerBase
+    )
 
 
 @pytest.mark.parametrize(
     "methodname, args",
     (
-        ("copy_exif", ("dest.jpg",)),
-        ("exif_date_time", ()),
-        ("get_formatted_exif", ([],)),
+        ("copy_metadata", ("dest.jpg",)),
+        ("get_date_time", ()),
+        ("fetch_key", ([],)),
         ("get_keys", ()),
     ),
 )
 def test_handler_base_raises(methodname, args):
-    handler = exif._ExifHandlerBase()
+    handler = metadata._ExternalKeyHandlerBase()
     method = getattr(handler, methodname)
-    with pytest.raises(exif.UnsupportedExifOperation):
+    with pytest.raises(metadata.UnsupportedMetadataOperation):
         method(*args)
 
 
 @pytest.mark.parametrize(
     "handler, expected_msg",
     (
-        (exif.ExifHandler, "not supported by pyexiv2"),
-        (exif._ExifHandlerPiexif, "not supported by piexif"),
-        (exif._ExifHandlerBase, "not supported. Please install"),
+        (metadata.ExternalKeyHandler, "not supported by pyexiv2"),
+        (metadata._ExternalKeyHandlerPiexif, "not supported by piexif"),
+        (metadata._ExternalKeyHandlerBase, "not supported. Please install"),
     ),
 )
 def test_handler_exception_customization(handler, expected_msg):
-    with pytest.raises(exif.UnsupportedExifOperation, match=expected_msg):
+    with pytest.raises(metadata.UnsupportedMetadataOperation, match=expected_msg):
         handler.raise_exception("test operation")
