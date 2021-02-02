@@ -25,6 +25,13 @@ _logger = log.module_logger(__name__)
 
 
 class _InternalKeyHandler(dict):
+    """Handler to load all internal keys of a single image.
+
+    Attributes:
+        _path: Apsolute path of the image to load the metadata of.
+        _reader: QImageReader or None of _path. Accessed via reder property.
+    """
+
     def __init__(self, path: str):
         super().__init__(
             {
@@ -39,27 +46,38 @@ class _InternalKeyHandler(dict):
 
     @property
     def reader(self) -> QImageReader:
+        """Return QImageReader instance of _path."""
         if self._reader is None:
             self._reader = QImageReader(self._path)
         return self._reader
 
     def _get_filesize(self):
+        """Get the file size."""
         return files.get_size_file(self._path)
 
     def _get_filetype(self):
+        """Get the file type."""
         return files.imghdr.what(self._path)
 
     def _get_xdimension(self):
+        """Get the x dimension in pixels."""
         return self.reader.size().width()
 
     def _get_ydimension(self):
+        """Get the y dimension in pixels."""
         return self.reader.size().height()
 
     def __getitem__(self, key: str) -> Tuple[str, str, str]:
+        """Intrypoint to extract the key of the image at _path.
+
+        Args:
+            key: internal key to fetch.
+        """
         key, func = super().get(key.lower())
         return (key, key, func())
 
     def get_keys(self) -> Iterable[str]:
+        """Returns a sequence of all available metadata keys."""
         return (key for key, _ in super().values())
 
 
@@ -94,6 +112,11 @@ class _ExternalKeyHandlerBase:
         self.raise_exception("Retrieving exif date-time")
 
     def fetch_key(self, _base_key: str) -> Tuple[str, str, str]:
+        """Fetch a single metadata key.
+
+        Args:
+            _base_key: metadata key to fetch.
+        """
         self.raise_exception("Getting formatted keys")
 
     def get_keys(self) -> Iterable[str]:
@@ -272,6 +295,7 @@ class ExternalKeyHandler(_ExternalKeyHandlerBase):
         return None
 
     def get_keys(self) -> Iterable[str]:
+        """Return a iteable of all available metadata keys."""
         return (key for key in self._metadata if not is_hex(key.rpartition(".")[2]))
 
     def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
@@ -322,18 +346,26 @@ class MetadataHandler:
 
     @property
     def _internal_handler(self) -> _InternalKeyHandler:
+        """Returns an instance of _InternalKeyHandler."""
         if self._int_handler is None:
             self._int_handler = _InternalKeyHandler(self.filename)
         return self._int_handler
 
     @property
     def _external_handler(self) -> ExternalKeyHandler:
+        """Returns an instance of ExternalKeyHandler."""
         if self._ext_handler is None:
             self._ext_handler = ExternalKeyHandler(self.filename)
         return self._ext_handler
 
     def fetch_keys(self, desired_keys: Sequence[str]) -> Dict[Any, Tuple[str, str]]:
-        """Throws: UnsupportedMetadataOperation"""
+        """Extracts a list of metadata keys.
+
+        Throws: UnsupportedMetadataOperation.
+
+        Args:
+            desired_keys: list of metadata keys to extract.
+        """
         metadata = dict()
 
         for base_key in desired_keys:
@@ -347,6 +379,18 @@ class MetadataHandler:
 
         return metadata
 
+    def fetch_key(self, key: str) -> Tuple[str, str, str]:
+        """Extracts a single metadata key.
+
+        Throws: UnsupportedMetadataOperation.
+
+        Args:
+            key: single metadata key to extract.
+        """
+        if key.lower().startswith("vimiv"):
+            return self._internal_handler[key]
+        return self._external_handler.fetch_key(key)
+
     def get_keys(self) -> Iterable[str]:
         """Retrieve the name of all metadata keys available.
 
@@ -355,12 +399,6 @@ class MetadataHandler:
         return itertools.chain(
             self._internal_handler.get_keys(), self._external_handler.get_keys()
         )
-
-    def fetch_key(self, key: str) -> Tuple[str, str, str]:
-        """Throws: UnsupportedMetadataOperation"""
-        if key.lower().startswith("vimiv"):
-            return self._internal_handler[key]
-        return self._external_handler.fetch_key(key)
 
 
 class ExifOrientation:
