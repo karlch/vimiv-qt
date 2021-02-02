@@ -73,8 +73,11 @@ class _InternalKeyHandler(dict):
         Args:
             key: internal key to fetch.
         """
-        key, func = super().get(key.lower())
-        return (key, key, func())
+        try:
+            key, func = super().get(key.lower())
+            return (key, key, func())
+        except KeyError:
+            return ("", "", "")
 
     def get_keys(self) -> Iterable[str]:
         """Returns a sequence of all available metadata keys."""
@@ -292,7 +295,7 @@ class ExternalKeyHandler(_ExternalKeyHandlerBase):
             except KeyError:
                 _logger.debug("Key %s is invalid for the current image", key)
 
-        return None
+        return ("", "", "")
 
     def get_keys(self) -> Iterable[str]:
         """Return a iteable of all available metadata keys."""
