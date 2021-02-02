@@ -14,17 +14,17 @@ from vimiv.imutils import metadata
 @pytest.fixture(
     params=[metadata.ExternalKeyHandler, metadata._ExternalKeyHandlerPiexif]
 )
-def exif_handler(request):
-    """Parametrized pytest fixture to yield the different exif handlers."""
+def external_handler(request):
+    """Parametrized pytest fixture to yield the different external handlers."""
     yield request.param
 
 
-def test_check_exif_dependency():
+def test_check_external_dependency():
     default = None
     assert metadata.check_external_dependancy(default) == default
 
 
-def test_check_exif_dependency_piexif(piexif):
+def test_check_external_dependency_piexif(piexif):
     default = None
     assert (
         metadata.check_external_dependancy(default)
@@ -32,7 +32,7 @@ def test_check_exif_dependency_piexif(piexif):
     )
 
 
-def test_check_exif_dependency_noexif(noexif):
+def test_check_external_dependency_noexif(noexif):
     default = None
     assert (
         metadata.check_external_dependancy(default) == metadata._ExternalKeyHandlerBase
