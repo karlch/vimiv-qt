@@ -219,6 +219,28 @@ class PromptSetting(Setting):
         return True
 
 
+class EnumSetting(Setting):
+    """Setting that can pick between options in an enum."""
+
+    def __init__(self, options: enum.EnumMeta, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        assert all(isinstance(option.value, str) for option in options)  # type: ignore
+        self._options = options
+
+    @property
+    def typ(self) -> type:
+        return self._options
+
+    def suggestions(self) -> List[str]:
+        return [option.value for option in self._options]  # type: ignore
+
+    def convertstr(self, text: str) -> str:
+        return self._options(text)
+
+    def __str__(self) -> str:
+        return "Options"
+
+
 class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstract class
     """Used as ABC for Int and Float settings.
 
@@ -415,6 +437,24 @@ class thumbnail:  # pylint: disable=invalid-name
         "thumbnail.listview",
         False,
         desc="Display thumbnails as list to the right of the image",
+    )
+
+    class ViewOptions(enum.Enum):
+        """Valid options for thumbnail view related settings."""
+
+        Never = "never"
+        Always = "always"
+        ListView = "listview"
+        IconView = "iconview"
+
+        def __str__(self) -> str:
+            return str(self.value)
+
+    display_text = EnumSetting(
+        ViewOptions, "thumbnail.display_text", ViewOptions.ListView, desc="TODO"
+    )
+    display_pixmap = EnumSetting(
+        ViewOptions, "thumbnail.display_pixmap", ViewOptions.Always, desc="TODO"
     )
 
 
