@@ -8,7 +8,7 @@
 
 from typing import List
 
-from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
+from PyQt5.QtWidgets import QWidget, QGridLayout
 
 from vimiv import api, utils
 from vimiv.utils import migration
@@ -18,7 +18,6 @@ from vimiv.gui.commandwidget import CommandWidget
 from vimiv.gui.image import ScrollableImage
 from vimiv.gui.keyhintwidget import KeyhintWidget
 from vimiv.gui.library import Library
-from vimiv.gui.thumbnail import ThumbnailView
 from vimiv.gui.message import Message
 from vimiv.gui.metadatawidget import MetadataWidget
 from vimiv.gui.statusbar import StatusBar
@@ -42,7 +41,8 @@ class MainWindow(QWidget):
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
-        grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
+        # grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
+        grid.addWidget(ScrollableImage(), 0, 1, 1, 1)
         self._library = Library(self)
         grid.addWidget(self._library, 0, 0, 1, 1)
         grid.addWidget(self._statusbar, 1, 0, 1, 2)
@@ -168,33 +168,3 @@ class MainWindow(QWidget):
         prompt = Prompt(question, parent=self)
         prompt.update_geometry(self.width(), self.bottom)
         prompt.run()
-
-
-class ImageThumbnailStack(QStackedWidget):
-    """QStackedWidget to toggle between image and thumbnail mode.
-
-    Attributes:
-        image: The image widget.
-        thumbnail: The thumbnail widget.
-    """
-
-    def __init__(self):
-        super().__init__()
-        self.image = ScrollableImage()
-        self.thumbnail = ThumbnailView()
-        self.addWidget(self.image)
-        self.addWidget(self.thumbnail)
-
-        api.modes.IMAGE.entered.connect(self._enter_image)
-        api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
-        # This is required in addition to the setting when entering image mode as it is
-        # possible to close thumbnail mode and enter the library
-        api.modes.THUMBNAIL.closed.connect(self._enter_image)
-
-    @utils.slot
-    def _enter_thumbnail(self):
-        self.setCurrentWidget(self.thumbnail)
-
-    @utils.slot
-    def _enter_image(self):
-        self.setCurrentWidget(self.image)

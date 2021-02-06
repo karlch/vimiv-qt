@@ -411,6 +411,11 @@ class thumbnail:  # pylint: disable=invalid-name
     """Namespace for thumbnail related settings."""
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
+    listview = BoolSetting(
+        "thumbnail.listview",
+        False,
+        desc="Display thumbnails as list to the right of the image",
+    )
 
 
 class slideshow:  # pylint: disable=invalid-name
