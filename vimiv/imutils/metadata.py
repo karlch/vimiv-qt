@@ -68,16 +68,16 @@ class _InternalKeyHandler(dict):
         return self.reader.size().height()
 
     def __getitem__(self, key: str) -> Tuple[str, str, str]:
-        """Intrypoint to extract the key of the image at _path.
+        """Entrypoint to extract the key of the image at _path.
 
         Args:
             key: internal key to fetch.
+
+        Throws:
+            KeyError
         """
-        try:
-            key, func = super().get(key.lower())
-            return (key, key, func())
-        except KeyError:
-            return ("", "", "")
+        key, func = super().__getitem__(key.lower())
+        return (key, key, func())
 
     def get_keys(self) -> Iterable[str]:
         """Returns a sequence of all available metadata keys."""
@@ -119,6 +119,9 @@ class _ExternalKeyHandlerBase:
 
         Args:
             _base_key: metadata key to fetch.
+
+        Throws:
+            KeyError
         """
         self.raise_exception("Getting formatted keys")
 
@@ -150,7 +153,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
     def fetch_key(self, base_key: str) -> Tuple[str, str, str]:
         key = base_key.rpartition(".")[2]
 
-        try:
+        with contextlib.suppress(piexif.InvalidImageDateError):
             for ifd in self._metadata:
                 if ifd == "thumbnail":
                     continue
@@ -189,10 +192,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
                     ):  # (int, int) <=> numerator, denominator
                         return (keyname, keyname, f"{val[0]}/{val[1]}")
 
-        except (piexif.InvalidImageDataError, KeyError):
-            return ("", "", "")
-
-        return ("", "", "")
+        raise KeyError(f"Key '{base_key}' not found")
 
     def get_keys(self) -> Iterable[str]:
         return (
@@ -274,28 +274,23 @@ class ExternalKeyHandler(_ExternalKeyHandlerBase):
         # For backwards compability, assume it has one of the following prefixes
         for prefix in ["", "Exif.Image.", "Exif.Photo."]:
             key = f"{prefix}{base_key}"
+            key_name = self._metadata[key].name
+
             try:
-                key_name = self._metadata[key].name
+                key_value = self._metadata[key].human_value
 
-                try:
-                    key_value = self._metadata[key].human_value
+            # Not all metadata (i.e. IPTC) provide human_value, take raw_value
+            except AttributeError:
+                value = self._metadata[key].raw_value
 
-                # Not all metadata (i.e. IPTC) provide human_value, take raw_value
-                except AttributeError:
-                    value = self._metadata[key].raw_value
+                # For IPTC the raw_value is a list of strings
+                if isinstance(value, list):
+                    key_value = ", ".join(value)
+                else:
+                    key_value = value
 
-                    # For IPTC the raw_value is a list of strings
-                    if isinstance(value, list):
-                        key_value = ", ".join(value)
-                    else:
-                        key_value = value
-
-                return (key, key_name, key_value)
-
-            except KeyError:
-                _logger.debug("Key %s is invalid for the current image", key)
-
-        return ("", "", "")
+            return (key, key_name, key_value)
+        raise KeyError(f"Key '{base_key}' not found")
 
     def get_keys(self) -> Iterable[str]:
         """Return a iteable of all available metadata keys."""
@@ -364,10 +359,11 @@ class MetadataHandler:
     def fetch_keys(self, desired_keys: Sequence[str]) -> Dict[Any, Tuple[str, str]]:
         """Extracts a list of metadata keys.
 
-        Throws: UnsupportedMetadataOperation.
-
         Args:
             desired_keys: list of metadata keys to extract.
+
+        Throws:
+            UnsupportedMetadataOperation
         """
         metadata = dict()
 
@@ -385,10 +381,12 @@ class MetadataHandler:
     def fetch_key(self, key: str) -> Tuple[str, str, str]:
         """Extracts a single metadata key.
 
-        Throws: UnsupportedMetadataOperation.
-
         Args:
             key: single metadata key to extract.
+
+        Throws:
+            UnsupportedMetadataOperation
+            KeyError
         """
         if key.lower().startswith("vimiv"):
             return self._internal_handler[key]
@@ -397,7 +395,8 @@ class MetadataHandler:
     def get_keys(self) -> Iterable[str]:
         """Retrieve the name of all metadata keys available.
 
-        Throws: UnsupportedMetadataOperation
+        Throws:
+            UnsupportedMetadataOperation
         """
         return itertools.chain(
             self._internal_handler.get_keys(), self._external_handler.get_keys()

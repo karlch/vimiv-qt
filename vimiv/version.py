@@ -42,7 +42,8 @@ def info() -> str:
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
         f"Svg Support: {bool(QtSvg)}\n"
-        f"Pyexiv2: {metadata.pyexiv2.__version__ if metadata.pyexiv2 is not None else None}\n"
+        "Pyexiv2: "
+        f"{metadata.pyexiv2.__version__ if metadata.pyexiv2 is not None else None}\n"
         f"Piexif: {metadata.piexif.VERSION if metadata.piexif is not None else None}"
     )
 

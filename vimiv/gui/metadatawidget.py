@@ -121,12 +121,8 @@ if metadata.has_metadata_support:
                 * ``--to-term``: Print the keys to the terminal instead.
             """
 
-            try:
-                keys = sorted(set(self.handler.get_keys()))
-                _logger.debug("Successfully got keys")
-            except metadata.UnsupportedMetadataOperation:
-                # TODO: should actually never happen
-                pass
+            keys = sorted(set(self.handler.get_keys()))
+            _logger.debug("Successfully got keys")
             if to_term:
                 print(*keys, sep="\n")
             elif n_cols < 1:
@@ -166,12 +162,8 @@ if metadata.has_metadata_support:
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            try:
-                data = self.handler.fetch_keys(keys)
-                _logger.debug("Fetched metadata")
-            except data.UnsupportedMetadataOperation:
-                # TODO: should never happen
-                pass
+            data = self.handler.fetch_keys(keys)
+            _logger.debug("Fetched metadata")
 
             if data:
                 self.setText(utils.format_html_table(data.values()))
