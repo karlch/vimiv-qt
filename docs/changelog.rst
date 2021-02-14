@@ -32,6 +32,8 @@ Fixed:
 
 * Crash when deleting images without permission. Thanks `@jcjgraf`_!
 * Undeleting symlinks. Thanks `@jcjgraf`_!
+* Expanding tilde to home directory when using the ``:write`` command. Thanks
+  `@jcjgraf`_ for pointing this out!
 
 
 v0.8.0 (2021-01-18)

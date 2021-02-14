@@ -151,6 +151,7 @@ class ImageFileHandler(QObject):
         """
         if not path:
             path = original_path = self._path
+        path = os.path.abspath(os.path.expanduser(path))
         if parallel:
             asyncrun(write_pixmap, pixmap, path, original_path)
         else:

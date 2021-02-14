@@ -40,6 +40,20 @@ def mock_directories(tmp_path):
 
 
 @pytest.fixture(autouse=True)
+def home_directory(tmp_path, mocker):
+    """Fixture to mock os.path.expanduser to return a different home directory."""
+    directory = tmp_path / ".home"
+    directory.mkdir()
+    new_home = str(directory)
+
+    def expand_user(path):
+        return path.replace("~", new_home)
+
+    mocker.patch("os.path.expanduser", new=expand_user)
+    return new_home
+
+
+@pytest.fixture(autouse=True)
 def cleanup():
     """Fixture to reset various vimiv properties at the end of each test."""
     yield

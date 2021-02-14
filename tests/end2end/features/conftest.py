@@ -409,3 +409,8 @@ def check_commandline_text(commandline, text):
 def check_boolean_setting(name, value):
     bool_value = value.lower() == "true"
     assert api.settings.get_value(name) is bool_value
+
+
+@bdd.then(bdd.parsers.parse("the home directory should contain {path}"))
+def check_path_in_home(home_directory, path):
+    assert path in os.listdir(home_directory)
