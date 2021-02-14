@@ -575,6 +575,10 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.search_bg = QColor(styles.get("thumbnail.search.highlighted.bg"))
         self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = parent.padding
+        try:
+            self.listview_alpha = int(styles.get("thumbnail.listview.alpha"))
+        except ValueError:
+            self.listview_alpha = 150
 
     def paint(self, painter, option, model_index):
         """Override the QStyledItemDelegate paint function.
@@ -604,9 +608,6 @@ class ThumbnailDelegate(QStyledItemDelegate):
             item: The ThumbnailItem.
         """
         color = self._get_background_color(item, option.state)
-        # TODO make configurable
-        if self.parent().viewMode() == self.parent().ListMode:
-            color.setAlpha(150)
         painter.save()
         painter.setBrush(color)
         painter.setPen(Qt.NoPen)
@@ -698,13 +699,22 @@ class ThumbnailDelegate(QStyledItemDelegate):
             item: The ThumbnailItem storing highlight status.
             state: State of the model index indicating selected.
         """
-        if state & QStyle.State_Selected:
-            if api.modes.current() == api.modes.THUMBNAIL:
-                return self.selection_bg
-            return self.selection_bg_unfocus
-        if item.highlighted:
-            return self.search_bg
-        return self.bg
+        selected = bool(state & QStyle.State_Selected)
+        focused = api.modes.current() == api.modes.THUMBNAIL
+
+        if selected:
+            color = self.selection_bg if focused else self.selection_bg_unfocus
+        elif item.highlighted:
+            color = self.search_bg
+        else:
+            color = self.bg
+
+        if self.parent().viewMode() == self.parent().IconMode:
+            return color
+
+        color = QColor(color)
+        color.setAlpha(self.listview_alpha)
+        return color
 
 
 class ThumbnailItem(QListWidgetItem):

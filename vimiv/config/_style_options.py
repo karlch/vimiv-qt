@@ -47,6 +47,7 @@ DEFAULT_OPTIONS = {
     "thumbnail.default.bg": "{statusbar.info}",
     "thumbnail.error.bg": "{statusbar.error}",
     "thumbnail.frame.fg": "{thumbnail.fg}",
+    "thumbnail.listview.alpha": "150",
     # Completion
     "completion.height": "16em",
     "completion.fg": "{statusbar.fg}",
