@@ -114,8 +114,8 @@ class ThumbnailView(
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         api.settings.thumbnail.listview.changed.connect(self._on_view_changed)
-        api.settings.thumbnail.display_pixmap.changed.connect(self.rescale_items)
-        api.settings.thumbnail.display_text.changed.connect(self.rescale_items)
+        api.settings.thumbnail.display_icon.changed.connect(self.rescale_items)
+        api.settings.thumbnail.display_name.changed.connect(self.rescale_items)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -393,7 +393,7 @@ class ThumbnailView(
     def item_size_hint(self) -> QSize:
         """Return the expected size of a single thumbnail item."""
         width = self.item_width()
-        if self.check_view_option(api.settings.thumbnail.display_pixmap.value):
+        if self.check_view_option(api.settings.thumbnail.display_icon.value):
             height = width
         else:
             font_metrics = QFontMetrics(self.font())
@@ -587,9 +587,9 @@ class ThumbnailDelegate(QStyledItemDelegate):
         item = self.parent().item(model_index.row())
         self._draw_background(painter, option, item)
 
-        if self.parent().check_view_option(api.settings.thumbnail.display_pixmap.value):
+        if self.parent().check_view_option(api.settings.thumbnail.display_icon.value):
             self._draw_pixmap(painter, option, item)
-        if self.parent().check_view_option(api.settings.thumbnail.display_text.value):
+        if self.parent().check_view_option(api.settings.thumbnail.display_name.value):
             self._draw_text(painter, option, item)
 
     def _draw_background(self, painter, option, item):

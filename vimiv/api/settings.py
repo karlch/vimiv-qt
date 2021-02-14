@@ -18,7 +18,7 @@ from typing import Any, Dict, ItemsView, List
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.api import prompt
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, quotedjoin
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -450,11 +450,19 @@ class thumbnail:  # pylint: disable=invalid-name
         def __str__(self) -> str:
             return str(self.value)
 
-    display_text = EnumSetting(
-        ViewOptions, "thumbnail.display_text", ViewOptions.ListView, desc="TODO"
+    _view_options = quotedjoin(option.value for option in ViewOptions)
+
+    display_name = EnumSetting(
+        ViewOptions,
+        "thumbnail.display_name",
+        ViewOptions.ListView,
+        desc=f"When to display the thumbnail name, one of {_view_options}",
     )
-    display_pixmap = EnumSetting(
-        ViewOptions, "thumbnail.display_pixmap", ViewOptions.Always, desc="TODO"
+    display_icon = EnumSetting(
+        ViewOptions,
+        "thumbnail.display_icon",
+        ViewOptions.Always,
+        desc=f"When to display the thumbnail icon, one of {_view_options}",
     )
 
 
