@@ -571,14 +571,18 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # QColor options for background drawing
         self.bg = QColor(styles.get("thumbnail.bg"))
         self.selection_bg = QColor(styles.get("thumbnail.selected.bg"))
-        self.selection_bg_unfocus = QColor(styles.get("thumbnail.selected.bg.unfocus"))
+        self.selection_bg_unfocus = utils.dim_color(self.selection_bg)
         self.search_bg = QColor(styles.get("thumbnail.search.highlighted.bg"))
         self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = parent.padding
         try:
             self.listview_alpha = int(styles.get("thumbnail.listview.alpha"))
+            self.listview_alpha_selected = int(
+                styles.get("thumbnail.listview.selected.alpha")
+            )
         except ValueError:
             self.listview_alpha = 150
+            self.listview_alpha_selected = 200
 
     def paint(self, painter, option, model_index):
         """Override the QStyledItemDelegate paint function.
@@ -709,11 +713,12 @@ class ThumbnailDelegate(QStyledItemDelegate):
         else:
             color = self.bg
 
-        if self.parent().viewMode() == self.parent().IconMode:
+        if self.parent().viewMode() == self.parent().IconMode or (selected and focused):
             return color
 
         color = QColor(color)
-        color.setAlpha(self.listview_alpha)
+        alpha = self.listview_alpha_selected if selected else self.listview_alpha
+        color.setAlpha(alpha)
         return color
 
 
@@ -726,7 +731,6 @@ class ThumbnailItem(QListWidgetItem):
         self, parent, index, *, size_hint, path, highlighted=False, marked=False
     ):
         basename = os.path.basename(path)
-        # super().__init__(self.default_icon(), basename, parent, index)
         super().__init__(self.default_icon(), basename, parent, index)
         self.highlighted = highlighted
         self.marked = marked

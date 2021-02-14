@@ -60,8 +60,6 @@ class Style(dict):
         for key, value in _style_options.DEFAULT_OPTIONS.items():
             self[key] = value
         # Add values with alpha channel that require special handling
-        self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
-        self["thumbnail.selected.bg.unfocus"] = self["{library.selected.bg.unfocus}"]
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
         # Shrink fontsize for thumbnail mode
         fontsize = re.search(r"\d+", font).group(0)
