@@ -63,6 +63,11 @@ class Style(dict):
         self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
         self["thumbnail.selected.bg.unfocus"] = self["{library.selected.bg.unfocus}"]
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
+        # Shrink fontsize for thumbnail mode
+        fontsize = re.search(r"\d+", font).group(0)
+        thumbnail_fontsize = float(fontsize) * 0.7
+        thumbnail_font = font.replace(fontsize, f"{thumbnail_fontsize:.2f}")
+        self["thumbnail.font"] = thumbnail_font
 
     def __getitem__(self, name: str):
         """Retrieve item automatically surrounding the name with {} if needed."""

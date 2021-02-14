@@ -39,7 +39,6 @@ DEFAULT_OPTIONS = {
     "statusbar.message_border": "2px solid",
     "statusbar.padding": "4",
     # Thumbnail
-    "thumbnail.font": "{font}",
     "thumbnail.fg": "{library.fg}",
     "thumbnail.bg": "{image.bg}",
     "thumbnail.padding": "20",
