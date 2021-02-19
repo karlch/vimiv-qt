@@ -36,9 +36,13 @@ _logger = log.module_logger(__name__)
 def test_cr2(header: bytes, _f: Optional[BinaryIO]) -> bool:
     return header[:2] in (b"II", b"MM") and header[8:10] == b"CR"
 
+def test_avif(header: bytes, _f: Optional[BinaryIO]) -> bool:
+    return header[4:12] == b"ftypavif"
+
 
 FORMATS = {
     "cr2": test_cr2,
+    "avif": test_avif,
 }
 
 
