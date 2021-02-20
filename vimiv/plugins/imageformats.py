@@ -38,7 +38,7 @@ def test_cr2(header: bytes, _f: Optional[BinaryIO]) -> bool:
 
 
 def test_avif(header: bytes, _f: Optional[BinaryIO]) -> bool:
-    return header[4:12] == b"ftypavif"
+    return header[4:12] in (b"ftypavif", b"ftypeavis")
 
 
 FORMATS = {
