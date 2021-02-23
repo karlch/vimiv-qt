@@ -153,7 +153,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
     def fetch_key(self, base_key: str) -> Tuple[str, str, str]:
         key = base_key.rpartition(".")[2]
 
-        with contextlib.suppress(piexif.InvalidImageDateError):
+        with contextlib.suppress(piexif.InvalidImageDataError):
             for ifd in self._metadata:
                 if ifd == "thumbnail":
                     continue

@@ -39,7 +39,7 @@ def apply_platform_markers(item):
 
 def apply_exif_markers(item):
     """Apply markers that skip tests depending on specific exif support."""
-    if os.path.basename(item.fspath) in ("test_exif.py",):
+    if os.path.basename(item.fspath) in ("test_metadata.py",):
         for marker_name in "exif", "pyexiv2", "piexif":
             marker = getattr(pytest.mark, marker_name)
             item.add_marker(marker)
