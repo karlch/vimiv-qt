@@ -21,6 +21,10 @@ Added:
   and keeps the previous behaviour of the mark command, i.e. inversing the mark status
   of the passed path(s). In addition one can now use ``--action mark`` and
   ``--action unmark`` to force (un-) marking the paths.
+* Support for the ``avif`` file format using the imageformats plugin. To enable it, add
+  ``imageformats = avif`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
+  `qt-avif-image-plugin <https://github.com/novomesk/qt-avif-image-plugin>`_.
+  Thanks `@schyzophrene-asynchrone`_!
 
 Changed:
 ^^^^^^^^
