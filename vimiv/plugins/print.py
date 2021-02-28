@@ -9,7 +9,7 @@
 import abc
 from typing import Optional, Any, Union
 
-from PyQt5.QtCore import QObject, Qt, QSize, pyqtSignal
+from PyQt5.QtCore import QObject, Qt, QSize, pyqtBoundSignal
 from PyQt5.QtGui import QPixmap, QMovie, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 
@@ -67,7 +67,7 @@ class PrintHandler(QObject):
     def handle_print(
         widget: "PrintWidget",
         dialog: Union[QPrintPreviewDialog, QPrintDialog],
-        *signals: pyqtSignal,
+        *signals: pyqtBoundSignal,
         auto_apply_orientation: bool = False,
     ) -> None:
         """Handle a print request of widget for a specific dialog."""
