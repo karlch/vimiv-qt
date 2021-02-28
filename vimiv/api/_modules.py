@@ -26,6 +26,8 @@ _logger = log.module_logger(__name__)
 ###############################################################################
 #                                  Commands                                   #
 ###############################################################################
+@api.keybindings.register("<button-right>", "enter library", mode=api.modes.THUMBNAIL)
+@api.keybindings.register("<button-right>", "enter library", mode=api.modes.IMAGE)
 @api.keybindings.register("gm", "enter manipulate")
 @api.keybindings.register("gt", "enter thumbnail")
 @api.keybindings.register("gl", "enter library")

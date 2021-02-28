@@ -29,7 +29,9 @@ _logger = log.module_logger(__name__)
 
 # We want to use the name next here as it is the best name for the command
 @api.keybindings.register("<ctrl>n", "next --keep-zoom", mode=api.modes.IMAGE)
-@api.keybindings.register(["n", "<page-down>"], "next", mode=api.modes.IMAGE)
+@api.keybindings.register(
+    ("n", "<page-down>", "<button-forward>"), "next", mode=api.modes.IMAGE
+)
 @api.commands.register(name="next")
 def next_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select next image.
@@ -46,7 +48,9 @@ def next_path(count: int = 1, keep_zoom: bool = False) -> None:
 
 
 @api.keybindings.register("<ctrl>p", "prev --keep-zoom", mode=api.modes.IMAGE)
-@api.keybindings.register(["p", "<page-up>"], "prev", mode=api.modes.IMAGE)
+@api.keybindings.register(
+    ("p", "<page-up>", "<button-back>"), "prev", mode=api.modes.IMAGE
+)
 @api.commands.register(name="prev")
 def prev_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select previous image.
