@@ -450,6 +450,6 @@ Initial release of the Qt version.
 .. _@woefe: https://github.com/woefe
 .. _@schyzophrene-asynchrone: https://github.com/schyzophrene-asynchrone
 .. _@pozitron57: https://github.com/pozitron57
-.. _@OliverLew: <https://github.com/OliverLew>
-.. _@maximbaz: <https://github.com/maximbaz>
-.. _@BachoSeven: <https://github.com/BachoSeven>
+.. _@OliverLew: https://github.com/OliverLew
+.. _@maximbaz: https://github.com/maximbaz
+.. _@BachoSeven: https://github.com/BachoSeven
