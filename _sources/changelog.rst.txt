@@ -25,6 +25,14 @@ Added:
   ``imageformats = avif`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
   `qt-avif-image-plugin <https://github.com/novomesk/qt-avif-image-plugin>`_.
   Thanks `@schyzophrene-asynchrone`_!
+* A few more default mouse bindings:
+
+  * ``<button-right>`` to enter the library from image and thumbnail mode.
+  * ``<button-right>`` to go to the parent directory in the library.
+  * ``<button-forward>`` and ``<button-back>`` to select the next/previous image in
+    image mode.
+
+  Thanks `@BachoSeven`_ for your thoughts!
 
 Changed:
 ^^^^^^^^
@@ -441,3 +449,4 @@ Initial release of the Qt version.
 .. _@pozitron57: https://github.com/pozitron57
 .. _@OliverLew: <https://github.com/OliverLew>
 .. _@maximbaz: <https://github.com/maximbaz>
+.. _@BachoSeven: <https://github.com/BachoSeven>
