@@ -29,8 +29,11 @@ Added:
 
   * ``<button-right>`` to enter the library from image and thumbnail mode.
   * ``<button-right>`` to go to the parent directory in the library.
+  * ``<button-middle>`` to enter thumbnail mode from image and library mode.
   * ``<button-forward>`` and ``<button-back>`` to select the next/previous image in
     image mode.
+  * ``<button-forward>`` and ``<button-back>`` to scroll down/up and open any selected
+    image in library mode.
 
   Thanks `@BachoSeven`_ for your thoughts!
 

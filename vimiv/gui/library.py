@@ -189,10 +189,12 @@ class Library(
     @api.keybindings.register(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
     )
-    @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        ("p", "<button-back>"), "scroll up --open-selected", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
-        "n", "scroll down --open-selected", mode=api.modes.LIBRARY
+        ("n", "<button-forward>"), "scroll down --open-selected", mode=api.modes.LIBRARY
     )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
     @api.keybindings.register(
