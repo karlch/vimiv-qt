@@ -4,3 +4,4 @@ pytest-mock==3.5.1
 pytest-qt==3.3.0
 pytest-xvfb==2.0.0
 pytest-bdd==4.0.2
+Pillow==8.1.2
