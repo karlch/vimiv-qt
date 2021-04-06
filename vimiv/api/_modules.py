@@ -17,7 +17,7 @@ from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
 from vimiv import api
-from vimiv.utils import files, log
+from vimiv.utils import files, log, imagereader
 
 
 _logger = log.module_logger(__name__)
@@ -87,6 +87,30 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     path = api.current_path()
     name = path if abspath else os.path.basename(path)
     clipboard.setText(name, mode=mode)
+
+
+@api.keybindings.register("yi", "copy-image")
+@api.keybindings.register("yI", "copy-image --primary")
+@api.commands.register()
+def copy_image(primary: bool = False) -> None:
+    """Copy currently selected image to system clipboard.
+
+    **syntax:** ``:copy-image [--primary]``
+
+    optional arguments:
+        * ``--primary``: Copy to primary selection.
+    """
+    clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    path = api.current_path()
+    try:
+        reader = imagereader.get_reader(path)
+        pixmap = reader.get_pixmap()
+    except ValueError as e:
+        log.error(str(e))
+        return
+
+    clipboard.setPixmap(pixmap, mode=mode)
 
 
 @api.commands.register()
