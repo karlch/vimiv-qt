@@ -36,6 +36,8 @@ Added:
     image in library mode.
 
   Thanks `@BachoSeven`_ for your thoughts!
+* `copy-image` command which copies the selected image to the clipboard. The flags
+  `--width`, `--height` and `--size` allow to scale the copied image.
 
 Changed:
 ^^^^^^^^
