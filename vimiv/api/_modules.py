@@ -92,23 +92,47 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
 @api.keybindings.register("yi", "copy-image")
 @api.keybindings.register("yI", "copy-image --primary")
 @api.commands.register()
-def copy_image(primary: bool = False) -> None:
+def copy_image(
+    primary: bool = False, width: int = None, height: int = None, size: int = None
+) -> None:
     """Copy currently selected image to system clipboard.
 
-    **syntax:** ``:copy-image [--primary]``
+    **syntax:** ``:copy-image [--primary] [--width=WIDTH] [--height=HEIGHT] [--size=SIZE]``
 
     optional arguments:
         * ``--primary``: Copy to primary selection.
+        * ``--width``: Scale width to the specified value.
+        * ``--height``: Scale height to the specified value.
+        * ``--size``: Scale longer side to the specified value.
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Selection if primary else QClipboard.Clipboard
     path = api.current_path()
+
     try:
         reader = imagereader.get_reader(path)
         pixmap = reader.get_pixmap()
     except ValueError as e:
         log.error(str(e))
         return
+
+    if size:
+        pix_size = pixmap.size()
+
+        if pix_size.height() >= pix_size.width():
+            _logger.debug(f"Copy image with size {size} restricting height")
+            pixmap = pixmap.scaledToHeight(size)
+        else:
+            _logger.debug(f"Copy image with size {size} restricting width")
+            pixmap = pixmap.scaledToWidth(size)
+
+    elif width:
+        _logger.debug(f"Copy image with width {width}")
+        pixmap = pixmap.scaledToWidth(width)
+
+    elif height:
+        _logger.debug(f"Copy image with height {height}")
+        pixmap = pixmap.scaledToHeight(height)
 
     clipboard.setPixmap(pixmap, mode=mode)
 
