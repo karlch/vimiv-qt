@@ -73,7 +73,7 @@ Added:
 * New ``--keep-zoom`` flag for ``:next`` and ``:prev`` which preserves zoom level and
   scroll position of the current image.
   Thanks `@jcjgraf`_ for the idea!
-* Exif support using `pyexiv2 <https://pypi.org/project/pyexiv2/>`_. When available,
+* Exif support using `pyexiv2 <https://python3-exiv2.readthedocs.io/>`_. When available,
   vimiv now prefers pyexiv2 over piexif for exif support due to its ability to format
   exif values into a human readable format. Thanks a lot
   `@jcjgraf`_ for all your hard work, thoughts and comments

@@ -9,6 +9,7 @@ this is the case:
 #. The ``:metadata`` command and the corresponding ``i``-keybinding is available.
 #. The ``{exif-date-time}`` statusbar module is available.
 
+.. include:: pyexiv2.rst
 
 Advantages of the different exif libraries
 ------------------------------------------
@@ -60,5 +61,5 @@ You can get a list of valid metadata keys for the current image using the
 
 
 .. _exiv2: https://www.exiv2.org/index.html
-.. _pyexiv2: https://pypi.org/project/pyexiv2/
+.. _pyexiv2: https://python3-exiv2.readthedocs.io
 .. _piexif: https://pypi.org/project/piexif/
