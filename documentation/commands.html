@@ -70,6 +70,7 @@
 <li><a class="reference internal" href="#alias">alias</a></li>
 <li><a class="reference internal" href="#bind">bind</a></li>
 <li><a class="reference internal" href="#command">command</a></li>
+<li><a class="reference internal" href="#copy-image">copy-image</a></li>
 <li><a class="reference internal" href="#copy-name">copy-name</a></li>
 <li><a class="reference internal" href="#delete">delete</a></li>
 <li><a class="reference internal" href="#enter">enter</a></li>
@@ -229,112 +230,115 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-global-command"><span class="std std-ref">command</span></a></p></td>
 <td><p>Enter command mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-copy-name"><span class="std std-ref">copy-name</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-copy-image"><span class="std std-ref">copy-image</span></a></p></td>
+<td><p>Copy currently selected image to system clipboard.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-copy-name"><span class="std std-ref">copy-name</span></a></p></td>
 <td><p>Copy name of current path to system clipboard.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-delete"><span class="std std-ref">delete</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-delete"><span class="std std-ref">delete</span></a></p></td>
 <td><p>Move one or more images to the trash directory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-enter"><span class="std std-ref">enter</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-enter"><span class="std std-ref">enter</span></a></p></td>
 <td><p>Enter another mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-fullscreen"><span class="std std-ref">fullscreen</span></a></p></td>
 <td><p>Toggle fullscreen mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-help"><span class="std std-ref">help</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-help"><span class="std std-ref">help</span></a></p></td>
 <td><p>Show help on a command or setting.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-history-clear"><span class="std std-ref">history-clear</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-history-clear"><span class="std std-ref">history-clear</span></a></p></td>
 <td><p>Clear the command history.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-keybindings"><span class="std std-ref">keybindings</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-keybindings"><span class="std std-ref">keybindings</span></a></p></td>
 <td><p>Show a pop-up with keybindings information.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-log"><span class="std std-ref">log</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-log"><span class="std std-ref">log</span></a></p></td>
 <td><p>Log a message with the corresponding log level.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark"><span class="std std-ref">mark</span></a></p></td>
 <td><p>Mark one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-clear"><span class="std std-ref">mark-clear</span></a></p></td>
 <td><p>Clear all marks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-rename"><span class="std std-ref">mark-rename</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-rename"><span class="std std-ref">mark-rename</span></a></p></td>
 <td><p>Rename marked images with a common base.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-mark-restore"><span class="std std-ref">mark-restore</span></a></p></td>
 <td><p>Restore the last cleared marks.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-next"><span class="std std-ref">next</span></a></p></td>
 <td><p>Select next image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-nop"><span class="std std-ref">nop</span></a></p></td>
 <td><p>Do nothing.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-open"><span class="std std-ref">open</span></a></p></td>
 <td><p>Open one or more paths.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-paste-name"><span class="std std-ref">paste-name</span></a></p></td>
 <td><p>Paste path from clipboard to open command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-prev"><span class="std std-ref">prev</span></a></p></td>
 <td><p>Select previous image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-quit"><span class="std std-ref">quit</span></a></p></td>
 <td><p>Quit vimiv.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-rename"><span class="std std-ref">rename</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-rename"><span class="std std-ref">rename</span></a></p></td>
 <td><p>Rename images with a common base.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-repeat-command"><span class="std std-ref">repeat-command</span></a></p></td>
 <td><p>Repeat the last command.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-scale"><span class="std std-ref">scale</span></a></p></td>
 <td><p>Scale the image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search"><span class="std std-ref">search</span></a></p></td>
 <td><p>Start a search.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-next"><span class="std std-ref">search-next</span></a></p></td>
 <td><p>Continue search to the next match.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-search-prev"><span class="std std-ref">search-prev</span></a></p></td>
 <td><p>Continue search to the previous match.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-set"><span class="std std-ref">set</span></a></p></td>
 <td><p>Set an option.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-sleep"><span class="std std-ref">sleep</span></a></p></td>
 <td><p>Sleep for a given number of seconds.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-spawn"><span class="std std-ref">spawn</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-spawn"><span class="std std-ref">spawn</span></a></p></td>
 <td><p>Spawn a command in a sub-shell.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-delete"><span class="std std-ref">tag-delete</span></a></p></td>
 <td><p>Delete an existing tag.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-load"><span class="std std-ref">tag-load</span></a></p></td>
 <td><p>Load images from a tag into the current mark list.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-open"><span class="std std-ref">tag-open</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-open"><span class="std std-ref">tag-open</span></a></p></td>
 <td><p>Open images from a tag in image mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-tag-write"><span class="std std-ref">tag-write</span></a></p></td>
 <td><p>Write marked paths to a tag.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-toggle"><span class="std std-ref">toggle</span></a></p></td>
 <td><p>Toggle one mode.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-unbind"><span class="std std-ref">unbind</span></a></p></td>
 <td><p>Unbind a keybinding.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-undelete"><span class="std std-ref">undelete</span></a></p></td>
 <td><p>Restore a file from the trash directory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-version"><span class="std std-ref">version</span></a></p></td>
 <td><p>Show a pop-up with version information.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-global-welcome-to-qt"><span class="std std-ref">welcome-to-qt</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-global-welcome-to-qt"><span class="std std-ref">welcome-to-qt</span></a></p></td>
 <td><p>Show a pop-up with a welcome message for users coming from gtk.</p></td>
 </tr>
 </tbody>
@@ -383,6 +387,22 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
+</section>
+<section id="copy-image">
+<span id="ref-global-copy-image"></span><h3>copy-image<a class="headerlink" href="#copy-image" title="Permalink to this headline">¶</a></h3>
+<p>Copy currently selected image to system clipboard.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:copy-image</span> <span class="pre">[--primary]</span> <span class="pre">[--width=WIDTH]</span> <span class="pre">[--height=HEIGHT]</span>
+<span class="pre">[--size=SIZE]</span></code></p>
+<dl class="simple">
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--primary</span></code>: Copy to primary selection.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--width</span></code>: Scale width to the specified value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--height</span></code>: Scale height to the specified value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--size</span></code>: Scale longer side to the specified value.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>count:</strong> Equivalent to the <code class="docutils literal notranslate"><span class="pre">--size</span></code> option</p>
 </section>
 <section id="copy-name">
 <span id="ref-global-copy-name"></span><h3>copy-name<a class="headerlink" href="#copy-name" title="Permalink to this headline">¶</a></h3>
