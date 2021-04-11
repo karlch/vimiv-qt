@@ -4,7 +4,7 @@
 # Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-from PyQt5.QtGui import QGuiApplication, QClipboard, QImage
+from PyQt5.QtGui import QGuiApplication, QClipboard
 
 import pytest
 import pytest_bdd as bdd
@@ -25,14 +25,14 @@ def check_primary(clipboard, text):
     assert text in clipboard.text(mode=QClipboard.Selection)
 
 
-@bdd.then(bdd.parsers.parse("The clipboard should contain image {image}"))
+@bdd.then(bdd.parsers.parse("The clipboard should contain any image"))
 def check_clipboard_image(clipboard, image):
-    assert clipboard.pixmap(mode=QClipboard.Clipboard).toImage() == QImage(image)
+    assert not clipboard.pixmap(mode=QClipboard.Clipboard).toImage().isNull()
 
 
-@bdd.then(bdd.parsers.parse("The primary selection should contain image {image}"))
+@bdd.then(bdd.parsers.parse("The primary selection should contain any image"))
 def check_primary_image(clipboard, image):
-    assert clipboard.pixmap(mode=QClipboard.Selection).toImage() == QImage(image)
+    assert not clipboard.pixmap(mode=QClipboard.Selection).toImage().isNull()
 
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain an image with width {width}"))

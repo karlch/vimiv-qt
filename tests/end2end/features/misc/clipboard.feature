@@ -28,26 +28,26 @@ Feature: Interaction with the system clipboard.
         Then the working directory should be child_01
 
     Scenario: Copy image to clipboard.
-        Given I open the image '.hidden.jpg'
+        Given I open any image
         When I run copy-image
-        Then the clipboard should contain image .hidden.jpg
+        Then the clipboard should contain any image
 
     Scenario: Copy image to primary.
-        Given I open the image '.hidden.jpg'
+        Given I open any image
         When I run copy-image --primary
-        Then the primary selection should contain image .hidden.jpg
+        Then the primary selection should contain any image
 
     Scenario: Copy image to clipboard and scale width.
-        Given I open the image '.hidden.jpg'
+        Given I open any image
         When I run copy-image --width=100
         Then the clipboard should contain an image with width 100
 
     Scenario: Copy image to clipboard and scale height.
-        Given I open the image '.hidden.jpg'
+        Given I open any image
         When I run copy-image --height=100
         Then the clipboard should contain an image with height 100
 
     Scenario: Copy image to clipboard and scale size.
-        Given I open the image '.hidden.jpg'
+        Given I open any image
         When I run copy-image --size=100
         Then the clipboard should contain an image with size 100
