@@ -132,7 +132,7 @@ Dependencies
 * `pyexiv2 <https://python3-exiv2.readthedocs.io>`_ (optional for exif support)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional alternative for exif support)
 
-.. include:: pyexiv.rst
+.. include:: pyexiv2.rst
 
 Package Names For Distributions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
