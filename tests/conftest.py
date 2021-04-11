@@ -203,8 +203,8 @@ def add_metadata_information():
         _metadata = metadata.pyexiv2.ImageMetadata(path)
         _metadata.read()
 
-        for key, value in content.items():
-            _metadata.__setitem__(key, value)
+        for tag in content.values():
+            _metadata[tag.key] = tag.value
 
         _metadata.write()
 

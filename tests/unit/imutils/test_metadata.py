@@ -8,7 +8,6 @@
 
 from fractions import Fraction
 from PyQt5.QtGui import QPixmap
-from PIL import Image
 import pytest
 
 from vimiv import imutils, utils
@@ -113,26 +112,39 @@ def metadata_content():
 
 
 @pytest.fixture()
-def dummy_image():
+def dummy_image(qapp, tmp_path):
     filename = "./image.jpg"
-    Image.new(mode="RGB", size=(300, 300), color="red").save(filename)
-    # QPixmap(*(300, 300)).save(filename)
+    filename = str(tmp_path / "image.jpg")
+    QPixmap(300, 300).save(filename)
     return filename
 
 
 @pytest.fixture
-def get_MetadataHandler(add_metadata_information, dummy_image, metadata_content):
+def metadata_handler(add_metadata_information, dummy_image, metadata_content):
     assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
     add_metadata_information(dummy_image, metadata_content)
     return MetadataHandler(dummy_image)
 
 
-def test_MetadataHandler_fetch_key(get_MetadataHandler, metadata_content):
-    handler = get_MetadataHandler
+@pytest.fixture
+def metadata_handler_piexif(dummy_image, metadata_handler):
+    metadata_handler._ext_handler = metadata._ExternalKeyHandlerPiexif(dummy_image)
+    return metadata_handler
+
+
+def test_metadatahandler_fetch_key(metadata_handler, metadata_content):
     for key, value in metadata_content.items():
-        data = handler.fetch_key(key)
-        assert data[0] == key
+        fetched_key, _, fetched_value = metadata_handler.fetch_key(key)
+        assert fetched_key == key
         try:
-            assert data[2] == value.human_value
+            assert fetched_value == value.human_value
         except AttributeError:
-            assert data[2] == value.raw_value
+            assert fetched_value == value.raw_value
+
+
+def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_content):
+    for key, value in metadata_content.items():
+        fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
+        short_key = key.rpartition(".")[-1]
+        assert fetched_key == short_key
+        assert fetched_value == value.raw_value
