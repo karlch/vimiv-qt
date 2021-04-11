@@ -17,7 +17,7 @@ from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
 from vimiv import api
-from vimiv.utils import files, log
+from vimiv.utils import files, log, imagereader
 
 
 _logger = log.module_logger(__name__)
@@ -87,6 +87,63 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     path = api.current_path()
     name = path if abspath else os.path.basename(path)
     clipboard.setText(name, mode=mode)
+
+
+@api.keybindings.register("yi", "copy-image")
+@api.keybindings.register("yI", "copy-image --primary")
+@api.commands.register()
+def copy_image(
+    primary: bool = False,
+    width: int = None,
+    height: int = None,
+    size: int = None,
+    count: int = None,
+) -> None:
+    """Copy currently selected image to system clipboard.
+
+    **syntax:** ``:copy-image [--primary] [--width=WIDTH] [--height=HEIGHT]
+    [--size=SIZE]``
+
+    optional arguments:
+        * ``--primary``: Copy to primary selection.
+        * ``--width``: Scale width to the specified value.
+        * ``--height``: Scale height to the specified value.
+        * ``--size``: Scale longer side to the specified value.
+
+    **count:** Equivalent to the ``--size`` option
+    """
+    clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    path = api.current_path()
+
+    try:
+        reader = imagereader.get_reader(path)
+        pixmap = reader.get_pixmap()
+    except ValueError as e:
+        log.error(str(e))
+        return
+
+    if size or count:
+        pix_size = pixmap.size()
+
+        size = count if count is not None else size
+
+        if pix_size.height() >= pix_size.width():
+            _logger.debug(f"Copy image with size {size} restricting height")
+            pixmap = pixmap.scaledToHeight(size)  # type: ignore[arg-type]
+        else:
+            _logger.debug(f"Copy image with size {size} restricting width")
+            pixmap = pixmap.scaledToWidth(size)  # type: ignore[arg-type]
+
+    elif width:
+        _logger.debug(f"Copy image with width {width}")
+        pixmap = pixmap.scaledToWidth(width)
+
+    elif height:
+        _logger.debug(f"Copy image with height {height}")
+        pixmap = pixmap.scaledToHeight(height)
+
+    clipboard.setPixmap(pixmap, mode=mode)
 
 
 @api.commands.register()
