@@ -3,7 +3,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Commands &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -192,7 +193,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="commands">
+  <section id="commands">
 <span id="id1"></span><h1>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h1>
 <p>In vimiv all keybindings are mapped to commands.</p>
 <p>Most of the commands can also be run from the command line but some are hidden
@@ -205,7 +206,7 @@ thumbnails in <code class="docutils literal notranslate"><span class="pre">thumb
 useless in the current mode. Commands available in the special <code class="docutils literal notranslate"><span class="pre">global</span></code> mode
 can be run in <code class="docutils literal notranslate"><span class="pre">image</span></code>, <code class="docutils literal notranslate"><span class="pre">library</span></code> and <code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> mode.</p>
 <p>Below is a complete list of all commands in every mode.</p>
-<div class="section" id="global">
+<section id="global">
 <h2>Global<a class="headerlink" href="#global" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id20">
 <caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id20" title="Permalink to this table">¶</a></caption>
@@ -338,7 +339,7 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 </tr>
 </tbody>
 </table>
-<div class="section" id="alias">
+<section id="alias">
 <span id="ref-global-alias"></span><h3>alias<a class="headerlink" href="#alias" title="Permalink to this headline">¶</a></h3>
 <p>Add an alias for a command.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:alias</span> <span class="pre">name</span> <span class="pre">command</span> <span class="pre">[--mode=MODE]</span></code></p>
@@ -355,8 +356,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="bind">
+</section>
+<section id="bind">
 <span id="ref-global-bind"></span><h3>bind<a class="headerlink" href="#bind" title="Permalink to this headline">¶</a></h3>
 <p>Bind keys to a command.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:bind</span> <span class="pre">keybinding</span> <span class="pre">command</span> <span class="pre">[--mode=MODE]</span></code></p>
@@ -371,8 +372,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="command">
+</section>
+<section id="command">
 <span id="ref-global-command"></span><h3>command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h3>
 <p>Enter command mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
@@ -382,8 +383,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="copy-name">
+</section>
+<section id="copy-name">
 <span id="ref-global-copy-name"></span><h3>copy-name<a class="headerlink" href="#copy-name" title="Permalink to this headline">¶</a></h3>
 <p>Copy name of current path to system clipboard.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:copy-name</span> <span class="pre">[--abspath]</span> <span class="pre">[--primary]</span></code></p>
@@ -394,8 +395,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="delete">
+</section>
+<section id="delete">
 <span id="ref-global-delete"></span><h3>delete<a class="headerlink" href="#delete" title="Permalink to this headline">¶</a></h3>
 <p>Move one or more images to the trash directory.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:delete</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
@@ -409,8 +410,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <p class="admonition-title">Note</p>
 <p>This only deletes images, not any other path(s).</p>
 </div>
-</div>
-<div class="section" id="enter">
+</section>
+<section id="enter">
 <span id="ref-global-enter"></span><h3>enter<a class="headerlink" href="#enter" title="Permalink to this headline">¶</a></h3>
 <p>Enter another mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:enter</span> <span class="pre">mode</span></code></p>
@@ -420,12 +421,12 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="fullscreen">
+</section>
+<section id="fullscreen">
 <span id="ref-global-fullscreen"></span><h3>fullscreen<a class="headerlink" href="#fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
-</div>
-<div class="section" id="help">
+</section>
+<section id="help">
 <span id="ref-global-help"></span><h3>help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h3>
 <p>Show help on a command or setting.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:help</span> <span class="pre">topic</span></code></p>
@@ -439,8 +440,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 <p class="admonition-title">Hint</p>
 <p>For commands <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">:command</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">-h</span></code>.</p>
 </div>
-</div>
-<div class="section" id="history-clear">
+</section>
+<section id="history-clear">
 <span id="ref-global-history-clear"></span><h3>history-clear<a class="headerlink" href="#history-clear" title="Permalink to this headline">¶</a></h3>
 <p>Clear the command history.</p>
 <p>This clears the history of all modes unless <code class="docutils literal notranslate"><span class="pre">--mode</span></code> is passed.</p>
@@ -451,8 +452,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="keybindings">
+</section>
+<section id="keybindings">
 <span id="ref-global-keybindings"></span><h3>keybindings<a class="headerlink" href="#keybindings" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with keybindings information.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
@@ -462,8 +463,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="log">
+</section>
+<section id="log">
 <span id="ref-global-log"></span><h3>log<a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h3>
 <p>Log a message with the corresponding log level.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:log</span> <span class="pre">level</span> <span class="pre">message</span></code></p>
@@ -474,8 +475,8 @@ command like <code class="docutils literal notranslate"><span class="pre">!gimp<
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="mark">
+</section>
+<section id="mark">
 <span id="ref-global-mark"></span><h3>mark<a class="headerlink" href="#mark" title="Permalink to this headline">¶</a></h3>
 <p>Mark one or more paths.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span> <span class="pre">[--action=ACTION]</span></code></p>
@@ -495,16 +496,16 @@ removing the mark.</p></li>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="mark-clear">
+</section>
+<section id="mark-clear">
 <span id="ref-global-mark-clear"></span><h3>mark-clear<a class="headerlink" href="#mark-clear" title="Permalink to this headline">¶</a></h3>
 <p>Clear all marks.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>It is possible to restore the last cleared marks using <code class="docutils literal notranslate"><span class="pre">mark-restore</span></code>.</p>
 </div>
-</div>
-<div class="section" id="mark-rename">
+</section>
+<section id="mark-rename">
 <span id="ref-global-mark-rename"></span><h3>mark-rename<a class="headerlink" href="#mark-rename" title="Permalink to this headline">¶</a></h3>
 <p>Rename marked images with a common base.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:mark-rename</span> <span class="pre">base</span> <span class="pre">[--start=INDEX]</span> <span class="pre">[--separator=SEPARATOR]</span>
@@ -526,12 +527,12 @@ removing the mark.</p></li>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="mark-restore">
+</section>
+<section id="mark-restore">
 <span id="ref-global-mark-restore"></span><h3>mark-restore<a class="headerlink" href="#mark-restore" title="Permalink to this headline">¶</a></h3>
 <p>Restore the last cleared marks.</p>
-</div>
-<div class="section" id="next">
+</section>
+<section id="next">
 <span id="ref-global-next"></span><h3>next<a class="headerlink" href="#next" title="Permalink to this headline">¶</a></h3>
 <p>Select next image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:next</span> <span class="pre">[--keep-zoom]</span></code></p>
@@ -542,13 +543,13 @@ removing the mark.</p></li>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="nop">
+</section>
+<section id="nop">
 <span id="ref-global-nop"></span><h3>nop<a class="headerlink" href="#nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove keys bound by Qt by explicitly binding them to nop.</p>
-</div>
-<div class="section" id="open">
+</section>
+<section id="open">
 <span id="ref-global-open"></span><h3>open<a class="headerlink" href="#open" title="Permalink to this headline">¶</a></h3>
 <p>Open one or more paths.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span></code></p>
@@ -560,8 +561,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="paste-name">
+</section>
+<section id="paste-name">
 <span id="ref-global-paste-name"></span><h3>paste-name<a class="headerlink" href="#paste-name" title="Permalink to this headline">¶</a></h3>
 <p>Paste path from clipboard to open command.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:paste-name</span> <span class="pre">[--primary]</span></code></p>
@@ -571,8 +572,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="prev">
+</section>
+<section id="prev">
 <span id="ref-global-prev"></span><h3>prev<a class="headerlink" href="#prev" title="Permalink to this headline">¶</a></h3>
 <p>Select previous image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:prev</span> <span class="pre">[--keep-zoom]</span></code></p>
@@ -583,12 +584,12 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="quit">
+</section>
+<section id="quit">
 <span id="ref-global-quit"></span><h3>quit<a class="headerlink" href="#quit" title="Permalink to this headline">¶</a></h3>
 <p>Quit vimiv.</p>
-</div>
-<div class="section" id="rename">
+</section>
+<section id="rename">
 <span id="ref-global-rename"></span><h3>rename<a class="headerlink" href="#rename" title="Permalink to this headline">¶</a></h3>
 <p>Rename images with a common base.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rename</span> <span class="pre">path</span> <span class="pre">[path</span> <span class="pre">...]</span> <span class="pre">base</span> <span class="pre">[--start=INDEX]</span> <span class="pre">[--separator=SEPARATOR]</span>
@@ -610,13 +611,13 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="repeat-command">
+</section>
+<section id="repeat-command">
 <span id="ref-global-repeat-command"></span><h3>repeat-command<a class="headerlink" href="#repeat-command" title="Permalink to this headline">¶</a></h3>
 <p>Repeat the last command.</p>
 <p><strong>count:</strong> Repeat count times.</p>
-</div>
-<div class="section" id="scale">
+</section>
+<section id="scale">
 <span id="ref-global-scale"></span><h3>scale<a class="headerlink" href="#scale" title="Permalink to this headline">¶</a></h3>
 <p>Scale the image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scale</span> <span class="pre">[--level=LEVEL]</span></code></p>
@@ -638,8 +639,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 <li><p><strong>float</strong>: Set scale to arbitrary decimal value.</p></li>
 </ul>
 </div>
-</div>
-<div class="section" id="search">
+</section>
+<section id="search">
 <span id="ref-global-search"></span><h3>search<a class="headerlink" href="#search" title="Permalink to this headline">¶</a></h3>
 <p>Start a search.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:search</span> <span class="pre">[--reverse]</span></code></p>
@@ -649,20 +650,20 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="search-next">
+</section>
+<section id="search-next">
 <span id="ref-global-search-next"></span><h3>search-next<a class="headerlink" href="#search-next" title="Permalink to this headline">¶</a></h3>
 <p>Continue search to the next match.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:search-next</span></code></p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="search-prev">
+</section>
+<section id="search-prev">
 <span id="ref-global-search-prev"></span><h3>search-prev<a class="headerlink" href="#search-prev" title="Permalink to this headline">¶</a></h3>
 <p>Continue search to the previous match.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:search-next</span></code></p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="set">
+</section>
+<section id="set">
 <span id="ref-global-set"></span><h3>set<a class="headerlink" href="#set" title="Permalink to this headline">¶</a></h3>
 <p>Set an option.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
@@ -673,8 +674,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="sleep">
+</section>
+<section id="sleep">
 <span id="ref-global-sleep"></span><h3>sleep<a class="headerlink" href="#sleep" title="Permalink to this headline">¶</a></h3>
 <p>Sleep for a given number of seconds.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:sleep</span> <span class="pre">duration</span></code></p>
@@ -684,8 +685,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="spawn">
+</section>
+<section id="spawn">
 <span id="ref-global-spawn"></span><h3>spawn<a class="headerlink" href="#spawn" title="Permalink to this headline">¶</a></h3>
 <p>Spawn a command in a sub-shell.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:spawn</span> <span class="pre">command</span> <span class="pre">[--shell=shell</span> <span class="pre">--shellarg=shellarg]</span></code></p>
@@ -704,8 +705,8 @@ the first valid directory is opened. If both fails, an error is displayed.</p>
 instead of running the program directly. This means that shell, redirection
 etc. will work in spawn, but not with !. Nevertheless ! is recommended in
 general for performance and security reasons.</p>
-</div>
-<div class="section" id="tag-delete">
+</section>
+<section id="tag-delete">
 <span id="ref-global-tag-delete"></span><h3>tag-delete<a class="headerlink" href="#tag-delete" title="Permalink to this headline">¶</a></h3>
 <p>Delete an existing tag.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:tag-delete</span> <span class="pre">name</span></code></p>
@@ -719,8 +720,8 @@ general for performance and security reasons.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="tag-load">
+</section>
+<section id="tag-load">
 <span id="ref-global-tag-load"></span><h3>tag-load<a class="headerlink" href="#tag-load" title="Permalink to this headline">¶</a></h3>
 <p>Load images from a tag into the current mark list.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">tag-load</span> <span class="pre">name</span></code></p>
@@ -734,8 +735,8 @@ general for performance and security reasons.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="tag-open">
+</section>
+<section id="tag-open">
 <span id="ref-global-tag-open"></span><h3>tag-open<a class="headerlink" href="#tag-open" title="Permalink to this headline">¶</a></h3>
 <p>Open images from a tag in image mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">tag-open</span> <span class="pre">name</span></code></p>
@@ -749,8 +750,8 @@ general for performance and security reasons.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="tag-write">
+</section>
+<section id="tag-write">
 <span id="ref-global-tag-write"></span><h3>tag-write<a class="headerlink" href="#tag-write" title="Permalink to this headline">¶</a></h3>
 <p>Write marked paths to a tag.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:tag-write</span> <span class="pre">name</span></code></p>
@@ -769,8 +770,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="toggle">
+</section>
+<section id="toggle">
 <span id="ref-global-toggle"></span><h3>toggle<a class="headerlink" href="#toggle" title="Permalink to this headline">¶</a></h3>
 <p>Toggle one mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:toggle</span> <span class="pre">mode</span></code>.</p>
@@ -781,8 +782,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="unbind">
+</section>
+<section id="unbind">
 <span id="ref-global-unbind"></span><h3>unbind<a class="headerlink" href="#unbind" title="Permalink to this headline">¶</a></h3>
 <p>Unbind a keybinding.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:unbind</span> <span class="pre">keybinding</span> <span class="pre">[--mode=MODE]</span></code></p>
@@ -796,8 +797,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="undelete">
+</section>
+<section id="undelete">
 <span id="ref-global-undelete"></span><h3>undelete<a class="headerlink" href="#undelete" title="Permalink to this headline">¶</a></h3>
 <p>Restore a file from the trash directory.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:undelete</span> <span class="pre">[basename</span> <span class="pre">...]</span></code></p>
@@ -808,8 +809,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="version">
+</section>
+<section id="version">
 <span id="ref-global-version"></span><h3>version<a class="headerlink" href="#version" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with version information.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:version</span> <span class="pre">[--copy]</span></code></p>
@@ -819,13 +820,13 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="welcome-to-qt">
+</section>
+<section id="welcome-to-qt">
 <span id="ref-global-welcome-to-qt"></span><h3>welcome-to-qt<a class="headerlink" href="#welcome-to-qt" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with a welcome message for users coming from gtk.</p>
-</div>
-</div>
-<div class="section" id="image">
+</section>
+</section>
+<section id="image">
 <h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id21">
 <caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id21" title="Permalink to this table">¶</a></caption>
@@ -892,11 +893,11 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </tr>
 </tbody>
 </table>
-<div class="section" id="center">
+<section id="center">
 <span id="ref-image-center"></span><h3>center<a class="headerlink" href="#center" title="Permalink to this headline">¶</a></h3>
 <p>Center the image in the viewport.</p>
-</div>
-<div class="section" id="flip">
+</section>
+<section id="flip">
 <span id="ref-image-flip"></span><h3>flip<a class="headerlink" href="#flip" title="Permalink to this headline">¶</a></h3>
 <p>Flip the image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:flip</span> <span class="pre">[--vertical]</span></code></p>
@@ -906,8 +907,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="goto">
+</section>
+<section id="goto">
 <span id="ref-image-goto"></span><h3>goto<a class="headerlink" href="#goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific image in current filelist.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
@@ -922,8 +923,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <p>-1 is the last image.</p>
 </div>
 <p><strong>count:</strong> Select [count]th image instead.</p>
-</div>
-<div class="section" id="metadata">
+</section>
+<section id="metadata">
 <span id="ref-image-metadata"></span><h3>metadata<a class="headerlink" href="#metadata" title="Permalink to this headline">¶</a></h3>
 <p>Toggle display of exif metadata of current image.</p>
 <p><strong>count:</strong> Select the key set to display instead.</p>
@@ -938,8 +939,8 @@ configfile like this:</p>
 </div>
 <p>where the values must be a comma-separated list of valid metadata keys.</p>
 </div>
-</div>
-<div class="section" id="metadata-list-keys">
+</section>
+<section id="metadata-list-keys">
 <span id="ref-image-metadata-list-keys"></span><h3>metadata-list-keys<a class="headerlink" href="#metadata-list-keys" title="Permalink to this headline">¶</a></h3>
 <p>Display a list of all valid metadata keys for the current image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:metadata-list-keys</span> <span class="pre">[--n-cols=NUMBER]</span> <span class="pre">[--to-term]</span></code></p>
@@ -950,16 +951,16 @@ configfile like this:</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="play-or-pause">
+</section>
+<section id="play-or-pause">
 <span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this headline">¶</a></h3>
 <p>Toggle between play and pause of animation.</p>
-</div>
-<div class="section" id="reload">
+</section>
+<section id="reload">
 <span id="ref-image-reload"></span><h3>reload<a class="headerlink" href="#reload" title="Permalink to this headline">¶</a></h3>
 <p>Reload the current image.</p>
-</div>
-<div class="section" id="rescale">
+</section>
+<section id="rescale">
 <span id="ref-image-rescale"></span><h3>rescale<a class="headerlink" href="#rescale" title="Permalink to this headline">¶</a></h3>
 <p>Rescale the original image to a new size.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rescale</span> <span class="pre">dx</span> <span class="pre">[dy]</span></code></p>
@@ -971,8 +972,8 @@ aspectratio is preserved.</p></li>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="resize">
+</section>
+<section id="resize">
 <span id="ref-image-resize"></span><h3>resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h3>
 <p>Resize the original image to a new size.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:resize</span> <span class="pre">width</span> <span class="pre">[height]</span></code></p>
@@ -984,8 +985,8 @@ aspectratio is preserved.</p></li>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="rotate">
+</section>
+<section id="rotate">
 <span id="ref-image-rotate"></span><h3>rotate<a class="headerlink" href="#rotate" title="Permalink to this headline">¶</a></h3>
 <p>Rotate the image.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:rotate</span> <span class="pre">[--counter-clockwise]</span></code></p>
@@ -996,8 +997,8 @@ aspectratio is preserved.</p></li>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="scroll">
+</section>
+<section id="scroll">
 <span id="ref-image-scroll"></span><h3>scroll<a class="headerlink" href="#scroll" title="Permalink to this headline">¶</a></h3>
 <p>Scroll the image in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
@@ -1008,8 +1009,8 @@ aspectratio is preserved.</p></li>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="scroll-edge">
+</section>
+<section id="scroll-edge">
 <span id="ref-image-scroll-edge"></span><h3>scroll-edge<a class="headerlink" href="#scroll-edge" title="Permalink to this headline">¶</a></h3>
 <p>Scroll the image to one edge.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll-edge</span> <span class="pre">direction</span></code>.</p>
@@ -1019,24 +1020,24 @@ aspectratio is preserved.</p></li>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="slideshow">
+</section>
+<section id="slideshow">
 <span id="ref-image-slideshow"></span><h3>slideshow<a class="headerlink" href="#slideshow" title="Permalink to this headline">¶</a></h3>
 <p>Toggle slideshow.</p>
 <p><strong>count:</strong> Set slideshow delay to count instead.</p>
-</div>
-<div class="section" id="straighten">
+</section>
+<section id="straighten">
 <span id="ref-image-straighten"></span><h3>straighten<a class="headerlink" href="#straighten" title="Permalink to this headline">¶</a></h3>
 <p>Display a grid to straighten the current image.</p>
 <p>The image can then be straightened clockwise using the <code class="docutils literal notranslate"><span class="pre">l</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code>
 keys and counter-clockwise with <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">H</span></code>. Accept the changes with
 <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code> and reject them with <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code>.</p>
-</div>
-<div class="section" id="undo-transformations">
+</section>
+<section id="undo-transformations">
 <span id="ref-image-undo-transformations"></span><h3>undo-transformations<a class="headerlink" href="#undo-transformations" title="Permalink to this headline">¶</a></h3>
 <p>Undo any transformation applied to the current image.</p>
-</div>
-<div class="section" id="write">
+</section>
+<section id="write">
 <span id="ref-image-write"></span><h3>write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>
 <p>Save the current image to disk.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:write</span> <span class="pre">[path]</span></code>.</p>
@@ -1046,8 +1047,8 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="zoom">
+</section>
+<section id="zoom">
 <span id="ref-image-zoom"></span><h3>zoom<a class="headerlink" href="#zoom" title="Permalink to this headline">¶</a></h3>
 <p>Zoom the current widget.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
@@ -1058,9 +1059,9 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-</div>
-<div class="section" id="library">
+</section>
+</section>
+<section id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id22">
 <caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id22" title="Permalink to this table">¶</a></caption>
@@ -1085,7 +1086,7 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 </tr>
 </tbody>
 </table>
-<div class="section" id="ref-library-goto">
+<section id="ref-library-goto">
 <span id="id2"></span><h3>goto<a class="headerlink" href="#ref-library-goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific row in current filelist.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">row</span></code></p>
@@ -1104,8 +1105,8 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 <p>-1 is the last row.</p>
 </div>
 <p><strong>count:</strong> Select [count]th element instead.</p>
-</div>
-<div class="section" id="open-selected">
+</section>
+<section id="open-selected">
 <span id="ref-library-open-selected"></span><h3>open-selected<a class="headerlink" href="#open-selected" title="Permalink to this headline">¶</a></h3>
 <p>Open the currently selected path.</p>
 <p>If the path activated is an image, it is opened in image mode. If it is
@@ -1117,8 +1118,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="ref-library-scroll">
+</section>
+<section id="ref-library-scroll">
 <span id="id3"></span><h3>scroll<a class="headerlink" href="#ref-library-scroll" title="Permalink to this headline">¶</a></h3>
 <p>Scroll the library in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
@@ -1140,9 +1141,9 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-</div>
-<div class="section" id="thumbnail">
+</section>
+</section>
+<section id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id23">
 <caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id23" title="Permalink to this table">¶</a></caption>
@@ -1176,15 +1177,15 @@ a directory, the library is loaded for this directory.</p>
 </tr>
 </tbody>
 </table>
-<div class="section" id="end-of-line">
+<section id="end-of-line">
 <span id="ref-thumbnail-end-of-line"></span><h3>end-of-line<a class="headerlink" href="#end-of-line" title="Permalink to this headline">¶</a></h3>
 <p>Select the last thumbnail in the current row.</p>
-</div>
-<div class="section" id="first-of-line">
+</section>
+<section id="first-of-line">
 <span id="ref-thumbnail-first-of-line"></span><h3>first-of-line<a class="headerlink" href="#first-of-line" title="Permalink to this headline">¶</a></h3>
 <p>Select the first thumbnail in the current row.</p>
-</div>
-<div class="section" id="ref-thumbnail-goto">
+</section>
+<section id="ref-thumbnail-goto">
 <span id="id4"></span><h3>goto<a class="headerlink" href="#ref-thumbnail-goto" title="Permalink to this headline">¶</a></h3>
 <p>Select specific thumbnail in current filelist.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">index</span></code></p>
@@ -1199,12 +1200,12 @@ a directory, the library is loaded for this directory.</p>
 <p>-1 is the last thumbnail.</p>
 </div>
 <p><strong>count:</strong> Select [count]th thubnail instead.</p>
-</div>
-<div class="section" id="ref-thumbnail-open-selected">
+</section>
+<section id="ref-thumbnail-open-selected">
 <span id="id5"></span><h3>open-selected<a class="headerlink" href="#ref-thumbnail-open-selected" title="Permalink to this headline">¶</a></h3>
 <p>Open the currently selected thumbnail in image mode.</p>
-</div>
-<div class="section" id="ref-thumbnail-scroll">
+</section>
+<section id="ref-thumbnail-scroll">
 <span id="id6"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Permalink to this headline">¶</a></h3>
 <p>Scroll to another thumbnail in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
@@ -1216,8 +1217,8 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="ref-thumbnail-zoom">
+</section>
+<section id="ref-thumbnail-zoom">
 <span id="id7"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Permalink to this headline">¶</a></h3>
 <p>Zoom the current widget.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
@@ -1228,9 +1229,9 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-</div>
-<div class="section" id="id8">
+</section>
+</section>
+<section id="id8">
 <h2>Command<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id24">
 <caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id24" title="Permalink to this table">¶</a></caption>
@@ -1261,7 +1262,7 @@ a directory, the library is loaded for this directory.</p>
 </tr>
 </tbody>
 </table>
-<div class="section" id="complete">
+<section id="complete">
 <span id="ref-command-complete"></span><h3>complete<a class="headerlink" href="#complete" title="Permalink to this headline">¶</a></h3>
 <p>Invoke command line completion.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:complete</span> <span class="pre">[--inverse]</span></code></p>
@@ -1271,8 +1272,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="history">
+</section>
+<section id="history">
 <span id="ref-command-history"></span><h3>history<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h3>
 <p>Cycle through command history.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:history</span> <span class="pre">direction</span></code></p>
@@ -1282,8 +1283,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="history-substr-search">
+</section>
+<section id="history-substr-search">
 <span id="ref-command-history-substr-search"></span><h3>history-substr-search<a class="headerlink" href="#history-substr-search" title="Permalink to this headline">¶</a></h3>
 <p>Cycle through command history with substring matching.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:history-substr-search</span> <span class="pre">direction</span></code></p>
@@ -1293,18 +1294,18 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="leave-commandline">
+</section>
+<section id="leave-commandline">
 <span id="ref-command-leave-commandline"></span><h3>leave-commandline<a class="headerlink" href="#leave-commandline" title="Permalink to this headline">¶</a></h3>
 <p>Leave command mode.</p>
-</div>
-<div class="section" id="ref-command-nop">
+</section>
+<section id="ref-command-nop">
 <span id="id9"></span><h3>nop<a class="headerlink" href="#ref-command-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove keys bound by Qt by explicitly binding them to nop.</p>
-</div>
-</div>
-<div class="section" id="manipulate">
+</section>
+</section>
+<section id="manipulate">
 <h2>Manipulate<a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id25">
 <caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id25" title="Permalink to this table">¶</a></caption>
@@ -1368,11 +1369,11 @@ a directory, the library is loaded for this directory.</p>
 </tr>
 </tbody>
 </table>
-<div class="section" id="accept">
+<section id="accept">
 <span id="ref-manipulate-accept"></span><h3>accept<a class="headerlink" href="#accept" title="Permalink to this headline">¶</a></h3>
 <p>Leave manipulate accepting the applied changes.</p>
-</div>
-<div class="section" id="ref-manipulate-command">
+</section>
+<section id="ref-manipulate-command">
 <span id="id10"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Permalink to this headline">¶</a></h3>
 <p>Enter command mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
@@ -1382,8 +1383,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="decrease">
+</section>
+<section id="decrease">
 <span id="ref-manipulate-decrease"></span><h3>decrease<a class="headerlink" href="#decrease" title="Permalink to this headline">¶</a></h3>
 <p>Decrease the value of the current manipulation.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:decrease</span> <span class="pre">value</span></code></p>
@@ -1394,16 +1395,16 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="discard">
+</section>
+<section id="discard">
 <span id="ref-manipulate-discard"></span><h3>discard<a class="headerlink" href="#discard" title="Permalink to this headline">¶</a></h3>
 <p>Discard any changes and leave manipulate.</p>
-</div>
-<div class="section" id="ref-manipulate-fullscreen">
+</section>
+<section id="ref-manipulate-fullscreen">
 <span id="id11"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Permalink to this headline">¶</a></h3>
 <p>Toggle fullscreen mode.</p>
-</div>
-<div class="section" id="ref-manipulate-goto">
+</section>
+<section id="ref-manipulate-goto">
 <span id="id12"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Permalink to this headline">¶</a></h3>
 <p>Set the value of the current manipulation.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">value</span></code></p>
@@ -1414,8 +1415,8 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> Set the manipulation to [count] instead.</p>
-</div>
-<div class="section" id="ref-manipulate-help">
+</section>
+<section id="ref-manipulate-help">
 <span id="id13"></span><h3>help<a class="headerlink" href="#ref-manipulate-help" title="Permalink to this headline">¶</a></h3>
 <p>Show help on a command or setting.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:help</span> <span class="pre">topic</span></code></p>
@@ -1429,8 +1430,8 @@ a directory, the library is loaded for this directory.</p>
 <p class="admonition-title">Hint</p>
 <p>For commands <code class="docutils literal notranslate"><span class="pre">help</span> <span class="pre">:command</span></code> is the same as <code class="docutils literal notranslate"><span class="pre">command</span> <span class="pre">-h</span></code>.</p>
 </div>
-</div>
-<div class="section" id="ref-manipulate-history-clear">
+</section>
+<section id="ref-manipulate-history-clear">
 <span id="id14"></span><h3>history-clear<a class="headerlink" href="#ref-manipulate-history-clear" title="Permalink to this headline">¶</a></h3>
 <p>Clear the command history.</p>
 <p>This clears the history of all modes unless <code class="docutils literal notranslate"><span class="pre">--mode</span></code> is passed.</p>
@@ -1441,8 +1442,8 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="increase">
+</section>
+<section id="increase">
 <span id="ref-manipulate-increase"></span><h3>increase<a class="headerlink" href="#increase" title="Permalink to this headline">¶</a></h3>
 <p>Increase the value of the current manipulation.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:increase</span> <span class="pre">value</span></code></p>
@@ -1453,8 +1454,8 @@ a directory, the library is loaded for this directory.</p>
 </dd>
 </dl>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="ref-manipulate-keybindings">
+</section>
+<section id="ref-manipulate-keybindings">
 <span id="id15"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Permalink to this headline">¶</a></h3>
 <p>Show a pop-up with keybindings information.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
@@ -1464,33 +1465,33 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-<div class="section" id="ref-manipulate-next">
+</section>
+<section id="ref-manipulate-next">
 <span id="id16"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Permalink to this headline">¶</a></h3>
 <p>Focus the next manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="next-tab">
+</section>
+<section id="next-tab">
 <span id="ref-manipulate-next-tab"></span><h3>next-tab<a class="headerlink" href="#next-tab" title="Permalink to this headline">¶</a></h3>
 <p>Focus the next manipulation tab.</p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="ref-manipulate-nop">
+</section>
+<section id="ref-manipulate-nop">
 <span id="id17"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Permalink to this headline">¶</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove keys bound by Qt by explicitly binding them to nop.</p>
-</div>
-<div class="section" id="ref-manipulate-prev">
+</section>
+<section id="ref-manipulate-prev">
 <span id="id18"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Permalink to this headline">¶</a></h3>
 <p>Focus the previous manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="prev-tab">
+</section>
+<section id="prev-tab">
 <span id="ref-manipulate-prev-tab"></span><h3>prev-tab<a class="headerlink" href="#prev-tab" title="Permalink to this headline">¶</a></h3>
 <p>Focus the previous manipulation tab.</p>
 <p><strong>count:</strong> multiplier</p>
-</div>
-<div class="section" id="ref-manipulate-set">
+</section>
+<section id="ref-manipulate-set">
 <span id="id19"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this headline">¶</a></h3>
 <p>Set an option.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
@@ -1501,9 +1502,9 @@ a directory, the library is loaded for this directory.</p>
 </ul>
 </dd>
 </dl>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
     </div>

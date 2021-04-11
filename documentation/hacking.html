@@ -3,7 +3,8 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
     <title>Hacking the Code &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -116,7 +117,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="hacking-the-code">
+  <section id="hacking-the-code">
 <span id="hacking"></span><h1><a class="toc-backref" href="#id3">Hacking the Code</a><a class="headerlink" href="#hacking-the-code" title="Permalink to this headline">¶</a></h1>
 <p>This page contains some guidelines as well as a few tips on how to get started with the
 source code. If you feel like relevant information is missing, please open an
@@ -169,21 +170,21 @@ or open an
 </li>
 </ul>
 </div>
-<div class="section" id="getting-the-source-code">
+<section id="getting-the-source-code">
 <h2><a class="toc-backref" href="#id4">Getting the Source Code</a><a class="headerlink" href="#getting-the-source-code" title="Permalink to this headline">¶</a></h2>
 <p>To retrieve the source code you can clone the repository using git:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt.git
 </pre></div>
 </div>
-</div>
-<div class="section" id="submitting-changes">
+</section>
+<section id="submitting-changes">
 <h2><a class="toc-backref" href="#id5">Submitting Changes</a><a class="headerlink" href="#submitting-changes" title="Permalink to this headline">¶</a></h2>
 <p>The preferred way to submit changes is to
 <a class="reference external" href="https://help.github.com/articles/fork-a-repo/">fork the repository</a>
 and to
 <a class="reference external" href="https://help.github.com/articles/creating-a-pull-request/">submit a merge request</a>.</p>
-</div>
-<div class="section" id="running-the-development-version">
+</section>
+<section id="running-the-development-version">
 <h2><a class="toc-backref" href="#id6">Running the Development Version</a><a class="headerlink" href="#running-the-development-version" title="Permalink to this headline">¶</a></h2>
 <p>The arguably cleanest method is to <a class="reference internal" href="install.html#install-using-tox"><span class="std std-ref">install vimiv using tox</span></a> and use the script from the virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
@@ -210,8 +211,8 @@ and removes the option to have both a development and a production executable.</
 the log level, use the <code class="docutils literal notranslate"><span class="pre">--log-level</span></code> option, e.g. <code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">debug</span></code> to
 enable debugging messages. As this can become very noisy, the <code class="docutils literal notranslate"><span class="pre">--debug</span></code> flag is useful
 to debug individual modules, e.g. <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">config.configfile</span></code>.</p>
-</div>
-<div class="section" id="tests-and-checkers">
+</section>
+<section id="tests-and-checkers">
 <h2><a class="toc-backref" href="#id7">Tests and Checkers</a><a class="headerlink" href="#tests-and-checkers" title="Permalink to this headline">¶</a></h2>
 <p>Vimiv runs it’s tests using
 <a class="reference external" href="https://tox.readthedocs.io/en/latest/">tox</a>. There are various different
@@ -250,8 +251,8 @@ with:</p>
 </ul>
 <p>In case you don’t want to run any of the checkers locally, you can just wait for the CI
 to run them. This is much slower and less direct though.</p>
-</div>
-<div class="section" id="style-and-formatting">
+</section>
+<section id="style-and-formatting">
 <h2><a class="toc-backref" href="#id8">Style and Formatting</a><a class="headerlink" href="#style-and-formatting" title="Permalink to this headline">¶</a></h2>
 <p>Vimiv uses <a class="reference external" href="https://pre-commit.com/">pre-commit</a> for a consistent formatting. To
 format the python source code, the
@@ -265,8 +266,8 @@ format the python source code, the
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pre</span><span class="o">-</span><span class="n">commit</span> <span class="n">install</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="writing-plugins">
+</section>
+<section id="writing-plugins">
 <span id="id2"></span><h2><a class="toc-backref" href="#id9">Writing Plugins</a><a class="headerlink" href="#writing-plugins" title="Permalink to this headline">¶</a></h2>
 <p>A great way to contribute to vimiv without having to work with the main source code is
 to write plugins. If you end up writing a plugin, please <a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">let me know</a> so I can advertise it on the <a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">Plugins</span></a> page. The basic
@@ -336,7 +337,7 @@ called.</p></li>
 </dl>
 </dd></dl>
 
-<div class="section" id="adding-support-for-new-imageformats">
+<section id="adding-support-for-new-imageformats">
 <span id="support-new-imageformats"></span><h3><a class="toc-backref" href="#id10">Adding Support for New Imageformats</a><a class="headerlink" href="#adding-support-for-new-imageformats" title="Permalink to this headline">¶</a></h3>
 <p>If you would like to add support for a new image format that is not supported by Qt, you
 can also solve this using the plugin system. A nice example of how to do this is the
@@ -368,13 +369,13 @@ same form as used by the standard library module
     <span class="n">api</span><span class="o">.</span><span class="n">add_external_format</span><span class="p">(</span><span class="s2">&quot;fmt&quot;</span><span class="p">,</span> <span class="n">test_func</span><span class="p">,</span> <span class="n">load_func</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="source-code-hints">
+</section>
+</section>
+<section id="source-code-hints">
 <h2><a class="toc-backref" href="#id11">Source Code Hints</a><a class="headerlink" href="#source-code-hints" title="Permalink to this headline">¶</a></h2>
 <p>The following paragraphs explain some of the core concepts of the source code
 which may be useful to understand before working on bigger changes.</p>
-<div class="section" id="logging">
+<section id="logging">
 <h3><a class="toc-backref" href="#id12">Logging</a><a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h3>
 <p>Logging is handled by the <code class="docutils literal notranslate"><span class="pre">vimiv.utils.log</span></code> module which wraps around the
 <a class="reference external" href="https://docs.python.org/3/howto/logging.html">standard python logging library</a>:</p>
@@ -414,13 +415,13 @@ create a module logger:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Something happened, and may now happen very often&quot;</span><span class="p">,</span> <span class="n">once</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="module-vimiv.api">
+</section>
+<section id="module-vimiv.api">
 <span id="api-documentation"></span><h3><a class="toc-backref" href="#id13">API Documentation</a><a class="headerlink" href="#module-vimiv.api" title="Permalink to this headline">¶</a></h3>
 <p><cite>Utilities to interact with the application</cite>.</p>
 <p>The following paragraphs provide an overview of the modules available in the
 <code class="docutils literal notranslate"><span class="pre">api</span></code> and give examples on how to use them.</p>
-<div class="section" id="module-vimiv.api.objreg">
+<section id="module-vimiv.api.objreg">
 <span id="the-object-registry"></span><h4><a class="toc-backref" href="#id14">The Object Registry</a><a class="headerlink" href="#module-vimiv.api.objreg" title="Permalink to this headline">¶</a></h4>
 <p><em>Storage system for objects</em>.</p>
 <p>The object registry is a storage system for long-lived objects. These objects are stored
@@ -459,8 +460,8 @@ stored in the registry right after <code class="docutils literal notranslate"><s
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-vimiv.api.modes">
+</section>
+<section id="module-vimiv.api.modes">
 <span id="modes"></span><h4><a class="toc-backref" href="#id15">Modes</a><a class="headerlink" href="#module-vimiv.api.modes" title="Permalink to this headline">¶</a></h4>
 <p><cite>Default modes and utility functions for mode handling</cite>.</p>
 <p>Similar to vim, vimiv has the concept of <code class="docutils literal notranslate"><span class="pre">modes</span></code>. The same command or
@@ -526,8 +527,8 @@ when entering a mode to focus the widget which is assigned to this mode.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-vimiv.api.commands">
+</section>
+<section id="module-vimiv.api.commands">
 <span id="commands"></span><h4><a class="toc-backref" href="#id16">Commands</a><a class="headerlink" href="#module-vimiv.api.commands" title="Permalink to this headline">¶</a></h4>
 <p><cite>Command storage and initialization</cite>.</p>
 <p>The user interacts with vimiv using commands. Creating a new command is done
@@ -683,8 +684,8 @@ command.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-vimiv.api.keybindings">
+</section>
+<section id="module-vimiv.api.keybindings">
 <span id="keybindings"></span><h4><a class="toc-backref" href="#id17">Keybindings</a><a class="headerlink" href="#module-vimiv.api.keybindings" title="Permalink to this headline">¶</a></h4>
 <p><cite>Utilities to map commands to a sequence of keys</cite>.</p>
 <p>Adding a new default keybinding is done using the <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code> decorator.
@@ -712,8 +713,8 @@ earth with <code class="docutils literal notranslate"><span class="pre">ge</span
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="module-vimiv.api.status">
+</section>
+<section id="module-vimiv.api.status">
 <span id="status-modules"></span><h4><a class="toc-backref" href="#id18">Status Modules</a><a class="headerlink" href="#module-vimiv.api.status" title="Permalink to this headline">¶</a></h4>
 <p><em>Utilities to add status modules and retrieve status text</em>.</p>
 <p>Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
@@ -779,7 +780,7 @@ status. When calling <a class="reference internal" href="#vimiv.api.status.evalu
 replaced by the return value of the decorated function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> – Name of the module as set in the config file. Must start with ‘{‘
+<dd class="field-odd"><p><strong>name</strong> – Name of the module as set in the config file. Must start with ‘{’
 and end with ‘}’ to allow differentiating modules from ordinary
 text.</p>
 </dd>
@@ -799,8 +800,8 @@ is, for example, always called after a command was run.</p>
 </dl>
 </dd></dl>
 
-</div>
-<div class="section" id="module-vimiv.api.completion">
+</section>
+<section id="module-vimiv.api.completion">
 <span id="completion"></span><h4><a class="toc-backref" href="#id19">Completion</a><a class="headerlink" href="#module-vimiv.api.completion" title="Permalink to this headline">¶</a></h4>
 <p><em>Utilities to work with completion modules</em>.</p>
 <p>A completion module offers a model with options for command line completion and a filter
@@ -897,8 +898,8 @@ description column is set up to take 30 % of the total width while the completio
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-vimiv.api.working_directory">
+</section>
+<section id="module-vimiv.api.working_directory">
 <span id="working-directory"></span><h4><a class="toc-backref" href="#id20">Working Directory</a><a class="headerlink" href="#module-vimiv.api.working_directory" title="Permalink to this headline">¶</a></h4>
 <p>Handler to take care of the current working directory.</p>
 <p>The handler stores the current working directory and provides the <code class="xref py py-func docutils literal notranslate"><span class="pre">chdir()</span></code> method
@@ -952,8 +953,8 @@ connect to these signals:</p>
 <dt>Module Attributes:</dt><dd><p>handler: The initialized <code class="xref py py-class docutils literal notranslate"><span class="pre">WorkingDirectoryHandler</span></code> object to interact with.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="module-vimiv.api.prompt">
+</section>
+<section id="module-vimiv.api.prompt">
 <span id="prompt"></span><h4><a class="toc-backref" href="#id21">Prompt</a><a class="headerlink" href="#module-vimiv.api.prompt" title="Permalink to this headline">¶</a></h4>
 <p>Prompt the user for a question.</p>
 <dl class="py function">
@@ -978,12 +979,12 @@ The UI is blocked until the question was answered or aborted.</p>
 </dl>
 </dd></dl>
 
-</div>
-</div>
-<div class="section" id="module-vimiv.imutils">
+</section>
+</section>
+<section id="module-vimiv.imutils">
 <span id="imutils-module"></span><h3><a class="toc-backref" href="#id22">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this headline">¶</a></h3>
 <p><cite>Utilities to load, edit, navigate and save images</cite>.</p>
-<div class="section" id="the-image-loading-process">
+<section id="the-image-loading-process">
 <h4><a class="toc-backref" href="#id23">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this headline">¶</a></h4>
 <p>The image loading process is started by emitting the <code class="docutils literal notranslate"><span class="pre">load_images</span></code> signal. It is for
 example emitted by the library when a new image path was selected, in thumbnail mode
@@ -1012,8 +1013,8 @@ widget has been created, the file handler emits one of:</p>
 </ul>
 <p>The image widget in <code class="docutils literal notranslate"><span class="pre">vimiv.gui.image</span></code> connects to these signals and displays
 the appropriate Qt widget.</p>
-</div>
-<div class="section" id="image-editing-modules">
+</section>
+<section id="image-editing-modules">
 <h4><a class="toc-backref" href="#id24">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this headline">¶</a></h4>
 <p>This section gives a quick overview of the modules that deal with image editing and how
 to add new functionality to manipulate images.</p>
@@ -1090,8 +1091,8 @@ raw data.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="adding-new-manipulations-to-the-c-extension">
+</section>
+<section id="adding-new-manipulations-to-the-c-extension">
 <span id="c-extension"></span><h4><a class="toc-backref" href="#id25">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this headline">¶</a></h4>
 <p>To add new manipulations to the C-extension, two things must be done.</p>
 <p>First, you implement a new manipulate function in its own header such as
@@ -1109,10 +1110,10 @@ the name of the function as seen by python, pass your function, the calling conv
 and finally a short docstring.</p>
 <p>For much more information on extending python with C see
 <a class="reference external" href="https://docs.python.org/3/extending/extending.html">the python documentation</a></p>
-</div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
+</section>
 
 
     </div>
