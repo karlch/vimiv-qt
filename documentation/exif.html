@@ -94,7 +94,7 @@
       
   <section id="exif">
 <h1>Exif<a class="headerlink" href="#exif" title="Permalink to this headline">¶</a></h1>
-<p>Vimiv provides optional exif support if either <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> or <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> is available. If
+<p>Vimiv provides optional exif support if either <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> or <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> is available. If
 this is the case:</p>
 <ol class="arabic simple">
 <li><p>Exif metadata is automatically copied from source to destination when writing images
@@ -102,16 +102,20 @@ to disk.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command and the corresponding <code class="docutils literal notranslate"><span class="pre">i</span></code>-keybinding is available.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">{exif-date-time}</span></code> statusbar module is available.</p></li>
 </ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There are multiple packages named <cite>pyexiv2</cite>. Make sure you install the right one.</p>
+</div>
 <section id="advantages-of-the-different-exif-libraries">
 <h2>Advantages of the different exif libraries<a class="headerlink" href="#advantages-of-the-different-exif-libraries" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://pypi.org/project/pyexiv2/">Pyexiv2</a> is the more powerful of the two options. One large advantage is that with
+<p><a class="reference external" href="https://python3-exiv2.readthedocs.io">Pyexiv2</a> is the more powerful of the two options. One large advantage is that with
 pyexiv2 <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> formats exif data into human readable format, for example
 <code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span> <span class="pre">mm</span></code> where <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> would only give <code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span></code>. However,
 given it is written as python bindings to the c++ api of <a class="reference external" href="https://www.exiv2.org/index.html">exiv2</a>, the installation is
 more involved compared to the pure python <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> module.</p>
-<p>We recommend to use <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> if the installation is not too involved on your system
+<p>We recommend to use <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> if the installation is not too involved on your system
 and <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> as a fallback solution or in case you don’t need the full power of
-<a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> and prefer something more lightweight.</p>
+<a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> and prefer something more lightweight.</p>
 </section>
 <section id="moving-from-piexif-to-pyexiv2">
 <h2>Moving from piexif to pyexiv2<a class="headerlink" href="#moving-from-piexif-to-pyexiv2" title="Permalink to this headline">¶</a></h2>
@@ -130,7 +134,7 @@ own key sets to the <code class="docutils literal notranslate"><span class="pre"
 </pre></div>
 </div>
 <p>where the values must be a comma-separated list of valid metadata keys.</p>
-<p>In case you are using <a class="reference external" href="https://pypi.org/project/pyexiv2/">pyexiv2</a> you can find a complete overview of valid keys on the
+<p>In case you are using <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> you can find a complete overview of valid keys on the
 <a class="reference external" href="https://www.exiv2.org/metadata.html">exiv2 webpage</a>. You can choose any of the exif
 or IPTC keys. It is considered best-practice to use the full path to any key, e.g.
 <code class="docutils literal notranslate"><span class="pre">Exif.Image.FocalLength</span></code>, but for convenience the short version of the key, e.g.
