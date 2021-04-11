@@ -113,10 +113,11 @@ that does nothing.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When binding a command including the “%” wildcard which stands for the current file,
-it must be escaped as “%%” as “%” is treated specially by the python ConfigParser.
-See
-<a class="reference external" href="https://docs.python.org/3/library/configparser.html#interpolation-of-values">the python documentation</a>
-for details.</p>
+it must be escaped as “%%” as “%” <a class="reference external" href="https://docs.python.org/3/library/configparser.html#interpolation-of-values">is treated specially by the python ConfigParser</a>.
+Special care should be taken if paths could include whitespace as these get escaped
+using single quotes to a path of the form ‘path with space.jpg’. These single quotes
+should not clash with other single quotes in the binding. We therefore recommend
+using double quotes for keybindings that include wildcards as needed.</p>
 </div>
 <p>It is also possible to bind mouse clicks and double clicks. The relevant names are
 <code class="docutils literal notranslate"><span class="pre">&lt;button-NAME&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;double-button-NAME&gt;</span></code>. Here <code class="docutils literal notranslate"><span class="pre">NAME</span></code> stands for the name of the
