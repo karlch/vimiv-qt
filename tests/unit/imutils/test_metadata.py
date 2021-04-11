@@ -83,7 +83,7 @@ def test_handler_exception_customization(handler, expected_msg):
 
 
 @pytest.fixture()
-def metadata_content():
+def external_content():
     return {
         "Exif.Image.Copyright": pyexiv2.exif.ExifTag(
             "Exif.Image.Copyright", "vimiv-AUTHORS-2021"
@@ -112,6 +112,17 @@ def metadata_content():
 
 
 @pytest.fixture()
+def internal_content():
+    return {"Vimiv.XDimension": 300, "Vimiv.YDimension": 300, "Vimiv.FileType": "jpg"}
+
+
+@pytest.fixture()
+def metadata_content(external_content, internal_content):
+    # Merge both dicts
+    return external_content | internal_content
+
+
+@pytest.fixture()
 def dummy_image(qapp, tmp_path):
     filename = "./image.jpg"
     filename = str(tmp_path / "image.jpg")
@@ -120,9 +131,9 @@ def dummy_image(qapp, tmp_path):
 
 
 @pytest.fixture
-def metadata_handler(add_metadata_information, dummy_image, metadata_content):
+def metadata_handler(add_metadata_information, dummy_image, external_content):
     assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
-    add_metadata_information(dummy_image, metadata_content)
+    add_metadata_information(dummy_image, external_content)
     return MetadataHandler(dummy_image)
 
 
@@ -139,12 +150,18 @@ def test_metadatahandler_fetch_key(metadata_handler, metadata_content):
         try:
             assert fetched_value == value.human_value
         except AttributeError:
-            assert fetched_value == value.raw_value
+            try:
+                assert fetched_value == value.raw_value
+            except AttributeError:
+                assert fetched_value == value
 
 
 def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_content):
     for key, value in metadata_content.items():
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
         short_key = key.rpartition(".")[-1]
-        assert fetched_key == short_key
-        assert fetched_value == value.raw_value
+        assert fetched_key == key or fetched_key == short_key
+        try:
+            assert fetched_value == value.raw_value
+        except AttributeError:
+            assert fetched_value == value
