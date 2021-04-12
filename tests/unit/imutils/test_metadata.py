@@ -214,3 +214,26 @@ def test_metadatahandler_fetch_keys_piexif(
                 value_match_piexif(
                     metadata_content[current_key], fetched[current_key][1]
                 )
+
+
+def test_metadatahandler_get_keys(metadata_handler, metadata_content):
+    fetched_keys = list(metadata_handler.get_keys())
+    available_keys = list(metadata_content.keys())
+
+    # Available_keys does not contain all possible keys
+    assert len(fetched_keys) >= len(available_keys)
+
+    for key in available_keys:
+        assert key in fetched_keys
+
+
+def test_metadatahandler_get_keys_piexif(metadata_handler_piexif, metadata_content):
+    fetched_keys = list(metadata_handler_piexif.get_keys())
+    available_keys = list(metadata_content.keys())
+
+    # Available_keys does not contain all possible keys
+    assert len(fetched_keys) >= len(available_keys)
+
+    for key in available_keys:
+        short_key = key.rpartition(".")[-1]
+        assert key in fetched_keys or short_key in fetched_keys
