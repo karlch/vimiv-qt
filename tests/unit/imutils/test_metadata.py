@@ -123,6 +123,15 @@ def metadata_content(external_content, internal_content):
 
 
 @pytest.fixture()
+def metadata_test_keys(metadata_content):
+    return [
+        list(metadata_content.keys()),
+        ["Exif.Image.Copyright", "Exif.Image.Make"],
+        ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
+    ]
+
+
+@pytest.fixture()
 def dummy_image(qapp, tmp_path):
     filename = "./image.jpg"
     filename = str(tmp_path / "image.jpg")
@@ -143,17 +152,28 @@ def metadata_handler_piexif(dummy_image, metadata_handler):
     return metadata_handler
 
 
+def value_match(required_value, actual_value):
+    try:
+        assert actual_value == required_value.human_value
+    except AttributeError:
+        try:
+            assert actual_value == required_value.raw_value
+        except AttributeError:
+            assert actual_value == required_value
+
+
+def value_match_piexif(required_value, actual_value):
+    try:
+        assert actual_value == required_value.raw_value
+    except AttributeError:
+        assert actual_value == required_value
+
+
 def test_metadatahandler_fetch_key(metadata_handler, metadata_content):
     for key, value in metadata_content.items():
         fetched_key, _, fetched_value = metadata_handler.fetch_key(key)
         assert fetched_key == key
-        try:
-            assert fetched_value == value.human_value
-        except AttributeError:
-            try:
-                assert fetched_value == value.raw_value
-            except AttributeError:
-                assert fetched_value == value
+        value_match(value, fetched_value)
 
 
 def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_content):
@@ -161,7 +181,36 @@ def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_cont
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
         short_key = key.rpartition(".")[-1]
         assert fetched_key == key or fetched_key == short_key
-        try:
-            assert fetched_value == value.raw_value
-        except AttributeError:
-            assert fetched_value == value
+        value_match_piexif(value, fetched_value)
+
+
+def test_metadatahandler_fetch_keys(
+    metadata_handler, metadata_content, metadata_test_keys
+):
+    for current_keys in metadata_test_keys:
+        fetched = metadata_handler.fetch_keys(current_keys)
+        assert len(fetched) == len(current_keys)
+
+        for current_key in current_keys:
+            assert current_key in fetched
+            value_match(metadata_content[current_key], fetched[current_key][1])
+
+
+def test_metadatahandler_fetch_keys_piexif(
+    metadata_handler_piexif, metadata_content, metadata_test_keys
+):
+    for current_keys in metadata_test_keys:
+        fetched = metadata_handler_piexif.fetch_keys(current_keys)
+        assert len(fetched) == len(current_keys)
+        print(fetched)
+
+        for current_key in current_keys:
+            short_key = current_key.rpartition(".")[-1]
+            assert current_key in fetched or short_key in fetched
+            # Internal keys are still in long form
+            try:
+                value_match_piexif(metadata_content[current_key], fetched[short_key][1])
+            except KeyError:
+                value_match_piexif(
+                    metadata_content[current_key], fetched[current_key][1]
+                )
