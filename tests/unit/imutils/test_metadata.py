@@ -119,7 +119,9 @@ def internal_content():
 @pytest.fixture()
 def metadata_content(external_content, internal_content):
     # Merge both dicts
-    return external_content | internal_content
+    # return external_content | internal_content # Only working for Py 3.9
+    external_content.update(internal_content)
+    return external_content
 
 
 @pytest.fixture()
