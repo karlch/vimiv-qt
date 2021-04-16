@@ -185,7 +185,10 @@ def check_exif_dependancy(handler):
         "There is no exif support and therefore:\n"
         "1. Exif data is lost when writing images to disk.\n"
         "2. The `:metadata` command and associated `i` keybinding is not available.\n"
-        "3. The {exif-date-time} statusbar module is not available."
+        "3. The {exif-date-time} statusbar module is not available.\n\n"
+        "Please install pyexiv2 or piexif to silence this warning.\n"
+        "For more information see\n"
+        "https://karlch.github.io/vimiv-qt/documentation/exif.html\n"
     )
 
     return _ExifHandlerBase
