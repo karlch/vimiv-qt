@@ -27,6 +27,12 @@ corresponding variable name. The following options are available:
 Overview of all settings
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-The following table explains all available settings.
+The following table explains all available settings. All setting names are of the form
+``group.name`` where ``group`` maps to the corresponding section in the configuration
+file and ``name`` is the name within this section. In case there is no ``group``, the
+setting belongs into the ``general`` section.
+
+Note that all settings related to the statusbar content are described in detail in their
+own corresponding :ref:`document <statusbar>`.
 
 .. include:: settings_table.rstsrc
