@@ -71,11 +71,10 @@ Every little help counts and is appreciated!  Feel free to read the
 for some useful tips and tricks.
 
 There are many ways to contribute, including:
-* [giving feedback and requesting new features](https://karlch.github.io/vimiv-qt/documentation/contributing.html#feedback-and-feature-requests),
-* [reporting bugs](https://karlch.github.io/vimiv-qt/documentation/contributing.html#reporting-bugs),
+* [giving feedback and requesting new features](https://karlch.github.io/vimiv-qt/documentation/contributing.html#feedback-and-feature-requests)
+* [reporting bugs](https://karlch.github.io/vimiv-qt/documentation/contributing.html#reporting-bugs)
 * [writing code](https://karlch.github.io/vimiv-qt/documentation/contributing.html#writing-code)
-  and
-* [extending the documentation](https://karlch.github.io/vimiv-qt/documentation/contributing.html#writing-documentation).
+* [extending the documentation](https://karlch.github.io/vimiv-qt/documentation/contributing.html#writing-documentation)
 * spreading the word in an article, blog, reddit post, ...
 
 Need help? Feel free to
