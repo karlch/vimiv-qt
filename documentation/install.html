@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Installation &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -102,7 +101,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <section id="installation">
+  <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>This page includes instructions for installation on various platforms as well as a
 manual fallback option:</p>
@@ -125,15 +124,15 @@ manual fallback option:</p>
 </li>
 </ul>
 </div>
-<section id="arch-linux">
+<div class="section" id="arch-linux">
 <h2><a class="toc-backref" href="#id1">Arch Linux</a><a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h2>
 <p>The
 <a class="reference external" href="https://aur.archlinux.org/packages/vimiv-qt/">latest stable release</a>
 and the
 <a class="reference external" href="https://aur.archlinux.org/packages/vimiv-qt-git/">git development version</a>
 is available in the AUR.</p>
-</section>
-<section id="fedora">
+</div>
+<div class="section" id="fedora">
 <h2><a class="toc-backref" href="#id2">Fedora</a><a class="headerlink" href="#fedora" title="Permalink to this headline">¶</a></h2>
 <p>The <a class="reference external" href="https://apps.fedoraproject.org/packages/vimiv-qt/overview/">stable release</a> is available in the Fedora repositories.
 It can be installed using the standard GUI software installers (Gnome
@@ -141,8 +140,8 @@ Software/Discover/Dnfdragora) and also using <cite>dnf</cite>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo dnf install vimiv-qt
 </pre></div>
 </div>
-</section>
-<section id="using-pip">
+</div>
+<div class="section" id="using-pip">
 <h2><a class="toc-backref" href="#id3">Using pip</a><a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
 <p>You can retrieve the latest stable release using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --user vimiv
@@ -160,8 +159,8 @@ expected. To get an idea on how to install these, you can take a look at
 the Makefile located in <cite>misc/Makefile</cite> and read the section on
 <a class="reference internal" href="#install-systemwide"><span class="std std-ref">system-wide installation</span></a>.</p>
 </div>
-</section>
-<section id="manual-install">
+</div>
+<div class="section" id="manual-install">
 <h2><a class="toc-backref" href="#id4">Manual Install</a><a class="headerlink" href="#manual-install" title="Permalink to this headline">¶</a></h2>
 <p>First of all get the code by cloning the git repository and switch into the
 repository folder:</p>
@@ -177,7 +176,7 @@ $ cd vimiv-qt
 required. In some distributions, e.g. Ubuntu, these are not included in the default
 python installation but another package (python-dev for Ubuntu) must be installed.</p>
 </div>
-<section id="system-wide-installation">
+<div class="section" id="system-wide-installation">
 <span id="install-systemwide"></span><h3><a class="toc-backref" href="#id5">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
 <p>Vimiv provides an example Makefile in the <code class="docutils literal notranslate"><span class="pre">misc</span></code> directory for convenience.
 To install copy the Makefile into the repository directory, <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">misc/Makefile</span>
@@ -200,8 +199,8 @@ your needs. To uninstall vimiv the standard:</p>
 <p>You need to have the <a class="reference internal" href="#install-dependencies"><span class="std std-ref">dependencies</span></a> installed
 system-wide for this to work.</p>
 </div>
-</section>
-<section id="using-tox">
+</div>
+<div class="section" id="using-tox">
 <span id="install-using-tox"></span><h3><a class="toc-backref" href="#id6">Using Tox</a><a class="headerlink" href="#using-tox" title="Permalink to this headline">¶</a></h3>
 <p>In the repostory folder run tox to set up the virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tox -e mkvenv
@@ -226,8 +225,8 @@ expected. To get an idea on how to install these, you can take a look at
 the Makefile located in <cite>misc/Makefile</cite> and read the section on
 <a class="reference internal" href="#install-systemwide"><span class="std std-ref">system-wide installation</span></a>.</p>
 </div>
-</section>
-<section id="running-directly-in-the-repository">
+</div>
+<div class="section" id="running-directly-in-the-repository">
 <h3><a class="toc-backref" href="#id7">Running directly in the repository</a><a class="headerlink" href="#running-directly-in-the-repository" title="Permalink to this headline">¶</a></h3>
 <p>In the repository folder build the c-extension for manipulate mode:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
@@ -250,9 +249,9 @@ expected. To get an idea on how to install these, you can take a look at
 the Makefile located in <cite>misc/Makefile</cite> and read the section on
 <a class="reference internal" href="#install-systemwide"><span class="std std-ref">system-wide installation</span></a>.</p>
 </div>
-</section>
-</section>
-<section id="dependencies">
+</div>
+</div>
+<div class="section" id="dependencies">
 <span id="install-dependencies"></span><h2><a class="toc-backref" href="#id8">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.python.org/">Python</a> 3.6 or newer with development extension</p></li>
@@ -273,7 +272,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section on
 <p class="admonition-title">Warning</p>
 <p>There are multiple packages named <cite>pyexiv2</cite>. Make sure you install the right one.</p>
 </div>
-<section id="package-names-for-distributions">
+<div class="section" id="package-names-for-distributions">
 <h3><a class="toc-backref" href="#id9">Package Names For Distributions</a><a class="headerlink" href="#package-names-for-distributions" title="Permalink to this headline">¶</a></h3>
 <p>Installing the following packages should pull in all necessary dependencies for
 building and running vimiv.</p>
@@ -302,9 +301,9 @@ building and running vimiv.</p>
 </ul>
 </dd>
 </dl>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
     </div>
@@ -338,7 +337,7 @@ building and running vimiv.</p>
     </p>
     <p>
         &copy; Copyright 2017-2020, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>
 </footer>

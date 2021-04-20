@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Exif &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -92,7 +91,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <section id="exif">
+  <div class="section" id="exif">
 <h1>Exif<a class="headerlink" href="#exif" title="Permalink to this headline">¶</a></h1>
 <p>Vimiv provides optional exif support if either <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> or <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> is available. If
 this is the case:</p>
@@ -106,7 +105,7 @@ to disk.</p></li>
 <p class="admonition-title">Warning</p>
 <p>There are multiple packages named <cite>pyexiv2</cite>. Make sure you install the right one.</p>
 </div>
-<section id="advantages-of-the-different-exif-libraries">
+<div class="section" id="advantages-of-the-different-exif-libraries">
 <h2>Advantages of the different exif libraries<a class="headerlink" href="#advantages-of-the-different-exif-libraries" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference external" href="https://python3-exiv2.readthedocs.io">Pyexiv2</a> is the more powerful of the two options. One large advantage is that with
 pyexiv2 <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> formats exif data into human readable format, for example
@@ -116,16 +115,16 @@ more involved compared to the pure python <a class="reference external" href="ht
 <p>We recommend to use <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> if the installation is not too involved on your system
 and <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> as a fallback solution or in case you don’t need the full power of
 <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> and prefer something more lightweight.</p>
-</section>
-<section id="moving-from-piexif-to-pyexiv2">
+</div>
+<div class="section" id="moving-from-piexif-to-pyexiv2">
 <h2>Moving from piexif to pyexiv2<a class="headerlink" href="#moving-from-piexif-to-pyexiv2" title="Permalink to this headline">¶</a></h2>
 <p>As pyexiv2 is the more powerful option compared to piexif, vimiv will prefer pyexiv2
 over piexif. Therefore, to switch to pyexiv2 simply install it on your system and vimiv
 will use it automatically. If you have defined custom metadata sets in your config, you
 may have to adjust them to use the full path to any key. See the next section for more
 information on this.</p>
-</section>
-<section id="customizing-metadata-keysets">
+</div>
+<div class="section" id="customizing-metadata-keysets">
 <h2>Customizing metadata keysets<a class="headerlink" href="#customizing-metadata-keysets" title="Permalink to this headline">¶</a></h2>
 <p>You can configure the information displayed by the <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command by adding your
 own key sets to the <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> section in your configfile like this:</p>
@@ -144,8 +143,8 @@ comes after the last <code class="docutils literal notranslate"><span class="pre
 everything up to and including the last <code class="docutils literal notranslate"><span class="pre">.</span></code> character and match only the short form.</p>
 <p>You can get a list of valid metadata keys for the current image using the
 <code class="docutils literal notranslate"><span class="pre">:metadata-list-keys</span></code> command.</p>
-</section>
-</section>
+</div>
+</div>
 
 
     </div>
@@ -179,7 +178,7 @@ everything up to and including the last <code class="docutils literal notranslat
     </p>
     <p>
         &copy; Copyright 2017-2020, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>
 </footer>

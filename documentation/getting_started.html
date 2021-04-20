@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Getting Started &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -98,7 +97,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <section id="getting-started">
+  <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>You can start vimiv from any application launcher with its .desktop file or
 from the command line using the <code class="docutils literal notranslate"><span class="pre">vimiv</span></code> command. If any valid image paths are
@@ -111,7 +110,7 @@ them take a look at the <code class="docutils literal notranslate"><span class="
 <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/</span></code> or open the keybindings pop-up by running <code class="docutils literal notranslate"><span class="pre">:keybindings</span></code>.</p>
 <p>You can run <code class="docutils literal notranslate"><span class="pre">:help</span> <span class="pre">topic</span></code> to get some additional information on a specific topic.
 Completion will guide you through the different options like commands and settings.</p>
-<section id="basics">
+<div class="section" id="basics">
 <h2>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h2>
 <p>Depending on how you started <code class="docutils literal notranslate"><span class="pre">vimiv</span></code> you will begin in image or in library
 mode. To enter another mode the <code class="docutils literal notranslate"><span class="pre">g</span></code> key is combined with the first letter of
@@ -129,8 +128,8 @@ key.</p>
 <p>Image mode cannot be toggled as it is the “normal” mode of vimiv</p>
 </div>
 <p>As in vim what a keybinding does depends on the mode in which it is ran.</p>
-</section>
-<section id="image">
+</div>
+<div class="section" id="image">
 <h2>Image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
 <p>Scrolling the image is done with <code class="docutils literal notranslate"><span class="pre">hjkl</span></code>. The next image is selected with
 <code class="docutils literal notranslate"><span class="pre">n</span></code>, the previous one with <code class="docutils literal notranslate"><span class="pre">p</span></code>. To show the first/last image use <code class="docutils literal notranslate"><span class="pre">gg/G</span></code>.</p>
@@ -138,8 +137,8 @@ key.</p>
 size use <code class="docutils literal notranslate"><span class="pre">w</span></code>. <code class="docutils literal notranslate"><span class="pre">e/E</span></code> fit horizontally/vertically.</p>
 <p>To start playing a slideshow use <code class="docutils literal notranslate"><span class="pre">ss</span></code>. The delay can be decreased/increased
 using <code class="docutils literal notranslate"><span class="pre">sh/sl</span></code>.</p>
-</section>
-<section id="library">
+</div>
+<div class="section" id="library">
 <h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">¶</a></h2>
 <p>The behaviour of the library is similar to the one of the file manager
 <a class="reference external" href="https://ranger.github.io/">ranger</a>.
@@ -148,14 +147,14 @@ list. <code class="docutils literal notranslate"><span class="pre">h</span></cod
 the file is a directory, it is opened in the library. An image is displayed to
 the right of the library. Pressing <code class="docutils literal notranslate"><span class="pre">l</span></code> again closes the library and focuses
 the image.</p>
-</section>
-<section id="thumbnail">
+</div>
+<div class="section" id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
 <p>Once again <code class="docutils literal notranslate"><span class="pre">hjkl</span></code> and <code class="docutils literal notranslate"><span class="pre">gg/G</span></code> work as expected.</p>
 <p>It is also possible to vary the size of the thumbnails with the <code class="docutils literal notranslate"><span class="pre">+/-</span></code> keys.</p>
 <p>To open the selected thumbnail in image mode, press <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code>.</p>
-</section>
-<section id="image-editing">
+</div>
+<div class="section" id="image-editing">
 <h2>Image Editing<a class="headerlink" href="#image-editing" title="Permalink to this headline">¶</a></h2>
 <p>Images can be rotated with the <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>, flipped with the <code class="docutils literal notranslate"><span class="pre">|</span></code> and <code class="docutils literal notranslate"><span class="pre">_</span></code> keys.
 These changes are automatically applied to the file as long as the <code class="docutils literal notranslate"><span class="pre">image.autowrite</span></code>
@@ -169,8 +168,8 @@ manipulation by 1/10 use <code class="docutils literal notranslate"><span class=
 the next/previous tab press <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;/&lt;shift&gt;&lt;tab&gt;</span></code>.</p>
 <p>When you are satisfied and want to apply the changes, accept with <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code>. If you
 prefer to leave discarding the changes, press <code class="docutils literal notranslate"><span class="pre">&lt;escape&gt;</span></code>.</p>
-</section>
-<section id="command-line">
+</div>
+<div class="section" id="command-line">
 <span id="commandline"></span><h2>Command Line<a class="headerlink" href="#command-line" title="Permalink to this headline">¶</a></h2>
 <p>Similar to many keyboard centric programs, vimiv includes a simple commmand
 line to run commands. It is opened with <code class="docutils literal notranslate"><span class="pre">:</span></code> and closed with <code class="docutils literal notranslate"><span class="pre">&lt;return&gt;</span></code> to
@@ -205,15 +204,15 @@ other shell specifics do not work. If you require to run with a sub-shell, use t
 <p>Command line history is saved to <code class="docutils literal notranslate"><span class="pre">$XDG_DATA_HOME/vimiv/history</span></code>. History can
 be navigated and searched through using the <code class="docutils literal notranslate"><span class="pre">&lt;control&gt;p/&lt;control&gt;n</span></code> and
 <code class="docutils literal notranslate"><span class="pre">&lt;up&gt;/&lt;down&gt;</span></code> keys.</p>
-</section>
-<section id="count">
+</div>
+<div class="section" id="count">
 <h2>Count<a class="headerlink" href="#count" title="Permalink to this headline">¶</a></h2>
 <p>Some commands support passing a <code class="docutils literal notranslate"><span class="pre">[count]</span></code> as repetition or step. To pass a
 count in the command line, prepend <code class="docutils literal notranslate"><span class="pre">[count]</span></code> to the command, e.g. <code class="docutils literal notranslate"><span class="pre">:5next</span></code>.
 Pressing any number appends it to the current <code class="docutils literal notranslate"><span class="pre">[count]</span></code> and the next command
 is run with the stored <code class="docutils literal notranslate"><span class="pre">[count]</span></code>.</p>
-</section>
-<section id="marks-and-tags">
+</div>
+<div class="section" id="marks-and-tags">
 <span id="id1"></span><h2>Marks and Tags<a class="headerlink" href="#marks-and-tags" title="Permalink to this headline">¶</a></h2>
 <p>Images supports the concept of marking images using the <code class="docutils literal notranslate"><span class="pre">:mark</span></code> command. As an
 argument it takes an arbitrary number of paths and supports pattern matching as
@@ -243,13 +242,13 @@ is the <code class="docutils literal notranslate"><span class="pre">tag-open</sp
 <p class="admonition-title">Warning</p>
 <p>This deletes the tag permanently with no option to restore it!</p>
 </div>
-</section>
-<section id="what-next">
+</div>
+<div class="section" id="what-next">
 <h2>What Next?<a class="headerlink" href="#what-next" title="Permalink to this headline">¶</a></h2>
 <p>You may want to check out how to <a class="reference internal" href="configuration/index.html"><span class="doc">configure</span></a> vimiv
 or take a look at a <a class="reference internal" href="commands.html"><span class="doc">description of all commands</span></a>.</p>
-</section>
-</section>
+</div>
+</div>
 
 
     </div>
@@ -283,7 +282,7 @@ or take a look at a <a class="reference internal" href="commands.html"><span cla
     </p>
     <p>
         &copy; Copyright 2017-2020, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>
 </footer>

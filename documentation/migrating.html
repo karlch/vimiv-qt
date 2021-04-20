@@ -3,8 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Migrating from the Gtk Version to Qt &#8212; vimiv  documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
@@ -99,7 +98,7 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <section id="migrating-from-the-gtk-version-to-qt">
+  <div class="section" id="migrating-from-the-gtk-version-to-qt">
 <span id="migrating"></span><h1><a class="toc-backref" href="#id4">Migrating from the Gtk Version to Qt</a><a class="headerlink" href="#migrating-from-the-gtk-version-to-qt" title="Permalink to this headline">¶</a></h1>
 <p>Some time ago I decided to rewrite vimiv completely in Qt because I was not happy with
 the Gtk version and the source code. For some more details, you can check
@@ -144,9 +143,9 @@ help, please do not hesitate to open an
 </li>
 </ul>
 </div>
-<section id="major-changes">
+<div class="section" id="major-changes">
 <h2><a class="toc-backref" href="#id5">Major Changes</a><a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h2>
-<section id="key-sequences">
+<div class="section" id="key-sequences">
 <h3><a class="toc-backref" href="#id6">Key Sequences</a><a class="headerlink" href="#key-sequences" title="Permalink to this headline">¶</a></h3>
 <p>It is now possible to bind key sequences like <code class="docutils literal notranslate"><span class="pre">gg</span></code>. This possibility changed the
 default bindings for switching modes. The library is entered with <code class="docutils literal notranslate"><span class="pre">gl</span></code> and toggled
@@ -154,8 +153,8 @@ with <code class="docutils literal notranslate"><span class="pre">tl</span></cod
 of <code class="docutils literal notranslate"><span class="pre">l</span></code>. Image mode can only be entered with <code class="docutils literal notranslate"><span class="pre">gi</span></code>, not toggled, as it is the “normal”
 mode of vimiv. To help you with partial matches, a keyhint widget pops up 500 ms after
 the first key press.</p>
-</section>
-<section id="keybinding-names">
+</div>
+<div class="section" id="keybinding-names">
 <h3><a class="toc-backref" href="#id7">Keybinding Names</a><a class="headerlink" href="#keybinding-names" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Naming of modifiers has changed to account for key sequences and for consistency.</p>
@@ -184,8 +183,8 @@ you would retrieve something along:</p>
 </pre></div>
 </div>
 </div>
-</section>
-<section id="command-names">
+</div>
+<div class="section" id="command-names">
 <h3><a class="toc-backref" href="#id8">Command Names</a><a class="headerlink" href="#command-names" title="Permalink to this headline">¶</a></h3>
 <p>Command handling has been redesigned for better scalability. This means that many names
 and/or arguments have changed. You can find
@@ -194,8 +193,8 @@ If you have trouble finding out how a previous command changed or are missing so
 please do not hesitate to open an
 <a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a> or
 <a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">contact me directly</a>.</p>
-</section>
-<section id="settings">
+</div>
+<div class="section" id="settings">
 <h3><a class="toc-backref" href="#id9">Settings</a><a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h3>
 <p>The rewrite has been used to rethink various settings. I hope the names are now clearer
 and the handling is more consistent. This is a brief overview of what happened to the
@@ -308,8 +307,8 @@ section, the one after is the option name.</p>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="marks-and-tags">
+</div>
+<div class="section" id="marks-and-tags">
 <h3><a class="toc-backref" href="#id10">Marks and Tags</a><a class="headerlink" href="#marks-and-tags" title="Permalink to this headline">¶</a></h3>
 <p>Your tag files are migrated and should continue working as is. However, the behaviour of
 marks and tags has changed in some ways.</p>
@@ -326,8 +325,8 @@ binding <code class="docutils literal notranslate"><span class="pre">m</span></c
 <li><p>Calling <code class="docutils literal notranslate"><span class="pre">:tag-load</span></code> now marks all images in the tag instead of loading them into
 image mode. To open them in image mode, call <code class="docutils literal notranslate"><span class="pre">:open</span> <span class="pre">%m</span></code> afterwards.</p></li>
 </ul>
-</section>
-<section id="manipulate">
+</div>
+<div class="section" id="manipulate">
 <h3><a class="toc-backref" href="#id11">Manipulate</a><a class="headerlink" href="#manipulate" title="Permalink to this headline">¶</a></h3>
 <p>Navigation in manipulate mode has been redesigned for better scalability. The one letter
 shortcuts to manipulation names were unfortunately rather limiting…</p>
@@ -335,9 +334,9 @@ shortcuts to manipulation names were unfortunately rather limiting…</p>
 <li><p>To focus the next/previous manipulation in the current tab, use <code class="docutils literal notranslate"><span class="pre">n</span></code>/<code class="docutils literal notranslate"><span class="pre">p</span></code>.</p></li>
 <li><p>To focus the next/previous tab, use <code class="docutils literal notranslate"><span class="pre">&lt;tab&gt;</span></code>/<code class="docutils literal notranslate"><span class="pre">&lt;shift&gt;&lt;tab&gt;</span></code>.</p></li>
 </ul>
-</section>
-</section>
-<section id="migration">
+</div>
+</div>
+<div class="section" id="migration">
 <h2><a class="toc-backref" href="#id12">Migration</a><a class="headerlink" href="#migration" title="Permalink to this headline">¶</a></h2>
 <p>When you first launch the qt version and you had a local <code class="docutils literal notranslate"><span class="pre">vimivrc</span></code> of the gtk version:</p>
 <ul class="simple">
@@ -345,8 +344,8 @@ shortcuts to manipulation names were unfortunately rather limiting…</p>
 <li><p>Your tags are migrated accordingly.</p></li>
 <li><p>A welcome pop-up with the most important information is shown.</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
     </div>
@@ -380,7 +379,7 @@ shortcuts to manipulation names were unfortunately rather limiting…</p>
     </p>
     <p>
         &copy; Copyright 2017-2020, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.3.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
     </p>
   </div>
 </footer>
