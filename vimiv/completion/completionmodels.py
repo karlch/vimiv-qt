@@ -39,7 +39,7 @@ class CommandModel(api.completion.BaseModel):
     def formatted_aliases(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of aliases with explanation for this mode."""
         return [
-            (alias, f"Alias for '{command}'")
+            (f":{alias}", f"Alias for '{command}'")
             for alias, command in aliases.get(mode).items()
         ]
 

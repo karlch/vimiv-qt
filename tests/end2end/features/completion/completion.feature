@@ -17,6 +17,11 @@ Feature: Using completion.
         And I run complete
         Then the text in the command line should be :2goto
 
+    Scenario: Command completion for aliases
+        Given I start vimiv
+        When I run command
+        Then a possible completion should contain Alias for 'quit'
+
     Scenario: Crash when completing on entered number
         Given I open any directory
         When I run command --text="2"
