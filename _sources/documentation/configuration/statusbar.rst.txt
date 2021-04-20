@@ -11,7 +11,7 @@ bar is grouped into three parts: left, center and right. Each part has a
 fallback content and can have a mode-dependent content which overrides the
 default. The content is defined in the ``STATUSBAR`` section of the
 ``vimiv.conf`` configuration file located in ``$XDG_CONFIG_HOME/vimiv/`` where
-``$XDG_CONFIG_HOME`` is usually ``~/.config/*`` if you have not configured it.
+``$XDG_CONFIG_HOME`` is usually ``~/.config/`` if you have not configured it.
 
 The three default options are defined via:
 

@@ -52,6 +52,7 @@ Fixed:
 * Undeleting symlinks. Thanks `@jcjgraf`_!
 * Expanding tilde to home directory when using the ``:write`` command. Thanks
   `@jcjgraf`_ for pointing this out!
+* Completion for aliases.
 
 
 v0.8.0 (2021-01-18)
