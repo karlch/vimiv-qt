@@ -39,6 +39,9 @@ Added:
 * The ``:copy-image`` command which copies the selected image to the clipboard. The
   flags ``--width``, ``--height`` and ``--size`` allow to scale the copied image.
   Thanks `@jcjgraf`_!
+* The ``read_only`` setting. When set to true, all commands that may write changes to
+  disk are disabled.
+  Thanks `@willemw12`_ for the idea!
 
 Changed:
 ^^^^^^^^
@@ -457,3 +460,4 @@ Initial release of the Qt version.
 .. _@OliverLew: https://github.com/OliverLew
 .. _@maximbaz: https://github.com/maximbaz
 .. _@BachoSeven: https://github.com/BachoSeven
+.. _@willemw12: https://github.com/willemw12
