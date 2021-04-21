@@ -149,52 +149,66 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
             self._metadata = None
+        except piexif.InvalidImageDataError:
+            log.warning(
+                "Piexif only supports the file types JPEG and TIFF.<br>\n"
+                "Please install pyexiv2 for better file type support.<br>\n"
+                "For more information see<br>\n"
+                "https://karlch.github.io/vimiv-qt/documentation/exif.html",
+                once=True,
+            )
+            self._metadata = None
 
     def fetch_key(self, base_key: str) -> Tuple[str, str, str]:
         key = base_key.rpartition(".")[2]
 
-        with contextlib.suppress(piexif.InvalidImageDataError):
-            for ifd in self._metadata:
-                if ifd == "thumbnail":
-                    continue
+        if self._metadata is None:
+            return {}
 
-                for tag in self._metadata[ifd]:
-                    keyname = piexif.TAGS[ifd][tag]["name"]
-                    keytype = piexif.TAGS[ifd][tag]["type"]
-                    val = self._metadata[ifd][tag]
-                    _logger.debug(
-                        f"name: {keyname}\
-                        type: {keytype}\
-                        value: {val}\
-                        tag: {tag}"
-                    )
-                    if keyname != key:
-                        continue
-                    if keytype in (
-                        piexif.TYPES.Byte,
-                        piexif.TYPES.Short,
-                        piexif.TYPES.Long,
-                        piexif.TYPES.SByte,
-                        piexif.TYPES.SShort,
-                        piexif.TYPES.SLong,
-                        piexif.TYPES.Float,
-                        piexif.TYPES.DFloat,
-                    ):  # integer and float
-                        return (keyname, keyname, str(val))
-                    if keytype in (
-                        piexif.TYPES.Ascii,
-                        piexif.TYPES.Undefined,
-                    ):  # byte encoded
-                        return (keyname, keyname, val.decode())
-                    if keytype in (
-                        piexif.TYPES.Rational,
-                        piexif.TYPES.SRational,
-                    ):  # (int, int) <=> numerator, denominator
-                        return (keyname, keyname, f"{val[0]}/{val[1]}")
+        for ifd in self._metadata:
+            if ifd == "thumbnail":
+                continue
+
+            for tag in self._metadata[ifd]:
+                keyname = piexif.TAGS[ifd][tag]["name"]
+                keytype = piexif.TAGS[ifd][tag]["type"]
+                val = self._metadata[ifd][tag]
+                _logger.debug(
+                    f"name: {keyname}\
+                    type: {keytype}\
+                    value: {val}\
+                    tag: {tag}"
+                )
+                if keyname != key:
+                    continue
+                if keytype in (
+                    piexif.TYPES.Byte,
+                    piexif.TYPES.Short,
+                    piexif.TYPES.Long,
+                    piexif.TYPES.SByte,
+                    piexif.TYPES.SShort,
+                    piexif.TYPES.SLong,
+                    piexif.TYPES.Float,
+                    piexif.TYPES.DFloat,
+                ):  # integer and float
+                    return (keyname, keyname, str(val))
+                if keytype in (
+                    piexif.TYPES.Ascii,
+                    piexif.TYPES.Undefined,
+                ):  # byte encoded
+                    return (keyname, keyname, val.decode())
+                if keytype in (
+                    piexif.TYPES.Rational,
+                    piexif.TYPES.SRational,
+                ):  # (int, int) <=> numerator, denominator
+                    return (keyname, keyname, f"{val[0]}/{val[1]}")
 
         raise KeyError(f"Key '{base_key}' not found")
 
     def get_keys(self) -> Iterable[str]:
+        if self._metadata is None:
+            return iter([])
+
         return (
             piexif.TAGS[ifd][tag]["name"]
             for ifd in self._metadata
@@ -203,6 +217,9 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
         )
 
     def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
+        if self._metadata is None:
+            return
+
         try:
             if reset_orientation:
                 with contextlib.suppress(KeyError):
@@ -218,6 +235,9 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
             _logger.debug("No metadata data in '%s'", dest)
 
     def get_date_time(self) -> str:
+        if self._metadata is None:
+            return ""
+
         with contextlib.suppress(
             piexif.InvalidImageDataError, FileNotFoundError, KeyError
         ):
