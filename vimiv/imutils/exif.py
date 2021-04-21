@@ -83,10 +83,22 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
         except FileNotFoundError:
             _logger.debug("File %s not found", filename)
             self._metadata = None
+        except piexif.InvalidImageDataError:
+            log.warning(
+                "Piexif only supports the file types JPEG and TIFF.<br>\n"
+                "Please install pyexiv2 for better file type support.<br>\n"
+                "For more information see<br>\n"
+                "https://karlch.github.io/vimiv-qt/documentation/exif.html",
+                once=True,
+            )
+            self._metadata = None
 
     def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
         desired_keys = [key.rpartition(".")[2] for key in desired_keys]
         exif = dict()
+
+        if self._metadata is None:
+            return {}
 
         try:
             for ifd in self._metadata:
@@ -128,7 +140,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
                     ):  # (int, int) <=> numerator, denominator
                         exif[keyname] = (keyname, f"{val[0]}/{val[1]}")
 
-        except (piexif.InvalidImageDataError, KeyError):
+        except KeyError:
             return {}
 
         return exif
@@ -142,6 +154,9 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
         )
 
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
+        if self._metadata is None:
+            return
+
         try:
             if reset_orientation:
                 with contextlib.suppress(KeyError):
@@ -151,15 +166,14 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
             exif_bytes = piexif.dump(self._metadata)
             piexif.insert(exif_bytes, dest)
             _logger.debug("Successfully wrote exif data for '%s'", dest)
-        except piexif.InvalidImageDataError:  # File is not a jpg
-            _logger.debug("File format for '%s' does not support exif", dest)
         except ValueError:
             _logger.debug("No exif data in '%s'", dest)
 
     def exif_date_time(self) -> str:
-        with contextlib.suppress(
-            piexif.InvalidImageDataError, FileNotFoundError, KeyError
-        ):
+        if self._metadata is None:
+            return ""
+
+        with contextlib.suppress(KeyError):
             return self._metadata["0th"][piexif.ImageIFD.DateTime].decode()
         return ""
 
