@@ -33,3 +33,8 @@ Feature: Display status information in the statusbar
         When I run bind << scroll down
         And I press '<'
         Then the right status should include &lt;
+
+    Scenario: Show read-only mode in statusbar
+        Given I start vimiv
+        When I run set read_only true
+        Then the left status should include [RO]

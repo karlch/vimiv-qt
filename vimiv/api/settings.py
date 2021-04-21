@@ -445,11 +445,13 @@ class statusbar:  # pylint: disable=invalid-name
         desc="Text to display if the current image is marked",
     )
     # Statusbar module strings, these are not retrieved by their type
-    StrSetting("statusbar.left", "{pwd}")
-    StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
+    StrSetting("statusbar.left", "{pwd}{read-only}")
+    StrSetting(
+        "statusbar.left_image", "{index}/{total} {basename}{read-only} [{zoomlevel}]"
+    )
     StrSetting(
         "statusbar.left_thumbnail",
-        "{thumbnail-index}/{thumbnail-total} {thumbnail-name}",
+        "{thumbnail-index}/{thumbnail-total} {thumbnail-name}{read-only}",
     )
     StrSetting(
         "statusbar.left_manipulate",

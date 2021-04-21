@@ -276,3 +276,11 @@ def modified() -> str:
         return "N/A"
     date_time = QDateTime.fromSecsSinceEpoch(int(mtime))
     return date_time.toString("yyyy-MM-dd HH:mm")
+
+
+@api.status.module("{read-only}")
+def read_only() -> str:
+    """Print ``[RO]`` if read_only is true."""
+    if api.settings.read_only:
+        return " [RO]"
+    return ""
