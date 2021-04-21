@@ -16,7 +16,7 @@ _last_deleted: List[str] = []
 
 
 @api.keybindings.register("x", "delete %")
-@api.commands.register()
+@api.commands.register(edit=True)
 def delete(paths: List[str]) -> None:
     """Move one or more images to the trash directory.
 
@@ -50,7 +50,7 @@ def delete(paths: List[str]) -> None:
         log.info(succ_msg)
 
 
-@api.commands.register()
+@api.commands.register(edit=True)
 def undelete(basenames: List[str]) -> None:
     """Restore a file from the trash directory.
 

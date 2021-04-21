@@ -34,6 +34,7 @@ from typing import cast, Any, Callable, List, Tuple
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
+from vimiv.api import settings
 from vimiv.utils import AbstractQObjectMeta, log
 
 
@@ -271,6 +272,17 @@ class _CommandMode(Mode):
             self._last = mode
 
 
+class _ManipulateMode(_MainMode):
+    """Manipulate mode class."""
+
+    def enter(self) -> None:
+        """Override enter to ensure we are not in read-only mode when manipulating."""
+        if settings.read_only:
+            log.error("Manipulate mode is disabled due to read-only being active")
+        else:
+            super().enter()
+
+
 # Create all modes
 GLOBAL = _MainMode("global")
 IMAGE = _MainMode("image")
@@ -278,7 +290,7 @@ Mode.active = IMAGE
 LIBRARY = _MainMode("library", last=IMAGE)
 THUMBNAIL = _MainMode("thumbnail", last=IMAGE)
 COMMAND = _CommandMode("command", last=IMAGE)
-MANIPULATE = _MainMode("manipulate", last=IMAGE)
+MANIPULATE = _ManipulateMode("manipulate", last=IMAGE)
 # This cannot be done in the constructor as the constructor of LIBRARY requires IMAGE
 # and vice-versa
 IMAGE.last = IMAGE.last_fallback = LIBRARY

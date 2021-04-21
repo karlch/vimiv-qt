@@ -124,7 +124,7 @@ class ImageFileHandler(QObject):
             api.signals.pixmap_loaded.emit(pixmap, keep_zoom)
         self._path = path
 
-    @api.commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE, edit=True)
     def write(self, path: List[str]):
         """Save the current image to disk.
 

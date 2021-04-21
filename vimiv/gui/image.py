@@ -318,7 +318,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
             movie = widget.movie()
             movie.setPaused(not movie.state() == QMovie.Paused)
 
-    @api.commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE, edit=True)
     def straighten(self):
         """Display a grid to straighten the current image.
 
