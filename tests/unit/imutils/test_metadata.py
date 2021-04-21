@@ -260,10 +260,13 @@ def external_keyhandler_piexif(add_metadata_information, dummy_image, external_c
 
 
 def test_external_keyhandler_get_date_time(
-    external_keyhandler, external_keyhandler_piexif
+    external_keyhandler, external_keyhandler_piexif, dummy_image
 ):
     assert external_keyhandler.get_date_time() == "2017-12-16 16:21:57"
     assert external_keyhandler_piexif.get_date_time() == "2017-12-16 16:21:57"
+
+    assert metadata.ExternalKeyHandler(dummy_image()).get_date_time() == ""
+    assert metadata._ExternalKeyHandlerPiexif(dummy_image()).get_date_time() == ""
 
 
 def test_external_keyhandler_copy_metadata(
