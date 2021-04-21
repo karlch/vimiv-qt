@@ -107,8 +107,9 @@ to disk.</p></li>
 </div>
 <div class="section" id="advantages-of-the-different-exif-libraries">
 <h2>Advantages of the different exif libraries<a class="headerlink" href="#advantages-of-the-different-exif-libraries" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://python3-exiv2.readthedocs.io">Pyexiv2</a> is the more powerful of the two options. One large advantage is that with
-pyexiv2 <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> formats exif data into human readable format, for example
+<p><a class="reference external" href="https://python3-exiv2.readthedocs.io">Pyexiv2</a> is the more powerful of the two options. One large advantage is that it
+supports not only JPEG and TIFF images, but most common file types. In addition,
+with pyexiv2 <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> formats exif data into human readable format, for example
 <code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span> <span class="pre">mm</span></code> where <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> would only give <code class="docutils literal notranslate"><span class="pre">FocalLength:</span> <span class="pre">5.0</span></code>. However,
 given it is written as python bindings to the c++ api of <a class="reference external" href="https://www.exiv2.org/index.html">exiv2</a>, the installation is
 more involved compared to the pure python <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a> module.</p>
