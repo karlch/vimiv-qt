@@ -117,3 +117,12 @@ Feature: Deleting an image in the current file list
         And I run delete %
         Then no crash should happen
         And the file image.jpg should exist
+
+    Scenario: Do not allow deleting when read_only is active
+        Given I open any image
+        When I run set read_only true
+        And I run delete %
+        Then the message
+            'delete: Disabled due to read-only being active'
+            should be displayed
+        And the file image.jpg should exist
