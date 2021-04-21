@@ -111,6 +111,11 @@ def internal_content():
 
 
 @pytest.fixture()
+def invalid_keys():
+    return ["Invalid", "Invalid.Key", "Not.Valid.2"]
+
+
+@pytest.fixture()
 def metadata_content(external_content, internal_content):
     # Merge both dicts
     # return external_content | internal_content # Only working for Py 3.9
@@ -119,12 +124,12 @@ def metadata_content(external_content, internal_content):
 
 
 @pytest.fixture()
-def metadata_test_keys(metadata_content):
+def metadata_test_keys(metadata_content, invalid_keys):
     return [
         list(metadata_content.keys()),
         ["Exif.Image.Copyright", "Exif.Image.Make"],
         ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
-        ["Invalid.Key.Value", "InvalidKey", "Exif.Photo.FocalLength"],
+        invalid_keys + ["Exif.Photo.FocalLength"],
     ]
 
 
@@ -173,19 +178,29 @@ def value_match_piexif(required_value, actual_value):
         assert actual_value == required_value
 
 
-def test_metadatahandler_fetch_key(metadata_handler, metadata_content):
+def test_metadatahandler_fetch_key(metadata_handler, metadata_content, invalid_keys):
     for key, value in metadata_content.items():
         fetched_key, _, fetched_value = metadata_handler.fetch_key(key)
         assert fetched_key == key
         value_match(value, fetched_value)
 
+    for key in invalid_keys:
+        with pytest.raises(KeyError):
+            _, _, _ = metadata_handler.fetch_key(key)
 
-def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_content):
+
+def test_metadatahandler_fetch_key_piexif(
+    metadata_handler_piexif, metadata_content, invalid_keys
+):
     for key, value in metadata_content.items():
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
         short_key = key.rpartition(".")[-1]
         assert fetched_key in (key, short_key)
         value_match_piexif(value, fetched_value)
+
+    for key in invalid_keys:
+        with pytest.raises(KeyError):
+            _, _, _ = metadata_handler.fetch_key(key)
 
 
 def test_metadatahandler_fetch_keys(
