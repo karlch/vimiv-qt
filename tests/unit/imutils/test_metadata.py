@@ -10,14 +10,8 @@ from fractions import Fraction
 from PyQt5.QtGui import QPixmap
 import pytest
 
-from vimiv import imutils, utils
 from vimiv.imutils import metadata
 from vimiv.imutils.metadata import MetadataHandler
-
-try:
-    import piexif
-except ImportError:
-    piexif = None
 
 try:
     import pyexiv2
@@ -190,7 +184,7 @@ def test_metadatahandler_fetch_key_piexif(metadata_handler_piexif, metadata_cont
     for key, value in metadata_content.items():
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
         short_key = key.rpartition(".")[-1]
-        assert fetched_key == key or fetched_key == short_key
+        assert fetched_key in (key, short_key)
         value_match_piexif(value, fetched_value)
 
 
