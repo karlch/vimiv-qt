@@ -135,22 +135,30 @@ def metadata_test_keys(metadata_content):
 
 @pytest.fixture()
 def dummy_image(qapp, tmp_path):
-    filename = "./image.jpg"
-    filename = str(tmp_path / "image.jpg")
-    QPixmap(300, 300).save(filename)
-    return filename
+
+    path = tmp_path
+
+    def _get_img(name="image.jpg"):
+        filename = str(path / name)
+        QPixmap(300, 300).save(filename)
+        return filename
+
+    return _get_img
 
 
 @pytest.fixture
 def metadata_handler(add_metadata_information, dummy_image, external_content):
     assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
-    add_metadata_information(dummy_image, external_content)
-    return MetadataHandler(dummy_image)
+    image = dummy_image()
+    add_metadata_information(image, external_content)
+    return MetadataHandler(image)
 
 
 @pytest.fixture
-def metadata_handler_piexif(dummy_image, metadata_handler):
-    metadata_handler._ext_handler = metadata._ExternalKeyHandlerPiexif(dummy_image)
+def metadata_handler_piexif(metadata_handler):
+    metadata_handler._ext_handler = metadata._ExternalKeyHandlerPiexif(
+        metadata_handler.filename
+    )
     return metadata_handler
 
 
@@ -239,3 +247,26 @@ def test_metadatahandler_get_keys_piexif(metadata_handler_piexif, metadata_conte
     for key in available_keys:
         short_key = key.rpartition(".")[-1]
         assert key in fetched_keys or short_key in fetched_keys
+
+
+@pytest.fixture
+def external_keyhandler(add_metadata_information, dummy_image, external_content):
+    assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
+    image = dummy_image()
+    add_metadata_information(image, external_content)
+    return metadata.ExternalKeyHandler(image)
+
+
+@pytest.fixture
+def external_keyhandler_piexif(add_metadata_information, dummy_image, external_content):
+    assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
+    image = dummy_image()
+    add_metadata_information(image, external_content)
+    return metadata._ExternalKeyHandlerPiexif(image)
+
+
+def test_external_keyhandler_get_date_time(
+    external_keyhandler, external_keyhandler_piexif
+):
+    assert external_keyhandler.get_date_time() == "2017-12-16 16:21:57"
+    assert external_keyhandler_piexif.get_date_time() == "2017-12-16 16:21:57"
