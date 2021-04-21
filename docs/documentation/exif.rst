@@ -14,8 +14,9 @@ this is the case:
 Advantages of the different exif libraries
 ------------------------------------------
 
-`Pyexiv2`_ is the more powerful of the two options. One large advantage is that with
-pyexiv2 ``:metadata`` formats exif data into human readable format, for example
+`Pyexiv2`_ is the more powerful of the two options. One large advantage is that it
+supports not only JPEG and TIFF images, but most common file types. In addition,
+with pyexiv2 ``:metadata`` formats exif data into human readable format, for example
 ``FocalLength: 5.0 mm`` where `piexif`_ would only give ``FocalLength: 5.0``. However,
 given it is written as python bindings to the c++ api of `exiv2`_, the installation is
 more involved compared to the pure python `piexif`_ module.
