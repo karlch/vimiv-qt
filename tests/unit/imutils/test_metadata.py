@@ -200,7 +200,7 @@ def test_metadatahandler_fetch_key_piexif(
 
     for key in invalid_keys:
         with pytest.raises(KeyError):
-            _, _, _ = metadata_handler.fetch_key(key)
+            _, _, _ = metadata_handler_piexif.fetch_key(key)
 
 
 def test_metadatahandler_fetch_keys(
