@@ -162,9 +162,9 @@ class ImageFileHandler(QObject):
 def write_pixmap(pixmap, path, original_path):
     """Write pixmap to file.
 
-    This requires both the path to write to and the original path as Exif data
+    This requires both the path to write to and the original path as metadata
     may be copied from the original path to the new copy. The procedure is to
-    write the path to a temporary file first, transplant the Exif data to the
+    write the path to a temporary file first, transplant the metadata to the
     temporary file if possible and finally rename the temporary file to the
     final path. The renaming is done as it is an atomic operation and we may be
     overriding the existing file.
@@ -172,7 +172,7 @@ def write_pixmap(pixmap, path, original_path):
     Args:
         pixmap: The QPixmap to write.
         path: Path to write the pixmap to.
-        original_path: Original path of the opened pixmap to retrieve exif information.
+        original_path: Original path of the opened pixmap to retrieve metadata.
     """
     try:
         _can_write(pixmap, path)
@@ -210,10 +210,10 @@ def _write(pixmap, path, original_path):
     handle, filename = tempfile.mkstemp(suffix=ext)
     os.close(handle)
     pixmap.save(filename)
-    # Copy exif info from original file to new file
+    # Copy metadata info from original file to new file
     try:
-        imutils.exif.ExifHandler(original_path).copy_exif(filename)
-    except imutils.exif.UnsupportedExifOperation:
+        imutils.metadata.ExternalKeyHandler(original_path).copy_metadata(filename)
+    except imutils.metadata.UnsupportedMetadataOperation:
         pass
     shutil.move(filename, path)
     # Check if valid image was created

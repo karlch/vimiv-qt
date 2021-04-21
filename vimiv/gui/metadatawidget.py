@@ -13,27 +13,27 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 from vimiv.config import styles
 
 _logger = utils.log.module_logger(__name__)
 
 
-if exif.has_exif_support:
+if metadata.has_metadata_support:
 
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
 
-        The display of the widget can be toggled by command. It is filled with exif
-        metadata information of the current image.
+        The display of the widget can be toggled by command. It is filled with metadata
+        information of the current image.
 
 
         Attributes:
             _mainwindow_bottom: y-coordinate of the bottom of the mainwindow.
             _mainwindow_width: width of the mainwindow.
-            _path: Absolute path of the current image to load exif metadata of.
+            _path: Absolute path of the current image to load metadata of.
             _current_set: Holds a string of the currently selected keyset.
-            _handler: ExifHandler for _path or None. Use the handler property to access.
+            _handler: MetadataHandler for _path or None. Accessed via handler property.
         """
 
         STYLESHEET = """
@@ -58,7 +58,7 @@ if exif.has_exif_support:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
-            self._handler: Optional[exif.ExifHandler] = None
+            self._handler: Optional[metadata.MetadataHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
@@ -66,16 +66,16 @@ if exif.has_exif_support:
             self.hide()
 
         @property
-        def handler(self) -> exif.ExifHandler:
-            """Return the ExifHandler for the current path."""
+        def handler(self) -> metadata.MetadataHandler:
+            """Return the MetadataHandler for the current path."""
             if self._handler is None:
-                self._handler = exif.ExifHandler(self._path)
+                self._handler = metadata.MetadataHandler(self._path)
             return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
         def metadata(self, count: Optional[int] = None):
-            """Toggle display of exif metadata of current image.
+            """Toggle display metadata of current image.
 
             **count:** Select the key set to display instead.
 
@@ -122,6 +122,7 @@ if exif.has_exif_support:
             """
 
             keys = sorted(set(self.handler.get_keys()))
+            _logger.debug("Successfully got keys")
             if to_term:
                 print(*keys, sep="\n")
             elif n_cols < 1:
@@ -134,6 +135,7 @@ if exif.has_exif_support:
                 self.setText(table)
                 self._update_geometry()
                 self.show()
+                _logger.debug("Displaying keys in %d columns.", columns)
 
         def update_geometry(self, window_width, window_bottom):
             """Adapt location when main window geometry changes."""
@@ -154,15 +156,17 @@ if exif.has_exif_support:
             if self._current_set == api.settings.metadata.current_keyset.value:
                 return
             _logger.debug(
-                "%s: reading exif of %s", self.__class__.__qualname__, self._path
+                "%s: reading metadata of %s", self.__class__.__qualname__, self._path
             )
             keys = [
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            formatted_exif = self.handler.get_formatted_exif(keys)
-            if formatted_exif:
-                self.setText(utils.format_html_table(formatted_exif.values()))
+            data = self.handler.fetch_keys(keys)
+            _logger.debug("Fetched metadata")
+
+            if data:
+                self.setText(utils.format_html_table(data.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()
@@ -178,5 +182,5 @@ if exif.has_exif_support:
                 self._update_text()
 
 
-else:  # No exif support  # pragma: no cover  # Covered in another CI
+else:  # No metadata support  # pragma: no cover  # Covered in another CI
     MetadataWidget = None  # type: ignore
