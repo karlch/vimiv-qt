@@ -270,3 +270,14 @@ def test_external_keyhandler_get_date_time(
 ):
     assert external_keyhandler.get_date_time() == "2017-12-16 16:21:57"
     assert external_keyhandler_piexif.get_date_time() == "2017-12-16 16:21:57"
+
+
+def test_external_keyhandler_copy_metadata(
+    external_keyhandler, external_keyhandler_piexif, dummy_image, metadata_content
+):
+    for handler in (external_keyhandler, external_keyhandler_piexif):
+        dest = dummy_image("dest.jpg")
+        handler.copy_metadata(dest)
+        assert len(list(metadata.MetadataHandler(dest).get_keys())) >= len(
+            metadata_content
+        )
