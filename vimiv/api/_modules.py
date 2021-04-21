@@ -160,7 +160,7 @@ def paste_name(primary: bool = True) -> None:
     api.open_paths([clipboard.text(mode=mode)])
 
 
-@api.commands.register()
+@api.commands.register(edit=True)
 def rename(
     paths: List[str],
     base: str,
@@ -210,7 +210,7 @@ def rename(
     api.mark.mark(marked)
 
 
-@api.commands.register()
+@api.commands.register(edit=True)
 def mark_rename(
     base: str, start: int = 1, overwrite: bool = False, separator: str = "_"
 ) -> None:

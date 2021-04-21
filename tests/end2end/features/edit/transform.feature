@@ -46,3 +46,12 @@ Feature: Transform an image.
         When I run resize 150
         And I run undo-transformations
         Then the image size should be 300x200
+
+    Scenario: Do not allow transforming when read_only is active
+        Given I open any image of size 300x200
+        When I run set read_only true
+        And I run rotate
+        Then the message
+            'rotate: Disabled due to read-only being active'
+            should be displayed
+        And the orientation should be landscape

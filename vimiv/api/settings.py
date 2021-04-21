@@ -330,6 +330,9 @@ startup_library = BoolSetting(
     hidden=True,
 )
 style = StrSetting("style", "default", hidden=True)
+read_only = BoolSetting(
+    "read_only", False, desc="Disable any commands that are able to edit files on disk"
+)
 
 
 class command:  # pylint: disable=invalid-name

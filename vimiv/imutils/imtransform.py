@@ -32,7 +32,7 @@ def register_transform_command(**kwargs):
             func(self, *args, **kwargs)
             self.apply()
 
-        return api.commands.register(mode=api.modes.IMAGE, **kwargs)(inner)
+        return api.commands.register(mode=api.modes.IMAGE, edit=True, **kwargs)(inner)
 
     return decorator
 
@@ -203,7 +203,7 @@ class Transform(QTransform):
         """Size of the transformed image."""
         return self.current.size()
 
-    @api.commands.register(mode=api.modes.IMAGE)
+    @register_transform_command()
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()

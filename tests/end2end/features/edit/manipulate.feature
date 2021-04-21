@@ -71,3 +71,11 @@ Feature: Manipulate an image.
         And I apply any manipulation
         And I run accept
         Then there should be 0 stored changes
+
+    Scenario: Do not allow entering manipulate when read_only is active
+        When I run set read_only true
+        And I enter manipulate mode
+        Then the message
+            'Manipulate mode is disabled due to read-only being active'
+            should be displayed
+        And the mode should be image

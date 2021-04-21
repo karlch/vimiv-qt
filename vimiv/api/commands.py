@@ -76,7 +76,7 @@ import inspect
 import os
 import typing
 
-from vimiv.api import modes, objreg
+from vimiv.api import modes, objreg, settings
 from vimiv.utils import (
     flatten,
     log,
@@ -94,6 +94,7 @@ def register(
     mode: modes.Mode = modes.GLOBAL,
     hide: bool = False,
     store: bool = True,
+    edit: bool = False,
     name: str = None,
 ) -> typing.Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to store a command in the registry.
@@ -102,11 +103,12 @@ def register(
         mode: Mode in which the command can be executed.
         hide: Hide command from command line.
         store: Save command to allow repeating with '.'.
+        edit: Command may make changes on disk.
         name: Name of the command if it should not be inferred from the function name.
     """
 
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
-        _Command(func, mode=mode, hide=hide, store=store, name=name)
+        _Command(func, mode=mode, hide=hide, store=store, name=name, edit=edit)
         return func
 
     return decorator
@@ -277,6 +279,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         description: Brief command description.
 
         _argparser: Argument parser used when the command is called.
+        _edit: The command may make changes on disk.
         _long_description: Full command description.
     """
 
@@ -286,6 +289,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         mode: modes.Mode = modes.GLOBAL,
         hide: bool = False,
         store: bool = True,
+        edit: bool = False,
         name: str = None,
     ):
         self._argparser: typing.Optional[_CommandArguments] = None
@@ -294,6 +298,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         self.mode = mode
         self.hide = hide
         self.store = store
+        self._edit = edit
         # Retrieve description from docstring
         docstr = inspect.getdoc(func)
         if docstr is None:
@@ -312,6 +317,8 @@ class _Command:  # pylint: disable=too-many-instance-attributes
             args: List of arguments for argparser to parse.
             count: Count passed to the command.
         """
+        if self._edit and settings.read_only:
+            raise CommandError("Disabled due to read-only being active")
         parsed_args = self.argparser.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
