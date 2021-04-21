@@ -189,8 +189,17 @@ image in library mode.</p></li>
 flags <code class="docutils literal notranslate"><span class="pre">--width</span></code>, <code class="docutils literal notranslate"><span class="pre">--height</span></code> and <code class="docutils literal notranslate"><span class="pre">--size</span></code> allow to scale the copied image.
 Thanks <a class="reference external" href="https://github.com/jcjgraf">&#64;jcjgraf</a>!</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">read_only</span></code> setting. When set to true, all commands that may write changes to
-disk are disabled.
-Thanks <a class="reference external" href="https://github.com/willemw12">&#64;willemw12</a> for the idea!</p></li>
+disk are disabled. This comes with the <code class="docutils literal notranslate"><span class="pre">{read-only}</span></code> status module which displays
+<code class="docutils literal notranslate"><span class="pre">[RO]</span></code> in case <code class="docutils literal notranslate"><span class="pre">read_only</span></code> is true. Note that you must add this to your
+vimiv.conf to enable it if you already define the left status contents. The new
+defaults are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">left</span> <span class="o">=</span> <span class="p">{</span><span class="n">pwd</span><span class="p">}{</span><span class="n">read</span><span class="o">-</span><span class="n">only</span><span class="p">}</span>
+<span class="n">left_image</span> <span class="o">=</span> <span class="p">{</span><span class="n">index</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">total</span><span class="p">}</span> <span class="p">{</span><span class="n">basename</span><span class="p">}{</span><span class="n">read</span><span class="o">-</span><span class="n">only</span><span class="p">}</span> <span class="p">[{</span><span class="n">zoomlevel</span><span class="p">}]</span>
+<span class="n">left_thumbnail</span> <span class="o">=</span> <span class="p">{</span><span class="n">thumbnail</span><span class="o">-</span><span class="n">index</span><span class="p">}</span><span class="o">/</span><span class="p">{</span><span class="n">thumbnail</span><span class="o">-</span><span class="n">total</span><span class="p">}</span> <span class="p">{</span><span class="n">thumbnail</span><span class="o">-</span><span class="n">name</span><span class="p">}{</span><span class="n">read</span><span class="o">-</span><span class="n">only</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Thanks <a class="reference external" href="https://github.com/willemw12">&#64;willemw12</a> for the idea!</p>
+</li>
 </ul>
 </div>
 <div class="section" id="changed">

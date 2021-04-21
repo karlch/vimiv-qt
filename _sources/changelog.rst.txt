@@ -40,7 +40,15 @@ Added:
   flags ``--width``, ``--height`` and ``--size`` allow to scale the copied image.
   Thanks `@jcjgraf`_!
 * The ``read_only`` setting. When set to true, all commands that may write changes to
-  disk are disabled.
+  disk are disabled. This comes with the ``{read-only}`` status module which displays
+  ``[RO]`` in case ``read_only`` is true. Note that you must add this to your
+  vimiv.conf to enable it if you already define the left status contents. The new
+  defaults are::
+
+    left = {pwd}{read-only}
+    left_image = {index}/{total} {basename}{read-only} [{zoomlevel}]
+    left_thumbnail = {thumbnail-index}/{thumbnail-total} {thumbnail-name}{read-only}
+
   Thanks `@willemw12`_ for the idea!
 
 Changed:
