@@ -124,12 +124,12 @@ def metadata_test_keys(metadata_content):
         list(metadata_content.keys()),
         ["Exif.Image.Copyright", "Exif.Image.Make"],
         ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
+        ["Invalid.Key.Value", "InvalidKey", "Exif.Photo.FocalLength"],
     ]
 
 
 @pytest.fixture()
 def dummy_image(qapp, tmp_path):
-
     path = tmp_path
 
     def _get_img(name="image.jpg"):
@@ -192,10 +192,11 @@ def test_metadatahandler_fetch_keys(
     metadata_handler, metadata_content, metadata_test_keys
 ):
     for current_keys in metadata_test_keys:
+        valid_keys = [key for key in current_keys if key in metadata_content.keys()]
         fetched = metadata_handler.fetch_keys(current_keys)
-        assert len(fetched) == len(current_keys)
+        assert len(fetched) == len(valid_keys)
 
-        for current_key in current_keys:
+        for current_key in valid_keys:
             assert current_key in fetched
             value_match(metadata_content[current_key], fetched[current_key][1])
 
@@ -204,11 +205,11 @@ def test_metadatahandler_fetch_keys_piexif(
     metadata_handler_piexif, metadata_content, metadata_test_keys
 ):
     for current_keys in metadata_test_keys:
+        valid_keys = [key for key in current_keys if key in metadata_content.keys()]
         fetched = metadata_handler_piexif.fetch_keys(current_keys)
-        assert len(fetched) == len(current_keys)
-        print(fetched)
+        assert len(fetched) == len(valid_keys)
 
-        for current_key in current_keys:
+        for current_key in valid_keys:
             short_key = current_key.rpartition(".")[-1]
             assert current_key in fetched or short_key in fetched
             # Internal keys are still in long form
