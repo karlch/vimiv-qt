@@ -20,6 +20,8 @@ Currently the following user plugins are available:
 * `Importer <https://github.com/jcjgraf/Importer>`_ to easily import your images from a
   SD card, camera or any directory into your photo storage.
 * `BatchMark <https://github.com/jcjgraf/BatchMark>`_ to easily mark contiguous images.
+* `Video <https://github.com/jcjgraf/Video>`_ for video support. Videos are listed
+  within vimiv and can be played using an external player.
 
 If you would like to write a plugin, some of the information on :ref:`writing_plugins`
 may be helpful to get started.
