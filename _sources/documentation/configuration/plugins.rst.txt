@@ -15,13 +15,17 @@ a new plugin:
 
 Currently the following user plugins are available:
 
-* `RawPrev <https://github.com/jcjgraf/RawPrev>`_ for raw support based on ``dcraw``
-  instead of `qt raw <https://gitlab.com/mardy/qtraw>`_
-* `Importer <https://github.com/jcjgraf/Importer>`_ to easily import your images from a
-  SD card, camera or any directory into your photo storage.
-* `BatchMark <https://github.com/jcjgraf/BatchMark>`_ to easily mark contiguous images.
-* `Video <https://github.com/jcjgraf/Video>`_ for video support. Videos are listed
-  within vimiv and can be played using an external player.
+.. table:: Overview of user plugins
+   :widths: 20 80
+
+   ======================================================== ===========
+   Name                                                     Description
+   ======================================================== ===========
+   `RawPrev <https://github.com/jcjgraf/RawPrev>`_          Raw support based on ``dcraw`` instead of `qt raw <https://gitlab.com/mardy/qtraw>`_
+   `Importer <https://github.com/jcjgraf/Importer>`_        Easily import your images from a SD card, camera or any directory into your photo storage
+   `BatchMark <https://github.com/jcjgraf/BatchMark>`_      Easily mark contiguous images
+   `Video <https://github.com/jcjgraf/Video>`_              List videos within vimiv and play them using an external player
+   ======================================================== ===========
 
 If you would like to write a plugin, some of the information on :ref:`writing_plugins`
 may be helpful to get started.
