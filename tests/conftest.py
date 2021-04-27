@@ -190,3 +190,22 @@ def add_exif_information():
         metadata.piexif.insert(metadata.piexif.dump(exif_dict), path)
 
     return add_exif_information_impl
+
+
+@pytest.fixture()
+def add_metadata_information():
+    """Fixture to retrieve a helper function that adds metadata content to an image."""
+
+    def add_metadata_information_impl(path: str, content):
+        assert (
+            metadata.pyexiv2 is not None
+        ), "pyexiv2 required to add metadata information"
+        _metadata = metadata.pyexiv2.ImageMetadata(path)
+        _metadata.read()
+
+        for tag in content.values():
+            _metadata[tag.key] = tag.value
+
+        _metadata.write()
+
+    return add_metadata_information_impl
