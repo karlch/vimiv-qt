@@ -65,6 +65,8 @@ Fixed:
   `@jcjgraf`_ for pointing this out!
 * Completion for aliases.
 * Crash when extracting metadata using piexif from a non JPEG or TIFF image. Thanks `@BachoSeven`_ for pointing this out!
+* Crash when searching in a symlinked directory. Thanks `@BachoSeven`_ for pointing this
+  out!
 
 
 v0.8.0 (2021-01-18)
