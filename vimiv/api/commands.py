@@ -206,7 +206,7 @@ class _CommandArguments(argparse.ArgumentParser):
         parsed_args = super().parse_args(args)
         with contextlib.suppress(AttributeError):
             parsed_args.paths = [
-                os.path.abspath(path) for path in sorted(flatten(parsed_args.paths))
+                os.path.realpath(path) for path in sorted(flatten(parsed_args.paths))
             ]
         return parsed_args
 

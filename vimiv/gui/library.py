@@ -234,7 +234,7 @@ class Library(
             self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
-            parent = os.path.abspath(os.pardir)
+            parent = os.path.realpath(os.pardir)
             self._positions[parent] = Position(os.getcwd())
             api.working_directory.handler.chdir(parent)
         else:
@@ -300,7 +300,7 @@ class Library(
         with contextlib.suppress(IndexError):  # No path selected
             basename = self.selectedIndexes()[1].data()
             basename = strip(basename)
-            return os.path.abspath(basename)
+            return os.path.realpath(basename)
         return ""
 
     def pathlist(self):
