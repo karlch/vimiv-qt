@@ -50,11 +50,15 @@ Added:
     left_thumbnail = {thumbnail-index}/{thumbnail-total} {thumbnail-name}{read-only}
 
   Thanks `@willemw12`_ for the idea!
+* The ``zh`` keybinding to toggle hidden files.
+  Thanks `@Kakupakat`_ for the idea!
 
 Changed:
 ^^^^^^^^
 
 * New set of default metadata key sets numbered from 1 to 5. Thanks `@jcjgraf`_!
+* When toggling ``library.show_hidden`` the selection now stays on the same file, not
+  the same index.
 
 Fixed:
 ^^^^^^
@@ -472,3 +476,4 @@ Initial release of the Qt version.
 .. _@maximbaz: https://github.com/maximbaz
 .. _@BachoSeven: https://github.com/BachoSeven
 .. _@willemw12: https://github.com/willemw12
+.. _@Kakupakat: https://github.com/Kakupakat
