@@ -106,8 +106,11 @@ def external_content():
         ),
         "Iptc.Application2.Keywords": pyexiv2.iptc.IptcTag(
             "Iptc.Application2.Keywords", ["ImageViewer", "Application", "Linux"]
-        )
-        # TODO: ADD IPTC
+        ),
+        "Xmp.xmpRights.Owner": pyexiv2.xmp.XmpTag(
+            "Xmp.xmpRights.Owner", ["vimiv-AUTHORS-2021"]
+        ),
+        "Xmp.xmp.Rating": pyexiv2.xmp.XmpTag("Xmp.xmp.Rating", 5),
     }
 
 
@@ -137,6 +140,8 @@ def metadata_test_keys(metadata_content, invalid_keys):
         ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
         invalid_keys + ["Exif.Photo.FocalLength"],
         ["Iptc.Application2.Program", "Iptc.Application2.Keywords"],
+        ["Xmp.xmp.Rating", "Exif.Photo.ISOSpeedRatings", "Iptc.Application2.Program"],
+        ["Xmp.xmp.Rating", "Xmp.xmpRights.Owner"],
     ]
 
 
@@ -180,7 +185,17 @@ def value_match(required_value, actual_value):
             except AttributeError:
                 val = required_value
 
-    assert actual_value == val or actual_value == ", ".join([e.decode() for e in val])
+    # Iptc is a list with byte elements of any type
+    # Xmp can be a list with elements of any type
+    try:
+        try:
+            joined_list = ", ".join([str(e.decode()) for e in val])
+        except AttributeError:
+            joined_list = ", ".join([str(e) for e in val])
+    except TypeError:
+        joined_list = ""
+
+    assert actual_value in (val, joined_list)
 
 
 def value_match_piexif(required_value, actual_value):
@@ -210,7 +225,7 @@ def test_metadatahandler_fetch_key_piexif(
     metadata_handler_piexif, metadata_content, invalid_keys
 ):
     for key, value in metadata_content.items():
-        if "Iptc" in key:
+        if "Iptc" in key or "Xmp" in key:
             continue
 
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
@@ -244,8 +259,9 @@ def test_metadatahandler_fetch_keys_piexif(
         valid_keys = [
             key
             for key in current_keys
-            if key in metadata_content.keys() and "Iptc" not in key
+            if key in metadata_content.keys() and not ("Iptc" in key or "Xmp" in key)
         ]
+        print(valid_keys, current_keys)
         fetched = metadata_handler_piexif.fetch_keys(current_keys)
         assert len(fetched) == len(valid_keys)
 
@@ -267,8 +283,10 @@ def test_metadatahandler_get_keys(
     available_keys = list(metadata_content.keys())
 
     for handler in (metadata_handler, metadata_handler_piexif):
-        if type(handler._external_handler) == metadata._ExternalKeyHandlerPiexif:
-            available_keys = [e for e in available_keys if "Iptc" not in e]
+        if isinstance(handler._external_handler, metadata._ExternalKeyHandlerPiexif):
+            available_keys = [
+                e for e in available_keys if not ("Iptc" in e or "Xmp" in e)
+            ]
 
         fetched_keys = list(handler.get_keys())
 
