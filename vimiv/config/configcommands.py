@@ -11,6 +11,7 @@ from typing import List
 from vimiv import api
 
 
+@api.keybindings.register("zh", "set library.show_hidden!")
 @api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("sh", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("H", "set library.width -0.05", mode=api.modes.LIBRARY)
