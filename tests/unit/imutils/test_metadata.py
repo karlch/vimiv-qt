@@ -100,6 +100,12 @@ def external_content():
         ),
         "Exif.GPSInfo.GPSAltitude": pyexiv2.exif.ExifTag(
             "Exif.GPSInfo.GPSAltitude", Fraction(2964)
+        ),
+        "Iptc.Application2.Program": pyexiv2.iptc.IptcTag(
+            "Iptc.Application2.Program", ["Vimiv"]
+        ),
+        "Iptc.Application2.Keywords": pyexiv2.iptc.IptcTag(
+            "Iptc.Application2.Keywords", ["ImageViewer", "Application", "Linux"]
         )
         # TODO: ADD IPTC
     }
@@ -130,6 +136,7 @@ def metadata_test_keys(metadata_content, invalid_keys):
         ["Exif.Image.Copyright", "Exif.Image.Make"],
         ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
         invalid_keys + ["Exif.Photo.FocalLength"],
+        ["Iptc.Application2.Program", "Iptc.Application2.Keywords"],
     ]
 
 
@@ -163,19 +170,29 @@ def metadata_handler_piexif(metadata_handler):
 
 def value_match(required_value, actual_value):
     try:
-        assert actual_value == required_value.human_value
+        val = required_value.human_value
     except AttributeError:
         try:
-            assert actual_value == required_value.raw_value
+            val = required_value.raw_value
         except AttributeError:
-            assert actual_value == required_value
+            try:
+                val = required_value.value
+            except AttributeError:
+                val = required_value
+
+    assert actual_value == val or actual_value == ", ".join([e.decode() for e in val])
 
 
 def value_match_piexif(required_value, actual_value):
     try:
-        assert actual_value == required_value.raw_value
+        val = required_value.raw_value
     except AttributeError:
-        assert actual_value == required_value
+        try:
+            val = required_value.value
+        except AttributeError:
+            val = required_value
+
+    assert actual_value == val
 
 
 def test_metadatahandler_fetch_key(metadata_handler, metadata_content, invalid_keys):
@@ -193,6 +210,9 @@ def test_metadatahandler_fetch_key_piexif(
     metadata_handler_piexif, metadata_content, invalid_keys
 ):
     for key, value in metadata_content.items():
+        if "Iptc" in key:
+            continue
+
         fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
         short_key = key.rpartition(".")[-1]
         assert fetched_key in (key, short_key)
@@ -220,7 +240,12 @@ def test_metadatahandler_fetch_keys_piexif(
     metadata_handler_piexif, metadata_content, metadata_test_keys
 ):
     for current_keys in metadata_test_keys:
-        valid_keys = [key for key in current_keys if key in metadata_content.keys()]
+
+        valid_keys = [
+            key
+            for key in current_keys
+            if key in metadata_content.keys() and "Iptc" not in key
+        ]
         fetched = metadata_handler_piexif.fetch_keys(current_keys)
         assert len(fetched) == len(valid_keys)
 
@@ -242,6 +267,9 @@ def test_metadatahandler_get_keys(
     available_keys = list(metadata_content.keys())
 
     for handler in (metadata_handler, metadata_handler_piexif):
+        if type(handler._external_handler) == metadata._ExternalKeyHandlerPiexif:
+            available_keys = [e for e in available_keys if "Iptc" not in e]
+
         fetched_keys = list(handler.get_keys())
 
         # Available_keys does not contain all possible keys
