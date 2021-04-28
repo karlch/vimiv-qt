@@ -13,3 +13,5 @@ Feature: Miscellaneous features connected to the library
         And I reload the library
         And I run set library.show_hidden true
         Then the library should contain 3 paths
+        # .hidden is placed in front of the current selection
+        And the library row should be 2

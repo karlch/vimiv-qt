@@ -127,6 +127,7 @@ class Library(
             self.repaint()
 
     def _on_show_hidden_changed(self, _value: bool):
+        self.store_position()
         self._open_directory(".", reload_current=True)
 
     @utils.slot
