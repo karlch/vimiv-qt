@@ -39,6 +39,15 @@ Added:
 * The ``:copy-image`` command which copies the selected image to the clipboard. The
   flags ``--width``, ``--height`` and ``--size`` allow to scale the copied image.
   Thanks `@jcjgraf`_!
+* Series of internal metadata keys. They are aimed to provide additional metadata
+  information which is not provided by the external metadata libraries. All these keys
+  start with a leading ``Vimiv``:
+
+  * ``Vimiv.FileSize`` File size
+  * ``Vimiv.FileType`` File type
+  * ``Vimiv.XDimension`` X dimension in pixel
+  * ``Vimiv.YDimension`` Y dimension in pixel
+
 
 Changed:
 ^^^^^^^^
