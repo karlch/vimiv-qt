@@ -80,7 +80,7 @@ if exif.has_exif_support:
             **count:** Select the key set to display instead.
 
             .. hint::
-                3 default key sets are provided and mapped to the counts 1-3. To
+                5 default key sets are provided and mapped to the counts 1-5. To
                 override them or add your own, extend the METADATA section in your
                 configfile like this::
 
