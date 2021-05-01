@@ -35,7 +35,7 @@ def test_fail_add_status_module():
     with pytest.raises(ValueError):
 
         @status.module("wrong")
-        def wrong():  # pylint: disable=unused-variable
+        def wrong():
             """Status module with an invalid name."""
             return "wrong"
 

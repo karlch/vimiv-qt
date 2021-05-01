@@ -181,7 +181,7 @@ def test_slot_fails_without_type_annotations():
     with pytest.raises(utils.AnnotationNotFound):
 
         @utils.slot
-        def dummy(x):  # pylint: disable=unused-variable
+        def dummy(x):
             """Dummy function to check for raising the exception."""
             ...
 
