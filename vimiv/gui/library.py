@@ -347,6 +347,14 @@ class Library(
         if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
 
+    def wheelEvent(self, event):
+        """Update mouse wheel for proper scrolling."""
+        steps = int(event.angleDelta().y() / 120)
+        if steps < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
+        else:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
+
 
 class LibraryModel(QStandardItemModel):
     """Model used for the library.
