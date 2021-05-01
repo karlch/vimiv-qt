@@ -21,7 +21,7 @@ def reset_to_default(cleanup_helper):
 @pytest.mark.parametrize("binding, command", [("t1", "test"), (("t1", "t2"), "test")])
 def test_add_keybindings(binding, command):
     @api.keybindings.register(binding, command, mode=api.modes.IMAGE)
-    def test():  # pylint: disable=unused-variable
+    def test():
         """Nop function to register a keybinding."""
 
     bindings = api.keybindings.get(api.modes.IMAGE)

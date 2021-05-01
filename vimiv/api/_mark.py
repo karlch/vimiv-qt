@@ -336,6 +336,8 @@ class Tag:
         _logger.debug("Opened tag object: '%s'", self)
         xdg.makedirs(os.path.dirname(abspath))
         try:
+            # We are writing our own context-manager here
+            # pylint: disable=consider-using-with
             self._file = open(abspath, self._mode)
         except FileNotFoundError:  # For read-only if the file does not exist
             raise commands.CommandError(f"No tag called '{name}'")

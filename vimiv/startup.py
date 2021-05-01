@@ -101,6 +101,8 @@ def init_directories(args: argparse.Namespace) -> None:
     """
     if args.temp_basedir:
         global _tmpdir
+        # We want the temporary directory to stick around until the end
+        # pylint: disable=consider-using-with
         _tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
         args.basedir = _tmpdir.name
     if args.basedir is not None:

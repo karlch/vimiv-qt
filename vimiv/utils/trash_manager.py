@@ -140,16 +140,18 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
 
     # Write to temporary file and use shutil.move to make sure the
     # operation is an atomic operation as specified by the standard
-    temp_file = tempfile.NamedTemporaryFile(dir=_info_directory, delete=False, mode="w")
-    info = TrashInfoParser()
-    info["Trash Info"] = {
-        "Path": quote(original_filename),
-        "DeletionDate": time.strftime("%Y-%m-%dT%H:%M:%S"),
-    }
-    info.write(temp_file, space_around_delimiters=False)
-    # Move to proper filename
-    info_filename = _get_info_filename(trash_filename)
-    shutil.move(temp_file.name, info_filename)
+    with tempfile.NamedTemporaryFile(
+        dir=_info_directory, delete=False, mode="w"
+    ) as temp_file:
+        info = TrashInfoParser()
+        info["Trash Info"] = {
+            "Path": quote(original_filename),
+            "DeletionDate": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+        info.write(temp_file, space_around_delimiters=False)
+        # Move to proper filename
+        info_filename = _get_info_filename(trash_filename)
+        shutil.move(temp_file.name, info_filename)
 
 
 class TrashInfoParser(configparser.ConfigParser):
