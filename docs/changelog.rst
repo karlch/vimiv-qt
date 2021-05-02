@@ -52,6 +52,9 @@ Added:
   Thanks `@willemw12`_ for the idea!
 * The ``zh`` keybinding to toggle hidden files.
   Thanks `@Kakupakat`_ for the idea!
+* The ``:print-stdout`` command which prints a given list of string to the STDOUT.
+* The ``:mark-print`` default alias which prints all marked images to STDOUT using
+  ``:print-stdout``.
 
 Changed:
 ^^^^^^^^
