@@ -243,6 +243,22 @@ def mark_rename(
     )
 
 
+@api.commands.register()
+def print_stdout(text: List[str], sep: str = "\n", end: str = "\n") -> None:
+    """Print text to the terminal.
+
+    **syntax:** ``:print-stdout text [--sep] [--end]``
+
+    positional arguments:
+        * ``text``: List of strings to concatenate and print
+
+    optional arguments:
+        * ``--sep``: String inserted between list element, default is new line.
+        * ``--end``: String appended after last element, default is new line.
+    """
+    print(*text, sep=sep, end=end)
+
+
 ###############################################################################
 #                               Status Modules                                #
 ###############################################################################

@@ -19,7 +19,7 @@ Aliases = Dict[str, str]
 
 _aliases: Dict[api.modes.Mode, Aliases] = {mode: {} for mode in api.modes.ALL}
 # Add default aliases
-_aliases[api.modes.GLOBAL].update(q="quit")
+_aliases[api.modes.GLOBAL].update({"q": "quit", "mark-print": "print-stdout %m"})
 _aliases[api.modes.IMAGE].update(w="write", wq="write && quit")
 
 
