@@ -15,13 +15,13 @@ import argparse
 import os
 import sys
 import tempfile
-from typing import List
+from typing import cast, List
 
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, QCoreApplication
 from PyQt5.QtWidgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins
-from vimiv.commands import runners, search
+from vimiv.commands import runners, search, wildcards
 from vimiv.config import configfile, keyfile, styles
 from vimiv.gui import mainwindow
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
@@ -88,6 +88,14 @@ def setup_post_app(args: argparse.Namespace) -> None:
     init_paths(args)
     if args.command:
         run_startup_commands(*args.command)
+    if args.output:
+
+        def print_output() -> None:
+            print(wildcards.expand_internal(args.output, api.modes.current()))
+
+        # We are sure we have an application here
+        qapp = cast(QApplication, QCoreApplication.instance())
+        qapp.aboutToQuit.connect(print_output)
 
 
 def init_directories(args: argparse.Namespace) -> None:
