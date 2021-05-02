@@ -55,6 +55,9 @@ Added:
 * The ``:print-stdout`` command which prints a given list of string to the STDOUT.
 * The ``:mark-print`` default alias which prints all marked images to STDOUT using
   ``:print-stdout``.
+* The ``-o TEXT`` flag to print ``TEXT`` to standard output before exit. Wildcards are
+  expanded before printing, allowing to for example print marked files using ``-o %m``.
+* The ``-i`` flag to read paths to open from standard input instead.
 
 Changed:
 ^^^^^^^^
