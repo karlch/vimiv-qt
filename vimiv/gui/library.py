@@ -359,15 +359,21 @@ class Library(
             self.open_selected(close=False)
 
     def wheelEvent(self, event):
-        """Update mouse wheel for proper scrolling."""
+        """Update mouse wheel for proper scrolling.
+
+        We accumulate steps until we have enough to scroll up / down by one row. For
+        regular mice one "roll" should result in a single scroll. Finer grained devices
+        such as touchpads need this cumulative approach.
+
+        See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
+        """
         self._scroll_step += event.angleDelta().y() / 120
         steps = int(self._scroll_step)
         if steps < 0:
             self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
         else:
             self.scroll(argtypes.DirectionWithPage.Up, count=steps)
-        if steps != 0:
-            self._scroll_step = self._scroll_step - steps
+        self._scroll_step = self._scroll_step - steps
         self._scroll_timer.start()
 
 
