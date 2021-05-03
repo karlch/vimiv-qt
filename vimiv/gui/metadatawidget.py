@@ -75,7 +75,7 @@ if metadata.has_metadata_support:
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
         def metadata(self, count: Optional[int] = None):
-            """Toggle display metadata of current image.
+            """Toggle metadata display of current image.
 
             **count:** Select the key set to display instead.
 

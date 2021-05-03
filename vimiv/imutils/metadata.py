@@ -81,7 +81,7 @@ class _InternalKeyHandler(dict):
 
     def get_keys(self) -> Iterable[str]:
         """Returns a sequence of all available metadata keys."""
-        return (key for key, _ in super().values())
+        return (key for key, _ in self.values())
 
 
 class UnsupportedMetadataOperation(NotImplementedError):
@@ -163,7 +163,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
         key = base_key.rpartition(".")[2]
 
         if self._metadata is None:
-            return {}
+            raise KeyError(f"Key '{base_key}' not found as there is no metadata")
 
         for ifd in self._metadata:
             if ifd == "thumbnail":
@@ -207,7 +207,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
 
     def get_keys(self) -> Iterable[str]:
         if self._metadata is None:
-            return iter([])
+            return []
 
         return (
             piexif.TAGS[ifd][tag]["name"]
@@ -245,7 +245,7 @@ class _ExternalKeyHandlerPiexif(_ExternalKeyHandlerBase):
         return ""
 
 
-def check_external_dependancy(handler):
+def check_external_dependency(handler):
     """Decorator for ExternalKeyHandler which requires the optional pyexiv2 module.
 
     If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
@@ -276,7 +276,7 @@ def check_external_dependancy(handler):
     return _ExternalKeyHandlerBase
 
 
-@check_external_dependancy
+@check_external_dependency
 class ExternalKeyHandler(_ExternalKeyHandlerBase):
     """Main ExternalKeyHandler implementation based on pyexiv2."""
 

@@ -29,13 +29,13 @@ def external_handler(request):
 
 def test_check_external_dependency():
     default = None
-    assert metadata.check_external_dependancy(default) == default
+    assert metadata.check_external_dependency(default) == default
 
 
 def test_check_external_dependency_piexif(piexif):
     default = None
     assert (
-        metadata.check_external_dependancy(default)
+        metadata.check_external_dependency(default)
         == metadata._ExternalKeyHandlerPiexif
     )
 
@@ -43,7 +43,7 @@ def test_check_external_dependency_piexif(piexif):
 def test_check_external_dependency_noexif(noexif):
     default = None
     assert (
-        metadata.check_external_dependancy(default) == metadata._ExternalKeyHandlerBase
+        metadata.check_external_dependency(default) == metadata._ExternalKeyHandlerBase
     )
 
 
