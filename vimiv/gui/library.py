@@ -11,7 +11,7 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple
 
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
@@ -45,6 +45,8 @@ class Library(
     Attributes:
         _last_selected: Name of the path that was selected last.
         _positions: Dictionary that stores positions in directories.
+        _scroll_step: Currently unprocessed scrolling step to support finer devices.
+        _scroll_timer: Timer to reset _scroll_step after scrolling.
     """
 
     STYLESHEET = """
@@ -88,6 +90,15 @@ class Library(
         super().__init__(parent=mainwindow)
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
+        self._scroll_step = 0
+        self._scroll_timer = QTimer()
+        self._scroll_timer.setInterval(100)
+        self._scroll_timer.setSingleShot(True)
+
+        def reset_scroll_step():
+            self._scroll_step = 0
+
+        self._scroll_timer.timeout.connect(reset_scroll_step)
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -346,6 +357,24 @@ class Library(
             synchronize.signals.new_library_path_selected.emit(current)
         if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
+
+    def wheelEvent(self, event):
+        """Update mouse wheel for proper scrolling.
+
+        We accumulate steps until we have enough to scroll up / down by one row. For
+        regular mice one "roll" should result in a single scroll. Finer grained devices
+        such as touchpads need this cumulative approach.
+
+        See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
+        """
+        self._scroll_step += event.angleDelta().y() / 120
+        steps = int(self._scroll_step)
+        if steps < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
+        else:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
+        self._scroll_step = self._scroll_step - steps
+        self._scroll_timer.start()
 
 
 class LibraryModel(QStandardItemModel):
