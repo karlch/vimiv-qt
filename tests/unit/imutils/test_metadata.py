@@ -19,6 +19,116 @@ except ImportError:
     pyexiv2 = None
 
 
+EXTERNAL_CONTENT = {
+    "Exif.Image.Copyright": pyexiv2.exif.ExifTag(
+        "Exif.Image.Copyright", "vimiv-AUTHORS-2021"
+    ),
+    "Exif.Image.DateTime": pyexiv2.exif.ExifTag(
+        "Exif.Image.DateTime", "2017-12-16 16:21:57"
+    ),
+    "Exif.Image.Make": pyexiv2.exif.ExifTag("Exif.Image.Make", "vimiv"),
+    "Exif.Photo.ApertureValue": pyexiv2.exif.ExifTag(
+        "Exif.Photo.ApertureValue", Fraction(4)
+    ),
+    "Exif.Photo.ExposureTime": pyexiv2.exif.ExifTag(
+        "Exif.Photo.ExposureTime", Fraction(1, 25)
+    ),
+    "Exif.Photo.FocalLength": pyexiv2.exif.ExifTag(
+        "Exif.Photo.FocalLength", Fraction(600)
+    ),
+    "Exif.Photo.ISOSpeedRatings": pyexiv2.exif.ExifTag(
+        "Exif.Photo.ISOSpeedRatings", [320]
+    ),
+    "Exif.GPSInfo.GPSAltitude": pyexiv2.exif.ExifTag(
+        "Exif.GPSInfo.GPSAltitude", Fraction(2964)
+    ),
+    "Iptc.Application2.Program": pyexiv2.iptc.IptcTag(
+        "Iptc.Application2.Program", ["Vimiv"]
+    ),
+    "Iptc.Application2.Keywords": pyexiv2.iptc.IptcTag(
+        "Iptc.Application2.Keywords", ["ImageViewer", "Application", "Linux"]
+    ),
+    "Xmp.xmpRights.Owner": pyexiv2.xmp.XmpTag(
+        "Xmp.xmpRights.Owner", ["vimiv-AUTHORS-2021"]
+    ),
+    "Xmp.xmp.Rating": pyexiv2.xmp.XmpTag("Xmp.xmp.Rating", 5),
+}
+
+
+INTERNAL_CONTENT = {
+    "Vimiv.XDimension": 300,
+    "Vimiv.YDimension": 300,
+    "Vimiv.FileType": "jpg",
+}
+
+
+# TODO: Write as variable
+def _full_content():
+    # Merge both dicts
+    # return external_content | internal_content # Only working for Py 3.9
+    content = EXTERNAL_CONTENT.copy()
+    content.update(INTERNAL_CONTENT)
+    return content
+
+
+FULL_CONTENT = _full_content()
+
+
+INVALID_KEYS = ["Invalid", "Invalid.Key", "Not.Valid.2"]
+
+
+TEST_KEYS = [
+    list(FULL_CONTENT.keys()),
+    ["Exif.Image.Copyright", "Exif.Image.Make"],
+    ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
+    INVALID_KEYS + ["Exif.Photo.FocalLength"],
+    ["Iptc.Application2.Program", "Iptc.Application2.Keywords"],
+    ["Xmp.xmp.Rating", "Exif.Photo.ISOSpeedRatings", "Iptc.Application2.Program"],
+    ["Xmp.xmp.Rating", "Xmp.xmpRights.Owner"],
+]
+
+
+@pytest.fixture()
+def dummy_image(qapp, tmp_path):
+    path = tmp_path
+
+    def _get_img(name="image.jpg"):
+        filename = str(path / name)
+        QPixmap(300, 300).save(filename)
+        return filename
+
+    return _get_img
+
+
+@pytest.fixture
+def main_handler_exiv2():
+    return lambda s: MetadataHandler(s)
+
+
+@pytest.fixture
+def main_handler_piexif(main_handler_exiv2):
+    def aux(img: str):
+        handler = main_handler_exiv2(img)
+        handler._ext_handler = metadata._ExternalKeyHandlerPiexif(img)
+        return handler
+
+    return aux
+
+
+# Todo: Cleanup fixture by reusing main_handler_* fixtures
+@pytest.fixture(params=[True, False])
+def main_handler(request, main_handler_exiv2):
+    if request.param:
+        return lambda s: MetadataHandler(s)
+
+    def aux(img: str):
+        handler = main_handler_exiv2(img)
+        handler._ext_handler = metadata._ExternalKeyHandlerPiexif(img)
+        return handler
+
+    return aux
+
+
 @pytest.fixture(
     params=[metadata.ExternalKeyHandler, metadata._ExternalKeyHandlerPiexif]
 )
@@ -76,103 +186,6 @@ def test_handler_exception_customization(handler, expected_msg):
         handler.raise_exception("test operation")
 
 
-@pytest.fixture()
-def external_content():
-    return {
-        "Exif.Image.Copyright": pyexiv2.exif.ExifTag(
-            "Exif.Image.Copyright", "vimiv-AUTHORS-2021"
-        ),
-        "Exif.Image.DateTime": pyexiv2.exif.ExifTag(
-            "Exif.Image.DateTime", "2017-12-16 16:21:57"
-        ),
-        "Exif.Image.Make": pyexiv2.exif.ExifTag("Exif.Image.Make", "vimiv"),
-        "Exif.Photo.ApertureValue": pyexiv2.exif.ExifTag(
-            "Exif.Photo.ApertureValue", Fraction(4)
-        ),
-        "Exif.Photo.ExposureTime": pyexiv2.exif.ExifTag(
-            "Exif.Photo.ExposureTime", Fraction(1, 25)
-        ),
-        "Exif.Photo.FocalLength": pyexiv2.exif.ExifTag(
-            "Exif.Photo.FocalLength", Fraction(600)
-        ),
-        "Exif.Photo.ISOSpeedRatings": pyexiv2.exif.ExifTag(
-            "Exif.Photo.ISOSpeedRatings", [320]
-        ),
-        "Exif.GPSInfo.GPSAltitude": pyexiv2.exif.ExifTag(
-            "Exif.GPSInfo.GPSAltitude", Fraction(2964)
-        ),
-        "Iptc.Application2.Program": pyexiv2.iptc.IptcTag(
-            "Iptc.Application2.Program", ["Vimiv"]
-        ),
-        "Iptc.Application2.Keywords": pyexiv2.iptc.IptcTag(
-            "Iptc.Application2.Keywords", ["ImageViewer", "Application", "Linux"]
-        ),
-        "Xmp.xmpRights.Owner": pyexiv2.xmp.XmpTag(
-            "Xmp.xmpRights.Owner", ["vimiv-AUTHORS-2021"]
-        ),
-        "Xmp.xmp.Rating": pyexiv2.xmp.XmpTag("Xmp.xmp.Rating", 5),
-    }
-
-
-@pytest.fixture()
-def internal_content():
-    return {"Vimiv.XDimension": 300, "Vimiv.YDimension": 300, "Vimiv.FileType": "jpg"}
-
-
-@pytest.fixture()
-def invalid_keys():
-    return ["Invalid", "Invalid.Key", "Not.Valid.2"]
-
-
-@pytest.fixture()
-def metadata_content(external_content, internal_content):
-    # Merge both dicts
-    # return external_content | internal_content # Only working for Py 3.9
-    external_content.update(internal_content)
-    return external_content
-
-
-@pytest.fixture()
-def metadata_test_keys(metadata_content, invalid_keys):
-    return [
-        list(metadata_content.keys()),
-        ["Exif.Image.Copyright", "Exif.Image.Make"],
-        ["Exif.GPSInfo.GPSAltitude", "Vimiv.XDimension", "Vimiv.YDimension"],
-        invalid_keys + ["Exif.Photo.FocalLength"],
-        ["Iptc.Application2.Program", "Iptc.Application2.Keywords"],
-        ["Xmp.xmp.Rating", "Exif.Photo.ISOSpeedRatings", "Iptc.Application2.Program"],
-        ["Xmp.xmp.Rating", "Xmp.xmpRights.Owner"],
-    ]
-
-
-@pytest.fixture()
-def dummy_image(qapp, tmp_path):
-    path = tmp_path
-
-    def _get_img(name="image.jpg"):
-        filename = str(path / name)
-        QPixmap(300, 300).save(filename)
-        return filename
-
-    return _get_img
-
-
-@pytest.fixture
-def metadata_handler(add_metadata_information, dummy_image, external_content):
-    assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
-    image = dummy_image()
-    add_metadata_information(image, external_content)
-    return MetadataHandler(image)
-
-
-@pytest.fixture
-def metadata_handler_piexif(metadata_handler):
-    metadata_handler._ext_handler = metadata._ExternalKeyHandlerPiexif(
-        metadata_handler.filename
-    )
-    return metadata_handler
-
-
 def value_match(required_value, actual_value):
     try:
         val = required_value.human_value
@@ -210,126 +223,163 @@ def value_match_piexif(required_value, actual_value):
     assert actual_value == val
 
 
-def test_metadatahandler_fetch_key(metadata_handler, metadata_content, invalid_keys):
-    for key, value in metadata_content.items():
-        fetched_key, _, fetched_value = metadata_handler.fetch_key(key)
-        assert fetched_key == key
-        value_match(value, fetched_value)
+# TODO add more test cases
+@pytest.mark.parametrize(
+    "metadata_key, expected_key, expected_value",
+    [("Exif.Image.Copyright", "Exif.Image.Copyright", "vimiv-AUTHORS-2021")],
+)
+def test_metadatahandler_fetch_key_exiv2(
+    main_handler_exiv2,
+    dummy_image,
+    add_metadata_information,
+    metadata_key,
+    expected_key,
+    expected_value,
+):
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler_exiv2(src)
 
-    for key in invalid_keys:
-        with pytest.raises(KeyError):
-            _, _, _ = metadata_handler.fetch_key(key)
+    fetched_key, _, fetched_value = handler.fetch_key(metadata_key)
+    assert fetched_key == expected_key
+    assert fetched_value == expected_value
 
 
+# TODO add more test cases
+@pytest.mark.parametrize(
+    "metadata_key, expected_key, expected_value",
+    [("Exif.Image.Copyright", "Exif.Image.Copyright", "vimiv-AUTHORS-2021")],
+)
 def test_metadatahandler_fetch_key_piexif(
-    metadata_handler_piexif, metadata_content, invalid_keys
+    main_handler_piexif,
+    dummy_image,
+    add_metadata_information,
+    metadata_key,
+    expected_key,
+    expected_value,
 ):
-    for key, value in metadata_content.items():
-        if "Iptc" in key or "Xmp" in key:
-            continue
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler_piexif(src)
 
-        fetched_key, _, fetched_value = metadata_handler_piexif.fetch_key(key)
-        short_key = key.rpartition(".")[-1]
-        assert fetched_key in (key, short_key)
-        value_match_piexif(value, fetched_value)
+    if "iptc" in metadata_key.lower() or "xmp" in metadata_key.lower():
+        return
 
-    for key in invalid_keys:
-        with pytest.raises(KeyError):
-            _, _, _ = metadata_handler_piexif.fetch_key(key)
+    fetched_key, _, fetched_value = handler.fetch_key(metadata_key)
+    short_key = metadata_key.rpartition(".")[-1]
+    assert fetched_key in (metadata_key, short_key)
+    assert fetched_value == expected_value
 
 
-def test_metadatahandler_fetch_keys(
-    metadata_handler, metadata_content, metadata_test_keys
+@pytest.mark.parametrize("metadata_key", INVALID_KEYS)
+def test_metadatahandler_fetch_key_invalid(
+    main_handler, dummy_image, add_metadata_information, metadata_key
 ):
-    for current_keys in metadata_test_keys:
-        valid_keys = [key for key in current_keys if key in metadata_content.keys()]
-        fetched = metadata_handler.fetch_keys(current_keys)
-        assert len(fetched) == len(valid_keys)
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler(src)
 
-        for current_key in valid_keys:
-            assert current_key in fetched
-            value_match(metadata_content[current_key], fetched[current_key][1])
+    with pytest.raises(KeyError):
+        _, _, _ = handler.fetch_key(metadata_key)
 
 
+@pytest.mark.parametrize("current_keys", TEST_KEYS)
+def test_metadatahandler_fetch_keys_exiv2(
+    main_handler_exiv2, add_metadata_information, dummy_image, current_keys
+):
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler_exiv2(src)
+
+    valid_keys = [key for key in current_keys if key in FULL_CONTENT.keys()]
+    fetched = handler.fetch_keys(current_keys)
+    assert len(fetched) == len(valid_keys)
+
+    for current_key in valid_keys:
+        assert current_key in fetched
+        value_match(FULL_CONTENT[current_key], fetched[current_key][1])
+
+
+@pytest.mark.parametrize("current_keys", TEST_KEYS)
 def test_metadatahandler_fetch_keys_piexif(
-    metadata_handler_piexif, metadata_content, metadata_test_keys
+    main_handler_piexif, add_metadata_information, dummy_image, current_keys
 ):
-    for current_keys in metadata_test_keys:
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler_piexif(src)
 
-        valid_keys = [
-            key
-            for key in current_keys
-            if key in metadata_content.keys() and not ("Iptc" in key or "Xmp" in key)
+    valid_keys = [
+        key
+        for key in current_keys
+        if key in FULL_CONTENT.keys()
+        and not ("iptc" in key.lower() or "xmp" in key.lower())
+    ]
+
+    fetched = handler.fetch_keys(current_keys)
+    assert len(fetched) == len(valid_keys)
+
+    for current_key in valid_keys:
+        short_key = current_key.rpartition(".")[-1]
+        assert current_key in fetched or short_key in fetched
+        # Internal keys are still in long form
+        try:
+            value_match_piexif(FULL_CONTENT[current_key], fetched[short_key][1])
+        except KeyError:
+            value_match_piexif(FULL_CONTENT[current_key], fetched[current_key][1])
+
+
+def test_metadatahandler_get_keys(main_handler, add_metadata_information, dummy_image):
+    src = dummy_image()
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    handler = main_handler(src)
+
+    available_keys = list(FULL_CONTENT.keys())
+
+    if isinstance(handler._external_handler, metadata._ExternalKeyHandlerPiexif):
+        available_keys = [
+            e for e in available_keys if not ("iptc" in e.lower() or "xmp" in e.lower())
         ]
-        print(valid_keys, current_keys)
-        fetched = metadata_handler_piexif.fetch_keys(current_keys)
-        assert len(fetched) == len(valid_keys)
 
-        for current_key in valid_keys:
-            short_key = current_key.rpartition(".")[-1]
-            assert current_key in fetched or short_key in fetched
-            # Internal keys are still in long form
-            try:
-                value_match_piexif(metadata_content[current_key], fetched[short_key][1])
-            except KeyError:
-                value_match_piexif(
-                    metadata_content[current_key], fetched[current_key][1]
+    fetched_keys = list(handler.get_keys())
+
+    # Available_keys does not contain all possible keys
+    assert len(fetched_keys) >= len(available_keys)
+
+    for key in available_keys:
+        short_key = key.rpartition(".")[-1]
+        assert key in fetched_keys or short_key in fetched_keys
+
+
+@pytest.mark.parametrize(
+    "metadata, expected_date",
+    [
+        (
+            {
+                "Exif.Image.DateTime": pyexiv2.exif.ExifTag(
+                    "Exif.Image.DateTime", "2017-12-16 16:21:57"
                 )
-
-
-def test_metadatahandler_get_keys(
-    metadata_handler, metadata_handler_piexif, metadata_content
-):
-    available_keys = list(metadata_content.keys())
-
-    for handler in (metadata_handler, metadata_handler_piexif):
-        if isinstance(handler._external_handler, metadata._ExternalKeyHandlerPiexif):
-            available_keys = [
-                e for e in available_keys if not ("Iptc" in e or "Xmp" in e)
-            ]
-
-        fetched_keys = list(handler.get_keys())
-
-        # Available_keys does not contain all possible keys
-        assert len(fetched_keys) >= len(available_keys)
-
-        for key in available_keys:
-            short_key = key.rpartition(".")[-1]
-            assert key in fetched_keys or short_key in fetched_keys
-
-
-@pytest.fixture
-def external_keyhandler(add_metadata_information, dummy_image, external_content):
-    assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
-    image = dummy_image()
-    add_metadata_information(image, external_content)
-    return metadata.ExternalKeyHandler(image)
-
-
-@pytest.fixture
-def external_keyhandler_piexif(add_metadata_information, dummy_image, external_content):
-    assert pyexiv2 is not None, "pyexiv2 required to add metadata information"
-    image = dummy_image()
-    add_metadata_information(image, external_content)
-    return metadata._ExternalKeyHandlerPiexif(image)
-
-
+            },
+            "2017-12-16 16:21:57",
+        ),
+        ({}, ""),
+    ],
+)
 def test_external_keyhandler_get_date_time(
-    external_keyhandler, external_keyhandler_piexif, dummy_image
+    external_handler, dummy_image, add_metadata_information, metadata, expected_date
 ):
-    assert external_keyhandler.get_date_time() == "2017-12-16 16:21:57"
-    assert external_keyhandler_piexif.get_date_time() == "2017-12-16 16:21:57"
-
-    assert metadata.ExternalKeyHandler(dummy_image()).get_date_time() == ""
-    assert metadata._ExternalKeyHandlerPiexif(dummy_image()).get_date_time() == ""
+    src = dummy_image("image.jpg")
+    add_metadata_information(src, metadata)
+    handler = external_handler(src)
+    assert handler.get_date_time() == expected_date
 
 
 def test_external_keyhandler_copy_metadata(
-    external_keyhandler, external_keyhandler_piexif, dummy_image, metadata_content
+    external_handler, dummy_image, add_metadata_information
 ):
-    for handler in (external_keyhandler, external_keyhandler_piexif):
-        dest = dummy_image("dest.jpg")
-        handler.copy_metadata(dest)
-        assert len(list(metadata.MetadataHandler(dest).get_keys())) >= len(
-            metadata_content
-        )
+    src = dummy_image("src.jpg")
+    add_metadata_information(src, EXTERNAL_CONTENT)
+    src_handler = external_handler(src)
+
+    dest = dummy_image("dest.jpg")
+    src_handler.copy_metadata(dest)
+    assert len(list(metadata.MetadataHandler(dest).get_keys())) >= len(FULL_CONTENT)
