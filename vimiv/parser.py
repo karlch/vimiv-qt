@@ -81,6 +81,18 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"
     )
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Wildcard expanded string to print to standard output upon quit",
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        action="store_true",
+        help="Read paths to open from standard input",
+        dest="stdinput",
+    )
 
     devel = parser.add_argument_group("development arguments")
     devel.add_argument(

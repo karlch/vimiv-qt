@@ -37,3 +37,9 @@ Feature: Startup vimiv with various flags
     Scenario: Open hidden image upon startup
         Given I open the image '.hidden.jpg'
         Then the filelist should contain 1 images
+
+    Scenario: Pipe paths to vimiv
+        Given I patch stdin for 3 images
+        And I open 5 images with -i
+        # Pipe takes preference over regular filelist with -i
+        Then the filelist should contain 3 images
