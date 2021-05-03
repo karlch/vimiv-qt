@@ -35,6 +35,7 @@ class ThumbnailView(
     eventhandler.EventHandlerMixin,
     widgets.GetNumVisibleMixin,
     widgets.ScrollToCenterMixin,
+    widgets.ScrollWheelCumulativeMixin,
     QListWidget,
 ):
     """Thumbnail widget.
@@ -79,7 +80,9 @@ class ThumbnailView(
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
     def __init__(self):
-        super().__init__()
+        widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
+        QListWidget.__init__(self)
+
         self._paths: List[str] = []
 
         fail_pixmap = create_pixmap(
@@ -422,6 +425,13 @@ class ThumbnailView(
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
         self.scrollTo(self.currentIndex())
+
+    def _scroll_wheel_callback(self, steps):
+        """Callback function used by the scroll wheel mixin for mouse scrolling."""
+        if steps < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
+        else:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):

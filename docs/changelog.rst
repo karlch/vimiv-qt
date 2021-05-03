@@ -65,8 +65,8 @@ Changed:
 * New set of default metadata key sets numbered from 1 to 5. Thanks `@jcjgraf`_!
 * When toggling ``library.show_hidden`` the selection now stays on the same file, not
   the same index.
-* Using the mouse to scroll in the library now changes the selection instead of just
-  scrolling the view.
+* Using the mouse to scroll in library and thumbnail mode now changes the selection
+  instead of just scrolling the view.
 
 Fixed:
 ^^^^^^

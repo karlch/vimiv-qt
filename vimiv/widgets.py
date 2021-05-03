@@ -8,7 +8,7 @@
 
 from typing import Optional, Tuple
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QFontMetrics
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
@@ -21,6 +21,46 @@ class ScrollToCenterMixin:
 
     def scrollTo(self, index, _hint=None):
         super().scrollTo(index, self.PositionAtCenter)
+
+
+class ScrollWheelCumulativeMixin:
+    """Mixin class for cumulative mouse scrolling.
+
+    Attributes:
+        _callback: Function to call when an integer step is accumulated.
+        _scroll_step: Currently unprocessed scrolling step to support finer devices.
+        _scroll_timer: Timer to reset _scroll_step after scrolling.
+    """
+
+    def __init__(self, callback):
+        self._callback = callback
+        self._scroll_step = 0
+        self._scroll_timer = QTimer()
+        self._scroll_timer.setInterval(100)
+        self._scroll_timer.setSingleShot(True)
+
+        def reset_scroll_step():
+            self._scroll_step = 0
+
+        self._scroll_timer.timeout.connect(reset_scroll_step)
+
+    def wheelEvent(self, event):
+        """Update mouse wheel for proper scrolling.
+
+        We accumulate steps until we have an integer value. For regular mice one "roll"
+        should result in a single step. Finer grained devices such as touchpads need
+        this cumulative approach.
+
+        See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
+        """
+        self._scroll_step += event.angleDelta().y() / 120
+        steps = int(self._scroll_step)
+
+        if steps:
+            self._callback(steps)
+
+        self._scroll_step = self._scroll_step - steps
+        self._scroll_timer.start()
 
 
 class GetNumVisibleMixin:
