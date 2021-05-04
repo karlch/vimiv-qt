@@ -57,10 +57,13 @@ Added:
   ``:print-stdout``.
 * The ``-o TEXT`` flag to print ``TEXT`` to standard output before exit. Wildcards are
   expanded before printing, allowing to for example print marked files using ``-o %m``.
+  Thanks `@loiccoyle`_ for the idea!
 * The ``-i`` flag to read paths to open from standard input instead.
+  Thanks `@loiccoyle`_ for the idea!
 * The ``--qt-args`` flag to pass arguments directly to qt. When passing multiple
   arguments, they must be quoted accordingly, e.g.
   ``vimiv --qt-args '--name floating'``.
+  Thanks `@loiccoyle`_ for the discussion!
 
 Changed:
 ^^^^^^^^
@@ -488,3 +491,4 @@ Initial release of the Qt version.
 .. _@BachoSeven: https://github.com/BachoSeven
 .. _@willemw12: https://github.com/willemw12
 .. _@Kakupakat: https://github.com/Kakupakat
+.. _@loiccoyle: https://github.com/loiccoyle
