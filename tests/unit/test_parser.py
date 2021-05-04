@@ -95,3 +95,17 @@ def test_parse_settings(argparser):
         arglist.extend(("-s", name, value))
     args = argparser.parse_args(arglist)
     assert args.cmd_settings == settings
+
+
+@pytest.mark.parametrize(
+    "qtargs, expected",
+    [
+        ("--name floating", ["--name", "floating"]),
+        ("--name floating --reverse", ["--name", "floating", "--reverse"]),
+        ("--name 'has space'", ["--name", "has space"]),
+    ],
+)
+def test_parse_qt_args(argparser, qtargs, expected):
+    arglist = ["--qt-args", qtargs]
+    args = argparser.parse_args(arglist)
+    assert parser.get_qt_args(args) == expected

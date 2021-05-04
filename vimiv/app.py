@@ -22,9 +22,14 @@ class Application(QApplication):
     """Main application class."""
 
     @api.objreg.register
-    def __init__(self) -> None:
-        """Initialize the main Qt application."""
-        super().__init__([vimiv.__name__])  # Only pass program name to Qt
+    def __init__(self, *qtargs: str) -> None:
+        """Initialize the main Qt application.
+
+        Args:
+            qtargs: Arguments passed directly to the QApplication.
+        """
+        _logger.debug("Passing %s to qt", utils.quotedjoin(qtargs))
+        super().__init__([vimiv.__name__, *qtargs])
         self.setApplicationVersion(vimiv.__version__)
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()

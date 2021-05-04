@@ -10,6 +10,8 @@ import argparse
 import contextlib
 import logging
 import os
+import shlex
+from typing import List
 
 from PyQt5.QtCore import QSize
 
@@ -56,7 +58,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "-s",
         "--set",
         nargs=2,
-        default=[],  # List is required for action="append"
+        default=[],  # List is required for iterating
         action="append",
         dest="cmd_settings",
         metavar=("OPTION", "VALUE"),
@@ -101,6 +103,11 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="MODULE",
         default=(),
         help="Force showing debug log messages of MODULE",
+    )
+    devel.add_argument(
+        "--qt-args",
+        metavar="ARGS",
+        help="Arguments to pass to qt directly, use quotes to pass multiple arguments",
     )
     return parser
 
@@ -177,3 +184,10 @@ def loglevel(value: str) -> int:
     with contextlib.suppress(AttributeError):
         return getattr(logging, value.upper())
     raise argparse.ArgumentTypeError(f"Invalid log level '{value}'")
+
+
+def get_qt_args(args: argparse.Namespace) -> List[str]:
+    """Retrieve list of arguments to pass to qt from argparse namespace."""
+    if args.qt_args:
+        return shlex.split(args.qt_args)
+    return []

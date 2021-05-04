@@ -42,7 +42,8 @@ _logger = log.module_logger(__name__)
 def main() -> int:
     """Run startup and the Qt main loop."""
     args = setup_pre_app(sys.argv[1:])
-    qapp = app.Application()
+    qt_args = parser.get_qt_args(args)
+    qapp = app.Application(*qt_args)
     crash_handler.CrashHandler(qapp)
     setup_post_app(args)
     _logger.debug("Startup completed, starting Qt main loop")
