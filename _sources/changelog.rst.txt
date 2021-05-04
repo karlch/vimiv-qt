@@ -58,6 +58,9 @@ Added:
 * The ``-o TEXT`` flag to print ``TEXT`` to standard output before exit. Wildcards are
   expanded before printing, allowing to for example print marked files using ``-o %m``.
 * The ``-i`` flag to read paths to open from standard input instead.
+* The ``--qt-args`` flag to pass arguments directly to qt. When passing multiple
+  arguments, they must be quoted accordingly, e.g.
+  ``vimiv --qt-args '--name floating'``.
 
 Changed:
 ^^^^^^^^
