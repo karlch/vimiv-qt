@@ -13,7 +13,8 @@ Module attributes:
 import abc
 import contextlib
 import enum
-from typing import Any, Dict, ItemsView, List
+from typing import Any, Dict, ItemsView, List, Callable, Tuple
+import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -315,6 +316,37 @@ class StrSetting(Setting):
         return "String"
 
 
+class ImageOrderSetting(Setting):
+    """Stores a image ordering setting."""
+
+    typ = str
+
+    ORDER_TYPES = {
+        "name": (os.path.basename, False),
+        "name-desc": (os.path.basename, True),
+        "modify": (os.path.getmtime, False),
+        "modify-desc": (os.path.getmtime, True),
+        "size": (os.path.getsize, False),
+        "size-desc": (os.path.getsize, True),
+    }
+
+    def convert(self, value: str) -> str:
+        if value not in self.ORDER_TYPES:
+            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+
+        return value
+
+    def get_para(self) -> Tuple[Callable[..., Any], bool]:
+        """Returns the ordering parameters according to the current set value."""
+        try:
+            return self.ORDER_TYPES[self.value]
+        except KeyError:
+            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+
+    def __str__(self) -> str:
+        return "ImageOrder"
+
+
 # Initialize all settings
 
 monitor_fs = BoolSetting(
@@ -333,6 +365,7 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
+image_order = ImageOrderSetting("image_order", "name", desc="Set ordering.",)
 
 
 class command:  # pylint: disable=invalid-name

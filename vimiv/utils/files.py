@@ -15,6 +15,8 @@ from PyQt5.QtGui import QImageReader
 
 from vimiv.utils import imagereader
 
+from vimiv import api
+
 
 ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]
 
@@ -29,10 +31,15 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
         Sorted list of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
+    order_function, reverse = api.settings.image_order.get_para()
     return sorted(
-        os.path.join(directory, path)
-        for path in os.listdir(directory)
-        if show_hidden or not path.startswith(".")
+        [
+            os.path.join(directory, path)
+            for path in os.listdir(directory)
+            if show_hidden or not path.startswith(".")
+        ],
+        key=order_function,
+        reverse=reverse,
     )
 
 
