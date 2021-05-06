@@ -87,12 +87,6 @@ def test_listdir_wrapper_returns_abspath(mocker):
     assert files.listdir("directory") == expected
 
 
-def test_listdir_wrapper_sort(mocker):
-    mocker.patch("os.listdir", return_value=["b.txt", "a.txt"])
-    mocker.patch("os.path.abspath", return_value="")
-    assert files.listdir("directory") == ["a.txt", "b.txt"]
-
-
 def test_listdir_wrapper_remove_hidden(mocker):
     mocker.patch("os.listdir", return_value=[".dotfile.txt", "a.txt"])
     mocker.patch("os.path.abspath", return_value="")
@@ -120,6 +114,13 @@ def test_images_supported(mocker):
     images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
+
+
+def test_order():
+    assert files.order((["b.txt", "a.txt"], ["b", "a"])) == (
+        ["a.txt", "b.txt"],
+        ["a", "b"],
+    )
 
 
 def test_tar_gz_not_an_image(tmp_path):
