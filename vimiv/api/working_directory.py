@@ -110,6 +110,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
         settings.image_order.changed.connect(self._reload_directory)
+        settings.directory_order.changed.connect(self._reload_directory)
         # TODO Fix upstream and open PR
         self.directoryChanged.connect(self._reload_directory)  # type: ignore
         self.fileChanged.connect(self._on_file_changed)  # type: ignore
@@ -225,7 +226,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.supported(paths)
+        return files.order(files.supported(paths))
 
 
 handler = cast(WorkingDirectoryHandler, None)

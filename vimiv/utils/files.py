@@ -28,7 +28,7 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
         directory: Directory to check for files in via os.listdir(directory).
         show_hidden: Include hidden files in output.
     Returns:
-        Sorted list of files in the directory with their absolute path.
+        List of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
     order_function, reverse = api.settings.image_order.get_para()
@@ -59,6 +59,26 @@ def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
             directories.append(path)
         elif is_image(path):
             images.append(path)
+    return images, directories
+
+
+def order(files: Tuple[List[str], List[str]]) -> Tuple[List[str], List[str]]:
+    """Orders images and directories according to the settings.
+
+    Args:
+        files: Tuple of list of images and list of directories.
+    Returns:
+        images: Ordered list of images.
+        directories: Orderd list of directories.
+    """
+
+    images, directories = files
+
+    image_order, image_reverse = api.settings.image_order.get_para()
+    directory_order, directory_reverse = api.settings.directory_order.get_para()
+    images = sorted(images, key=image_order, reverse=image_reverse)
+    directories = sorted(directories, key=directory_order, reverse=directory_reverse)
+
     return images, directories
 
 

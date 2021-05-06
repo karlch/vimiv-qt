@@ -316,10 +316,34 @@ class StrSetting(Setting):
         return "String"
 
 
-class ImageOrderSetting(Setting):
-    """Stores a image ordering setting."""
+class OrderSetting(Setting):
+    """Stores an ordering setting."""
 
     typ = str
+
+    ORDER_TYPES: Dict[str, Tuple[Callable[..., Any], bool]] = {}
+
+    def convert(self, value: str) -> str:
+        if value not in self.ORDER_TYPES:
+            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+        return value
+
+    def get_para(self) -> Tuple[Callable[..., Any], bool]:
+        """Returns the ordering parameters according to the current set value."""
+        try:
+            return self.ORDER_TYPES[self.value]
+        except KeyError:
+            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+
+    def suggestions(self) -> List[str]:
+        return [str(value) for value in self.ORDER_TYPES]
+
+    def __str__(self) -> str:
+        return "Order"
+
+
+class ImageOrderSetting(OrderSetting):
+    """Stores an image ordering setting."""
 
     ORDER_TYPES = {
         "name": (os.path.basename, False),
@@ -330,21 +354,24 @@ class ImageOrderSetting(Setting):
         "size-desc": (os.path.getsize, True),
     }
 
-    def convert(self, value: str) -> str:
-        if value not in self.ORDER_TYPES:
-            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
-
-        return value
-
-    def get_para(self) -> Tuple[Callable[..., Any], bool]:
-        """Returns the ordering parameters according to the current set value."""
-        try:
-            return self.ORDER_TYPES[self.value]
-        except KeyError:
-            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
-
     def __str__(self) -> str:
         return "ImageOrder"
+
+
+class DirectoryOrderSetting(OrderSetting):
+    """Stores an directory ordering setting."""
+
+    ORDER_TYPES = {
+        "name": (os.path.basename, False),
+        "name-desc": (os.path.basename, True),
+        "modify": (os.path.getmtime, False),
+        "modify-desc": (os.path.getmtime, True),
+        "size": (lambda e: len(os.listdir(e)), True),
+        "size-desc": (lambda e: len(os.listdir(e)), False),
+    }
+
+    def __str__(self) -> str:
+        return "DirectoryOrder"
 
 
 # Initialize all settings
@@ -365,7 +392,10 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
-image_order = ImageOrderSetting("image_order", "name", desc="Set ordering.",)
+image_order = ImageOrderSetting("image_order", "name", desc="Set image ordering.",)
+directory_order = DirectoryOrderSetting(
+    "directory_order", "name", desc="Set directory ordering.",
+)
 
 
 class command:  # pylint: disable=invalid-name
