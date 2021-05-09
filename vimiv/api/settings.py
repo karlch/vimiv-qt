@@ -13,8 +13,9 @@ Module attributes:
 import abc
 import contextlib
 import enum
-from typing import Any, Dict, ItemsView, List, Callable, Tuple
+from typing import Any, Dict, ItemsView, List, Callable, Tuple, Union
 import os
+import re
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -338,6 +339,18 @@ class OrderSetting(Setting):
     def suggestions(self) -> List[str]:
         return [str(value) for value in self.ORDER_TYPES]
 
+    @staticmethod
+    def _natural_sort(text: str) -> List[Union[str, int]]:
+        """Key function for natural sort.
+
+        Credits to https://stackoverflow.com/a/5967539/5464989
+        """
+
+        def convert(t: str) -> Union[str, int]:
+            return int(t) if t.isdigit() else t
+
+        return [convert(c) for c in re.split(r"(\d+)", text)]
+
     def __str__(self) -> str:
         return "Order"
 
@@ -348,6 +361,8 @@ class ImageOrderSetting(OrderSetting):
     ORDER_TYPES = {
         "name": (os.path.basename, False),
         "name-desc": (os.path.basename, True),
+        "name-natural": (OrderSetting._natural_sort, False),
+        "name-natural-desc": (OrderSetting._natural_sort, True),
         "modify": (os.path.getmtime, False),
         "modify-desc": (os.path.getmtime, True),
         "size": (os.path.getsize, False),
@@ -364,6 +379,8 @@ class DirectoryOrderSetting(OrderSetting):
     ORDER_TYPES = {
         "name": (os.path.basename, False),
         "name-desc": (os.path.basename, True),
+        "name-natural": (OrderSetting._natural_sort, False),
+        "name-natural-desc": (OrderSetting._natural_sort, True),
         "modify": (os.path.getmtime, False),
         "modify-desc": (os.path.getmtime, True),
         "size": (lambda e: len(os.listdir(e)), True),
