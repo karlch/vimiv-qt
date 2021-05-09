@@ -13,9 +13,9 @@ Module attributes:
 import abc
 import contextlib
 import enum
-from typing import Any, Dict, ItemsView, List, Callable, Tuple, Union
 import os
 import re
+from typing import Any, Dict, ItemsView, List, Callable, Tuple, Union
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
