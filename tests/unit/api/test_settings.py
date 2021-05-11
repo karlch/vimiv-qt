@@ -151,3 +151,21 @@ def test_ask_prompt_setting(mocker, prompt_setting, answer):
     mocker.patch("vimiv.api.prompt.ask_question", ask_question)
 
     assert bool(prompt_setting) == answer
+
+
+def test_set_order_setting():
+    o = settings.ImageOrderSetting("imageorder", "name")
+    o.value = "name-desc"
+    assert o.value == "name-desc"
+
+
+def test_set_order_setting_non_str():
+    o = settings.OrderSetting("order", "name")
+    with pytest.raises(ValueError, match="must be one of"):
+        o.value = 1
+
+
+def test_set_order_setting_non_valid():
+    o = settings.OrderSetting("order", "name")
+    with pytest.raises(ValueError, match="must be one of"):
+        o.value = "invalid"
