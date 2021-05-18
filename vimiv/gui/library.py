@@ -352,12 +352,12 @@ class Library(
         if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
 
-    def _scroll_wheel_callback(self, steps):
+    def _scroll_wheel_callback(self, _steps_x, steps_y):
         """Callback function used by the scroll wheel mixin for mouse scrolling."""
-        if steps < 0:
-            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
-        else:
-            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
 
 
 class LibraryModel(QStandardItemModel):

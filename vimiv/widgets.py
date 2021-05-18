@@ -34,13 +34,13 @@ class ScrollWheelCumulativeMixin:
 
     def __init__(self, callback):
         self._callback = callback
-        self._scroll_step = 0
+        self._scroll_step_x = self._scroll_step_y = 0
         self._scroll_timer = QTimer()
         self._scroll_timer.setInterval(100)
         self._scroll_timer.setSingleShot(True)
 
         def reset_scroll_step():
-            self._scroll_step = 0
+            self._scroll_step_x = self._scroll_step_y = 0
 
         self._scroll_timer.timeout.connect(reset_scroll_step)
 
@@ -53,13 +53,17 @@ class ScrollWheelCumulativeMixin:
 
         See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
         """
-        self._scroll_step += event.angleDelta().y() / 120
-        steps = int(self._scroll_step)
+        self._scroll_step_x += event.angleDelta().x() / 120
+        self._scroll_step_y += event.angleDelta().y() / 120
 
-        if steps:
-            self._callback(steps)
+        steps_x = int(self._scroll_step_x)
+        steps_y = int(self._scroll_step_y)
 
-        self._scroll_step = self._scroll_step - steps
+        if steps_x or steps_y:
+            self._callback(steps_x, steps_y)
+
+        self._scroll_step_x -= steps_x
+        self._scroll_step_y -= steps_y
         self._scroll_timer.start()
 
 

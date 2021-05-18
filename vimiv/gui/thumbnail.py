@@ -426,12 +426,16 @@ class ThumbnailView(
         super().resizeEvent(event)
         self.scrollTo(self.currentIndex())
 
-    def _scroll_wheel_callback(self, steps):
+    def _scroll_wheel_callback(self, steps_x, steps_y):
         """Callback function used by the scroll wheel mixin for mouse scrolling."""
-        if steps < 0:
-            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
-        else:
-            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
+        if steps_x < 0:
+            self.scroll(argtypes.DirectionWithPage.Right, count=abs(steps_x))
+        elif steps_x > 0:
+            self.scroll(argtypes.DirectionWithPage.Left, count=steps_x)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):
