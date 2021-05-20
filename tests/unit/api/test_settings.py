@@ -154,18 +154,18 @@ def test_ask_prompt_setting(mocker, prompt_setting, answer):
 
 
 def test_set_order_setting():
-    o = settings.ImageOrderSetting("imageorder", "name")
-    o.value = "name-desc"
-    assert o.value == "name-desc"
+    o = settings.ImageOrderSetting("imageorder", "alphabetical")
+    o.value = "alphabetical-desc"
+    assert o.value == "alphabetical-desc"
 
 
 def test_set_order_setting_non_str():
-    o = settings.OrderSetting("order", "name")
+    o = settings.OrderSetting("order", "alphabetical")
     with pytest.raises(ValueError, match="must be one of"):
         o.value = 1
 
 
 def test_set_order_setting_non_valid():
-    o = settings.OrderSetting("order", "name")
+    o = settings.OrderSetting("order", "alphabetical")
     with pytest.raises(ValueError, match="must be one of"):
         o.value = "invalid"
