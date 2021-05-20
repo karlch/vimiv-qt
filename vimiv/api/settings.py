@@ -359,14 +359,14 @@ class ImageOrderSetting(OrderSetting):
     """Stores an image ordering setting."""
 
     ORDER_TYPES = {
-        "name": (os.path.basename, False),
-        "name-desc": (os.path.basename, True),
-        "name-natural": (OrderSetting._natural_sort, False),
-        "name-natural-desc": (OrderSetting._natural_sort, True),
-        "modify": (os.path.getmtime, False),
-        "modify-desc": (os.path.getmtime, True),
-        "size": (os.path.getsize, False),
-        "size-desc": (os.path.getsize, True),
+        "alphabetical": (os.path.basename, False),
+        "alphabetical-desc": (os.path.basename, True),
+        "natural": (OrderSetting._natural_sort, False),
+        "natural-desc": (OrderSetting._natural_sort, True),
+        "recently-modify-first": (os.path.getmtime, False),
+        "recently-modify-last": (os.path.getmtime, True),
+        "smallest-first": (os.path.getsize, False),
+        "largest-first": (os.path.getsize, True),
     }
 
     def __str__(self) -> str:
@@ -377,14 +377,14 @@ class DirectoryOrderSetting(OrderSetting):
     """Stores an directory ordering setting."""
 
     ORDER_TYPES = {
-        "name": (os.path.basename, False),
-        "name-desc": (os.path.basename, True),
-        "name-natural": (OrderSetting._natural_sort, False),
-        "name-natural-desc": (OrderSetting._natural_sort, True),
-        "modify": (os.path.getmtime, False),
-        "modify-desc": (os.path.getmtime, True),
-        "size": (lambda e: len(os.listdir(e)), True),
-        "size-desc": (lambda e: len(os.listdir(e)), False),
+        "alphabetical": (os.path.basename, False),
+        "alphabetical-desc": (os.path.basename, True),
+        "natural": (OrderSetting._natural_sort, False),
+        "natural-desc": (OrderSetting._natural_sort, True),
+        "recently-modify-first": (os.path.getmtime, False),
+        "recently-modify-last": (os.path.getmtime, True),
+        "smallest-first": (lambda e: len(os.listdir(e)), True),
+        "largest-first": (lambda e: len(os.listdir(e)), False),
     }
 
     def __str__(self) -> str:
@@ -409,9 +409,11 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
-image_order = ImageOrderSetting("image_order", "name", desc="Set image ordering.",)
+image_order = ImageOrderSetting(
+    "image_order", "alphabetical", desc="Set image ordering.",
+)
 directory_order = DirectoryOrderSetting(
-    "directory_order", "name", desc="Set directory ordering.",
+    "directory_order", "alphabetical", desc="Set directory ordering.",
 )
 
 
