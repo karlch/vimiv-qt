@@ -451,7 +451,7 @@ class statusbar:  # pylint: disable=invalid-name
     )
     StrSetting(
         "statusbar.left_thumbnail",
-        "{thumbnail-index}/{thumbnail-total} {thumbnail-name}{read-only}",
+        "{thumbnail-index}/{thumbnail-total} {thumbnail-basename}{read-only}",
     )
     StrSetting(
         "statusbar.left_manipulate",

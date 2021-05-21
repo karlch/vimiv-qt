@@ -104,6 +104,20 @@ def basename() -> str:
     return os.path.basename(current())
 
 
+@api.status.module("{name}")
+def name() -> str:
+    """Name without extension of the current image."""
+    filename, _ = os.path.splitext(basename())
+    return filename
+
+
+@api.status.module("{extension}")
+def extension() -> str:
+    """File extension of the current image."""
+    _, fileextension = os.path.splitext(basename())
+    return fileextension.replace(".", "")
+
+
 @api.status.module("{index}")
 def get_index() -> str:  # Needs to be called get as we use index as variable often
     """Index of the current image."""

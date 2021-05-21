@@ -379,14 +379,31 @@ class ThumbnailView(
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
-    @api.status.module("{thumbnail-name}")
-    def _thumbnail_name(self):
-        """Name of the currently selected thumbnail."""
+    @api.status.module("{thumbnail-basename}")
+    def _thumbnail_basename(self):
+        """Basename of the currently selected thumbnail."""
         try:
             abspath = self._paths[self.current_index()]
             basename = os.path.basename(abspath)
-            name, _ = os.path.splitext(basename)
+            return basename
+        except IndexError:
+            return ""
+
+    @api.status.module("{thumbnail-name}")
+    def _thumbnail_name(self):
+        """Name without extension of the currently selected thumbnail."""
+        try:
+            name, _ = os.path.splitext(self._thumbnail_basename())
             return name
+        except IndexError:
+            return ""
+
+    @api.status.module("{thumbnail-extension}")
+    def _thumbnail_extension(self):
+        """Extension of the currently selected thumbnail."""
+        try:
+            _, extension = os.path.splitext(self._thumbnail_basename())
+            return extension.replace(".", "")
         except IndexError:
             return ""
 
@@ -411,7 +428,7 @@ class ThumbnailView(
     @api.status.module("{thumbnail-index}")
     def current_index_statusbar(self) -> str:
         """Index of the currently selected thumbnail."""
-        return str(self.current_index() + 1)
+        return str(self.current_index() + 1).zfill(len(self.total()))
 
     @api.status.module("{thumbnail-total}")
     def total(self):
