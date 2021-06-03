@@ -416,7 +416,7 @@ def dim_color(color: QColor, *, factor: float = 0.75) -> QColor:
     """Dim a QColor by reducing saturation and lightness by factor."""
     color = QColor(color)
     hue, saturation, lightness, alpha = color.getHsl()
-    color.setHsl(hue, saturation * factor, lightness * factor, alpha)
+    color.setHsl(hue, int(saturation * factor), int(lightness * factor), alpha)
     return color
 
 
