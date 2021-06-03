@@ -433,8 +433,8 @@ class thumbnail:  # pylint: disable=invalid-name
     """Namespace for thumbnail related settings."""
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
-    listview = BoolSetting(
-        "thumbnail.listview",
+    filmstrip = BoolSetting(
+        "thumbnail.filmstrip",
         False,
         desc="Display thumbnails as list to the right of the image",
     )
@@ -444,7 +444,7 @@ class thumbnail:  # pylint: disable=invalid-name
 
         Never = "never"
         Always = "always"
-        ListView = "listview"
+        FilmStrip = "filmstrip"
         IconView = "iconview"
 
         def __str__(self) -> str:
@@ -455,7 +455,7 @@ class thumbnail:  # pylint: disable=invalid-name
     display_name = EnumSetting(
         ViewOptions,
         "thumbnail.display_name",
-        ViewOptions.ListView,
+        ViewOptions.FilmStrip,
         desc=f"When to display the thumbnail name, one of {_view_options}",
     )
     display_icon = EnumSetting(

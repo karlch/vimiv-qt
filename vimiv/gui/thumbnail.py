@@ -114,7 +114,7 @@ class ThumbnailView(
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
-        api.settings.thumbnail.listview.changed.connect(self._on_view_changed)
+        api.settings.thumbnail.filmstrip.changed.connect(self._on_view_changed)
         api.settings.thumbnail.display_icon.changed.connect(self.rescale_items)
         api.settings.thumbnail.display_name.changed.connect(self.rescale_items)
         search.search.new_search.connect(self._on_new_search)
@@ -129,10 +129,10 @@ class ThumbnailView(
 
         styles.apply(self)
 
-        if not api.settings.thumbnail.listview:
+        if not api.settings.thumbnail.filmstrip:
             self.setViewMode(QListWidget.IconMode)
         else:
-            self._update_background(listview=True)
+            self._update_background(filmstrip=True)
             self.rescale_items()
 
         self.hide()
@@ -470,13 +470,13 @@ class ThumbnailView(
         self.rescale_items()
         self._update_geometry()
 
-    def _on_view_changed(self, listview: bool):
+    def _on_view_changed(self, filmstrip: bool):
         """Update thumbnail view mode.
 
         Args:
-            listview: If True, use list mode, otherwise icon mode.
+            filmstrip: If True, use list mode, otherwise icon mode.
         """
-        if listview:
+        if filmstrip:
             _logger.debug("Setting view mode to list")
             self.setViewMode(self.ListMode)
         else:
@@ -487,11 +487,11 @@ class ThumbnailView(
                 self.hide()
         self._update_geometry()
         self.rescale_items()
-        self._update_background(listview=listview)
+        self._update_background(filmstrip=filmstrip)
 
-    def _update_background(self, *, listview: bool = False):
+    def _update_background(self, *, filmstrip: bool = False):
         """Update background color depending on the view mode."""
-        bg_color = "#00000000" if listview else styles.get("thumbnail.bg")
+        bg_color = "#00000000" if filmstrip else styles.get("thumbnail.bg")
         stylesheet = re.sub(
             "background-color: #[0-9A-Fa-f]+",
             f"background-color: {bg_color}",
@@ -585,7 +585,7 @@ class ThumbnailView(
             return False
         if option == option.Always:
             return True
-        if option == option.ListView and self.viewMode() == self.ListMode:
+        if option == option.FilmStrip and self.viewMode() == self.ListMode:
             return True
         if option == option.IconView and self.viewMode() == self.IconMode:
             return True
@@ -611,13 +611,13 @@ class ThumbnailDelegate(QStyledItemDelegate):
         self.mark_bg = QColor(styles.get("mark.color"))
         self.padding = parent.padding
         try:
-            self.listview_alpha = int(styles.get("thumbnail.listview.alpha"))
-            self.listview_alpha_selected = int(
-                styles.get("thumbnail.listview.selected.alpha")
+            self.filmstrip_alpha = int(styles.get("thumbnail.filmstrip.alpha"))
+            self.filmstrip_alpha_selected = int(
+                styles.get("thumbnail.filmstrip.selected.alpha")
             )
         except ValueError:
-            self.listview_alpha = 150
-            self.listview_alpha_selected = 200
+            self.filmstrip_alpha = 150
+            self.filmstrip_alpha_selected = 200
 
     def paint(self, painter, option, model_index):
         """Override the QStyledItemDelegate paint function.
@@ -757,7 +757,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
             return color
 
         color = QColor(color)
-        alpha = self.listview_alpha_selected if selected else self.listview_alpha
+        alpha = self.filmstrip_alpha_selected if selected else self.filmstrip_alpha
         color.setAlpha(alpha)
         return color
 

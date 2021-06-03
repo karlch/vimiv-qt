@@ -23,7 +23,7 @@ from vimiv import api
 @api.keybindings.register(
     "zi", "set thumbnail.display_icon always", mode=api.modes.THUMBNAIL
 )
-@api.keybindings.register("<tab>", "set thumbnail.listview!", mode=api.modes.THUMBNAIL)
+@api.keybindings.register("<tab>", "set thumbnail.filmstrip!", mode=api.modes.THUMBNAIL)
 @api.keybindings.register("zh", "set library.show_hidden!")
 @api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("sh", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
