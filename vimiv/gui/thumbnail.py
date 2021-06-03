@@ -43,6 +43,7 @@ class ThumbnailView(
 
     Attributes:
         padding: Padding of the displayed icon in all directions.
+        text_size: Maximum bounding rectangle of the thumbnail names.
         _manager: ThumbnailManager class to create thumbnails asynchronously.
         _paths: Last paths loaded to avoid duplicate loading.
     """
