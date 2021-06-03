@@ -66,6 +66,8 @@ Added:
   arguments, they must be quoted accordingly, e.g.
   ``vimiv --qt-args '--name floating'``.
   Thanks `@loiccoyle`_ for the discussion!
+* Statusbar modules ``name``, ``thumbnail-basename``, ``extension`` and
+  ``thumbnail-extension``.
 
 Changed:
 ^^^^^^^^
@@ -76,6 +78,8 @@ Changed:
 * Using the mouse to scroll in library and thumbnail mode now changes the selection
   instead of just scrolling the view. Horizontal scrolling in thumbnail mode is
   supported.
+* Default statusbar module ``thumbnail-name`` was changed to ``thumbnail-basename`` for
+  ``left_thumbnail``.
 
 Fixed:
 ^^^^^^
@@ -88,6 +92,7 @@ Fixed:
 * Crash when extracting metadata using piexif from a non JPEG or TIFF image. Thanks `@BachoSeven`_ for pointing this out!
 * Crash when searching in a symlinked directory. Thanks `@BachoSeven`_ for pointing this
   out!
+* Inconsistencies between the base status bar module and the thumbnail- modules.
 
 
 v0.8.0 (2021-01-18)
