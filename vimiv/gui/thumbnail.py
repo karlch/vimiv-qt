@@ -248,8 +248,12 @@ class ThumbnailView(
     )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        ("h", "<button-back>"), "scroll left", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        ("l", "<button-forward>"), "scroll right", mode=api.modes.THUMBNAIL
+    )
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(  # type: ignore[override]
         self, direction: argtypes.DirectionWithPage, count=1
