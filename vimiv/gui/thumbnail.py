@@ -514,7 +514,6 @@ class ThumbnailView(
         else:
             _logger.debug("Setting view mode to icon")
             self.setViewMode(self.IconMode)
-            # TODO the alternative is to enter thumbnail mode
             if api.modes.current() != api.modes.THUMBNAIL:
                 self.hide()
         self._update_geometry()
