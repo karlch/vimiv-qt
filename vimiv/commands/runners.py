@@ -78,6 +78,7 @@ def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
         for i, cmdpart in enumerate(textparts):
             _logger.debug("Handling part %d '%s'", i, cmdpart)
             _run_single(cmdpart, mode, count)
+            mode = api.modes.current()
     except CommandPartFailed:
         _logger.debug("Stopping at %d as '%s' failed", i, cmdpart)
 
