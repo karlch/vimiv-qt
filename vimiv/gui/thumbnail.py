@@ -156,7 +156,10 @@ class ThumbnailView(
     def n_columns(self) -> int:
         """Return the number of columns."""
         sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
-        return (self.width() - sb_width) // self.sizeHintForColumn(0)
+        try:
+            return max((self.width() - sb_width) // self.sizeHintForColumn(0), 1)
+        except ZeroDivisionError:
+            return 1
 
     def n_rows(self) -> int:
         """Return the number of rows."""
