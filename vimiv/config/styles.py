@@ -56,16 +56,11 @@ class Style(dict):
             self.check_valid_color(color)
             self[f"base{i:02x}"] = color
         # Fill in all default values
-        self["font"] = font
+        self["font"] = self["thumbnail.font"] = font
         for key, value in _style_options.DEFAULT_OPTIONS.items():
             self[key] = value
         # Add values with alpha channel that require special handling
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
-        # Shrink fontsize for thumbnail mode
-        fontsize = re.search(r"\d+", font).group(0)
-        thumbnail_fontsize = float(fontsize) * 0.7
-        thumbnail_font = font.replace(fontsize, f"{thumbnail_fontsize:.2f}")
-        self["thumbnail.font"] = thumbnail_font
 
     def __getitem__(self, name: str):
         """Retrieve item automatically surrounding the name with {} if needed."""
