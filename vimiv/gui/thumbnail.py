@@ -594,6 +594,8 @@ class ThumbnailDelegate(QStyledItemDelegate):
     The delegate draws the items.
     """
 
+    # Storing the styles makes the code more readable and faster IMHO
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, parent):
         super().__init__(parent)
 
