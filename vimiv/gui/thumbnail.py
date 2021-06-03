@@ -276,6 +276,12 @@ class ThumbnailView(
     @api.keybindings.register(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
     )
+    @api.keybindings.register(
+        "p", "scroll left --open-selected", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        "n", "scroll right --open-selected", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
     @api.keybindings.register(
@@ -286,7 +292,10 @@ class ThumbnailView(
     )
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(  # type: ignore[override]
-        self, direction: argtypes.DirectionWithPage, count=1
+        self,
+        direction: argtypes.DirectionWithPage,
+        open_selected: bool = False,
+        count=1,
     ):
         """Scroll to another thumbnail in the given direction.
 
@@ -295,6 +304,9 @@ class ThumbnailView(
         positional arguments:
             * ``direction``: The direction to scroll in
               (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
+
+        optional arguments:
+            * ``--open-selected``: Automatically open any selected image.
 
         **count:** multiplier
         """
@@ -309,6 +321,8 @@ class ThumbnailView(
         else:
             current = self._scroll_updown_listmode(current, direction, count)
         self._select_index(current)
+        if open_selected:
+            api.signals.load_images.emit([self.current()])
 
     def _scroll_updown_iconmode(
         self, current: int, direction: argtypes.DirectionWithPage, step: int
