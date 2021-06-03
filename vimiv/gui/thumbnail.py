@@ -35,6 +35,7 @@ class ThumbnailView(
     eventhandler.EventHandlerMixin,
     widgets.GetNumVisibleMixin,
     widgets.ScrollToCenterMixin,
+    widgets.ScrollWheelCumulativeMixin,
     QListWidget,
 ):
     """Thumbnail widget.
@@ -79,7 +80,9 @@ class ThumbnailView(
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
     def __init__(self):
-        super().__init__()
+        widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
+        QListWidget.__init__(self)
+
         self._paths: List[str] = []
 
         fail_pixmap = create_pixmap(
@@ -245,8 +248,12 @@ class ThumbnailView(
     )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        ("h", "<button-back>"), "scroll left", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        ("l", "<button-forward>"), "scroll right", mode=api.modes.THUMBNAIL
+    )
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(  # type: ignore[override]
         self, direction: argtypes.DirectionWithPage, count=1
@@ -422,6 +429,17 @@ class ThumbnailView(
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
         self.scrollTo(self.currentIndex())
+
+    def _scroll_wheel_callback(self, steps_x, steps_y):
+        """Callback function used by the scroll wheel mixin for mouse scrolling."""
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
+        if steps_x < 0:
+            self.scroll(argtypes.DirectionWithPage.Right, count=abs(steps_x))
+        elif steps_x > 0:
+            self.scroll(argtypes.DirectionWithPage.Left, count=steps_x)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):

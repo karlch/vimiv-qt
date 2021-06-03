@@ -11,7 +11,7 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple
 
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
@@ -38,15 +38,16 @@ class Position(NamedTuple):
 
 
 class Library(
-    eventhandler.EventHandlerMixin, widgets.GetNumVisibleMixin, widgets.FlatTreeView
+    eventhandler.EventHandlerMixin,
+    widgets.GetNumVisibleMixin,
+    widgets.ScrollWheelCumulativeMixin,
+    widgets.FlatTreeView,
 ):
     """Library widget.
 
     Attributes:
         _last_selected: Name of the path that was selected last.
         _positions: Dictionary that stores positions in directories.
-        _scroll_step: Currently unprocessed scrolling step to support finer devices.
-        _scroll_timer: Timer to reset _scroll_step after scrolling.
     """
 
     STYLESHEET = """
@@ -87,18 +88,11 @@ class Library(
     @api.modes.widget(api.modes.LIBRARY)
     @api.objreg.register
     def __init__(self, mainwindow):
-        super().__init__(parent=mainwindow)
+        widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
+        widgets.FlatTreeView.__init__(self, parent=mainwindow)
+
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
-        self._scroll_step = 0
-        self._scroll_timer = QTimer()
-        self._scroll_timer.setInterval(100)
-        self._scroll_timer.setSingleShot(True)
-
-        def reset_scroll_step():
-            self._scroll_step = 0
-
-        self._scroll_timer.timeout.connect(reset_scroll_step)
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -358,23 +352,12 @@ class Library(
         if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
 
-    def wheelEvent(self, event):
-        """Update mouse wheel for proper scrolling.
-
-        We accumulate steps until we have enough to scroll up / down by one row. For
-        regular mice one "roll" should result in a single scroll. Finer grained devices
-        such as touchpads need this cumulative approach.
-
-        See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
-        """
-        self._scroll_step += event.angleDelta().y() / 120
-        steps = int(self._scroll_step)
-        if steps < 0:
-            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps))
-        else:
-            self.scroll(argtypes.DirectionWithPage.Up, count=steps)
-        self._scroll_step = self._scroll_step - steps
-        self._scroll_timer.start()
+    def _scroll_wheel_callback(self, _steps_x, steps_y):
+        """Callback function used by the scroll wheel mixin for mouse scrolling."""
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
 
 
 class LibraryModel(QStandardItemModel):
