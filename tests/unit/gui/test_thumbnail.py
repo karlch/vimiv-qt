@@ -26,5 +26,5 @@ def test_create_default_pixmap_once(item):
     """Ensure the default thumbnail icon is only created once."""
     size_hint = QSize(128, 128)
     for index in range(5):
-        item(None, index, path="/path/to/image.jpg", size_hint=size_hint)
+        item(None, index, name="image.jpg", size_hint=size_hint)
     item.create_default_icon.assert_called_once()
