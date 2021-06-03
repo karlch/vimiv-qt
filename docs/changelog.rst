@@ -34,6 +34,8 @@ Added:
     image mode.
   * ``<button-forward>`` and ``<button-back>`` to scroll down/up and open any selected
     image in library mode.
+  * ``<button-forward>`` and ``<button-back>`` select the next/previous thumbnail in
+    thumnbail mode.
 
   Thanks `@BachoSeven`_ for your thoughts!
 * The ``:copy-image`` command which copies the selected image to the clipboard. The
@@ -66,7 +68,8 @@ Changed:
 * When toggling ``library.show_hidden`` the selection now stays on the same file, not
   the same index.
 * Using the mouse to scroll in library and thumbnail mode now changes the selection
-  instead of just scrolling the view.
+  instead of just scrolling the view. Horizontal scrolling in thumbnail mode is
+  supported.
 
 Fixed:
 ^^^^^^
