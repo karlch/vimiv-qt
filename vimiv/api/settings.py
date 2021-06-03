@@ -237,6 +237,13 @@ class EnumSetting(Setting):
     def convertstr(self, text: str) -> str:
         return self._options(text)
 
+    def toggle(self) -> None:
+        """Jump through the valid enum options."""
+        options: List[enum.EnumMeta] = list(self._options)
+        current_index = options.index(self.value)
+        next_index = (current_index + 1) % len(options)
+        self.value = options[next_index]
+
     def __str__(self) -> str:
         return "Options"
 
@@ -439,30 +446,29 @@ class thumbnail:  # pylint: disable=invalid-name
         desc="Display thumbnails as list to the right of the image",
     )
 
-    class ViewOptions(enum.Enum):
+    class ViewOption(enum.Enum):
         """Valid options for thumbnail view related settings."""
 
-        Never = "never"
-        Always = "always"
-        FilmStrip = "filmstrip"
-        IconView = "iconview"
+        IconOnly = "icon"
+        NameOnly = "name"
+        Both = "both"
 
         def __str__(self) -> str:
             return str(self.value)
 
-    _view_options = quotedjoin(option.value for option in ViewOptions)
+    _view_options = quotedjoin(option.value for option in ViewOption)
 
-    display_name = EnumSetting(
-        ViewOptions,
-        "thumbnail.display_name",
-        ViewOptions.FilmStrip,
-        desc=f"When to display the thumbnail name, one of {_view_options}",
-    )
     display_icon = EnumSetting(
-        ViewOptions,
+        ViewOption,
         "thumbnail.display_icon",
-        ViewOptions.Always,
-        desc=f"When to display the thumbnail icon, one of {_view_options}",
+        ViewOption.IconOnly,
+        desc=f"Which element(s) to display in icon view, one of {_view_options}",
+    )
+    display_filmstrip = EnumSetting(
+        ViewOption,
+        "thumbnail.display_filmstrip",
+        ViewOption.Both,
+        desc=f"Which element(s) to display in icon view, one of {_view_options}",
     )
 
 

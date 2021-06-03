@@ -116,7 +116,7 @@ class ThumbnailView(
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
         api.settings.thumbnail.filmstrip.changed.connect(self._on_view_changed)
         api.settings.thumbnail.display_icon.changed.connect(self.rescale_items)
-        api.settings.thumbnail.display_name.changed.connect(self.rescale_items)
+        api.settings.thumbnail.display_filmstrip.changed.connect(self.rescale_items)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -164,6 +164,27 @@ class ThumbnailView(
     def n_rows(self) -> int:
         """Return the number of rows."""
         return math.ceil(self.count() / self.n_columns())
+
+    def icon_visible(self) -> bool:
+        """Return True if the icon is currently visible."""
+        return self._check_visible(name=False)
+
+    def name_visible(self) -> bool:
+        """Return True if the name is currently visible."""
+        return self._check_visible(name=True)
+
+    def _check_visible(self, *, name: bool) -> bool:
+        """Check if an element is visible in the current view mode."""
+        setting = self._current_display_setting()
+        option = api.settings.thumbnail.ViewOption
+        option_only = option.NameOnly if name else option.IconOnly
+        return setting.value in (option_only, option.Both)
+
+    def _current_display_setting(self) -> api.settings.Setting:
+        """Return the display setting relevant for the current view mode."""
+        if self.viewMode() == self.ListMode:
+            return api.settings.thumbnail.display_filmstrip
+        return api.settings.thumbnail.display_icon
 
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
@@ -410,6 +431,17 @@ class ThumbnailView(
         _logger.debug("Zooming in direction '%s'", direction)
         api.settings.thumbnail.size.step(up=direction == direction.In)
 
+    @api.keybindings.register("w", "toggle-display-setting", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def toggle_display_setting(self):
+        """Jump to the next option for the current display setting.
+
+        Changes between "icon only", "text only" and "both" for the current view mode
+        ("icon" or "filmstrip").
+        """
+        setting = self._current_display_setting()
+        setting.toggle()
+
     def _update_text_size(self, names: List[str]):
         """Recalculate text dimension according to new thumbnail names."""
         text_height = text_width = 0
@@ -424,10 +456,10 @@ class ThumbnailView(
         """Return the expected size of a single thumbnail item."""
         height = 0
         width = 0
-        if self.check_view_option(api.settings.thumbnail.display_icon.value):
+        if self.icon_visible():
             height += self.iconSize().height()
             width = self.iconSize().width()
-        if self.check_view_option(api.settings.thumbnail.display_name.value):
+        if self.name_visible():
             height += self.text_size.height()
             width = max(width, self.text_size.width())
         return QSize(width + 2 * self.padding, height + 2 * self.padding)
@@ -579,18 +611,6 @@ class ThumbnailView(
         elif steps_x > 0:
             self.scroll(argtypes.DirectionWithPage.Left, count=steps_x)
 
-    def check_view_option(self, option: api.settings.thumbnail.ViewOptions) -> bool:
-        """Return True if the corresponding view option matches the current mode."""
-        if option == option.Never:
-            return False
-        if option == option.Always:
-            return True
-        if option == option.FilmStrip and self.viewMode() == self.ListMode:
-            return True
-        if option == option.IconView and self.viewMode() == self.IconMode:
-            return True
-        return False
-
 
 class ThumbnailDelegate(QStyledItemDelegate):
     """Delegate used for the thumbnail widget.
@@ -630,9 +650,9 @@ class ThumbnailDelegate(QStyledItemDelegate):
         item = self.parent().item(model_index.row())
         self._draw_background(painter, option, item)
 
-        if self.parent().check_view_option(api.settings.thumbnail.display_icon.value):
+        if self.parent().icon_visible():
             self._draw_pixmap(painter, option, item)
-        if self.parent().check_view_option(api.settings.thumbnail.display_name.value):
+        if self.parent().name_visible():
             self._draw_text(painter, option, item)
 
     def _draw_background(self, painter, option, item):
@@ -679,7 +699,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
-        if self.parent().check_view_option(api.settings.thumbnail.display_name.value):
+        if self.parent().name_visible():
             diff_y -= self.parent().text_size.height() // 2
         x = int(option.rect.x() + self.padding + diff_x)
         y = int(option.rect.y() + self.padding + diff_y)
@@ -700,7 +720,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
             option: The QStyleOptionViewItem.
             item: The ThumbnailItem.
         """
-        if self.parent().check_view_option(api.settings.thumbnail.display_icon.value):
+        if self.parent().icon_visible():
             y = option.rect.y() + option.rect.height() - int(0.5 * self.padding)
         else:
             y = option.rect.y() + option.rect.height() // 2
