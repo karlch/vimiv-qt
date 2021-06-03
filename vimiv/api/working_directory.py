@@ -121,7 +121,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
-        directory = os.path.realpath(directory)  # os.chdir always enters the realpath
+        directory = os.path.abspath(directory)
         if directory != self._dir or reload_current:
             _logger.debug("Changing directory to '%s'", directory)
             if self.directories():  # Unmonitor old directories
