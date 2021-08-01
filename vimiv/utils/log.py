@@ -197,9 +197,11 @@ class StatusbarLogHandler(QObject, logging.NullHandler):
 
     message = pyqtSignal(str, str)
 
-    def handle(self, record: logging.LogRecord) -> None:
+    def handle(self, record: logging.LogRecord) -> bool:
         if record.levelno >= logging.INFO:  # Debug in the statusbar makes no sense
             self.message.emit(record.levelname.lower(), record.message)
+            return True
+        return False
 
 
 _app_logger = LazyLogger(f"{vimiv.__name__}")
