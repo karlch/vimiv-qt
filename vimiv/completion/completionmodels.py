@@ -104,10 +104,10 @@ class PathModel(api.completion.BaseModel):
         """Update completion options when text changes."""
         directory = self._get_directory(text)
         # Nothing changed
-        if os.path.realpath(directory) == self._last_directory:
+        if os.path.abspath(directory) == self._last_directory:
             return
         # Prepare
-        self._last_directory = os.path.realpath(directory)
+        self._last_directory = os.path.abspath(directory)
         # No completions for non-existent directory
         if not os.path.isdir(os.path.expanduser(directory)):
             return

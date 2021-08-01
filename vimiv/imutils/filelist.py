@@ -12,7 +12,7 @@ new image in the filelist is selected, it is passed on to the file handler to op
 
 import os
 import random
-from typing import List, Optional
+from typing import List, Iterable, Optional
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
@@ -262,13 +262,15 @@ def _load_single(path: str) -> None:
         _load_paths(api.working_directory.handler.images, path)
 
 
-def _load_paths(paths: List[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
         paths: List of paths to load.
         focused_path: The path to display.
     """
+    paths = [os.path.abspath(path) for path in paths]
+    focused_path = os.path.abspath(focused_path)
     if api.settings.shuffle.value:
         random.shuffle(paths)
     previous = current()

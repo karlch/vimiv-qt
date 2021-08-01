@@ -151,7 +151,7 @@ def existing_file(value: str) -> str:
     Returns:
         Path to the file as string if it exists.
     """
-    path = os.path.realpath(os.path.expanduser(value))
+    path = os.path.abspath(os.path.expanduser(value))
     if not os.path.isfile(path):
         raise argparse.ArgumentTypeError(f"No file called '{value}'")
     return path
@@ -167,7 +167,7 @@ def existing_path(value: str) -> str:
     Returns:
         Path to the file as string if it exists.
     """
-    path = os.path.realpath(os.path.expanduser(value))
+    path = os.path.abspath(os.path.expanduser(value))
     if not os.path.exists(path):
         raise argparse.ArgumentTypeError(f"No path called '{value}'")
     return path

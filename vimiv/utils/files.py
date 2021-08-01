@@ -28,7 +28,7 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     Returns:
         Sorted list of files in the directory with their absolute path.
     """
-    directory = os.path.realpath(os.path.expanduser(directory))
+    directory = os.path.abspath(os.path.expanduser(directory))
     return sorted(
         os.path.join(directory, path)
         for path in os.listdir(directory)
