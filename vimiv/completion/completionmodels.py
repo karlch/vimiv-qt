@@ -128,17 +128,8 @@ class PathModel(api.completion.BaseModel):
             total_directories.append(directory_list)
         
 
-        # Format data
-
-        # self.set_data([
-        #     self._create_row(os.path.join(directory, os.path.basename(path)))
-        #     for path in total_images + total_directories for directory in directories
-        #     ]
-        # )
         previous_completions = ['']
-        # print(directories ,total_images , total_directories)
         for directory , images , directory_list in zip(directories,total_images,total_directories):
-            # completions = [ f"{os.path.join(directory,os.path.basename(previous.strip()))} {os.path.join(directory,os.path.basename(path.strip()))}" for previous in previous_completions for path in images + directory_list ]
             completions = list()
             for previous in previous_completions:
                 for path in images + directory_list:
@@ -146,24 +137,20 @@ class PathModel(api.completion.BaseModel):
                         completions.append(f"{os.path.join(directory,os.path.basename(path.strip()))}")
                     else:
                         completions.append(f"{previous.strip()} {os.path.join(directory,os.path.basename(path.strip()))}")
-            print(directories)
-            print(previous_completions)
-            print(completions)
                     
             previous_completions.extend(completions)
 
         self.set_data([
             self._create_row(completion.split()) for completion in previous_completions
             if completion
+                
             ])
 
     def _create_row(self,paths):
-        # return (f":{self._command} {api.completion.escape(path)}",)
         row = [':' + self._command]
         for path in paths:
             row.append(api.completion.escape(path))
-        print(' '.join(row))
-        return ' '.join(row)
+        return tuple([' '.join(row)])
         
 
     def _get_directory(self, text: str) -> str:
