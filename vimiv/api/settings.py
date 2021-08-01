@@ -14,13 +14,12 @@ import abc
 import contextlib
 import enum
 import os
-import re
-from typing import Any, Dict, ItemsView, List, Callable, Tuple, Union
+from typing import Any, Dict, ItemsView, List, Callable, Tuple
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.api import prompt
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, natural_sort
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -322,77 +321,46 @@ class OrderSetting(Setting):
 
     typ = str
 
-    ORDER_TYPES: Dict[str, Tuple[Callable[..., Any], bool]] = {}
+    ORDER_TYPES: Dict[str, Tuple[Callable[..., Any], bool]] = {
+        "alphabetical": (os.path.basename, False),
+        "alphabetical-desc": (os.path.basename, True),
+        "natural": (natural_sort, False),
+        "natural-desc": (natural_sort, True),
+        "recently-modify-first": (os.path.getmtime, False),
+        "recently-modify-last": (os.path.getmtime, True),
+    }
+
+    def __init__(
+        self,
+        *args: Any,
+        additional_order_types: Dict[str, Tuple[Callable[..., Any], bool]] = None,
+        **kwargs: Any,
+    ):
+        super().__init__(*args, **kwargs)
+        self.order_types = dict(self.ORDER_TYPES)
+        if additional_order_types:
+            self.order_types.update(additional_order_types)
 
     def convert(self, value: str) -> str:
-        if value not in self.ORDER_TYPES:
+        if value not in self.order_types:
             raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
         return value
 
     def get_para(self) -> Tuple[Callable[..., Any], bool]:
         """Returns the ordering parameters according to the current set value."""
         try:
-            return self.ORDER_TYPES[self.value]
+            return self.order_types[self.value]
         except KeyError:
             raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
 
     def suggestions(self) -> List[str]:
-        return [str(value) for value in self.ORDER_TYPES]
-
-    @staticmethod
-    def _natural_sort(text: str) -> List[Union[str, int]]:
-        """Key function for natural sort.
-
-        Credits to https://stackoverflow.com/a/5967539/5464989
-        """
-
-        def convert(t: str) -> Union[str, int]:
-            return int(t) if t.isdigit() else t
-
-        return [convert(c) for c in re.split(r"(\d+)", text)]
+        return [str(value) for value in self.order_types]
 
     def __str__(self) -> str:
         return "Order"
 
 
-class ImageOrderSetting(OrderSetting):
-    """Stores an image ordering setting."""
-
-    ORDER_TYPES = {
-        "alphabetical": (os.path.basename, False),
-        "alphabetical-desc": (os.path.basename, True),
-        "natural": (OrderSetting._natural_sort, False),
-        "natural-desc": (OrderSetting._natural_sort, True),
-        "recently-modify-first": (os.path.getmtime, False),
-        "recently-modify-last": (os.path.getmtime, True),
-        "smallest-first": (os.path.getsize, False),
-        "largest-first": (os.path.getsize, True),
-    }
-
-    def __str__(self) -> str:
-        return "ImageOrder"
-
-
-class DirectoryOrderSetting(OrderSetting):
-    """Stores an directory ordering setting."""
-
-    ORDER_TYPES = {
-        "alphabetical": (os.path.basename, False),
-        "alphabetical-desc": (os.path.basename, True),
-        "natural": (OrderSetting._natural_sort, False),
-        "natural-desc": (OrderSetting._natural_sort, True),
-        "recently-modify-first": (os.path.getmtime, False),
-        "recently-modify-last": (os.path.getmtime, True),
-        "smallest-first": (lambda e: len(os.listdir(e)), True),
-        "largest-first": (lambda e: len(os.listdir(e)), False),
-    }
-
-    def __str__(self) -> str:
-        return "DirectoryOrder"
-
-
 # Initialize all settings
-
 monitor_fs = BoolSetting(
     "monitor_filesystem",
     True,
@@ -409,11 +377,23 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
-image_order = ImageOrderSetting(
-    "image_order", "alphabetical", desc="Set image ordering.",
+image_order = OrderSetting(
+    "image_order",
+    "alphabetical",
+    desc="Set image ordering.",
+    additional_order_types={
+        "smallest-first": (os.path.getsize, False),
+        "largest-first": (os.path.getsize, True),
+    },
 )
-directory_order = DirectoryOrderSetting(
-    "directory_order", "alphabetical", desc="Set directory ordering.",
+directory_order = OrderSetting(
+    "directory_order",
+    "alphabetical",
+    desc="Set directory ordering.",
+    additional_order_types={
+        "smallest-first": (lambda e: len(os.listdir(e)), True),
+        "largest-first": (lambda e: len(os.listdir(e)), False),
+    },
 )
 
 
