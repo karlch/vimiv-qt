@@ -62,7 +62,7 @@ def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
     return images, directories
 
 
-def order(files: Tuple[List[str], List[str]]) -> Tuple[List[str], List[str]]:
+def order(images: List[str], directories: List[str]) -> Tuple[List[str], List[str]]:
     """Orders images and directories according to the settings.
 
     Args:
@@ -71,8 +71,6 @@ def order(files: Tuple[List[str], List[str]]) -> Tuple[List[str], List[str]]:
         images: Ordered list of images.
         directories: Orderd list of directories.
     """
-
-    images, directories = files
 
     image_order, image_reverse = api.settings.image_order.get_para()
     directory_order, directory_reverse = api.settings.directory_order.get_para()

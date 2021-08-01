@@ -117,7 +117,7 @@ def test_images_supported(mocker):
 
 
 def test_order():
-    assert files.order((["b.txt", "a.txt"], ["b", "a"])) == (
+    assert files.order(["b.txt", "a.txt"], ["b", "a"]) == (
         ["a.txt", "b.txt"],
         ["a", "b"],
     )
