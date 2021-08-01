@@ -221,12 +221,12 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """Get supported content of directory.
 
         Returns:
-            images: List of images inside the directory.
-            directories: List of directories inside the directory.
+            images: Ordered list of images inside the directory.
+            directories: Ordered list of directories inside the directory.
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.order(files.supported(paths))
+        return files.order(*files.supported(paths))
 
 
 handler = cast(WorkingDirectoryHandler, None)
