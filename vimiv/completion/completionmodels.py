@@ -94,7 +94,7 @@ class PathModel(api.completion.BaseModel):
         super().__init__(f":{command} ", valid_modes=valid_modes)
         self._command = command
         self._directory_re = re.compile(rf"(: *{command} *)(.*)")
-        self._last_directory = ""
+        self._last_directories = list()
 
     def on_enter(self, text: str) -> None:
         """Update completion options on enter."""
@@ -102,25 +102,56 @@ class PathModel(api.completion.BaseModel):
 
     def on_text_changed(self, text: str) -> None:
         """Update completion options when text changes."""
-        directory = self._get_directory(text)
+        completion_terms = text.split()[1:]
+        directories = list()
+        for term in completion_terms:
+            term = ':open ' + term
+            directory = self._get_directory(term)
+            directories.append(directory)
         # Nothing changed
-        if os.path.realpath(directory) == self._last_directory:
-            return
+        # for directory in directories:
+        #     if os.path.realpath(directory) in self._last_directories:
+        #         directories.remove(directory)
         # Prepare
-        self._last_directory = os.path.realpath(directory)
+        # self._last_directories = [ os.path.realpath(directory) for directory in directories ]
         # No completions for non-existent directory
-        if not os.path.isdir(os.path.expanduser(directory)):
-            return
-        # Retrieve supported paths
-        images, directories = files.supported(files.listdir(directory))
-        # Format data
-        self.set_data(
-            self._create_row(os.path.join(directory, os.path.basename(path)))
-            for path in images + directories
-        )
+        for directory in directories:
+            if not os.path.isdir(os.path.expanduser(directory)):
+                directories.remove(directory)
+        total_images = list()
+        total_directories = list()
 
-    def _create_row(self, path):
-        return (f":{self._command} {api.completion.escape(path)}",)
+        # Retrieve supported paths
+        for directory in directories:
+            images, directory_list = files.supported(files.listdir(directory))
+            total_images.append(images)
+            total_directories.append(directory_list)
+        
+
+        previous_completions = ['']
+        for directory , images , directory_list in zip(directories,total_images,total_directories):
+            completions = list()
+            for previous in previous_completions:
+                for path in images + directory_list:
+                    if not previous:
+                        completions.append(f"{os.path.join(directory,os.path.basename(path.strip()))}")
+                    else:
+                        completions.append(f"{previous.strip()} {os.path.join(directory,os.path.basename(path.strip()))}")
+                    
+            previous_completions.extend(completions)
+
+        self.set_data([
+            self._create_row(completion.split()) for completion in previous_completions
+            if completion
+                
+            ])
+
+    def _create_row(self,paths):
+        row = [':' + self._command]
+        for path in paths:
+            row.append(api.completion.escape(path))
+        return tuple([' '.join(row)])
+        
 
     def _get_directory(self, text: str) -> str:
         """Retrieve directory for which the path completion is created."""
