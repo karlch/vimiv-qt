@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7]
-        toxenv: [pyqt59, pyqt510, pyqt511, pyqt512, pyqt513]
+        toxenv: [pyqt511, pyqt512, pyqt513]
       fail-fast: false
 
     steps:
