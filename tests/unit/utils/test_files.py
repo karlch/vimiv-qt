@@ -116,11 +116,25 @@ def test_images_supported(mocker):
     assert not directories
 
 
-def test_order():
-    assert files.order(["b.txt", "a.txt"], ["b", "a"]) == (
-        ["a.txt", "b.txt"],
-        ["a", "b"],
-    )
+@pytest.mark.parametrize(
+    "input_img, input_dir, sorted_img, sorted_dir",
+    (
+        (
+            ["a.j", "c.j", "b.j"],
+            ["a", "c", "b"],
+            ["a.j", "b.j", "c.j"],
+            ["a", "b", "c"],
+        ),
+        (
+            ["a2.j", "a3.j", "a1.j"],
+            ["a2", "a3", "a1"],
+            ["a1.j", "a2.j", "a3.j"],
+            ["a1", "a2", "a3"],
+        ),
+    ),
+)
+def test_order(input_img, input_dir, sorted_img, sorted_dir):
+    assert files.order(input_img, input_dir) == (sorted_img, sorted_dir)
 
 
 def test_tar_gz_not_an_image(tmp_path):
