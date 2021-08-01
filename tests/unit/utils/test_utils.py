@@ -332,3 +332,19 @@ def test_is_hex_true(text):
 @pytest.mark.parametrize("text", ("00x234", "0xGC7", "not-hex", "A-67", "a:9e"))
 def test_is_hex_false(text):
     assert not utils.is_hex(text)
+
+
+@pytest.mark.parametrize(
+    "input_list, sorted_list",
+    (
+        (["a100a", "a10a", "a1a"], ["a1a", "a10a", "a100a"]),
+        (
+            ["a10a1a", "a1a10a", "a10a10a", "a1a1a"],
+            ["a1a1a", "a1a10a", "a10a1a", "a10a10a"],
+        ),
+        (["100", "50", "10", "20"], ["10", "20", "50", "100"]),
+        (["aa", "a", "aaa"], ["a", "aa", "aaa"]),
+    ),
+)
+def test_natural_sort(input_list, sorted_list):
+    assert sorted(input_list, key=utils.natural_sort) == sorted_list
