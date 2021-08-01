@@ -80,6 +80,9 @@ Changed:
   supported.
 * Default statusbar module ``thumbnail-name`` was changed to ``thumbnail-basename`` for
   ``left_thumbnail``.
+* Support for Qt versions 5.9 and 5.10 was officially dropped. These are no longer
+  supported by our testing framework, and 5.11 is out since July 2018. Code will likely
+  still work with these versions, but as it is no longer tested, there is no guarantee.
 
 Fixed:
 ^^^^^^
