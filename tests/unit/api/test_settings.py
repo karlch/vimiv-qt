@@ -154,7 +154,7 @@ def test_ask_prompt_setting(mocker, prompt_setting, answer):
 
 
 def test_set_order_setting():
-    o = settings.ImageOrderSetting("imageorder", "alphabetical")
+    o = settings.OrderSetting("order", "alphabetical")
     o.value = "alphabetical-desc"
     assert o.value == "alphabetical-desc"
 
