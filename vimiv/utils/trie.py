@@ -126,8 +126,8 @@ class Trie:
             for child in self.children.values():
                 hidden.extend(key for key, _ in child)
             _logger.warning("%s hides longer keys: %s", self.key, quotedjoin(hidden))
-        for elem in self.children:
-            self.children[elem].check()
+        for child in self.children.values():
+            child.check()
 
 
 class TrieMatch(NamedTuple):
