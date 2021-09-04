@@ -31,6 +31,7 @@ disable=no-self-use,
         import-outside-toplevel,
         raise-missing-from,
         arguments-renamed,
+        unspecified-encoding,
 
 [BASIC]
 function-rgx=[a-z_][a-z0-9_]{2,50}$

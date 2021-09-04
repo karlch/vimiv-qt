@@ -95,7 +95,7 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
 
     def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
         desired_keys = [key.rpartition(".")[2] for key in desired_keys]
-        exif = dict()
+        exif = {}
 
         if self._metadata is None:
             return {}
@@ -223,7 +223,7 @@ class ExifHandler(_ExifHandlerBase):
             _logger.debug("File %s not found", filename)
 
     def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
-        exif = dict()
+        exif = {}
 
         for base_key in desired_keys:
             # For backwards compability, assume it has one of the following prefixes
