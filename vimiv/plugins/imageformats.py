@@ -41,9 +41,14 @@ def test_avif(header: bytes, _f: Optional[BinaryIO]) -> bool:
     return header[4:12] in (b"ftypavif", b"ftypavis")
 
 
+def test_jp2(header: bytes, _f: Optional[BinaryIO]) -> bool:
+    return header[:6] == b"\x00\x00\x00\x0cjP"
+
+
 FORMATS = {
     "cr2": test_cr2,
     "avif": test_avif,
+    "jp2": test_jp2,
 }
 
 
