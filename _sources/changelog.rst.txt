@@ -68,6 +68,9 @@ Added:
   Thanks `@loiccoyle`_ for the discussion!
 * Statusbar modules ``name``, ``thumbnail-basename``, ``extension`` and
   ``thumbnail-extension``.
+* Support for the ``jp2`` file format using the imageformats plugin. To enable it, add
+  ``imageformats = jp2`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
+  the qt imageformats plugin. Thanks `@szsdk`_ for testing!
 
 Changed:
 ^^^^^^^^
@@ -503,3 +506,4 @@ Initial release of the Qt version.
 .. _@willemw12: https://github.com/willemw12
 .. _@Kakupakat: https://github.com/Kakupakat
 .. _@loiccoyle: https://github.com/loiccoyle
+.. _@szsdk: https://github.com/szsdk
