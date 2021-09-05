@@ -30,7 +30,7 @@ def custom_configfile(tmp_path, custom_configparser):
     def create_custom_configfile(basename, read, default_parser, **sections):
         parser = custom_configparser(default_parser, **sections)
         path = tmp_path / basename
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             parser.write(f)
         read(str(path))
 
