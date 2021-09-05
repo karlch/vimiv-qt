@@ -45,3 +45,5 @@ add separated by a comma.
 Currently the following formats are supported:
 
 * cr2 (requires `qt raw <https://gitlab.com/mardy/qtraw>`_)
+* avif (requires `qt-avif-image-plugin <https://github.com/novomesk/qt-avif-image-plugin>`_)
+* jp2 (requires qt imageformats plugin)
