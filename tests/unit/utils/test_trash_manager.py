@@ -55,7 +55,7 @@ def test_undelete_file(deleted_file):
 
 
 def test_create_trashinfo(deleted_file):
-    with open(deleted_file.info, "r") as f:
+    with open(deleted_file.info, "r", encoding="utf-8") as f:
         content = f.read()
 
     assert content.startswith("[Trash Info]"), "Trash info header not created"

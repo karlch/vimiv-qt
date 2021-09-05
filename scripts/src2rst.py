@@ -97,7 +97,7 @@ def generate_commandline_options():
     groups, titles = _get_options(argparser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
-    with open(filename_synopsis, "w") as f:
+    with open(filename_synopsis, "w", encoding="utf-8") as f:
         synopsis_options = ["[%s]" % (title) for title in titles]
         synopsis = "**vimiv** %s" % (" ".join(synopsis_options))
         f.write(synopsis)

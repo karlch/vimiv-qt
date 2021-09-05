@@ -34,13 +34,13 @@ def mock_gtk_version(tmp_path, monkeypatch):
 
     for basename in ("vimivrc", "keys.conf"):
         abspath = xdg.vimiv_config_dir(basename)
-        with open(abspath, "w") as f:
+        with open(abspath, "w", encoding="utf-8") as f:
             f.write("option: value\n")
 
     tag_dir = xdg.vimiv_data_dir("Tags")
     os.mkdir(tag_dir)
     tag_file = os.path.join(tag_dir, TAGFILE_NAME)
-    with open(tag_file, "w") as f:
+    with open(tag_file, "w", encoding="utf-8") as f:
         for i in range(10):
             f.write(f"test_{i:02d}.jpg\n")
 

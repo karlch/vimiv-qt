@@ -11,7 +11,7 @@ class RSTFile:
     """Context manager wrapping a file and adding rst utility methods."""
 
     def __init__(self, filename):
-        self._file = open(filename, "w")
+        self._file = open(filename, "w", encoding="utf-8")
         self._write_header()
 
     def __enter__(self):

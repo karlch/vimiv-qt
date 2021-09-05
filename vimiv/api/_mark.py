@@ -338,7 +338,7 @@ class Tag:
         try:
             # We are writing our own context-manager here
             # pylint: disable=consider-using-with
-            self._file = open(abspath, self._mode)
+            self._file = open(abspath, self._mode, encoding="utf-8")
         except FileNotFoundError:  # For read-only if the file does not exist
             raise commands.CommandError(f"No tag called '{name}'")
         except OSError as e:

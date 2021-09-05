@@ -44,7 +44,7 @@ def style_file(tmp_path):
             parser["STYLE"]["font"] = font
         for key, value in options.items():
             parser["STYLE"][key] = value
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             parser.write(f)
         return filename
 

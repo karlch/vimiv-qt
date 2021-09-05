@@ -28,7 +28,7 @@ def mode_based_history_file(tmp_path, mocker):
     """Fixture to create mode-based history file to initialize History."""
     path = tmp_path / "history.json"
 
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(MODE_HISTORY, f)
 
     mocker.patch.object(History, "filename", return_value=str(path))
@@ -58,7 +58,7 @@ def test_write_history(mode_based_history_file, history):
         history_deque.extend(MODE_HISTORY[mode.name])
     history.write()
 
-    with open(history.filename(), "r") as f:
+    with open(history.filename(), "r", encoding="utf-8") as f:
         written_history = json.load(f)
 
     assert written_history == MODE_HISTORY

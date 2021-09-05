@@ -49,7 +49,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def read_history(*, mode: str, filename: str) -> List[str]:
-    with open(filename, "r") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         content = json.load(f)
     return content[mode]
 

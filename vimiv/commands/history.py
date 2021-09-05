@@ -51,7 +51,7 @@ class History(dict):
 
     def write(self):
         """Write history of each mode to the json file."""
-        with open(self.filename(), "w") as f:
+        with open(self.filename(), "w", encoding="utf-8") as f:
             json.dump(
                 {mode.name: list(value) for mode, value in self.items()}, f, indent=4
             )
@@ -60,7 +60,7 @@ class History(dict):
         """Backup and read history from the old text-file history."""
         old_path = self.filename().replace(".json", "")
         if os.path.isfile(old_path):
-            with open(old_path, "r") as f:
+            with open(old_path, "r", encoding="utf-8") as f:
                 old_commands = [line.strip() for line in f]
             backup_name = old_path + ".bak"
             _logger.info(
@@ -83,7 +83,7 @@ class History(dict):
         history: DefaultDict[str, list] = collections.defaultdict(list)
 
         try:
-            with open(path, "r") as f:
+            with open(path, "r", encoding="utf-8") as f:
                 history.update(json.load(f))
             _logger.debug("Loaded history from '%s'", path)
         except FileNotFoundError:

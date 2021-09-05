@@ -25,7 +25,7 @@ def parse(cli_path: str) -> None:
 
 def dump(path: str) -> None:
     """Write default configurations to config file at path."""
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         get_default_parser().write(f)
     _logger.debug("Created default configuration file '%s'", path)
 

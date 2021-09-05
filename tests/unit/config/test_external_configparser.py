@@ -32,7 +32,7 @@ def config(tmp_path):
     parser = configparser.ConfigParser()
     parser[SECTION_NAME][OPTION_NAME] = "${env:" + ENV_VARIABLE.name + "}"
     path = tmp_path / "config.ini"
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         parser.write(f)
     yield str(path)
 

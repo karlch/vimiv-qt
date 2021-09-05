@@ -264,7 +264,7 @@ def dump(name: str, style: Style):
     for option, value in style.items():
         option = option.strip("{}")
         parser["STYLE"][option] = value
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(
             "; This file is a reference for creating own styles."
             " It will never be read.\n"

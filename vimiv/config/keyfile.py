@@ -26,7 +26,7 @@ def parse(cli_path: str):
 
 def dump(path: str):
     """Write default keybindings to keys file at path."""
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         get_default_parser().write(f)
     _logger.debug("Created default keys file '%s'", path)
 

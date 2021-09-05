@@ -25,7 +25,7 @@ except NameError:
 
 def read_file(filename):
     """Read content of filename into string and return it."""
-    with open(filename) as f:
+    with open(filename, encoding="utf-8") as f:
         return f.read()
 
 

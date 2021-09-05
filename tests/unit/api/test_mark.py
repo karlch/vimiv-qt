@@ -101,7 +101,7 @@ def test_tag_write(tagwrite):
 
 
 def test_tag_write_header(tagwrite):
-    with open(tagwrite.path, "r") as f:
+    with open(tagwrite.path, "r", encoding="utf-8") as f:
         comment_lines = [line for line in f if line.startswith(Tag.COMMENTCHAR)]
     assert "vimiv tag file" in comment_lines[0]
     date_re = re.compile(r"# created: \d\d\d\d-\d\d-\d\d \d\d:\d\d")
@@ -111,7 +111,7 @@ def test_tag_write_header(tagwrite):
 
 
 def test_tag_write_paths(tagwrite):
-    with open(tagwrite.path, "r") as f:
+    with open(tagwrite.path, "r", encoding="utf-8") as f:
         path_lines = [
             line.strip() for line in f if not line.startswith(Tag.COMMENTCHAR)
         ]
@@ -142,7 +142,7 @@ def test_tag_delete(mark, parts):
     name = os.path.join(*parts)
     tagpath = Tag.path(name)
     os.makedirs(os.path.dirname(tagpath), exist_ok=True, mode=0o700)
-    with open(Tag.path(name), "w") as f:
+    with open(Tag.path(name), "w", encoding="utf-8") as f:
         f.write("My tag content")
     mark.tag_delete(basename)
     assert not os.path.exists(Tag.path(basename))
