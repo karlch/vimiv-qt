@@ -50,10 +50,7 @@ def _general_help() -> None:
     _format_help(title=vimiv.__name__, description=vimiv.__description__, text=text)
 
 
-# TODO Expose a public command class so the pylint suppression is no longer required
-def _command_help(
-    command: api.commands._Command,  # pylint: disable=protected-access
-) -> None:
+def _command_help(command: api.commands._Command,) -> None:
     """Display information on this command."""
     description = command.long_description.replace("\n", "<br>")
     _format_help(title=command.name, description=description)
