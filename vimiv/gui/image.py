@@ -124,6 +124,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         widget = QLabel()
         widget.setMovie(movie)
         self._update_scene(widget, QRectF(movie.currentPixmap().rect()), keep_zoom)
+        widget.resize(movie.currentPixmap().size())
 
     def _load_svg(self, path: str, keep_zoom: bool) -> None:
         """Load new vector graphic into the graphics scene."""
