@@ -71,6 +71,8 @@ Added:
 * Support for the ``jp2`` file format using the imageformats plugin. To enable it, add
   ``imageformats = jp2`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
   the qt imageformats plugin. Thanks `@szsdk`_ for testing!
+* The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
+  before deleting. Thanks `@timsofteng`_ for the idea!
 
 Changed:
 ^^^^^^^^
@@ -507,3 +509,4 @@ Initial release of the Qt version.
 .. _@Kakupakat: https://github.com/Kakupakat
 .. _@loiccoyle: https://github.com/loiccoyle
 .. _@szsdk: https://github.com/szsdk
+.. _@timsofteng: https://github.com/timsofteng

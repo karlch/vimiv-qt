@@ -10,14 +10,14 @@ import os
 from typing import List
 
 from vimiv import api
-from vimiv.utils import files, log, trash_manager
+from vimiv.utils import files, log, trash_manager, quotedjoin
 
 _last_deleted: List[str] = []
 
 
 @api.keybindings.register("x", "delete %")
 @api.commands.register(edit=True)
-def delete(paths: List[str]) -> None:
+def delete(paths: List[str], ask: bool = False) -> None:
     """Move one or more images to the trash directory.
 
     **syntax:** ``:delete path [path ...]``
@@ -25,8 +25,15 @@ def delete(paths: List[str]) -> None:
     positional arguments:
         * ``paths``: The path(s) to the images to delete.
 
+    optional arguments:
+        * ``--ask``: Prompt for confirmation before deleting the images.
+
     .. note:: This only deletes images, not any other path(s).
     """
+    if ask and not api.prompt.ask_question(
+        title="delete", body=f"delete {quotedjoin(paths)}?"
+    ):
+        return
     _last_deleted.clear()
     images = [path for path in paths if files.is_image(path)]
     if not images:
