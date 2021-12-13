@@ -61,7 +61,7 @@ def test_update_history_with_duplicates(history_deque):
 
 def test_never_exceed_history_max_elements(history_deque):
     for i in range(history_deque.maxlen + 5):
-        history_deque.update(":test-%d" % (i))
+        history_deque.update(f":test-{i}")
     assert len(history_deque) == history_deque.maxlen
 
 

@@ -55,6 +55,7 @@ def test_check_pyqt_available(capsys, monkeypatch):
 
 def build_message(software, required, version):
     """Helper to create the expected error message on too low software version."""
+    # pylint: disable=consider-using-f-string
     return "At least %s %s is required to run vimiv. Using %s.\n" % (
         software,
         ".".join(str(i) for i in required),

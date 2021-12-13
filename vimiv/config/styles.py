@@ -156,7 +156,7 @@ def apply(obj, append: str = ""):
 def get(name: str) -> str:
     """Return style option for a given name."""
     try:
-        return _style["{%s}" % (name)]
+        return _style[f"{{{name}}}"]
     except KeyError:
         log.error("Style option '%s' not found, falling back to default", name)
         return ""

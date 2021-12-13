@@ -30,10 +30,7 @@ except ImportError:
 ExceptionHandler = Callable[
     [Type[BaseException], BaseException, types.TracebackType], None
 ]
-# See https://github.com/PyCQA/pylint/issues/2804
-SignalHandler = Callable[
-    [signal.Signals, types.FrameType], None  # pylint: disable=no-member
-]
+SignalHandler = Callable[[signal.Signals, types.FrameType], None]
 
 _logger = log.module_logger(__name__)
 

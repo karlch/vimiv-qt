@@ -53,6 +53,8 @@ def join_version_tuple(version):
 
 def _exit_version(software, required, installed):
     """Call exit for out-of-date software."""
+    # This module needs to work for python < 3.6
+    # pylint: disable=consider-using-f-string
     _exit(
         "At least %s %s is required to run vimiv. Using %s.\n"
         % (software, join_version_tuple(required), join_version_tuple(installed))

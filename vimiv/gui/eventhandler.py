@@ -281,8 +281,6 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         Qt.Key_End: "<end>",
         Qt.Key_PageUp: "<page-up>",
         Qt.Key_PageDown: "<page-down>",
-        Qt.Key_Home: "<home>",
-        Qt.Key_End: "<end>",
     }
     separator_keys = {
         Qt.Key_Colon: "<colon>",
