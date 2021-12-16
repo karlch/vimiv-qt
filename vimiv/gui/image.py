@@ -359,7 +359,8 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
 
     def wheelEvent(self, event):
         """Update mouse wheel to zoom with control."""
-        if event.modifiers() & Qt.ControlModifier:
+        require_ctrl = api.settings.image.zoom_wheel_ctrl
+        if not require_ctrl or event.modifiers() & Qt.ControlModifier:
             # We divide by 120 as this is the regular delta multiple
             # See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
             steps = event.angleDelta().y() / 120

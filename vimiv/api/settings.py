@@ -389,6 +389,11 @@ class image:  # pylint: disable=invalid-name
         suggestions=["1.0", "1.5", "2.0", "5.0"],
         min_value=1.0,
     )
+    zoom_wheel_ctrl = BoolSetting(
+        "image.zoom_wheel_ctrl",
+        True,
+        desc="Require holding the control modifier for zooming with the mouse wheel",
+    )
 
 
 class library:  # pylint: disable=invalid-name
