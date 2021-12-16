@@ -31,23 +31,51 @@ jobs:
       env:
         CI: Github-Actions
 
-  py38:
+  py38-39:
 
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        toxenv: [pyqt513, pyqt514, pyqt515-cov, piexif, noexif, lint, packaging, mypy]
+        python-version: [3.8, 3.9]
+        toxenv: [pyqt513, pyqt514, pyqt515]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2.4.0
-    - name: Set up python 3.8
+    - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v2.3.1
       with:
-        python-version: 3.8
+        python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
         sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libexiv2-dev libboost-python-dev
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python38.so
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python${PYVERSION//./}.so
+        python -m pip install --upgrade pip
+        pip install tox
+      env:
+        PYVERSION: ${{ matrix.python-version }}
+    - name: Test with tox
+      run: |
+        tox -e ${{ matrix.toxenv }}
+      env:
+        CI: Github-Actions
+
+  py310:
+
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        toxenv: [pyqt515-cov, piexif, noexif, lint, packaging, mypy]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v2.4.0
+    - name: Set up python 3.10
+      uses: actions/setup-python@v2.3.1
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libexiv2-dev libboost-python-dev
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python310.so
         python -m pip install --upgrade pip
         pip install tox
     - name: Test with tox
