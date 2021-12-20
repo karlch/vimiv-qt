@@ -65,7 +65,7 @@ from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
 from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
-
+from vimiv.utils.files import SupportedMeta
 
 _logger = log.module_logger(__name__)
 
@@ -215,7 +215,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             self._directories = directories
             self.changed.emit(images, directories)
 
-    def _get_content(self, directory: str) -> Tuple[List[str], List[str]]:
+    def _get_content(self, directory: str) -> SupportedMeta:
         """Get supported content of directory.
 
         Returns:
@@ -224,7 +224,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.supported(paths)
+        return files.supported_with_meta(paths)
 
 
 handler = cast(WorkingDirectoryHandler, None)

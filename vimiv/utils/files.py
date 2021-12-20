@@ -9,6 +9,7 @@
 import imghdr
 import functools
 import os
+from stat import S_ISDIR, S_ISREG
 from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
 from PyQt5.QtGui import QImageReader
@@ -36,6 +37,28 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     )
 
 
+SupportedMeta = Tuple[List[Tuple[str, os.stat_result]], List[Tuple[str, os.stat_result]]]
+
+
+def supported_with_meta(paths: Iterable[str]) -> SupportedMeta:
+    directories = []
+    images = []
+    for path in paths:
+        stat_result = os.stat(path)
+        if S_ISDIR(stat_result.st_mode):
+            directories.append((path, stat_result))
+        elif is_image(path, stat_result):
+            images.append((path, stat_result))
+    return images, directories
+
+
+def strip_meta(files: SupportedMeta) -> Tuple[List[str], List[str]]:
+    def first(it):
+        return list(map(lambda a: a[0], it))
+    images, directories = files
+    return first(images), first(directories)
+
+
 def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
     """Get a list of supported images and a list of directories from paths.
 
@@ -45,17 +68,10 @@ def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
         images: List of images inside the directory.
         directories: List of directories inside the directory.
     """
-    directories = []
-    images = []
-    for path in paths:
-        if os.path.isdir(path):
-            directories.append(path)
-        elif is_image(path):
-            images.append(path)
-    return images, directories
+    return strip_meta(supported_with_meta(paths))
 
 
-def get_size(path: str) -> str:
+def get_size(path: str, stat_result: Optional[os.stat_result] = None) -> str:
     """Get the size of a path in human readable format.
 
     If the path is an image, the filesize is returned in the form of 2.3M. If
@@ -66,18 +82,30 @@ def get_size(path: str) -> str:
         Size of path as string.
     """
     try:
-        isfile = os.path.isfile(path)
+        if stat_result is not None:
+            isfile = S_ISREG(stat_result.st_mode)
+        else:
+            isfile = os.path.isfile(path)
     except OSError:
         return "N/A"
     if isfile:
-        return get_size_file(path)
+        return get_size_file(path, stat_result)
     return get_size_directory(path)
 
 
-def get_size_file(path: str) -> str:
-    """Retrieve the size of a file as formatted byte number in human-readable format."""
+def get_size_file(path: str, stat_result: Optional[os.stat_result] = None) -> str:
+    """Retrieve the size of a file as formatted byte number in human-readable format.
+
+    Args:
+        path: Path to the file
+        stat_result: Result of os.stat() to determine node type of filename without disk access.
+    """
     try:
-        return sizeof_fmt(os.path.getsize(path))
+        if stat_result is not None:
+            size = stat_result.st_size
+        else:
+            size = os.path.getsize(path)
+        return sizeof_fmt(size)
     except OSError:
         return "N/A"
 
@@ -114,14 +142,19 @@ def get_size_directory(path: str) -> str:
         return "N/A"
 
 
-def is_image(filename: str) -> bool:
+def is_image(filename: str, stat_result: Optional[os.stat_result] = None) -> bool:
     """Check whether a file is an image.
 
     Args:
         filename: Name of file to check.
+        stat_result: Result of os.stat() to determine node type of filename without disk access.
     """
     try:
-        return os.path.isfile(filename) and imghdr.what(filename) is not None
+        if stat_result is not None:
+            is_file = S_ISREG(stat_result.st_mode)
+        else:
+            is_file = os.path.isfile(filename)
+        return is_file and imghdr.what(filename) is not None
     except OSError:
         return False
 

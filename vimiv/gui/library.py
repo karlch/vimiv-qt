@@ -9,7 +9,7 @@
 import contextlib
 import math
 import os
-from typing import List, Optional, Dict, NamedTuple
+from typing import List, Optional, Dict, NamedTuple, Tuple
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
@@ -386,7 +386,7 @@ class LibraryModel(QStandardItemModel):
         api.working_directory.handler.loaded.connect(self._update_content)
 
     @pyqtSlot(list, list)
-    def _update_content(self, images: List[str], directories: List[str]):
+    def _update_content(self, images: List[Tuple[str, os.stat_result]], directories: List[Tuple[str, os.stat_result]]):
         """Update library content with new images and directories.
 
         Args:
@@ -399,7 +399,7 @@ class LibraryModel(QStandardItemModel):
         self._library.load_directory()
 
     @pyqtSlot(list, list)
-    def _on_directory_changed(self, images: List[str], directories: List[str]):
+    def _on_directory_changed(self, images: List[Tuple[str, os.stat_result]], directories: List[Tuple[str, os.stat_result]]):
         """Reload library when directory content has changed.
 
         In addition to _update_content() the position is stored.
@@ -458,7 +458,7 @@ class LibraryModel(QStandardItemModel):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    def _add_rows(self, paths: List[str], are_directories: bool = False):
+    def _add_rows(self, paths: List[Tuple[str, os.stat_result]], are_directories: bool = False):
         """Generate a library row for each path and add it to the model.
 
         Args:
@@ -468,17 +468,17 @@ class LibraryModel(QStandardItemModel):
         get_size = files.get_size_directory if are_directories else files.get_size_file
         mark_prefix = api.mark.indicator + " "
         for i, path in enumerate(paths, start=self.rowCount() + 1):
-            name = os.path.basename(path)
+            name = os.path.basename(path[0])
             if are_directories:
                 name = utils.add_html(name + "/", "b")
             if path in api.mark.paths:
                 name = mark_prefix + name
             with contextlib.suppress(FileNotFoundError):  # Deleted in the meantime
-                size = get_size(path)
+                size = get_size(*path)
                 self.appendRow(
                     (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size))
                 )
-                self.paths.append(path)
+                self.paths.append(path[0])
 
 
 class LibraryDelegate(QStyledItemDelegate):
