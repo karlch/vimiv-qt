@@ -386,7 +386,11 @@ class LibraryModel(QStandardItemModel):
         api.working_directory.handler.loaded.connect(self._update_content)
 
     @pyqtSlot(list, list)
-    def _update_content(self, images: List[Tuple[str, os.stat_result]], directories: List[Tuple[str, os.stat_result]]):
+    def _update_content(
+        self,
+        images: List[Tuple[str, os.stat_result]],
+        directories: List[Tuple[str, os.stat_result]],
+    ):
         """Update library content with new images and directories.
 
         Args:
@@ -399,7 +403,11 @@ class LibraryModel(QStandardItemModel):
         self._library.load_directory()
 
     @pyqtSlot(list, list)
-    def _on_directory_changed(self, images: List[Tuple[str, os.stat_result]], directories: List[Tuple[str, os.stat_result]]):
+    def _on_directory_changed(
+        self,
+        images: List[Tuple[str, os.stat_result]],
+        directories: List[Tuple[str, os.stat_result]],
+    ):
         """Reload library when directory content has changed.
 
         In addition to _update_content() the position is stored.
@@ -458,7 +466,9 @@ class LibraryModel(QStandardItemModel):
         """Return True if the index is highlighted as search result."""
         return index.row() in self._highlighted
 
-    def _add_rows(self, paths: List[Tuple[str, os.stat_result]], are_directories: bool = False):
+    def _add_rows(
+        self, paths: List[Tuple[str, os.stat_result]], are_directories: bool = False
+    ):
         """Generate a library row for each path and add it to the model.
 
         Args:

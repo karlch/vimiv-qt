@@ -10,7 +10,7 @@ import imghdr
 import functools
 import os
 from stat import S_ISDIR, S_ISREG
-from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
+from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable, Any
 
 from PyQt5.QtGui import QImageReader
 
@@ -37,10 +37,20 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     )
 
 
-SupportedMeta = Tuple[List[Tuple[str, os.stat_result]], List[Tuple[str, os.stat_result]]]
+SupportedMeta = Tuple[
+    List[Tuple[str, os.stat_result]], List[Tuple[str, os.stat_result]]
+]
 
 
 def supported_with_meta(paths: Iterable[str]) -> SupportedMeta:
+    """Get supported images and directories from paths including metadata.
+
+    Args:
+        paths: List containing paths to parse.
+    Returns:
+        supported_meta: lists of images and directories including os.stat_result
+            metadata.
+    """
     directories = []
     images = []
     for path in paths:
@@ -53,8 +63,18 @@ def supported_with_meta(paths: Iterable[str]) -> SupportedMeta:
 
 
 def strip_meta(files: SupportedMeta) -> Tuple[List[str], List[str]]:
-    def first(it):
+    """Remove metadata from a SupportedMeta tuple.
+
+    Args:
+        files: Lists of files and directories including os.stat_result metadata.
+    Returns:
+        images: List of images without os.stat_result metadata.
+        directories: List of directories without os.stat_result metadata.
+    """
+
+    def first(it: Iterable[Tuple[str, Any]]) -> List[str]:
         return list(map(lambda a: a[0], it))
+
     images, directories = files
     return first(images), first(directories)
 
@@ -98,7 +118,8 @@ def get_size_file(path: str, stat_result: Optional[os.stat_result] = None) -> st
 
     Args:
         path: Path to the file
-        stat_result: Result of os.stat() to determine node type of filename without disk access.
+        stat_result: Result of os.stat() to determine node type of filename without disk
+            access.
     """
     try:
         if stat_result is not None:
@@ -128,14 +149,16 @@ def sizeof_fmt(num: float) -> str:
     return f"{num:.1f}Y"
 
 
-def get_size_directory(path: str) -> str:
+def get_size_directory(path: str, stat_result: Optional[os.stat_result] = None) -> str:
     """Get size of directory by checking amount of supported paths.
 
     Args:
         path: Path to directory to check.
+        stat_result: Currently unused argument to unify get_size_* functions.
     Returns:
         Size as formatted string.
     """
+    # pylint: disable=unused-argument
     try:
         return str(len(os.listdir(path)))
     except OSError:
@@ -147,7 +170,8 @@ def is_image(filename: str, stat_result: Optional[os.stat_result] = None) -> boo
 
     Args:
         filename: Name of file to check.
-        stat_result: Result of os.stat() to determine node type of filename without disk access.
+        stat_result: Result of os.stat() to determine node type of filename without disk
+            access.
     """
     try:
         if stat_result is not None:

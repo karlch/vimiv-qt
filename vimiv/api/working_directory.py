@@ -156,8 +156,9 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""
         self._dir = directory
-        self._images, self._directories = self._get_content(directory)
-        self.loaded.emit(self._images, self._directories)
+        images, directories = self._get_content(directory)
+        self._images, self._directories = files.strip_meta((images, directories))
+        self.loaded.emit(images, directories)
 
     @throttled(delay_ms=WAIT_TIME_MS)
     def _reload_directory(self, _path: str) -> None:
@@ -193,14 +194,19 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         _logger.debug("Image file updated")
         status.update("image file changed")
 
-    def _emit_changes(self, images: List[str], directories: List[str]) -> None:
+    def _emit_changes(
+        self,
+        images_meta: List[Tuple[str, os.stat_result]],
+        directories_meta: List[Tuple[str, os.stat_result]]
+    ) -> None:
         """Emit changed signals if the content in the directory has changed.
 
         Args:
-            images: Updated list of images in the working directory.
-            directories: Updated list of directories in the working directory.
+            images_meta: Updated list of images in the working directory.
+            directories_meta: Updated list of directories in the working directory.
         """
         # Image filelist has changed, relevant for thumbnail and image mode
+        images, directories = files.strip_meta((images_meta, directories_meta))
         if images != self._images:
             new = set(images)
             old = set(self._images)
