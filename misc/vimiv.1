@@ -1,8 +1,5 @@
 .\" Man page generated from reStructuredText.
 .
-.TH "VIMIV" "1" "May 05, 2021" "" "vimiv"
-.SH NAME
-vimiv \- an image viewer with vim-like keybindings
 .
 .nr rst2man-indent-level 0
 .
@@ -30,9 +27,12 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
+.TH "VIMIV" "1" "Dec 26, 2021" "" "vimiv"
+.SH NAME
+vimiv \- an image viewer with vim-like keybindings
 .SH SYNOPSIS
 .sp
-\fBvimiv\fP [\fBPATH\fP] [\fB\-h\fP] [\fB\-\-help\fP] [\fB\-f\fP] [\fB\-\-fullscreen\fP] [\fB\-v\fP] [\fB\-\-version\fP] [\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-b\fP \fIDIRECTORY\fP] [\fB\-\-basedir\fP \fIDIRECTORY\fP] [\fB\-o\fP] [\fB\-\-output\fP] [\fB\-i\fP] [\fB\-\-input\fP] [\fB\-\-debug\fP \fIMODULE\fP] [\fB\-\-qt\-args\fP \fIARGS\fP]
+\fBvimiv\fP [\fBPATH\fP] [\fB\-h\fP] [\fB\-\-help\fP] [\fB\-f\fP] [\fB\-\-fullscreen\fP] [\fB\-v\fP] [\fB\-\-version\fP] [\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-b\fP \fIDIRECTORY\fP] [\fB\-\-basedir\fP \fIDIRECTORY\fP] [\fB\-o\fP \fITEXT\fP] [\fB\-\-output\fP \fITEXT\fP] [\fB\-i\fP] [\fB\-\-input\fP] [\fB\-\-debug\fP \fIMODULE\fP] [\fB\-\-qt\-args\fP \fIARGS\fP]
 .SH DESCRIPTION
 .sp
 Vimiv is an image viewer with vim\-like keybindings. It is written in python3
@@ -141,7 +141,7 @@ Directory to use for all storage
 .UNINDENT
 .UNINDENT
 .sp
-\fB\-o\fP, \fB\-\-output\fP
+\fB\-o\fP \fITEXT\fP, \fB\-\-output\fP \fITEXT\fP
 .INDENT 0.0
 .INDENT 3.5
 Wildcard expanded string to print to standard output upon quit

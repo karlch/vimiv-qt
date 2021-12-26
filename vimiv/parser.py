@@ -86,6 +86,7 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-o",
         "--output",
+        metavar="TEXT",
         help="Wildcard expanded string to print to standard output upon quit",
     )
     parser.add_argument(
