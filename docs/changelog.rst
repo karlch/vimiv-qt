@@ -74,6 +74,8 @@ Added:
 * The ``image.zoom_wheel_ctrl`` setting which toggles the need to hold the ``<ctrl>``
   modifier for zooming an image with the mouse wheel. Thanks `@ArtemSmaznov`_ for the
   idea!
+* The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
+  before deleting. Thanks `@timsofteng`_ for the idea!
 
 Changed:
 ^^^^^^^^
@@ -511,3 +513,4 @@ Initial release of the Qt version.
 .. _@loiccoyle: https://github.com/loiccoyle
 .. _@szsdk: https://github.com/szsdk
 .. _@ArtemSmaznov: https://github.com/ArtemSmaznov
+.. _@timsofteng: https://github.com/timsofteng
