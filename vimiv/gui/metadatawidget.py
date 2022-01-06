@@ -177,6 +177,5 @@ if exif.has_exif_support:
             if self.isVisible():
                 self._update_text()
 
-
 else:  # No exif support  # pragma: no cover  # Covered in another CI
     MetadataWidget = None  # type: ignore
