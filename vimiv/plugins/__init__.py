@@ -123,9 +123,7 @@ def cleanup() -> None:
     _logger.debug("Cleaning up plugins")
     for name, module in _loaded_plugins.items():
         try:
-            # AttributeError is caught afterwards, the module may or may not define
-            # cleanup
-            module.cleanup()  # type: ignore
+            module.cleanup()
             _logger.debug("Cleaned up '%s'", name)
         except AttributeError:
             _logger.debug("Plugin '%s' does not define cleanup()", name)
@@ -160,8 +158,7 @@ def _load_plugin(name: str, info: str, directory: str) -> None:
         log.error("Importing plugin '%s': %s", name, str(e))
         return
     try:
-        # AttributeError is caught afterwards, the module may or may not define init
-        module.init(info)  # type: ignore
+        module.init(info)
         _logger.debug("Initialized '%s'", name)
     except AttributeError:
         _logger.debug("Plugin '%s' does not define init()", name)

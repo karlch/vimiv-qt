@@ -11,7 +11,7 @@ import os
 import signal
 import sys
 import types
-from typing import Callable, Type
+from typing import Callable, Optional, Type
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
 from PyQt5.QtWidgets import QApplication
@@ -30,7 +30,7 @@ except ImportError:
 ExceptionHandler = Callable[
     [Type[BaseException], BaseException, types.TracebackType], None
 ]
-SignalHandler = Callable[[signal.Signals, types.FrameType], None]
+SignalHandler = Callable[[int, Optional[types.FrameType]], None]
 
 _logger = log.module_logger(__name__)
 
@@ -110,7 +110,7 @@ class CrashHandler(QObject):
             log.fatal("Exception: %r", e)
             sys.exit(customtypes.Exit.err_suicide)
 
-    def handle_interrupt(self, signum: int, _frame: types.FrameType) -> None:
+    def handle_interrupt(self, signum: int, _frame: Optional[types.FrameType]) -> None:
         """Initial handler for interrupt signals to exit gracefully.
 
         Args:
@@ -124,7 +124,9 @@ class CrashHandler(QObject):
             0, functools.partial(self._app.exit, customtypes.Exit.signal + signum)
         )
 
-    def handle_interrupt_forcefully(self, signum: int, _frame: types.FrameType) -> None:
+    def handle_interrupt_forcefully(
+        self, signum: int, _frame: Optional[types.FrameType]
+    ) -> None:
         """Second handler for interrupt signals to exit forcefully.
 
         Args:
