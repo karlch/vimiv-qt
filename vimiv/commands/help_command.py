@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions to format and retrieve text for the :help command."""
@@ -50,7 +50,9 @@ def _general_help() -> None:
     _format_help(title=vimiv.__name__, description=vimiv.__description__, text=text)
 
 
-def _command_help(command: api.commands._Command,) -> None:
+def _command_help(
+    command: api.commands._Command,
+) -> None:
     """Display information on this command."""
     description = command.long_description.replace("\n", "<br>")
     _format_help(title=command.name, description=description)

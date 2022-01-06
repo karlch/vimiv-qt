@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.gui.eventhandler."""
@@ -71,7 +71,14 @@ def test_keyevent_to_sequence_for_only_modifier():
         (Qt.LeftButton, Qt.NoModifier, ("<button-left>",)),
         (Qt.MiddleButton, Qt.NoModifier, ("<button-middle>",)),
         (Qt.RightButton, Qt.NoModifier, ("<button-right>",)),
-        (Qt.LeftButton, Qt.ControlModifier, ("<ctrl>", "<button-left>",)),
+        (
+            Qt.LeftButton,
+            Qt.ControlModifier,
+            (
+                "<ctrl>",
+                "<button-left>",
+            ),
+        ),
     ],
 )
 def test_mouse_event_to_sequence(qtbutton, modifier, expected):

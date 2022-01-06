@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2021 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Various completion models for command line completion."""
@@ -156,7 +156,8 @@ class SettingsOptionModel(api.completion.BaseModel):
 
     def __init__(self, setting: api.settings.Setting):
         super().__init__(
-            f":set {setting.name}", column_widths=(0.5, 0.5),
+            f":set {setting.name}",
+            column_widths=(0.5, 0.5),
         )
         self._setting = setting
         self.setSortRole(3)
@@ -227,7 +228,8 @@ class TagModel(api.completion.BaseModel):
     def __init__(self, suffix):
         self._command = f"tag-{suffix}"
         super().__init__(
-            f":{self._command} ", valid_modes=api.modes.GLOBALS,
+            f":{self._command} ",
+            valid_modes=api.modes.GLOBALS,
         )
 
     def on_enter(self, text: str) -> None:
