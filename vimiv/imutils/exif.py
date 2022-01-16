@@ -18,7 +18,12 @@ from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable
 
 from vimiv.utils import log, lazy, is_hex
 
-pyexiv2 = lazy.import_module("pyexiv2", optional=True)
+# TODO lazy loading
+import gi
+
+gi.require_version("GExiv2", "0.10")
+from gi.repository import GExiv2 as gexiv2
+
 piexif = lazy.import_module("piexif", optional=True)
 _logger = log.module_logger(__name__)
 
@@ -37,7 +42,7 @@ class _ExifHandlerBase:
     of the supported exif libraries to implement the methods it can.
     """
 
-    MESSAGE_SUFFIX = ". Please install pyexiv2 or piexif for exif support."
+    MESSAGE_SUFFIX = ". Please install gexiv2 or piexif for exif support."
 
     def __init__(self, _filename=""):
         pass
@@ -179,9 +184,9 @@ class _ExifHandlerPiexif(_ExifHandlerBase):
 
 
 def check_exif_dependancy(handler):
-    """Decorator for ExifHandler which requires the optional pyexiv2 module.
+    """Decorator for ExifHandler which requires the optional gexiv2 module.
 
-    If pyexiv2 is available, the class is left as it is. If pyexiv2 is not available
+    If gexiv2 is available, the class is left as it is. If gexiv2 is not available
     but the less powerful piexif module is, _ExifHandlerPiexif is returned instead.
     If none of the two modules are available, the base implementation which always
     throws an exception is returned.
@@ -189,7 +194,7 @@ def check_exif_dependancy(handler):
     Args:
         handler: The class to be decorated.
     """
-    if pyexiv2:
+    if gexiv2:
         return handler
 
     if piexif:
@@ -200,7 +205,7 @@ def check_exif_dependancy(handler):
         "1. Exif data is lost when writing images to disk.\n"
         "2. The `:metadata` command and associated `i` keybinding is not available.\n"
         "3. The {exif-date-time} statusbar module is not available.\n\n"
-        "Please install pyexiv2 or piexif to silence this warning.\n"
+        "Please install gexiv2 or piexif to silence this warning.\n"
         "For more information see\n"
         "https://karlch.github.io/vimiv-qt/documentation/exif.html\n"
     )
@@ -210,16 +215,15 @@ def check_exif_dependancy(handler):
 
 @check_exif_dependancy
 class ExifHandler(_ExifHandlerBase):
-    """Main ExifHandler implementation based on pyexiv2."""
+    """Main ExifHandler implementation based on gexiv2."""
 
-    MESSAGE_SUFFIX = " by pyexiv2."
+    MESSAGE_SUFFIX = " by gexiv2."
 
     def __init__(self, filename=""):
         super().__init__(filename)
         try:
-            self._metadata = pyexiv2.ImageMetadata(filename)
-            self._metadata.read()
-        except FileNotFoundError:
+            self._metadata = gexiv2.Metadata(filename)
+        except gi.repository.GLib.GError:
             _logger.debug("File %s not found", filename)
 
     def get_formatted_exif(self, desired_keys: Sequence[str]) -> ExifDictT:
@@ -230,25 +234,13 @@ class ExifHandler(_ExifHandlerBase):
             for prefix in ["", "Exif.Image.", "Exif.Photo."]:
                 key = f"{prefix}{base_key}"
                 try:
-                    key_name = self._metadata[key].name
-
-                    try:
-                        key_value = self._metadata[key].human_value
-
-                    # Not all metadata (i.e. IPTC) provide human_value, take raw_value
-                    except AttributeError:
-                        value = self._metadata[key].raw_value
-
-                        # For IPTC the raw_value is a list of strings
-                        if isinstance(value, list):
-                            key_value = ", ".join(value)
-                        else:
-                            key_value = value
-
-                    exif[key] = (key_name, key_value)
+                    exif[key] = (
+                        self._metadata.try_get_tag_label(key),
+                        self._metadata.try_get_tag_interpreted_string(key),
+                    )
                     break
 
-                except KeyError:
+                except gi.repository.GLib.GError:
                     _logger.debug("Key %s is invalid for the current image", key)
 
         return exif
@@ -259,28 +251,19 @@ class ExifHandler(_ExifHandlerBase):
     def copy_exif(self, dest: str, reset_orientation: bool = True) -> None:
         if reset_orientation:
             with contextlib.suppress(KeyError):
-                self._metadata["Exif.Image.Orientation"] = ExifOrientation.Normal
+                self._metadata.set_orientation(ExifOrientation.Normal)
         try:
-            dest_image = pyexiv2.ImageMetadata(dest)
-            dest_image.read()
-
-            # File types restrict the metadata type they can store.
-            # Try copying all types one by one and skip if it fails.
-            for copy_args in set(itertools.permutations((True, False, False, False))):
-                with contextlib.suppress(ValueError):
-                    self._metadata.copy(dest_image, *copy_args)
-
-            dest_image.write()
+            self._metadata.save_file(dest)
 
             _logger.debug("Successfully wrote exif data for '%s'", dest)
-        except FileNotFoundError:
-            _logger.debug("Failed to write exif data. Destination '%s' not found", dest)
-        except OSError as e:
+
+        # TODO error handling
+        except gi.repository.GLib.GError as e:
             _logger.debug("Failed to write exif data for '%s': '%s'", dest, str(e))
 
     def exif_date_time(self) -> str:
-        with contextlib.suppress(KeyError):
-            return self._metadata["Exif.Image.DateTime"].raw_value
+        with contextlib.suppress(gi.repository.GLib.GError):
+            return self._metadata.get_tag_raw("Exif.Image.DateTime")
         return ""
 
 
