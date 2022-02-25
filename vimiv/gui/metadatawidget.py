@@ -19,8 +19,10 @@ from vimiv.config import styles
 _logger = utils.log.module_logger(__name__)
 
 
-if exif.has_exif_support:
-
+# TODO: find good solution for no-exif case
+# TODO: detect if handler for formatted metadata present
+# if len(exif._registry[exif.Methods.get_formatted_metadata]) > 0:
+if True:
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
 
@@ -33,7 +35,7 @@ if exif.has_exif_support:
             _mainwindow_width: width of the mainwindow.
             _path: Absolute path of the current image to load exif metadata of.
             _current_set: Holds a string of the currently selected keyset.
-            _handler: ExifHandler for _path or None. Use the handler property to access.
+            _handler: MetadataHandler for _path or None. Use the handler property to access.
         """
 
         STYLESHEET = """
@@ -58,7 +60,7 @@ if exif.has_exif_support:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
-            self._handler: Optional[exif.ExifHandler] = None
+            self._handler: Optional[exif.MetadataHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
@@ -66,10 +68,10 @@ if exif.has_exif_support:
             self.hide()
 
         @property
-        def handler(self) -> exif.ExifHandler:
-            """Return the ExifHandler for the current path."""
+        def handler(self) -> exif.MetadataHandler:
+            """Return the MetadataHandler for the current path."""
             if self._handler is None:
-                self._handler = exif.ExifHandler(self._path)
+                self._handler = exif.MetadataHandler(self._path)
             return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
@@ -160,7 +162,7 @@ if exif.has_exif_support:
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            formatted_exif = self.handler.get_formatted_exif(keys)
+            formatted_exif = self.handler.get_formatted_metadata(keys)
             if formatted_exif:
                 self.setText(utils.format_html_table(formatted_exif.values()))
             else:
