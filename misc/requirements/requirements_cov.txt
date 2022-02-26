@@ -1,2 +1,2 @@
-coverage==6.2
+coverage==6.3.2
 pytest-cov==3.0.0
