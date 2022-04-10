@@ -178,6 +178,13 @@ def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
 add_image_format("svg", test_svg)
 
 
+def test_ico(h: bytes, _f: Optional[BinaryIO]) -> bool:
+    return h.startswith(bytes.fromhex("00000100"))
+
+
+add_image_format("ico", test_ico)
+
+
 # We now directly override the jpg part of imghdr as it has some known limitations
 # See e.g. https://bugs.python.org/issue16512
 def test_jpg(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
