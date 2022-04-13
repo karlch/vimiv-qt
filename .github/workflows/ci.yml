@@ -3,12 +3,11 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  py36-37:
+  py37:
 
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
         toxenv: [pyqt511, pyqt512, pyqt513]
       fail-fast: false
 
@@ -17,7 +16,7 @@ jobs:
     - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v2.3.1
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.7
     - name: Install dependencies
       run: |
         sudo apt-get install libxkbcommon-x11-0 libexiv2-dev libboost-python-dev
