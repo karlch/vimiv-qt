@@ -20,7 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get install libxkbcommon-x11-0 libexiv2-dev libboost-python-dev
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python${PY//./}.so
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python37.so
         python -m pip install --upgrade pip
         pip install tox
       env:
