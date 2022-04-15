@@ -31,7 +31,11 @@ _logger = log.module_logger(__name__)
 @api.keybindings.register("<button-right>", "enter library", mode=api.modes.THUMBNAIL)
 @api.keybindings.register("<button-right>", "enter library", mode=api.modes.IMAGE)
 @api.keybindings.register("gm", "enter manipulate")
-@api.keybindings.register("gt", "enter thumbnail")
+@api.keybindings.register(
+    "gF", "enter thumbnail && set thumbnail.filmstrip true && open-selected"
+)
+@api.keybindings.register("gf", "enter thumbnail && set thumbnail.filmstrip true")
+@api.keybindings.register("gt", "enter thumbnail && set thumbnail.filmstrip false")
 @api.keybindings.register("gl", "enter library")
 @api.keybindings.register("gi", "enter image")
 @api.commands.register()

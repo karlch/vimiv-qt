@@ -39,7 +39,6 @@ DEFAULT_OPTIONS = {
     "statusbar.message_border": "2px solid",
     "statusbar.padding": "4",
     # Thumbnail
-    "thumbnail.font": "{font}",
     "thumbnail.fg": "{library.fg}",
     "thumbnail.bg": "{image.bg}",
     "thumbnail.padding": "20",
@@ -48,6 +47,8 @@ DEFAULT_OPTIONS = {
     "thumbnail.default.bg": "{statusbar.info}",
     "thumbnail.error.bg": "{statusbar.error}",
     "thumbnail.frame.fg": "{thumbnail.fg}",
+    "thumbnail.filmstrip.alpha": "150",
+    "thumbnail.filmstrip.selected.alpha": "200",
     # Completion
     "completion.height": "16em",
     "completion.fg": "{statusbar.fg}",

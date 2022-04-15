@@ -9,11 +9,12 @@
 import contextlib
 import math
 import os
+import re
 from typing import List, Optional, Iterator, cast
 
-from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QRect, QRectF, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
-from PyQt5.QtGui import QColor, QIcon
+from PyQt5.QtGui import QColor, QIcon, QFontMetrics, QResizeEvent
 
 from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search, number_for_command
@@ -41,12 +42,15 @@ class ThumbnailView(
     """Thumbnail widget.
 
     Attributes:
+        padding: Padding of the displayed icon in all directions.
+        text_size: Maximum bounding rectangle of the thumbnail names.
         _manager: ThumbnailManager class to create thumbnails asynchronously.
         _paths: Last paths loaded to avoid duplicate loading.
     """
 
     STYLESHEET = """
     QListWidget {
+        color: {library.fg};
         font: {thumbnail.font};
         background-color: {thumbnail.bg};
     }
@@ -79,11 +83,12 @@ class ThumbnailView(
 
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
-    def __init__(self):
+    def __init__(self, parent):
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
-        QListWidget.__init__(self)
-
+        QListWidget.__init__(self, parent)
+        self.padding = int(styles.get("thumbnail.padding"))
         self._paths: List[str] = []
+        self.text_size = QSize(0, 0)
 
         fail_pixmap = create_pixmap(
             color=styles.get("thumbnail.error.bg"),
@@ -94,7 +99,6 @@ class ThumbnailView(
         self._manager = thumbnail_manager.ThumbnailManager(fail_pixmap)
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setViewMode(QListWidget.IconMode)
         default_size = api.settings.thumbnail.size.value
         self.setIconSize(QSize(default_size, default_size))
         self.setResizeMode(QListWidget.Adjust)
@@ -102,10 +106,17 @@ class ThumbnailView(
         self.setItemDelegate(ThumbnailDelegate(self))
         self.setDragEnabled(False)
 
+        parent.resized.connect(self._update_geometry)
+        api.modes.THUMBNAIL.entered.connect(self.show)
+        api.modes.IMAGE.entered.connect(self._maybe_hide)
+        api.modes.THUMBNAIL.closed.connect(self.hide)
         api.signals.all_images_cleared.connect(self.clear)
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
+        api.settings.thumbnail.filmstrip.changed.connect(self._on_view_changed)
+        api.settings.thumbnail.display_icon.changed.connect(self.rescale_items)
+        api.settings.thumbnail.display_filmstrip.changed.connect(self.rescale_items)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -117,6 +128,14 @@ class ThumbnailView(
         synchronize.signals.new_library_path_selected.connect(self._select_path)
 
         styles.apply(self)
+
+        if not api.settings.thumbnail.filmstrip:
+            self.setViewMode(QListWidget.IconMode)
+        else:
+            self._update_background(filmstrip=True)
+            self.rescale_items()
+
+        self.hide()
 
     def __iter__(self) -> Iterator["ThumbnailItem"]:
         for index in range(self.count()):
@@ -137,11 +156,35 @@ class ThumbnailView(
     def n_columns(self) -> int:
         """Return the number of columns."""
         sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
-        return (self.width() - sb_width) // self.item_size()
+        try:
+            return max((self.width() - sb_width) // self.sizeHintForColumn(0), 1)
+        except ZeroDivisionError:
+            return 1
 
     def n_rows(self) -> int:
         """Return the number of rows."""
         return math.ceil(self.count() / self.n_columns())
+
+    def icon_visible(self) -> bool:
+        """Return True if the icon is currently visible."""
+        return self._check_visible(name=False)
+
+    def name_visible(self) -> bool:
+        """Return True if the name is currently visible."""
+        return self._check_visible(name=True)
+
+    def _check_visible(self, *, name: bool) -> bool:
+        """Check if an element is visible in the current view mode."""
+        setting = self._current_display_setting()
+        option = api.settings.thumbnail.ViewOption
+        option_only = option.NameOnly if name else option.IconOnly
+        return setting.value in (option_only, option.Both)
+
+    def _current_display_setting(self) -> api.settings.Setting:
+        """Return the display setting relevant for the current view mode."""
+        if self.viewMode() == self.ListMode:
+            return api.settings.thumbnail.display_filmstrip
+        return api.settings.thumbnail.display_icon
 
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
@@ -169,11 +212,13 @@ class ThumbnailView(
             del self._paths[idx]  # Remove as the index also changes in the QListWidget
             if not self.takeItem(idx):
                 _logger.error("Error removing thumbnail for '%s'", path)
-        size_hint = QSize(self.item_size(), self.item_size())
-        for i, path in enumerate(paths):
+        basenames = [os.path.basename(path) for path in paths]
+        self._update_text_size(basenames)
+        size_hint = self.calculate_item_size_hint()
+        for (i, path), basename in zip(enumerate(paths), basenames):
             if path not in self._paths:  # Add new path
                 _logger.debug("Adding new thumbnail '%s'", path)
-                ThumbnailItem(self, i, size_hint=size_hint)
+                ThumbnailItem(self, i, name=basename, size_hint=size_hint)
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
@@ -216,6 +261,16 @@ class ThumbnailView(
             item.highlighted = False
         self.repaint()
 
+    @utils.slot
+    def _update_geometry(self):
+        """Update thumbnail geometry depending on image size and view mode."""
+        if self.viewMode() == self.IconMode:
+            self.setGeometry(0, 0, self.parent().width(), self.parent().height())
+        else:
+            width = self.sizeHintForColumn(0)
+            x = self.parent().width() - width
+            self.setGeometry(x, 0, width, self.parent().height())
+
     def _mark_highlight(self, path: str, marked: bool = True):
         """(Un-)Highlight a path if it was (un-)marked.
 
@@ -246,6 +301,12 @@ class ThumbnailView(
     @api.keybindings.register(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
     )
+    @api.keybindings.register(
+        "p", "scroll left --open-selected", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        "n", "scroll right --open-selected", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
     @api.keybindings.register(
@@ -256,7 +317,10 @@ class ThumbnailView(
     )
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(  # type: ignore[override]
-        self, direction: argtypes.DirectionWithPage, count=1
+        self,
+        direction: argtypes.DirectionWithPage,
+        open_selected: bool = False,
+        count=1,
     ):
         """Scroll to another thumbnail in the given direction.
 
@@ -266,6 +330,9 @@ class ThumbnailView(
             * ``direction``: The direction to scroll in
               (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
+        optional arguments:
+            * ``--open-selected``: Automatically open any selected image.
+
         **count:** multiplier
         """
         _logger.debug("Scrolling in direction '%s'", direction)
@@ -274,14 +341,18 @@ class ThumbnailView(
             current += count
         elif direction == direction.Left:
             current -= count
+        elif self.viewMode() == self.IconMode:
+            current = self._scroll_updown_iconmode(current, direction, count)
         else:
-            current = self._scroll_updown(current, direction, count)
+            current = self._scroll_updown_listmode(current, direction, count)
         self._select_index(current)
+        if open_selected:
+            api.signals.load_images.emit([self.current()])
 
-    def _scroll_updown(
+    def _scroll_updown_iconmode(
         self, current: int, direction: argtypes.DirectionWithPage, step: int
     ) -> int:
-        """Helper function bundling the logic required to scroll up/down."""
+        """Helper function to scroll up/down when in icon view mode."""
         if direction.is_page_step:
             n_items = self._n_visible_items(contains=True)
             factor = 0.5 if direction.is_half_page_step else 1
@@ -294,6 +365,18 @@ class ThumbnailView(
         if last_in_col > self.count() - 1:
             last_in_col -= self.n_columns()
         return min(current + self.n_columns() * step, last_in_col)
+
+    def _scroll_updown_listmode(
+        self, current: int, direction: argtypes.DirectionWithPage, step: int
+    ) -> int:
+        """Helper function to scroll up/down when in list view mode."""
+        if direction.is_page_step:
+            n_items = self._n_visible_items(contains=False)
+            factor = 0.5 if direction.is_half_page_step else 1
+            step *= int(n_items * factor)
+        if direction.is_reverse:  # Upwards
+            step *= -1
+        return current + step
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
@@ -348,12 +431,49 @@ class ThumbnailView(
         _logger.debug("Zooming in direction '%s'", direction)
         api.settings.thumbnail.size.step(up=direction == direction.In)
 
+    @api.keybindings.register("w", "toggle-display-setting", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def toggle_display_setting(self):
+        """Jump to the next option for the current display setting.
+
+        Changes between "icon only", "text only" and "both" for the current view mode
+        ("icon" or "filmstrip").
+        """
+        setting = self._current_display_setting()
+        setting.toggle()
+
+    def _update_text_size(self, names: List[str]):
+        """Recalculate text dimension according to new thumbnail names."""
+        text_height = text_width = 0
+        font_metrics = QFontMetrics(self.font())
+        for name in names:
+            rect = font_metrics.boundingRect(name)
+            text_height = max(text_height, rect.height())
+            text_width = max(text_width, rect.width())
+        self.text_size = QSize(text_width, text_height)
+
+    def calculate_item_size_hint(self) -> QSize:
+        """Return the expected size of a single thumbnail item."""
+        height = 0
+        width = 0
+        if self.icon_visible():
+            height += self.iconSize().height()
+            width = self.iconSize().width()
+        if self.name_visible():
+            height += self.text_size.height()
+            width = max(width, self.text_size.width())
+        return QSize(width + 2 * self.padding, height + 2 * self.padding)
+
     def rescale_items(self):
         """Reset item hint when item size has changed."""
+        size = self.calculate_item_size_hint()
         for i in range(self.count()):
             item = self.item(i)
-            item.setSizeHint(QSize(self.item_size(), self.item_size()))
+            item.setSizeHint(size)
         self.scrollTo(self.currentIndex())
+        # Something here triggers the proper re-painting of the columns
+        # TODO figure out how to do this without triggering the QResizeEvent
+        super().resizeEvent(QResizeEvent(super().size(), super().size() * 2))
 
     @utils.slot
     def _select_path(self, path: str):
@@ -380,11 +500,43 @@ class ThumbnailView(
         _logger.debug("Setting size to %d", value)
         self.setIconSize(QSize(value, value))
         self.rescale_items()
+        self._update_geometry()
 
-    def item_size(self):
+    def _on_view_changed(self, filmstrip: bool):
+        """Update thumbnail view mode.
+
+        Args:
+            filmstrip: If True, use list mode, otherwise icon mode.
+        """
+        if filmstrip:
+            _logger.debug("Setting view mode to list")
+            self.setViewMode(self.ListMode)
+        else:
+            _logger.debug("Setting view mode to icon")
+            self.setViewMode(self.IconMode)
+            if api.modes.current() != api.modes.THUMBNAIL:
+                self.hide()
+        self._update_geometry()
+        self.rescale_items()
+        self._update_background(filmstrip=filmstrip)
+
+    def _update_background(self, *, filmstrip: bool = False):
+        """Update background color depending on the view mode."""
+        bg_color = "#00000000" if filmstrip else styles.get("thumbnail.bg")
+        stylesheet = re.sub(
+            "background-color: #[0-9A-Fa-f]+",
+            f"background-color: {bg_color}",
+            self.styleSheet(),
+        )
+        self.setStyleSheet(stylesheet)
+
+    def _maybe_hide(self):
+        if self.viewMode() == self.IconMode:
+            self.hide()
+
+    def item_width(self):
         """Return the size of one icon including padding."""
-        padding = int(styles.get("thumbnail.padding").replace("px", ""))
-        return self.iconSize().width() + 2 * padding
+        return self.iconSize().width() + 2 * self.padding
 
     @api.status.module("{thumbnail-basename}")
     def _thumbnail_basename(self):
@@ -465,16 +617,26 @@ class ThumbnailDelegate(QStyledItemDelegate):
     The delegate draws the items.
     """
 
+    # Storing the styles makes the code more readable and faster IMHO
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, parent):
         super().__init__(parent)
 
         # QColor options for background drawing
         self.bg = QColor(styles.get("thumbnail.bg"))
         self.selection_bg = QColor(styles.get("thumbnail.selected.bg"))
-        self.selection_bg_unfocus = QColor(styles.get("thumbnail.selected.bg.unfocus"))
+        self.selection_bg_unfocus = utils.dim_color(self.selection_bg)
         self.search_bg = QColor(styles.get("thumbnail.search.highlighted.bg"))
         self.mark_bg = QColor(styles.get("mark.color"))
-        self.padding = int(styles.get("thumbnail.padding"))
+        self.padding = parent.padding
+        try:
+            self.filmstrip_alpha = int(styles.get("thumbnail.filmstrip.alpha"))
+            self.filmstrip_alpha_selected = int(
+                styles.get("thumbnail.filmstrip.selected.alpha")
+            )
+        except ValueError:
+            self.filmstrip_alpha = 150
+            self.filmstrip_alpha_selected = 200
 
     def paint(self, painter, option, model_index):
         """Override the QStyledItemDelegate paint function.
@@ -486,7 +648,11 @@ class ThumbnailDelegate(QStyledItemDelegate):
         """
         item = self.parent().item(model_index.row())
         self._draw_background(painter, option, item)
-        self._draw_pixmap(painter, option, item)
+
+        if self.parent().icon_visible():
+            self._draw_pixmap(painter, option, item)
+        if self.parent().name_visible():
+            self._draw_text(painter, option, item)
 
     def _draw_background(self, painter, option, item):
         """Draw the background rectangle of the thumbnail.
@@ -532,6 +698,8 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
+        if self.parent().name_visible():
+            diff_y -= self.parent().text_size.height() // 2
         x = int(option.rect.x() + self.padding + diff_x)
         y = int(option.rect.y() + self.padding + diff_y)
         # Draw
@@ -539,6 +707,33 @@ class ThumbnailDelegate(QStyledItemDelegate):
         painter.restore()
         if item.marked:
             self._draw_mark(painter, option, x + size.width(), y + size.height())
+
+    def _draw_text(self, painter, option, item):
+        """Draw the text of the thumbnail item.
+
+        This calculates the remaining space, applies padding as well as eliding
+        appropriately centers the text.
+
+        Args:
+            painter: The QPainter.
+            option: The QStyleOptionViewItem.
+            item: The ThumbnailItem.
+        """
+        if self.parent().icon_visible():
+            y = option.rect.y() + option.rect.height() - int(0.5 * self.padding)
+        else:
+            y = option.rect.y() + option.rect.height() // 2
+        rect = QRectF(
+            option.rect.x() + int(self.padding * 0.5),
+            y,
+            option.rect.width() - self.padding,
+            self.padding,
+        )
+        font_metrics = painter.fontMetrics()
+        text_rect = font_metrics.boundingRect(item.text())
+        dw = (rect.width() - text_rect.width()) // 2
+        dh = (rect.height() - text_rect.height()) // 2
+        painter.drawText(rect.x() + dw, rect.y() + dh, item.text())
 
     def _draw_mark(self, painter, option, x, y):
         """Draw small rectangle as mark indicator if the image is marked.
@@ -567,13 +762,23 @@ class ThumbnailDelegate(QStyledItemDelegate):
             item: The ThumbnailItem storing highlight status.
             state: State of the model index indicating selected.
         """
-        if state & QStyle.State_Selected:
-            if api.modes.current() == api.modes.THUMBNAIL:
-                return self.selection_bg
-            return self.selection_bg_unfocus
-        if item.highlighted:
-            return self.search_bg
-        return self.bg
+        selected = bool(state & QStyle.State_Selected)
+        focused = api.modes.current() == api.modes.THUMBNAIL
+
+        if selected:
+            color = self.selection_bg if focused else self.selection_bg_unfocus
+        elif item.highlighted:
+            color = self.search_bg
+        else:
+            color = self.bg
+
+        if self.parent().viewMode() == self.parent().IconMode or (selected and focused):
+            return color
+
+        color = QColor(color)
+        alpha = self.filmstrip_alpha_selected if selected else self.filmstrip_alpha
+        color.setAlpha(alpha)
+        return color
 
 
 class ThumbnailItem(QListWidgetItem):
@@ -581,8 +786,10 @@ class ThumbnailItem(QListWidgetItem):
 
     _default_icon = None
 
-    def __init__(self, parent, index, *, size_hint, highlighted=False, marked=False):
-        super().__init__(self.default_icon(), "", parent, index)
+    def __init__(
+        self, parent, index, *, size_hint, name, highlighted=False, marked=False
+    ):
+        super().__init__(self.default_icon(), name, parent, index)
         self.highlighted = highlighted
         self.marked = marked
         self.setSizeHint(size_hint)

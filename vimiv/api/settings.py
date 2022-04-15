@@ -18,7 +18,7 @@ from typing import Any, Dict, ItemsView, List
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.api import prompt
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, quotedjoin
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -219,6 +219,35 @@ class PromptSetting(Setting):
         return True
 
 
+class EnumSetting(Setting):
+    """Setting that can pick between options in an enum."""
+
+    def __init__(self, options: enum.EnumMeta, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        assert all(isinstance(option.value, str) for option in options)  # type: ignore
+        self._options = options
+
+    @property
+    def typ(self) -> type:
+        return self._options
+
+    def suggestions(self) -> List[str]:
+        return [option.value for option in self._options]  # type: ignore
+
+    def convertstr(self, text: str) -> str:
+        return self._options(text)
+
+    def toggle(self) -> None:
+        """Jump through the valid enum options."""
+        options: List[enum.EnumMeta] = list(self._options)
+        current_index = options.index(self.value)
+        next_index = (current_index + 1) % len(options)
+        self.value = options[next_index]
+
+    def __str__(self) -> str:
+        return "Options"
+
+
 class NumberSetting(Setting):  # pylint: disable=abstract-method  # Still abstract class
     """Used as ABC for Int and Float settings.
 
@@ -416,6 +445,36 @@ class thumbnail:  # pylint: disable=invalid-name
     """Namespace for thumbnail related settings."""
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
+    filmstrip = BoolSetting(
+        "thumbnail.filmstrip",
+        False,
+        desc="Display thumbnails as list to the right of the image",
+    )
+
+    class ViewOption(enum.Enum):
+        """Valid options for thumbnail view related settings."""
+
+        IconOnly = "icon"
+        NameOnly = "name"
+        Both = "both"
+
+        def __str__(self) -> str:
+            return str(self.value)
+
+    _view_options = quotedjoin(option.value for option in ViewOption)
+
+    display_icon = EnumSetting(
+        ViewOption,
+        "thumbnail.display_icon",
+        ViewOption.IconOnly,
+        desc=f"Which element(s) to display in icon view, one of {_view_options}",
+    )
+    display_filmstrip = EnumSetting(
+        ViewOption,
+        "thumbnail.display_filmstrip",
+        ViewOption.Both,
+        desc=f"Which element(s) to display in icon view, one of {_view_options}",
+    )
 
 
 class slideshow:  # pylint: disable=invalid-name

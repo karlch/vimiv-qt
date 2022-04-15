@@ -24,7 +24,7 @@ from vimiv import api, imutils, utils
 from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
-from vimiv.gui import eventhandler
+from vimiv.gui import eventhandler, thumbnail
 from vimiv.utils import lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
@@ -82,6 +82,8 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         scene.setSceneRect(QRectF(0, 0, 1, 1))
         self.setScene(scene)
         self.setOptimizationFlags(QGraphicsView.DontSavePainterState)
+
+        thumbnail.ThumbnailView(self)
 
         api.signals.pixmap_loaded.connect(self._load_pixmap)
         api.signals.movie_loaded.connect(self._load_movie)

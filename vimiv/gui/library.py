@@ -502,7 +502,7 @@ class LibraryDelegate(QStyledItemDelegate):
 
         # QColor options for background drawing
         self.selection_bg = QColor(styles.get("library.selected.bg"))
-        self.selection_bg_unfocus = QColor(styles.get("library.selected.bg.unfocus"))
+        self.selection_bg_unfocus = utils.dim_color(self.selection_bg)
         self.even_bg = QColor(styles.get("library.even.bg"))
         self.odd_bg = QColor(styles.get("library.odd.bg"))
         self.search_bg = QColor(styles.get("library.search.highlighted.bg"))
