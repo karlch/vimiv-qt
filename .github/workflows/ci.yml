@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
   py37:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         toxenv: [pyqt511, pyqt512, pyqt513]
@@ -32,7 +32,7 @@ jobs:
 
   py38-39:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         python-version: [3.8, 3.9]
@@ -46,7 +46,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
         python -m pip install --upgrade pip
         pip install -r misc/requirements/requirements_tox.txt
       env:
@@ -59,7 +59,7 @@ jobs:
 
   py310:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         toxenv: [pyqt515-cov, piexif, lint, packaging, mypy]
@@ -72,7 +72,7 @@ jobs:
         python-version: "3.10"
     - name: Install dependencies
       run: |
-        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
         python -m pip install --upgrade pip
         pip install -r misc/requirements/requirements_tox.txt
     - name: Test with tox
