@@ -212,9 +212,11 @@ class _ModeWidget(QWidget):
 
     def current(self) -> str:
         """Return the current path valid for this mode."""
+        raise NotImplementedError("Do not use _ModeWidget directly")
 
     def pathlist(self) -> List[str]:
         """Return the current list of paths valid for this mode."""
+        raise NotImplementedError("Do not use _ModeWidget directly")
 
 
 def widget(mode: Mode) -> Callable:

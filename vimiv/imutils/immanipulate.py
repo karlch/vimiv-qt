@@ -356,7 +356,7 @@ class Manipulator(QObject):
     updated = pyqtSignal(QPixmap)
 
     @api.objreg.register
-    def __init__(self, current_pixmap):
+    def __init__(self, current_pixmap: QPixmap):
         super().__init__()
 
         self.manipulations = Manipulations()

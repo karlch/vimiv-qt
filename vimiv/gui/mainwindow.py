@@ -34,7 +34,7 @@ class MainWindow(QWidget):
     """
 
     @api.objreg.register
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._overlays: List[QWidget] = []
         # Create main widgets and add them to the grid layout

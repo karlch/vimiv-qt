@@ -12,7 +12,7 @@ import os
 from typing import List, Optional, Dict, NamedTuple
 
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
+from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
@@ -87,7 +87,7 @@ class Library(
 
     @api.modes.widget(api.modes.LIBRARY)
     @api.objreg.register
-    def __init__(self, mainwindow):
+    def __init__(self, mainwindow: QWidget):
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         widgets.FlatTreeView.__init__(self, parent=mainwindow)
 

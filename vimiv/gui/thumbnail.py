@@ -79,7 +79,7 @@ class ThumbnailView(
 
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
-    def __init__(self):
+    def __init__(self) -> None:
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         QListWidget.__init__(self)
 
