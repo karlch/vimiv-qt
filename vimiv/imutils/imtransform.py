@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """*imtransform - transformations such as rotate and flip*."""
@@ -238,7 +238,7 @@ class Transform(QTransform):
             s = 0.5 * short
             wr, hr = (s / cos_a, s / sin_a) if is_portrait else (s / sin_a, s / cos_a)
         else:
-            cos_2a = cos_a ** 2 - sin_a ** 2
+            cos_2a = cos_a**2 - sin_a**2
             wr = (original.width() * cos_a - original.height() * sin_a) / cos_2a
             hr = (original.height() * cos_a - original.width() * sin_a) / cos_2a
 
