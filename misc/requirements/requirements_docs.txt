@@ -1,2 +1,2 @@
-sphinx==5.3.0
+sphinx==6.0.0
 sphinx-bootstrap-theme==0.8.1
