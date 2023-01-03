@@ -13,8 +13,7 @@ load-plugins=check_count,
 
 [MESSAGES CONTROL]
 enable=all
-disable=no-self-use,
-        fixme,
+disable=fixme,
         cyclic-import,
         global-statement,
         locally-disabled,
@@ -27,7 +26,6 @@ disable=no-self-use,
         suppressed-message,
         arguments-differ,
         duplicate-code,
-        bad-continuation,
         import-outside-toplevel,
         raise-missing-from,
         arguments-renamed,

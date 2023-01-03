@@ -50,6 +50,9 @@ def set_command(name: str, value: List[str]):
     except KeyError:
         raise api.commands.CommandError(f"unknown setting '{name}'")
     except (AttributeError, TypeError):
+        # The string is always assigned, the exception can only be raised later-on when
+        # performing the operation
+        # pylint: disable=used-before-assignment
         raise api.commands.CommandError(
             f"'{setting.name}' does not support {operation}"
         )
