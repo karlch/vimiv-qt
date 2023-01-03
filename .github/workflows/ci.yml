@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3.2.0
     - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v4.4.0
       with:
@@ -39,7 +39,7 @@ jobs:
         toxenv: [pyqt513, pyqt514, pyqt515]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3.2.0
     - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v4.4.0
       with:
@@ -65,7 +65,7 @@ jobs:
         toxenv: [pyqt515-cov, piexif, lint, packaging, mypy]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2.4.0
+    - uses: actions/checkout@v3.2.0
     - name: Set up python 3.10
       uses: actions/setup-python@v4.4.0
       with:
