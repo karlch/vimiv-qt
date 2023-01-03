@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.files."""
@@ -149,7 +149,7 @@ def test_is_image_on_fifo_file(qtbot, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024 ** 8, "3.0Y")]
+    "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024**8, "3.0Y")]
 )
 def test_sizeof_fmt(size, expected):
     assert files.sizeof_fmt(size) == expected

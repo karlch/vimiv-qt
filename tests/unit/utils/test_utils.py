@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils"""
@@ -60,7 +60,7 @@ def test_format_html_table(n_rows):
     # Format by hand
     iterable = list(range(n_rows))
     row = "<tr><td>{num}</td><td style='padding-left: 2ex'>{numsq}</td></tr>"
-    text = "\n".join(row.format(num=num, numsq=num ** 2) for num in iterable)
+    text = "\n".join(row.format(num=num, numsq=num**2) for num in iterable)
     expected = "<table>" + text + "</table>"
     # Format using function
     content = [(f"{num:d}", f"{num**2:d}") for num in iterable]

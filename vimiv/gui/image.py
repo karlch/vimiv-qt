@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2022 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """QtWidgets for IMAGE mode."""
@@ -215,7 +215,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
 
         **count:** multiplier
         """
-        scale = 1.25 ** count if direction == Zoom.In else 1 / 1.25 ** count
+        scale = 1.25**count if direction == Zoom.In else 1 / 1.25**count
         self._scale_to_float(self.zoom_level * scale)
         self._scale = ImageScaleFloat(self.zoom_level)
 
@@ -364,7 +364,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
             # We divide by 120 as this is the regular delta multiple
             # See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
             steps = event.angleDelta().y() / 120
-            scale = 1.03 ** steps
+            scale = 1.03**steps
             self._scale_to_float(self.zoom_level * scale)
             self._scale = ImageScaleFloat(self.zoom_level)
             api.status.update("image zoom level changed")
