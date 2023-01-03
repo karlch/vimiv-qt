@@ -49,7 +49,7 @@ class BaseReader(abc.ABC):
         return pixmap.toImage()
 
     @classmethod
-    @abc.abstractclassmethod
+    @abc.abstractmethod
     def supports(cls, file_format: str) -> bool:
         """Return True if the file_format is supported."""
 

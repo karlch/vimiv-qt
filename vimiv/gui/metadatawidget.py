@@ -10,7 +10,7 @@ import itertools
 from typing import Optional
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
 
 from vimiv import api, utils
 from vimiv.imutils import exif
@@ -47,7 +47,7 @@ if exif.has_exif_support:
         """
 
         @api.objreg.register
-        def __init__(self, parent):
+        def __init__(self, parent: QWidget):
             super().__init__(parent=parent)
             styles.apply(self)
 
