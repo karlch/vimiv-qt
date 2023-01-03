@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Settings &#8212; vimiv  documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -22,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js "></script>
-<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
 
   </head><body>
 
@@ -92,7 +94,7 @@
     <div class="body col-md-12 content" role="main">
       
   <section id="settings">
-<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h1>
+<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this heading">¶</a></h1>
 <p>Vimiv provides configurable settings.</p>
 <p>There are two ways to change a setting:</p>
 <ul class="simple">
@@ -102,7 +104,7 @@
 <p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
 <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
 <section id="referring-to-external-resources">
-<span id="external-resources"></span><h2>Referring to external resources<a class="headerlink" href="#referring-to-external-resources" title="Permalink to this headline">¶</a></h2>
+<span id="external-resources"></span><h2>Referring to external resources<a class="headerlink" href="#referring-to-external-resources" title="Permalink to this heading">¶</a></h2>
 <p>In the configuration file, it is possible to refer to external resources using the
 <code class="docutils literal notranslate"><span class="pre">option</span> <span class="pre">=</span> <span class="pre">${RESOURCE:variable}</span></code>
 syntax. Here <code class="docutils literal notranslate"><span class="pre">RESOURCE</span></code> defines the type of external resource, and <code class="docutils literal notranslate"><span class="pre">variable</span></code> is the
@@ -112,18 +114,18 @@ corresponding variable name. The following options are available:</p>
 </ul>
 </section>
 <section id="overview-of-all-settings">
-<h2>Overview of all settings<a class="headerlink" href="#overview-of-all-settings" title="Permalink to this headline">¶</a></h2>
+<h2>Overview of all settings<a class="headerlink" href="#overview-of-all-settings" title="Permalink to this heading">¶</a></h2>
 <p>The following table explains all available settings. All setting names are of the form
 <code class="docutils literal notranslate"><span class="pre">group.name</span></code> where <code class="docutils literal notranslate"><span class="pre">group</span></code> maps to the corresponding section in the configuration
 file and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the name within this section. In case there is no <code class="docutils literal notranslate"><span class="pre">group</span></code>, the
 setting belongs into the <code class="docutils literal notranslate"><span class="pre">general</span></code> section.</p>
 <p>Note that all settings related to the statusbar content are described in detail in their
 own corresponding <a class="reference internal" href="statusbar.html#statusbar"><span class="std std-ref">document</span></a>.</p>
-<table class="colwidths-given docutils align-default" id="id1">
+<table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Setting</p></th>
@@ -245,8 +247,8 @@ own corresponding <a class="reference internal" href="statusbar.html#statusbar">
       
     </p>
     <p>
-        &copy; Copyright 2017-2022, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
+        &copy; Copyright 2017-2023, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
     </p>
   </div>
 </footer>

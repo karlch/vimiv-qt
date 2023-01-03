@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>Installation &#8212; vimiv  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
@@ -12,7 +12,9 @@
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -22,10 +24,10 @@
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js "></script>
-<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js "></script>
-<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
 
   </head><body>
 
@@ -103,10 +105,10 @@
     <div class="body col-md-12 content" role="main">
       
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
 <p>This page includes instructions for installation on various platforms as well as a
 manual fallback option:</p>
-<div class="contents local topic" id="contents">
+<nav class="contents local" id="contents">
 <ul class="simple">
 <li><p><a class="reference internal" href="#arch-linux" id="id1">Arch Linux</a></p></li>
 <li><p><a class="reference internal" href="#fedora" id="id2">Fedora</a></p></li>
@@ -124,9 +126,9 @@ manual fallback option:</p>
 </ul>
 </li>
 </ul>
-</div>
+</nav>
 <section id="arch-linux">
-<h2><a class="toc-backref" href="#id1">Arch Linux</a><a class="headerlink" href="#arch-linux" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Arch Linux</a><a class="headerlink" href="#arch-linux" title="Permalink to this heading">¶</a></h2>
 <p>The
 <a class="reference external" href="https://aur.archlinux.org/packages/vimiv-qt/">latest stable release</a>
 and the
@@ -134,7 +136,7 @@ and the
 is available in the AUR.</p>
 </section>
 <section id="fedora">
-<h2><a class="toc-backref" href="#id2">Fedora</a><a class="headerlink" href="#fedora" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Fedora</a><a class="headerlink" href="#fedora" title="Permalink to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://apps.fedoraproject.org/packages/vimiv-qt/overview/">stable release</a> is available in the Fedora repositories.
 It can be installed using the standard GUI software installers (Gnome
 Software/Discover/Dnfdragora) and also using <cite>dnf</cite>:</p>
@@ -143,7 +145,7 @@ Software/Discover/Dnfdragora) and also using <cite>dnf</cite>:</p>
 </div>
 </section>
 <section id="using-pip">
-<h2><a class="toc-backref" href="#id3">Using pip</a><a class="headerlink" href="#using-pip" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Using pip</a><a class="headerlink" href="#using-pip" title="Permalink to this heading">¶</a></h2>
 <p>You can retrieve the latest stable release using:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --user vimiv
 </pre></div>
@@ -162,7 +164,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section on
 </div>
 </section>
 <section id="manual-install">
-<h2><a class="toc-backref" href="#id4">Manual Install</a><a class="headerlink" href="#manual-install" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Manual Install</a><a class="headerlink" href="#manual-install" title="Permalink to this heading">¶</a></h2>
 <p>First of all get the code by cloning the git repository and switch into the
 repository folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt/
@@ -178,7 +180,7 @@ required. In some distributions, e.g. Ubuntu, these are not included in the defa
 python installation but another package (python-dev for Ubuntu) must be installed.</p>
 </div>
 <section id="system-wide-installation">
-<span id="install-systemwide"></span><h3><a class="toc-backref" href="#id5">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this headline">¶</a></h3>
+<span id="install-systemwide"></span><h3><a class="toc-backref" href="#id5" role="doc-backlink">System-Wide Installation</a><a class="headerlink" href="#system-wide-installation" title="Permalink to this heading">¶</a></h3>
 <p>Vimiv provides an example Makefile in the <code class="docutils literal notranslate"><span class="pre">misc</span></code> directory for convenience.
 To install copy the Makefile into the repository directory, <code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">misc/Makefile</span>
 <span class="pre">.</span></code>, tweak it to your liking and run (as root if installing system-wide):</p>
@@ -202,7 +204,7 @@ system-wide for this to work.</p>
 </div>
 </section>
 <section id="using-tox">
-<span id="install-using-tox"></span><h3><a class="toc-backref" href="#id6">Using Tox</a><a class="headerlink" href="#using-tox" title="Permalink to this headline">¶</a></h3>
+<span id="install-using-tox"></span><h3><a class="toc-backref" href="#id6" role="doc-backlink">Using Tox</a><a class="headerlink" href="#using-tox" title="Permalink to this heading">¶</a></h3>
 <p>In the repostory folder run tox to set up the virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tox -e mkvenv
 </pre></div>
@@ -228,7 +230,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section on
 </div>
 </section>
 <section id="running-directly-in-the-repository">
-<h3><a class="toc-backref" href="#id7">Running directly in the repository</a><a class="headerlink" href="#running-directly-in-the-repository" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Running directly in the repository</a><a class="headerlink" href="#running-directly-in-the-repository" title="Permalink to this heading">¶</a></h3>
 <p>In the repository folder build the c-extension for manipulate mode:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python setup.py build_ext --inplace
 </pre></div>
@@ -253,7 +255,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section on
 </section>
 </section>
 <section id="dependencies">
-<span id="install-dependencies"></span><h2><a class="toc-backref" href="#id8">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<span id="install-dependencies"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Dependencies</a><a class="headerlink" href="#dependencies" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="http://www.python.org/">Python</a> 3.6 or newer with development extension</p></li>
 <li><dl class="simple">
@@ -274,7 +276,7 @@ the Makefile located in <cite>misc/Makefile</cite> and read the section on
 <p>There are multiple packages named <cite>pyexiv2</cite>. Make sure you install the right one.</p>
 </div>
 <section id="package-names-for-distributions">
-<h3><a class="toc-backref" href="#id9">Package Names For Distributions</a><a class="headerlink" href="#package-names-for-distributions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Package Names For Distributions</a><a class="headerlink" href="#package-names-for-distributions" title="Permalink to this heading">¶</a></h3>
 <p>Installing the following packages should pull in all necessary dependencies for
 building and running vimiv.</p>
 <dl class="simple">
@@ -337,8 +339,8 @@ building and running vimiv.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2022, Christian Karl.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.3.2.<br/>
+        &copy; Copyright 2017-2023, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
     </p>
   </div>
 </footer>
