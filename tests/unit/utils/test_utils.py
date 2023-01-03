@@ -183,7 +183,6 @@ def test_slot_fails_without_type_annotations():
         @utils.slot
         def dummy(x):
             """Dummy function to check for raising the exception."""
-            ...
 
 
 def test_flatten():
