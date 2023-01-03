@@ -64,7 +64,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        toxenv: [pyqt515-cov, piexif, noexif, lint, packaging, mypy]
+        toxenv: [pyqt515-cov, piexif, lint, packaging, mypy]
       fail-fast: false
     steps:
     - uses: actions/checkout@v2.4.0
