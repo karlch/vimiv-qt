@@ -109,8 +109,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories: List[str] = []
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
-        settings.image_order.changed.connect(self._reload_directory)
-        settings.directory_order.changed.connect(self._reload_directory)
+        settings.image_order.changed.connect(self._reorder_directory)
+        settings.directory_order.changed.connect(self._reorder_directory)
         # TODO Fix upstream and open PR
         self.directoryChanged.connect(self._reload_directory)  # type: ignore
         self.fileChanged.connect(self._on_file_changed)  # type: ignore
@@ -227,6 +227,12 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
         return files.order(*files.supported(paths))
+
+    @slot
+    def _reorder_directory(self):
+        """Reorder current files / directories."""
+        _logger.debug("Reloading working directory")
+        self._emit_changes(*files.order(self._images, self._directories))
 
 
 handler = cast(WorkingDirectoryHandler, None)
