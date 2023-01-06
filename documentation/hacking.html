@@ -625,7 +625,8 @@ to the argument parser as type of the argument.</p>
 </div>
 <p>Another special argument is the <code class="docutils literal notranslate"><span class="pre">paths</span></code> argument. It will perform unix-style pattern
 matching using the <code class="docutils literal notranslate"><span class="pre">glob</span></code> module on each path given and return a list of matched
-paths. An example of this in action is the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command defined in <code class="docutils literal notranslate"><span class="pre">vimiv.app</span></code>.</p>
+paths. An example of this in action is the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command defined in <code class="docutils literal notranslate"><span class="pre">vimiv.api</span></code> in
+the <code class="docutils literal notranslate"><span class="pre">open_paths</span></code> function.</p>
 <p>Each command is valid for a specific mode, the default being global. To supply
 the mode, add it to the register decorator:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@commands</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">Modes</span><span class="o">.</span><span class="n">IMAGE</span><span class="p">)</span>
