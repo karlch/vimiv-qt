@@ -49,7 +49,8 @@ It is possible for commands to support the special ``count`` argument.
 
 Another special argument is the ``paths`` argument. It will perform unix-style pattern
 matching using the ``glob`` module on each path given and return a list of matched
-paths. An example of this in action is the ``:open`` command defined in ``vimiv.app``.
+paths. An example of this in action is the ``:open`` command defined in ``vimiv.api`` in
+the ``open_paths`` function.
 
 Each command is valid for a specific mode, the default being global. To supply
 the mode, add it to the register decorator::
