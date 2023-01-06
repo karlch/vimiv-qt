@@ -15,3 +15,11 @@ Feature: Miscellaneous features connected to the library
         Then the library should contain 3 paths
         # .hidden is placed in front of the current selection
         And the library row should be 2
+
+    Scenario: Invert directory order in the library
+        When I run set directory_order alphabetical-desc
+        # We change the order to
+        # - child_02
+        # - child_01
+        # but keep the selection on child_01 due to the stored position
+        Then the library row should be 2
