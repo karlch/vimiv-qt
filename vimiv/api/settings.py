@@ -343,7 +343,7 @@ class OrderSetting(Setting):
 
     def convert(self, value: str) -> str:
         if value not in self.order_types:
-            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+            raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
         return value
 
     def get_para(self) -> Tuple[Callable[..., Any], bool]:
@@ -351,7 +351,7 @@ class OrderSetting(Setting):
         try:
             return self.order_types[self.value]
         except KeyError:
-            raise ValueError(f"Option must be one of {', '.join(self.ORDER_TYPES)}")
+            raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
 
     def suggestions(self) -> List[str]:
         return [str(value) for value in self.order_types]
