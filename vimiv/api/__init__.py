@@ -64,6 +64,9 @@ def open_paths(paths: Iterable[str]) -> None:
     If any path given is an image, all valid images are opened in image mode. Otherwise
     the first valid directory is opened. If both fails, an error is displayed.
 
+    .. hint:: Passing a single directory therefore changes the directory in the library,
+        think ``cd``.
+
     positional arguments:
         * ``paths``: The path(s) to open.
     """
