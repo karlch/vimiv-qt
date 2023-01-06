@@ -169,3 +169,18 @@ def test_set_order_setting_non_valid():
     o = settings.OrderSetting("order", "alphabetical")
     with pytest.raises(ValueError, match="must be one of"):
         o.value = "invalid"
+
+
+@pytest.mark.parametrize(
+    "ordering_name, values, expected_values",
+    [
+        ("alphabetical", ["a.j", "c.j", "b.j"], ["a.j", "b.j", "c.j"]),
+        ("alphabetical-inverse", ["a.j", "c.j", "b.j"], ["c.j", "b.j", "a.j"]),
+        ("natural", ["a5.j", "a11.j", "a3.j"], ["a3.j", "a5.j", "a11.j"]),
+        ("natural-inverse", ["a5.j", "a11.j", "a3.j"], ["a11.j", "a5.j", "a3.j"]),
+    ],
+)
+def test_order_setting_sort(ordering_name, values, expected_values):
+    o = settings.OrderSetting("order", ordering_name)
+    sorted_values = o.sort(values)
+    assert sorted_values == expected_values

@@ -226,13 +226,18 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.order(*files.supported(paths))
+        return self._order_paths(*files.supported(paths))
 
     @slot
     def _reorder_directory(self):
         """Reorder current files / directories."""
         _logger.debug("Reloading working directory")
-        self._emit_changes(*files.order(self._images, self._directories))
+        self._emit_changes(*self._order_paths(self._images, self._directories))
+
+    @staticmethod
+    def _order_paths(images: List[str], dirs: List[str]) -> Tuple[List[str], List[str]]:
+        """Order images and directories according to the current ordering setting."""
+        return settings.image_order.sort(images), settings.directory_order.sort(dirs)
 
 
 handler = cast(WorkingDirectoryHandler, None)

@@ -346,15 +346,13 @@ class OrderSetting(Setting):
             raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
         return value
 
-    def get_para(self) -> Tuple[Callable[..., Any], bool]:
-        """Returns the ordering parameters according to the current set value."""
-        try:
-            return self.order_types[self.value]
-        except KeyError:
-            raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
+    def sort(self, values: List[str]) -> List[str]:
+        """Sort values according to the current ordering."""
+        ordering, reverse = self.order_types[self.value]
+        return sorted(values, key=ordering, reverse=reverse)
 
     def suggestions(self) -> List[str]:
-        return [str(value) for value in self.order_types]
+        return list(self.order_types)
 
     def __str__(self) -> str:
         return "Order"
@@ -391,8 +389,8 @@ directory_order = OrderSetting(
     "alphabetical",
     desc="Set directory ordering.",
     additional_order_types={
-        "smallest-first": (lambda e: len(os.listdir(e)), True),
-        "largest-first": (lambda e: len(os.listdir(e)), False),
+        "smallest-first": (lambda d: len(os.listdir(d)), False),
+        "largest-first": (lambda d: len(os.listdir(d)), True),
     },
 )
 
