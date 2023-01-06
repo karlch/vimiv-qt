@@ -326,8 +326,8 @@ class OrderSetting(Setting):
         "alphabetical-desc": (os.path.basename, True),
         "natural": (natural_sort, False),
         "natural-desc": (natural_sort, True),
-        "recently-modify-first": (os.path.getmtime, False),
-        "recently-modify-last": (os.path.getmtime, True),
+        "recently-modified-first": (os.path.getmtime, False),
+        "recently-modified-last": (os.path.getmtime, True),
     }
 
     def __init__(
