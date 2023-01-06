@@ -155,8 +155,8 @@ def test_ask_prompt_setting(mocker, prompt_setting, answer):
 
 def test_set_order_setting():
     o = settings.OrderSetting("order", "alphabetical")
-    o.value = "alphabetical-desc"
-    assert o.value == "alphabetical-desc"
+    o.value = "alphabetical-inverse"
+    assert o.value == "alphabetical-inverse"
 
 
 def test_set_order_setting_non_str():

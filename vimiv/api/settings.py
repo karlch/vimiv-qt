@@ -323,9 +323,9 @@ class OrderSetting(Setting):
 
     ORDER_TYPES: Dict[str, Tuple[Callable[..., Any], bool]] = {
         "alphabetical": (os.path.basename, False),
-        "alphabetical-desc": (os.path.basename, True),
+        "alphabetical-inverse": (os.path.basename, True),
         "natural": (natural_sort, False),
-        "natural-desc": (natural_sort, True),
+        "natural-inverse": (natural_sort, True),
         "recently-modified-first": (os.path.getmtime, False),
         "recently-modified-last": (os.path.getmtime, True),
     }
