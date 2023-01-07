@@ -4,161 +4,193 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-"""Utility functions and classes for exif handling.
+"""Utility functions and classes for metadata handling.
 
-All exif related tasks are implemented in this module. The heavy lifting is done using
-one of the supported exif libraries, i.e.
-* piexif (https://pypi.org/project/piexif/) and
-* pyexiv2 (https://pypi.org/project/py3exiv2/).
+This module provides a common interface for all metadata related functionalities.
+Metadata plugins provide metadata for the current image by registering function
+implementations for the functions specified by `Operations`. Registered implementations
+are stored in the `_MetadataRegistry`. The `MetadataHandler` is the main class used
+to interact with the metadata of the current image. It queries `_MetadataRegistry`
+and uses the registering implementations to provide its functionality.
+
+Module Attributes:
+    _registry: Dictionary storing function implementations for all operations.
 """
 
-import contextlib
 from enum import Enum
-import functools
 import itertools
 import inspect
-from typing import Any, Dict, Tuple, NoReturn, Sequence, Iterable, Callable, List, Union
+from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Callable
 
-from vimiv.utils import log, lazy, is_hex, customtypes
+from vimiv.utils import log, customtypes
 
 _logger = log.module_logger(__name__)
 
-ExifDictT = Dict[Any, Tuple[str, str]]
+# Type returned by `MetadataHandler.get_metadata`. Key if dictionary is the metadata
+# key. Value is a tuple of name and value for that key.
+MetadataDictT = Dict[str, Tuple[str, str]]
 
 
-class Methods(str, Enum):
+class Operations(str, Enum):
     """Represents all possible function clients can implement."""
 
     # TODO: From 3.11 on use StrEnum and auto()
     copy_metadata = "copy_metadata"
     get_date_time = "get_date_time"
-    get_raw_metadata = "get_raw_metadata"
-    get_formatted_metadata = "get_formatted_metadata"
+    get_metadata = "get_metadata"
     get_keys = "get_keys"
 
 
 class _MetadataRegistry(dict):
+    """Handles the registration of function implementations.
+
+    Values:
+        Operations.copy_metadata: List of functions
+        Operations.get_date_time: Function
+        Operations.get_metadata: List of functions
+        Operations.get_keys: List of functions
+    """
+
     def __init__(self):
         super().__init__()
         _logger.debug("Initializing metadata registry")
+        self[Operations.copy_metadata] = []
+        self[Operations.get_date_time] = None
+        self[Operations.get_metadata] = []
+        self[Operations.get_keys] = []
 
-        # TODO: use List[customtypes.FuncNoneT]
-        # TODO: specific return type
-        self[Methods.copy_metadata] = []  #: List[Callable[..., None]] = []
-        self[Methods.get_date_time] = None  #: Union[Callable[..., str], None] = None
-        self[Methods.get_raw_metadata] = []  #: List[Callable[..., ExifDictT]] = []
-        self[Methods.get_formatted_metadata] = []  #: List[Callable[..., ExifDictT]] = []
-        self[Methods.get_keys] = []  #: List[Callable[..., Any]] = []
+    def register(self, operation: Operations, func: customtypes.FuncT) -> None:
+        """Registers a function implementation for a specific method.
 
-    def register(self, method: Methods, func: customtypes.FuncT) -> None:
-        """Registers a func for a specific method."""
+        With the exception of `Operations.get_date_time`, multiple implementation
+        can be registered for a single method. For `Operations.get_date_time`,
+        consecutive calls to this function overwrite the previously stored
+        function.
 
-        if method == Methods.get_date_time:
-            if self[method]:
+        Args:
+            operation: Operation for which the function is registered.
+            func: Function to be registered.
+        """
+
+        if operation == Operations.get_date_time:
+            if self[operation]:
                 _logger.warning(
-                    f"Key {Methods.get_date_time} has already been set. Overwriting old implementation with new one."
+                    f"{Operations.get_date_time} has already an implementation."
+                    "Overwriting it."
                 )
-            self[method] = func
+            self[operation] = func
         else:
-            self[method].append(func)
+            self[operation].append(func)
 
-        _logger.debug(f"Registered {func.__name__} for {method}")
+        _logger.debug(f"Registered {func.__name__} for {operation}")
 
 
 _registry = _MetadataRegistry()
 
 
 def has_copy_metadata() -> bool:
-    """Return True iff MetadataHandler supports `copy_metadata`."""
-    return bool(_registry[Methods.copy_metadata])
+    """Return True iff `MetadataHandler` has an implementation for `copy_metadata`."""
+    return bool(_registry[Operations.copy_metadata])
 
 
 def has_get_date_time() -> bool:
-    """Return True iff MetadataHandler supports `get_date_time`."""
-    return bool(_registry[Methods.get_date_time])
+    """Return True iff `MetadataHandler` has an implementation for `get_date_time`."""
+    return bool(_registry[Operations.get_date_time])
 
 
-def has_get_raw_metadata() -> bool:
-    """Return True iff MetadataHandler supports `get_raw_metadata`."""
-    return bool(_registry[Methods.get_raw_metadata])
-
-
-def has_get_formatted_metadata() -> bool:
-    """Return True iff MetadataHandler supports `get_formatted_metadata`."""
-    return bool(_registry[Methods.get_formatted_metadata])
+def has_get_metadata() -> bool:
+    """Return True iff `MetadataHandler` has an implementation for `get_metadata`."""
+    return bool(_registry[Operations.get_metadata])
 
 
 def has_get_keys() -> bool:
-    """Return True iff MetadataHandler supports `get_keys`."""
-    return bool(_registry[Methods.get_keys])
+    """Return True iff `MetadataHandler` has an implementation for `get_keys`."""
+    return bool(_registry[Operations.get_keys])
 
 
 class MetadataHandler:
-    """ """
+    """Handle metadata related functionalities of images.
+
+    Attributes:
+        _path: Path to current image.
+    """
 
     def __init__(self, path: str):
-        self.path = path
+        self._path = path
 
     def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
-        """Copy exif information from current image to dest.
+        """Copy metadata from current image to dest.
+
+        Runs all registered implementations for `Operations.copy_metadata`.
 
         Args:
-            dest: Path to write the exif information to.
+            dest: Path to write the metadata to.
             reset_orientation: If true, reset the exif orientation tag to normal.
         """
 
         if not has_copy_metadata():
             MetadataHandler.raise_exception()
 
-        for f in _registry[Methods.copy_metadata]:
-            f(self.path, dest, reset_orientation)
+        failed = False
+
+        for f in _registry[Operations.copy_metadata]:
+            try:
+                out = f(self._path, dest, reset_orientation)
+            except TypeError:
+                out = f(self._path, dest)
+
+            if not out:
+                failed = True
+
+        if failed:
+            _logger.warning(
+                "Some implementations failed while copying metadata."
+                "Some metadata may be missing in the destination image."
+            )
 
     def get_date_time(self) -> str:
-        """Get exif creation date and time as formatted string."""
+        """Get creation date and time as formatted string."""
 
         if not has_get_date_time():
             MetadataHandler.raise_exception()
 
-        return _registry[Methods.get_date_time](self.path)
+        return _registry[Operations.get_date_time](self._path)
 
-    def get_raw_metadata(self, desired_keys: Sequence[str]) -> ExifDictT:
-        """Get a dictionary of metadata values."""
+    def get_metadata(self, keys: Sequence[str]) -> MetadataDictT:
+        """Get value of all desired keys.
 
-        if not has_get_raw_metadata():
+        Use all registered implementations for `Operations.get_metadata` to query
+        the current image using the provided metadata keys. The result of all
+        implementations is combined.
+
+        Args:
+            keys: Keys of metadata to query the image for.
+
+        Returns:
+            Dictionary with retrieved metadata.
+        """
+
+        if not has_get_metadata():
             MetadataHandler.raise_exception()
 
-        out: ExifDictT = {}
+        out: MetadataDictT = {}
 
-        for f in _registry[Methods.get_raw_metadata]:
-            # TODO: from 3.9 on use: out = out | f(self.path, desired_keys)
-            out = {**out, **f(self.path, desired_keys)}
-
-        return out
-
-    def get_formatted_metadata(self, desired_keys: Sequence[str]) -> ExifDictT:
-        """Get a dictionary of formatted metadata values."""
-
-        if not has_get_formatted_metadata():
-            MetadataHandler.raise_exception()
-
-        out: ExifDictT = {}
-
-        for f in _registry[Methods.get_formatted_metadata]:
-            # TODO: from 3.9 on use: out = out | f(self.path, desired_keys)
-            out = {**out, **f(self.path, desired_keys)}
+        for f in _registry[Operations.get_metadata]:
+            # TODO: from 3.9 on use: out = out | f(self.path, keys)
+            out = {**f(self._path, keys), **out}
 
         return out
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the name of all exif keys available."""
+        """Retrieve the key of all metadata values available in the current image."""
 
         if not has_get_keys():
             MetadataHandler.raise_exception()
 
         out: Iterable[str] = iter([])
 
-        for f in _registry[Methods.get_keys]:
-            out = itertools.chain(f(self.path), out)
+        for f in _registry[Operations.get_keys]:
+            out = itertools.chain(f(self._path), out)
 
         return out
 
@@ -171,12 +203,18 @@ class MetadataHandler:
 
 
 class UnsupportedMetadataOperation(NotImplementedError):
-    """Raised if an metadata operation is not supported by any loaded backend."""
+    """Raised if for an Operations, no function implementation is registered."""
 
 
-def register(method: Methods) -> Callable[[customtypes.FuncT], customtypes.FuncT]:
+def register(operation: Operations) -> Callable[[customtypes.FuncT], customtypes.FuncT]:
+    """Decorator to register a function implementation.
+
+    Args:
+        operation: Operation for which the decorated function is registered.
+    """
+
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
-        _registry.register(method, func)
+        _registry.register(operation, func)
         return func
 
     return decorator

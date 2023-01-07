@@ -18,7 +18,6 @@ from typing import Optional
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
-from vimiv.imutils import exif
 from vimiv.utils import xdg, run_qprocess, lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
@@ -42,8 +41,9 @@ def info() -> str:
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
         f"Svg Support: {bool(QtSvg)}\n"
-        f"Pyexiv2: {exif.pyexiv2.__version__ if exif.pyexiv2 is not None else None}\n"
-        f"Piexif: {exif.piexif.VERSION if exif.piexif is not None else None}"
+        # TODO: what to do about them?
+        # f"Pyexiv2: {exif.pyexiv2.__version__ if exif.pyexiv2 is not None else None}\n"
+        # f"Piexif: {exif.piexif.VERSION if exif.piexif is not None else None}"
     )
 
 

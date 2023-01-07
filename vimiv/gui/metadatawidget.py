@@ -20,19 +20,19 @@ _logger = utils.log.module_logger(__name__)
 
 
 # TODO: conditional fails as this file is imported before plugins are loaded
-# if exif.has_get_formatted_metadata() or exif.has_get_raw_metadata():
+# if exif.has_get_metadata():
 if True:
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
 
-        The display of the widget can be toggled by command. It is filled with exif
+        The display of the widget can be toggled by command. It is filled with
         metadata information of the current image.
 
 
         Attributes:
             _mainwindow_bottom: y-coordinate of the bottom of the mainwindow.
             _mainwindow_width: width of the mainwindow.
-            _path: Absolute path of the current image to load exif metadata of.
+            _path: Absolute path of the current image to load metadata of.
             _current_set: Holds a string of the currently selected keyset.
             _handler: MetadataHandler for _path or None. Use the handler property to access.
         """
@@ -76,7 +76,7 @@ if True:
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)
         @api.commands.register(mode=api.modes.IMAGE)
         def metadata(self, count: Optional[int] = None):
-            """Toggle display of exif metadata of current image.
+            """Toggle display of metadata of current image.
 
             **count:** Select the key set to display instead.
 
@@ -155,15 +155,15 @@ if True:
             if self._current_set == api.settings.metadata.current_keyset.value:
                 return
             _logger.debug(
-                "%s: reading exif of %s", self.__class__.__qualname__, self._path
+                "%s: reading metadata of %s", self.__class__.__qualname__, self._path
             )
             keys = [
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            formatted_exif = self.handler.get_formatted_metadata(keys)
-            if formatted_exif:
-                self.setText(utils.format_html_table(formatted_exif.values()))
+            metadata = self.handler.get_metadata(keys)
+            if metadata:
+                self.setText(utils.format_html_table(metadata.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()

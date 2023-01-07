@@ -50,7 +50,7 @@ class MainWindow(QWidget):
         self._overlays.append(KeyhintWidget(self))
         self._overlays.append(Message(self))
         self._overlays.append(CommandWidget(self))
-        if MetadataWidget is not None:  # Not defined if there is no exif support
+        if MetadataWidget is not None:  # Not defined if there is no metadata support
             self._overlays.append(MetadataWidget(self))
         # Connect signals
         api.status.signals.update.connect(self._set_title)
