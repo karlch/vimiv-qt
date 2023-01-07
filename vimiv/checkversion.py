@@ -19,14 +19,6 @@ Module Attributes:
 
 import sys
 
-try:
-    from vimiv.qt.core import PYQT_VERSION_STR
-
-    PYQT_VERSION = tuple(map(int, PYQT_VERSION_STR.split(".")))
-except ImportError:  # pragma: no cover  # PyQt is there in tests, using None is tested
-    # We check explicitly for None before using the tuple version
-    PYQT_VERSION = None  # type: ignore
-
 
 PYTHON_REQUIRED_VERSION = (3, 6)
 PYQT_REQUIRED_VERSION = (5, 9, 2)
@@ -41,10 +33,17 @@ def check_python_version():
 
 def check_pyqt_version():
     """Ensure the PyQt version is new enough."""
-    if PYQT_VERSION is None:
-        _exit("PyQt is required to run vimiv.\n")
-    elif PYQT_VERSION < PYQT_REQUIRED_VERSION:
-        _exit_version("PyQt", PYQT_REQUIRED_VERSION, PYQT_VERSION)
+    try:
+        from vimiv.qt.core import PYQT_VERSION_STR
+    except ImportError as e:  # TODO add back test for this
+        _exit(
+            f"Error importing a valid Qt python wrapper:\n{e}\n\n"
+            "Please install / configure a valid wrapper to run vimiv.\n"
+        )
+
+    pyqt_version = tuple(map(int, PYQT_VERSION_STR.split(".")))
+    if pyqt_version < PYQT_REQUIRED_VERSION:
+        _exit_version("PyQt", PYQT_REQUIRED_VERSION, pyqt_version)
 
 
 def join_version_tuple(version):

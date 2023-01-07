@@ -14,4 +14,10 @@ if qt.WRAPPER == qt.WRAPPERS.PyQt5:
     try:
         from PyQt5.sip import *
     except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
-        from sip import *  # type: ignore
+        from sip import *
+if qt.WRAPPER == qt.WRAPPERS.PyQt6:  # pragma: no cover
+    # Apparently still bundled wrong in a few distributions / versions
+    try:
+        from PyQt6.sip import *
+    except ImportError:
+        from sip import *

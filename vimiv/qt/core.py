@@ -11,3 +11,5 @@ from vimiv import qt
 
 if qt.WRAPPER == qt.WRAPPERS.PyQt5:
     from PyQt5.QtCore import *
+elif qt.WRAPPER == qt.WRAPPERS.PyQt6:
+    from PyQt6.QtCore import *
