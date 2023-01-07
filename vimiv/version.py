@@ -18,10 +18,9 @@ from typing import Optional
 from vimiv.qt.core import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
+from vimiv.qt.svg import QtSvg
 from vimiv.imutils import exif
-from vimiv.utils import xdg, run_qprocess, lazy
-
-QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
+from vimiv.utils import xdg, run_qprocess
 
 
 def info() -> str:

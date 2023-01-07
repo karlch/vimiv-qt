@@ -12,11 +12,10 @@ from typing import Optional, Any, Union
 from vimiv.qt.core import QObject, Qt, QSize, pyqtBoundSignal
 from vimiv.qt.gui import QPixmap, QMovie, QPainter
 from vimiv.qt.printsupport import QPrintDialog, QPrintPreviewDialog, QPrinter
+from vimiv.qt.svg import QtSvg
 
 from vimiv import api
-from vimiv.utils import slot, log, lazy
-
-QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
+from vimiv.utils import slot, log
 
 
 _logger = log.module_logger(__name__)

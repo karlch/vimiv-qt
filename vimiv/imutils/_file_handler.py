@@ -13,11 +13,10 @@ from typing import List
 
 from vimiv.qt.core import QObject, QCoreApplication
 from vimiv.qt.gui import QPixmap, QImageReader, QMovie
+from vimiv.qt.svg import QtSvg
 
 from vimiv import api, utils, imutils
-from vimiv.utils import files, log, asyncrun, lazy, imagereader
-
-QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
+from vimiv.utils import files, log, asyncrun, imagereader
 
 
 _logger = log.module_logger(__name__)
