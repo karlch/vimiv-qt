@@ -12,9 +12,16 @@ import inspect
 import re
 import typing
 
-from vimiv.qt.core import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
+from vimiv.qt.core import (
+    Qt,
+    pyqtSlot,
+    QRunnable,
+    QThreadPool,
+    QProcess,
+    QTimer,
+    QObject,
+)
 from vimiv.qt.gui import QPixmap, QColor, QPainter
-from vimiv.qt.sip import wrappertype
 
 from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
 
@@ -454,7 +461,7 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
     raise TypeError(f"{typ} is not of Optional type")
 
 
-class AbstractQObjectMeta(wrappertype, abc.ABCMeta):
+class AbstractQObjectMeta(type(QObject), abc.ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
