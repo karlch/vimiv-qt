@@ -6,8 +6,8 @@
 
 """Tests for vimiv.gui.eventhandler."""
 
-from PyQt5.QtCore import QEvent, Qt, QPoint
-from PyQt5.QtGui import QKeyEvent, QMouseEvent
+from vimiv.qt.core import QEvent, Qt, QPoint
+from vimiv.qt.gui import QKeyEvent, QMouseEvent
 
 import pytest
 

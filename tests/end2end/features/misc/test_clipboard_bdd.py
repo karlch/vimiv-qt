@@ -6,7 +6,7 @@
 
 import os
 
-from PyQt5.QtGui import QClipboard
+from vimiv.qt.gui import QClipboard
 
 import pytest_bdd as bdd
 

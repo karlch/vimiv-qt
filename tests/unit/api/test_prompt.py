@@ -6,7 +6,7 @@
 
 """Tests for vimiv.api.prompt."""
 
-from PyQt5.QtCore import QObject
+from vimiv.qt.core import QObject
 
 import pytest
 

@@ -8,7 +8,7 @@
 
 import logging
 
-from PyQt5.QtGui import QPixmap
+from vimiv.qt.gui import QPixmap
 
 import pytest
 import pytest_bdd as bdd

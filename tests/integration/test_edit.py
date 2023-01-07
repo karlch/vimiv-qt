@@ -6,7 +6,7 @@
 
 """Integration tests related to editing images."""
 
-from PyQt5.QtGui import QPixmap, QColor
+from vimiv.qt.gui import QPixmap, QColor
 
 import pytest
 

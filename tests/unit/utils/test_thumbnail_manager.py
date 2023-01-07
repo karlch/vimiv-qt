@@ -7,7 +7,7 @@
 import hashlib
 import os
 
-from PyQt5.QtGui import QPixmap
+from vimiv.qt.gui import QPixmap
 
 import pytest
 

@@ -11,7 +11,7 @@ import imghdr  # pylint: disable=deprecated-module
 import os
 import tarfile
 
-from PyQt5.QtGui import QImageReader
+from vimiv.qt.gui import QImageReader
 
 import pytest
 

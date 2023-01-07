@@ -11,7 +11,7 @@ import os
 import typing
 from typing import get_type_hints
 
-from PyQt5.QtCore import pyqtSignal, QObject, QByteArray
+from vimiv.qt.core import pyqtSignal, QObject, QByteArray
 
 import pytest
 

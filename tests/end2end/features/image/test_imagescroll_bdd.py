@@ -4,7 +4,7 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-from PyQt5.QtGui import QResizeEvent
+from vimiv.qt.gui import QResizeEvent
 
 import pytest_bdd as bdd
 

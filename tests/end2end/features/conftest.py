@@ -9,9 +9,9 @@
 import os
 import pathlib
 
-from PyQt5.QtCore import Qt, QProcess, QTimer
-from PyQt5.QtGui import QFocusEvent, QMouseEvent
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.core import Qt, QProcess, QTimer
+from vimiv.qt.gui import QFocusEvent, QMouseEvent
+from vimiv.qt.widgets import QApplication
 
 import pytest
 import pytest_bdd as bdd
