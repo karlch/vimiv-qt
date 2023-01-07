@@ -54,8 +54,8 @@ For an overview of implemented models, feel free to take a look at the ones defi
 import re
 from typing import cast, Dict, Iterable, Tuple
 
-from PyQt5.QtCore import QSortFilterProxyModel, Qt
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from vimiv.qt.core import QSortFilterProxyModel, Qt
+from vimiv.qt.gui import QStandardItemModel, QStandardItem
 
 from vimiv.api import modes, settings
 from vimiv.utils import log, escape_chars, unescape_chars

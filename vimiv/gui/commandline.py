@@ -9,8 +9,8 @@
 import contextlib
 from typing import cast, TYPE_CHECKING
 
-from PyQt5.QtCore import QCoreApplication, QTimer
-from PyQt5.QtWidgets import QLineEdit
+from vimiv.qt.core import QCoreApplication, QTimer
+from vimiv.qt.widgets import QLineEdit
 
 from vimiv import api, utils
 from vimiv.commands import argtypes, runners, search

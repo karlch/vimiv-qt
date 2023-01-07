@@ -16,8 +16,8 @@ Module Attributes:
 
 import re
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QWidget, QHBoxLayout
+from vimiv.qt.core import Qt
+from vimiv.qt.widgets import QLabel, QWidget, QHBoxLayout
 
 from vimiv import api, utils
 from vimiv.config import styles

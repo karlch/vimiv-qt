@@ -9,8 +9,8 @@
 import string
 from typing import Union, Tuple, List, cast
 
-from PyQt5.QtCore import Qt, QTimer, QObject, pyqtSignal
-from PyQt5.QtGui import QKeySequence, QKeyEvent, QMouseEvent
+from vimiv.qt.core import Qt, QTimer, QObject, pyqtSignal
+from vimiv.qt.gui import QKeySequence, QKeyEvent, QMouseEvent
 
 from vimiv import api, utils
 from vimiv.commands import runners, search

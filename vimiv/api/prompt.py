@@ -8,7 +8,7 @@
 
 import typing
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from vimiv.qt.core import QObject, pyqtSignal
 
 from vimiv.utils import log
 

@@ -11,9 +11,9 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple, cast
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
-from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
+from vimiv.qt.core import Qt, pyqtSlot
+from vimiv.qt.widgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
+from vimiv.qt.gui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search, number_for_command

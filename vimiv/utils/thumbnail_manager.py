@@ -18,8 +18,8 @@ import os
 import tempfile
 from typing import Dict, List
 
-from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
-from PyQt5.QtGui import QIcon, QPixmap, QImage
+from vimiv.qt.core import QRunnable, pyqtSignal, QObject
+from vimiv.qt.gui import QIcon, QPixmap, QImage
 
 import vimiv
 from vimiv.utils import xdg, imagereader, Pool

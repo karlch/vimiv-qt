@@ -6,7 +6,7 @@
 
 """Storage class for the current pixmap."""
 
-from PyQt5.QtGui import QPixmap
+from vimiv.qt.gui import QPixmap
 
 
 class CurrentPixmap:

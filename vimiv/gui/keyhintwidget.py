@@ -8,8 +8,8 @@
 
 from typing import Iterator, Tuple
 
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from vimiv.qt.core import QTimer, Qt
+from vimiv.qt.widgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles

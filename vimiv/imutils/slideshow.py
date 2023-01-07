@@ -8,7 +8,7 @@
 
 from typing import Optional
 
-from PyQt5.QtCore import QTimer
+from vimiv.qt.core import QTimer
 
 from vimiv import api
 

@@ -11,7 +11,7 @@ Module Attributes:
 """
 
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from vimiv.qt.core import pyqtSignal, QObject
 
 
 class _Signals(QObject):

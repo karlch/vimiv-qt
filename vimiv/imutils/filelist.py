@@ -14,7 +14,7 @@ import os
 import random
 from typing import List, Iterable, Optional
 
-from PyQt5.QtCore import QObject, pyqtSlot
+from vimiv.qt.core import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command

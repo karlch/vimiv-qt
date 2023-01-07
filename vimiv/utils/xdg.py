@@ -8,7 +8,7 @@
 
 import os
 
-from PyQt5.QtCore import QStandardPaths
+from vimiv.qt.core import QStandardPaths
 
 import vimiv
 

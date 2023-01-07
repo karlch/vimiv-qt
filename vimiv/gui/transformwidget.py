@@ -11,8 +11,8 @@ import contextlib
 import functools
 from typing import cast
 
-from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtWidgets import QWidget
+from vimiv.qt.core import Qt, QRect
+from vimiv.qt.widgets import QWidget
 
 from vimiv.imutils import imtransform
 

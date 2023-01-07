@@ -6,8 +6,8 @@
 
 """Message widget to display temporary information to the user."""
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from vimiv.qt.core import Qt, QTimer
+from vimiv.qt.widgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles

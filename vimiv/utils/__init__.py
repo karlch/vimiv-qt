@@ -12,16 +12,11 @@ import inspect
 import re
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
-from PyQt5.QtGui import QPixmap, QColor, QPainter
+from vimiv.qt.core import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
+from vimiv.qt.gui import QPixmap, QColor, QPainter
+from vimiv.qt.sip import wrappertype
 
 from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
-
-# Different location under PyQt < 5.11
-try:
-    from PyQt5.sip import wrappertype
-except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
-    from sip import wrappertype  # type: ignore
 
 
 RE_STR_NOT_ESCAPED = r"(?<!\\)"

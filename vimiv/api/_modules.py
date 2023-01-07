@@ -13,8 +13,8 @@ corresponding objects.
 import os
 from typing import List
 
-from PyQt5.QtCore import QDateTime
-from PyQt5.QtGui import QGuiApplication, QClipboard
+from vimiv.qt.core import QDateTime
+from vimiv.qt.gui import QGuiApplication, QClipboard
 
 from vimiv import api
 from vimiv.utils import files, log, imagereader

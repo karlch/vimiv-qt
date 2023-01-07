@@ -9,9 +9,9 @@
 import abc
 from typing import Optional, Any, Union
 
-from PyQt5.QtCore import QObject, Qt, QSize, pyqtBoundSignal
-from PyQt5.QtGui import QPixmap, QMovie, QPainter
-from PyQt5.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
+from vimiv.qt.core import QObject, Qt, QSize, pyqtBoundSignal
+from vimiv.qt.gui import QPixmap, QMovie, QPainter
+from vimiv.qt.printsupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 
 from vimiv import api
 from vimiv.utils import slot, log, lazy

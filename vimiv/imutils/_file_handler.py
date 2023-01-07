@@ -11,8 +11,8 @@ import shutil
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import QObject, QCoreApplication
-from PyQt5.QtGui import QPixmap, QImageReader, QMovie
+from vimiv.qt.core import QObject, QCoreApplication
+from vimiv.qt.gui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
 from vimiv.utils import files, log, asyncrun, lazy, imagereader

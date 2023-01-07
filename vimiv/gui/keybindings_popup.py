@@ -8,7 +8,7 @@
 
 from typing import List, Tuple, Iterator, Set
 
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QLayout, QLineEdit
+from vimiv.qt.widgets import QLabel, QHBoxLayout, QVBoxLayout, QLayout, QLineEdit
 
 import vimiv
 from vimiv import api, utils

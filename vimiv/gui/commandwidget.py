@@ -6,8 +6,8 @@
 
 """Command widget at the bottom including commandline and completion widget."""
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
+from vimiv.qt.core import Qt
+from vimiv.qt.widgets import QWidget, QSizePolicy, QVBoxLayout
 
 from vimiv import api
 from vimiv.completion import completer

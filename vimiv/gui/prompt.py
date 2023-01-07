@@ -6,8 +6,8 @@
 
 """Blocking prompt widget asking the user a question."""
 
-from PyQt5.QtCore import Qt, QEventLoop
-from PyQt5.QtWidgets import QLabel
+from vimiv.qt.core import Qt, QEventLoop
+from vimiv.qt.widgets import QLabel
 
 from vimiv import api, utils
 from vimiv.config import styles

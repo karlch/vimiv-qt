@@ -8,7 +8,7 @@
 
 import os
 from typing import List, Iterable, Callable, BinaryIO
-from PyQt5.QtGui import QPixmap
+from vimiv.qt.gui import QPixmap
 
 from vimiv.utils import files, imagereader
 

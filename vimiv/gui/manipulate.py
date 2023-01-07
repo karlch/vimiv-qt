@@ -8,9 +8,9 @@
 
 from typing import List, Optional
 
-from PyQt5.QtCore import Qt, QSize, QPoint
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
+from vimiv.qt.core import Qt, QSize, QPoint
+from vimiv.qt.gui import QPixmap
+from vimiv.qt.widgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles

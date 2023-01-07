@@ -11,7 +11,7 @@ import functools
 import os
 from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
-from PyQt5.QtGui import QImageReader
+from vimiv.qt.gui import QImageReader
 
 from vimiv.utils import imagereader
 

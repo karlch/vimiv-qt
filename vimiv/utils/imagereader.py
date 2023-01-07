@@ -9,8 +9,8 @@
 import abc
 from typing import Dict, Callable
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QImageReader, QPixmap, QImage
+from vimiv.qt.core import Qt
+from vimiv.qt.gui import QImageReader, QPixmap, QImage
 
 from .files import imghdr
 

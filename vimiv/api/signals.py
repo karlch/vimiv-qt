@@ -6,8 +6,8 @@
 
 """Namespace for signals exposed via the api."""
 
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap, QMovie
+from vimiv.qt.core import QObject, pyqtSignal
+from vimiv.qt.gui import QPixmap, QMovie
 
 
 class _SignalHandler(QObject):

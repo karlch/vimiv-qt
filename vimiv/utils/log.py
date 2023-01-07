@@ -47,7 +47,7 @@ In case you want to ensure that a log message is only logged a single time, pass
 import logging
 from typing import Dict, List, Optional, Any, Set
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from vimiv.qt.core import pyqtSignal, QObject
 
 import vimiv
 

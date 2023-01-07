@@ -9,8 +9,8 @@
 import itertools
 from typing import Optional
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
+from vimiv.qt.core import Qt
+from vimiv.qt.widgets import QLabel, QSizePolicy, QWidget
 
 from vimiv import api, utils
 from vimiv.imutils import exif

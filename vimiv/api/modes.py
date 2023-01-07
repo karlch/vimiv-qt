@@ -31,8 +31,8 @@ All modes inherit from the common :class:`Mode` base class.
 import abc
 from typing import cast, Any, Callable, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QWidget
+from vimiv.qt.core import pyqtSignal, QObject
+from vimiv.qt.widgets import QWidget
 
 from vimiv.api import settings
 from vimiv.utils import AbstractQObjectMeta, log

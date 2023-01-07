@@ -13,8 +13,8 @@ import sys
 import types
 from typing import Callable, Optional, Type
 
-from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.core import QTimer, QSocketNotifier, QObject
+from vimiv.qt.widgets import QApplication
 
 from vimiv.utils import log, customtypes
 

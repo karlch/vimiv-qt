@@ -6,7 +6,7 @@
 
 """Completion widget in the bar."""
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from vimiv.qt.core import pyqtSignal, Qt
 
 from vimiv import api, widgets
 from vimiv.config import styles

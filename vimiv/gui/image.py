@@ -9,8 +9,8 @@
 import contextlib
 from typing import List, Union, Optional, Callable
 
-from PyQt5.QtCore import Qt, QRectF, pyqtSignal
-from PyQt5.QtWidgets import (
+from vimiv.qt.core import Qt, QRectF, pyqtSignal
+from vimiv.qt.widgets import (
     QGraphicsView,
     QGraphicsScene,
     QFrame,
@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
     QGraphicsPixmapItem,
     QLabel,
 )
-from PyQt5.QtGui import QMovie, QPixmap
+from vimiv.qt.gui import QMovie, QPixmap
 
 from vimiv import api, imutils, utils
 from vimiv.imutils import slideshow

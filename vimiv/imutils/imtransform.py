@@ -10,8 +10,8 @@ import functools
 import math
 from typing import Optional
 
-from PyQt5.QtCore import Qt, QRect, QSize, QObject, pyqtSignal
-from PyQt5.QtGui import QTransform, QPixmap
+from vimiv.qt.core import Qt, QRect, QSize, QObject, pyqtSignal
+from vimiv.qt.gui import QTransform, QPixmap
 
 from vimiv import api
 from vimiv.utils import log

@@ -12,7 +12,7 @@ import os
 import shutil
 from typing import Any, Callable, List, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
+from vimiv.qt.core import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
 
 from vimiv.api import commands, keybindings, objreg, status, settings, modes
 from vimiv.config import styles

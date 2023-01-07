@@ -26,9 +26,9 @@ import abc
 import copy
 from typing import Optional, NamedTuple, List
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QLabel, QApplication
+from vimiv.qt.core import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
+from vimiv.qt.gui import QPixmap, QImage
+from vimiv.qt.widgets import QLabel, QApplication
 
 from vimiv import api, utils, widgets
 from vimiv.config import styles

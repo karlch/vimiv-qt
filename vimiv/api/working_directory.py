@@ -27,7 +27,7 @@ as the list of added and removed images.
 Thus, if your custom class needs to know the current images and/or directories, it can
 connect to these signals::
 
-    from PyQt5.QtCore import QObject
+    from vimiv.qt.core import QObject
 
     from vimiv import api
 
@@ -61,7 +61,7 @@ Module Attributes:
 import os
 from typing import cast, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
+from vimiv.qt.core import pyqtSignal, QFileSystemWatcher
 
 from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
