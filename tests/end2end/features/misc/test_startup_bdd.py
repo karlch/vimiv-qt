@@ -30,7 +30,7 @@ def check_version_information(output):
     assert vimiv.__version__ in output.out
 
 
-@bdd.then("the log level should be <level>")
+@bdd.then(bdd.parsers.parse("the log level should be {level}"))
 def check_log_level(level):
     loglevel = getattr(logging, level.upper())
     assert log._app_logger.level == loglevel

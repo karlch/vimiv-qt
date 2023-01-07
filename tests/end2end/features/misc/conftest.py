@@ -15,12 +15,12 @@ def clipboard():
     return QGuiApplication.clipboard()
 
 
-@bdd.then(bdd.parsers.parse("The clipboard should contain {text}"))
+@bdd.then(bdd.parsers.parse("The clipboard should contain '{text}'"))
 def check_clipboard(clipboard, text):
     assert text in clipboard.text(mode=QClipboard.Clipboard)
 
 
-@bdd.then(bdd.parsers.parse("The primary selection should contain {text}"))
+@bdd.then(bdd.parsers.parse("The primary selection should contain '{text}'"))
 def check_primary(clipboard, text):
     assert text in clipboard.text(mode=QClipboard.Selection)
 
