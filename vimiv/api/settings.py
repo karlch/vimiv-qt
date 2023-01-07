@@ -380,7 +380,7 @@ read_only = BoolSetting(
 image_order = OrderSetting(
     "image_order",
     "alphabetical",
-    desc="Set image ordering.",
+    desc="Ordering of images, e.g. in the library",
     additional_order_types={
         "smallest-first": (os.path.getsize, False),
         "largest-first": (os.path.getsize, True),
@@ -389,7 +389,7 @@ image_order = OrderSetting(
 directory_order = OrderSetting(
     "directory_order",
     "alphabetical",
-    desc="Set directory ordering.",
+    desc="Ordering of directories, e.g. in the library",
     additional_order_types={
         "smallest-first": (lambda d: len(os.listdir(d)), False),
         "largest-first": (lambda d: len(os.listdir(d)), True),
