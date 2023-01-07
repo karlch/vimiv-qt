@@ -75,7 +75,7 @@ class Mark(QObject):
         if self._watcher is None:
             _logger.debug("Creating watcher to monitor marked paths")
             self._watcher = QFileSystemWatcher()
-            self._watcher.fileChanged.connect(self._on_file_changed)  # type: ignore
+            self._watcher.fileChanged.connect(self._on_file_changed)
         return self._watcher
 
     def is_marked(self, path: str) -> bool:
