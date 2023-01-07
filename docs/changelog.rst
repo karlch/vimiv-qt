@@ -76,6 +76,12 @@ Added:
   idea!
 * The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
   before deleting. Thanks `@timsofteng`_ for the idea!
+* Support for different sorting options for images and directories via the
+  ``image_order`` and ``directory_order`` settings. Please refer to the completion
+  options shown when entering ``:set image_order`` and ``:set diretory_order`` for
+  the available options. Thanks to `@kAldown`_ for the initial implementation,
+  `@jcjgraf`_ for taking over, and many more joining in the discussions and reminding us
+  why this feature is important!
 
 Changed:
 ^^^^^^^^
@@ -514,3 +520,4 @@ Initial release of the Qt version.
 .. _@szsdk: https://github.com/szsdk
 .. _@ArtemSmaznov: https://github.com/ArtemSmaznov
 .. _@timsofteng: https://github.com/timsofteng
+.. _@kAldown: https://github.com/kaldown
