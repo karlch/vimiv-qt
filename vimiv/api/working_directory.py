@@ -111,6 +111,9 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
         settings.sort.image_order.changed.connect(self._reorder_directory)
         settings.sort.directory_order.changed.connect(self._reorder_directory)
+        settings.sort.reverse.changed.connect(self._reorder_directory)
+        settings.sort.ignore_case.changed.connect(self._reorder_directory)
+
         # TODO Fix upstream and open PR
         self.directoryChanged.connect(self._reload_directory)  # type: ignore
         self.fileChanged.connect(self._on_file_changed)  # type: ignore

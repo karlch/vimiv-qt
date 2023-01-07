@@ -17,7 +17,7 @@ Feature: Miscellaneous features connected to the library
         And the library row should be 2
 
     Scenario: Invert directory order in the library
-        When I run set sort.directory_order alphabetical-inverse
+        When I run set sort.reverse!
         # We change the order to
         # - child_02
         # - child_01

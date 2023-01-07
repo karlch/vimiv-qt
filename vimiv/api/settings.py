@@ -14,7 +14,7 @@ import abc
 import contextlib
 import enum
 import os
-from typing import Any, Dict, ItemsView, List, Callable, Tuple
+from typing import Any, Dict, ItemsView, List, Callable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -321,21 +321,18 @@ class OrderSetting(Setting):
 
     typ = str
 
-    ORDER_TYPES: Dict[str, Tuple[Callable[..., Any], bool]] = {
-        "alphabetical": (str, False),
-        "alphabetical-inverse": (str, True),
-        "natural": (natural_sort, False),
-        "natural-inverse": (natural_sort, True),
-        "case-insensitive": (str.lower, False),
-        "case-insensitive-inverse": (str.lower, True),
-        "recently-modified-first": (os.path.getmtime, False),
-        "recently-modified-last": (os.path.getmtime, True),
+    ORDER_TYPES: Dict[str, Callable[..., Any]] = {
+        "alphabetical": str,
+        "natural": natural_sort,
+        "recently-modified": os.path.getmtime,
     }
+
+    STR_ORDER_TYPES = "alphabetical", "natural"
 
     def __init__(
         self,
         *args: Any,
-        additional_order_types: Dict[str, Tuple[Callable[..., Any], bool]] = None,
+        additional_order_types: Dict[str, Callable[..., Any]] = None,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
@@ -350,8 +347,12 @@ class OrderSetting(Setting):
 
     def sort(self, values: List[str]) -> List[str]:
         """Sort values according to the current ordering."""
-        ordering, reverse = self.order_types[self.value]
-        return sorted(values, key=ordering, reverse=reverse)
+        ordering = self.order_types[self.value]
+        if sort.ignore_case.value and self.value in self.STR_ORDER_TYPES:
+            return sorted(
+                values, key=lambda s: ordering(s.lower()), reverse=sort.reverse.value
+            )
+        return sorted(values, key=ordering, reverse=sort.reverse.value)
 
     def suggestions(self) -> List[str]:
         return list(self.order_types)
@@ -575,8 +576,7 @@ class sort:  # pylint: disable=invalid-name
         "alphabetical",
         desc="Ordering of images, e.g. in the library",
         additional_order_types={
-            "smallest-first": (os.path.getsize, False),
-            "largest-first": (os.path.getsize, True),
+            "size": os.path.getsize,
         },
     )
     directory_order = OrderSetting(
@@ -584,7 +584,16 @@ class sort:  # pylint: disable=invalid-name
         "alphabetical",
         desc="Ordering of directories, e.g. in the library",
         additional_order_types={
-            "smallest-first": (lambda d: len(os.listdir(d)), False),
-            "largest-first": (lambda d: len(os.listdir(d)), True),
+            "size": lambda d: len(os.listdir(d)),
         },
+    )
+    reverse = BoolSetting(
+        "sort.reverse",
+        False,
+        desc="Reverse the order of sorting, i.e. z before a, largest first, etc.",
+    )
+    ignore_case = BoolSetting(
+        "sort.ignore_case",
+        False,
+        desc="Ignore case when sorting, i.e. 'A' and 'a' are equal",
     )
