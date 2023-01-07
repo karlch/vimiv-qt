@@ -13,7 +13,7 @@ import os
 import shlex
 from typing import List
 
-from PyQt5.QtCore import QSize
+from vimiv.qt.core import QSize
 
 import vimiv
 

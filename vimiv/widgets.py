@@ -8,9 +8,9 @@
 
 from typing import Optional, Tuple
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QFontMetrics
-from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
+from vimiv.qt.core import Qt, QTimer
+from vimiv.qt.gui import QPainter, QFontMetrics
+from vimiv.qt.widgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
 from vimiv.config import styles
 from vimiv.utils import cached_method

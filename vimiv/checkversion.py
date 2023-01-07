@@ -20,7 +20,7 @@ Module Attributes:
 import sys
 
 try:
-    from PyQt5.QtCore import PYQT_VERSION_STR
+    from vimiv.qt.core import PYQT_VERSION_STR
 
     PYQT_VERSION = tuple(map(int, PYQT_VERSION_STR.split(".")))
 except ImportError:  # pragma: no cover  # PyQt is there in tests, using None is tested

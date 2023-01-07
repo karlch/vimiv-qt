@@ -17,8 +17,8 @@ import sys
 import tempfile
 from typing import cast, List
 
-from PyQt5.QtCore import QSize, QCoreApplication
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.core import QSize, QCoreApplication
+from vimiv.qt.widgets import QApplication
 
 from vimiv import app, api, parser, imutils, plugins
 from vimiv.commands import runners, search, wildcards

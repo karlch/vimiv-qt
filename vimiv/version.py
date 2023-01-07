@@ -15,7 +15,7 @@ import os
 import sys
 from typing import Optional
 
-from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
+from vimiv.qt.core import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
 from vimiv.imutils import exif
