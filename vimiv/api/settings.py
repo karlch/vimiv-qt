@@ -367,7 +367,6 @@ monitor_fs = BoolSetting(
     True,
     desc="Monitor current directory for changes and reload widgets automatically",
 )
-shuffle = BoolSetting("shuffle", False, desc="Randomly shuffle images")
 startup_library = BoolSetting(
     "startup_library",
     True,
@@ -596,4 +595,9 @@ class sort:  # pylint: disable=invalid-name
         "sort.ignore_case",
         False,
         desc="Ignore case when sorting, i.e. 'A' and 'a' are equal",
+    )
+    shuffle = BoolSetting(
+        "sort.shuffle",
+        False,
+        desc="Randomly shuffle images and ignoring all other sort settings",
     )

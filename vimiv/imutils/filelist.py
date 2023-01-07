@@ -271,7 +271,7 @@ def _load_paths(paths: Iterable[str], focused_path: str) -> None:
     """
     paths = [os.path.abspath(path) for path in paths]
     focused_path = os.path.abspath(focused_path)
-    if api.settings.shuffle.value:
+    if api.settings.sort.shuffle.value:
         random.shuffle(paths)
     previous = current()
     _set_paths(paths)

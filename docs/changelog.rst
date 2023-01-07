@@ -97,6 +97,7 @@ Changed:
 * Support for Qt versions 5.9 and 5.10 was officially dropped. These are no longer
   supported by our testing framework, and 5.11 is out since July 2018. Code will likely
   still work with these versions, but as it is no longer tested, there is no guarantee.
+* The ``shuffle`` setting was moved into the ``sort`` group.
 
 Fixed:
 ^^^^^^

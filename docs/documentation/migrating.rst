@@ -97,7 +97,7 @@ section, the one after is the option name.
     general.start_fullscreen      Removed, use the ``--fullscreen`` command line flag instead
     general.start_slideshow       Removed, use ``--command slideshow`` instead
     general.slideshow_delay       Moved to ``slideshow.delay``
-    general.shuffle               Remains the same
+    general.shuffle               Moved to ``sort.shuffle``
     general.display_bar           Moved to ``statusbar.show``
     general.default_thumbsize     Moved to ``thumbnail.size``
     general.geometry              Removed, use ``--geometry`` instead
