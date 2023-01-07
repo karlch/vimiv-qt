@@ -9,12 +9,12 @@
 import os
 import pathlib
 
+import pytest
+import pytest_bdd as bdd
+
 from vimiv.qt.core import Qt, QProcess, QTimer
 from vimiv.qt.gui import QFocusEvent, QMouseEvent
 from vimiv.qt.widgets import QApplication
-
-import pytest
-import pytest_bdd as bdd
 
 import vimiv.gui.library
 import vimiv.gui.thumbnail

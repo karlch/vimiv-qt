@@ -6,9 +6,9 @@
 
 import os
 
-from vimiv.qt.gui import QClipboard
-
 import pytest_bdd as bdd
+
+from vimiv.qt.gui import QClipboard
 
 
 bdd.scenarios("clipboard.feature")

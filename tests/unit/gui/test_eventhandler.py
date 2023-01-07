@@ -6,10 +6,10 @@
 
 """Tests for vimiv.gui.eventhandler."""
 
+import pytest
+
 from vimiv.qt.core import QEvent, Qt, QPoint
 from vimiv.qt.gui import QKeyEvent, QMouseEvent
-
-import pytest
 
 from vimiv.gui import eventhandler
 

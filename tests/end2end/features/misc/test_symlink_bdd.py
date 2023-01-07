@@ -4,9 +4,9 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-from vimiv.qt.gui import QPixmap
-
 import pytest_bdd as bdd
+
+from vimiv.qt.gui import QPixmap
 
 from vimiv import startup
 

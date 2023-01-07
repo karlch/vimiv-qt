@@ -8,12 +8,12 @@
 
 import logging
 
-from vimiv.qt.gui import QPixmap
-
 import pytest
 import pytest_bdd as bdd
 
 import mockdecorators
+
+from vimiv.qt.gui import QPixmap
 
 with mockdecorators.apply():
     from vimiv import api, startup, utils

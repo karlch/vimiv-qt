@@ -7,9 +7,9 @@
 import hashlib
 import os
 
-from vimiv.qt.gui import QPixmap
-
 import pytest
+
+from vimiv.qt.gui import QPixmap
 
 from vimiv.utils import thumbnail_manager
 

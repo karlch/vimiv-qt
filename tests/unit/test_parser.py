@@ -10,9 +10,9 @@ import argparse
 import logging
 import os
 
-from vimiv.qt.core import QSize
-
 import pytest
+
+from vimiv.qt.core import QSize
 
 from vimiv import parser
 

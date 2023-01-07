@@ -8,9 +8,9 @@
 
 import functools
 
-from vimiv.qt.gui import QPixmap
-
 import pytest
+
+from vimiv.qt.gui import QPixmap
 
 from vimiv.imutils import current_pixmap, imtransform
 

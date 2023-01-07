@@ -6,9 +6,9 @@
 
 """Integration tests related to editing images."""
 
-from vimiv.qt.gui import QPixmap, QColor
-
 import pytest
+
+from vimiv.qt.gui import QPixmap, QColor
 
 from vimiv.config import styles
 from vimiv.imutils import edit_handler
