@@ -27,7 +27,7 @@ class CommandWidget(QWidget):
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
 
-        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
 
         self._commandline = commandline.CommandLine()
         self._completion_widget = completionwidget.CompletionView(mainwindow)
@@ -40,7 +40,7 @@ class CommandWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._completion_widget)
         layout.addWidget(self._commandline)
-        layout.setAlignment(Qt.AlignBottom)
+        layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self._commandline.editingFinished.connect(self.leave_commandline)
 

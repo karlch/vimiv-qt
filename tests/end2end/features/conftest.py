@@ -124,10 +124,10 @@ def answer_prompt(qtbot, mainwindow):
 
     def function(key):
         keys = {
-            "y": Qt.Key_Y,
-            "n": Qt.Key_N,
-            "<return>": Qt.Key_Return,
-            "<escape>": Qt.Key_Escape,
+            "y": Qt.Key.Key_Y,
+            "n": Qt.Key.Key_N,
+            "<return>": Qt.Key.Key_Return,
+            "<escape>": Qt.Key.Key_Escape,
         }
         try:
             qkey = keys[key]
@@ -149,22 +149,22 @@ def answer_prompt(qtbot, mainwindow):
 def keypress(qtbot):
     """Fixture to press keys on a widget handling special keys appropriately."""
     special_keys = {
-        "<escape>": Qt.Key_Escape,
-        "<return>": Qt.Key_Return,
-        "<space>": Qt.Key_Space,
-        "<backspace>": Qt.Key_Backspace,
+        "<escape>": Qt.Key.Key_Escape,
+        "<return>": Qt.Key.Key_Return,
+        "<space>": Qt.Key.Key_Space,
+        "<backspace>": Qt.Key.Key_Backspace,
     }
 
     def get_modifier(keys):
         modifiers = {
-            "<ctrl>": Qt.ControlModifier,
-            "<alt>": Qt.AltModifier,
-            "<shift>": Qt.ShiftModifier,
+            "<ctrl>": Qt.KeyboardModifier.ControlModifier,
+            "<alt>": Qt.KeyboardModifier.AltModifier,
+            "<shift>": Qt.KeyboardModifier.ShiftModifier,
         }
         for name, key in modifiers.items():
             if keys.startswith(name):
                 return key, keys.replace(name, "")
-        return Qt.NoModifier, keys
+        return Qt.KeyboardModifier.NoModifier, keys
 
     def press_impl(widget, keys):
         modifier, keys = get_modifier(keys)
@@ -222,7 +222,9 @@ def run_command(command, qtbot):
 
         def external_finished():
             state = external_runner.state()
-            assert state == QProcess.NotRunning, "external command timed out"
+            assert (
+                state == QProcess.ProcessState.NotRunning
+            ), "external command timed out"
 
         qtbot.waitUntil(external_finished, timeout=30000)
 
@@ -268,7 +270,7 @@ def focus_widget(image, library, widget_name):
         raise KeyError(
             f"Unknown widget '{widget_name}'. Currently supported: {', '.join(names)}"
         )
-    event = QFocusEvent(QFocusEvent.FocusOut)
+    event = QFocusEvent(QFocusEvent.Type.FocusOut)
     widget.focusOutEvent(event)
 
 

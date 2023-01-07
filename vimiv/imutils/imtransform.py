@@ -150,7 +150,11 @@ class Transform(QTransform):
 
     def apply(self):
         """Apply all transformations to the original pixmap."""
-        self._apply(self.original.transformed(self, mode=Qt.SmoothTransformation))
+        self._apply(
+            self.original.transformed(
+                self, mode=Qt.TransformationMode.SmoothTransformation
+            )
+        )
 
     def straighten(self, *, angle: int, original_size: QSize):
         """Straighten the original image.
@@ -163,7 +167,9 @@ class Transform(QTransform):
             original_size: Size of the original unstraightened image.
         """
         self.rotate(angle)
-        transformed = self.original.transformed(self, mode=Qt.SmoothTransformation)
+        transformed = self.original.transformed(
+            self, mode=Qt.TransformationMode.SmoothTransformation
+        )
         rect = self.largest_rect_in_rotated(
             original=original_size, rotated=transformed.size(), angle=angle
         )

@@ -23,4 +23,4 @@ bdd.scenarios("clipboard.feature")
 )
 def check_clipboard_abspath(clipboard, text):
     text = os.path.abspath(text)
-    assert clipboard.text(mode=QClipboard.Clipboard) == text
+    assert clipboard.text(mode=QClipboard.Mode.Clipboard) == text

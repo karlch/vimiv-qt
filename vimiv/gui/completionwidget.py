@@ -44,8 +44,8 @@ class CompletionView(widgets.FlatTreeView):
     def __init__(self, parent):
         super().__init__(parent=parent)
 
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setEditTriggers(self.NoEditTriggers)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setModel(api.completion.FilterProxyModel())
 
         styles.apply(self)

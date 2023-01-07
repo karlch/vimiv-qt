@@ -93,11 +93,11 @@ class ThumbnailView(
         )
         self._manager = thumbnail_manager.ThumbnailManager(fail_pixmap)
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setViewMode(QListWidget.IconMode)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setViewMode(QListWidget.ViewMode.IconMode)
         default_size = api.settings.thumbnail.size.value
         self.setIconSize(QSize(default_size, default_size))
-        self.setResizeMode(QListWidget.Adjust)
+        self.setResizeMode(QListWidget.ResizeMode.Adjust)
 
         self.setItemDelegate(ThumbnailDelegate(self))
         self.setDragEnabled(False)
@@ -502,7 +502,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         color = self._get_background_color(item, option.state)
         painter.save()
         painter.setBrush(color)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
@@ -528,7 +528,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
             option.rect.height() - 2 * self.padding,
         )
         # Size the pixmap should take
-        size = pixmap.size().scaled(rect.size(), Qt.KeepAspectRatio)
+        size = pixmap.size().scaled(rect.size(), Qt.AspectRatioMode.KeepAspectRatio)
         # Coordinates to center the pixmap
         diff_x = (rect.width() - size.width()) / 2.0
         diff_y = (rect.height() - size.height()) / 2.0
@@ -554,7 +554,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
         width = int(max(min(0.05 * option.rect.width(), self.padding), 4))
         painter.save()
         painter.setBrush(self.mark_bg)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(x - width // 2, y - width // 2, width, width)
         painter.restore()
 
@@ -567,7 +567,7 @@ class ThumbnailDelegate(QStyledItemDelegate):
             item: The ThumbnailItem storing highlight status.
             state: State of the model index indicating selected.
         """
-        if state & QStyle.State_Selected:
+        if state & QStyle.StateFlag.State_Selected:
             if api.modes.current() == api.modes.THUMBNAIL:
                 return self.selection_bg
             return self.selection_bg_unfocus

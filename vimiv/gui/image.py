@@ -84,14 +84,14 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         self._scale = ImageScaleFloat(1.0)
         self.transformation_module: Optional[Callable[[], str]] = None
 
-        self.setResizeAnchor(QGraphicsView.AnchorViewCenter)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setFrameShape(QFrame.Box)
+        self.setResizeAnchor(QGraphicsView.ViewportAnchor.AnchorViewCenter)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setFrameShape(QFrame.Shape.Box)
         scene = QGraphicsScene()
         scene.setSceneRect(QRectF(0, 0, 1, 1))
         self.setScene(scene)
-        self.setOptimizationFlags(QGraphicsView.DontSavePainterState)
+        self.setOptimizationFlags(QGraphicsView.OptimizationFlag.DontSavePainterState)
 
         api.signals.pixmap_loaded.connect(self._load_pixmap)
         api.signals.movie_loaded.connect(self._load_movie)
@@ -123,7 +123,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         """Load new pixmap into the graphics scene."""
         item = QGraphicsPixmapItem()
         item.setPixmap(pixmap)
-        item.setTransformationMode(Qt.SmoothTransformation)
+        item.setTransformationMode(Qt.TransformationMode.SmoothTransformation)
         self._update_scene(item, item.boundingRect(), keep_zoom)
 
     def _load_movie(self, movie: QMovie, keep_zoom: bool) -> None:
@@ -327,7 +327,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         with contextlib.suppress(IndexError, AttributeError):  # No items, not a movie
             widget = self.items()[0].widget()
             movie = widget.movie()
-            movie.setPaused(not movie.state() == QMovie.Paused)
+            movie.setPaused(not movie.state() == QMovie.MovieState.Paused)
 
     @api.commands.register(mode=api.modes.IMAGE, edit=True)
     def straighten(self):
@@ -418,19 +418,19 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""
-        if event.button() == Qt.LeftButton:
-            self.setDragMode(QGraphicsView.ScrollHandDrag)
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.setDragMode(QGraphicsView.DragMode.ScrollHandDrag)
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
         """Update mouse release event to stop any panning."""
-        self.setDragMode(QGraphicsView.NoDrag)
+        self.setDragMode(QGraphicsView.DragMode.NoDrag)
         super().mouseReleaseEvent(event)
 
     def wheelEvent(self, event):
         """Update mouse wheel to zoom with control."""
         require_ctrl = api.settings.image.zoom_wheel_ctrl
-        if not require_ctrl or event.modifiers() & Qt.ControlModifier:
+        if not require_ctrl or event.modifiers() & Qt.KeyboardModifier.ControlModifier:
             # We divide by 120 as this is the regular delta multiple
             # See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
             steps = event.angleDelta().y() / 120
@@ -443,5 +443,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
 
     def focusOutEvent(self, event):
         """Stop slideshow when focusing another widget."""
-        if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
+        if (
+            event.reason() != Qt.FocusReason.ActiveWindowFocusReason
+        ):  # Unfocused the whole window
             slideshow.stop()

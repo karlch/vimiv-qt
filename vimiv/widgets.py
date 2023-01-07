@@ -20,7 +20,7 @@ class ScrollToCenterMixin:
     """Mixin class to ensure the selected index stays at the center when scrolling."""
 
     def scrollTo(self, index, _hint=None):
-        super().scrollTo(index, self.PositionAtCenter)
+        super().scrollTo(index, self.ScrollHint.PositionAtCenter)
 
 
 class ScrollWheelCumulativeMixin:
@@ -100,8 +100,8 @@ class FlatTreeView(ScrollToCenterMixin, QTreeView):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
 
         self.setUniformRowHeights(True)
         self.setIndentation(0)
@@ -109,7 +109,7 @@ class FlatTreeView(ScrollToCenterMixin, QTreeView):
         self.setAlternatingRowColors(True)
         self.setItemsExpandable(False)
         self.setExpandsOnDoubleClick(False)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     def _select_row(self, row):
         """Select a specific row in the library.
@@ -163,7 +163,7 @@ class SliderWithValue(QSlider):
         painter = QPainter(self)
         font_metrics = QFontMetrics(self.font())
 
-        x = (rect.width() - font_metrics.width(text)) // 2
+        x = (rect.width() - font_metrics.horizontalAdvance(text)) // 2
         y = rect.height() - (rect.height() - font_metrics.capHeight()) // 2
         painter.drawText(x, y, text)
 
@@ -226,7 +226,7 @@ class PopUp(QDialog):
     def __init__(self, title: str, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle(title)
-        self.setWindowFlags(self.windowFlags() | Qt.Tool)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.Tool)
         styles.apply(self)
 
     def reject(self):

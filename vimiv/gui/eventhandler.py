@@ -208,17 +208,17 @@ class EventHandlerMixin:
 def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
     """Convert QKeyEvent to meaningful string sequence."""
     modifiers = (
-        Qt.Key_Control,
-        Qt.Key_Alt,
-        Qt.Key_Shift,
-        Qt.Key_Meta,
-        Qt.Key_AltGr,
-        Qt.Key_Super_L,
-        Qt.Key_Super_R,
-        Qt.Key_Hyper_L,
-        Qt.Key_Hyper_R,
-        Qt.Key_Direction_L,
-        Qt.Key_Direction_R,
+        Qt.Key.Key_Control,
+        Qt.Key.Key_Alt,
+        Qt.Key.Key_Shift,
+        Qt.Key.Key_Meta,
+        Qt.Key.Key_AltGr,
+        Qt.Key.Key_Super_L,
+        Qt.Key.Key_Super_R,
+        Qt.Key.Key_Hyper_L,
+        Qt.Key.Key_Hyper_R,
+        Qt.Key.Key_Direction_L,
+        Qt.Key.Key_Direction_R,
     )
     if event.key() in modifiers:  # Only modifier pressed
         raise ValueError("Modifiers do not have a stand-alone name")
@@ -228,11 +228,11 @@ def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
 def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> SequenceT:
     """Convert QMouseEvent to meaningful string sequence."""
     button_names = {
-        Qt.LeftButton: "left",
-        Qt.MiddleButton: "middle",
-        Qt.RightButton: "right",
-        Qt.BackButton: "back",
-        Qt.ForwardButton: "forward",
+        Qt.MouseButton.LeftButton: "left",
+        Qt.MouseButton.MiddleButton: "middle",
+        Qt.MouseButton.RightButton: "right",
+        Qt.MouseButton.BackButton: "back",
+        Qt.MouseButton.ForwardButton: "forward",
     }
     button = event.button()
     button_name = button_names[button] if button in button_names else str(button)
@@ -242,9 +242,9 @@ def mouseevent_to_sequence(event: QMouseEvent, prefix: str = "button") -> Sequen
 def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> List[str]:
     """Return the names of all modifiers pressed in the event."""
     modmask2str = {
-        Qt.ControlModifier: "<ctrl>",
-        Qt.AltModifier: "<alt>",
-        Qt.MetaModifier: "<meta>",
+        Qt.KeyboardModifier.ControlModifier: "<ctrl>",
+        Qt.KeyboardModifier.AltModifier: "<alt>",
+        Qt.KeyboardModifier.MetaModifier: "<meta>",
     }
     modifiers = event.modifiers()
     return [mod_name for mask, mod_name in modmask2str.items() if modifiers & mask]
@@ -262,30 +262,30 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         Name of the main key press escaping special keys.
     """
     special_keys = {
-        Qt.Key_Space: "<space>",
-        Qt.Key_Backtab: "<tab>",
-        Qt.Key_Tab: "<tab>",
-        Qt.Key_Escape: "<escape>",
-        Qt.Key_Enter: "<enter>",
-        Qt.Key_Return: "<return>",
-        Qt.Key_Backspace: "<backspace>",
-        Qt.Key_Left: "<left>",
-        Qt.Key_Right: "<right>",
-        Qt.Key_Up: "<up>",
-        Qt.Key_Down: "<down>",
-        Qt.Key_Home: "<home>",
-        Qt.Key_End: "<end>",
-        Qt.Key_PageUp: "<page-up>",
-        Qt.Key_PageDown: "<page-down>",
+        Qt.Key.Key_Space: "<space>",
+        Qt.Key.Key_Backtab: "<tab>",
+        Qt.Key.Key_Tab: "<tab>",
+        Qt.Key.Key_Escape: "<escape>",
+        Qt.Key.Key_Enter: "<enter>",
+        Qt.Key.Key_Return: "<return>",
+        Qt.Key.Key_Backspace: "<backspace>",
+        Qt.Key.Key_Left: "<left>",
+        Qt.Key.Key_Right: "<right>",
+        Qt.Key.Key_Up: "<up>",
+        Qt.Key.Key_Down: "<down>",
+        Qt.Key.Key_Home: "<home>",
+        Qt.Key.Key_End: "<end>",
+        Qt.Key.Key_PageUp: "<page-up>",
+        Qt.Key.Key_PageDown: "<page-down>",
     }
     separator_keys = {
-        Qt.Key_Colon: "<colon>",
-        Qt.Key_Equal: "<equal>",
+        Qt.Key.Key_Colon: "<colon>",
+        Qt.Key.Key_Equal: "<equal>",
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
         text = special_keys[event.key()]  # type: ignore
-        if event.modifiers() & Qt.ShiftModifier:
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             return "<shift>", text
         return (text,)
     if event.key() in separator_keys:  # Required as configparser crashes otherwise

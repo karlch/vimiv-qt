@@ -77,7 +77,7 @@ class Manipulation(QObject):
             "{manipulate.slider.left}",
             "{manipulate.slider.handle}",
             "{manipulate.slider.right}",
-            Qt.Horizontal,
+            Qt.Orientation.Horizontal,
         )
         self.slider.setMinimum(lower)
         self.slider.setMaximum(upper)
@@ -301,7 +301,7 @@ class Manipulations(list):
         # Convert original pixmap to python bytes
         image = pixmap.toImage()
         bits = image.constBits()
-        bits.setsize(image.byteCount())
+        bits.setsize(image.sizeInBytes())
         data = bits.asstring()
         # Apply changes on the byte-level
         for group in groups:
@@ -534,12 +534,12 @@ class Manipulator(QObject):
                 0, lambda: utils.log.error("File format does not support manipulate")
             )
             return
-        screen_geometry = QApplication.desktop().screenGeometry()
+        screen_geometry = QApplication.primaryScreen().geometry()
         self._pixmap = self._current_pixmap.pixmap.scaled(
             screen_geometry.width(),
             screen_geometry.height(),
-            aspectRatioMode=Qt.KeepAspectRatio,
-            transformMode=Qt.SmoothTransformation,
+            aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+            transformMode=Qt.TransformationMode.SmoothTransformation,
         )
         self.updated.emit(self._pixmap)
 

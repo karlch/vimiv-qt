@@ -64,7 +64,7 @@ class KeybindingsPopUp(PopUp):
         self._search.setPlaceholderText("search")
 
         layout = QVBoxLayout()
-        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         content_layout = QHBoxLayout()
         for _ in range(columns):
             label = QLabel()

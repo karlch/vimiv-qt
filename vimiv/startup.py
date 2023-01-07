@@ -47,7 +47,7 @@ def main() -> int:
     crash_handler.CrashHandler(qapp)
     setup_post_app(args)
     _logger.debug("Startup completed, starting Qt main loop")
-    returncode = qapp.exec_()
+    returncode = qapp.exec()
     plugins.cleanup()
     _logger.debug("Exiting with status %d", returncode)
     return returncode
@@ -144,7 +144,7 @@ def init_ui(args: argparse.Namespace) -> None:
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size
-    screen_geometry = QApplication.desktop().screenGeometry()
+    screen_geometry = QApplication.primaryScreen().geometry()
     geometry = (
         args.geometry
         if args.geometry

@@ -79,7 +79,7 @@ class Prompt(QLabel):
     def run(self):
         """Run the blocking event loop."""
         _logger.debug("Running blocking %s", self)
-        self.loop.exec_()
+        self.loop.exec()
 
     def update_geometry(self, _width: int, bottom: int):
         y = bottom - self.height()
@@ -96,11 +96,11 @@ class Prompt(QLabel):
 
     def keyPressEvent(self, event):
         """Leave the prompt on a valid key binding."""
-        if event.key() == Qt.Key_Y:
+        if event.key() == Qt.Key.Key_Y:
             self.leave(answer=True)
-        elif event.key() in (Qt.Key_N, Qt.Key_Return):
+        elif event.key() in (Qt.Key.Key_N, Qt.Key.Key_Return):
             self.leave(answer=False)
-        elif event.key() == Qt.Key_Escape:
+        elif event.key() == Qt.Key.Key_Escape:
             self.leave()
 
     def focusOutEvent(self, event):

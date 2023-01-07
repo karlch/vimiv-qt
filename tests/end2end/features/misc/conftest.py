@@ -17,39 +17,41 @@ def clipboard():
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain '{text}'"))
 def check_clipboard(clipboard, text):
-    assert text in clipboard.text(mode=QClipboard.Clipboard)
+    assert text in clipboard.text(mode=QClipboard.Mode.Clipboard)
 
 
 @bdd.then(bdd.parsers.parse("The primary selection should contain '{text}'"))
 def check_primary(clipboard, text):
-    assert text in clipboard.text(mode=QClipboard.Selection)
+    assert text in clipboard.text(mode=QClipboard.Mode.Selection)
 
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain any image"))
 def check_clipboard_image(clipboard, image):
-    assert not clipboard.pixmap(mode=QClipboard.Clipboard).toImage().isNull()
+    assert not clipboard.pixmap(mode=QClipboard.Mode.Clipboard).toImage().isNull()
 
 
 @bdd.then(bdd.parsers.parse("The primary selection should contain any image"))
 def check_primary_image(clipboard, image):
-    assert not clipboard.pixmap(mode=QClipboard.Selection).toImage().isNull()
+    assert not clipboard.pixmap(mode=QClipboard.Mode.Selection).toImage().isNull()
 
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain an image with width {width}"))
 def check_clipboard_image_width(clipboard, width):
-    assert clipboard.pixmap(mode=QClipboard.Clipboard).size().width() == int(width)
+    assert clipboard.pixmap(mode=QClipboard.Mode.Clipboard).size().width() == int(width)
 
 
 @bdd.then(
     bdd.parsers.parse("The clipboard should contain an image with height {height}")
 )
 def check_clipboard_image_height(clipboard, height):
-    assert clipboard.pixmap(mode=QClipboard.Clipboard).size().height() == int(height)
+    assert clipboard.pixmap(mode=QClipboard.Mode.Clipboard).size().height() == int(
+        height
+    )
 
 
 @bdd.then(bdd.parsers.parse("The clipboard should contain an image with size {size}"))
 def check_clipboard_image_size(clipboard, size):
     assert max(
-        clipboard.pixmap(mode=QClipboard.Clipboard).size().height(),
-        clipboard.pixmap(mode=QClipboard.Clipboard).size().width(),
+        clipboard.pixmap(mode=QClipboard.Mode.Clipboard).size().height(),
+        clipboard.pixmap(mode=QClipboard.Mode.Clipboard).size().width(),
     ) == int(size)

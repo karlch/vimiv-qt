@@ -114,7 +114,7 @@ class FilterProxyModel(QSortFilterProxyModel):
     def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
-        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.unmatched = ""
         self._empty = BaseModel("")
 
@@ -162,14 +162,14 @@ class FilterProxyModel(QSortFilterProxyModel):
             command = parts[-1]
         regex = prefix + f" *.*{command}.*"
         regex = regex.replace("\\", "\\\\")
-        self.setFilterRegExp(regex)
+        self.setFilterRegularExpression(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
-        self.setFilterRegExp(".*".join(prefix + command))
+        self.setFilterRegularExpression(".*".join(prefix + command))
 
     def reset(self) -> None:
         """Reset regular expression, unmatched string and source model."""
-        self.setFilterRegExp("")
+        self.setFilterRegularExpression("")
         self.unmatched = ""
         self.setSourceModel(self._empty)
 

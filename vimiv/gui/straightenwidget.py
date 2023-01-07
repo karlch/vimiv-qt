@@ -32,9 +32,9 @@ class StraightenWidget(transformwidget.TransformWidget):
     """
 
     LINES = (
-        (0.25, Qt.DashLine, 2),
-        (0.5, Qt.SolidLine, 4),
-        (0.75, Qt.DashLine, 2),
+        (0.25, Qt.PenStyle.DashLine, 2),
+        (0.5, Qt.PenStyle.SolidLine, 4),
+        (0.75, Qt.PenStyle.DashLine, 2),
     )
 
     def __init__(self, image):

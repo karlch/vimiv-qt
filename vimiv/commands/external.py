@@ -82,12 +82,12 @@ class _ExternalRunnerImpl(QProcess):
     """Runner for external commands."""
 
     error_messages = {
-        QProcess.FailedToStart: "command not found or not executable",
-        QProcess.Crashed: "process crashed after startup",
-        QProcess.Timedout: "process timed out",
-        QProcess.WriteError: "cannot write to process",
-        QProcess.ReadError: "cannot read from process",
-        QProcess.UnknownError: "unknown",
+        QProcess.ProcessError.FailedToStart: "command not found or not executable",
+        QProcess.ProcessError.Crashed: "process crashed after startup",
+        QProcess.ProcessError.Timedout: "process timed out",
+        QProcess.ProcessError.WriteError: "cannot write to process",
+        QProcess.ProcessError.ReadError: "cannot read from process",
+        QProcess.ProcessError.UnknownError: "unknown",
     }
 
     _instance = None
@@ -102,7 +102,7 @@ class _ExternalRunnerImpl(QProcess):
 
     def __call__(self, command: str, *args: str, pipe=False) -> None:
         """Run external command with arguments."""
-        if self.state() == QProcess.Running:
+        if self.state() == QProcess.ProcessState.Running:
             log.warning("Closing running process '%s'", self.program())
             self.close()
         self._pipe = pipe
@@ -114,7 +114,7 @@ class _ExternalRunnerImpl(QProcess):
 
     def _on_finished(self, exitcode, exitstatus):
         """Check exit status and possibly process standard output on completion."""
-        if exitstatus != QProcess.NormalExit or exitcode != 0:
+        if exitstatus != QProcess.ExitStatus.NormalExit or exitcode != 0:
             log.error(
                 "Error running external process '%s':\n%s",
                 self.program(),
@@ -140,7 +140,7 @@ class _ExternalRunnerImpl(QProcess):
         log.error("Error running '%s': %s", self.program(), self.error_messages[error])
 
     def _on_quit(self):
-        if self.state() == QProcess.Running:
+        if self.state() == QProcess.ProcessState.Running:
             log.warning(
                 "Decoupling external command '%s' with pid %d",
                 self.program(),

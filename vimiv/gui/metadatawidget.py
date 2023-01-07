@@ -51,8 +51,8 @@ if exif.has_exif_support:
             super().__init__(parent=parent)
             styles.apply(self)
 
-            self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-            self.setTextFormat(Qt.RichText)
+            self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+            self.setTextFormat(Qt.TextFormat.RichText)
 
             self._mainwindow_bottom = 0
             self._mainwindow_width = 0

@@ -49,9 +49,9 @@ class StatusBar(QWidget):
         layout = QHBoxLayout(self)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
-        self.left = self.create_label(layout, Qt.AlignLeft)
-        self.center = self.create_label(layout, Qt.AlignCenter)
-        self.right = self.create_label(layout, Qt.AlignRight)
+        self.left = self.create_label(layout, Qt.AlignmentFlag.AlignLeft)
+        self.center = self.create_label(layout, Qt.AlignmentFlag.AlignCenter)
+        self.right = self.create_label(layout, Qt.AlignmentFlag.AlignRight)
 
         styles.apply(self)
         api.status.signals.update.connect(self._update_status)
@@ -70,7 +70,7 @@ class StatusBar(QWidget):
         """Create a label with this alignment and add it to the layout."""
         label = QLabel()
         label.setAlignment(alignment)
-        label.setTextFormat(Qt.RichText)
+        label.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(label)
         return label
 

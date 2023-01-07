@@ -43,7 +43,7 @@ class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
     @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
-        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
         styles.apply(self)
         # Add all manipulations from immanipulate
@@ -176,8 +176,8 @@ class ManipulateImage(QLabel):
         pixmap = self._pixmap.scaled(
             self._max_size.width(),
             self._max_size.height(),
-            aspectRatioMode=Qt.KeepAspectRatio,
-            transformMode=Qt.SmoothTransformation,
+            aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+            transformMode=Qt.TransformationMode.SmoothTransformation,
         )
         self.setPixmap(pixmap)
         # Update geometry to only show pixmap

@@ -395,7 +395,7 @@ def create_pixmap(
     # Initialize
     pixmap = QPixmap(size, size)
     painter = QPainter(pixmap)
-    painter.setPen(Qt.NoPen)
+    painter.setPen(Qt.PenStyle.NoPen)
     # Frame
     painter.setBrush(QColor(frame_color))
     painter.drawRect(pixmap.rect())
@@ -429,7 +429,10 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     process.start(cmd, args)
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
-    if process.exitStatus() != QProcess.NormalExit or process.exitCode() != 0:
+    if (
+        process.exitStatus() != QProcess.ExitStatus.NormalExit
+        or process.exitCode() != 0
+    ):
         stderr = qbytearray_to_str(process.readAllStandardError()).strip()
         raise OSError(stderr)
     return qbytearray_to_str(process.readAllStandardOutput()).strip()

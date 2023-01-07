@@ -83,7 +83,7 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
         * ``--primary``: Copy to primary selection.
     """
     clipboard = QGuiApplication.clipboard()
-    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    mode = QClipboard.Mode.Selection if primary else QClipboard.Mode.Clipboard
     path = api.current_path()
     name = path if abspath else os.path.basename(path)
     clipboard.setText(name, mode=mode)
@@ -113,7 +113,7 @@ def copy_image(
     **count:** Equivalent to the ``--size`` option
     """
     clipboard = QGuiApplication.clipboard()
-    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    mode = QClipboard.Mode.Selection if primary else QClipboard.Mode.Clipboard
     path = api.current_path()
 
     try:
@@ -156,7 +156,7 @@ def paste_name(primary: bool = True) -> None:
         * ``--primary``: Paste from  primary selection.
     """
     clipboard = QGuiApplication.clipboard()
-    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    mode = QClipboard.Mode.Selection if primary else QClipboard.Mode.Clipboard
     api.open_paths([clipboard.text(mode=mode)])
 
 

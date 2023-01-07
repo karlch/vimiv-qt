@@ -52,10 +52,9 @@ def _autoselect_wrapper():
     for wrapper in WRAPPERS:
         try:
             importlib.import_module(wrapper.value)
-            print(f"Successfully selected Qt wrapper: '{wrapper.value}'")
             return wrapper
-        except ImportError:
-            print(f"Qt wrapper '{wrapper.value}' not found")
+        except ImportError:  # Raise later
+            pass
     raise ImportError(f"No valid Qt wrapper found. Valid options: {_WRAPPER_NAMES_STR}")
 
 

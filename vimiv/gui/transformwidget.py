@@ -36,7 +36,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def __init__(self, image):
         super().__init__(parent=image)
         self.setObjectName(self.__class__.__qualname__)
-        self.setWindowFlags(Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.SubWindow)
         self.setFocus()
 
         self.bindings = {
@@ -96,8 +96,8 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def focusOutEvent(self, event):
         """Leave the widget when the user focuses another widget."""
         ignored_reasons = (
-            Qt.ActiveWindowFocusReason,  # Unfocused the whole window
-            Qt.OtherFocusReason,  # Unfocused explicitly during leave
+            Qt.FocusReason.ActiveWindowFocusReason,  # Unfocused the whole window
+            Qt.FocusReason.OtherFocusReason,  # Unfocused explicitly during leave
         )
         if event.reason() not in ignored_reasons:
             self.leave(accept=False)

@@ -34,8 +34,8 @@ class Message(QLabel):
         self._timer.setInterval(api.settings.statusbar.message_timeout.value)
         self._timer.setSingleShot(True)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-        self.setTextFormat(Qt.RichText)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.setTextFormat(Qt.TextFormat.RichText)
         self.setWordWrap(True)
 
         styles.apply(self)

@@ -102,7 +102,7 @@ class PrintWidget(abc.ABC):
     def print(self, printer: QPrinter, auto_apply_orientation: bool = False) -> None:
         """Print the widget."""
         if auto_apply_orientation and self.size.width() > self.size.height():
-            printer.setOrientation(QPrinter.Landscape)
+            printer.setOrientation(QPrinter.Orientation.Landscape)
         self.paint(printer)
 
     @abc.abstractmethod
@@ -125,8 +125,9 @@ class PrintPixmap(PrintWidget):
         """Scale pixmap to match printer page and paint using painter."""
         _logger.debug("Painting pixmap for print")
         painter = QPainter(printer)
+        page_size = printer.pageRect(printer.Unit.DevicePixel).toRect().size()
         scaled_pixmap = self._widget.scaled(
-            printer.pageRect().size(), Qt.KeepAspectRatio
+            page_size, Qt.AspectRatioMode.KeepAspectRatio
         )
         painter.drawPixmap(0, 0, scaled_pixmap)
         painter.end()
@@ -145,9 +146,10 @@ class PrintSvg(PrintWidget):
     def paint(self, printer: QPrinter) -> None:
         """Scale vector graphic to match printer page and paint using render."""
         _logger.debug("Painting vector graphic for print")
+        page_rect = printer.pageRect(printer.Unit.DevicePixel).toRect()
         scale = min(
-            self._widget.sizeHint().width() / printer.pageRect().width(),
-            self._widget.sizeHint().height() / printer.pageRect().height(),
+            self._widget.sizeHint().width() / page_rect.width(),
+            self._widget.sizeHint().height() / page_rect.height(),
         )
         self._widget.setFixedSize(self._widget.sizeHint() * scale)
         self._widget.render(printer)
@@ -176,8 +178,9 @@ class PrintMovie(PrintWidget):
                 printer.newPage()
 
             self._widget.jumpToFrame(frame)
+            page_size = printer.pageRect(printer.Unit.DevicePixel).toRect().size()
             pixmap = self._widget.currentPixmap().scaled(
-                printer.pageRect().size(), Qt.KeepAspectRatio
+                page_size, Qt.AspectRatioMode.KeepAspectRatio
             )
             painter.drawPixmap(0, 0, pixmap)
 

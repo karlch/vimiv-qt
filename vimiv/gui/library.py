@@ -94,8 +94,8 @@ class Library(
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Ignored)
 
         self.setModel(LibraryModel(self))
         self.setItemDelegate(LibraryDelegate())
@@ -567,7 +567,7 @@ class LibraryDelegate(QStyledItemDelegate):
         color = self._get_background_color(index, option.state)
         painter.save()
         painter.setBrush(color)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
@@ -595,7 +595,7 @@ class LibraryDelegate(QStyledItemDelegate):
             index: Index of the element indicating even/odd/highlighted.
             state: State of the index indicating selected.
         """
-        if state & QStyle.State_Selected:
+        if state & QStyle.StateFlag.State_Selected:
             if api.modes.current() == api.modes.LIBRARY:
                 return self.selection_bg
             return self.selection_bg_unfocus
@@ -623,11 +623,15 @@ class LibraryDelegate(QStyledItemDelegate):
         # Html only surrounds the leading mark indicator as directories are never marked
         if text.startswith(self.mark_str):
             mark_stripped = strip_html(self.mark_str)
-            elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+            elided = font_metrics.elidedText(
+                html_stripped, Qt.TextElideMode.ElideMiddle, width
+            )
             return elided.replace(mark_stripped, self.mark_str)
         # Html surrounds the full text as the file may be a directory which is displayed
         # in bold
-        elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+        elided = font_metrics.elidedText(
+            html_stripped, Qt.TextElideMode.ElideMiddle, width
+        )
         return text.replace(html_stripped, elided)
 
 
