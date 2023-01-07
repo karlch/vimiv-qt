@@ -190,7 +190,7 @@ class SignalHandler(QObject):
             _load_single(*paths)
         else:
             _logger.debug("Image filelist: loading %d paths", len(paths))
-            _load_paths(paths, paths[0])
+            _load_paths(paths)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -262,17 +262,19 @@ def _load_single(path: str) -> None:
         _load_paths(api.working_directory.handler.images, path)
 
 
-def _load_paths(paths: Iterable[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str = None) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
         paths: List of paths to load.
-        focused_path: The path to display.
+        focused_path: The path to display if defined.
     """
     paths = [os.path.abspath(path) for path in paths]
-    focused_path = os.path.abspath(focused_path)
     if api.settings.sort.shuffle.value:
         random.shuffle(paths)
+    else:
+        paths = api.settings.sort.image_order.sort(paths)
+    focused_path = os.path.abspath(focused_path) if focused_path else paths[0]
     previous = current()
     _set_paths(paths)
     index = (

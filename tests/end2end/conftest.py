@@ -166,6 +166,35 @@ def start_vector_graphic(svg):
     start([svg])
 
 
+@bdd.given("I open images from multiple directories")
+def start_multiple_directories(tmp_path):
+    dir1 = tmp_path / "dir1"
+    dir1.mkdir()
+    dir2 = tmp_path / "dir2"
+    dir2.mkdir()
+    dir3 = tmp_path / "dir3"
+    dir3.mkdir()
+
+    paths = []
+
+    for i in range(1, 4):
+        path = str(dir1 / f"image_dir1_{i}.png")
+        create_image(path)
+        paths.append(path)
+
+    for i in range(1, 3):
+        path = str(dir2 / f"also_image_dir2_{i}.png")
+        create_image(path)
+        paths.append(path)
+
+    for i in range(1, 5):
+        path = str(dir3 / f"more_image_dir3_{i}.png")
+        create_image(path)
+        paths.append(path)
+
+    return start(paths)
+
+
 @bdd.given("I capture output", target_fixture="output")
 def capture_output(capsys):
     return Output(capsys)

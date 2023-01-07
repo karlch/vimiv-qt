@@ -14,7 +14,7 @@ import abc
 import contextlib
 import enum
 import os
-from typing import Any, Dict, ItemsView, List, Callable
+from typing import Any, Dict, ItemsView, List, Callable, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
@@ -345,17 +345,26 @@ class OrderSetting(Setting):
             raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
         return value
 
-    def sort(self, values: List[str]) -> List[str]:
+    def sort(self, values: Iterable[str]) -> List[str]:
         """Sort values according to the current ordering."""
-        ordering = self.order_types[self.value]
-        if sort.ignore_case.value and self.value in self.STR_ORDER_TYPES:
-            return sorted(
-                values, key=lambda s: ordering(s.lower()), reverse=sort.reverse.value
-            )
+        ordering = self._get_ordering()
         return sorted(values, key=ordering, reverse=sort.reverse.value)
 
     def suggestions(self) -> List[str]:
         return list(self.order_types)
+
+    def _get_ordering(self) -> Callable[..., Any]:
+        """Retrieve current ordering function.
+
+        Respects the sort.ignore_case setting and applies os.path.basename to
+        string-like orderings.
+        """
+        ordering = self.order_types[self.value]
+        if self.value not in self.STR_ORDER_TYPES:
+            return ordering
+        if sort.ignore_case.value:
+            return lambda s: ordering(os.path.basename(s).lower())
+        return lambda s: ordering(os.path.basename(s))
 
     def __str__(self) -> str:
         return "Order"

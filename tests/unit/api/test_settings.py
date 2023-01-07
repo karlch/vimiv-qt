@@ -203,3 +203,10 @@ def test_order_setting_sort_ignore_case(monkeypatch, ignore_case):
     sorted_values = o.sort(values)
 
     assert sorted_values == expected_values
+
+
+def test_order_setting_sort_basename():
+    o = settings.OrderSetting("order", "alphabetical")
+    values = ["a/c.j", "c/b.j", "c/a.j"]
+    sorted_values = o.sort(values)
+    assert sorted_values == ["c/a.j", "c/b.j", "a/c.j"]

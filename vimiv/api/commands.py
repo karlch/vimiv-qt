@@ -203,11 +203,11 @@ class _CommandArguments(argparse.ArgumentParser):
         raise CommandInfo(self.description)
 
     def parse_args(self, args: typing.List[str]) -> argparse.Namespace:  # type: ignore
-        """Override parse_args to sort and flatten paths list in addition."""
+        """Override parse_args to flatten paths list in addition."""
         parsed_args = super().parse_args(args)
         with contextlib.suppress(AttributeError):
             parsed_args.paths = [
-                os.path.abspath(path) for path in sorted(flatten(parsed_args.paths))
+                os.path.abspath(path) for path in flatten(parsed_args.paths)
             ]
         return parsed_args
 
