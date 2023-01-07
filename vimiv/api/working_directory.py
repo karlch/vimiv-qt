@@ -229,7 +229,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         return self._order_paths(*files.supported(paths))
 
     @slot
-    def _reorder_directory(self):
+    def _reorder_directory(self) -> None:
         """Reorder current files / directories."""
         _logger.debug("Reloading working directory")
         self._emit_changes(*self._order_paths(self._images, self._directories))
