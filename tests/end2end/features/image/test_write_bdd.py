@@ -16,7 +16,6 @@ bdd.scenarios("write.feature")
 
 
 @bdd.when(bdd.parsers.parse("I write the image to {name}"))
-@bdd.when("I write the image to <name>")
 def write_image(handler, name):
     handler.write_pixmap(
         handler._edit_handler.pixmap,

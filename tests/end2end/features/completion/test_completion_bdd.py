@@ -36,7 +36,6 @@ def check_no_completion_selected(completionwidget):
 
 
 @bdd.then(bdd.parsers.parse("a possible completion should contain {text}"))
-@bdd.then("a possible completion should contain <text>")
 def check_available_completion_text(completiondata, text):
     completion_text = "\n".join(" ".join(row) for row in completiondata)
     assert text in completion_text

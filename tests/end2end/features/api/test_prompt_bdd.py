@@ -12,13 +12,16 @@ from vimiv import api
 bdd.scenarios("prompt.feature")
 
 
-@bdd.given("I ask a question and answer with <key>", target_fixture="prompt_response")
+@bdd.given(
+    bdd.parsers.parse("I ask a question and answer with {key}"),
+    target_fixture="prompt_response",
+)
 def answer_question(answer_prompt, key):
     answer_prompt(key)
     return api.prompt.ask_question(title="end2end-question", body="Hello there?")
 
 
-@bdd.then(bdd.parsers.parse("I expect <answer> as answer"))
+@bdd.then(bdd.parsers.parse("I expect {answer} as answer"))
 def check_prompt(prompt_response, answer):
     answer = answer.lower()
     if answer in ("true", "yes", "1"):
