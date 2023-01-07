@@ -35,7 +35,7 @@ def set_command(name: str, value: List[str]):
         # Toggle boolean settings
         if name.endswith("!"):
             operation = "toggling"
-            setting.toggle()
+            setting.toggle()  # type: ignore  # We catch the AttributeError later
         # Set default
         elif not strvalue:
             operation = "resetting"

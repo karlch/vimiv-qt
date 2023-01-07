@@ -247,11 +247,7 @@ def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> List[str]:
         Qt.MetaModifier: "<meta>",
     }
     modifiers = event.modifiers()
-    return [
-        mod_name
-        for mask, mod_name in modmask2str.items()
-        if modifiers & mask  # type: ignore
-    ]
+    return [mod_name for mask, mod_name in modmask2str.items() if modifiers & mask]
 
 
 def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
@@ -289,7 +285,7 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
         text = special_keys[event.key()]  # type: ignore
-        if event.modifiers() & Qt.ShiftModifier:  # type: ignore
+        if event.modifiers() & Qt.ShiftModifier:
             return "<shift>", text
         return (text,)
     if event.key() in separator_keys:  # Required as configparser crashes otherwise
