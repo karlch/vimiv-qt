@@ -9,7 +9,7 @@
 from vimiv import qt
 
 
-if qt.WRAPPER == qt.WRAPPERS.PyQt5:
+if qt.USE_PYQT5:
     from PyQt5.QtWidgets import *
-if qt.WRAPPER == qt.WRAPPERS.PyQt6:
+if qt.USE_PYQT6:
     from PyQt6.QtWidgets import *
