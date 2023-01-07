@@ -326,8 +326,8 @@ class OrderSetting(Setting):
         "alphabetical-inverse": (str, True),
         "natural": (natural_sort, False),
         "natural-inverse": (natural_sort, True),
-        "case-insensitive": (lambda s: s.lower(), False),
-        "case-insensitive-inverse": (lambda s: s.lower(), True),
+        "case-insensitive": (str.lower, False),
+        "case-insensitive-inverse": (str.lower, True),
         "recently-modified-first": (os.path.getmtime, False),
         "recently-modified-last": (os.path.getmtime, True),
     }
