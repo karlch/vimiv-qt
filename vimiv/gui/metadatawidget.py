@@ -19,9 +19,8 @@ from vimiv.config import styles
 _logger = utils.log.module_logger(__name__)
 
 
-# TODO: find good solution for no-exif case
-# TODO: detect if handler for formatted metadata present
-# if len(exif._registry[exif.Methods.get_formatted_metadata]) > 0:
+# TODO: conditional fails as this file is imported before plugins are loaded
+# if exif.has_get_formatted_metadata() or exif.has_get_raw_metadata():
 if True:
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.

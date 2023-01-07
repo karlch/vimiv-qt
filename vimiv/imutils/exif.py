@@ -28,6 +28,7 @@ ExifDictT = Dict[Any, Tuple[str, str]]
 
 class Methods(str, Enum):
     """Represents all possible function clients can implement."""
+
     # TODO: From 3.11 on use StrEnum and auto()
     copy_metadata = "copy_metadata"
     get_date_time = "get_date_time"
@@ -37,7 +38,6 @@ class Methods(str, Enum):
 
 
 class _MetadataRegistry(dict):
-
     def __init__(self):
         super().__init__()
         _logger.debug("Initializing metadata registry")
@@ -54,8 +54,10 @@ class _MetadataRegistry(dict):
         """Registers a func for a specific method."""
 
         if method == Methods.get_date_time:
-            if self[method] is not None:
-                _logger.warning(f"Key {Methods.get_date_time} has already been set. Overwriting old implementation with new one.")
+            if self[method]:
+                _logger.warning(
+                    f"Key {Methods.get_date_time} has already been set. Overwriting old implementation with new one."
+                )
             self[method] = func
         else:
             self[method].append(func)
@@ -64,6 +66,31 @@ class _MetadataRegistry(dict):
 
 
 _registry = _MetadataRegistry()
+
+
+def has_copy_metadata() -> bool:
+    """Return True iff MetadataHandler supports `copy_metadata`."""
+    return bool(_registry[Methods.copy_metadata])
+
+
+def has_get_date_time() -> bool:
+    """Return True iff MetadataHandler supports `get_date_time`."""
+    return bool(_registry[Methods.get_date_time])
+
+
+def has_get_raw_metadata() -> bool:
+    """Return True iff MetadataHandler supports `get_raw_metadata`."""
+    return bool(_registry[Methods.get_raw_metadata])
+
+
+def has_get_formatted_metadata() -> bool:
+    """Return True iff MetadataHandler supports `get_formatted_metadata`."""
+    return bool(_registry[Methods.get_formatted_metadata])
+
+
+def has_get_keys() -> bool:
+    """Return True iff MetadataHandler supports `get_keys`."""
+    return bool(_registry[Methods.get_keys])
 
 
 class MetadataHandler:
@@ -80,7 +107,7 @@ class MetadataHandler:
             reset_orientation: If true, reset the exif orientation tag to normal.
         """
 
-        if len(_registry[Methods.copy_metadata]) == 0:
+        if not has_copy_metadata():
             MetadataHandler.raise_exception()
 
         for f in _registry[Methods.copy_metadata]:
@@ -89,7 +116,7 @@ class MetadataHandler:
     def get_date_time(self) -> str:
         """Get exif creation date and time as formatted string."""
 
-        if _registry[Methods.get_date_time] is None:
+        if not has_get_date_time():
             MetadataHandler.raise_exception()
 
         return _registry[Methods.get_date_time](self.path)
@@ -97,7 +124,7 @@ class MetadataHandler:
     def get_raw_metadata(self, desired_keys: Sequence[str]) -> ExifDictT:
         """Get a dictionary of metadata values."""
 
-        if len(_registry[Methods.get_raw_metadata]) == 0:
+        if not has_get_raw_metadata():
             MetadataHandler.raise_exception()
 
         out: ExifDictT = {}
@@ -111,7 +138,7 @@ class MetadataHandler:
     def get_formatted_metadata(self, desired_keys: Sequence[str]) -> ExifDictT:
         """Get a dictionary of formatted metadata values."""
 
-        if len(_registry[Methods.get_formatted_metadata]) == 0:
+        if not has_get_formatted_metadata():
             MetadataHandler.raise_exception()
 
         out: ExifDictT = {}
@@ -125,7 +152,7 @@ class MetadataHandler:
     def get_keys(self) -> Iterable[str]:
         """Retrieve the name of all exif keys available."""
 
-        if len(_registry[Methods.get_keys]) == 0:
+        if not has_get_keys():
             MetadataHandler.raise_exception()
 
         out: Iterable[str] = iter([])
@@ -148,7 +175,6 @@ class UnsupportedMetadataOperation(NotImplementedError):
 
 
 def register(method: Methods) -> Callable[[customtypes.FuncT], customtypes.FuncT]:
-
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
         _registry.register(method, func)
         return func
