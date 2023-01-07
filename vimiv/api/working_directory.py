@@ -109,8 +109,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories: List[str] = []
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
-        settings.image_order.changed.connect(self._reorder_directory)
-        settings.directory_order.changed.connect(self._reorder_directory)
+        settings.sort.image_order.changed.connect(self._reorder_directory)
+        settings.sort.directory_order.changed.connect(self._reorder_directory)
         # TODO Fix upstream and open PR
         self.directoryChanged.connect(self._reload_directory)  # type: ignore
         self.fileChanged.connect(self._on_file_changed)  # type: ignore
@@ -237,7 +237,10 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     @staticmethod
     def _order_paths(images: List[str], dirs: List[str]) -> Tuple[List[str], List[str]]:
         """Order images and directories according to the current ordering setting."""
-        return settings.image_order.sort(images), settings.directory_order.sort(dirs)
+        return (
+            settings.sort.image_order.sort(images),
+            settings.sort.directory_order.sort(dirs),
+        )
 
 
 handler = cast(WorkingDirectoryHandler, None)

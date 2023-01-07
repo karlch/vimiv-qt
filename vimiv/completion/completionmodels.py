@@ -117,8 +117,8 @@ class PathModel(api.completion.BaseModel):
         self.set_data(
             self._create_row(os.path.join(directory, os.path.basename(path)))
             for path in (
-                api.settings.image_order.sort(images)
-                + api.settings.directory_order.sort(directories)
+                api.settings.sort.image_order.sort(images)
+                + api.settings.sort.directory_order.sort(directories)
             )
         )
 
@@ -201,7 +201,7 @@ class TrashModel(api.completion.BaseModel):
         """Update trash model on enter to include any newly un-/deleted paths."""
         data = []
         paths = files.listdir(trash_manager.files_directory())
-        for path in api.settings.image_order.sort(paths):
+        for path in api.settings.sort.image_order.sort(paths):
             cmd = f":undelete {api.completion.escape(os.path.basename(path))}"
             # Get info and format it neatly
             original, date = trash_manager.trash_info(path)

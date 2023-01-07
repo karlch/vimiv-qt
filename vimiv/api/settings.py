@@ -377,24 +377,6 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
-image_order = OrderSetting(
-    "image_order",
-    "alphabetical",
-    desc="Ordering of images, e.g. in the library",
-    additional_order_types={
-        "smallest-first": (os.path.getsize, False),
-        "largest-first": (os.path.getsize, True),
-    },
-)
-directory_order = OrderSetting(
-    "directory_order",
-    "alphabetical",
-    desc="Ordering of directories, e.g. in the library",
-    additional_order_types={
-        "smallest-first": (lambda d: len(os.listdir(d)), False),
-        "largest-first": (lambda d: len(os.listdir(d)), True),
-    },
-)
 
 
 class command:  # pylint: disable=invalid-name
@@ -583,3 +565,26 @@ class metadata:  # pylint: disable=invalid-name
     )
 
     keysets: Dict[int, str] = dict(enumerate(defaults, start=1))
+
+
+class sort:  # pylint: disable=invalid-name
+    """Namespace for sorting related settings."""
+
+    image_order = OrderSetting(
+        "sort.image_order",
+        "alphabetical",
+        desc="Ordering of images, e.g. in the library",
+        additional_order_types={
+            "smallest-first": (os.path.getsize, False),
+            "largest-first": (os.path.getsize, True),
+        },
+    )
+    directory_order = OrderSetting(
+        "sort.directory_order",
+        "alphabetical",
+        desc="Ordering of directories, e.g. in the library",
+        additional_order_types={
+            "smallest-first": (lambda d: len(os.listdir(d)), False),
+            "largest-first": (lambda d: len(os.listdir(d)), True),
+        },
+    )
