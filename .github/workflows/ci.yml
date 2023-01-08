@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        toxenv: [pyqt515-cov, piexif, lint, packaging, mypy]
+        toxenv: [pyqt515-cov, pyqt515-piexif-cov, lint, packaging, mypy]
       fail-fast: false
     steps:
     - uses: actions/checkout@v3.3.0
@@ -81,9 +81,7 @@ jobs:
       env:
         CI: Github-Actions
     - name: Upload coverage to codecov
-      run: |
-        pip install codecov
-        codecov -X gcov
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.toxenv == 'pyqt515-cov'
+      if: "endsWith(matrix.toxenv, '-cov')"
+      uses: codecov/codecov-action@v3
+      with:
+        name: "${{ matrix.toxenv }}"
