@@ -43,3 +43,9 @@ Feature: Startup vimiv with various flags
         And I open 5 images with -i
         # Pipe takes preference over regular filelist with -i
         Then the filelist should contain 3 images
+
+    Scenario: Start with an invalid file
+        Given I open a text file
+        Then no crash should happen
+        And the mode should be library
+        And the filelist should contain 0 images

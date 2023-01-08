@@ -202,6 +202,13 @@ def start_multiple_directories(tmp_path):
     return start(paths)
 
 
+@bdd.given("I open a text file")
+def start_invalid_path(tmp_path):
+    txtfile = tmp_path / "file.txt"
+    txtfile.write_text("This is a text file\n")
+    start([str(txtfile)])
+
+
 @bdd.given("I capture output", target_fixture="output")
 def capture_output(capsys):
     return Output(capsys)
