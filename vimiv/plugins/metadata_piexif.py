@@ -14,6 +14,7 @@ Properties:
 """
 
 import contextlib
+import functools
 from pathlib import Path
 from typing import Any, Sequence, Iterable, Optional, Dict
 
@@ -25,6 +26,7 @@ from vimiv.utils import log
 _logger = log.module_logger(__name__)
 
 
+@functools.lru_cache(1)
 def prepare_backend(path: Path) -> Optional[Dict[str, Any]]:
     """Extract all metadata from the image."""
     try:
@@ -78,6 +80,7 @@ def get_date_time(path: Path) -> str:
 
 
 @exif.register(exif.Operations.get_metadata)
+@functools.lru_cache(1)
 def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
     """Get value of all desired keys."""
     metadata = prepare_backend(path)
@@ -126,6 +129,7 @@ def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
 
 
 @exif.register(exif.Operations.get_keys)
+@functools.lru_cache(1)
 def get_keys(path: Path) -> Iterable[str]:
     """Retrieve the key of all metadata values available in the current image."""
     metadata = prepare_backend(path)

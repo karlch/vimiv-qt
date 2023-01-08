@@ -13,6 +13,7 @@ Properties:
 """
 
 import contextlib
+import functools
 import itertools
 from pathlib import Path
 from typing import Any, Sequence, Iterable, Optional
@@ -25,6 +26,7 @@ from vimiv.utils import log, is_hex
 _logger = log.module_logger(__name__)
 
 
+@functools.lru_cache(1)
 def prepare_backend(path: Path) -> Optional[pyexiv2.ImageMetadata]:
     """Load metadata from image."""
     try:
@@ -81,6 +83,7 @@ def get_date_time(path: Path) -> str:
 
 
 @exif.register(exif.Operations.get_metadata)
+@functools.lru_cache(1)
 def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
     """Get value of all desired keys."""
     metadata = prepare_backend(path)
@@ -120,6 +123,7 @@ def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
 
 
 @exif.register(exif.Operations.get_keys)
+@functools.lru_cache(1)
 def get_keys(path: Path) -> Iterable[str]:
     """Retrieve the key of all metadata values available in the current image."""
     metadata = prepare_backend(path)
