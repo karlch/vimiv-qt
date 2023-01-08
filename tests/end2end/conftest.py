@@ -143,6 +143,13 @@ def start_n_images(tmp_path, n_images):
     start_image(tmp_path, n_images=n_images)
 
 
+@bdd.given(
+    bdd.parsers.parse("I open {n_images:d} images without leading zeros in their name")
+)
+def start_n_images_no_zeros(tmp_path, n_images):
+    start_image(tmp_path, n_images=n_images, leading_zeros=False)
+
+
 @bdd.given(bdd.parsers.parse("I open {n_images:d} images with {args}"))
 def start_n_images_with_args(tmp_path, n_images, args):
     start_image(tmp_path, n_images=n_images, args=args.split())
@@ -230,9 +237,9 @@ def start_directory(tmp_path, n_children=0, n_images=0, permission=0o777, args=N
     start([directory] + args)
 
 
-def start_image(tmp_path, n_images=1, size=(300, 300), args=None):
+def start_image(tmp_path, n_images=1, size=(300, 300), args=None, leading_zeros=True):
     """Run vimiv startup using n images as the passed paths."""
-    paths = create_n_images(tmp_path, n_images, size=size)
+    paths = create_n_images(tmp_path, n_images, size=size, leading_zeros=leading_zeros)
     argv = paths if args is None else paths + args
     start(argv)
 
@@ -244,10 +251,17 @@ def start(argv):
     startup.setup_post_app(args)
 
 
-def create_n_images(directory, number, size=(300, 300), imgformat="jpg"):
+def create_n_images(
+    directory, number, size=(300, 300), leading_zeros=True, imgformat="jpg"
+):
     paths = []
     for i in range(1, number + 1):
-        basename = f"image.{imgformat}" if number == 1 else f"image_{i:02d}.{imgformat}"
+        if number == 1:
+            basename = f"image.{imgformat}"
+        elif leading_zeros:
+            basename = f"image_{i:02d}.{imgformat}"
+        else:
+            basename = f"image_{i:d}.{imgformat}"
         path = directory / basename
         create_image(str(path.resolve()), size=size)
         paths.append(path)
