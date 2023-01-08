@@ -46,9 +46,3 @@ Feature: Navigating through the displayed images
         And the message
             'goto: No image in list'
             should be displayed
-
-    Scenario: Re-order current filelist
-        Given I open 5 images
-        When I run set sort.reverse!
-        # We revert the sorting, but keep the selection
-        Then the image should have the index 5

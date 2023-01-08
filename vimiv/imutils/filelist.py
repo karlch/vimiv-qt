@@ -170,6 +170,7 @@ class SignalHandler(QObject):
 
         api.signals.load_images.connect(self._on_load_images)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
+        api.settings.sort.shuffle.changed.connect(self._on_shuffle)
 
     @pyqtSlot(list)
     def _on_load_images(self, paths: List[str]):
@@ -235,6 +236,11 @@ class SignalHandler(QObject):
         else:
             _load_paths(paths, current())
             api.status.update("Image filelist changed")
+
+    @utils.slot
+    def _on_shuffle(self):
+        """Reload paths to force shuffling."""
+        _load_paths(_paths, current())
 
 
 def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
