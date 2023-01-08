@@ -28,14 +28,13 @@ All modes inherit from the common :class:`Mode` base class.
 """
 
 
-import abc
 from typing import cast, Any, Callable, List, Tuple
 
 from vimiv.qt.core import pyqtSignal, QObject
 from vimiv.qt.widgets import QWidget
 
 from vimiv.api import settings
-from vimiv.utils import AbstractQObjectMeta, log
+from vimiv.utils import log
 
 
 _logger = log.module_logger(__name__)
@@ -45,7 +44,7 @@ class InvalidMode(Exception):
     """Exception raised when no valid mode could be found."""
 
 
-class Mode(QObject, metaclass=AbstractQObjectMeta):
+class Mode(QObject):
     """Base class for modes.
 
     Class Attributes:
@@ -164,9 +163,9 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     def current_path(self) -> str:
         return self.widget.current()
 
-    @abc.abstractmethod
     def _set_last(self, mode: "Mode") -> None:
         """Delegate storing the last mode to the child widget."""
+        raise NotImplemented("Must be implemented by the child widget")
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mode):

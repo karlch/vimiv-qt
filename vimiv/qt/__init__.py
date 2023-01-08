@@ -14,6 +14,7 @@ import os
 class WRAPPERS(enum.Enum):
     PyQt5 = "PyQt5"
     PyQt6 = "PyQt6"
+    PySide6 = "PySide6"
 
 
 _WRAPPER_NAMES = [wrapper.value for wrapper in WRAPPERS]
@@ -62,3 +63,4 @@ WRAPPER = _select_wrapper()
 
 USE_PYQT5 = WRAPPER == WRAPPERS.PyQt5
 USE_PYQT6 = WRAPPER == WRAPPERS.PyQt6
+USE_PYSIDE6 = WRAPPER == WRAPPERS.PySide6

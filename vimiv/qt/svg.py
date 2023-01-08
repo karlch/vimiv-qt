@@ -7,16 +7,12 @@
 # pylint: disable=missing-module-docstring,wildcard-import,unused-wildcard-import
 
 from vimiv import qt
+from vimiv.utils import lazy
 
-
+# Lazy import the module that implements QSvgWidget
 if qt.USE_PYQT5:
-    from PyQt5.QtCore import *
+    QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 elif qt.USE_PYQT6:
-    from PyQt6.QtCore import *
+    QtSvg = lazy.import_module("PyQt6.QtSvgWidgets", optional=True)
 elif qt.USE_PYSIDE6:
-    from PySide6.QtCore import *
-    from PySide6.QtCore import __version__ as PYQT_VERSION_STR
-
-    pyqtSignal = Signal
-    pyqtSlot = Slot
-    QT_VERSION_STR = qVersion()
+    QtSvg = lazy.import_module("PySide6.QtSvgWidgets", optional=True)

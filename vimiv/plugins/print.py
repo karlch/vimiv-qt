@@ -9,7 +9,7 @@
 import abc
 from typing import Optional, Any, Union
 
-from vimiv.qt.core import QObject, Qt, QSize, pyqtBoundSignal
+from vimiv.qt.core import QObject, Qt, QSize
 from vimiv.qt.gui import QPixmap, QMovie, QPainter
 from vimiv.qt.printsupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 from vimiv.qt.svg import QtSvg
@@ -66,7 +66,7 @@ class PrintHandler(QObject):
     def handle_print(
         widget: "PrintWidget",
         dialog: Union[QPrintPreviewDialog, QPrintDialog],
-        *signals: pyqtBoundSignal,
+        *signals,
         auto_apply_orientation: bool = False,
     ) -> None:
         """Handle a print request of widget for a specific dialog."""

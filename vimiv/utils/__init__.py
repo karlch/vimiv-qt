@@ -6,21 +6,12 @@
 
 """Various utility functions."""
 
-import abc
 import functools
 import inspect
 import re
 import typing
 
-from vimiv.qt.core import (
-    Qt,
-    pyqtSlot,
-    QRunnable,
-    QThreadPool,
-    QProcess,
-    QTimer,
-    QObject,
-)
+from vimiv.qt.core import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
 from vimiv.qt.gui import QPixmap, QColor, QPainter
 
 from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
@@ -459,10 +450,6 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
         if not isinstance(elem, type(None)):
             return elem
     raise TypeError(f"{typ} is not of Optional type")
-
-
-class AbstractQObjectMeta(type(QObject), abc.ABCMeta):
-    """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
 def throttled(*, delay_ms: int):

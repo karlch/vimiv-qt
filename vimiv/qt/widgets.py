@@ -13,3 +13,5 @@ if qt.USE_PYQT5:
     from PyQt5.QtWidgets import *
 if qt.USE_PYQT6:
     from PyQt6.QtWidgets import *
+elif qt.USE_PYSIDE6:
+    from PySide6.QtWidgets import *

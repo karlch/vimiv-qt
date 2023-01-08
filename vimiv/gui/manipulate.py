@@ -12,7 +12,7 @@ from vimiv.qt.core import Qt, QSize, QPoint
 from vimiv.qt.gui import QPixmap
 from vimiv.qt.widgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils, imutils, qt
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
 from vimiv.gui import eventhandler
@@ -173,12 +173,21 @@ class ManipulateImage(QLabel):
         """Rescale pixmap and geometry to fit."""
         assert self._pixmap is not None, "No pixmap to rescale"
         # Scale pixmap to fit into label
-        pixmap = self._pixmap.scaled(
-            self._max_size.width(),
-            self._max_size.height(),
-            aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
-            transformMode=Qt.TransformationMode.SmoothTransformation,
-        )
+        # Workaround for different keyword naming in PySide6
+        if qt.USE_PYSIDE6:
+            pixmap = self._pixmap.scaled(
+                self._max_size.width(),
+                self._max_size.height(),
+                aspectMode=Qt.AspectRatioMode.KeepAspectRatio,
+                mode=Qt.TransformationMode.SmoothTransformation,
+            )
+        else:
+            pixmap = self._pixmap.scaled(
+                self._max_size.width(),
+                self._max_size.height(),
+                aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+                transformMode=Qt.TransformationMode.SmoothTransformation,
+            )
         self.setPixmap(pixmap)
         # Update geometry to only show pixmap
         x = self._bottom_right.x() - pixmap.width()
