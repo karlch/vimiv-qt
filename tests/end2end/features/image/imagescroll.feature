@@ -18,3 +18,13 @@ Feature: Scroll the current image
         And I run scroll-edge left
         And I resize the image
         Then the image left-edge should be 0
+
+    Scenario Outline: Scroll image
+        When I run 10zoom in
+        And I run scroll <direction>
+        Then the image <position> should not be <value>
+
+        Examples:
+            | direction | position   | value |
+            | right     | left-edge  | 0     |
+            | down      | top-edge   | 0     |
