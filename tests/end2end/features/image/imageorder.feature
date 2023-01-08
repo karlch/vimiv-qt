@@ -2,7 +2,7 @@ Feature: Ordering the image filelist.
 
     Scenario: Re-order current filelist
         Given I open 12 images without leading zeros in their name
-        # When I run set sort.image_order natural
+        When I run set sort.image_order natural
         Then the image should have the index 01
         And the image number 1 should be image_1.jpg
         And the image number 2 should be image_2.jpg

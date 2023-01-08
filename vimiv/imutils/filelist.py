@@ -240,7 +240,8 @@ class SignalHandler(QObject):
     @utils.slot
     def _on_shuffle(self):
         """Reload paths to force shuffling."""
-        _load_paths(_paths, current())
+        if _paths:
+            _load_paths(_paths, current())
 
 
 def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
