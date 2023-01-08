@@ -342,9 +342,9 @@ def check_row_number(library, row):
     assert library.row() + 1 == int(row)
 
 
-@bdd.then(bdd.parsers.parse("the image should have the index {index}"))
+@bdd.then(bdd.parsers.parse("the image should have the index {index:d}"))
 def check_image_index(index):
-    assert filelist.get_index() == index
+    assert int(filelist.get_index()) == index
 
 
 @bdd.given("I enter thumbnail mode")
