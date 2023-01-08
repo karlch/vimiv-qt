@@ -303,8 +303,11 @@ class Manipulations(list):
         # Convert original pixmap to python bytes
         if qt.USE_PYSIDE6:
             data = bits.tobytes()
-        else:
+        elif qt.USE_PYQT6:
             bits.setsize(image.sizeInBytes())
+            data = bits.asstring()
+        else:
+            bits.setsize(image.byteCount())
             data = bits.asstring()
         # Apply changes on the byte-level
         for group in groups:
