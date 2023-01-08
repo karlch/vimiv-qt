@@ -9,7 +9,7 @@
 import contextlib
 import math
 import os
-from typing import List, Optional, Dict, NamedTuple
+from typing import List, Optional, Dict, NamedTuple, cast
 
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
@@ -358,6 +358,9 @@ class Library(
             self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
         elif steps_y > 0:
             self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
+
+    def model(self) -> "LibraryModel":
+        return cast(LibraryModel, super().model())
 
 
 class LibraryModel(QStandardItemModel):

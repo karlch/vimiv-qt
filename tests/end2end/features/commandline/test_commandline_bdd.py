@@ -23,7 +23,7 @@ def history(commandline):
     return commandline._history
 
 
-@bdd.when("I run help <topic>")
+@bdd.when(bdd.parsers.parse("I run help {topic}"))
 def run_help(topic):
     runners.run(f"help {topic}", mode=api.modes.current())
 
@@ -41,7 +41,6 @@ def check_commandline_closed():
 
 
 @bdd.then(bdd.parsers.parse("the help for '{topic}' should be displayed"))
-@bdd.then("the help for '<topic>' should be displayed")
 def check_help(message_widget, topic):
     if topic == "vimiv":
         assert vimiv.__description__ in message_widget.text()

@@ -226,7 +226,7 @@ class PopUp(QDialog):
     def __init__(self, title: str, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle(title)
-        self.setWindowFlags(self.windowFlags() | Qt.Tool)  # type: ignore
+        self.setWindowFlags(self.windowFlags() | Qt.Tool)
         styles.apply(self)
 
     def reject(self):
