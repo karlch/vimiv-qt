@@ -35,6 +35,8 @@ jobs:
           - python: "3.11"
             toxenv: pyqt515-piexif-cov
           - python: "3.11"
+            toxenv: pyqt6-cov
+          - python: "3.11"
             toxenv: lint
           - python: "3.11"
             toxenv: packaging
