@@ -3,12 +3,40 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  py37:
+  ci:
 
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        toxenv: [pyqt511, pyqt512, pyqt513]
+        include:
+          - python: "3.7"
+            toxenv: pyqt511
+          - python: "3.7"
+            toxenv: pyqt512
+          - python: "3.7"
+            toxenv: pyqt513
+          - python: "3.8"
+            toxenv: pyqt513
+          - python: "3.8"
+            toxenv: pyqt514
+          - python: "3.8"
+            toxenv: pyqt515
+          - python: "3.9"
+            toxenv: pyqt513
+          - python: "3.9"
+            toxenv: pyqt514
+          - python: "3.9"
+            toxenv: pyqt515
+          - python: "3.10"
+            toxenv: pyqt515-cov
+          - python: "3.10"
+            toxenv: pyqt515-piexif-cov
+          - python: "3.10"
+            toxenv: lint
+          - python: "3.10"
+            toxenv: packaging
+          - python: "3.10"
+            toxenv: mypy
       fail-fast: false
 
     steps:
@@ -16,60 +44,7 @@ jobs:
     - name: Set up ${{ matrix.python-version }}
       uses: actions/setup-python@v4.4.0
       with:
-        python-version: 3.7
-    - name: Install dependencies
-      run: |
-        sudo apt-get install libxkbcommon-x11-0
-        python -m pip install --upgrade pip
-        pip install -r misc/requirements/requirements_tox.txt
-      env:
-        PY: ${{ matrix.python-version }}
-    - name: Test with tox
-      run: |
-        tox -e ${{ matrix.toxenv }}
-      env:
-        CI: Github-Actions
-
-  py38-39:
-
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9]
-        toxenv: [pyqt513, pyqt514, pyqt515]
-      fail-fast: false
-    steps:
-    - uses: actions/checkout@v3.3.0
-    - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.4.0
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
-        python -m pip install --upgrade pip
-        pip install -r misc/requirements/requirements_tox.txt
-      env:
-        PYVERSION: ${{ matrix.python-version }}
-    - name: Test with tox
-      run: |
-        tox -e ${{ matrix.toxenv }}
-      env:
-        CI: Github-Actions
-
-  py310:
-
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        toxenv: [pyqt515-cov, pyqt515-piexif-cov, lint, packaging, mypy]
-      fail-fast: false
-    steps:
-    - uses: actions/checkout@v3.3.0
-    - name: Set up python 3.10
-      uses: actions/setup-python@v4.4.0
-      with:
-        python-version: "3.10"
+        python-version: "${{ matrix.python }}"
     - name: Install dependencies
       run: |
         sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
@@ -77,7 +52,7 @@ jobs:
         pip install -r misc/requirements/requirements_tox.txt
     - name: Test with tox
       run: |
-        tox -e ${{ matrix.toxenv }}
+        tox -e "${{ matrix.toxenv }}"
       env:
         CI: Github-Actions
     - name: Upload coverage to codecov
