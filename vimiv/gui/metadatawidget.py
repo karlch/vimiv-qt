@@ -13,14 +13,14 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
 
 from vimiv import api, utils
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 from vimiv.config import styles
 
 _logger = utils.log.module_logger(__name__)
 
 
 # TODO: conditional fails as this file is imported before plugins are loaded
-# if exif.has_get_metadata():
+# if metadata.has_get_metadata():
 if True:
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
@@ -59,7 +59,7 @@ if True:
             self._mainwindow_width = 0
             self._path = ""
             self._current_set = ""
-            self._handler: Optional[exif.MetadataHandler] = None
+            self._handler: Optional[metadata.MetadataHandler] = None
 
             api.signals.new_image_opened.connect(self._on_image_opened)
             api.settings.metadata.current_keyset.changed.connect(self._update_text)
@@ -67,10 +67,10 @@ if True:
             self.hide()
 
         @property
-        def handler(self) -> exif.MetadataHandler:
+        def handler(self) -> metadata.MetadataHandler:
             """Return the MetadataHandler for the current path."""
             if self._handler is None:
-                self._handler = exif.MetadataHandler(self._path)
+                self._handler = metadata.MetadataHandler(self._path)
             return self._handler
 
         @api.keybindings.register("i", "metadata", mode=api.modes.IMAGE)

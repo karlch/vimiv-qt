@@ -172,7 +172,7 @@ def write_pixmap(pixmap, path, original_path):
     Args:
         pixmap: The QPixmap to write.
         path: Path to write the pixmap to.
-        original_path: Original path of the opened pixmap to retrieve exif information.
+        original_path: Original path of the opened pixmap to retrieve metadata information.
     """
     try:
         _can_write(pixmap, path)
@@ -210,10 +210,10 @@ def _write(pixmap, path, original_path):
     handle, filename = tempfile.mkstemp(suffix=ext)
     os.close(handle)
     pixmap.save(filename)
-    # Copy exif info from original file to new file
+    # Copy metadata info from original file to new file
     try:
-        imutils.exif.MetadataHandler(original_path).copy_metadata(filename)
-    except imutils.exif.UnsupportedMetadataOperation:
+        imutils.metadata.MetadataHandler(original_path).copy_metadata(filename)
+    except imutils.metadata.UnsupportedMetadataOperation:
         pass
     shutil.move(filename, path)
     # Check if valid image was created

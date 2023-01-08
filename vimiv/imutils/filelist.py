@@ -141,8 +141,8 @@ def exif_date_time() -> str:
     be used as basis to work with.
     """
     try:
-        return imutils.exif.MetadataHandler(current()).get_date_time()
-    except imutils.exif.UnsupportedMetadataOperation:
+        return imutils.metadata.MetadataHandler(current()).get_date_time()
+    except imutils.metadata.UnsupportedMetadataOperation:
         return ""
 
 

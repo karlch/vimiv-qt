@@ -20,7 +20,7 @@ from typing import Any, Sequence, Iterable, Optional
 
 import pyexiv2
 
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 from vimiv.utils import log, is_hex
 
 _logger = log.module_logger(__name__)
@@ -38,7 +38,7 @@ def prepare_backend(path: Path) -> Optional[pyexiv2.ImageMetadata]:
         return None
 
 
-@exif.register(exif.Operations.copy_metadata)
+@metadata.register(metadata.Operations.copy_metadata)
 def copy_metadata(path: Path, dest: str, reset_orientation: bool = True) -> bool:
     """Copy metadata from current image to dest."""
     metadata = prepare_backend(path)
@@ -48,7 +48,7 @@ def copy_metadata(path: Path, dest: str, reset_orientation: bool = True) -> bool
 
     if reset_orientation:
         with contextlib.suppress(KeyError):
-            metadata["Exif.Image.Orientation"] = exif.ExifOrientation.Normal
+            metadata["Exif.Image.Orientation"] = metadata.ExifOrientation.Normal
 
     try:
         dest_image = pyexiv2.ImageMetadata(dest)
@@ -69,7 +69,7 @@ def copy_metadata(path: Path, dest: str, reset_orientation: bool = True) -> bool
     return False
 
 
-@exif.register(exif.Operations.get_date_time)
+@metadata.register(metadata.Operations.get_date_time)
 def get_date_time(path: Path) -> str:
     """Get creation date and time as formatted string."""
     metadata = prepare_backend(path)
@@ -82,9 +82,9 @@ def get_date_time(path: Path) -> str:
     return ""
 
 
-@exif.register(exif.Operations.get_metadata)
+@metadata.register(metadata.Operations.get_metadata)
 @functools.lru_cache(1)
-def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
+def get_metadata(path: Path, desired_keys: Sequence[str]) -> metadata.MetadataDictT:
     """Get value of all desired keys."""
     metadata = prepare_backend(path)
     out = {}
@@ -122,7 +122,7 @@ def get_metadata(path: Path, desired_keys: Sequence[str]) -> exif.MetadataDictT:
     return out
 
 
-@exif.register(exif.Operations.get_keys)
+@metadata.register(metadata.Operations.get_keys)
 @functools.lru_cache(1)
 def get_keys(path: Path) -> Iterable[str]:
     """Retrieve the key of all metadata values available in the current image."""
