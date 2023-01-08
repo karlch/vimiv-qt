@@ -76,6 +76,12 @@ Added:
   idea!
 * The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
   before deleting. Thanks `@timsofteng`_ for the idea!
+* Support for different sorting options for images and directories via the
+  ``sort.image_order``, ``sort.directory_order``, ``sort.reverse`` and
+  ``sort.ignore_case`` settings. Please refer to the :ref:`documentation <sorting>` for
+  further details. Thanks to `@kAldown`_ for the initial implementation, `@jcjgraf`_ for
+  taking over, and many more joining in the discussions and reminding us why this
+  feature is important!
 
 Changed:
 ^^^^^^^^
@@ -91,6 +97,7 @@ Changed:
 * Support for Qt versions 5.9 and 5.10 was officially dropped. These are no longer
   supported by our testing framework, and 5.11 is out since July 2018. Code will likely
   still work with these versions, but as it is no longer tested, there is no guarantee.
+* The ``shuffle`` setting was moved into the ``sort`` group.
 
 Fixed:
 ^^^^^^
@@ -514,3 +521,4 @@ Initial release of the Qt version.
 .. _@szsdk: https://github.com/szsdk
 .. _@ArtemSmaznov: https://github.com/ArtemSmaznov
 .. _@timsofteng: https://github.com/timsofteng
+.. _@kAldown: https://github.com/kaldown
