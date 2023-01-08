@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3.3.0
+    - uses: actions/cache@v3
+      with:
+        path: |
+          .tox
+          ~/.cache/pip
+        key: "${{ matrix.toxenv }}_${{ hashFiles('misc/requirements/requirements*.txt') }}_${{ hashFiles('scripts/src2rst.py') }}"
     - name: Set up python
       uses: actions/setup-python@v4.4.0
       with:
