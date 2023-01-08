@@ -165,7 +165,7 @@ class Mode(QObject):
 
     def _set_last(self, mode: "Mode") -> None:
         """Delegate storing the last mode to the child widget."""
-        raise NotImplemented("Must be implemented by the child widget")
+        raise NotImplementedError("Must be implemented by the child widget")
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mode):

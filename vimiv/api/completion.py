@@ -166,6 +166,8 @@ class FilterProxyModel(QSortFilterProxyModel):
         self._set_regex(regex)
 
     def _set_regex(self, regex: str) -> None:
+        """Set filter regex according to Qt wrapper version."""
+        # TODO remove once we drop support for PyQt < 5.15
         if qt.USE_PYQT5:
             self.setFilterRegExp(regex)
         else:

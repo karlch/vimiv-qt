@@ -4,7 +4,7 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-# pylint: disable=missing-module-docstring,wildcard-import,unused-wildcard-import
+# pylint: disable=missing-module-docstring
 
 from vimiv import qt
 from vimiv.utils import lazy

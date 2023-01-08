@@ -14,6 +14,7 @@ if qt.USE_PYQT5:
 elif qt.USE_PYQT6:
     from PyQt6.QtCore import *
 elif qt.USE_PYSIDE6:
+    # pylint: disable=no-name-in-module,undefined-variable
     from PySide6.QtCore import *
     from PySide6.QtCore import __version__ as PYQT_VERSION_STR
 

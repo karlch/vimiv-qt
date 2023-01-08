@@ -12,6 +12,12 @@ import os
 
 
 class WRAPPERS(enum.Enum):
+    """List of supported python Qt wrappers.
+
+    Order matters as this is the order in which we check for them being installed if the
+    wrapper is not defined by the user explicitly.
+    """
+
     PyQt5 = "PyQt5"
     PyQt6 = "PyQt6"
     PySide6 = "PySide6"
