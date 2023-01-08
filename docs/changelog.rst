@@ -77,11 +77,11 @@ Added:
 * The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
   before deleting. Thanks `@timsofteng`_ for the idea!
 * Support for different sorting options for images and directories via the
-  ``image_order`` and ``directory_order`` settings. Please refer to the completion
-  options shown when entering ``:set image_order`` and ``:set directory_order`` for
-  the available options. Thanks to `@kAldown`_ for the initial implementation,
-  `@jcjgraf`_ for taking over, and many more joining in the discussions and reminding us
-  why this feature is important!
+  ``sort.image_order``, ``sort.directory_order``, ``sort.reverse`` and
+  ``sort.ignore_case`` settings. Please refer to the :ref:`documentation <sorting>` for
+  further details. Thanks to `@kAldown`_ for the initial implementation, `@jcjgraf`_ for
+  taking over, and many more joining in the discussions and reminding us why this
+  feature is important!
 
 Changed:
 ^^^^^^^^
