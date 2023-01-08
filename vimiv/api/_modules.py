@@ -175,7 +175,7 @@ def rename(
     [--overwrite] [--skip-image-check]``
 
     Example::
-        ``:rename * identifier`` would rename all images in the filelist to
+        ``:rename %f identifier`` would rename all images in the filelist to
         ``identifier_001``, ``identifier_002``, ..., ``identifier_NNN``.
 
     positional arguments:
@@ -189,6 +189,7 @@ def rename(
         * ``--skip-image-check``: Do not check if all renamed paths are images.
     """
     paths = [path for path in paths if files.is_image(path) or skip_image_check]
+    paths = api.settings.sort.image_order.sort(paths)
     if not paths:
         raise api.commands.CommandError("No paths to rename")
     marked = []

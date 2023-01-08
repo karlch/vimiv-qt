@@ -87,12 +87,6 @@ def test_listdir_wrapper_returns_abspath(mocker):
     assert files.listdir("directory") == expected
 
 
-def test_listdir_wrapper_sort(mocker):
-    mocker.patch("os.listdir", return_value=["b.txt", "a.txt"])
-    mocker.patch("os.path.abspath", return_value="")
-    assert files.listdir("directory") == ["a.txt", "b.txt"]
-
-
 def test_listdir_wrapper_remove_hidden(mocker):
     mocker.patch("os.listdir", return_value=[".dotfile.txt", "a.txt"])
     mocker.patch("os.path.abspath", return_value="")

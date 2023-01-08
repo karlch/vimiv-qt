@@ -110,7 +110,7 @@ Feature: Using completion.
     Scenario: Using setting completion.
         Given I open any directory
         When I run command --text="set "
-        Then a possible completion should contain set shuffle
+        Then a possible completion should contain set sort.shuffle
         And a possible completion should contain set library.width
 
     Scenario: Do not show hidden setting in completion.
@@ -121,9 +121,9 @@ Feature: Using completion.
 
     Scenario: Using setting option completion.
         Given I open any directory
-        When I run command --text="set shuffle"
-        Then a possible completion should contain set shuffle True
-        And a possible completion should contain set shuffle False
+        When I run command --text="set sort.shuffle"
+        Then a possible completion should contain set sort.shuffle True
+        And a possible completion should contain set sort.shuffle False
 
     Scenario: Update setting completion with newest value
         Given I open any directory

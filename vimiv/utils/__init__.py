@@ -526,3 +526,15 @@ class Throttle(QTimer):
         """Stop all running throttles."""
         for throttle in cls.throttles:
             throttle.stop()
+
+
+def natural_sort(text: str) -> typing.List[typing.Union[str, int]]:
+    """Key function for natural sort.
+
+    Credits to https://stackoverflow.com/a/5967539/5464989
+    """
+
+    def convert(t: str) -> typing.Union[str, int]:
+        return int(t) if t.isdigit() else t
+
+    return [convert(c) for c in re.split(r"(\d+)", text)]

@@ -36,3 +36,29 @@ Note that all settings related to the statusbar content are described in detail 
 own corresponding :ref:`document <statusbar>`.
 
 .. include:: settings_table.rstsrc
+
+.. _sorting:
+
+Sorting
+^^^^^^^
+
+The settings in the ``sort`` group allow changing the ordering of images and
+directories. The ordering principle is defined by the ``sort.image_order`` and
+``sort.directory_order`` settings which both have the following options:
+
+.. table:: Overview of ordering types
+   :widths: 30 70
+
+   ========================= ===========
+   Ordering                  Description
+   ========================= ===========
+   alphabetical              Regular ordering by string basename
+   natural                   Natural ordering by basename, i.e. image2.jpg comes before image11.jpg
+   recently-modified         Ordering by modification time (``mtime``)
+   size                      Ordering by filesize, in bytes for images, in number of files for directories
+   ========================= ===========
+
+In addition, the ordering can be reversed using ``sort.reverse`` and the string-like
+orderings (``alphabetical`` and ``natural``) can be made case-insensitive using
+``sort.ignore_case``. When ``sort.shuffle`` is set, the image filelist is shuffled
+regardless of the other orderings, but the library remains ordered.

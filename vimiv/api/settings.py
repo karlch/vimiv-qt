@@ -13,12 +13,13 @@ Module attributes:
 import abc
 import contextlib
 import enum
-from typing import Any, Dict, ItemsView, List
+import os
+from typing import Any, Dict, ItemsView, List, Callable, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
 from vimiv.api import prompt
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, natural_sort
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -315,14 +316,66 @@ class StrSetting(Setting):
         return "String"
 
 
-# Initialize all settings
+class OrderSetting(Setting):
+    """Stores an ordering setting."""
 
+    typ = str
+
+    ORDER_TYPES: Dict[str, Callable[..., Any]] = {
+        "alphabetical": str,
+        "natural": natural_sort,
+        "recently-modified": os.path.getmtime,
+    }
+
+    STR_ORDER_TYPES = "alphabetical", "natural"
+
+    def __init__(
+        self,
+        *args: Any,
+        additional_order_types: Dict[str, Callable[..., Any]] = None,
+        **kwargs: Any,
+    ):
+        super().__init__(*args, **kwargs)
+        self.order_types = dict(self.ORDER_TYPES)
+        if additional_order_types:
+            self.order_types.update(additional_order_types)
+
+    def convert(self, value: str) -> str:
+        if value not in self.order_types:
+            raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
+        return value
+
+    def sort(self, values: Iterable[str]) -> List[str]:
+        """Sort values according to the current ordering."""
+        ordering = self._get_ordering()
+        return sorted(values, key=ordering, reverse=sort.reverse.value)
+
+    def suggestions(self) -> List[str]:
+        return list(self.order_types)
+
+    def _get_ordering(self) -> Callable[..., Any]:
+        """Retrieve current ordering function.
+
+        Respects the sort.ignore_case setting and applies os.path.basename to
+        string-like orderings.
+        """
+        ordering = self.order_types[self.value]
+        if self.value not in self.STR_ORDER_TYPES:
+            return ordering
+        if sort.ignore_case.value:
+            return lambda s: ordering(os.path.basename(s).lower())
+        return lambda s: ordering(os.path.basename(s))
+
+    def __str__(self) -> str:
+        return "Order"
+
+
+# Initialize all settings
 monitor_fs = BoolSetting(
     "monitor_filesystem",
     True,
     desc="Monitor current directory for changes and reload widgets automatically",
 )
-shuffle = BoolSetting("shuffle", False, desc="Randomly shuffle images")
 startup_library = BoolSetting(
     "startup_library",
     True,
@@ -521,3 +574,39 @@ class metadata:  # pylint: disable=invalid-name
     )
 
     keysets: Dict[int, str] = dict(enumerate(defaults, start=1))
+
+
+class sort:  # pylint: disable=invalid-name
+    """Namespace for sorting related settings."""
+
+    image_order = OrderSetting(
+        "sort.image_order",
+        "alphabetical",
+        desc="Ordering of images, e.g. in the library",
+        additional_order_types={
+            "size": os.path.getsize,
+        },
+    )
+    directory_order = OrderSetting(
+        "sort.directory_order",
+        "alphabetical",
+        desc="Ordering of directories, e.g. in the library",
+        additional_order_types={
+            "size": lambda d: len(os.listdir(d)),
+        },
+    )
+    reverse = BoolSetting(
+        "sort.reverse",
+        False,
+        desc="Reverse the order of sorting, i.e. z before a, largest first, etc.",
+    )
+    ignore_case = BoolSetting(
+        "sort.ignore_case",
+        False,
+        desc="Ignore case when sorting, i.e. 'A' and 'a' are equal",
+    )
+    shuffle = BoolSetting(
+        "sort.shuffle",
+        False,
+        desc="Randomly shuffle images and ignoring all other sort settings",
+    )

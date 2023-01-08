@@ -170,6 +170,7 @@ class SignalHandler(QObject):
 
         api.signals.load_images.connect(self._on_load_images)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
+        api.settings.sort.shuffle.changed.connect(self._on_shuffle)
 
     @pyqtSlot(list)
     def _on_load_images(self, paths: List[str]):
@@ -190,7 +191,7 @@ class SignalHandler(QObject):
             _load_single(*paths)
         else:
             _logger.debug("Image filelist: loading %d paths", len(paths))
-            _load_paths(paths, paths[0])
+            _load_paths(paths)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -236,6 +237,12 @@ class SignalHandler(QObject):
             _load_paths(paths, current())
             api.status.update("Image filelist changed")
 
+    @utils.slot
+    def _on_shuffle(self):
+        """Reload paths to force shuffling."""
+        if _paths:
+            _load_paths(_paths, current())
+
 
 def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
     """Set the global _index to index."""
@@ -262,17 +269,19 @@ def _load_single(path: str) -> None:
         _load_paths(api.working_directory.handler.images, path)
 
 
-def _load_paths(paths: Iterable[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str = None) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
         paths: List of paths to load.
-        focused_path: The path to display.
+        focused_path: The path to display if defined.
     """
     paths = [os.path.abspath(path) for path in paths]
-    focused_path = os.path.abspath(focused_path)
-    if api.settings.shuffle.value:
+    if api.settings.sort.shuffle.value:
         random.shuffle(paths)
+    else:
+        paths = api.settings.sort.image_order.sort(paths)
+    focused_path = os.path.abspath(focused_path) if focused_path else paths[0]
     previous = current()
     _set_paths(paths)
     index = (

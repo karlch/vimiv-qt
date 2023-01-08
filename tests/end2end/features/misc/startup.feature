@@ -5,9 +5,9 @@ Feature: Startup vimiv with various flags
         Then the boolean setting 'completion.fuzzy' should be 'true'
 
     Scenario: Set multiple options using the commandline
-        Given I start vimiv with -s completion.fuzzy true -s shuffle true
+        Given I start vimiv with -s completion.fuzzy true -s sort.shuffle true
         Then the boolean setting 'completion.fuzzy' should be 'true'
-        And the boolean setting 'shuffle' should be 'true'
+        And the boolean setting 'sort.shuffle' should be 'true'
 
     Scenario: Set an unknown option using the commandline
         Given I start vimiv with -s not.a.setting true

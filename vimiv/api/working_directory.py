@@ -109,8 +109,14 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories: List[str] = []
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
+        settings.sort.image_order.changed.connect(self._reorder_directory)
+        settings.sort.directory_order.changed.connect(self._reorder_directory)
+        settings.sort.reverse.changed.connect(self._reorder_directory)
+        settings.sort.ignore_case.changed.connect(self._reorder_directory)
+
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
+
         signals.new_image_opened.connect(self._on_new_image)
 
     @property
@@ -218,12 +224,26 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """Get supported content of directory.
 
         Returns:
-            images: List of images inside the directory.
-            directories: List of directories inside the directory.
+            images: Ordered list of images inside the directory.
+            directories: Ordered list of directories inside the directory.
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.supported(paths)
+        return self._order_paths(*files.supported(paths))
+
+    @slot
+    def _reorder_directory(self) -> None:
+        """Reorder current files / directories."""
+        _logger.debug("Reloading working directory")
+        self._emit_changes(*self._order_paths(self._images, self._directories))
+
+    @staticmethod
+    def _order_paths(images: List[str], dirs: List[str]) -> Tuple[List[str], List[str]]:
+        """Order images and directories according to the current ordering setting."""
+        return (
+            settings.sort.image_order.sort(images),
+            settings.sort.directory_order.sort(dirs),
+        )
 
 
 handler = cast(WorkingDirectoryHandler, None)

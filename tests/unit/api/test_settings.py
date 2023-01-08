@@ -151,3 +151,62 @@ def test_ask_prompt_setting(mocker, prompt_setting, answer):
     mocker.patch("vimiv.api.prompt.ask_question", ask_question)
 
     assert bool(prompt_setting) == answer
+
+
+def test_set_order_setting():
+    o = settings.OrderSetting("order", "alphabetical")
+    o.value = "natural"
+    assert o.value == "natural"
+
+
+def test_set_order_setting_non_str():
+    o = settings.OrderSetting("order", "alphabetical")
+    with pytest.raises(ValueError, match="must be one of"):
+        o.value = 1
+
+
+def test_set_order_setting_non_valid():
+    o = settings.OrderSetting("order", "alphabetical")
+    with pytest.raises(ValueError, match="must be one of"):
+        o.value = "invalid"
+
+
+@pytest.mark.parametrize("reverse", [True, False])
+@pytest.mark.parametrize(
+    "ordering_name, values, expected_values",
+    [
+        ("alphabetical", ["a.j", "c.j", "b.j"], ["a.j", "b.j", "c.j"]),
+        ("natural", ["a5.j", "a11.j", "a3.j"], ["a3.j", "a5.j", "a11.j"]),
+    ],
+)
+def test_order_setting_sort(
+    monkeypatch, ordering_name, values, expected_values, reverse
+):
+    monkeypatch.setattr(settings.sort.reverse, "value", reverse)
+    o = settings.OrderSetting("order", ordering_name)
+    sorted_values = o.sort(values)
+    expected_values = expected_values[::-1] if reverse else expected_values
+    assert sorted_values == expected_values
+
+
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_order_setting_sort_ignore_case(monkeypatch, ignore_case):
+    monkeypatch.setattr(settings.sort.ignore_case, "value", ignore_case)
+    o = settings.OrderSetting("order", "alphabetical")
+
+    values = ["c.j", "B.j", "a.j", "D.j"]
+    if ignore_case:
+        expected_values = ["a.j", "B.j", "c.j", "D.j"]
+    else:
+        expected_values = ["B.j", "D.j", "a.j", "c.j"]
+
+    sorted_values = o.sort(values)
+
+    assert sorted_values == expected_values
+
+
+def test_order_setting_sort_basename():
+    o = settings.OrderSetting("order", "alphabetical")
+    values = ["a/c.j", "c/b.j", "c/a.j"]
+    sorted_values = o.sort(values)
+    assert sorted_values == ["c/a.j", "c/b.j", "a/c.j"]

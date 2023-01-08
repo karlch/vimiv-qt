@@ -26,14 +26,14 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
         directory: Directory to check for files in via os.listdir(directory).
         show_hidden: Include hidden files in output.
     Returns:
-        Sorted list of files in the directory with their absolute path.
+        List of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
-    return sorted(
+    return [
         os.path.join(directory, path)
         for path in os.listdir(directory)
         if show_hidden or not path.startswith(".")
-    )
+    ]
 
 
 def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
