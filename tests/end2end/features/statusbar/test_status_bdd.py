@@ -8,3 +8,8 @@ import pytest_bdd as bdd
 
 
 bdd.scenarios("status.feature")
+
+
+@bdd.then("the image should have mouse tracking")
+def check_image_tracks_mouse(image):
+    assert image.hasMouseTracking()

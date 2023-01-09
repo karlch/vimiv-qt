@@ -38,3 +38,8 @@ Feature: Display status information in the statusbar
         Given I start vimiv
         When I run set read_only true
         Then the left status should include [RO]
+
+    Scenario: Show cursor position in statusbar
+        Given I open any image
+        When I run set statusbar.right_image {cursor-position}
+        Then the image should have mouse tracking
