@@ -7,56 +7,84 @@
 """Utility functions and classes for metadata handling.
 
 This module provides a common interface for all metadata related functionalities.
-Metadata plugins provide metadata for the current image by registering function
-implementations for the functions specified by `Operations`. Registered implementations
-are stored in the `_MetadataRegistry`. The `MetadataHandler` is the main class used
-to interact with the metadata of the current image. It queries `_MetadataRegistry`
-and uses the registering implementations to provide its functionality.
+`MetadataHandler` is used to interact with the metadata of the current image. It
+relies on the functionality provided by optionally loaded metadata plugins. Such
+plugins implements the `MetadataPlugin` abstract class and registers that class
+using the `register` function.
 
 Module Attributes:
-    _registry: Dictionary storing function implementations for all operations.
+    _registry: List of registered `MetadataPlugin` implementations.
 """
 
+from abc import ABC, abstractmethod
 import contextlib
 import itertools
-import inspect
-from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Type, Optional
+from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Type, List
 
 from vimiv.utils import log
 
 _logger = log.module_logger(__name__)
 
-# Type returned by `MetadataHandler.get_metadata`. Key if dictionary is the metadata
-# key. Value is a tuple of name and value for that key.
+# Type returned by `MetadataHandler.get_metadata`.
+# Key is the metadata key. Value is a tuple of descriptive name and value for that key.
 MetadataDictT = Dict[str, Tuple[str, str]]
 
 
-class MetadataPlugin:
-    """Base class overwritten by plugins to extend the metadata capabilities."""
+class MetadataPlugin(ABC):
+    """Abstract class implemented by plugins to provide metadata capabilities.
 
-    # Fields must be set by any subclass
-    name: Optional[str] = None
-    version: Optional[str] = None
+    Implementations of this class are required to overwrite `__init__`, `name`,
+    `version`, `get_metadata` and `get_keys`.
+    The implementations of `copy_metadata` and `get_date_time` is optional.
+    """
 
-    def __init__(self, path: str) -> None:
-        self._path = path
-
-    def __init_subclass__(cls, **kwargs):
-        """Enforce subclasses to set attribute `name` and `version`."""
-        for required in ("name", "version"):
-            if not getattr(cls, required):
-                raise TypeError(
-                    f"Cannot instantiate {cls.__name__} "
-                    f"without {required} attribute defined"
-                )
-        return super().__init_subclass__(**kwargs)
-
-    def copy_metadata(self, _dest: str, _reset_orientation: bool = True) -> bool:
-        """Copy metadata from current image to dest.
+    @abstractmethod
+    def __init__(self, _path: str) -> None:
+        """Initialize metadata handler for a specific image.
 
         Args:
-            dest: Path to write the metadata to.
-            reset_orientation: If true, reset the exif orientation tag to normal.
+            _path: Path to current image.
+        """
+
+    @property
+    @abstractmethod
+    def name(self) -> str:
+        """Get the name of the used backend.
+
+        If no backend is used, return the name of the plugin.
+        """
+
+    @property
+    @abstractmethod
+    def version(self) -> str:
+        """Get the version of the used backend.
+
+        If no backend is used, return an empty string.
+        """
+
+    @abstractmethod
+    def get_metadata(self, _keys: Sequence[str]) -> MetadataDictT:
+        """Get value of all desired keys for the current image.
+
+        If no value is found for a certain key, do not include the key in the output.
+
+        Args:
+            _keys: Keys of metadata to query the image for.
+
+        Returns:
+            Dictionary with retrieved metadata.
+        """
+
+    @abstractmethod
+    def get_keys(self) -> Iterable[str]:
+        """Get the keys for all metadata values available for the current image."""
+
+    def copy_metadata(self, _dest: str, _reset_orientation: bool = True) -> bool:
+        """Copy metadata from the current image to dest image.
+
+        Args:
+            _dest: Path to write the metadata to.
+            _reset_orientation: If true, reset the exif orientation tag to normal.
 
         Returns:
             Flag indicating if copy was successful.
@@ -64,94 +92,21 @@ class MetadataPlugin:
         raise NotImplementedError
 
     def get_date_time(self) -> str:
-        """Get creation date and time as formatted string."""
+        """Get creation date and time of the current image as formatted string."""
         raise NotImplementedError
 
-    def get_metadata(self, _keys: Sequence[str]) -> MetadataDictT:
-        """Get value of all desired keys.
 
-        Args:
-            keys: Keys of metadata to query the image for.
-
-        Returns:
-            Dictionary with retrieved metadata.
-        """
-        raise NotImplementedError
-
-    def get_keys(self) -> Iterable[str]:
-        """Retrieve the key of all metadata values available in the current image."""
-        raise NotImplementedError
-
-    @classmethod
-    def _implement_copy_metadata(cls) -> bool:
-        """Return True iff class overwrites `MetadataPlugin.copy_metadata`."""
-        return cls.copy_metadata != MetadataPlugin.copy_metadata
-
-    @classmethod
-    def _implement_get_date_time(cls) -> bool:
-        """Return True iff class overwrites `MetadataPlugin.get_date_time`."""
-        return cls.get_date_time != MetadataPlugin.get_date_time
-
-    @classmethod
-    def _implement_get_metadata(cls) -> bool:
-        """Return True iff class overwrites `MetadataPlugin.get_metadata`."""
-        return cls.get_metadata != MetadataPlugin.get_metadata
-
-    @classmethod
-    def _implement_get_keys(cls) -> bool:
-        """Return True iff class overwrites `MetadataPlugin.get_keys`."""
-        return cls.get_keys != MetadataPlugin.get_keys
+# Stores all registered metadata implementations.
+_registry: List[Type[MetadataPlugin]] = []
 
 
-class _MetadataRegistry(dict):
-    """Handles the registration of function implementations."""
+def has_metadata_support() -> bool:
+    """Indicate if `MetadataHandler` has `get_metadata()` and `get_keys()` capabilities.
 
-    def __init__(self):
-        super().__init__()
-        _logger.debug("Initializing metadata registry")
-        self.has_copy_metadata = False
-        self.has_get_date_time = False
-        self.has_get_metadata = False
-        self.has_get_keys = False
-
-    def __setitem__(self, key: str, val: Type[MetadataPlugin]):
-
-        if val._implement_copy_metadata():
-            self.has_copy_metadata = True
-
-        if val._implement_get_date_time():
-            self.has_get_date_time = True
-
-        if val._implement_get_metadata():
-            self.has_get_metadata = True
-
-        if val._implement_get_keys():
-            self.has_get_keys = True
-
-        dict.__setitem__(self, key, val)
-
-
-_registry: _MetadataRegistry = _MetadataRegistry()
-
-
-def has_copy_metadata() -> bool:
-    """Return True iff `MetadataHandler` has an implementation for `copy_metadata`."""
-    return _registry.has_copy_metadata
-
-
-def has_get_date_time() -> bool:
-    """Return True iff `MetadataHandler` has an implementation for `get_date_time`."""
-    return _registry.has_get_date_time
-
-
-def has_get_metadata() -> bool:
-    """Return True iff `MetadataHandler` has an implementation for `get_metadata`."""
-    return _registry.has_get_metadata
-
-
-def has_get_keys() -> bool:
-    """Return True iff `MetadataHandler` has an implementation for `get_keys`."""
-    return _registry.has_get_keys
+    Returns:
+        True iff at least one metadata plugins has been registered.
+    """
+    return bool(_registry)
 
 
 class MetadataHandler:
@@ -164,10 +119,68 @@ class MetadataHandler:
     def __init__(self, path: str):
         self._path = path
 
+    @property
+    def has_copy_metadata(self) -> bool:
+        """True iff `MetadataHandler` has an implementation for `copy_metadata`."""
+        return any(
+            list(
+                map(
+                    lambda e: e.copy_metadata != MetadataPlugin.copy_metadata, _registry
+                )
+            )
+        )
+
+    @property
+    def has_get_date_time(self) -> bool:
+        """True iff `MetadataHandler` has an implementation for `get_date_time`."""
+        return any(
+            list(
+                map(
+                    lambda e: e.get_date_time != MetadataPlugin.get_date_time, _registry
+                )
+            )
+        )
+
+    def get_metadata(self, keys: Sequence[str]) -> MetadataDictT:
+        """Get value of all desired keys from the current image.
+
+        Use all registered metadata implementations to extract the metadata from the
+        current image. The output of all methods is combined.
+
+        Args:
+            keys: Keys of metadata to query the image for.
+
+        Returns:
+            Dictionary with retrieved metadata.
+        """
+        out: MetadataDictT = {}
+
+        for backend in _registry:
+            with contextlib.suppress(NotImplementedError):
+                # TODO: from 3.9 on use: c = a | b
+                out = {**backend(self._path).get_metadata(keys), **out}
+
+        # TODO: ensure keys are returned in the right order
+        return out
+
+    def get_keys(self) -> Iterable[str]:
+        """Get the keys for all metadata values available for the current image.
+
+        Uses all registered metadata implementations to extract the available keys for
+        the current image. The output off all methods is combined.
+        """
+        out: Iterable[str] = iter([])
+
+        for backend in _registry:
+            with contextlib.suppress(NotImplementedError):
+                out = itertools.chain(out, backend(self._path).get_keys())
+
+        return out
+
     def copy_metadata(self, dest: str, reset_orientation: bool = True) -> None:
         """Copy metadata from current image to dest.
 
-        Runs all registered implementations for `Operations.copy_metadata`.
+        Uses all registered metadata implementations that support this operation.
 
         Args:
             dest: Path to write the metadata to.
@@ -176,16 +189,16 @@ class MetadataHandler:
         Raises:
             UnsupportedMetadataOperation if no implementation supports this operation.
         """
-
-        if not has_copy_metadata():
-            MetadataHandler.raise_exception()
+        if not self.has_copy_metadata:
+            MetadataHandler.raise_exception("copy_metadata")
 
         failed = []
 
-        for name, backend in _registry.items():
+        for backend in _registry:
             with contextlib.suppress(NotImplementedError):
-                if not backend(self._path).copy_metadata(dest, reset_orientation):
-                    failed.append(name)
+                be = backend(self._path)
+                if not be.copy_metadata(dest, reset_orientation):
+                    failed.append(be.name)
 
         if failed:
             _logger.warning(
@@ -197,69 +210,26 @@ class MetadataHandler:
     def get_date_time(self) -> str:
         """Get creation date and time as formatted string.
 
+        Uses the first registered metadata implementations that supports this operation.
+
         Raises:
             UnsupportedMetadataOperation if no implementation supports this operation.
         """
+        if not self.has_get_date_time:
+            MetadataHandler.raise_exception("get_date_time")
 
-        if not has_get_date_time():
-            MetadataHandler.raise_exception()
-
-        for _, backend in _registry.items():
+        for backend in _registry:
             with contextlib.suppress(NotImplementedError):
-                return backend(self._path).get_date_time()
+                out = backend(self._path).get_date_time()
+                # If we get an empty string, continue. We may get something better.
+                if out:
+                    return out
         return ""
 
-    def get_metadata(self, keys: Sequence[str]) -> MetadataDictT:
-        """Get value of all desired keys.
-
-        Use all registered implementations for `Operations.get_metadata` to query
-        the current image using the provided metadata keys. The result of all
-        implementations is combined.
-
-        Args:
-            keys: Keys of metadata to query the image for.
-
-        Returns:
-            Dictionary with retrieved metadata.
-
-        Raises:
-            UnsupportedMetadataOperation if no implementation supports this operation.
-        """
-
-        if not has_get_metadata():
-            MetadataHandler.raise_exception()
-
-        out: MetadataDictT = {}
-
-        for _, backend in _registry.items():
-            with contextlib.suppress(NotImplementedError):
-                # TODO: from 3.9 on use: c = a | b
-                out = {**backend(self._path).get_metadata(keys), **out}
-
-        return out
-
-    def get_keys(self) -> Iterable[str]:
-        """Retrieve the key of all metadata values available in the current image.
-
-        Raises:
-            UnsupportedMetadataOperation if no implementation supports this operation.
-        """
-
-        if not has_get_keys():
-            MetadataHandler.raise_exception()
-
-        out: Iterable[str] = iter([])
-
-        for _, backend in _registry.items():
-            with contextlib.suppress(NotImplementedError):
-                out = itertools.chain(backend(self._path).get_keys(), out)
-
-        return out
-
     @staticmethod
-    def raise_exception() -> NoReturn:
+    def raise_exception(operation: str) -> NoReturn:
         """Raise an exception for a operations without implementation."""
-        msg = f"{inspect.stack()[1][3]} has no implementation"
+        msg = f"{operation} has no implementation"
         _logger.warning(msg, once=True)
         raise UnsupportedMetadataOperation(msg)
 
@@ -269,22 +239,23 @@ class UnsupportedMetadataOperation(NotImplementedError):
 
 
 def register(plugin: Type[MetadataPlugin]) -> None:
-    """Register metadata functionality for usage by MetadataHandler.
+    """Register metadata plugin implementation.
+
+    All registered metadata plugin implementations are available to the
+    `MetadataHandler`.
 
     Args:
-        plugin: Subclass of MetadataPlugin that implements metadat functionality.
+        plugin: Implementation of `MetadataPlugin`.
     """
-    assert plugin.name, "Required to have `plugin.name` set"
-    assert plugin.version, "Required to have `plugin.version` set"
 
-    _logger.debug(f"Registring metadata plugin {plugin.name}")
-    if plugin.name in _registry:
+    _logger.debug(f"Registring metadata plugin implementation {plugin.name}")
+    if plugin in _registry:
         _logger.warning(
             f"Metadata plugin {plugin.name} has already been registered. Ignoring it."
         )
         return
 
-    _registry[plugin.name] = plugin
+    _registry.append(plugin)
 
 
 class ExifOrientation:

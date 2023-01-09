@@ -25,13 +25,13 @@ _logger = log.module_logger(__name__)
 
 
 class MetadataPiexif(metadata.MetadataPlugin):
-    """Provided metadata support based on piexif."""
+    """Provided metadata support based on piexif.
 
-    name = "piexif"
-    version = piexif.VERSION
+    Implements `get_metadata`, `get_keys`, `copy_metadata`, and `get_date_time`.
+    """
 
     def __init__(self, path: str) -> None:
-        super().__init__(path)
+        self._path = path
 
         try:
             self._metadata = piexif.load(path)
@@ -48,34 +48,18 @@ class MetadataPiexif(metadata.MetadataPlugin):
             )
             self._metadata = None
 
-    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> bool:
-        """Copy metadata from current image to dest."""
-        if self._metadata is None:
-            return False
+    @property
+    def name(self) -> str:
+        """Get the name of the used backend."""
+        return "piexif"
 
-        try:
-            if reset_orientation:
-                with contextlib.suppress(KeyError):
-                    self._metadata["0th"][
-                        piexif.ImageIFD.Orientation
-                    ] = metadata.ExifOrientation.Normal
-            exif_bytes = piexif.dump(metadata)
-            piexif.insert(exif_bytes, dest)
-            return True
-        except ValueError:
-            return False
-
-    def get_date_time(self) -> str:
-        """Get creation date and time as formatted string."""
-        if self._metadata is None:
-            return ""
-
-        with contextlib.suppress(KeyError):
-            return self._metadata["0th"][piexif.ImageIFD.DateTime].decode()
-        return ""
+    @property
+    def version(self) -> str:
+        """Get the version of the used backend."""
+        return piexif.VERSION
 
     def get_metadata(self, desired_keys: Sequence[str]) -> metadata.MetadataDictT:
-        """Get value of all desired keys."""
+        """Get value of all desired keys for the current image."""
         out = {}
 
         # TODO: remove
@@ -123,7 +107,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
         return out
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the key of all metadata values available in the current image."""
+        """Get the keys for all metadata values available for the current image."""
         if self._metadata is None:
             return iter([])
 
@@ -133,6 +117,32 @@ class MetadataPiexif(metadata.MetadataPlugin):
             if ifd != "thumbnail"
             for tag in self._metadata[ifd]
         )
+
+    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> bool:
+        """Copy metadata from the current image to dest image."""
+        if self._metadata is None:
+            return False
+
+        try:
+            if reset_orientation:
+                with contextlib.suppress(KeyError):
+                    self._metadata["0th"][
+                        piexif.ImageIFD.Orientation
+                    ] = metadata.ExifOrientation.Normal
+            exif_bytes = piexif.dump(metadata)
+            piexif.insert(exif_bytes, dest)
+            return True
+        except ValueError:
+            return False
+
+    def get_date_time(self) -> str:
+        """Get creation date and time of the current image as formatted string."""
+        if self._metadata is None:
+            return ""
+
+        with contextlib.suppress(KeyError):
+            return self._metadata["0th"][piexif.ImageIFD.DateTime].decode()
+        return ""
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
