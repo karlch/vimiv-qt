@@ -18,6 +18,7 @@ from typing import Optional
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
+from vimiv.imutils import metadata
 from vimiv.utils import xdg, run_qprocess, lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
@@ -35,15 +36,19 @@ def info() -> str:
         if git_info is not None
         else f"vimiv v{vimiv.__version__}"
     )
+    metadata_plugins = metadata.get_registrations()
+    metadata_plugins_version = (
+        "False"
+        if not metadata_plugins
+        else "".join(f"\n    {n}: {v if v else '-'}" for n, v in metadata_plugins)
+    )
     return (
         f"{vimiv_version}\n\n"
         f"Python: {_python_version()}\n"
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
         f"Svg Support: {bool(QtSvg)}\n"
-        # TODO: what to do about them?
-        # f"Pyexiv2: {exif.pyexiv2.__version__ if exif.pyexiv2 is not None else None}\n"
-        # f"Piexif: {exif.piexif.VERSION if exif.piexif is not None else None}"
+        f"Metadata Support: {metadata_plugins_version}"
     )
 
 

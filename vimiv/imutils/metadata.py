@@ -258,6 +258,15 @@ def register(plugin: Type[MetadataPlugin]) -> None:
     _registry.append(plugin)
 
 
+def get_registrations() -> List[Tuple[str, str]]:
+    """List of all registered metadata plugin implementations.
+
+    Returns:
+        List of tuple of the form (name of backend, version of backend).
+    """
+    return [(e("").name, e("").version) for e in _registry]
+
+
 class ExifOrientation:
     """Namespace for exif orientation tags.
 
