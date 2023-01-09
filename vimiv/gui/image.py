@@ -25,12 +25,14 @@ from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
 from vimiv.gui import eventhandler
-from vimiv.utils import lazy
+from vimiv.utils import lazy, log
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 INF = float("inf")
+
+_logger = log.module_logger(__name__)
 
 
 class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
@@ -338,6 +340,29 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
             return ""
         return self.transformation_module()  # pylint: disable=not-callable
 
+    @api.status.module("{cursor-position}")
+    def cursor_position(self) -> str:
+        """Current cursor position in image coordinates."""
+        # Initialize mouse tracking on first call
+        if not self.hasMouseTracking():
+            _logger.debug("Activating mouse tracking for {cursor-position} module")
+            self.setMouseTracking(True)
+            # We only want to override leaveEvent if we really have to
+            # pylint: disable=invalid-name
+            self.leaveEvent = self._leave_event  # type: ignore[assignment]
+
+        rect = self.sceneRect().toRect()
+        if rect.width() == 1:  # Empty
+            return ""
+
+        cursor_pos = self.mapToScene(self.mapFromGlobal(self.cursor().pos())).toPoint()
+
+        if not 0 < cursor_pos.x() <= rect.width():
+            return ""
+        if not 0 < cursor_pos.y() <= rect.height():
+            return ""
+        return f"({cursor_pos.x()}, {cursor_pos.y()})"
+
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
@@ -345,6 +370,24 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
             self.scale(self._scale)
             api.status.update("image zoom level changed")
             self.resized.emit()
+
+    def mouseMoveEvent(self, event):
+        """Override mouse move event to also update the status.
+
+        Needed by the cursor position related status module and only applied in case it
+        is used at all to avoid unnecessary updates.
+        """
+        api.status.update("mouse position changed")
+        super().mouseMoveEvent(event)
+
+    def _leave_event(self, event):
+        """Override leave event to also update the status.
+
+        Needed by the cursor position related status module and only applied in case it
+        is used at all to avoid unnecessary updates.
+        """
+        api.status.update("mouse position changed")
+        super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""

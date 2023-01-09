@@ -82,6 +82,8 @@ Added:
   further details. Thanks to `@kAldown`_ for the initial implementation, `@jcjgraf`_ for
   taking over, and many more joining in the discussions and reminding us why this
   feature is important!
+* New ``{cursor-position}`` statusbar module which tracks the mouse cursor position in
+  image coordinates.
 
 Changed:
 ^^^^^^^^
