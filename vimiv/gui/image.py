@@ -25,12 +25,14 @@ from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import Direction, ImageScale, ImageScaleFloat, Zoom
 from vimiv.config import styles
 from vimiv.gui import eventhandler
-from vimiv.utils import lazy
+from vimiv.utils import lazy, log
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 INF = float("inf")
+
+_logger = log.module_logger(__name__)
 
 
 class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
@@ -82,12 +84,6 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         scene.setSceneRect(QRectF(0, 0, 1, 1))
         self.setScene(scene)
         self.setOptimizationFlags(QGraphicsView.DontSavePainterState)
-        # TODO Check if the status module is available somehow
-        if True:
-            self.setMouseTracking(True)
-            # We only want to override leaveEvent if we really have to
-            # pylint: disable=invalid-name
-            self.leaveEvent = self._leave_event  # type: ignore[assignment]
 
         api.signals.pixmap_loaded.connect(self._load_pixmap)
         api.signals.movie_loaded.connect(self._load_movie)
@@ -347,8 +343,13 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     @api.status.module("{cursor-position}")
     def cursor_position(self) -> str:
         """Current cursor position in image coordinates."""
+        # Initialize mouse tracking on first call
         if not self.hasMouseTracking():
-            return ""
+            _logger.debug("Activating mouse tracking for {cursor-position} module")
+            self.setMouseTracking(True)
+            # We only want to override leaveEvent if we really have to
+            # pylint: disable=invalid-name
+            self.leaveEvent = self._leave_event  # type: ignore[assignment]
 
         rect = self.sceneRect().toRect()
         if rect.width() == 1:  # Empty
