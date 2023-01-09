@@ -20,7 +20,7 @@ Module Attributes:
 import contextlib
 import itertools
 import inspect
-from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Type
+from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Type, Optional
 
 from vimiv.utils import log
 
@@ -31,11 +31,12 @@ _logger = log.module_logger(__name__)
 MetadataDictT = Dict[str, Tuple[str, str]]
 
 
-class MetadataPlugin():
+class MetadataPlugin:
     """Base class overwritten by plugins to extend the metadata capabilities."""
 
-    name: str = None
-    version: str = None
+    # Fields must be set by any subclass
+    name: Optional[str] = None
+    version: Optional[str] = None
 
     def __init__(self, path: str) -> None:
         self._path = path
@@ -44,15 +45,21 @@ class MetadataPlugin():
         """Enforce subclasses to set attribute `name` and `version`."""
         for required in ("name", "version"):
             if not getattr(cls, required):
-                raise TypeError(f"Cannot instantiate {cls.__name__} without {required} attribute defined")
+                raise TypeError(
+                    f"Cannot instantiate {cls.__name__} "
+                    f"without {required} attribute defined"
+                )
         return super().__init_subclass__(**kwargs)
 
-    def copy_metadata(self, _dest: str, _reset_orientation: bool = True) -> None:
+    def copy_metadata(self, _dest: str, _reset_orientation: bool = True) -> bool:
         """Copy metadata from current image to dest.
 
         Args:
             dest: Path to write the metadata to.
             reset_orientation: If true, reset the exif orientation tag to normal.
+
+        Returns:
+            Flag indicating if copy was successful.
         """
         raise NotImplementedError
 
@@ -99,6 +106,7 @@ class MetadataPlugin():
 class _MetadataRegistry(dict):
     """Handles the registration of function implementations."""
 
+
     def __init__(self):
         super().__init__()
         _logger.debug("Initializing metadata registry")
@@ -109,22 +117,22 @@ class _MetadataRegistry(dict):
 
     def __setitem__(self, key: str, val: Type[MetadataPlugin]):
 
-        if val._implement_copy_metadata:
+        if val._implement_copy_metadata():
             self.has_copy_metadata = True
 
-        if val._implement_get_date_time:
+        if val._implement_get_date_time():
             self.has_get_date_time = True
 
-        if val._implement_get_metadata:
+        if val._implement_get_metadata():
             self.has_get_metadata = True
 
-        if val._implement_get_keys:
+        if val._implement_get_keys():
             self.has_get_keys = True
 
         dict.__setitem__(self, key, val)
 
 
-_registry: Dict[str, MetadataPlugin] = _MetadataRegistry()
+_registry: _MetadataRegistry = _MetadataRegistry()
 
 
 def has_copy_metadata() -> bool:
@@ -172,14 +180,15 @@ class MetadataHandler:
 
         failed = []
 
-        for name, Backend in _registry.items():
+        for name, backend in _registry.items():
             with contextlib.suppress(NotImplementedError):
-                if not Backend(self._path).copy_metadata(dest, reset_orientation):
+                if not backend(self._path).copy_metadata(dest, reset_orientation):
                     failed.append(name)
 
         if failed:
             _logger.warning(
-                f"The following plugins failed to copy metadata: {failed.join(', ')}<br>\n"
+                f"The following plugins failed to copy metadata: "
+                f"{', '.join(failed)}<br>\n"
                 f"Some metadata may be missing in the destination image {dest}."
             )
 
@@ -189,9 +198,10 @@ class MetadataHandler:
         if not has_get_date_time():
             MetadataHandler.raise_exception()
 
-        for _, Backend in _registry.items():
+        for _, backend in _registry.items():
             with contextlib.suppress(NotImplementedError):
-                return Backend(self._path).get_date_time()
+                return backend(self._path).get_date_time()
+        return ""
 
     def get_metadata(self, keys: Sequence[str]) -> MetadataDictT:
         """Get value of all desired keys.
@@ -212,10 +222,10 @@ class MetadataHandler:
 
         out: MetadataDictT = {}
 
-        for _, Backend in _registry.items():
+        for _, backend in _registry.items():
             with contextlib.suppress(NotImplementedError):
                 # TODO: from 3.9 on use: c = a | b
-                out = {**Backend(self._path).get_metadata(keys), **out}
+                out = {**backend(self._path).get_metadata(keys), **out}
 
         return out
 
@@ -227,9 +237,9 @@ class MetadataHandler:
 
         out: Iterable[str] = iter([])
 
-        for _, Backend in _registry.items():
+        for _, backend in _registry.items():
             with contextlib.suppress(NotImplementedError):
-                out = itertools.chain(Backend(self._path).get_keys(), out)
+                out = itertools.chain(backend(self._path).get_keys(), out)
 
         return out
 
@@ -251,10 +261,14 @@ def register(plugin: Type[MetadataPlugin]) -> None:
     Args:
         operation: Operation for which the decorated function is registered.
     """
+    assert plugin.name, "Required to have `plugin.name` set"
+    assert plugin.version, "Required to have `plugin.version` set"
 
     _logger.debug(f"Registring metadata plugin {plugin.name}")
     if plugin.name in _registry:
-        _logger.warning("Metadata plugin {name} has already been registered. Ignoring it.")
+        _logger.warning(
+            "Metadata plugin {name} has already been registered. Ignoring it."
+        )
         return
 
     _registry[plugin.name] = plugin

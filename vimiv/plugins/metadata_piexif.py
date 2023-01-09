@@ -14,7 +14,6 @@ Properties:
 """
 
 import contextlib
-from pathlib import Path
 from typing import Any, Sequence, Iterable
 
 import piexif
@@ -26,6 +25,7 @@ _logger = log.module_logger(__name__)
 
 
 class MetadataPiexif(metadata.MetadataPlugin):
+    """Provided metadata support based on piexif."""
 
     name = "piexif"
     version = piexif.VERSION
@@ -48,7 +48,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
             )
             self._metadata = None
 
-    def copy_metadata(self, path: Path, dest: str, reset_orientation: bool = True) -> bool:
+    def copy_metadata(self, dest: str, reset_orientation: bool = True) -> bool:
         """Copy metadata from current image to dest."""
         if self._metadata is None:
             return False
@@ -65,7 +65,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
         except ValueError:
             return False
 
-    def get_date_time(self, path: Path) -> str:
+    def get_date_time(self) -> str:
         """Get creation date and time as formatted string."""
         if self._metadata is None:
             return ""
@@ -122,7 +122,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
 
         return out
 
-    def get_keys(self, path: Path) -> Iterable[str]:
+    def get_keys(self) -> Iterable[str]:
         """Retrieve the key of all metadata values available in the current image."""
         if self._metadata is None:
             return iter([])

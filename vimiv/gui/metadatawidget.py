@@ -22,6 +22,7 @@ _logger = utils.log.module_logger(__name__)
 # TODO: conditional fails as this file is imported before plugins are loaded
 # if metadata.has_get_metadata():
 if True:
+
     class MetadataWidget(QLabel):
         """Overlay widget to display image metadata.
 
@@ -34,7 +35,7 @@ if True:
             _mainwindow_width: width of the mainwindow.
             _path: Absolute path of the current image to load metadata of.
             _current_set: Holds a string of the currently selected keyset.
-            _handler: MetadataHandler for _path or None. Use the handler property to access.
+            _handler: MetadataHandler for _path or None. Use its property for access.
         """
 
         STYLESHEET = """
@@ -161,9 +162,9 @@ if True:
                 e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
             ]
             _logger.debug(f"Read metadata.current_keys {keys}")
-            metadata = self.handler.get_metadata(keys)
-            if metadata:
-                self.setText(utils.format_html_table(metadata.values()))
+            data = self.handler.get_metadata(keys)
+            if data:
+                self.setText(utils.format_html_table(data.values()))
             else:
                 self.setText("No matching metadata found")
             self._update_geometry()
