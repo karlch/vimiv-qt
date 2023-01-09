@@ -106,7 +106,6 @@ class MetadataPlugin:
 class _MetadataRegistry(dict):
     """Handles the registration of function implementations."""
 
-
     def __init__(self):
         super().__init__()
         _logger.debug("Initializing metadata registry")
@@ -173,6 +172,9 @@ class MetadataHandler:
         Args:
             dest: Path to write the metadata to.
             reset_orientation: If true, reset the exif orientation tag to normal.
+
+        Raises:
+            UnsupportedMetadataOperation if no implementation supports this operation.
         """
 
         if not has_copy_metadata():
@@ -193,7 +195,11 @@ class MetadataHandler:
             )
 
     def get_date_time(self) -> str:
-        """Get creation date and time as formatted string."""
+        """Get creation date and time as formatted string.
+
+        Raises:
+            UnsupportedMetadataOperation if no implementation supports this operation.
+        """
 
         if not has_get_date_time():
             MetadataHandler.raise_exception()
@@ -215,6 +221,9 @@ class MetadataHandler:
 
         Returns:
             Dictionary with retrieved metadata.
+
+        Raises:
+            UnsupportedMetadataOperation if no implementation supports this operation.
         """
 
         if not has_get_metadata():
@@ -230,7 +239,11 @@ class MetadataHandler:
         return out
 
     def get_keys(self) -> Iterable[str]:
-        """Retrieve the key of all metadata values available in the current image."""
+        """Retrieve the key of all metadata values available in the current image.
+
+        Raises:
+            UnsupportedMetadataOperation if no implementation supports this operation.
+        """
 
         if not has_get_keys():
             MetadataHandler.raise_exception()
@@ -256,10 +269,10 @@ class UnsupportedMetadataOperation(NotImplementedError):
 
 
 def register(plugin: Type[MetadataPlugin]) -> None:
-    """Decorator to register a function implementation.
+    """Register metadata functionality for usage by MetadataHandler.
 
     Args:
-        operation: Operation for which the decorated function is registered.
+        plugin: Subclass of MetadataPlugin that implements metadat functionality.
     """
     assert plugin.name, "Required to have `plugin.name` set"
     assert plugin.version, "Required to have `plugin.version` set"
@@ -267,7 +280,7 @@ def register(plugin: Type[MetadataPlugin]) -> None:
     _logger.debug(f"Registring metadata plugin {plugin.name}")
     if plugin.name in _registry:
         _logger.warning(
-            "Metadata plugin {name} has already been registered. Ignoring it."
+            f"Metadata plugin {plugin.name} has already been registered. Ignoring it."
         )
         return
 
