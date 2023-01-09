@@ -16,10 +16,10 @@ Properties:
 import contextlib
 from typing import Any, Sequence, Iterable
 
-import piexif
-
 from vimiv.imutils import metadata
-from vimiv.utils import log
+from vimiv.utils import log, lazy
+
+piexif = lazy.import_module("piexif")
 
 _logger = log.module_logger(__name__)
 

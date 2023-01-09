@@ -16,10 +16,10 @@ import contextlib
 import itertools
 from typing import Any, Sequence, Iterable
 
-import pyexiv2
-
 from vimiv.imutils import metadata
-from vimiv.utils import log, is_hex
+from vimiv.utils import log, is_hex, lazy
+
+pyexiv2 = lazy.import_module("pyexiv2")
 
 _logger = log.module_logger(__name__)
 
