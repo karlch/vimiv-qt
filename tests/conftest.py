@@ -12,7 +12,9 @@ import urllib.request
 
 import pytest
 
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
+# from vimiv.plugins import metadata_pyexiv2, metadata_piexif
+from vimiv.plugins import metadata_piexif
 
 
 CI = "CI" in os.environ
@@ -23,11 +25,12 @@ PLATFORM_MARKERS = (
     ("ci_skip", not CI, "Skipped on ci"),
 )
 
-EXIF_MARKERS = (
-    ("exif", exif.has_exif_support, "Only run with exif support"),
-    ("noexif", not exif.has_exif_support, "Only run without exif support"),
-    ("pyexiv2", exif.pyexiv2 is not None, "Only run with pyexiv2"),
-    ("piexif", exif.piexif is not None, "Only run with piexif"),
+METADATA_MARKERS = (
+    ("metadata", metadata.has_metadata_support(), "Only run with metadata support"),
+    ("nometadata", not metadata.has_metadata_support(), "Only run without metadata support"),
+    ("piexif", metadata_piexif.piexif is not None, "Only run with piexif"),
+    # ("pyexiv2", metadata_pyexiv2.pyexiv2 is not None, "Only run with pyexiv2"),
+    ("pyexiv2", False, "Only run with pyexiv2"),
 )
 # fmt: on
 
@@ -37,13 +40,13 @@ def apply_platform_markers(item):
     apply_markers_helper(item, PLATFORM_MARKERS)
 
 
-def apply_exif_markers(item):
-    """Apply markers that skip tests depending on specific exif support."""
+def apply_metadata_markers(item):
+    """Apply markers that skip tests depending on specific metadata support."""
     if os.path.basename(item.fspath) in ("test_exif.py",):
-        for marker_name in "exif", "pyexiv2", "piexif":
+        for marker_name in "metadata", "pyexiv2", "piexif":
             marker = getattr(pytest.mark, marker_name)
             item.add_marker(marker)
-    apply_markers_helper(item, EXIF_MARKERS)
+    apply_markers_helper(item, METADATA_MARKERS)
 
 
 def apply_markers_helper(item, markers):
@@ -61,7 +64,7 @@ def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
         apply_platform_markers(item)
-        apply_exif_markers(item)
+        apply_metadata_markers(item)
 
 
 @pytest.fixture
@@ -166,15 +169,46 @@ def tmpdir():
 
 
 @pytest.fixture()
-def piexif(monkeypatch):
-    """Pytest fixture to ensure only piexif is available."""
-    monkeypatch.setattr(exif, "pyexiv2", None)
+def reset_metadata_registration():
+    """Fixture to ensure everything is reset to default after testing."""
+    initial_content = metadata._registry.copy()
+    yield
+    metadata._registry = initial_content
 
 
 @pytest.fixture()
-def noexif(monkeypatch, piexif):
-    """Pytest fixture to ensure no exif library is available."""
-    monkeypatch.setattr(exif, "piexif", None)
+def metadata_support(reset_metadata_registration):
+    """Pytest fixture to ensure piexif and pyexiv2 based metadata plugins are registered."""
+    from vimiv.plugins.metadata_piexif import MetadataPiexif
+    from vimiv.plugins.metadata_pyexiv2 import MetadataPyexiv2
+
+    metadata._registry = []
+    metadata.register(MetadataPiexif)
+    metadata.register(MetadataPyexiv2)
+
+
+@pytest.fixture()
+def piexif(reset_metadata_registration):
+    """Pytest fixture to ensure only piexif based metadata plugin is registered."""
+    from vimiv.plugins.metadata_piexif import MetadataPiexif
+
+    metadata._registry = []
+    metadata.register(MetadataPiexif)
+
+
+@pytest.fixture()
+def pyexiv2(reset_metadata_registration):
+    """Pytest fixture to ensure only pyexiv2 based metadata plugin is registered."""
+    from vimiv.plugins.metadata_pyexiv2 import MetadataPyexiv2
+
+    metadata._registry = []
+    metadata.register(MetadataPyexiv2)
+
+
+@pytest.fixture()
+def no_metadata_support(reset_metadata_registration):
+    """Pytest fixture to ensure no metadata plugin is registered."""
+    metadata._registry = {}
 
 
 @pytest.fixture()
@@ -182,11 +216,12 @@ def add_exif_information():
     """Fixture to retrieve a helper function that adds exif content to an image."""
 
     def add_exif_information_impl(path: str, content):
-        assert exif.piexif is not None, "piexif required to add exif information"
-        exif_dict = exif.piexif.load(path)
+        import piexif
+
+        exif_dict = piexif.load(path)
         for ifd, ifd_dict in content.items():
             for key, value in ifd_dict.items():
                 exif_dict[ifd][key] = value
-        exif.piexif.insert(exif.piexif.dump(exif_dict), path)
+        piexif.insert(piexif.dump(exif_dict), path)
 
     return add_exif_information_impl

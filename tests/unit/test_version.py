@@ -9,7 +9,7 @@
 import pytest
 
 from vimiv import version
-from vimiv.imutils import exif
+from vimiv.imutils import metadata
 
 
 @pytest.fixture
@@ -26,15 +26,15 @@ def test_no_svg_support_info(no_svg_support):
 
 
 @pytest.mark.pyexiv2
-def test_pyexiv2_info():
-    assert exif.pyexiv2.__version__ in version.info()
+def test_pyexiv2_info(pyexiv2):
+    assert f"pyexiv2: {metadata._registry[0]('').version}" in version.info().lower()
 
 
 @pytest.mark.piexif
-def test_piexif_info():
-    assert exif.piexif.VERSION in version.info()
+def test_piexif_info(piexif):
+    assert f"piexif: {metadata._registry[0]('').version}" in version.info().lower()
 
 
-def test_no_exif_support_info(noexif):
-    assert "piexif: none" in version.info().lower()
-    assert "pyexiv2: none" in version.info().lower()
+@pytest.mark.nometadata
+def test_no_metadata_support_info(no_metadata_support):
+    assert "metadata support: false" in version.info().lower()
