@@ -14,7 +14,7 @@ from vimiv import api
 from vimiv.config import styles
 
 from .resize import ResizeLayout
-from .transform_widget import TransformWidget
+from .transformwidget import TransformWidget
 
 
 class CropWidget(TransformWidget):
