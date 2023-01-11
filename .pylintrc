@@ -6,14 +6,14 @@ extension-pkg-whitelist=PyQt5,
 init-hook='import sys; sys.path.append("./scripts/pylint_checkers/")'
 load-plugins=check_count,
              check_docstring,
+             check_header,
              pylint.extensions.emptystring,
              pylint.extensions.check_elif,
              pylint.extensions.overlapping_exceptions,
 
 [MESSAGES CONTROL]
 enable=all
-disable=no-self-use,
-        fixme,
+disable=fixme,
         cyclic-import,
         global-statement,
         locally-disabled,
@@ -26,12 +26,14 @@ disable=no-self-use,
         suppressed-message,
         arguments-differ,
         duplicate-code,
-        bad-continuation,
         import-outside-toplevel,
+        raise-missing-from,
+        arguments-renamed,
 
 [BASIC]
 function-rgx=[a-z_][a-z0-9_]{2,50}$
 const-rgx=[A-Za-z_][A-Za-z0-9_]{0,30}$
+class-const-rgx=[A-Za-z_][A-Za-z0-9_]{0,30}$
 method-rgx=[a-z_][A-Za-z0-9_]{2,50}$
 attr-rgx=[a-z_][a-z0-9_]{0,30}$
 argument-rgx=[a-z_][a-z0-9_]{0,30}$

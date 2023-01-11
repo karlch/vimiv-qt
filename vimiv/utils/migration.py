@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tools to help with migration from the deprecated gtk version."""
@@ -13,9 +13,8 @@ from typing import NamedTuple, Optional, List
 from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
 
 import vimiv
+from vimiv.utils import xdg
 from vimiv.widgets import PopUp
-
-from . import xdg
 
 
 class XdgDirectories(NamedTuple):

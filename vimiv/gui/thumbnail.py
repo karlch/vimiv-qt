@@ -1,30 +1,43 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Thumbnail widget."""
 
+import contextlib
+import math
 import os
-from contextlib import suppress
 from typing import List, Optional, Iterator, cast
 
-from PyQt5.QtCore import Qt, QSize, QItemSelectionModel, QRect, pyqtSlot
+from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from PyQt5.QtGui import QColor, QIcon
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils, imutils, widgets
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
+from vimiv.gui import eventhandler, synchronize
 from vimiv.utils import create_pixmap, thumbnail_manager, log
-from . import eventhandler, synchronize
 
 
 _logger = log.module_logger(__name__)
 
 
-class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
+# The class is certainly very border-line in size, much like the corresponding classes
+# image.ScrollableImage and library.Library.
+# TODO consider refactoring if this improves code-clarity
+# pylint: disable=too-many-public-methods
+
+
+class ThumbnailView(
+    eventhandler.EventHandlerMixin,
+    widgets.GetNumVisibleMixin,
+    widgets.ScrollToCenterMixin,
+    widgets.ScrollWheelCumulativeMixin,
+    QListWidget,
+):
     """Thumbnail widget.
 
     Attributes:
@@ -66,8 +79,10 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
 
     @api.modes.widget(api.modes.THUMBNAIL)
     @api.objreg.register
-    def __init__(self):
-        super().__init__()
+    def __init__(self) -> None:
+        widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
+        QListWidget.__init__(self)
+
         self._paths: List[str] = []
 
         fail_pixmap = create_pixmap(
@@ -85,7 +100,9 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         self.setResizeMode(QListWidget.Adjust)
 
         self.setItemDelegate(ThumbnailDelegate(self))
+        self.setDragEnabled(False)
 
+        api.signals.all_images_cleared.connect(self.clear)
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
@@ -96,6 +113,7 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         self.doubleClicked.connect(self.open_selected)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
+        api.mark.markdone.connect(self.repaint)
         synchronize.signals.new_library_path_selected.connect(self._select_path)
 
         styles.apply(self)
@@ -104,8 +122,34 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         for index in range(self.count()):
             yield self.item(index)
 
+    def current_index(self) -> int:
+        """Return the index of the currently selected item."""
+        return self.currentRow()
+
+    def current_column(self) -> int:
+        """Return the column of the currently selected item."""
+        return self.current_index() % self.n_columns()
+
+    def current_row(self) -> int:
+        """Return the row of the currently selected item."""
+        return self.current_index() // self.n_columns()
+
+    def n_columns(self) -> int:
+        """Return the number of columns."""
+        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
+        return (self.width() - sb_width) // self.item_size()
+
+    def n_rows(self) -> int:
+        """Return the number of rows."""
+        return math.ceil(self.count() / self.n_columns())
+
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
+
+    def clear(self):
+        """Override clear to also empty paths."""
+        self._paths = []
+        super().clear()
 
     @pyqtSlot(list)
     def _on_new_images_opened(self, paths: List[str]):
@@ -117,25 +161,23 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         if paths == self._paths:  # Nothing to do
             _logger.debug("No new images to load")
             return
-        _logger.debug("Loading %d new images", len(paths))
-        # Delete paths that are no longer here
-        # We must go in reverse order as otherwise the indexing changes on the
-        # fly
-        for i, path in enumerate(self._paths[::-1]):
-            if path not in paths:
-                _logger.debug("Removing existing thumbnail '%s'", path)
-                if not self.takeItem(len(self._paths) - 1 - i):
-                    log.error("Error removing thumbnail for %s", path)
-        # Add new paths
+        _logger.debug("Updating thumbnails...")
+        removed = set(self._paths) - set(paths)
+        for path in removed:
+            _logger.debug("Removing existing thumbnail '%s'", path)
+            idx = self._paths.index(path)
+            del self._paths[idx]  # Remove as the index also changes in the QListWidget
+            if not self.takeItem(idx):
+                _logger.error("Error removing thumbnail for '%s'", path)
         size_hint = QSize(self.item_size(), self.item_size())
         for i, path in enumerate(paths):
-            if path not in self._paths:
+            if path not in self._paths:  # Add new path
                 _logger.debug("Adding new thumbnail '%s'", path)
-                marked = path in api.mark.paths
-                ThumbnailItem(self, i, marked=marked, size_hint=size_hint)
-        # Update paths and create thumbnails
+                ThumbnailItem(self, i, size_hint=size_hint)
+            self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
         self._manager.create_thumbnails_async(paths)
+        _logger.debug("... update completed")
 
     @utils.slot
     def _on_thumbnail_created(self, index: int, icon: QIcon):
@@ -188,7 +230,6 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             return
         item = self.item(index)
         item.marked = marked
-        self.repaint()
 
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def open_selected(self):
@@ -197,44 +238,62 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        "<ctrl>u", "scroll half-page-up", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("h", "scroll left", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("l", "scroll right", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        ("h", "<button-back>"), "scroll left", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        ("l", "<button-forward>"), "scroll right", mode=api.modes.THUMBNAIL
+    )
     @api.commands.register(mode=api.modes.THUMBNAIL)
-    def scroll(self, direction: argtypes.Direction, count=1):  # type: ignore[override]
+    def scroll(  # type: ignore[override]
+        self, direction: argtypes.DirectionWithPage, count=1
+    ):
         """Scroll to another thumbnail in the given direction.
 
         **syntax:** ``:scroll direction``
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         **count:** multiplier
         """
         _logger.debug("Scrolling in direction '%s'", direction)
-        current = self.currentRow()
-        column = current % self.columns()
-        if direction == argtypes.Direction.Right:
-            current += 1 * count
-            current = min(current, self.count() - 1)
-        elif direction == argtypes.Direction.Left:
-            current -= 1 * count
-            current = max(0, current)
-        elif direction == argtypes.Direction.Down:
-            # Do not jump between columns
-            current += self.columns() * count
-            elems_in_last_row = self.count() % self.columns()
-            if not elems_in_last_row:
-                elems_in_last_row = self.columns()
-            if column < elems_in_last_row:
-                current = min(self.count() - (elems_in_last_row - column), current)
-            else:
-                current = min(self.count() - 1, current)
+        current = self.current_index()
+        if direction == direction.Right:
+            current += count
+        elif direction == direction.Left:
+            current -= count
         else:
-            current -= self.columns() * count
-            current = max(column, current)
+            current = self._scroll_updown(current, direction, count)
         self._select_index(current)
+
+    def _scroll_updown(
+        self, current: int, direction: argtypes.DirectionWithPage, step: int
+    ) -> int:
+        """Helper function bundling the logic required to scroll up/down."""
+        if direction.is_page_step:
+            n_items = self._n_visible_items(contains=True)
+            factor = 0.5 if direction.is_half_page_step else 1
+            n_rows = int(n_items / self.n_columns() * factor)
+            step *= n_rows
+        if direction.is_reverse:  # Upwards
+            return max(self.current_column(), current - self.n_columns() * step)
+        # Do not jump between columns
+        last_in_col = (self.n_rows() - 1) * self.n_columns() + self.current_column()
+        if last_in_col > self.count() - 1:
+            last_in_col -= self.n_columns()
+        return min(current + self.n_columns() * step, last_in_col)
 
     @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
@@ -253,10 +312,25 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         **count:** Select [count]th thubnail instead.
         """
         try:
-            index = number_for_command(index, count, max_count=self.count())
-        except ValueError:
-            raise api.commands.CommandError("Either index or count is required")
+            index = number_for_command(
+                index, count, max_count=self.count(), elem_name="thumbnail"
+            )
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
         self._select_index(index)
+
+    @api.keybindings.register("$", "end-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def end_of_line(self):
+        """Select the last thumbnail in the current row."""
+        first_in_next_row = (self.current_row() + 1) * self.n_columns()
+        self._select_index(first_in_next_row - 1)
+
+    @api.keybindings.register("^", "first-of-line", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def first_of_line(self):
+        """Select the first thumbnail in the current row."""
+        self._select_index(self.current_row() * self.n_columns())
 
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
@@ -279,12 +353,12 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         for i in range(self.count()):
             item = self.item(i)
             item.setSizeHint(QSize(self.item_size(), self.item_size()))
-        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
+        self.scrollTo(self.currentIndex())
 
     @utils.slot
     def _select_path(self, path: str):
         """Select a specific path by name."""
-        with suppress(ValueError):
+        with contextlib.suppress(ValueError):
             self._select_index(self._paths.index(path), emit=False)
 
     def _select_index(self, index: int, emit: bool = True) -> None:
@@ -294,11 +368,11 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
             index: Number of the current item to select.
             emit: Emit the new_thumbnail_path_selected signal.
         """
+        if not self._paths:
+            raise api.commands.CommandWarning("Thumbnail list is empty")
         _logger.debug("Selecting thumbnail number %d", index)
-        model_index = self.model().index(index, 0)
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(model_index, selmod)  # type: ignore
-        self.scrollTo(model_index, hint=self.PositionAtCenter)
+        index = utils.clamp(index, 0, self.count() - 1)
+        self.setCurrentRow(index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
 
@@ -307,31 +381,43 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         self.setIconSize(QSize(value, value))
         self.rescale_items()
 
-    def columns(self):
-        """Return the number of columns."""
-        sb_width = int(styles.get("image.scrollbar.width").replace("px", ""))
-        return (self.width() - sb_width) // self.item_size()
-
     def item_size(self):
         """Return the size of one icon including padding."""
         padding = int(styles.get("thumbnail.padding").replace("px", ""))
         return self.iconSize().width() + 2 * padding
 
+    @api.status.module("{thumbnail-basename}")
+    def _thumbnail_basename(self):
+        """Basename of the currently selected thumbnail."""
+        try:
+            abspath = self._paths[self.current_index()]
+            basename = os.path.basename(abspath)
+            return basename
+        except IndexError:
+            return ""
+
     @api.status.module("{thumbnail-name}")
     def _thumbnail_name(self):
-        """Name of the currently selected thumbnail."""
+        """Name without extension of the currently selected thumbnail."""
         try:
-            abspath = self._paths[self.currentRow()]
-            basename = os.path.basename(abspath)
-            name, _ = os.path.splitext(basename)
+            name, _ = os.path.splitext(self._thumbnail_basename())
             return name
+        except IndexError:
+            return ""
+
+    @api.status.module("{thumbnail-extension}")
+    def _thumbnail_extension(self):
+        """Extension of the currently selected thumbnail."""
+        try:
+            _, extension = os.path.splitext(self._thumbnail_basename())
+            return extension.replace(".", "")
         except IndexError:
             return ""
 
     def current(self):
         """Current path for thumbnail mode."""
         try:
-            return self._paths[self.currentRow()]
+            return self._paths[self.current_index()]
         except IndexError:
             return ""
 
@@ -347,9 +433,9 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
         return sizes[self.iconSize().width()]
 
     @api.status.module("{thumbnail-index}")
-    def current_index(self):
+    def current_index_statusbar(self) -> str:
         """Index of the currently selected thumbnail."""
-        return str(self.currentRow() + 1)
+        return str(self.current_index() + 1).zfill(len(self.total()))
 
     @api.status.module("{thumbnail-total}")
     def total(self):
@@ -359,7 +445,18 @@ class ThumbnailView(eventhandler.EventHandlerMixin, QListWidget):
     def resizeEvent(self, event):
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
-        self.scrollTo(self.selectionModel().currentIndex(), hint=self.PositionAtCenter)
+        self.scrollTo(self.currentIndex())
+
+    def _scroll_wheel_callback(self, steps_x, steps_y):
+        """Callback function used by the scroll wheel mixin for mouse scrolling."""
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
+        if steps_x < 0:
+            self.scroll(argtypes.DirectionWithPage.Right, count=abs(steps_x))
+        elif steps_x > 0:
+            self.scroll(argtypes.DirectionWithPage.Left, count=steps_x)
 
 
 class ThumbnailDelegate(QStyledItemDelegate):
@@ -440,27 +537,25 @@ class ThumbnailDelegate(QStyledItemDelegate):
         # Draw
         painter.drawPixmap(x, y, size.width(), size.height(), pixmap)
         painter.restore()
-        self._draw_mark(painter, item, option, x + size.width(), y + size.height())
+        if item.marked:
+            self._draw_mark(painter, option, x + size.width(), y + size.height())
 
-    def _draw_mark(self, painter, item, option, x, y):
+    def _draw_mark(self, painter, option, x, y):
         """Draw small rectangle as mark indicator if the image is marked.
 
         Args:
             painter: The QPainter.
             option: The QStyleOptionViewItem.
-            item: The ThumbnailItem storing mark status.
             x: x-coordinate at which the pixmap ends.
             y: y-coordinate at which the pixmap ends.
         """
-        if not item.marked:
-            return
         # Try to set 5 % of width, reduce to padding if this is smaller
         # At least 4px width
-        width = max(min(0.05 * option.rect.width(), self.padding), 4)
+        width = int(max(min(0.05 * option.rect.width(), self.padding), 4))
         painter.save()
         painter.setBrush(self.mark_bg)
         painter.setPen(Qt.NoPen)
-        painter.drawRect(x - 0.5 * width, y - 0.5 * width, width, width)
+        painter.drawRect(x - width // 2, y - width // 2, width, width)
         painter.restore()
 
     def _get_background_color(self, item, state):
@@ -486,22 +581,30 @@ class ThumbnailItem(QListWidgetItem):
 
     _default_icon = None
 
-    def __init__(self, parent, index, highlighted=False, marked=False, size_hint=None):
-        super().__init__(self.default_icon, "", parent, index)
+    def __init__(self, parent, index, *, size_hint, highlighted=False, marked=False):
+        super().__init__(self.default_icon(), "", parent, index)
         self.highlighted = highlighted
         self.marked = marked
         self.setSizeHint(size_hint)
 
-    @property
-    def default_icon(self):
-        """Default icon if the thumbnail has not been created."""
-        if self._default_icon is None:
-            self._default_icon = QIcon(
-                create_pixmap(
-                    color=styles.get("thumbnail.default.bg"),
-                    frame_color=styles.get("thumbnail.frame.fg"),
-                    size=256,
-                    frame_size=10,
-                )
+    @classmethod
+    def default_icon(cls):
+        """Default icon if the thumbnail has not been created.
+
+        The return value is stored to avoid re-creating the pixmap for every thumbnail.
+        """
+        if cls._default_icon is None:
+            cls._default_icon = cls.create_default_icon()
+        return cls._default_icon
+
+    @classmethod
+    def create_default_icon(cls):
+        """Create the default icon shown if the thumbnail has not been created."""
+        return QIcon(
+            create_pixmap(
+                color=styles.get("thumbnail.default.bg"),
+                frame_color=styles.get("thumbnail.frame.fg"),
+                size=256,
+                frame_size=10,
             )
-        return self._default_icon
+        )

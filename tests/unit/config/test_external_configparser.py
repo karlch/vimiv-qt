@@ -1,21 +1,22 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Unit tests for vimiv.config.external_configparser."""
 
+import collections
 import configparser
-import os
-from collections import namedtuple
 
 import pytest
 
 from vimiv.config import external_configparser
 
 
-ENV_VARIABLE = namedtuple("EnvironmentVariable", ["name", "value"])("COLOR0", "#121212")
+ENV_VARIABLE = collections.namedtuple("EnvironmentVariable", ["name", "value"])(
+    "COLOR0", "#121212"
+)
 SECTION_NAME = "default".upper()
 OPTION_NAME = ENV_VARIABLE.name.lower()
 
@@ -26,23 +27,21 @@ def parser():
 
 
 @pytest.fixture()
-def config(tmpdir):
+def config(tmp_path):
     """Fixture to retrieve a written config file with external references."""
     parser = configparser.ConfigParser()
     parser[SECTION_NAME][OPTION_NAME] = "${env:" + ENV_VARIABLE.name + "}"
-    path = tmpdir.join("config.ini")
-    with open(path, "w") as f:
+    path = tmp_path / "config.ini"
+    with open(path, "w", encoding="utf-8") as f:
         parser.write(f)
     yield str(path)
 
 
 @pytest.fixture()
-def setup_env():
+def setup_env(monkeypatch):
     """Fixture to add and clean up an environment variable."""
     variable, value = ENV_VARIABLE
-    os.environ[variable] = value
-    yield
-    del os.environ[variable]
+    monkeypatch.setenv(variable, value)
 
 
 @pytest.mark.parametrize(
@@ -81,6 +80,6 @@ def test_fail_update_variable_from_env():
         external_configparser.ExternalInterpolation.update("${env:not_in_env}")
 
 
-def test_read_env_variable_from_config(config, parser):
+def test_read_env_variable_from_config(setup_env, config, parser):
     parser.read(config)
     assert parser.get(SECTION_NAME, OPTION_NAME) == ENV_VARIABLE.value

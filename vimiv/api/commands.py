@@ -1,13 +1,13 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Command storage and initialization`.
 
 The user interacts with vimiv using commands. Creating a new command is done
-using the :func:`register` decorator. The command name is directly infered from
+using the :func:`register` decorator. The command name is directly inferred from
 the function name, the functions docstring is used to document the command. The
 arguments supported by the command are also deduced by inspecting the arguments
 the function takes. To understand these concepts, lets add a simple command
@@ -49,7 +49,8 @@ It is possible for commands to support the special ``count`` argument.
 
 Another special argument is the ``paths`` argument. It will perform unix-style pattern
 matching using the ``glob`` module on each path given and return a list of matched
-paths. An example of this in action is the ``:open`` command defined in ``vimiv.app``.
+paths. An example of this in action is the ``:open`` command defined in ``vimiv.api`` in
+the ``open_paths`` function.
 
 Each command is valid for a specific mode, the default being global. To supply
 the mode, add it to the register decorator::
@@ -70,17 +71,14 @@ command.
 """
 
 import argparse
+import contextlib
 import glob
 import inspect
 import os
 import typing
-from contextlib import suppress
-from functools import partial
 
+from vimiv.api import modes, objreg, settings
 from vimiv.utils import (
-    class_that_defined_method,
-    cached_method,
-    is_method,
     flatten,
     log,
     customtypes,
@@ -88,8 +86,6 @@ from vimiv.utils import (
     is_optional_type,
     type_of_optional,
 )
-
-from . import modes
 
 
 _logger = log.module_logger(__name__)
@@ -99,6 +95,7 @@ def register(
     mode: modes.Mode = modes.GLOBAL,
     hide: bool = False,
     store: bool = True,
+    edit: bool = False,
     name: str = None,
 ) -> typing.Callable[[customtypes.FuncT], customtypes.FuncT]:
     """Decorator to store a command in the registry.
@@ -107,11 +104,12 @@ def register(
         mode: Mode in which the command can be executed.
         hide: Hide command from command line.
         store: Save command to allow repeating with '.'.
+        edit: Command may make changes on disk.
         name: Name of the command if it should not be inferred from the function name.
     """
 
     def decorator(func: customtypes.FuncT) -> customtypes.FuncT:
-        _Command(func, mode=mode, hide=hide, store=store, name=name)
+        _Command(func, mode=mode, hide=hide, store=store, name=name, edit=edit)
         return func
 
     return decorator
@@ -205,11 +203,11 @@ class _CommandArguments(argparse.ArgumentParser):
         raise CommandInfo(self.description)
 
     def parse_args(self, args: typing.List[str]) -> argparse.Namespace:  # type: ignore
-        """Override parse_args to sort and flatten paths list in addition."""
+        """Override parse_args to flatten paths list in addition."""
         parsed_args = super().parse_args(args)
-        with suppress(AttributeError):
+        with contextlib.suppress(AttributeError):
             parsed_args.paths = [
-                os.path.abspath(path) for path in sorted(flatten(parsed_args.paths))
+                os.path.abspath(path) for path in flatten(parsed_args.paths)
             ]
         return parsed_args
 
@@ -282,6 +280,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         description: Brief command description.
 
         _argparser: Argument parser used when the command is called.
+        _edit: The command may make changes on disk.
         _long_description: Full command description.
     """
 
@@ -291,6 +290,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         mode: modes.Mode = modes.GLOBAL,
         hide: bool = False,
         store: bool = True,
+        edit: bool = False,
         name: str = None,
     ):
         self._argparser: typing.Optional[_CommandArguments] = None
@@ -299,6 +299,7 @@ class _Command:  # pylint: disable=too-many-instance-attributes
         self.mode = mode
         self.hide = hide
         self.store = store
+        self._edit = edit
         # Retrieve description from docstring
         docstr = inspect.getdoc(func)
         if docstr is None:
@@ -317,11 +318,12 @@ class _Command:  # pylint: disable=too-many-instance-attributes
             args: List of arguments for argparser to parse.
             count: Count passed to the command.
         """
+        if self._edit and settings.read_only:
+            raise CommandError("Disabled due to read-only being active")
         parsed_args = self.argparser.parse_args(args)
         kwargs = vars(parsed_args)
         self._parse_count(count, kwargs)
-        func = self._create_func(self.func)
-        func(**kwargs)
+        objreg._call_with_instance(self.func, **kwargs)
 
     @property
     def argparser(self) -> _CommandArguments:
@@ -342,24 +344,6 @@ class _Command:  # pylint: disable=too-many-instance-attributes
 
     def __repr__(self) -> str:
         return f"Command('{self.name}', '{self.func}')"
-
-    @cached_method
-    def _create_func(self, func: typing.Callable) -> typing.Callable:
-        """Create function to call for a command function.
-
-        This retrieves the instance of a class object for methods and sets it as first
-        argument (the 'self' argument) of a lambda. For standard functions nothing is
-        done.
-
-        Returns:
-            A function to be called with any keyword arguments.
-        """
-        _logger.debug("Creating function for command '%s'", func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            instance = cls.instance
-            return partial(func, instance)
-        return func
 
 
 def _get_command_name(func: typing.Callable) -> str:

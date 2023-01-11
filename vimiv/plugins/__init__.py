@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Interface to load and initialize plugins`.
@@ -39,7 +39,7 @@ There are three main components a plugin can make use of to interact with vimiv:
 .. warning::
 
     Before the release of version 1.0 there may be changes to the api although it is
-    tried to keep them as minimial as possible. Any breaking changes will be announced
+    tried to keep them as minimal as possible. Any breaking changes will be announced
     in advance to allow plugins to adapt.
 
 The plugin loading process can be summarized by the following steps:
@@ -65,10 +65,10 @@ Module Attributes:
 import importlib
 import os
 import sys
-from types import ModuleType
+import types
 from typing import Dict, List
 
-from vimiv.utils import xdg, log
+from vimiv.utils import xdg, log, quotedjoin
 
 
 _app_plugin_directory = os.path.dirname(__file__)
@@ -76,7 +76,7 @@ _user_plugin_directory = xdg.vimiv_data_dir("plugins")
 _plugins: Dict[str, str] = {
     "print": "default"
 }  # key: name, value: additional information
-_loaded_plugins: Dict[str, ModuleType] = {}  # key:name, value: loaded module
+_loaded_plugins: Dict[str, types.ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
 
 
@@ -92,16 +92,25 @@ def load() -> None:
     sys.path.insert(0, _app_plugin_directory)
     sys.path.insert(0, _user_plugin_directory)
     app_plugins = _get_plugins(_app_plugin_directory)
-    _logger.debug("Available app plugins: %s", ", ".join(app_plugins))
+    _logger.debug("Available app plugins: %s", quotedjoin(app_plugins))
     user_plugins = _get_plugins(_user_plugin_directory)
-    _logger.debug("Available user plugins: %s", ", ".join(user_plugins))
+    _logger.debug("Available user plugins: %s", quotedjoin(user_plugins))
     for plugin, info in _plugins.items():
         if plugin in app_plugins:
             _load_plugin(plugin, info, _app_plugin_directory)
         elif plugin in user_plugins:
             _load_plugin(plugin, info, _user_plugin_directory)
         else:
-            _logger.debug("Unable to find plugin '%s', ignoring", plugin)
+            _logger.error(
+                "Unable to find plugin '%s', ignoring.\n"
+                "    Available app plugins: %s\n"
+                "    Available user plugins: %s\n"
+                "    User plugin directory: '%s'",
+                plugin,
+                quotedjoin(app_plugins),
+                quotedjoin(user_plugins),
+                _user_plugin_directory,
+            )
     _logger.debug("Plugin loading completed")
 
 
@@ -114,9 +123,7 @@ def cleanup() -> None:
     _logger.debug("Cleaning up plugins")
     for name, module in _loaded_plugins.items():
         try:
-            # AttributeError is caught afterwards, the module may or may not define
-            # cleanup
-            module.cleanup()  # type: ignore
+            module.cleanup()
             _logger.debug("Cleaned up '%s'", name)
         except AttributeError:
             _logger.debug("Plugin '%s' does not define cleanup()", name)
@@ -151,8 +158,7 @@ def _load_plugin(name: str, info: str, directory: str) -> None:
         log.error("Importing plugin '%s': %s", name, str(e))
         return
     try:
-        # AttributeError is caught afterwards, the module may or may not define init
-        module.init(info)  # type: ignore
+        module.init(info)
         _logger.debug("Initialized '%s'", name)
     except AttributeError:
         _logger.debug("Plugin '%s' does not define init()", name)

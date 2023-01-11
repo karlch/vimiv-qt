@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Integration tests related to reading settings from configuration file."""
@@ -17,7 +17,7 @@ from vimiv.config import configfile
 #        Configuration dictionaries used to parametrize the configuration file         #
 ########################################################################################
 UPDATED_CONFIG = {
-    "GENERAL": {"shuffle": "True"},
+    "SORT": {"shuffle": "True"},
     "IMAGE": {"overzoom": "4.2"},
     "THUMBNAIL": {"size": "64"},
 }
@@ -34,8 +34,17 @@ UPDATED_STATUSBAR = {
 }
 
 
+UPDATED_EXIF_KEY_SETS = {
+    "METADATA": {
+        "keys2": "Override,Second,Set",
+        "keys4": "New,Fourth,Set",
+        "keys9": "New,Ninth,Set",
+    }
+}
+
+
 UPDATED_CONFIG_INVALID = {
-    "GENERAL": {"shuffle": "not a bool"},
+    "SORT": {"shuffle": "not a bool"},
     "IMAGE": {"overzoom": "not a float"},
     "THUMBNAIL": {"size": "not an int"},
 }
@@ -52,7 +61,7 @@ def reset_to_default(cleanup_helper):
 
 
 @pytest.fixture(scope="function")
-def configpath(tmpdir, custom_configfile, request):
+def configpath(custom_configfile, request):
     yield custom_configfile(
         "vimiv.conf", configfile.read, configfile.get_default_parser, **request.param
     )
@@ -74,7 +83,7 @@ def mock_logger(mocker):
 @pytest.mark.parametrize("configpath", [UPDATED_CONFIG], indirect=["configpath"])
 def test_read_config(configpath):
     """Ensure updated settings are read correctly."""
-    assert api.settings.shuffle.value is True
+    assert api.settings.sort.shuffle.value is True
     assert api.settings.image.overzoom.value == 4.2
     assert api.settings.thumbnail.size.value == 64
 
@@ -83,10 +92,20 @@ def test_read_config(configpath):
     "configpath", [{"ALIASES": {"anything": "scroll left"}}], indirect=["configpath"]
 )
 def test_read_aliases(configpath):
-    """Ensure new aliaess are read correctly."""
+    """Ensure new aliases are read correctly."""
     global_aliases = aliases.get(api.modes.IMAGE)
     assert "anything" in global_aliases
     assert global_aliases["anything"] == "scroll left"
+
+
+@pytest.mark.parametrize("configpath", [UPDATED_EXIF_KEY_SETS], indirect=["configpath"])
+def test_read_exif_key_sets(configpath):
+    """Ensure new exif key sets are read correctly."""
+    keysets = api.settings.metadata.keysets
+    for key, expected in UPDATED_EXIF_KEY_SETS["METADATA"].items():
+        number = int(key.replace("keys", ""))
+        value = keysets[number]
+        assert value == expected
 
 
 @pytest.mark.parametrize("configpath", [UPDATED_STATUSBAR], indirect=["configpath"])

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Commands and status modules using the api.
@@ -11,15 +11,13 @@ corresponding objects.
 """
 
 import os
-from contextlib import suppress
 from typing import List
 
 from PyQt5.QtCore import QDateTime
 from PyQt5.QtGui import QGuiApplication, QClipboard
 
-import vimiv
 from vimiv import api
-from vimiv.utils import files, log
+from vimiv.utils import files, log, imagereader
 
 
 _logger = log.module_logger(__name__)
@@ -28,6 +26,10 @@ _logger = log.module_logger(__name__)
 ###############################################################################
 #                                  Commands                                   #
 ###############################################################################
+@api.keybindings.register("<button-middle>", "enter thumbnail", mode=api.modes.LIBRARY)
+@api.keybindings.register("<button-middle>", "enter thumbnail", mode=api.modes.IMAGE)
+@api.keybindings.register("<button-right>", "enter library", mode=api.modes.THUMBNAIL)
+@api.keybindings.register("<button-right>", "enter library", mode=api.modes.IMAGE)
 @api.keybindings.register("gm", "enter manipulate")
 @api.keybindings.register("gt", "enter thumbnail")
 @api.keybindings.register("gl", "enter library")
@@ -87,6 +89,63 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     clipboard.setText(name, mode=mode)
 
 
+@api.keybindings.register("yi", "copy-image")
+@api.keybindings.register("yI", "copy-image --primary")
+@api.commands.register()
+def copy_image(
+    primary: bool = False,
+    width: int = None,
+    height: int = None,
+    size: int = None,
+    count: int = None,
+) -> None:
+    """Copy currently selected image to system clipboard.
+
+    **syntax:** ``:copy-image [--primary] [--width=WIDTH] [--height=HEIGHT]
+    [--size=SIZE]``
+
+    optional arguments:
+        * ``--primary``: Copy to primary selection.
+        * ``--width``: Scale width to the specified value.
+        * ``--height``: Scale height to the specified value.
+        * ``--size``: Scale longer side to the specified value.
+
+    **count:** Equivalent to the ``--size`` option
+    """
+    clipboard = QGuiApplication.clipboard()
+    mode = QClipboard.Selection if primary else QClipboard.Clipboard
+    path = api.current_path()
+
+    try:
+        reader = imagereader.get_reader(path)
+        pixmap = reader.get_pixmap()
+    except ValueError as e:
+        log.error(str(e))
+        return
+
+    if size or count:
+        pix_size = pixmap.size()
+
+        size = count if count is not None else size
+
+        if pix_size.height() >= pix_size.width():
+            _logger.debug(f"Copy image with size {size} restricting height")
+            pixmap = pixmap.scaledToHeight(size)  # type: ignore[arg-type]
+        else:
+            _logger.debug(f"Copy image with size {size} restricting width")
+            pixmap = pixmap.scaledToWidth(size)  # type: ignore[arg-type]
+
+    elif width:
+        _logger.debug(f"Copy image with width {width}")
+        pixmap = pixmap.scaledToWidth(width)
+
+    elif height:
+        _logger.debug(f"Copy image with height {height}")
+        pixmap = pixmap.scaledToHeight(height)
+
+    clipboard.setPixmap(pixmap, mode=mode)
+
+
 @api.commands.register()
 def paste_name(primary: bool = True) -> None:
     """Paste path from clipboard to open command.
@@ -101,50 +160,7 @@ def paste_name(primary: bool = True) -> None:
     api.open_paths([clipboard.text(mode=mode)])
 
 
-# We want to use the name help here as it is the best name for the command
-@api.commands.register(mode=api.modes.MANIPULATE, name="help")
-@api.commands.register(name="help")
-def help_command(topic: str) -> None:
-    """Show help on a command or setting.
-
-    **syntax:** ``:help topic``
-
-    positional arguments:
-        * ``topic``: Either a valid :command or a valid setting name.
-
-    .. hint:: For commands ``help :command`` is the same as ``command -h``.
-    """
-    topic = topic.lower().lstrip(":")
-    if topic == "vimiv":
-        log.info(
-            "%s: %s\n\n"
-            "Website: %s\n\n"
-            "For an overview of keybindings, run :keybindings.\n"
-            "To retrieve help on a command or setting run :help topic.",
-            vimiv.__name__,
-            vimiv.__description__,
-            vimiv.__url__,
-        )
-        return
-    with suppress(api.commands.CommandNotFound):
-        command = api.commands.get(topic, mode=api.modes.current())
-        # This raises an exception and leaves this command
-        command(["-h"], "")
-    with suppress(KeyError):
-        setting = api.settings.get(topic)
-        log.info(
-            "%s: %s\n\nType: %s\nDefault: %s\nSuggestions: %s",
-            setting.name,
-            setting.desc,
-            setting,
-            setting.default,
-            ", ".join(setting.suggestions()),
-        )
-        return
-    raise api.commands.CommandError(f"Unknown topic '{topic}'")
-
-
-@api.commands.register()
+@api.commands.register(edit=True)
 def rename(
     paths: List[str],
     base: str,
@@ -159,7 +175,7 @@ def rename(
     [--overwrite] [--skip-image-check]``
 
     Example::
-        ``:rename * identifier`` would rename all images in the filelist to
+        ``:rename %f identifier`` would rename all images in the filelist to
         ``identifier_001``, ``identifier_002``, ..., ``identifier_NNN``.
 
     positional arguments:
@@ -173,6 +189,7 @@ def rename(
         * ``--skip-image-check``: Do not check if all renamed paths are images.
     """
     paths = [path for path in paths if files.is_image(path) or skip_image_check]
+    paths = api.settings.sort.image_order.sort(paths)
     if not paths:
         raise api.commands.CommandError("No paths to rename")
     marked = []
@@ -194,7 +211,7 @@ def rename(
     api.mark.mark(marked)
 
 
-@api.commands.register()
+@api.commands.register(edit=True)
 def mark_rename(
     base: str, start: int = 1, overwrite: bool = False, separator: str = "_"
 ) -> None:
@@ -225,6 +242,22 @@ def mark_rename(
         separator=separator,
         skip_image_check=True,
     )
+
+
+@api.commands.register()
+def print_stdout(text: List[str], sep: str = "\n", end: str = "\n") -> None:
+    """Print text to the terminal.
+
+    **syntax:** ``:print-stdout text [--sep] [--end]``
+
+    positional arguments:
+        * ``text``: List of strings to concatenate and print
+
+    optional arguments:
+        * ``--sep``: String inserted between list element, default is new line.
+        * ``--end``: String appended after last element, default is new line.
+    """
+    print(*text, sep=sep, end=end)
 
 
 ###############################################################################
@@ -260,3 +293,11 @@ def modified() -> str:
         return "N/A"
     date_time = QDateTime.fromSecsSinceEpoch(int(mtime))
     return date_time.toString("yyyy-MM-dd HH:mm")
+
+
+@api.status.module("{read-only}")
+def read_only() -> str:
+    """Print ``[RO]`` if read_only is true."""
+    if api.settings.read_only:
+        return " [RO]"
+    return ""

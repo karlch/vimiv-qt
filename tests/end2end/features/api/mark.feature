@@ -13,7 +13,7 @@ Feature: Mark and tag images.
         And image_01.jpg should be marked
         And image_02.jpg should be marked
 
-    Scenario: Load all marked images
+    Scenario: Open all marked images
         Given I open 5 images
         When I run mark image_01.jpg image_02.jpg
         And I run open %m
@@ -46,6 +46,14 @@ Feature: Mark and tag images.
         And I run tag-write test
         And I run tag-delete test
         Then the tag file test should not exist
+
+    Scenario: Open a tag file
+        Given I open 5 images
+        When I run mark image_01.jpg image_02.jpg
+        And I run tag-write test
+        And I run tag-open test
+        Then there should be 2 marked images
+        And the filelist should contain 2 images
 
     Scenario: Remove deleted file from mark list
         Given I open 5 images

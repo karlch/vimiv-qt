@@ -3,7 +3,246 @@ Changelog
 
 All notable changes to vimiv are documented in this file.
 
-v0.6.0 (unreleased)
+v0.9.0 (unreleased)
+-------------------
+
+Added:
+^^^^^^
+
+* More vim movement commands with corresponding keybindings, namely:
+
+  * ``:scroll page-up/page-down/half-page-up/half-page-down`` mapped to ``<ctrl>b``,
+    ``<ctrl>f``, ``<ctrl>u`` and ``<ctrl>d`` for library and thumbnail mode.
+  * ``:end-of-line`` mapped to ``$`` and ``:first-of-line`` mapped to ``^`` to select
+    the first icon of the current row in thumbnail mode.
+
+  Thanks `@jcjgraf <https://github.com/jcjgraf>`_ for the idea!
+* The ``--action`` flag for the ``:mark`` command. ``--action toggle`` is the default
+  and keeps the previous behaviour of the mark command, i.e. inversing the mark status
+  of the passed path(s). In addition one can now use ``--action mark`` and
+  ``--action unmark`` to force (un-) marking the paths.
+* Support for the ``avif`` file format using the imageformats plugin. To enable it, add
+  ``imageformats = avif`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
+  `qt-avif-image-plugin <https://github.com/novomesk/qt-avif-image-plugin>`_.
+  Thanks `@schyzophrene-asynchrone`_!
+* A few more default mouse bindings:
+
+  * ``<button-right>`` to enter the library from image and thumbnail mode.
+  * ``<button-right>`` to go to the parent directory in the library.
+  * ``<button-middle>`` to enter thumbnail mode from image and library mode.
+  * ``<button-forward>`` and ``<button-back>`` to select the next/previous image in
+    image mode.
+  * ``<button-forward>`` and ``<button-back>`` to scroll down/up and open any selected
+    image in library mode.
+  * ``<button-forward>`` and ``<button-back>`` select the next/previous thumbnail in
+    thumnbail mode.
+
+  Thanks `@BachoSeven`_ for your thoughts!
+* The ``:copy-image`` command which copies the selected image to the clipboard. The
+  flags ``--width``, ``--height`` and ``--size`` allow to scale the copied image.
+  Thanks `@jcjgraf`_!
+* The ``read_only`` setting. When set to true, all commands that may write changes to
+  disk are disabled. This comes with the ``{read-only}`` status module which displays
+  ``[RO]`` in case ``read_only`` is true. Note that you must add this to your
+  vimiv.conf to enable it if you already define the left status contents. The new
+  defaults are::
+
+    left = {pwd}{read-only}
+    left_image = {index}/{total} {basename}{read-only} [{zoomlevel}]
+    left_thumbnail = {thumbnail-index}/{thumbnail-total} {thumbnail-name}{read-only}
+
+  Thanks `@willemw12`_ for the idea!
+* The ``zh`` keybinding to toggle hidden files.
+  Thanks `@Kakupakat`_ for the idea!
+* The ``:print-stdout`` command which prints a given list of string to the STDOUT.
+* The ``:mark-print`` default alias which prints all marked images to STDOUT using
+  ``:print-stdout``.
+* The ``-o TEXT`` flag to print ``TEXT`` to standard output before exit. Wildcards are
+  expanded before printing, allowing to for example print marked files using ``-o %m``.
+  Thanks `@loiccoyle`_ for the idea!
+* The ``-i`` flag to read paths to open from standard input instead.
+  Thanks `@loiccoyle`_ for the idea!
+* The ``--qt-args`` flag to pass arguments directly to qt. When passing multiple
+  arguments, they must be quoted accordingly, e.g.
+  ``vimiv --qt-args '--name floating'``.
+  Thanks `@loiccoyle`_ for the discussion!
+* Statusbar modules ``name``, ``thumbnail-basename``, ``extension`` and
+  ``thumbnail-extension``.
+* Support for the ``jp2`` file format using the imageformats plugin. To enable it, add
+  ``imageformats = jp2`` to the ``[PLUGINS]`` section of your ``vimiv.conf``. Requires
+  the qt imageformats plugin. Thanks `@szsdk`_ for testing!
+* The ``image.zoom_wheel_ctrl`` setting which toggles the need to hold the ``<ctrl>``
+  modifier for zooming an image with the mouse wheel. Thanks `@ArtemSmaznov`_ for the
+  idea!
+* The ``--ask`` flag for the ``:delete`` command to prompt the user for confirmation
+  before deleting. Thanks `@timsofteng`_ for the idea!
+* Support for different sorting options for images and directories via the
+  ``sort.image_order``, ``sort.directory_order``, ``sort.reverse`` and
+  ``sort.ignore_case`` settings. Please refer to the :ref:`documentation <sorting>` for
+  further details. Thanks to `@kAldown`_ for the initial implementation, `@jcjgraf`_ for
+  taking over, and many more joining in the discussions and reminding us why this
+  feature is important!
+* New ``{cursor-position}`` statusbar module which tracks the mouse cursor position in
+  image coordinates.
+
+Changed:
+^^^^^^^^
+
+* New set of default metadata key sets numbered from 1 to 5. Thanks `@jcjgraf`_!
+* When toggling ``library.show_hidden`` the selection now stays on the same file, not
+  the same index.
+* Using the mouse to scroll in library and thumbnail mode now changes the selection
+  instead of just scrolling the view. Horizontal scrolling in thumbnail mode is
+  supported.
+* Default statusbar module ``thumbnail-name`` was changed to ``thumbnail-basename`` for
+  ``left_thumbnail``.
+* Support for Qt versions 5.9 and 5.10 was officially dropped. These are no longer
+  supported by our testing framework, and 5.11 is out since July 2018. Code will likely
+  still work with these versions, but as it is no longer tested, there is no guarantee.
+* The ``shuffle`` setting was moved into the ``sort`` group.
+
+Fixed:
+^^^^^^
+
+* Crash when deleting images without permission. Thanks `@jcjgraf`_!
+* Undeleting symlinks. Thanks `@jcjgraf`_!
+* Expanding tilde to home directory when using the ``:write`` command. Thanks
+  `@jcjgraf`_ for pointing this out!
+* Completion for aliases.
+* Crash when extracting metadata using piexif from a non JPEG or TIFF image. Thanks `@BachoSeven`_ for pointing this out!
+* Crash when searching in a symlinked directory. Thanks `@BachoSeven`_ for pointing this
+  out!
+* Inconsistencies between the base status bar module and the thumbnail- modules.
+
+
+v0.8.0 (2021-01-18)
+-------------------
+
+Added:
+^^^^^^
+
+* A customizable set of metadata key settings numbered ``metadata.keys1`` to
+  ``metadata.keys3``. The default is ``metadata.keys1``. One can switch between the sets
+  using ``[count]i``. To override one of these sets, add ``keys2 =
+  Override,SecondSet``. To add a new one, use ``keys4 = New,Fourth,Set``. Here the
+  values must be a comma-separated list of valid metadata keys. Thanks `@jcjgraf`_!
+* ``<equal>`` is now bound to ``:scale --level=fit`` in image mode. Thanks `@jcjgraf`_
+  for pointing this out!
+* The ``:history-clear`` command to clear the command history.
+* Handle ``unbind`` explicitly when parsing ``keys.conf``. Instead of binding a key to
+  the ``:unbind`` command, any existing keybinding for this key is now removed.
+* A new api interface which enables writing plugins to support new image formats. See
+  :ref:`support_new_imageformats` for more details.
+  Thanks `@jcjgraf`_!
+* New ``--keep-zoom`` flag for ``:next`` and ``:prev`` which preserves zoom level and
+  scroll position of the current image.
+  Thanks `@jcjgraf`_ for the idea!
+* Exif support using `pyexiv2 <https://python3-exiv2.readthedocs.io/>`_. When available,
+  vimiv now prefers pyexiv2 over piexif for exif support due to its ability to format
+  exif values into a human readable format. Thanks a lot
+  `@jcjgraf`_ for all your hard work, thoughts and comments
+  on this topic!
+* New ``:metadata-list-keys`` command to display all valid exif keys for the current
+  image.
+
+Changed:
+^^^^^^^^
+
+* The ``=`` key can now be bound using ``<equal>``. Using the raw ``=`` character is not
+  possible in ``keys.conf`` as it is treated as separator much like ``:``.
+* Renamed ``vimiv.appdata.xml`` to ``org.karlch.vimiv.qt.metainfo.xml``.
+* History is now mode based. The plain-text history file is replaced by a json file
+  which stores the history of each mode. Any existing history is migrated by adding it
+  to every mode and keeping a backup of the plain-text history file at ``history.bak``.
+  The script ``scripts/vimiv_history.py`` is provided to print the history of a mode
+  line-by-line as aid in case user-scripts relied on the plain-text nature of the
+  history file.
+
+Fixed:
+^^^^^^
+
+* Not selecting the first library row in a directory in case the directory was
+  previously empty.
+* Initial selection of ``:complete --inverse``. This is now correctly the last row, not
+  the second-to-last.
+* Various issues when handling backslash and percent characters in paths and
+  completions. Thanks
+  `@woefe`_ for pointing these out!
+* Quoting of paths and the date format of the trashinfo file created by the ``:delete``
+  command. Thanks `@woefe`_ for the bug report.
+* Creating thumbnails for thumbnails.
+* Opening single hidden images when ``library.show_hidden`` is set to false. Thanks
+  `@schyzophrene-asynchrone`_ for pointing
+  this out!
+* Displaying key binding conflicts before parsing the complete ``keys.conf``. This lead
+  to scenarios in which a warning was displayed which is later resolved by the
+  corresponding ``unbind``. Thanks `@schyzophrene-asynchrone`_!
+* Crash when toggling manipulate mode before ever entering it. Thanks
+  `@pozitron57`_ for pointing this out!
+* Crash when dragging thumbnails.
+
+
+v0.7.0 (2020-05-17)
+-------------------
+
+Added:
+^^^^^^
+
+* The tilde character ``~`` is now also expanded to the user's home directory when
+  running external commands started via ``!``.
+* The ``%f`` wildcard to match the current filelist. This is useful in addition to ``*``
+  as the filelist does not have to be equal to all files in the current directory.
+* The ``:tag-open`` command equivalent to ``:tag-load`` followed by ``:open %m`` for
+  convenience.
+* Various small improvements to the ``:help`` command:
+
+  * Consistent cleaner formatting using the html-subset of ``QLabel``.
+  * New ``wildcards`` topic.
+
+Changed:
+^^^^^^^^
+
+* Manipulations are no longer directly written to file when running ``:accept``.
+  Instead, they behave according to the ``image.autowrite`` setting just like
+  transformations.
+* Zooming now always uses the center of the currently visible area as focal-point.
+* Spaces in statusbar settings such as ``statusbar.left`` are now only replaced by
+  the html-equivalent ``&nbsp;`` if there are multiple subsequent spaces. This keeps
+  wanted additional spacing while allowing to use html code such as
+  ``<span style='color: #8FBCBB; font-weight: bold;'>colored and bold</span>``.
+* Both the command line and the widget to display status messages are now overlay
+  widgets instead of being integrated with the bar. This decouples them from the main
+  grid layout and better reflects their role as they are being shown temporarily over
+  the current widget/image.
+
+Fixed:
+^^^^^^
+
+* Centering the image on any type of resize, even when the user explicitly changed the
+  scroll position.
+* Displaying bindings containing special html characters such as '<' or '>' in the
+  keyhint widget and in the ``{keys}`` status module.
+* Crash when scrolling thumbnail mode with empty thumbnail list.
+* Crash when running ``:goto`` without valid paths/images/thumbnails.
+* Switching mode when toggling an inactive mode.
+* Displaying status messages larger than one line in manipulate mode.
+* Resetting settings to ther default value via ``:set setting.name``. The value of the
+  setting was changed accordingly, but the ``changed`` signal was not emitted which
+  means nothing actually happened.
+* Hanging when a FIFO file is in the current directory.
+
+
+v0.6.1 (2020-03-07)
+-------------------
+
+Fixed:
+^^^^^^
+
+* Fix removing thumbnails when the number of thumbnails decreases. Regression since
+  v0.6.0.
+
+
+v0.6.0 (2020-03-07)
 -------------------
 
 Added:
@@ -53,6 +292,10 @@ Fixed:
 * Segfault when applying manipulations.
 * Crash when searching empty pathlist.
 * Library column widths when starting in an empty directory.
+* Reset image filelist selection when working directory content changes. We now ensure a
+  custom selection, such as after ``:open %m``, is not replaced by all images in the
+  working directory on a proposed reload.
+* Selecting wrong path in library/thumbnail when deleting images in image mode.
 
 
 v0.5.0 (2020-01-05)
@@ -79,8 +322,7 @@ Added:
 Changed:
 ^^^^^^^^
 
-* Saner default step for mouse zoom. Thanks
-  `@OliverLew <https://github.com/OliverLew>`_ for catching this.
+* Saner default step for mouse zoom. Thanks `@OliverLew`_ for catching this.
 * Completion api no longer provides a ``BaseFilter`` class. Instead, the
   ``FilterProxyModel`` is always used for completion filtering. Customization can only
   be done by adding new completion models inheriting from ``BaseModel``.
@@ -96,7 +338,7 @@ Fixed:
 * Partial matches with special keys such as ``<tab>``.
 * The ``-s`` command line option to temporarily set an option. Broken since v0.4.0.
 * Support for some jpg files not recognized by the ``imghdr`` module. Thanks
-  `@maximbaz <https://github.com/maximbaz>`_ for the help.
+  `@maximbaz`_ for the help.
 * Undefined behaviour when running ``:enter command``. This now displays an error
   message and hints that ``:command`` or ``:search`` should be used instead.
 
@@ -271,3 +513,19 @@ v0.1.0 (2019-08-15)
 -------------------
 
 Initial release of the Qt version.
+
+
+.. _@jcjgraf: https://github.com/jcjgraf
+.. _@woefe: https://github.com/woefe
+.. _@schyzophrene-asynchrone: https://github.com/schyzophrene-asynchrone
+.. _@pozitron57: https://github.com/pozitron57
+.. _@OliverLew: https://github.com/OliverLew
+.. _@maximbaz: https://github.com/maximbaz
+.. _@BachoSeven: https://github.com/BachoSeven
+.. _@willemw12: https://github.com/willemw12
+.. _@Kakupakat: https://github.com/Kakupakat
+.. _@loiccoyle: https://github.com/loiccoyle
+.. _@szsdk: https://github.com/szsdk
+.. _@ArtemSmaznov: https://github.com/ArtemSmaznov
+.. _@timsofteng: https://github.com/timsofteng
+.. _@kAldown: https://github.com/kaldown

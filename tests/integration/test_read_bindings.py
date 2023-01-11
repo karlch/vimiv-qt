@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Integration tests related to reading keybindings from configuration file."""
@@ -20,6 +20,8 @@ UPDATED_BINDINGS = {
     "LIBRARY": {"<return>": "open-selected --close"},
 }
 
+REMOVE_J_BINDING = {"IMAGE": {"j": keyfile.DEL_BINDING_COMMAND}}
+
 
 ########################################################################################
 #                                      Fixtures                                        #
@@ -32,11 +34,17 @@ def reset_to_default(cleanup_helper):
 
 
 @pytest.fixture(scope="function")
-def keyspath(tmpdir, custom_configfile, request):
+def keyspath(custom_configfile, request):
     """Fixture to create a custom keybindings file for reading."""
     yield custom_configfile(
         "keys.conf", keyfile.read, keyfile.get_default_parser, **request.param
     )
+
+
+@pytest.fixture()
+def bind_j():
+    """Fixture to ensure j is bound to a command."""
+    api.keybindings.bind("j", "scroll down", api.modes.IMAGE)
 
 
 ########################################################################################
@@ -51,3 +59,9 @@ def test_read_bindings(keyspath):
             modes = api.modes.GLOBALS if mode == api.modes.GLOBAL else (mode,)
             for mode in modes:
                 assert api.keybindings._registry[mode][binding].value == command
+
+
+@pytest.mark.parametrize("keyspath", [REMOVE_J_BINDING], indirect=["keyspath"])
+def test_delete_binding(bind_j, keyspath):
+    image_bindings = api.keybindings.get(api.modes.IMAGE)
+    assert "j" not in image_bindings

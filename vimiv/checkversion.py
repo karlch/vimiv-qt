@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Check version and availability of required software upon import.
@@ -53,6 +53,8 @@ def join_version_tuple(version):
 
 def _exit_version(software, required, installed):
     """Call exit for out-of-date software."""
+    # This module needs to work for python < 3.6
+    # pylint: disable=consider-using-f-string
     _exit(
         "At least %s %s is required to run vimiv. Using %s.\n"
         % (software, join_version_tuple(required), join_version_tuple(installed))

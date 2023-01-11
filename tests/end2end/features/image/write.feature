@@ -11,7 +11,7 @@ Feature: Write an image to disk
             | new_path.png  |
             | new_path.tiff |
 
-    @optional
+    @exif
     Scenario: Write image preserving exif information
         Given I open any image
         When I add exif information
@@ -24,3 +24,9 @@ Feature: Write an image to disk
         And I plan to answer the prompt with n
         And I run next
         Then no crash should happen
+
+    Scenario: Crash when writing image with tilde in path
+        Given I open any image
+        When I write the image to ~/test.jpg
+        Then no crash should happen
+        And the home directory should contain test.jpg

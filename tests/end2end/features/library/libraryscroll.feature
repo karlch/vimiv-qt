@@ -84,3 +84,65 @@ Feature: Scrolling the library.
         Then the message
             'goto: Either row or count is required'
             should be displayed
+
+    Scenario: Keep correct selection when deleting images
+        Given I open 5 images
+        When I run goto 3
+        And I run delete %
+        And I wait for the working directory handler
+        Then the library row should be 3
+
+    Scenario: Keep correct selection when deleting directories
+        Given I open a directory with 5 paths
+        When I run goto 3
+        And I run !rmdir %
+        Then the library row should be 3
+
+    Scenario: Keep correct selection when deleting last directory
+        Given I open a directory with 5 paths
+        When I run goto 5
+        And I run !rmdir %
+        Then the library row should be 4
+
+    Scenario: Crash on goto in empty directory
+        Given I start vimiv
+        When I run goto 3
+        Then no crash should happen
+        And the message
+            'goto: No path in list'
+            should be displayed
+
+    Scenario: Select first row of previously empty directory
+        Given I open a directory with 1 paths
+        When I run scroll right
+        And I run scroll left
+        And I create the directory 'child_01/child'
+        And I run scroll right
+        Then the library row should be 1
+
+    Scenario: Scroll page down
+        Given I open a directory with 50 paths
+        When I run scroll page-down
+        Then the library should be one page down
+
+    Scenario: Scroll page down with count
+        Given I open a directory with 50 paths
+        When I run 2scroll page-down
+        Then the library should be two pages down
+
+    Scenario: Scroll page up
+        Given I open a directory with 50 paths
+        When I run scroll page-down
+        And I run scroll page-up
+        Then the library row should be 1
+
+    Scenario: Scroll half page down
+        Given I open a directory with 50 paths
+        When I run scroll half-page-down
+        Then the library should be half a page down
+
+    Scenario: Scroll half page up
+        Given I open a directory with 50 paths
+        When I run scroll half-page-down
+        And I run scroll half-page-up
+        Then the library row should be 1

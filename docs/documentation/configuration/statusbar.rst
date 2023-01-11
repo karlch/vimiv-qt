@@ -11,7 +11,7 @@ bar is grouped into three parts: left, center and right. Each part has a
 fallback content and can have a mode-dependent content which overrides the
 default. The content is defined in the ``STATUSBAR`` section of the
 ``vimiv.conf`` configuration file located in ``$XDG_CONFIG_HOME/vimiv/`` where
-``$XDG_CONFIG_HOME`` is usually ``~/.config/*`` if you have not configured it.
+``$XDG_CONFIG_HOME`` is usually ``~/.config/`` if you have not configured it.
 
 The three default options are defined via:
 
@@ -28,6 +28,20 @@ Text you enter is displayed *as is*. Formatting using a subset of the html
 styles is possible. As this is not very useful, vimiv provides a set of so
 called ``modules`` for the statusbar. A module is indicated by surrounding its
 name in curly braces, e.g. ``{pwd}``. This gets replaced by the output of the
-module. A list of available modules can be found below.
+module. A list of available modules can be found
+:ref:`in the table below <status_modules>`.
+
+You can find information on the supported html subset
+`in the Qt documentation <https://doc.qt.io/qt-5/richtext-html-subset.html>`_. Some
+useful examples:
+
+* ``<b>bold text</b>``
+* ``<i>italic text</i>``
+* ``<u>underlined text</u>``
+* ``<span style='color: red;'>red text</span>``
+* ``<span style='color: #8FBCBB;'>fancy html-cyan text</span>``
+* ``<span style='background-color: red;'>red background</span>``
+
+.. _status_modules:
 
 .. include:: status_modules.rstsrc

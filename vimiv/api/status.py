@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """*Utilities to add status modules and retrieve status text*.
@@ -25,7 +25,7 @@ by the text "user: " we run::
 
     updated_text = status.evaluate("user: {username}")
 
-The occurance of '{username}' is then replaced by the outcome of the username()
+The occurrence of '{username}' is then replaced by the outcome of the username()
 function defined earlier.
 
 If any other object requires the status to be updated, they should call
@@ -38,7 +38,8 @@ from typing import Callable, TypeVar, Any, Dict
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
-from vimiv.utils import cached_method, is_method, class_that_defined_method, log
+from vimiv.api import objreg
+from vimiv.utils import log
 
 
 Module = Callable[[], str]
@@ -58,35 +59,17 @@ class _Module:
         self._func = func
 
     def __call__(self) -> str:
-        func = self._create_func(self._func)
-        return func()
+        return objreg._call_with_instance(self._func)
 
     def __repr__(self) -> str:
         return f"StatusModule('{self._func.__name__}')"
-
-    @cached_method
-    def _create_func(self, func: Callable[..., str]) -> Module:
-        """Create function to call for a status module.
-
-        This retrieves the instance of a class object for methods and sets it
-        as first argument (the 'self' argument) of a lambda. For standard
-        functions nothing is done.
-
-        Returns:
-            A function to be called without arguments.
-        """
-        _logger.debug("Creating function for status module '%s'", func.__name__)
-        if is_method(func):
-            cls = class_that_defined_method(func)
-            return functools.partial(func, cls.instance)
-        return func
 
 
 def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
     """Decorator to register a function as status module.
 
     The decorated function must return a string that can be displayed as
-    status. When calling :func:`evaluate`, any occurance of ``name`` will be
+    status. When calling :func:`evaluate`, any occurrence of ``name`` will be
     replaced by the return value of the decorated function.
 
     Args:
@@ -110,7 +93,7 @@ def module(name: str) -> Callable[[ModuleFunc], ModuleFunc]:
 def evaluate(text: str) -> str:
     """Evaluate the status modules and update text accordingly.
 
-    Replaces all occurances of module names with the output of the
+    Replaces all occurrences of module names with the output of the
     corresponding function.
 
     Example:

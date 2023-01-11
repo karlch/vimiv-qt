@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Filelist of images.
@@ -11,15 +11,15 @@ new image in the filelist is selected, it is passed on to the file handler to op
 """
 
 import os
-from random import shuffle
+import random
 from typing import List, Iterable, Optional
 
 from PyQt5.QtCore import QObject, pyqtSlot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command
+from vimiv.imutils import slideshow
 from vimiv.utils import files, log
-from .slideshow import Slideshow
 
 
 _paths: List[str] = []
@@ -28,26 +28,42 @@ _logger = log.module_logger(__name__)
 
 
 # We want to use the name next here as it is the best name for the command
-@api.keybindings.register(["n", "<page-down>"], "next", mode=api.modes.IMAGE)
+@api.keybindings.register("<ctrl>n", "next --keep-zoom", mode=api.modes.IMAGE)
+@api.keybindings.register(
+    ("n", "<page-down>", "<button-forward>"), "next", mode=api.modes.IMAGE
+)
 @api.commands.register(name="next")
-def next_path(count: int = 1) -> None:
+def next_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select next image.
 
+    **syntax:** ``:next [--keep-zoom]``
+
+    optional arguments:
+        * ``--keep-zoom``: Keep zoom level and scroll position of the current image.
+
     **count:** multiplier
     """
     if _paths:
-        _set_index((_index + count) % len(_paths))
+        _set_index((_index + count) % len(_paths), keep_zoom=keep_zoom)
 
 
-@api.keybindings.register(["p", "<page-up>"], "prev", mode=api.modes.IMAGE)
+@api.keybindings.register("<ctrl>p", "prev --keep-zoom", mode=api.modes.IMAGE)
+@api.keybindings.register(
+    ("p", "<page-up>", "<button-back>"), "prev", mode=api.modes.IMAGE
+)
 @api.commands.register(name="prev")
-def prev_path(count: int = 1) -> None:
+def prev_path(count: int = 1, keep_zoom: bool = False) -> None:
     """Select previous image.
 
+    **syntax:** ``:prev [--keep-zoom]``
+
+    optional arguments:
+        * ``--keep-zoom``: Keep zoom level and scroll position of the current image.
+
     **count:** multiplier
     """
     if _paths:
-        _set_index((_index - count) % len(_paths))
+        _set_index((_index - count) % len(_paths), keep_zoom=keep_zoom)
 
 
 @api.keybindings.register(["G", "<end>"], "goto -1", mode=api.modes.IMAGE)
@@ -66,9 +82,11 @@ def goto(index: Optional[int], count: Optional[int] = None) -> None:
     **count:** Select [count]th image instead.
     """
     try:
-        index = number_for_command(index, count, max_count=len(_paths))
-    except ValueError:
-        raise api.commands.CommandError("Either index or count is required")
+        index = number_for_command(
+            index, count, max_count=len(_paths), elem_name="image"
+        )
+    except ValueError as e:
+        raise api.commands.CommandError(str(e))
     _set_index(index)
 
 
@@ -84,6 +102,20 @@ def current() -> str:
 def basename() -> str:
     """Basename of the current image."""
     return os.path.basename(current())
+
+
+@api.status.module("{name}")
+def name() -> str:
+    """Name without extension of the current image."""
+    filename, _ = os.path.splitext(basename())
+    return filename
+
+
+@api.status.module("{extension}")
+def extension() -> str:
+    """File extension of the current image."""
+    _, fileextension = os.path.splitext(basename())
+    return fileextension.replace(".", "")
 
 
 @api.status.module("{index}")
@@ -108,7 +140,10 @@ def exif_date_time() -> str:
     data in the statusbar. If there are any requests/ideas for more, this can
     be used as basis to work with.
     """
-    return imutils.exif.exif_date_time(current())
+    try:
+        return imutils.exif.ExifHandler(current()).exif_date_time()
+    except imutils.exif.UnsupportedExifOperation:
+        return ""
 
 
 def pathlist() -> List[str]:
@@ -131,10 +166,11 @@ class SignalHandler(QObject):
         search.search.new_search.connect(self._on_new_search)
         # The slideshow object is created here as it is not required by anything else
         # It stays around as it is part of the global object registry
-        Slideshow().timeout.connect(self._on_slideshow_event)
+        slideshow.event.connect(self._on_slideshow_event)
 
         api.signals.load_images.connect(self._on_load_images)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
+        api.settings.sort.shuffle.changed.connect(self._on_shuffle)
 
     @pyqtSlot(list)
     def _on_load_images(self, paths: List[str]):
@@ -155,7 +191,7 @@ class SignalHandler(QObject):
             _load_single(*paths)
         else:
             _logger.debug("Image filelist: loading %d paths", len(paths))
-            _load_paths(paths, paths[0])
+            _load_paths(paths)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -181,25 +217,39 @@ class SignalHandler(QObject):
         next_path()
         api.status.update("next image from slideshow event")
 
-    @pyqtSlot(list)
-    def _on_images_changed(self, paths: List[str]):
-        """React when images were changed by another process."""
-        if os.getcwd() != os.path.dirname(current()):  # Images not in filelist
-            return
-        if paths:  # Some images on disk changed, reload all for safety
-            focused_path = current()
-            _load_paths(paths, focused_path)
-            api.status.update("image filelist changed")
-        else:  # No more images in the current filelist
+    @pyqtSlot(list, list, list)
+    def _on_images_changed(
+        self, new_paths: List[str], added: List[str], removed: List[str]
+    ):
+        """React when images were changed by another process.
+
+        Any removed paths are cleared from the image filelist. In case we had the
+        complete directory loaded, any added paths are also added to the filelist.
+        """
+        paths = [path for path in _paths if path not in removed]
+        if set(paths + added) == set(new_paths):
+            _logger.debug("Adding %s to image filelist", added)
+            paths = new_paths
+        if not paths:
             _clear()
+            api.status.update("Image filelist cleared")
+        else:
+            _load_paths(paths, current())
+            api.status.update("Image filelist changed")
+
+    @utils.slot
+    def _on_shuffle(self):
+        """Reload paths to force shuffling."""
+        if _paths:
+            _load_paths(_paths, current())
 
 
-def _set_index(index: int, previous: str = None) -> None:
+def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
     """Set the global _index to index."""
     global _index
     _index = index
     if previous != current():
-        api.signals.new_image_opened.emit(current())
+        api.signals.new_image_opened.emit(current(), keep_zoom)
 
 
 def _set_paths(paths: List[str]) -> None:
@@ -213,23 +263,25 @@ def _load_single(path: str) -> None:
     """Populate list of paths in same directory for single path."""
     if path in _paths:
         goto(_paths.index(path) + 1)  # goto is indexed from 1
+    elif path not in api.working_directory.handler.images and files.is_image(path):
+        _load_paths([path, *api.working_directory.handler.images], path)
     else:
-        directory = os.path.dirname(path)
-        paths, _ = files.supported(files.listdir(directory))
-        _load_paths(paths, path)
+        _load_paths(api.working_directory.handler.images, path)
 
 
-def _load_paths(paths: Iterable[str], focused_path: str) -> None:
+def _load_paths(paths: Iterable[str], focused_path: str = None) -> None:
     """Populate imstorage with a new list of paths.
 
     Args:
         paths: List of paths to load.
-        focused_path: The path to display.
+        focused_path: The path to display if defined.
     """
     paths = [os.path.abspath(path) for path in paths]
-    focused_path = os.path.abspath(focused_path)
-    if api.settings.shuffle.value:
-        shuffle(paths)
+    if api.settings.sort.shuffle.value:
+        random.shuffle(paths)
+    else:
+        paths = api.settings.sort.image_order.sort(paths)
+    focused_path = os.path.abspath(focused_path) if focused_path else paths[0]
     previous = current()
     _set_paths(paths)
     index = (

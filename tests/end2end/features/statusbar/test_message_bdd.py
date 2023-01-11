@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import pytest_bdd as bdd
@@ -21,13 +21,3 @@ def log_warning(message, qtbot):
 @bdd.when("I clear the status")
 def clear_status():
     api.status.clear("clear in bdd step")
-
-
-@bdd.then("the bar should be visible")
-def check_bar_visible(bar):
-    assert bar.isVisible()
-
-
-@bdd.then("the bar should not be visible")
-def check_bar_not_visible(bar):
-    assert not bar.isVisible()

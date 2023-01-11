@@ -58,6 +58,14 @@ Feature: Use the command line.
         And I run history next
         Then the text in the command line should be /
 
+    Scenario: Do not share history between modes
+        When I run command --text=next
+        And I press '<return>'
+        And I enter image mode
+        And I run command
+        And I run history next
+        Then the text in the command line should be :
+
     Scenario: Close command line when prefix is deleted
         When I run command
         And I press '<backspace>'
@@ -77,9 +85,23 @@ Feature: Use the command line.
             | :open-selected |
             | vimiv          |
             | library.width  |
+            | wildcards      |
 
     Scenario: Fail help command with unknown topic
         When I run help invalid_topic
         Then the message
             'help: Unknown topic 'invalid_topic''
             should be displayed
+
+    Scenario: Clear complete command history
+        When I run command --text=history-clear
+        And I populate the history
+        And I press '<return>'
+        Then the history of all modes should be empty
+
+    Scenario: Clear history of current mode
+        When I run command --text="history-clear --mode"
+        And I populate the history
+        And I press '<return>'
+        Then the history of library mode should be empty
+        And the history of image mode should not be empty

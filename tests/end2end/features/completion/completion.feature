@@ -17,6 +17,11 @@ Feature: Using completion.
         And I run complete
         Then the text in the command line should be :2goto
 
+    Scenario: Command completion for aliases
+        Given I start vimiv
+        When I run command
+        Then a possible completion should contain Alias for 'quit'
+
     Scenario: Crash when completing on entered number
         Given I open any directory
         When I run command --text="2"
@@ -70,10 +75,42 @@ Feature: Using completion.
         And I press '<return>'
         Then the working directory should be path with spaces
 
+    Scenario: Escape path with backslashes upon completion
+        Given I open any directory
+        When I create the directory 'path\with\backslashes'
+        And I run command --text="open pat"
+        And I run complete
+        And I press '<return>'
+        Then the working directory should be path\with\backslashes
+
+    Scenario: Escape path with percent upon completion
+        Given I open any directory
+        When I create the directory 'directory%'
+        And I run command --text="open dir"
+        And I run complete
+        And I press '<return>'
+        Then the working directory should be directory%
+
+    Scenario: Escape path with backslash and subsequent percent upon completion
+        Given I open any directory
+        When I create the directory 'directory\%'
+        And I run command --text="open dir"
+        And I run complete
+        And I press '<return>'
+        Then the working directory should be directory\%
+
+    Scenario: Complete from directory with escaped characters
+        Given I open any directory
+        When I create the directory 'path\with\backslashes/child'
+        And I run command --text="open pat"
+        And I run complete
+        And I press '/'
+        Then a possible completion should contain open ./path\\with\\backslashes/child
+
     Scenario: Using setting completion.
         Given I open any directory
         When I run command --text="set "
-        Then a possible completion should contain set shuffle
+        Then a possible completion should contain set sort.shuffle
         And a possible completion should contain set library.width
 
     Scenario: Do not show hidden setting in completion.
@@ -84,9 +121,9 @@ Feature: Using completion.
 
     Scenario: Using setting option completion.
         Given I open any directory
-        When I run command --text="set shuffle"
-        Then a possible completion should contain set shuffle True
-        And a possible completion should contain set shuffle False
+        When I run command --text="set sort.shuffle"
+        Then a possible completion should contain set sort.shuffle True
+        And a possible completion should contain set sort.shuffle False
 
     Scenario: Update setting completion with newest value
         Given I open any directory
@@ -108,6 +145,7 @@ Feature: Using completion.
         When I run delete %
         When I run command --text="undelete "
         Then a possible completion should contain undelete image_01.jpg
+        And the trash completion for 'image_01.jpg' should show the trashinfo
 
     Scenario: Do not show trash completion in manipulate mode
         Given I open 2 images
@@ -178,3 +216,22 @@ Feature: Using completion.
         When I run set completion.fuzzy true
         And I run command --text="FLS"
         Then a possible completion should contain fullscreen
+
+    Scenario: Select first row upon complete
+        Given I start vimiv
+        When I run command
+        And I run complete
+        Then the completion row number 0 should be selected
+
+    Scenario: Select second row upon two completions
+        Given I start vimiv
+        When I run command
+        And I run complete
+        And I run complete
+        Then the completion row number 1 should be selected
+
+    Scenario: Select last row upon complete --inverse
+        Given I start vimiv
+        When I run command
+        And I run complete --inverse
+        Then the completion row number -1 should be selected

@@ -1,15 +1,17 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """The commandline argument parser and related functions."""
 
 import argparse
+import contextlib
 import logging
 import os
-from contextlib import suppress
+import shlex
+from typing import List
 
 from PyQt5.QtCore import QSize
 
@@ -56,7 +58,7 @@ def get_argparser() -> argparse.ArgumentParser:
         "-s",
         "--set",
         nargs=2,
-        default=[],  # List is required for action="append"
+        default=[],  # List is required for iterating
         action="append",
         dest="cmd_settings",
         metavar=("OPTION", "VALUE"),
@@ -81,6 +83,19 @@ def get_argparser() -> argparse.ArgumentParser:
     parser.add_argument(
         "paths", nargs="*", type=existing_path, metavar="PATH", help="Paths to open"
     )
+    parser.add_argument(
+        "-o",
+        "--output",
+        metavar="TEXT",
+        help="Wildcard expanded string to print to standard output upon quit",
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        action="store_true",
+        help="Read paths to open from standard input",
+        dest="stdinput",
+    )
 
     devel = parser.add_argument_group("development arguments")
     devel.add_argument(
@@ -89,6 +104,11 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="MODULE",
         default=(),
         help="Force showing debug log messages of MODULE",
+    )
+    devel.add_argument(
+        "--qt-args",
+        metavar="ARGS",
+        help="Arguments to pass to qt directly, use quotes to pass multiple arguments",
     )
     return parser
 
@@ -162,6 +182,13 @@ def loglevel(value: str) -> int:
     Returns:
         value as logging level.
     """
-    with suppress(AttributeError):
+    with contextlib.suppress(AttributeError):
         return getattr(logging, value.upper())
     raise argparse.ArgumentTypeError(f"Invalid log level '{value}'")
+
+
+def get_qt_args(args: argparse.Namespace) -> List[str]:
+    """Retrieve list of arguments to pass to qt from argparse namespace."""
+    if args.qt_args:
+        return shlex.split(args.qt_args)
+    return []

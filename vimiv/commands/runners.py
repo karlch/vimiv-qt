@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Classes and functions to run commands.
@@ -12,19 +12,16 @@ Module Attributes:
     _last_command: Dictionary storing the last command for each mode.
 """
 
-import re
+import os
 import shlex
 from typing import Dict, List, NamedTuple, Tuple
 
 from vimiv import api, utils
 from vimiv.utils import log, customtypes
-from vimiv.commands import aliases
-
-from .external import ExternalRunner
-
+from vimiv.commands import aliases, external, wildcards
 
 SEPARATOR = "&&"
-external = ExternalRunner()
+external_runner = external.ExternalRunner()
 
 _last_command: Dict[api.modes.Mode, "LastCommand"] = {}
 _logger = log.module_logger(__name__)
@@ -70,10 +67,10 @@ def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
     _logger.debug("Running '%s'", text)
 
     def update_part(text: str) -> str:
-        """Update aliases and % in final parts without seperator."""
+        """Update aliases and % in final parts without separator."""
         if SEPARATOR in text:
             return text
-        return expand_percent(alias(text.strip(), mode), mode)
+        return wildcards.expand_internal(alias(text.strip(), mode), mode)
 
     textparts = utils.recursive_split(text, SEPARATOR, update_part)
     _logger.debug("Split text into parts '%s'", textparts)
@@ -95,7 +92,9 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external.run(text.lstrip("!"))
+        external_runner.run(
+            wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~")
+        )
     else:
         command(count + text, mode)
 
@@ -194,24 +193,6 @@ def _parse(text: str) -> Tuple[str, str, List[str]]:
     return count, cmdname, args
 
 
-def expand_percent(text: str, mode: api.modes.Mode) -> str:
-    """Expand % to the corresponding path and %m to all marked paths.
-
-    Args:
-        text: The command in which the wildcards are expanded.
-        mode: Mode the command is run in to get correct path(-list).
-    """
-    # Check first as the re substitutions are rather expensive
-    if "%m" in text:
-        text = re.sub(r"(?<!\\)%m", " ".join(api.mark.paths), text)
-        text = text.replace("\\%m", "%")  # Remove escape characters
-    if "%" in text:
-        current = shlex.quote(api.current_path(mode))
-        text = re.sub(r"(?<!\\)%", current, text)
-        text = text.replace("\\%", "%")  # Remove escape characters
-    return text
-
-
 def alias(text: str, mode: api.modes.Mode) -> str:
     """Replace alias with the actual command.
 
@@ -221,5 +202,5 @@ def alias(text: str, mode: api.modes.Mode) -> str:
     cmd = text.split()[0]
     if cmd in aliases.get(mode):
         text = text.replace(cmd, aliases.get(mode)[cmd])
-        return expand_percent(text, mode)
+        return wildcards.expand_internal(text, mode)
     return text

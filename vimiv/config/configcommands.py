@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Commands dealing with settings and configuration."""
@@ -11,6 +11,7 @@ from typing import List
 from vimiv import api
 
 
+@api.keybindings.register("zh", "set library.show_hidden!")
 @api.keybindings.register("sl", "set slideshow.delay +0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("sh", "set slideshow.delay -0.5", mode=api.modes.IMAGE)
 @api.keybindings.register("H", "set library.width -0.05", mode=api.modes.LIBRARY)
@@ -49,6 +50,9 @@ def set_command(name: str, value: List[str]):
     except KeyError:
         raise api.commands.CommandError(f"unknown setting '{name}'")
     except (AttributeError, TypeError):
+        # The string is always assigned, the exception can only be raised later-on when
+        # performing the operation
+        # pylint: disable=used-before-assignment
         raise api.commands.CommandError(
             f"'{setting.name}' does not support {operation}"
         )
@@ -71,6 +75,7 @@ def bind(keybinding: str, command: List[str], mode: str = None):
     """
     modeobj = api.modes.get_by_name(mode) if mode else api.modes.current()
     api.keybindings.bind(keybinding, " ".join(command), modeobj)
+    api.keybindings.check()
 
 
 @api.commands.register()
@@ -95,6 +100,5 @@ def unbind(keybinding: str, mode: str = None):
 def nop():
     """Do nothing.
 
-    This is useful to remove default keybindings by explicitly binding them to
-    nop.
+    This is useful to remove keys bound by Qt by explicitly binding them to nop.
     """

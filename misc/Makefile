@@ -31,7 +31,7 @@ help:
 install:
 	python3 setup.py install --root=$(DESTDIR)/ --prefix=$(PREFIX) --record=install_log.txt
 	install -Dm644 misc/vimiv.desktop $(APPDIR)/vimiv.desktop
-	install -Dm644 misc/vimiv.appdata.xml $(METAINFODIR)/vimiv.appdata.xml
+	install -Dm644 misc/org.karlch.vimiv.qt.metainfo.xml $(METAINFODIR)/org.karlch.vimiv.qt.metainfo.xml
 	install -Dm644 LICENSE $(LICENSEDIR)/vimiv/LICENSE
 	install -Dm644 misc/vimiv.1 $(MANDIR)/man1/vimiv.1
 	gzip -n -9 -f  $(MANDIR)/man1/vimiv.1
@@ -41,7 +41,7 @@ install:
 uninstall:
 	scripts/uninstall_pythonpkg.sh
 	rm $(APPDIR)/vimiv.desktop
-	rm $(METAINFODIR)/vimiv.appdata.xml
+	rm $(METAINFODIR)/org.karlch.vimiv.qt.metainfo.xml
 	rm -r $(LICENSEDIR)/vimiv
 	rm $(MANDIR)/man1/vimiv.1.gz
 	$(foreach i,$(ICONSIZES),rm $(DATADIR)/icons/hicolor/${i}x${i}/apps/vimiv.png;)

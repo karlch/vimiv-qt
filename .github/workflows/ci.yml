@@ -3,62 +3,68 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  py36-37:
+  ci:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
-        toxenv: [pyqt59, pyqt510, pyqt511, pyqt512, pyqt513, mypy]
-        exclude:
-          - python-version: 3.6
+        include:
+          - python: "3.7"
+            toxenv: pyqt511
+          - python: "3.7"
+            toxenv: pyqt512
+          - python: "3.7"
+            toxenv: pyqt513
+          - python: "3.8"
+            toxenv: pyqt513
+          - python: "3.8"
+            toxenv: pyqt514
+          - python: "3.8"
+            toxenv: pyqt515
+          - python: "3.9"
+            toxenv: pyqt513
+          - python: "3.9"
+            toxenv: pyqt514
+          - python: "3.9"
+            toxenv: pyqt515
+          - python: "3.10"
+            toxenv: pyqt515-cov
+          - python: "3.10"
+            toxenv: pyqt515-piexif-cov
+          - python: "3.10"
+            toxenv: lint
+          - python: "3.10"
+            toxenv: packaging
+          - python: "3.10"
             toxenv: mypy
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v3.3.0
+    - uses: actions/cache@v3
+      with:
+        path: |
+          .mypy_cache
+          .tox
+          ~/.cache/pip
+        key: "${{ matrix.toxenv }}_${{ hashFiles('misc/requirements/requirements*.txt') }}_${{ hashFiles('scripts/maybe_build_cextension.py') }}_${{ hashFiles('scripts/lint_tests.py') }}"
     - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v4.4.0
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "${{ matrix.python }}"
     - name: Install dependencies
       run: |
-        sudo apt-get install libxkbcommon-x11-0
+        sudo apt-get update && sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
         python -m pip install --upgrade pip
-        pip install tox
+        pip install -r misc/requirements/requirements_tox.txt
     - name: Test with tox
       run: |
-        tox -e ${{ matrix.toxenv }}
-      env:
-        CI: Github-Actions
-
-  py38:
-
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        toxenv: [pyqt513, pyqt514-cov, lint, packaging, mypy]
-      fail-fast: false
-    steps:
-    - uses: actions/checkout@v1
-    - name: Set up python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        sudo apt-get install libxkbcommon-x11-0
-        python -m pip install --upgrade pip
-        pip install tox
-    - name: Test with tox
-      run: |
-        tox -e ${{ matrix.toxenv }}
+        tox -e "${{ matrix.toxenv }}"
       env:
         CI: Github-Actions
     - name: Upload coverage to codecov
-      run: |
-        pip install codecov
-        codecov -X gcov
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      if: matrix.toxenv == 'pyqt514-cov'
+      if: "endsWith(matrix.toxenv, '-cov')"
+      uses: codecov/codecov-action@v3
+      with:
+        name: "${{ matrix.toxenv }}"

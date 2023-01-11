@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Main function and startup utilities for vimiv.
@@ -15,18 +15,23 @@ import argparse
 import os
 import sys
 import tempfile
-from typing import List
+from typing import cast, List
 
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, QCoreApplication
 from PyQt5.QtWidgets import QApplication
 
-from vimiv import app, api, parser, imutils, plugins, gui
-from vimiv.commands import runners, search
+from vimiv import app, api, parser, imutils, plugins
+from vimiv.commands import runners, search, wildcards
 from vimiv.config import configfile, keyfile, styles
+from vimiv.gui import mainwindow
 from vimiv.utils import xdg, crash_handler, log, trash_manager, customtypes, migration
 
 # Must be imported to create the commands using the decorators
-from vimiv.commands import misccommands  # pylint: disable=unused-import
+from vimiv.commands import (  # pylint: disable=unused-import
+    misccommands,
+    delete_command,
+    help_command,
+)
 from vimiv.config import configcommands  # pylint: disable=unused-import
 
 
@@ -37,7 +42,8 @@ _logger = log.module_logger(__name__)
 def main() -> int:
     """Run startup and the Qt main loop."""
     args = setup_pre_app(sys.argv[1:])
-    qapp = app.Application()
+    qt_args = parser.get_qt_args(args)
+    qapp = app.Application(*qt_args)
     crash_handler.CrashHandler(qapp)
     setup_post_app(args)
     _logger.debug("Startup completed, starting Qt main loop")
@@ -83,6 +89,14 @@ def setup_post_app(args: argparse.Namespace) -> None:
     init_paths(args)
     if args.command:
         run_startup_commands(*args.command)
+    if args.output:
+
+        def print_output() -> None:
+            print(wildcards.expand_internal(args.output, api.modes.current()))
+
+        # We are sure we have an application here
+        qapp = cast(QApplication, QCoreApplication.instance())
+        qapp.aboutToQuit.connect(print_output)
 
 
 def init_directories(args: argparse.Namespace) -> None:
@@ -96,6 +110,8 @@ def init_directories(args: argparse.Namespace) -> None:
     """
     if args.temp_basedir:
         global _tmpdir
+        # We want the temporary directory to stick around until the end
+        # pylint: disable=consider-using-with
         _tmpdir = tempfile.TemporaryDirectory(prefix="vimiv-tempdir-")
         args.basedir = _tmpdir.name
     if args.basedir is not None:
@@ -106,8 +122,14 @@ def init_directories(args: argparse.Namespace) -> None:
 def init_paths(args: argparse.Namespace) -> None:
     """Open paths given from commandline or fallback to library if set."""
     _logger.debug("Opening paths")
+    read_stdin = args.stdinput and not sys.stdin.isatty()
+    paths = (
+        [os.path.realpath(line.strip()) for line in sys.stdin]
+        if read_stdin
+        else args.paths
+    )
     try:
-        api.open_paths(args.paths)
+        api.open_paths(paths)
     except api.commands.CommandError:
         _logger.debug("init_paths: No valid paths retrieved")
         if api.settings.startup_library.value:
@@ -118,7 +140,7 @@ def init_paths(args: argparse.Namespace) -> None:
 def init_ui(args: argparse.Namespace) -> None:
     """Initialize the Qt UI."""
     _logger.debug("Initializing UI")
-    mw = gui.MainWindow()
+    mw = mainwindow.MainWindow()
     if args.fullscreen:
         mw.fullscreen()
     # Center on screen and apply size

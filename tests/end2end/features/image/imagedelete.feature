@@ -74,3 +74,55 @@ Feature: Deleting an image in the current file list
         And the message
             'delete: No images to delete'
             should be displayed
+
+    Scenario: Keep limited filelist when deleting images
+        Given I open 5 images
+        When I run open image_03.jpg image_04.jpg image_05.jpg
+        And I run delete %
+        And I wait for the working directory handler
+        Then the file image_03.jpg should not exist
+        And the filelist should contain 2 images
+
+    Scenario Outline: Delete image with special characters in filename
+        Given I open the image '<name>'
+        When I run delete %
+        Then the file <name> should not exist
+
+        Examples:
+            | name    |
+            | %.jpg   |
+            | \.jpg   |
+            | \%.jpg  |
+            | \\%.jpg |
+            | \%m.jpg |
+
+    Scenario Outline: Undelete image with special characters in filename
+        Given I open the image '<name>'
+        When I run delete %
+        And I run undelete
+        Then no crash should happen
+        And the file <name> should exist
+
+        Examples:
+            | name    |
+            | %.jpg   |
+            | \.jpg   |
+            | \%.jpg  |
+            | \\%.jpg |
+            | \%m.jpg |
+
+    Scenario: Crash when deleting image without permission
+        Given I open any image
+        When I remove move permissions
+        And I run delete %
+        Then no crash should happen
+        And the file image.jpg should exist
+
+    Scenario: Do not allow deleting when read_only is active
+        Given I open any image
+        When I run set read_only true
+        And I run delete %
+        Then the message
+            'delete: Disabled due to read-only being active'
+            should be displayed
+        And the file image.jpg should exist

@@ -1,23 +1,27 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """CommandLine widget in the bar."""
 
-from contextlib import suppress
+import contextlib
+from typing import cast, TYPE_CHECKING
 
 from PyQt5.QtCore import QCoreApplication, QTimer
 from PyQt5.QtWidgets import QLineEdit
 
 from vimiv import api, utils
-from vimiv.commands import history, argtypes, runners, search
+from vimiv.commands import argtypes, runners, search
 from vimiv.config import styles
-from .eventhandler import EventHandlerMixin
+from vimiv.gui import eventhandler
+
+if TYPE_CHECKING:
+    from vimiv.commands import history
 
 
-class CommandLine(EventHandlerMixin, QLineEdit):
+class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
     """Commandline widget in the bar.
 
     Class Attributes:
@@ -47,22 +51,28 @@ class CommandLine(EventHandlerMixin, QLineEdit):
     @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
+
+        self.mode: api.modes.Mode = api.modes.IMAGE
+        self._history = cast("history.History", None)
+
+        api.modes.COMMAND.first_entered.connect(self.init)
+
+    def init(self) -> None:
+        """Lazy-initialize command-line when first entering command mode."""
+        from vimiv.commands import history
+
         self._history = history.History(
             self.PREFIXES,
-            history.read(),
             max_items=api.settings.command.history_limit.value,
         )
-        self.mode = api.modes.IMAGE
 
         self.returnPressed.connect(self._on_return_pressed)
-        self.editingFinished.connect(self._history.reset)
         self.textEdited.connect(self._on_text_edited)
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
         QCoreApplication.instance().aboutToQuit.connect(  # type: ignore
-            self._on_app_quit
+            self._history.write
         )
-        api.modes.COMMAND.entered.connect(self._on_entered)
 
         styles.apply(self)
 
@@ -72,13 +82,21 @@ class CommandLine(EventHandlerMixin, QLineEdit):
     def current(self):
         return api.modes.COMMAND.last.widget.current()
 
+    def enter(self, text: str):
+        self.setText(text)
+        self.mode = api.modes.COMMAND.last
+
+    def leave(self):
+        self.clear()
+        self._history.reset()
+
     @utils.slot
     def _on_return_pressed(self) -> None:
         """Run command and store history on return."""
         prefix, command = self._split_prefix(self.text())
         if not command:  # Only prefix entered
             return
-        self._history.update(prefix + command)
+        self._history[self.mode].update(prefix + command)
         # Run commands in QTimer so the command line has been left when the
         # command runs
         if prefix == ":":
@@ -97,7 +115,7 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         """
         prefix, command = text[0], text[1:]
         if prefix not in self.PREFIXES:
-            possible = ", ".join(str(prefix) for prefix in CommandLine.PREFIXES)
+            possible = utils.quotedjoin(self.PREFIXES)
             raise ValueError(f"Unknown prefix '{prefix}', possible values: {possible}")
         command = command.strip()
         return prefix, command
@@ -114,7 +132,7 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         """Run incremental search if enabled."""
         if not search.use_incremental(self.mode):
             return
-        with suppress(IndexError):  # Not enough text
+        with contextlib.suppress(IndexError):  # Not enough text
             prefix, text = self._split_prefix(self.text())
             if prefix in "/?" and text:
                 search.search(text, self.mode, reverse=prefix == "?", incremental=True)
@@ -136,7 +154,7 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         positional arguments:
             * ``direction``: The direction to cycle in (next/prev).
         """
-        self.setText(self._history.cycle(direction, self.text()))
+        self.setText(self._history[self.mode].cycle(direction, self.text()))
 
     @api.keybindings.register(
         "<up>", "history-substr-search next", mode=api.modes.COMMAND
@@ -153,17 +171,25 @@ class CommandLine(EventHandlerMixin, QLineEdit):
         positional arguments:
             * ``direction``: The direction to cycle in (next/prev).
         """
-        self.setText(self._history.substr_cycle(direction, self.text()))
+        self.setText(self._history[self.mode].substr_cycle(direction, self.text()))
 
-    @utils.slot
-    def _on_app_quit(self):
-        """Write command history to file on quit."""
-        history.write(self._history)
+    @api.commands.register(mode=api.modes.MANIPULATE)
+    @api.commands.register()
+    def history_clear(self, mode: bool = False):
+        """Clear the command history.
+
+        This clears the history of all modes unless ``--mode`` is passed.
+
+        **syntax:** ``:history-clear [--mode]``
+
+        optional arguments:
+            * ``--mode``: Clear the history of the current mode only.
+        """
+        if mode:
+            self._history[self.mode].clear()
+        else:
+            for historydeque in self._history.values():
+                historydeque.clear()
 
     def focusOutEvent(self, event):
         """Override focus out event to not emit editingFinished."""
-
-    @utils.slot
-    def _on_entered(self):
-        """Store mode from which the command line was entered."""
-        self.mode = api.modes.COMMAND.last

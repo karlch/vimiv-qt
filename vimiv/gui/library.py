@@ -1,27 +1,48 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Library widget with model and delegate."""
 
+import contextlib
+import math
 import os
-from contextlib import suppress
-from typing import List, Optional, Dict, Union
+from typing import List, Optional, Dict, NamedTuple, cast
 
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle
+from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
 from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search, number_for_command
 from vimiv.config import styles
+from vimiv.gui import eventhandler, synchronize
 from vimiv.utils import files, strip_html, clamp, wrap_style_span, log
-from . import eventhandler, synchronize
 
 
-class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
+_logger = log.module_logger(__name__)
+
+
+class Position(NamedTuple):
+    """Storage class for a position in the library.
+
+    Attributes:
+        path: Path of the stored position.
+        row: Row of the stored position used in case the path is no longer available.
+    """
+
+    path: str
+    row: int = 0
+
+
+class Library(
+    eventhandler.EventHandlerMixin,
+    widgets.GetNumVisibleMixin,
+    widgets.ScrollWheelCumulativeMixin,
+    widgets.FlatTreeView,
+):
     """Library widget.
 
     Attributes:
@@ -66,10 +87,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     @api.modes.widget(api.modes.LIBRARY)
     @api.objreg.register
-    def __init__(self, mainwindow):
-        super().__init__(parent=mainwindow)
+    def __init__(self, mainwindow: QWidget):
+        widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
+        widgets.FlatTreeView.__init__(self, parent=mainwindow)
+
         self._last_selected = ""
-        self._positions: Dict[str, Union[int, str]] = {}
+        self._positions: Dict[str, Position] = {}
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
@@ -80,12 +103,12 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
         self.activated.connect(self.open_selected)
         self.doubleClicked.connect(self.open_selected)
-        api.settings.library.width.changed.connect(self._on_width_changed)
+        api.settings.library.width.changed.connect(self.update_width)
         api.settings.library.show_hidden.changed.connect(self._on_show_hidden_changed)
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self.repaint)
         api.modes.LIBRARY.entered.connect(self._on_enter)
-        api.modes.LIBRARY.left.connect(self._on_left)
+        api.modes.LIBRARY.closed.connect(self._on_closed)
         api.signals.new_image_opened.connect(self._select_path)
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
@@ -104,32 +127,31 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             _incremental: True if incremental search was performed.
         """
         if mode == api.modes.LIBRARY:
+            _logger.debug("Updating library due to new search")
             self._select_row(index)
             self.repaint()
 
-    def _on_width_changed(self, _value: int):
-        self.update_width()
-
     def _on_show_hidden_changed(self, _value: bool):
+        self.store_position()
         self._open_directory(".", reload_current=True)
 
     @utils.slot
     def _on_enter(self):
         """Update widths and ensure that the current path is visible at the center."""
         self.update_width()
-        self.scrollTo(self.currentIndex(), hint=self.PositionAtCenter)
 
     @utils.slot
-    def _on_left(self):
-        """Hide library widget if library mode was left."""
+    def _on_closed(self):
+        """Hide library widget if library mode was closed."""
         self.hide()
         self._last_selected = ""
 
     @utils.slot
     def _select_path(self, path: str):
         """Select a specific path by name."""
-        with suppress(ValueError):
-            self._select_row(self.model().paths.index(path), emit=False)  # type: ignore
+        with contextlib.suppress(ValueError):
+            _logger.debug("Selecting library path '%s' via slot", path)
+            self._select_row(self.model().paths.index(path), emit=False)
 
     @api.commands.register(mode=api.modes.LIBRARY)
     def open_selected(self, close: bool = False):
@@ -165,21 +187,32 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
             api.signals.load_images.emit([path])
         self._last_selected = path
         if close:
-            api.modes.LIBRARY.leave()
+            api.modes.LIBRARY.close()
 
-    @api.keybindings.register("p", "scroll up --open-selected", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.LIBRARY)
+    @api.keybindings.register("<ctrl>u", "scroll half-page-up", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
+    )
+    @api.keybindings.register(
+        ("p", "<button-back>"), "scroll up --open-selected", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
-        "n", "scroll down --open-selected", mode=api.modes.LIBRARY
+        ("n", "<button-forward>"), "scroll down --open-selected", mode=api.modes.LIBRARY
     )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
-    @api.keybindings.register(  # No idea why this has to go in this weird location
-        "h", "scroll left", mode=api.modes.LIBRARY  # type: ignore[override]
+    @api.keybindings.register(
+        ("h", "<button-right>"), "scroll left", mode=api.modes.LIBRARY
     )
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
     @api.commands.register(mode=api.modes.LIBRARY)
-    def scroll(
-        self, direction: argtypes.Direction, open_selected: bool = False, count=1
+    def scroll(  # type: ignore[override]
+        self,
+        direction: argtypes.DirectionWithPage,
+        open_selected: bool = False,
+        count=1,
     ):
         """Scroll the library in the given direction.
 
@@ -192,13 +225,15 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         * Scrolling up and down moves the cursor.
 
         positional arguments:
-            * ``direction``: The direction to scroll in (left/right/up/down).
+            * ``direction``: The direction to scroll in
+              (left/right/up/down/page-up/page-down/half-page-up/half-page-down).
 
         optional arguments:
             * ``--open-selected``: Automatically open any selected image.
 
         **count:** multiplier
         """
+        _logger.debug("Scrolling in direction '%s'", direction)
         if direction == direction.Right:
             current = self.current()
             # Close library on double selection
@@ -206,18 +241,21 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
-            self._positions[parent] = os.getcwd()
+            self._positions[parent] = Position(os.getcwd())
             api.working_directory.handler.chdir(parent)
         else:
-            try:
-                row = self.row()
-            # Directory is empty
-            except IndexError:
+            row = self.row()
+            if row == -1:  # Directory is empty
                 raise api.commands.CommandWarning("Directory is empty")
-            if direction == direction.Up:
-                row -= count
-            else:
-                row += count
+            if direction.is_page_step:
+                n_items = self._n_visible_items()
+                factor = 0.5 if direction.is_half_page_step else 1
+                stepsize = math.ceil(n_items * factor)
+                count *= stepsize
+            if direction.is_reverse:
+                count *= -1
+            _logger.debug("Scrolling %d rows", count)
+            row += count
             self._select_row(clamp(row, 0, self.model().rowCount() - 1), open_selected)
 
     @api.keybindings.register("go", "goto 1 --open-selected", mode=api.modes.LIBRARY)
@@ -245,9 +283,15 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
         **count:** Select [count]th element instead.
         """
         try:
-            row = number_for_command(row, count, max_count=self.model().rowCount())
-        except ValueError:
-            raise api.commands.CommandError("Either row or count is required")
+            row = number_for_command(
+                row,
+                count,
+                max_count=self.model().rowCount(),
+                number_name="row",
+                elem_name="path",
+            )
+        except ValueError as e:
+            raise api.commands.CommandError(str(e))
         self._select_row(row, open_selected_image=open_selected)
 
     def update_width(self):
@@ -259,8 +303,8 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     def current(self):
         """Return absolute path of currently selected path."""
-        with suppress(IndexError):  # No path selected
-            basename = self.selectionModel().selectedIndexes()[1].data()
+        with contextlib.suppress(IndexError):  # No path selected
+            basename = self.selectedIndexes()[1].data()
             basename = strip(basename)
             return os.path.abspath(basename)
         return ""
@@ -271,30 +315,52 @@ class Library(eventhandler.EventHandlerMixin, widgets.FlatTreeView):
 
     def store_position(self):
         """Set the stored position for a directory if possible."""
-        with suppress(IndexError):
-            self._positions[os.getcwd()] = self.row()
+        with contextlib.suppress(IndexError):
+            position = Position(self.current(), self.row())
+            self._positions[os.getcwd()] = position if position.row != -1 else None
 
-    def select_stored_position(self):
-        """Select the stored position for a directory if possible."""
-        directory = os.getcwd()
-        row = 0
-        with suppress(KeyError, ValueError):
-            stored = self._positions[directory]
-            if isinstance(stored, int):
-                row = min(stored, self.model().rowCount() - 1)
-            else:
-                row = self.model().paths.index(stored)
+    def load_directory(self):
+        """Update library for new or reloaded directory."""
+        _logger.debug("Updating library for new/reloaded directory")
+        row = self._get_stored_position()
         self._select_row(row)
+        self.update_width()
+
+    def _get_stored_position(self):
+        """Retrieve row of stored path with various fallback options."""
+        stored_position = self._positions.get(os.getcwd())
+        if stored_position is not None:
+            try:
+                row = self.model().paths.index(stored_position.path)
+                _logger.debug("Retrieved stored position from path: %d", row)
+                return row
+            except ValueError:  # stored_path no longer exists
+                row = min(stored_position.row, self.model().rowCount() - 1)
+                _logger.debug("Stored position longer exists, using fallback %d", row)
+                return row
+        _logger.debug("No stored position, falling back to 0")
+        return 0
 
     def _select_row(
         self, row: int, open_selected_image: bool = False, emit: bool = True
     ):
         super()._select_row(row)
+        _logger.debug("Selecting library row %d", row)
         current = self.current()
         if emit:
             synchronize.signals.new_library_path_selected.emit(current)
         if open_selected_image and not os.path.isdir(current):
             self.open_selected(close=False)
+
+    def _scroll_wheel_callback(self, _steps_x, steps_y):
+        """Callback function used by the scroll wheel mixin for mouse scrolling."""
+        if steps_y < 0:
+            self.scroll(argtypes.DirectionWithPage.Down, count=abs(steps_y))
+        elif steps_y > 0:
+            self.scroll(argtypes.DirectionWithPage.Up, count=steps_y)
+
+    def model(self) -> "LibraryModel":
+        return cast(LibraryModel, super().model())
 
 
 class LibraryModel(QStandardItemModel):
@@ -333,8 +399,7 @@ class LibraryModel(QStandardItemModel):
         self.remove_all_rows()
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
-        self._library.select_stored_position()
-        self._library.update_width()
+        self._library.load_directory()
 
     @pyqtSlot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
@@ -404,17 +469,20 @@ class LibraryModel(QStandardItemModel):
             are_directories: Whether all paths are directories.
         """
         get_size = files.get_size_directory if are_directories else files.get_size_file
-        mark_prefix = api.mark.indicator() + " "
-        for i, path in enumerate(paths, start=self.rowCount() + 1):
+        mark_prefix = api.mark.indicator + " "
+        # See https://github.com/PyCQA/pylint/issues/7963
+        # TODO remove once newer pylint version with fix was released
+        enum_start = self.rowCount() + 1
+        for i, path in enumerate(paths, start=enum_start):
             name = os.path.basename(path)
             if are_directories:
                 name = utils.add_html(name + "/", "b")
             if path in api.mark.paths:
                 name = mark_prefix + name
-            with suppress(FileNotFoundError):  # Has been deleted in the meantime
+            with contextlib.suppress(FileNotFoundError):  # Deleted in the meantime
                 size = get_size(path)
                 self.appendRow(
-                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size),)
+                    (QStandardItem(str(i)), QStandardItem(name), QStandardItem(size))
                 )
                 self.paths.append(path)
 
@@ -444,6 +512,8 @@ class LibraryDelegate(QStyledItemDelegate):
         self.even_bg = QColor(styles.get("library.even.bg"))
         self.odd_bg = QColor(styles.get("library.odd.bg"))
         self.search_bg = QColor(styles.get("library.search.highlighted.bg"))
+
+        self.mark_str = api.mark.highlight("")
 
     def createEditor(self, *_):
         """Library is not editable by the user."""
@@ -549,13 +619,12 @@ class LibraryDelegate(QStyledItemDelegate):
         Returns:
             Elided version of the text.
         """
-        mark_str = api.mark.highlight("")
         html_stripped = strip_html(text)
         # Html only surrounds the leading mark indicator as directories are never marked
-        if text.startswith(mark_str):
-            mark_stripped = strip_html(mark_str)
+        if text.startswith(self.mark_str):
+            mark_stripped = strip_html(self.mark_str)
             elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
-            return elided.replace(mark_stripped, mark_str)
+            return elided.replace(mark_stripped, self.mark_str)
         # Html surrounds the full text as the file may be a directory which is displayed
         # in bold
         elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)

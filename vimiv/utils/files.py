@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions dealing with files and paths."""
@@ -13,6 +13,11 @@ from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
 from PyQt5.QtGui import QImageReader
 
+from vimiv.utils import imagereader
+
+
+ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]
+
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
@@ -21,14 +26,14 @@ def listdir(directory: str, show_hidden: bool = False) -> List[str]:
         directory: Directory to check for files in via os.listdir(directory).
         show_hidden: Include hidden files in output.
     Returns:
-        Sorted list of files in the directory with their absolute path.
+        List of files in the directory with their absolute path.
     """
     directory = os.path.abspath(os.path.expanduser(directory))
-    return sorted(
+    return [
         os.path.join(directory, path)
         for path in os.listdir(directory)
         if show_hidden or not path.startswith(".")
-    )
+    ]
 
 
 def supported(paths: Iterable[str]) -> Tuple[List[str], List[str]]:
@@ -116,7 +121,7 @@ def is_image(filename: str) -> bool:
         filename: Name of file to check.
     """
     try:
-        return imghdr.what(filename) is not None
+        return os.path.isfile(filename) and imghdr.what(filename) is not None
     except OSError:
         return False
 
@@ -137,7 +142,7 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
     ]
 
 
-def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> None:
+def add_image_format(name: str, check: ImghdrTestFuncT) -> None:
     """Add a new image format to the checks performed in is_image.
 
     Args:
@@ -146,11 +151,14 @@ def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> Non
     """
 
     @functools.wraps(check)
-    def test(h: bytes, f: BinaryIO) -> Optional[str]:
+    def test(h: bytes, f: Optional[BinaryIO]) -> Optional[str]:
         if check(h, f):
             if hasattr(test, "checked"):
                 return name
-            if name in QImageReader.supportedImageFormats():
+            if (
+                name in QImageReader.supportedImageFormats()
+                or name in imagereader.external_handler
+            ):
                 setattr(test, "checked", True)
                 return name
             imghdr.tests.remove(test)
@@ -163,16 +171,23 @@ def add_image_format(name: str, check: Callable[[bytes, BinaryIO], bool]) -> Non
 add_image_format.index = 3  # type: ignore  # Start inserting after jpg, png and gif
 
 
-def test_svg(h: bytes, _f: BinaryIO) -> bool:
-    return b"<?xml" in h
+def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
+    return h.startswith((b"<?xml", b"<svg"))
 
 
 add_image_format("svg", test_svg)
 
 
+def test_ico(h: bytes, _f: Optional[BinaryIO]) -> bool:
+    return h.startswith(bytes.fromhex("00000100"))
+
+
+add_image_format("ico", test_ico)
+
+
 # We now directly override the jpg part of imghdr as it has some known limitations
 # See e.g. https://bugs.python.org/issue16512
-def test_jpg(h: bytes, _f: BinaryIO) -> Optional[str]:
+def test_jpg(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
     """Custom jpg test function.
 
     The one from the imghdr module fails with some jpgs that include ICC_PROFILE data.
@@ -184,7 +199,7 @@ def test_jpg(h: bytes, _f: BinaryIO) -> Optional[str]:
     return None
 
 
-def test_jpg_fallback(h: bytes, _f: BinaryIO) -> Optional[str]:
+def test_jpg_fallback(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
     """Fallback test for jpg files with no headers, only the two starting bits."""
     return "jpg" if h[:2] == b"\xff\xd8" else None
 

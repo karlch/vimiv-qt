@@ -1,16 +1,16 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.xdg."""
 
 import os
 
-from vimiv.utils import xdg
-
 import pytest
+
+from vimiv.utils import xdg
 
 
 @pytest.fixture
@@ -22,9 +22,9 @@ def unset_xdg_env(monkeypatch):
 
 
 @pytest.fixture
-def mock_xdg(tmpdir, monkeypatch):
+def mock_xdg(tmp_path, monkeypatch):
     """Set XDG_* directories to a temporary directory."""
-    dirname = str(tmpdir.join("directory"))
+    dirname = str(tmp_path / "directory")
     monkeypatch.setenv("XDG_CACHE_HOME", dirname)
     monkeypatch.setenv("XDG_CONFIG_HOME", dirname)
     monkeypatch.setenv("XDG_DATA_HOME", dirname)

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import pytest
@@ -35,7 +35,7 @@ class SearchResults:
 @pytest.fixture(autouse=True)
 def search_results():
     """Fixture to retrieve a clean helper class to store search results."""
-    yield SearchResults()
+    return SearchResults()
 
 
 @bdd.when(bdd.parsers.parse("I search for {text}"))

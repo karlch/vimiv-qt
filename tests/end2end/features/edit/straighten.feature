@@ -1,6 +1,6 @@
 Feature: Straighten an image.
 
-    Background: 
+    Background:
         Given I open any image of size 300x200
 
     Scenario: Enter straighten widget

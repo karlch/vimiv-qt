@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Utility functions to create reST files."""
@@ -11,7 +11,7 @@ class RSTFile:
     """Context manager wrapping a file and adding rst utility methods."""
 
     def __init__(self, filename):
-        self._file = open(filename, "w")
+        self._file = open(filename, "w", encoding="utf-8")
         self._write_header()
 
     def __enter__(self):

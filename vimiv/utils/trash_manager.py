@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Provides functions and signals to handle a shared trash directory.
@@ -10,28 +10,24 @@ The functions delete and undeletes images from the user's Trash directory
 in $XDG_DATA_HOME/Trash according to the freedesktop.org trash specification.
 
 Module Attributes:
-    _files_directory: String path to the directory in which trashed files are
+    _files_directory: Path to the directory in which trashed files are stored.
+    _info_directory: Path to the directory in which info files for trashed files are
         stored.
-    _info_directory: String path to the directory in which info files for
-        trashed files are stored.
-    _last_deleted: List of last deleted images to allow undeleting them.
 """
 
 import configparser
+import functools
 import os
 import shutil
 import tempfile
 import time
-from functools import lru_cache
-from typing import cast, Tuple, List
+from typing import cast, Tuple
 
-from vimiv import api
-from vimiv.utils import files, log, xdg
+from vimiv.utils import xdg
 
 
 _files_directory = cast(str, None)
 _info_directory = cast(str, None)
-_last_deleted: List[str] = []
 
 
 def init() -> None:
@@ -42,61 +38,73 @@ def init() -> None:
     xdg.makedirs(_files_directory, _info_directory)
 
 
-@api.keybindings.register("x", "delete %")
-@api.commands.register()
-def delete(paths: List[str]) -> None:
-    """Move one or more images to the trash directory.
+def delete(filename: str) -> str:
+    """Move filename to the trash directory.
 
-    **syntax:** ``:delete path [path ...]``
-
-    positional arguments:
-        * ``paths``: The path(s) to the images to delete.
-
-    .. note:: This only deletes images, not any other path(s).
+    Args:
+        filename: Name of the file to move to the trash directory.
+    Returns:
+        The path to the file in the trash directory.
     """
-    _last_deleted.clear()
-    images = [path for path in paths if files.is_image(path)]
-    n_images = len(images)
-    if n_images == 0:
-        raise api.commands.CommandError("No images to delete")
-    for filename in images:
-        filename = os.path.abspath(filename)
-        trash_filename = _get_trash_filename(filename)
-        _create_info_file(trash_filename, filename)
-        shutil.move(filename, trash_filename)
-        _last_deleted.append(os.path.basename(trash_filename))
-    if n_images > 1:
-        log.info("Deleted %d images", n_images)
+    filename = os.path.abspath(filename)
+    trash_filename = _get_trash_filename(filename)
+    _create_info_file(trash_filename, filename)
+    shutil.move(filename, trash_filename)
+    return trash_filename
 
 
-@api.commands.register()
-def undelete(basenames: List[str]) -> None:
-    """Restore a file from the trash directory.
+def undelete(basename: str) -> str:
+    """Restore basename from the trash directory.
 
-    **syntax:** ``:undelete [basename ...]``
-
-    If no basename is given, the last deleted images in this session are restored.
-
-    positional arguments:
-        * ``basenames``: The basename(s) of the file in the trash directory.
+    Args:
+        basename: Basename of the file in the trash directory.
+    Returns:
+        The path to the restored file.
     """
-    basenames = basenames if basenames else _last_deleted
-    for basename in basenames:
-        trash_filename = os.path.join(_files_directory, basename)
-        info_filename = _get_info_filename(basename)
-        if not os.path.exists(info_filename) or not os.path.exists(trash_filename):
-            raise api.commands.CommandError(f"File for '{basename}' does not exist")
-        original_filename, _ = trash_info(basename)
-        if not os.path.isdir(os.path.dirname(original_filename)):
-            raise api.commands.CommandError(
-                f"Original directory of '{basename}' is not accessible"
-            )
-        shutil.move(trash_filename, original_filename)
-        os.remove(info_filename)
+    trash_filename = os.path.join(_files_directory, basename)
+    info_filename = _get_info_filename(basename)
+    if not os.path.exists(info_filename) or (
+        not os.path.exists(trash_filename) and not os.path.islink(trash_filename)
+    ):
+        raise FileNotFoundError(f"File for '{basename}' does not exist")
+    original_filename, _ = trash_info(basename)
+    if not os.path.isdir(os.path.dirname(original_filename)):
+        raise FileNotFoundError(f"Original directory of '{basename}' is not accessible")
+    shutil.move(trash_filename, original_filename)
+    os.remove(info_filename)
+    return original_filename
+
+
+@functools.lru_cache(None)
+def trash_info(filename: str) -> Tuple[str, str]:
+    """Get information stored in the .trashinfo file.
+
+    Uses the lru_cache from functools as opening the files and reading information from
+    them is rather expensive.
+
+    Args:
+        filename: Name of the file to get info on.
+    Returns:
+        original_filename: The absolute path to the original file.
+        deletion_date: The deletion date.
+    """
+    from urllib.parse import unquote
+
+    info_filename = _get_info_filename(filename)
+    info = TrashInfoParser()
+    info.read(info_filename)
+    content = info["Trash Info"]
+    original_filename = unquote(content["Path"])
+    deletion_date = content["DeletionDate"]
+    return original_filename, deletion_date
+
+
+def files_directory() -> str:
+    return _files_directory
 
 
 def _get_trash_filename(filename: str) -> str:
-    """Return the name of the file in self.files_directory.
+    """Return the name of the file in the trash files directory.
 
     Args:
         filename: The original name of the file.
@@ -111,8 +119,13 @@ def _get_trash_filename(filename: str) -> str:
     return path
 
 
-def _get_info_filename(filename: str) -> str:
-    basename = os.path.basename(filename)
+def _get_info_filename(trash_filename: str) -> str:
+    """Return the name of the corresponding trashinfo file.
+
+    Args:
+        trash_filename: The name of the corresponding file in the trash files directory.
+    """
+    basename = os.path.basename(trash_filename)
     return os.path.join(_info_directory, basename + ".trashinfo")
 
 
@@ -123,44 +136,30 @@ def _create_info_file(trash_filename: str, original_filename: str) -> None:
         trash_filename: The name of the file in self.files_directory.
         original_filename: The original name of the file.
     """
-    # Note: we cannot use configparser here as it writes keys in lowercase
-    info_path = _get_info_filename(trash_filename)
+    from urllib.parse import quote
+
     # Write to temporary file and use shutil.move to make sure the
     # operation is an atomic operation as specified by the standard
-    fd, temp_path = tempfile.mkstemp(dir=_info_directory)
-    os.close(fd)
-    temp_file = open(temp_path, "w")
-    temp_file.write("[Trash Info]\n")
-    temp_file.write(f"Path={original_filename}\n")
-    temp_file.write("DeletionDate={date}\n".format(date=time.strftime("%Y%m%dT%H%M%S")))
-    # Make sure that all data is on disk
-    temp_file.flush()
-    os.fsync(temp_file.fileno())
-    temp_file.close()
-    shutil.move(temp_path, info_path)
+    with tempfile.NamedTemporaryFile(
+        dir=_info_directory, delete=False, mode="w"
+    ) as temp_file:
+        info = TrashInfoParser()
+        info["Trash Info"] = {
+            "Path": quote(original_filename),
+            "DeletionDate": time.strftime("%Y-%m-%dT%H:%M:%S"),
+        }
+        info.write(temp_file, space_around_delimiters=False)
+        # Move to proper filename
+        info_filename = _get_info_filename(trash_filename)
+        shutil.move(temp_file.name, info_filename)
 
 
-@lru_cache(None)
-def trash_info(filename: str) -> Tuple[str, str]:
-    """Get information stored in the .trashinfo file.
+class TrashInfoParser(configparser.ConfigParser):
+    """Case-sensitive configparser without interpolation."""
 
-    Uses the lru_cache from functools as opening the files and reading information from
-    them is rather expensive.
+    def __init__(self) -> None:
+        super().__init__(interpolation=None)
 
-    Args:
-        filename: Name of the file to get info on.
-    Returns:
-        original_filename: The absolute path to the original file.
-        deletion_date: The deletion date.
-    """
-    info_filename = _get_info_filename(filename)
-    info = configparser.ConfigParser()
-    info.read(info_filename)
-    content = info["Trash Info"]
-    original_filename = content["Path"]
-    deletion_date = content["DeletionDate"]
-    return original_filename, deletion_date
-
-
-def files_directory() -> str:
-    return _files_directory
+    def optionxform(self, optionstr: str) -> str:
+        """Override so the parser becomes case sensitive."""
+        return optionstr

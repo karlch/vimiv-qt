@@ -1,13 +1,13 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Module to patch vimiv decorators before import."""
 
-from contextlib import contextmanager
-from unittest import mock
+import contextlib
+import unittest.mock
 
 _known_classes = set()
 
@@ -30,10 +30,8 @@ def mockregister_cleanup():
             cls.instance = None
 
 
-@contextmanager
+@contextlib.contextmanager
 def apply():
     """Contextmanager to mock relevant vimiv decorators and restore state."""
-    with mock.patch("vimiv.utils.cached_method", lambda x: x), mock.patch(
-        "vimiv.api.objreg.register", mockregister
-    ):
+    with unittest.mock.patch("vimiv.api.objreg.register", mockregister):
         yield

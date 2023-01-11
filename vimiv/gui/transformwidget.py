@@ -1,14 +1,14 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Base class for widgets which provide a gui for more complex transformations."""
 
 import abc
+import contextlib
 import functools
-from contextlib import suppress
 from typing import cast
 
 from PyQt5.QtCore import Qt, QRect
@@ -16,10 +16,8 @@ from PyQt5.QtWidgets import QWidget
 
 from vimiv.imutils import imtransform
 
-# See https://github.com/PyCQA/pylint/issues/3202
-from vimiv import api, utils  # pylint: disable=unused-import
-
-from .eventhandler import keyevent_to_sequence
+from vimiv import api, utils
+from vimiv.gui import eventhandler
 from .image import ScrollableImage
 
 
@@ -35,7 +33,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         previous_matrix: Transformation matrix before starting changes here.
     """
 
-    def __init__(self, image, **bindings):
+    def __init__(self, image):
         super().__init__(parent=image)
         self.setObjectName(self.__class__.__qualname__)
         self.setWindowFlags(Qt.SubWindow)
@@ -44,7 +42,6 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         self.bindings = {
             ("<escape>",): self.leave,
             ("<return>",): functools.partial(self.leave, accept=True),
-            **bindings,
         }
         self.transform = imtransform.Transform.instance
         self.previous_matrix = self.transform.matrix
@@ -96,8 +93,8 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
 
     def keyPressEvent(self, event):
         """Run binding from bindings dictionary."""
-        with suppress(ValueError, KeyError):
-            keysequence = keyevent_to_sequence(event)
+        with contextlib.suppress(ValueError, KeyError):
+            keysequence = eventhandler.keyevent_to_sequence(event)
             binding = self.bindings[keysequence]
             api.status.clear("transform binding")
             binding()

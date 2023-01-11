@@ -1,19 +1,19 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Various completion models for command line completion."""
 
+import functools
 import os
 import re
-from functools import lru_cache
 from typing import List, Set, Tuple
 
 from vimiv import api
 from vimiv.commands import aliases
-from vimiv.utils import files, trash_manager, escape_ws, unescape_ws
+from vimiv.utils import files, trash_manager
 
 
 class CommandModel(api.completion.BaseModel):
@@ -27,7 +27,7 @@ class CommandModel(api.completion.BaseModel):
         mode = api.modes.COMMAND.last
         self.set_data(self.formatted_commands(mode) + self.formatted_aliases(mode))
 
-    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    @functools.lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [
@@ -39,7 +39,7 @@ class CommandModel(api.completion.BaseModel):
     def formatted_aliases(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of aliases with explanation for this mode."""
         return [
-            (alias, f"Alias for '{command}'")
+            (f":{alias}", f"Alias for '{command}'")
             for alias, command in aliases.get(mode).items()
         ]
 
@@ -59,7 +59,11 @@ class ExternalCommandModel(api.completion.BaseModel):
         if self._initialized:
             return
         executables = self._get_executables()
-        self.set_data((f":!{cmd}",) for cmd in executables if not cmd.startswith("."))
+        self.set_data(
+            (f":!{api.completion.escape(cmd)}",)
+            for cmd in executables
+            if not cmd.startswith(".")
+        )
         self._initialized = True
 
     def _get_executables(self) -> List[str]:
@@ -104,7 +108,7 @@ class PathModel(api.completion.BaseModel):
             return
         # Prepare
         self._last_directory = os.path.abspath(directory)
-        # No completinos for non-existent directory
+        # No completions for non-existent directory
         if not os.path.isdir(os.path.expanduser(directory)):
             return
         # Retrieve supported paths
@@ -112,11 +116,14 @@ class PathModel(api.completion.BaseModel):
         # Format data
         self.set_data(
             self._create_row(os.path.join(directory, os.path.basename(path)))
-            for path in images + directories
+            for path in (
+                api.settings.sort.image_order.sort(images)
+                + api.settings.sort.directory_order.sort(directories)
+            )
         )
 
     def _create_row(self, path):
-        return (f":{self._command} {escape_ws(path)}",)
+        return (f":{self._command} {api.completion.escape(path)}",)
 
     def _get_directory(self, text: str) -> str:
         """Retrieve directory for which the path completion is created."""
@@ -125,8 +132,10 @@ class PathModel(api.completion.BaseModel):
             return "."
         _prefix, directory = match.groups()
         if "/" not in directory:
-            return unescape_ws(directory) if os.path.isdir(directory) else "."
-        return unescape_ws(os.path.dirname(directory))
+            if os.path.isdir(directory):
+                return api.completion.unescape(directory)
+            return "."
+        return api.completion.unescape(os.path.dirname(directory))
 
 
 class SettingsModel(api.completion.BaseModel):
@@ -150,7 +159,8 @@ class SettingsOptionModel(api.completion.BaseModel):
 
     def __init__(self, setting: api.settings.Setting):
         super().__init__(
-            f":set {setting.name}", column_widths=(0.5, 0.5),
+            f":set {setting.name}",
+            column_widths=(0.5, 0.5),
         )
         self._setting = setting
         self.setSortRole(3)
@@ -184,23 +194,29 @@ class TrashModel(api.completion.BaseModel):
             column_widths=(0.4, 0.45, 0.15),
             valid_modes=api.modes.GLOBALS,
         )
+        self._old_date_re = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})")
+        self._date_re = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})")
 
     def on_enter(self, text: str) -> None:
         """Update trash model on enter to include any newly un-/deleted paths."""
         data = []
-        for path in files.listdir(trash_manager.files_directory()):
-            cmd = f":undelete {os.path.basename(path)}"
+        paths = files.listdir(trash_manager.files_directory())
+        for path in api.settings.sort.image_order.sort(paths):
+            cmd = f":undelete {api.completion.escape(os.path.basename(path))}"
             # Get info and format it neatly
             original, date = trash_manager.trash_info(path)
             original = original.replace(os.path.expanduser("~"), "~")
             original = os.path.dirname(original)
-            date = "%s-%s-%s %s:%s" % (
-                date[2:4],
-                date[4:6],
-                date[6:8],
-                date[9:11],
-                date[11:13],
-            )
+            date_match = self._date_re.match(date)
+            if date_match is None:
+                # Wrong date formatting that was used up to v0.7.0
+                # TODO remove after releasing v1.0.0
+                date_match = self._old_date_re.match(date)
+            if date_match is not None:
+                year, month, day, hour, minute, _ = date_match.groups()
+                date = f"{year}-{month}-{day} {hour}:{minute}"
+            else:
+                date = "date unknown"
             # Append data in column form
             data.append((cmd, original, date))
         self.set_data(data)
@@ -216,13 +232,15 @@ class TagModel(api.completion.BaseModel):
     def __init__(self, suffix):
         self._command = f"tag-{suffix}"
         super().__init__(
-            f":{self._command} ", valid_modes=api.modes.GLOBALS,
+            f":{self._command} ",
+            valid_modes=api.modes.GLOBALS,
         )
 
     def on_enter(self, text: str) -> None:
         """Update tag model on enter to include any new/deleted tags."""
         self.set_data(
-            (f":{self._command} {fname}",) for fname in files.listfiles(api.mark.tagdir)
+            (f":{self._command} {api.completion.escape(fname)}",)
+            for fname in files.listfiles(api.mark.tagdir)
         )
 
 
@@ -231,7 +249,10 @@ class HelpModel(api.completion.BaseModel):
 
     def __init__(self):
         super().__init__(":help", column_widths=(0.3, 0.7))
-        self._general = [(":help  vimiv", "General information")]
+        self._general = [
+            (":help  vimiv", "General information"),
+            (":help  wildcards", "Information on various wildcards available"),
+        ]
         self._formatted_settings = [
             (f":help {name}", setting.desc) for name, setting in api.settings.items()
         ]
@@ -243,7 +264,7 @@ class HelpModel(api.completion.BaseModel):
             self._general + self.formatted_commands(mode) + self._formatted_settings
         )
 
-    @lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
+    @functools.lru_cache(len(api.modes.ALL) - 2)  # ALL without GLOBAL and COMMAND
     def formatted_commands(self, mode: api.modes.Mode) -> List[Tuple[str, str]]:
         """Return list of commands with description for this mode."""
         return [
@@ -270,7 +291,7 @@ def init():
         SettingsOptionModel(setting)
     for command in ("open", "delete", "mark"):
         PathModel(command)
-    for suffix in ("delete", "load", "write"):
+    for suffix in ("delete", "load", "write", "open"):
         TagModel(suffix)
     TrashModel()
     HelpModel()

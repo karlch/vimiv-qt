@@ -1,32 +1,36 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.api._mark."""
 
+import collections
 import os
 import re
-from collections import namedtuple
 
 import pytest
 
+from vimiv import api
 from vimiv.api._mark import Mark, Tag
 
 
 @pytest.fixture
-def mark(qtbot, mocker):
+def mark(qtbot, mocker, monkeypatch):
     instance = Mark()
-    instance.marked = mocker.Mock()
-    instance.unmarked = mocker.Mock()
+    mocker.patch.object(instance, "marked")
+    mocker.patch.object(instance, "unmarked")
     mocker.patch("vimiv.utils.files.is_image", return_value=True)
     yield instance
+    # TODO think about a proper mocking method
+    Mark.instance = api.mark  # Reset objreg instance to the one from api
 
 
 @pytest.fixture(autouse=True)
-def tagdir(tmpdir, mocker):
-    tmp_tagdir = tmpdir.mkdir("tags")
+def tagdir(tmp_path, mocker):
+    tmp_tagdir = tmp_path / "tags"
+    tmp_tagdir.mkdir()
     mocker.patch.object(Tag, "dirname", return_value=str(tmp_tagdir))
     yield str(tmp_tagdir)
 
@@ -38,43 +42,58 @@ def tagwrite(tagdir):
     with Tag(name, read_only=False) as tag:
         tag.write(paths)
     path = os.path.join(tagdir, name)
-    yield namedtuple("tagwrite", ["path", "content"])(path, paths)
+    yield collections.namedtuple("tagwrite", ["path", "content"])(path, paths)
 
 
 def test_mark_single_image(mark):
     mark.mark(["image"])
-    assert "image" in mark._marked
-    assert mark.marked.called_once_with("image")
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_once_with("image")
 
 
 def test_mark_multiple_images(mark):
-    mark.mark(["image1", "image2"])
-    assert "image1" in mark._marked
-    assert "image2" in mark._marked
-    assert mark.marked.called_with("image1")
-    assert mark.marked.called_with("image2")
+    images = ["image1", "image2"]
+    mark.mark(images)
+    for image in images:
+        assert mark.is_marked(image)
+        mark.marked.emit.assert_any_call(image)
 
 
-def test_toggle_mark(mark):
+def test_mark_action_toggle(mark):
     mark.mark(["image"])
     mark.mark(["image"])
-    assert "image" not in mark._marked
-    assert mark.unmarked.called_once_with("image")
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
+
+
+def test_mark_action_mark(mark):
+    mark.mark(["image"], action=Mark.Action.Mark)
+    mark.mark(["image"], action=Mark.Action.Mark)
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_once_with("image")
+
+
+def test_mark_action_unmark(mark):
+    mark.mark(["image"])
+    mark.mark(["image"], action=Mark.Action.Unmark)
+    mark.mark(["image"], action=Mark.Action.Unmark)
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
 
 
 def test_mark_clear(mark):
     mark.mark(["image"])
     mark.mark_clear()
-    assert "image" not in mark._marked
-    assert mark.unmarked.called_once_with("image")
+    assert not mark.is_marked("image")
+    mark.unmarked.emit.assert_called_once_with("image")
 
 
 def test_mark_restore(mark):
     mark.mark(["image"])
     mark.mark_clear()
     mark.mark_restore()
-    assert "image" in mark._marked
-    assert mark.marked.called_with("image")
+    assert mark.is_marked("image")
+    mark.marked.emit.assert_called_with("image")
 
 
 def test_tag_write(tagwrite):
@@ -82,8 +101,8 @@ def test_tag_write(tagwrite):
 
 
 def test_tag_write_header(tagwrite):
-    with open(tagwrite.path, "r") as f:
-        comment_lines = [l for l in f if l.startswith(Tag.COMMENTCHAR)]
+    with open(tagwrite.path, "r", encoding="utf-8") as f:
+        comment_lines = [line for line in f if line.startswith(Tag.COMMENTCHAR)]
     assert "vimiv tag file" in comment_lines[0]
     date_re = re.compile(r"# created: \d\d\d\d-\d\d-\d\d \d\d:\d\d")
     assert (
@@ -92,8 +111,10 @@ def test_tag_write_header(tagwrite):
 
 
 def test_tag_write_paths(tagwrite):
-    with open(tagwrite.path, "r") as f:
-        path_lines = [l.strip() for l in f if not l.startswith(Tag.COMMENTCHAR)]
+    with open(tagwrite.path, "r", encoding="utf-8") as f:
+        path_lines = [
+            line.strip() for line in f if not line.startswith(Tag.COMMENTCHAR)
+        ]
     for path in tagwrite.content:
         assert path in path_lines
 
@@ -121,7 +142,7 @@ def test_tag_delete(mark, parts):
     name = os.path.join(*parts)
     tagpath = Tag.path(name)
     os.makedirs(os.path.dirname(tagpath), exist_ok=True, mode=0o700)
-    with open(Tag.path(name), "w") as f:
+    with open(Tag.path(name), "w", encoding="utf-8") as f:
         f.write("My tag content")
     mark.tag_delete(basename)
     assert not os.path.exists(Tag.path(basename))

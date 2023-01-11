@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.config.keybindings."""
@@ -22,11 +22,11 @@ def reset_to_default(cleanup_helper):
 def test_add_keybindings(binding, command):
     @api.keybindings.register(binding, command, mode=api.modes.IMAGE)
     def test():
-        pass
+        """Nop function to register a keybinding."""
 
     bindings = api.keybindings.get(api.modes.IMAGE)
-    for binding in binding if isinstance(binding, tuple) else (binding,):
-        assert bindings[binding].value == command
+    for keysequence in binding if isinstance(binding, tuple) else (binding,):
+        assert bindings[keysequence].value == command
 
 
 def test_bind_unbind_keybinding():

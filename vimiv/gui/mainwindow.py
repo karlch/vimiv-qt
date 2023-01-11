@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """QMainWindow which groups all the other widgets."""
@@ -14,42 +14,46 @@ from vimiv import api, utils
 from vimiv.utils import migration
 
 # Import all GUI widgets used to create the full main window
-from .bar import Bar
-from .image import ScrollableImage
-from .keyhint_widget import KeyhintWidget
-from .library import Library
-from .thumbnail import ThumbnailView
-from .metadata_widget import MetadataWidget
+from vimiv.gui.commandwidget import CommandWidget
+from vimiv.gui.image import ScrollableImage
+from vimiv.gui.keyhintwidget import KeyhintWidget
+from vimiv.gui.library import Library
+from vimiv.gui.thumbnail import ThumbnailView
+from vimiv.gui.message import Message
+from vimiv.gui.metadatawidget import MetadataWidget
+from vimiv.gui.statusbar import StatusBar
 
 
 class MainWindow(QWidget):
     """QMainWindow which groups all the other widgets.
 
     Attributes:
-        _bar: bar.Bar object containing statusbar and command line.
+        _library: Library object at the left of the grid.
         _overlays: List of overlay widgets.
+        _statusbar: Statusbar object displayed at the bottom.
     """
 
     @api.objreg.register
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._overlays: List[QWidget] = []
         # Create main widgets and add them to the grid layout
-        self._bar = Bar(self)
+        self._statusbar = StatusBar()
         grid = QGridLayout(self)
         grid.setSpacing(0)
         grid.setContentsMargins(0, 0, 0, 0)
         grid.addWidget(ImageThumbnailStack(), 0, 1, 1, 1)
-        grid.addWidget(Library(self), 0, 0, 1, 1)
-        grid.addWidget(self._bar, 1, 0, 1, 2)
+        self._library = Library(self)
+        grid.addWidget(self._library, 0, 0, 1, 1)
+        grid.addWidget(self._statusbar, 1, 0, 1, 2)
         # Add overlay widgets
         self._overlays.append(KeyhintWidget(self))
+        self._overlays.append(Message(self))
+        self._overlays.append(CommandWidget(self))
         if MetadataWidget is not None:  # Not defined if there is no exif support
             self._overlays.append(MetadataWidget(self))
         # Connect signals
         api.status.signals.update.connect(self._set_title)
-        api.modes.COMMAND.entered.connect(self._update_overlay_geometry)
-        api.modes.COMMAND.left.connect(self._update_overlay_geometry)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         api.prompt.question_asked.connect(self._run_prompt)
@@ -57,11 +61,10 @@ class MainWindow(QWidget):
     @utils.slot
     def _init_manipulate(self):
         """Create UI widgets related to manipulate mode."""
-        from .manipulate import Manipulate, ManipulateImage
+        from vimiv.gui.manipulate import Manipulate
 
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
-        self.add_overlay(ManipulateImage(self, manipulate_widget))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")
@@ -83,7 +86,7 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--copy``: Copy version information to clipboard instead.
         """
-        from .version_popup import VersionPopUp
+        from vimiv.gui.version_popup import VersionPopUp
 
         if copy:
             VersionPopUp.copy_to_clipboard()
@@ -100,7 +103,7 @@ class MainWindow(QWidget):
         optional arguments:
             * ``--columns``: Number of columns to split the bindings in.
         """
-        from .keybindings_popup import KeybindingsPopUp
+        from vimiv.gui.keybindings_popup import KeybindingsPopUp
 
         KeybindingsPopUp(columns, parent=self)
 
@@ -117,7 +120,7 @@ class MainWindow(QWidget):
         """
         super().resizeEvent(event)
         self._update_overlay_geometry()
-        Library.instance.update_width()
+        self._library.update_width()
 
     def show(self):
         """Update show to resize overlays."""
@@ -127,8 +130,8 @@ class MainWindow(QWidget):
     @property
     def bottom(self):
         """Bottom of the main window respecting the status bar height."""
-        if self._bar.isVisible():
-            return self.height() - self._bar.height()
+        if self._statusbar.isVisible():
+            return self.height() - self._statusbar.height()
         return self.height()
 
     def add_overlay(self, widget, resize=True):
@@ -160,7 +163,7 @@ class MainWindow(QWidget):
     @utils.slot
     def _run_prompt(self, question: api.prompt.Question) -> None:
         """Display a UI blocking prompt when a question was asked."""
-        from .prompt import Prompt
+        from vimiv.gui.prompt import Prompt
 
         prompt = Prompt(question, parent=self)
         prompt.update_geometry(self.width(), self.bottom)
@@ -185,8 +188,8 @@ class ImageThumbnailStack(QStackedWidget):
         api.modes.IMAGE.entered.connect(self._enter_image)
         api.modes.THUMBNAIL.entered.connect(self._enter_thumbnail)
         # This is required in addition to the setting when entering image mode as it is
-        # possible to leave for the library
-        api.modes.THUMBNAIL.left.connect(self._enter_image)
+        # possible to close thumbnail mode and enter the library
+        api.modes.THUMBNAIL.closed.connect(self._enter_image)
 
     @utils.slot
     def _enter_thumbnail(self):

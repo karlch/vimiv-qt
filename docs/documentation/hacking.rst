@@ -77,6 +77,8 @@ environments:
 
         tox -e pyqt
 
+  This requires xorg xvfb to be installed on your system.
+
 * A linting environment to check the code quality and style using
   `pylint <https://www.pylint.org/>`_,
   `pycodestyle <http://pycodestyle.pycqa.org/en/latest/>`_ and
@@ -103,18 +105,18 @@ to run them. This is much slower and less direct though.
 Style and Formatting
 --------------------
 
-Vimiv uses the `black code formatter <https://github.com/ambv/black>`_ to
-automatically format the source code. To install black, run::
+Vimiv uses `pre-commit <https://pre-commit.com/>`_ for a consistent formatting. To
+format the python source code, the
+`black code formatter <https://github.com/ambv/black>`_ is used.
 
-   pip install black
+You can install the tools with::
 
-or use the package manager of your OS if applicable. Formatting the source code
-is done using::
+    pip install pre-commit
+    pip install black
 
-   black vimiv tests
+And setup ``pre-commit`` using::
 
-For more information on the formatter as well as a few useful tips, visit
-`the project's github page <https://github.com/ambv/black>`_.
+    pre-commit install
 
 .. _writing_plugins:
 
@@ -129,6 +131,43 @@ plugin infrastructure are given in the ``vimiv.plugins`` module:
 
 .. automodule:: vimiv.plugins
    :members: load, get_plugins
+
+
+.. _support_new_imageformats:
+
+Adding Support for New Imageformats
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you would like to add support for a new image format that is not supported by Qt, you
+can also solve this using the plugin system. A nice example of how to do this is the
+`RawPrev <https://github.com/jcjgraf/RawPrev>`_ plugin which adds support for viewing
+raw images using ``dcraw``.
+
+To make this work, you need to implement two functions:
+
+#. A function which checks if a path is of your filetype. The function must be of the
+   same form as used by the standard library module
+   `imghdr <https://docs.python.org/3/library/imghdr.html>`_.
+#. The actual loading function which creates a ``QPixmap`` from the path.
+
+Finally, you tell vimiv about the newly supported filetype::
+
+    from typing import Any, BinaryIO
+
+    from PyQt5.QtGui import QPixmap
+
+    from vimiv import api
+
+
+    def test_func(header: bytes, file_handle: BinaryIO) -> bool:
+        """Return True if the file is of your format."""
+
+    def load_func(path: str) -> QPixmap:
+        """Implement your custom loading here and return the created QPixmap."""
+
+    def init(_info: str, *_args: Any, **_kwargs: Any) -> None:
+        """Setup your plugin by adding your file format to vimiv."""
+        api.add_external_format("fmt", test_func, load_func)
 
 
 Source Code Hints

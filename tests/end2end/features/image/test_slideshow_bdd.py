@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import pytest
@@ -16,13 +16,15 @@ bdd.scenarios("slideshow.feature")
 
 @pytest.fixture
 def sshow():
-    return slideshow.Slideshow.instance
+    instance = slideshow._timer
+    yield instance
+    instance.stop()
 
 
-@bdd.given(bdd.parsers.parse("I forcefully set the slideshow delay to {N:d}ms"))
-def set_slideshow_delay(sshow, N):
+@bdd.given(bdd.parsers.parse("I forcefully set the slideshow delay to {delay:d}ms"))
+def set_slideshow_delay(sshow, delay):
     """Set the slideshow delay to a small value to increase test speed."""
-    sshow.setInterval(N)
+    sshow.setInterval(delay)
 
 
 @bdd.then("the slideshow should be playing")
@@ -43,9 +45,9 @@ def check_slideshow_delay(sshow, delay):
     assert sshow.interval() == delay * 1000
 
 
-@bdd.when(bdd.parsers.parse("I let the slideshow run {N:d} times"))
-def wait_slideshow_signal(qtbot, sshow, N):
-    for i in range(N):
+@bdd.when(bdd.parsers.parse("I let the slideshow run {repeat:d} times"))
+def wait_slideshow_signal(qtbot, sshow, repeat):
+    for _ in range(repeat):
         # Wait for slideshow delay and give it a small buffer
         with qtbot.waitSignal(sshow.timeout, timeout=int(sshow.interval() * 1.2)):
             pass

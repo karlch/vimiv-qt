@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.trie"""
@@ -38,19 +38,12 @@ def test_setitem(trie, key, value):
     assert node.key == "".join(key)
 
 
-def test_setitem_warns_for_hidden_key(trie, mocklogger):
-    """Ensure we cannot add keys with a base that is a full match."""
+def test_check_warns_for_hidden_key(trie, mocklogger):
+    """Ensure we log a warning for keys with a base that is a full match."""
     key1 = "key"
     key2 = key1 + "1"
     trie[key1] = trie[key2] = "value"
-    mocklogger.warning.assert_called_once()
-
-
-def test_setitem_raises_for_hiding_key(trie, mocklogger):
-    """Ensure we cannot add keys with a base shorter than a full match."""
-    key1 = "key"
-    key2 = key1 + "1"
-    trie[key2] = trie[key1] = "value"
+    trie.check()
     mocklogger.warning.assert_called_once()
 
 

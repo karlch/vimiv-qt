@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Utilities related to logging`.
@@ -37,16 +37,21 @@ Three log handlers are currently used:
 * One to save the output in a log file located in
   ``$XDG_DATA_HOME/vimiv/vimiv.log``
 * One to print log messages to the statusbar (only for application-wide logger)
+
+In case you want to ensure that a log message is only logged a single time, pass
+``once=True`` to your log statement::
+
+    _logger.debug("Something happened, and may now happen very often", once=True)
 """
 
 import logging
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Set
 
 from PyQt5.QtCore import pyqtSignal, QObject
 
 import vimiv
 
-from . import xdg
+from vimiv.utils import xdg
 
 
 _module_loggers: Dict[str, "LazyLogger"] = {}
@@ -145,8 +150,11 @@ class LazyLogger:
         self.level = level
         self._logger: Optional[logging.Logger] = None
         self._name = name
+        self._stored_messages: Set[str] = set()
 
-    def log(self, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
+    def log(
+        self, level: int, msg: str, *args: Any, once: bool = False, **kwargs: Any
+    ) -> None:
         """Log a message creating the logger instance if needed."""
         if level < self.level:
             return
@@ -154,6 +162,10 @@ class LazyLogger:
             self._logger = logging.getLogger(f"<{self._name}>")
             self._logger.propagate = False
             self._logger.handlers = self.handlers
+        if once:
+            if msg in self._stored_messages:
+                return
+            self._stored_messages.add(msg)
         self._logger.log(level, msg, *args, **kwargs)
 
     def debug(self, msg: str, *args: Any, **kwargs: Any) -> None:
@@ -185,9 +197,11 @@ class StatusbarLogHandler(QObject, logging.NullHandler):
 
     message = pyqtSignal(str, str)
 
-    def handle(self, record: logging.LogRecord) -> None:
+    def handle(self, record: logging.LogRecord) -> bool:
         if record.levelno >= logging.INFO:  # Debug in the statusbar makes no sense
             self.message.emit(record.levelname.lower(), record.message)
+            return True
+        return False
 
 
 _app_logger = LazyLogger(f"{vimiv.__name__}")

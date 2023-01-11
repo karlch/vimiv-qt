@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 r"""Handler to take care of the current working directory.
@@ -17,11 +17,13 @@ In addition the directory and current image is monitored using QFileSystemWatche
 changes are exposed via three signals:
 
 * ``loaded`` when the working directory has changed and the content was loaded
-* ``changed`` when the content of the current directory has chagned
+* ``changed`` when the content of the current directory has changed
 * ``images_changed`` when the images in the current directory where changed
 
 The first two signals are emitted with the list of images and list of directories in the
-working directory as arguments, ``images_changed`` only includes the list of images.
+working directory as arguments, ``images_changed`` includes the list of images as well
+as the list of added and removed images.
+
 Thus, if your custom class needs to know the current images and/or directories, it can
 connect to these signals::
 
@@ -47,8 +49,10 @@ connect to these signals::
             print("Updated images:", *images, sep="\n", end="\n\n")
             print("Updated directories:", *directories, sep="\n", end="\n\n")
 
-        def _on_im_changed(self, images):
-            print("Updated images:", *images, sep="\n", end="\n\n")
+        def _on_im_changed(self, new_images, added, removed):
+            print("Updated images:", *new_images, sep="\n", end="\n\n")
+            print("Added images:", *added, sep="\n", end="\n\n")
+            print("Removed images:", *removed, sep="\n", end="\n\n")
 
 Module Attributes:
     handler: The initialized :class:`WorkingDirectoryHandler` object to interact with.
@@ -59,8 +63,8 @@ from typing import cast, List, Tuple
 
 from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
 
+from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
-from . import settings, signals, status
 
 
 _logger = log.module_logger(__name__)
@@ -80,6 +84,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         images_changed: Emitted when the images in the working directory have
                 changed.
             arg1: List of images in the working directory.
+            arg2: List of images added within the change.
+            arg3: List of images removed within the change.
 
     Class Attributes:
         WAIT_TIME_MS: Time in milliseconds to wait before emitting *_changed signals.
@@ -92,7 +98,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     loaded = pyqtSignal(list, list)
     changed = pyqtSignal(list, list)
-    images_changed = pyqtSignal(list)
+    images_changed = pyqtSignal(list, list, list)
 
     WAIT_TIME_MS = 300
 
@@ -103,14 +109,24 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         self._directories: List[str] = []
 
         settings.monitor_fs.changed.connect(self._on_monitor_fs_changed)
-        # TODO Fix upstream and open PR
-        self.directoryChanged.connect(self._reload_directory)  # type: ignore
-        self.fileChanged.connect(self._on_file_changed)  # type: ignore
+        settings.sort.image_order.changed.connect(self._reorder_directory)
+        settings.sort.directory_order.changed.connect(self._reorder_directory)
+        settings.sort.reverse.changed.connect(self._reorder_directory)
+        settings.sort.ignore_case.changed.connect(self._reorder_directory)
+
+        self.directoryChanged.connect(self._reload_directory)
+        self.fileChanged.connect(self._on_file_changed)
+
         signals.new_image_opened.connect(self._on_new_image)
+
+    @property
+    def images(self) -> List[str]:
+        """List of images in the current working directory."""
+        return self._images
 
     def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
-        directory = os.path.abspath(directory)
+        directory = os.path.realpath(directory)
         if directory != self._dir or reload_current:
             _logger.debug("Changing directory to '%s'", directory)
             if self.directories():  # Unmonitor old directories
@@ -191,7 +207,13 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """
         # Image filelist has changed, relevant for thumbnail and image mode
         if images != self._images:
-            self.images_changed.emit(images)
+            new = set(images)
+            old = set(self._images)
+            added = sorted(new - old)
+            removed = sorted(old - new)
+            _logger.debug("Added images: %s", added)
+            _logger.debug("Removed images: %s", removed)
+            self.images_changed.emit(images, added, removed)
         # Total filelist has changed, relevant for the library
         if images != self._images or directories != self._directories:
             self._images = images
@@ -202,12 +224,26 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """Get supported content of directory.
 
         Returns:
-            images: List of images inside the directory.
-            directories: List of directories inside the directory.
+            images: Ordered list of images inside the directory.
+            directories: Ordered list of directories inside the directory.
         """
         show_hidden = settings.library.show_hidden.value
         paths = files.listdir(directory, show_hidden=show_hidden)
-        return files.supported(paths)
+        return self._order_paths(*files.supported(paths))
+
+    @slot
+    def _reorder_directory(self) -> None:
+        """Reorder current files / directories."""
+        _logger.debug("Reloading working directory")
+        self._emit_changes(*self._order_paths(self._images, self._directories))
+
+    @staticmethod
+    def _order_paths(images: List[str], dirs: List[str]) -> Tuple[List[str], List[str]]:
+        """Order images and directories according to the current ordering setting."""
+        return (
+            settings.sort.image_order.sort(images),
+            settings.sort.directory_order.sort(dirs),
+        )
 
 
 handler = cast(WorkingDirectoryHandler, None)

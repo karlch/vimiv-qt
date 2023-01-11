@@ -1,12 +1,14 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Miscellaneous QtWidgets."""
 
-from PyQt5.QtCore import QItemSelectionModel, Qt
+from typing import Optional, Tuple
+
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPainter, QFontMetrics
 from PyQt5.QtWidgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
@@ -14,7 +16,85 @@ from vimiv.config import styles
 from vimiv.utils import cached_method
 
 
-class FlatTreeView(QTreeView):
+class ScrollToCenterMixin:
+    """Mixin class to ensure the selected index stays at the center when scrolling."""
+
+    def scrollTo(self, index, _hint=None):
+        super().scrollTo(index, self.PositionAtCenter)
+
+
+class ScrollWheelCumulativeMixin:
+    """Mixin class for cumulative mouse scrolling.
+
+    Attributes:
+        _callback: Function to call when an integer step is accumulated.
+        _scroll_step: Currently unprocessed scrolling step to support finer devices.
+        _scroll_timer: Timer to reset _scroll_step after scrolling.
+    """
+
+    def __init__(self, callback):
+        self._callback = callback
+        self._scroll_step_x = self._scroll_step_y = 0
+        self._scroll_timer = QTimer()
+        self._scroll_timer.setInterval(100)
+        self._scroll_timer.setSingleShot(True)
+
+        def reset_scroll_step():
+            self._scroll_step_x = self._scroll_step_y = 0
+
+        self._scroll_timer.timeout.connect(reset_scroll_step)
+
+    def wheelEvent(self, event):
+        """Update mouse wheel for proper scrolling.
+
+        We accumulate steps until we have an integer value. For regular mice one "roll"
+        should result in a single step. Finer grained devices such as touchpads need
+        this cumulative approach.
+
+        See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta for more details.
+        """
+        self._scroll_step_x += event.angleDelta().x() / 120
+        self._scroll_step_y += event.angleDelta().y() / 120
+
+        steps_x = int(self._scroll_step_x)
+        steps_y = int(self._scroll_step_y)
+
+        if steps_x or steps_y:
+            self._callback(steps_x, steps_y)
+
+        self._scroll_step_x -= steps_x
+        self._scroll_step_y -= steps_y
+        self._scroll_timer.start()
+
+
+class GetNumVisibleMixin:
+    """Mixin class to get the number of visible items in a view."""
+
+    def _visible_range(
+        self, contains: bool = False
+    ) -> Tuple[Optional[int], Optional[int]]:
+        """Return index of first and last visible row."""
+        index_first = index_last = None
+        view_rect = self.viewport().rect()  # type: ignore[attr-defined]
+        cutfunc = view_rect.contains if contains else view_rect.intersects
+        for row in range(self.model().rowCount()):  # type: ignore[attr-defined]
+            row_rect = self.visualRect(self.model().index(row, 0))  # type: ignore[attr-defined]  # pylint: disable=line-too-long,useless-suppression
+            visible = cutfunc(row_rect)
+            if visible:
+                if index_first is None:
+                    index_first = row
+                index_last = row
+        return index_first, index_last
+
+    def _n_visible_items(self, *, contains=False) -> int:
+        """Return the number of visible items in the view."""
+        index_first, index_last = self._visible_range(contains=contains)
+        if index_first is None or index_last is None:
+            return 0
+        return index_last - index_first
+
+
+class FlatTreeView(ScrollToCenterMixin, QTreeView):
     """QTreeView without expandable items."""
 
     def __init__(self, parent=None):
@@ -46,14 +126,11 @@ class FlatTreeView(QTreeView):
         Args:
             index: QModelIndex to select.
         """
-        selmod = QItemSelectionModel.Rows | QItemSelectionModel.ClearAndSelect
-        self.selectionModel().setCurrentIndex(index, selmod)
-        self.scrollTo(index, hint=self.PositionAtCenter)
+        self.setCurrentIndex(index)
 
     def row(self):
         """Return the currently selected row."""
-        selected_indexes = self.selectionModel().selectedIndexes()  # 3 columns
-        return selected_indexes[0].row()
+        return self.currentIndex().row()
 
 
 class SliderWithValue(QSlider):
@@ -149,7 +226,7 @@ class PopUp(QDialog):
     def __init__(self, title: str, parent=None):
         super().__init__(parent=parent)
         self.setWindowTitle(title)
-        self.setWindowFlags(self.windowFlags() | Qt.Tool)  # type: ignore
+        self.setWindowFlags(self.windowFlags() | Qt.Tool)
         styles.apply(self)
 
     def reject(self):

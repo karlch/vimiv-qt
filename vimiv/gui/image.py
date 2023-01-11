@@ -1,12 +1,12 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """QtWidgets for IMAGE mode."""
 
-from contextlib import suppress
+import contextlib
 from typing import List, Union, Optional, Callable
 
 from PyQt5.QtCore import Qt, QRectF, pyqtSignal
@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QMovie, QPixmap
 
 from vimiv import api, imutils, utils
+from vimiv.imutils import slideshow
 from vimiv.commands.argtypes import (
     Direction,
     ImageScale,
@@ -29,17 +30,18 @@ from vimiv.commands.argtypes import (
     AspectRatio,
 )
 from vimiv.config import styles
-from vimiv.utils import lazy
-
-from .eventhandler import EventHandlerMixin
+from vimiv.gui import eventhandler
+from vimiv.utils import lazy, log
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 INF = float("inf")
 
+_logger = log.module_logger(__name__)
 
-class ScrollableImage(EventHandlerMixin, QGraphicsView):
+
+class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     """QGraphicsView to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.
@@ -105,29 +107,40 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         """List of current paths for image mode."""
         return imutils.pathlist()
 
-    def _load_pixmap(self, pixmap: QPixmap, reload_only: bool) -> None:
+    @property
+    def focalpoint(self):
+        """The center of the currently visible part of the scene."""
+        return self.visible_rect.center()
+
+    @property
+    def visible_rect(self):
+        """The currently visible part of the scene in the image coordinates."""
+        return self.mapToScene(self.viewport().rect()).boundingRect() & self.sceneRect()
+
+    def _load_pixmap(self, pixmap: QPixmap, keep_zoom: bool) -> None:
         """Load new pixmap into the graphics scene."""
         item = QGraphicsPixmapItem()
         item.setPixmap(pixmap)
         item.setTransformationMode(Qt.SmoothTransformation)
-        self._update_scene(item, item.boundingRect(), reload_only)
+        self._update_scene(item, item.boundingRect(), keep_zoom)
 
-    def _load_movie(self, movie: QMovie, reload_only: bool) -> None:
+    def _load_movie(self, movie: QMovie, keep_zoom: bool) -> None:
         """Load new movie into the graphics scene."""
         movie.jumpToFrame(0)
         if api.settings.image.autoplay.value:
             movie.start()
         widget = QLabel()
         widget.setMovie(movie)
-        self._update_scene(widget, QRectF(movie.currentPixmap().rect()), reload_only)
+        self._update_scene(widget, QRectF(movie.currentPixmap().rect()), keep_zoom)
+        widget.resize(movie.currentPixmap().size())
 
-    def _load_svg(self, path: str, reload_only: bool) -> None:
+    def _load_svg(self, path: str, keep_zoom: bool) -> None:
         """Load new vector graphic into the graphics scene."""
         item = QtSvg.QGraphicsSvgItem(path)
-        self._update_scene(item, item.boundingRect(), reload_only)
+        self._update_scene(item, item.boundingRect(), keep_zoom)
 
     def _update_scene(
-        self, item: Union[QGraphicsItem, QLabel], rect: QRectF, reload_only: bool
+        self, item: Union[QGraphicsItem, QLabel], rect: QRectF, keep_zoom: bool
     ) -> None:
         """Update the scene with the newly loaded item."""
         self.scene().clear()
@@ -136,7 +149,11 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         else:
             self.scene().addWidget(item)
         self.scene().setSceneRect(rect)
-        self.scale(self._scale if reload_only else ImageScale.Overzoom)  # type: ignore
+        self.scale(self._scale if keep_zoom else ImageScale.Overzoom)  # type: ignore
+        self._update_focalpoint()
+
+    def _update_focalpoint(self):
+        self.centerOn(self.focalpoint)
 
     def _on_images_cleared(self) -> None:
         self.scene().clear()
@@ -171,8 +188,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     @api.commands.register(mode=api.modes.IMAGE)
     def center(self):
         """Center the image in the viewport."""
-        rect = self.scene().sceneRect()
-        self.centerOn(rect.width() / 2, rect.height() / 2)
+        self.centerOn(self.sceneRect().center())
 
     @api.keybindings.register("K", "scroll-edge up", mode=api.modes.IMAGE)
     @api.keybindings.register("J", "scroll-edge down", mode=api.modes.IMAGE)
@@ -207,11 +223,13 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
         **count:** multiplier
         """
-        scale = 1.25 ** count if direction == Zoom.In else 1 / 1.25 ** count
+        scale = 1.25**count if direction == Zoom.In else 1 / 1.25**count
         self._scale_to_float(self.zoom_level * scale)
         self._scale = ImageScaleFloat(self.zoom_level)
 
-    @api.keybindings.register("w", "scale --level=fit", mode=api.modes.IMAGE)
+    @api.keybindings.register(
+        ("w", "<equal>"), "scale --level=fit", mode=api.modes.IMAGE
+    )
     @api.keybindings.register("W", "scale --level=1", mode=api.modes.IMAGE)
     @api.keybindings.register("e", "scale --level=fit-width", mode=api.modes.IMAGE)
     @api.keybindings.register("E", "scale --level=fit-height", mode=api.modes.IMAGE)
@@ -248,10 +266,9 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         elif level == ImageScale.FitHeight:
             self._scale_to_fit(height=rect.height())
         elif isinstance(level, float):
-            level *= count  # Required so it is stored correctly later
+            level *= count  # type: ignore  # Required so it is stored correctly later
             self._scale_to_float(level)
         self._scale = level
-        self.center()
 
     def _scale_to_fit(
         self, width: float = None, height: float = None, limit: float = INF
@@ -280,7 +297,10 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             level: Size to scale to. 1 is the original image size.
         """
         level = utils.clamp(level, self.MIN_SCALE, self.MAX_SCALE)
-        super().scale(level / self.zoom_level, level / self.zoom_level)
+        factor = level / self.zoom_level
+        super().scale(factor, factor)
+        if factor < 1:
+            self._update_focalpoint()
 
     @property
     def zoom_level(self) -> float:
@@ -301,13 +321,13 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     @api.keybindings.register("<space>", "play-or-pause", mode=api.modes.IMAGE)
     @api.commands.register(mode=api.modes.IMAGE)
     def play_or_pause(self):
-        """Toggle betwen play and pause of animation."""
-        with suppress(IndexError, AttributeError):  # No items loaded, not a movie
+        """Toggle between play and pause of animation."""
+        with contextlib.suppress(IndexError, AttributeError):  # No items, not a movie
             widget = self.items()[0].widget()
             movie = widget.movie()
             movie.setPaused(not movie.state() == QMovie.Paused)
 
-    @api.commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE, edit=True)
     def straighten(self):
         """Display a grid to straighten the current image.
 
@@ -315,7 +335,7 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
         keys and counter-clockwise with ``h``, ``<`` and ``H``. Accept the changes with
         ``<return>`` and reject them with ``<escape>``.
         """
-        from .straighten_widget import StraightenWidget
+        from vimiv.gui.straightenwidget import StraightenWidget
 
         StraightenWidget(self)
 
@@ -345,6 +365,29 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             return ""
         return self.transformation_module()  # pylint: disable=not-callable
 
+    @api.status.module("{cursor-position}")
+    def cursor_position(self) -> str:
+        """Current cursor position in image coordinates."""
+        # Initialize mouse tracking on first call
+        if not self.hasMouseTracking():
+            _logger.debug("Activating mouse tracking for {cursor-position} module")
+            self.setMouseTracking(True)
+            # We only want to override leaveEvent if we really have to
+            # pylint: disable=invalid-name
+            self.leaveEvent = self._leave_event  # type: ignore[assignment]
+
+        rect = self.sceneRect().toRect()
+        if rect.width() == 1:  # Empty
+            return ""
+
+        cursor_pos = self.mapToScene(self.mapFromGlobal(self.cursor().pos())).toPoint()
+
+        if not 0 < cursor_pos.x() <= rect.width():
+            return ""
+        if not 0 < cursor_pos.y() <= rect.height():
+            return ""
+        return f"({cursor_pos.x()}, {cursor_pos.y()})"
+
     def resizeEvent(self, event):
         """Rescale the child image and update statusbar on resize event."""
         super().resizeEvent(event)
@@ -352,6 +395,24 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
             self.scale(self._scale)
             api.status.update("image zoom level changed")
             self.resized.emit()
+
+    def mouseMoveEvent(self, event):
+        """Override mouse move event to also update the status.
+
+        Needed by the cursor position related status module and only applied in case it
+        is used at all to avoid unnecessary updates.
+        """
+        api.status.update("mouse position changed")
+        super().mouseMoveEvent(event)
+
+    def _leave_event(self, event):
+        """Override leave event to also update the status.
+
+        Needed by the cursor position related status module and only applied in case it
+        is used at all to avoid unnecessary updates.
+        """
+        api.status.update("mouse position changed")
+        super().leaveEvent(event)
 
     def mousePressEvent(self, event):
         """Update mouse press event to start panning on left button."""
@@ -366,11 +427,12 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
 
     def wheelEvent(self, event):
         """Update mouse wheel to zoom with control."""
-        if event.modifiers() & Qt.ControlModifier:
+        require_ctrl = api.settings.image.zoom_wheel_ctrl
+        if not require_ctrl or event.modifiers() & Qt.ControlModifier:
             # We divide by 120 as this is the regular delta multiple
             # See https://doc.qt.io/qt-5/qwheelevent.html#angleDelta
             steps = event.angleDelta().y() / 120
-            scale = 1.03 ** steps
+            scale = 1.03**steps
             self._scale_to_float(self.zoom_level * scale)
             self._scale = ImageScaleFloat(self.zoom_level)
             api.status.update("image zoom level changed")
@@ -380,6 +442,4 @@ class ScrollableImage(EventHandlerMixin, QGraphicsView):
     def focusOutEvent(self, event):
         """Stop slideshow when focusing another widget."""
         if event.reason() != Qt.ActiveWindowFocusReason:  # Unfocused the whole window
-            slideshow = imutils.slideshow.Slideshow.instance
-            if slideshow is not None and slideshow.isActive():
-                slideshow.stop()
+            slideshow.stop()

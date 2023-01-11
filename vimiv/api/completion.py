@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """*Utilities to work with completion modules*.
@@ -57,11 +57,13 @@ from typing import cast, Dict, Iterable, Tuple
 from PyQt5.QtCore import QSortFilterProxyModel, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-from vimiv.utils import log
-from . import modes, settings
+from vimiv.api import modes, settings
+from vimiv.utils import log, escape_chars, unescape_chars
 
 
 _logger = log.module_logger(__name__)
+# Characters that must be escaped for valid commandline usage
+_CHARS_TO_ESCAPE = r"%\\ "
 
 
 def get_model(text: str, mode: modes.Mode) -> "BaseModel":
@@ -81,6 +83,16 @@ def get_model(text: str, mode: modes.Mode) -> "BaseModel":
                 best_match, best_match_size = model, match_size
     _logger.debug("Model '%s' for text '%s'", best_match, text)
     return best_match
+
+
+def escape(text: str) -> str:
+    """Escape text for valid commandline usage."""
+    return escape_chars(text, _CHARS_TO_ESCAPE)
+
+
+def unescape(text: str) -> str:
+    """Revert escaping of text for valid commandline usage."""
+    return unescape_chars(text, _CHARS_TO_ESCAPE)
 
 
 class FilterProxyModel(QSortFilterProxyModel):
@@ -149,6 +161,7 @@ class FilterProxyModel(QSortFilterProxyModel):
             prefix = prefix + " ".join(parts[:-1])
             command = parts[-1]
         regex = prefix + f" *.*{command}.*"
+        regex = regex.replace("\\", "\\\\")
         self.setFilterRegExp(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
@@ -200,7 +213,7 @@ class BaseModel(QStandardItemModel):
         This allows models to change their content accordingly.
 
         Args:
-            text: The current text in the comand line.
+            text: The current text in the command line.
         """
 
     def on_text_changed(self, text: str) -> None:
@@ -209,7 +222,7 @@ class BaseModel(QStandardItemModel):
         This allows models to change their content accordingly.
 
         Args:
-            text: The current text in the comand line.
+            text: The current text in the command line.
         """
 
     def set_data(self, data: Iterable[Tuple]) -> None:

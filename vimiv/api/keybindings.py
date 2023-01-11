@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Utilities to map commands to a sequence of keys`.
@@ -37,9 +37,8 @@ import functools
 import re
 from typing import Callable, Union, Tuple, Iterable, Iterator
 
+from vimiv.api import commands, modes
 from vimiv.utils import customtypes, trie
-
-from . import commands, modes
 
 
 def register(
@@ -71,8 +70,7 @@ def bind(
 
     See config/configcommands.bind for the corresponding command.
     """
-    # See https://github.com/python/mypy/issues/4975
-    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):
         bindings = _registry[submode]
         if not override and keybinding in bindings:
             raise ValueError(f"Duplicate keybinding for '{keybinding}'")
@@ -84,8 +82,7 @@ def unbind(keybinding: str, mode: modes.Mode) -> None:
 
     See config/configcommands.unbind for the corresponding command.
     """
-    # See https://github.com/python/mypy/issues/4975
-    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):  # type: ignore
+    for submode in modes.GLOBALS if mode is modes.GLOBAL else (mode,):
         try:
             del _registry[submode][keybinding]
         except KeyError:
@@ -159,3 +156,9 @@ def items() -> Iterator[Tuple[modes.Mode, Iterable[Tuple[str, str]]]]:
             yield mode, sort(set(get(mode)) - global_bindings)
         else:
             yield mode, sort(get(mode))
+
+
+def check() -> None:
+    """Checks every mode for keybinding clashes and logs warnings."""
+    for _, bindings_trie in _registry.items():
+        bindings_trie.check()

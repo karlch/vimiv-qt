@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Store and change settings.
@@ -10,19 +10,16 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
+import abc
+import contextlib
 import enum
-from abc import abstractmethod
-from contextlib import suppress
-from typing import Any, Dict, ItemsView, List, Callable, TypeVar
+import os
+from typing import Any, Dict, ItemsView, List, Callable, Iterable
 
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes
-from . import prompt
-
-
-SettingT = TypeVar("SettingT", bound="Setting")
-MethodT = Callable[[SettingT, Any], Any]
+from vimiv.api import prompt
+from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, natural_sort
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -103,7 +100,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         _storage[name] = self  # Store setting in storage
 
     @property
-    @abstractmethod
+    @abc.abstractmethod
     def typ(self) -> type:
         """The python type of this setting defined by the child class."""
 
@@ -117,12 +114,14 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     @value.setter
     def value(self, value: Any) -> Any:
-        self._value = self.convert(value)
-        _logger.debug("Setting '%s' to '%s'", self.name, value)
-        self.changed.emit(self._value)
+        new_value = self.convert(value)
+        if new_value != self._value:
+            self._value = new_value
+            _logger.debug("Setting '%s' to '%s'", self.name, value)
+            self.changed.emit(self._value)
 
     def set_to_default(self) -> None:
-        self._value = self.default
+        self.value = self.default
 
     def suggestions(self) -> List[str]:
         """Return a list of valid or useful suggestions for the setting.
@@ -133,7 +132,7 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
 
     def convert(self, value: Any) -> Any:
         """Convert value to setting type before using it."""
-        with suppress(ValueError):  # We re-raise later with a consistent message
+        with contextlib.suppress(ValueError):  # Re-raise later with consistent message
             if isinstance(value, str):
                 return self.convertstr(value)
             return self.typ(value)
@@ -188,7 +187,7 @@ class PromptSetting(Setting):
         ask = "ask"
 
         def __str__(self) -> str:
-            return self.value
+            return str(self.value)
 
     typ = Options
 
@@ -317,14 +316,66 @@ class StrSetting(Setting):
         return "String"
 
 
-# Initialize all settings
+class OrderSetting(Setting):
+    """Stores an ordering setting."""
 
+    typ = str
+
+    ORDER_TYPES: Dict[str, Callable[..., Any]] = {
+        "alphabetical": str,
+        "natural": natural_sort,
+        "recently-modified": os.path.getmtime,
+    }
+
+    STR_ORDER_TYPES = "alphabetical", "natural"
+
+    def __init__(
+        self,
+        *args: Any,
+        additional_order_types: Dict[str, Callable[..., Any]] = None,
+        **kwargs: Any,
+    ):
+        super().__init__(*args, **kwargs)
+        self.order_types = dict(self.ORDER_TYPES)
+        if additional_order_types:
+            self.order_types.update(additional_order_types)
+
+    def convert(self, value: str) -> str:
+        if value not in self.order_types:
+            raise ValueError(f"Option must be one of {', '.join(self.order_types)}")
+        return value
+
+    def sort(self, values: Iterable[str]) -> List[str]:
+        """Sort values according to the current ordering."""
+        ordering = self._get_ordering()
+        return sorted(values, key=ordering, reverse=sort.reverse.value)
+
+    def suggestions(self) -> List[str]:
+        return list(self.order_types)
+
+    def _get_ordering(self) -> Callable[..., Any]:
+        """Retrieve current ordering function.
+
+        Respects the sort.ignore_case setting and applies os.path.basename to
+        string-like orderings.
+        """
+        ordering = self.order_types[self.value]
+        if self.value not in self.STR_ORDER_TYPES:
+            return ordering
+        if sort.ignore_case.value:
+            return lambda s: ordering(os.path.basename(s).lower())
+        return lambda s: ordering(os.path.basename(s))
+
+    def __str__(self) -> str:
+        return "Order"
+
+
+# Initialize all settings
 monitor_fs = BoolSetting(
     "monitor_filesystem",
     True,
     desc="Monitor current directory for changes and reload widgets automatically",
 )
-shuffle = BoolSetting("shuffle", False, desc="Randomly shuffle images")
 startup_library = BoolSetting(
     "startup_library",
     True,
@@ -332,6 +383,9 @@ startup_library = BoolSetting(
     hidden=True,
 )
 style = StrSetting("style", "default", hidden=True)
+read_only = BoolSetting(
+    "read_only", False, desc="Disable any commands that are able to edit files on disk"
+)
 
 
 class command:  # pylint: disable=invalid-name
@@ -387,6 +441,11 @@ class image:  # pylint: disable=invalid-name
         desc="Maximum scale to apply trying to fit image to window",
         suggestions=["1.0", "1.5", "2.0", "5.0"],
         min_value=1.0,
+    )
+    zoom_wheel_ctrl = BoolSetting(
+        "image.zoom_wheel_ctrl",
+        True,
+        desc="Require holding the control modifier for zooming with the mouse wheel",
     )
 
 
@@ -444,11 +503,13 @@ class statusbar:  # pylint: disable=invalid-name
         desc="Text to display if the current image is marked",
     )
     # Statusbar module strings, these are not retrieved by their type
-    StrSetting("statusbar.left", "{pwd}")
-    StrSetting("statusbar.left_image", "{index}/{total} {basename} [{zoomlevel}]")
+    StrSetting("statusbar.left", "{pwd}{read-only}")
+    StrSetting(
+        "statusbar.left_image", "{index}/{total} {basename}{read-only} [{zoomlevel}]"
+    )
     StrSetting(
         "statusbar.left_thumbnail",
-        "{thumbnail-index}/{thumbnail-total} {thumbnail-name}",
+        "{thumbnail-index}/{thumbnail-total} {thumbnail-basename}{read-only}",
     )
     StrSetting(
         "statusbar.left_manipulate",
@@ -490,3 +551,62 @@ class title:  # pylint: disable=invalid-name
         desc="Default window title if no mode specific options exist",
     )
     StrSetting("title.image", "vimiv - {basename}", desc="Window title in image mode")
+
+
+class metadata:  # pylint: disable=invalid-name
+    """Namespace for metadata related settings."""
+
+    # Default sets
+    defaults = [
+        "Exif.Image.Make,Exif.Image.Model,Exif.Photo.LensModel,Exif.Image.DateTime,Exif.Image.Artist,Exif.Image.Copyright",  # pylint: disable=line-too-long,useless-suppression
+        "Exif.Photo.ExposureTime,Exif.Photo.FNumber,Exif.Photo.ISOSpeedRatings,Exif.Photo.ApertureValue,Exif.Photo.ExposureBiasValue,Exif.Photo.FocalLength,Exif.Photo.ExposureProgram",  # pylint: disable=line-too-long,useless-suppression
+        "Exif.GPSInfo.GPSLatitudeRef,Exif.GPSInfo.GPSLatitude,Exif.GPSInfo.GPSLongitudeRef,Exif.GPSInfo.GPSLongitude,Exif.GPSInfo.GPSAltitudeRef,Exif.GPSInfo.GPSAltitude",  # pylint: disable=line-too-long,useless-suppression
+        "Iptc.Application2.Caption,Iptc.Application2.Keywords,Iptc.Application2.City,Iptc.Application2.SubLocation,Iptc.Application2.ProvinceState,Iptc.Application2.CountryName,Iptc.Application2.Source,Iptc.Application2.Credit,Iptc.Application2.Copyright,Iptc.Application2.Contact",  # pylint: disable=line-too-long,useless-suppression
+        "Exif.Image.ImageWidth,Exif.Image.ImageLength,Exif.Photo.PixelXDimension,Exif.Photo.PixelYDimension,Exif.Image.BitsPerSample,Exif.Image.Compression,Exif.Photo.ColorSpace",  # pylint: disable=line-too-long,useless-suppression
+    ]
+
+    # Store the keys as a comma separated string
+    current_keyset = StrSetting(
+        "metadata.current_keyset",
+        defaults[0],
+        desc="Currently displayed metadata keyset",
+        suggestions=defaults,
+    )
+
+    keysets: Dict[int, str] = dict(enumerate(defaults, start=1))
+
+
+class sort:  # pylint: disable=invalid-name
+    """Namespace for sorting related settings."""
+
+    image_order = OrderSetting(
+        "sort.image_order",
+        "alphabetical",
+        desc="Ordering of images, e.g. in the library",
+        additional_order_types={
+            "size": os.path.getsize,
+        },
+    )
+    directory_order = OrderSetting(
+        "sort.directory_order",
+        "alphabetical",
+        desc="Ordering of directories, e.g. in the library",
+        additional_order_types={
+            "size": lambda d: len(os.listdir(d)),
+        },
+    )
+    reverse = BoolSetting(
+        "sort.reverse",
+        False,
+        desc="Reverse the order of sorting, i.e. z before a, largest first, etc.",
+    )
+    ignore_case = BoolSetting(
+        "sort.ignore_case",
+        False,
+        desc="Ignore case when sorting, i.e. 'A' and 'a' are equal",
+    )
+    shuffle = BoolSetting(
+        "sort.shuffle",
+        False,
+        desc="Randomly shuffle images and ignoring all other sort settings",
+    )

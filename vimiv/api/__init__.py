@@ -1,17 +1,18 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Utilities to interact with the application`."""
 
 import os
-from typing import List, Iterable
+from typing import List, Iterable, Callable, BinaryIO
+from PyQt5.QtGui import QPixmap
 
-from vimiv.utils import files, log
+from vimiv.utils import files, imagereader
 
-from . import (
+from vimiv.api import (
     commands,
     completion,
     keybindings,
@@ -50,7 +51,7 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
         The list of currently open paths.
     """
     mode = mode if mode else modes.current()
-    return mode.pathlist
+    return list(mode.pathlist)  # Ensure we create a copy
 
 
 @keybindings.register("o", "command --text='open '")
@@ -62,6 +63,9 @@ def open_paths(paths: Iterable[str]) -> None:
 
     If any path given is an image, all valid images are opened in image mode. Otherwise
     the first valid directory is opened. If both fails, an error is displayed.
+
+    .. hint:: Passing a single directory therefore changes the directory in the library,
+        think ``cd``.
 
     positional arguments:
         * ``paths``: The path(s) to open.
@@ -78,10 +82,17 @@ def open_paths(paths: Iterable[str]) -> None:
         raise commands.CommandError("No valid paths")
 
 
-def open(paths: Iterable[str]) -> None:  # pylint: disable=redefined-builtin
-    """Deprecated open function for backwards compatibility."""
-    # TODO remove in v0.7.0
-    log.warning(
-        "Calling 'api.open' directly is deprecated, use 'api.open_paths' instead"
-    )
-    open_paths(paths)
+def add_external_format(
+    file_format: str,
+    test_func: files.ImghdrTestFuncT,
+    load_func: Callable[[str], QPixmap],
+) -> None:
+    """Add support for new fileformat.
+
+    Args:
+        file_format: String value of the file type
+        test_func: Function returning True if load_func supports this type.
+        load_func: Function to load a QPixmap from the passed path.
+    """
+    files.add_image_format(file_format, test_func)
+    imagereader.external_handler[file_format] = load_func

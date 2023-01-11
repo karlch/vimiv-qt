@@ -1,12 +1,11 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Classes to deal with the actual image file."""
 
-import enum
 import os
 import shutil
 import tempfile
@@ -16,35 +15,12 @@ from PyQt5.QtCore import QObject, QCoreApplication
 from PyQt5.QtGui import QPixmap, QImageReader, QMovie
 
 from vimiv import api, utils, imutils
-from vimiv.imutils import imtransform
-from vimiv.utils import files, log, asyncrun, lazy
+from vimiv.utils import files, log, asyncrun, lazy, imagereader
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
 
 
 _logger = log.module_logger(__name__)
-
-
-class Pixmaps:
-    """Simple storage class for different pixmap versions.
-
-    Class Attributes:
-        current: The current possibly transformed and manipulated pixmap.
-        original: The original unedited pixmap.
-        transformed: The possibly transformed but unmanipulated pixmap.
-    """
-
-    current = None
-    original = None
-    transformed = None
-
-
-class ImageType(enum.IntEnum):
-    """Enum class for different image widget types."""
-
-    Pixmap = 0
-    Svg = 1
-    Movie = 2
 
 
 class ImageFileHandler(QObject):
@@ -58,100 +34,38 @@ class ImageFileHandler(QObject):
     manipulate to file if wanted.
 
     Attributes:
-        transform: Transform class to get rotate and flip from.
-        manipulate: Manipulate class for e.g. brightness.
-
+        _edit_handler: Handler to interact with any changes to the current image.
         _path: Path to the currently loaded QObject.
-        _pixmaps: Pixmaps object storing different version of the loaded image.
     """
 
     @api.objreg.register
     def __init__(self):
         super().__init__()
-        self._pixmaps = Pixmaps()
-
-        self.transform = imtransform.Transform(self)
-        self.manipulate = None
-
         self._path = ""
-        self._image_type = None
+        self._edit_handler = imutils.EditHandler()
 
         api.signals.new_image_opened.connect(self._on_new_image_opened)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.signals.image_changed.connect(self.reload)
-        api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
 
-    @property
-    def editable(self):
-        """True if the currently opened image is transformable/manipulatable."""
-        return self._image_type == ImageType.Pixmap
-
-    @property
-    def current(self):
-        """The currently displayed pixmap.
-
-        Upon setting a signal to update the image shown is emitted.
-        """
-        return self._pixmaps.current
-
-    @current.setter
-    def current(self, pixmap):
-        self._pixmaps.current = pixmap
-        reload_only = True
-        api.signals.pixmap_loaded.emit(pixmap, reload_only)
-
-    @property
-    def original(self):
-        """Original pixmap without any transformation or manipulations.
-
-        Upon setting all edited pixmaps are reset as well.
-        """
-        return self._pixmaps.original
-
-    @original.setter
-    def original(self, pixmap) -> None:
-        self._pixmaps.original = (
-            self._pixmaps.transformed
-        ) = self._pixmaps.current = pixmap
-
-    @property
-    def transformed(self):
-        """Transformed pixmap without any manipulations applied.
-
-        Upon setting the current pixmap gets updated and shown.
-        """
-        return self._pixmaps.transformed
-
-    @transformed.setter
-    def transformed(self, pixmap):
-        self._pixmaps.transformed = pixmap
-        self.current = pixmap
-
-    @property
-    def changed(self):
-        """True if the current image was edited in any way."""
-        if self.original is None:
-            return False
-        return self.transform.changed or (self.manipulate and self.manipulate.changed)
-
     @utils.slot
-    def _on_new_image_opened(self, path: str):
+    def _on_new_image_opened(self, path: str, keep_zoom: bool):
         """Load proper displayable QWidget for a new image path."""
         self._maybe_write(self._path)
-        self._load(path, reload_only=False)
+        self._load(path, keep_zoom=keep_zoom)
 
     @utils.slot
     def _on_images_cleared(self):
         """Reset to default when all images were cleared."""
         self._path = ""
-        self.original = None
+        self._edit_handler.clear()
 
     @utils.slot
     @api.commands.register(mode=api.modes.IMAGE)
     def reload(self):
         """Reload the current image."""
-        self._load(self._path, reload_only=True)
+        self._load(self._path, keep_zoom=True)
 
     def _maybe_write(self, path, parallel=True):
         """Write image to disk if requested and it has changed.
@@ -160,76 +74,57 @@ class ImageFileHandler(QObject):
             path: Path to the image file.
             parallel: Write the image in an additional thread.
         """
-        if not self.changed:
+        if not self._edit_handler.changed:
             return
         if api.settings.image.autowrite:
-            self.write_pixmap(self.current, path, original_path=path, parallel=parallel)
+            self.write_pixmap(
+                self._edit_handler.pixmap, path, original_path=path, parallel=parallel
+            )
         else:
-            self._reset()
+            self._edit_handler.reset()
 
     @utils.slot
     def _on_quit(self):
         """Possibly write changes to disk on quit."""
         self._maybe_write(self._path, parallel=False)
 
-    @utils.slot
-    def _init_manipulate(self):
-        """Initialize the Manipulator widget from the immanipulate module."""
-        from vimiv.imutils import immanipulate
-
-        self.manipulate = immanipulate.Manipulator(self)
-
-    def _load(self, path: str, reload_only: bool):
+    def _load(self, path: str, keep_zoom: bool):
         """Load proper displayable QWidget for a path.
 
         This reads the image using QImageReader and then emits the appropriate
         *_loaded signal to tell the image to display a new object.
         """
-        # Pass file format explicitly as imghdr does a much better job at this than the
-        # file name based approach of QImageReader
-        file_format = files.imghdr.what(path)
-        if file_format is None:
-            log.error("%s is not a valid image", path)
-            return
-        reader = QImageReader(path, file_format.encode("utf-8"))
-        reader.setAutoTransform(True)  # Automatically apply exif orientation
-        if not reader.canRead():
-            log.error("Cannot read image %s", path)
+        try:
+            reader = imagereader.get_reader(path)
+        except ValueError as e:
+            log.error(str(e))
             return
         # SVG
-        if file_format == "svg" and QtSvg is not None:
+        if reader.is_vectorgraphic and QtSvg is not None:
             # Do not store image and only emit with the path as the
             # VectorGraphic widget needs the path in the constructor
-            self.original = None
-            api.signals.svg_loaded.emit(path, reload_only)
-            self._image_type = ImageType.Svg
+            api.signals.svg_loaded.emit(path, keep_zoom)
+            self._edit_handler.clear()
         # Gif
-        elif reader.supportsAnimation():
+        elif reader.is_animation:
             movie = QMovie(path)
             if not movie.isValid() or movie.frameCount() == 0:
                 log.error("Error reading animation %s: invalid data", path)
                 return
-            self.original = movie
-            api.signals.movie_loaded.emit(self.current, reload_only)
-            self._image_type = ImageType.Movie
+            api.signals.movie_loaded.emit(movie, keep_zoom)
+            self._edit_handler.clear()
         # Regular image
         else:
-            pixmap = QPixmap.fromImageReader(reader)
-            if reader.error():
-                log.error("Error reading image %s: %s", path, reader.errorString())
+            try:
+                pixmap = reader.get_pixmap()
+            except ValueError as e:
+                log.error("%s", e)
                 return
-            self.original = pixmap
-            api.signals.pixmap_loaded.emit(self.current, reload_only)
-            self._image_type = ImageType.Pixmap
+            self._edit_handler.pixmap = pixmap
+            api.signals.pixmap_loaded.emit(pixmap, keep_zoom)
         self._path = path
 
-    def _reset(self):
-        """Reset transform and manipulate back to default."""
-        self.transform.reset()
-        if self.manipulate is not None:
-            self.manipulate.reset()
-
-    @api.commands.register(mode=api.modes.IMAGE)
+    @api.commands.register(mode=api.modes.IMAGE, edit=True)
     def write(self, path: List[str]):
         """Save the current image to disk.
 
@@ -240,7 +135,9 @@ class ImageFileHandler(QObject):
         """
         assert isinstance(path, list), "Must be list from nargs"
         self.write_pixmap(
-            pixmap=self.current, path=" ".join(path), original_path=self._path
+            pixmap=self._edit_handler.pixmap,
+            path=" ".join(path),
+            original_path=self._path,
         )
 
     def write_pixmap(self, pixmap, path=None, original_path=None, parallel=True):
@@ -254,11 +151,12 @@ class ImageFileHandler(QObject):
         """
         if not path:
             path = original_path = self._path
+        path = os.path.abspath(os.path.expanduser(path))
         if parallel:
             asyncrun(write_pixmap, pixmap, path, original_path)
         else:
             write_pixmap(pixmap, path, original_path)
-        self._reset()
+        self._edit_handler.reset()
 
 
 def write_pixmap(pixmap, path, original_path):
@@ -313,7 +211,10 @@ def _write(pixmap, path, original_path):
     os.close(handle)
     pixmap.save(filename)
     # Copy exif info from original file to new file
-    imutils.exif.copy_exif(original_path, filename)
+    try:
+        imutils.exif.ExifHandler(original_path).copy_exif(filename)
+    except imutils.exif.UnsupportedExifOperation:
+        pass
     shutil.move(filename, path)
     # Check if valid image was created
     if not os.path.isfile(path):

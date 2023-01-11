@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Namespace for signals exposed via the api."""
@@ -19,6 +19,7 @@ class _SignalHandler(QObject):
 
         new_image_opened: Emitted when the filelist loaded a new path.
             arg1: Path of the new image.
+            arg2: True if the zoom level should be kept.
         new_images_opened: Emitted when the filelist loaded new paths.
             arg1: List of new paths.
         all_images_cleared: Emitted when there are no more paths in the filelist.
@@ -39,8 +40,8 @@ class _SignalHandler(QObject):
     # Emitted when new images should be loaded
     load_images = pyqtSignal(list)
 
-    # Emited when new image path(s) were opened
-    new_image_opened = pyqtSignal(str)
+    # Emitted when new image path(s) were opened
+    new_image_opened = pyqtSignal(str, bool)
     new_images_opened = pyqtSignal(list)
     all_images_cleared = pyqtSignal()
 

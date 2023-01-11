@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions dealing with the stylesheet of the Qt widgets.
@@ -22,10 +22,8 @@ import sys
 from typing import cast
 
 from vimiv import api
+from vimiv.config import read_log_exception, external_configparser, _style_options
 from vimiv.utils import xdg, log, customtypes
-
-from . import read_log_exception, external_configparser
-from ._style_options import DEFAULT_OPTIONS
 
 
 NAME_DEFAULT = "default"
@@ -59,7 +57,7 @@ class Style(dict):
             self[f"base{i:02x}"] = color
         # Fill in all default values
         self["font"] = font
-        for key, value in DEFAULT_OPTIONS.items():
+        for key, value in _style_options.DEFAULT_OPTIONS.items():
             self[key] = value
         # Add values with alpha channel that require special handling
         self["library.selected.bg.unfocus"] = self.add_alpha(self["{base0d}"], "88")
@@ -67,18 +65,26 @@ class Style(dict):
         self["metadata.bg"] = self.add_alpha(self["{statusbar.bg}"], "AA")
         self["crop.bg"] = self.add_alpha(self["{crop.border.color}"], "44")
 
+    def __getitem__(self, name: str):
+        """Retrieve item automatically surrounding the name with {} if needed."""
+        return super().__getitem__(self.key(name))
+
     def __setitem__(self, name: str, item: str):
         """Store item automatically surrounding the name with {} if needed."""
         assert isinstance(name, str), "Style options must be strings."
         assert isinstance(item, str), "Style values must be strings."
-        if not name.startswith("{"):
-            name = "{%s}" % (name)
+        key = self.key(name)
         if item in self:
-            super().__setitem__(name, self[item])
+            super().__setitem__(key, self[item])
         else:
-            if self.is_color_option(name):
+            if self.is_color_option(key):
                 self.check_valid_color(item)
-            super().__setitem__(name, item)
+            super().__setitem__(key, item)
+
+    @classmethod
+    def key(cls, name: str):
+        """Surround key name in {} if needed."""
+        return name if name.startswith("{") else f"{{{name}}}"
 
     @staticmethod
     def is_color_option(name: str) -> bool:
@@ -151,7 +157,7 @@ def apply(obj, append: str = ""):
 def get(name: str) -> str:
     """Return style option for a given name."""
     try:
-        return _style["{%s}" % (name)]
+        return _style[f"{{{name}}}"]
     except KeyError:
         log.error("Style option '%s' not found, falling back to default", name)
         return ""
@@ -259,7 +265,7 @@ def dump(name: str, style: Style):
     for option, value in style.items():
         option = option.strip("{}")
         parser["STYLE"][option] = value
-    with open(filename, "w") as f:
+    with open(filename, "w", encoding="utf-8") as f:
         f.write(
             "; This file is a reference for creating own styles."
             " It will never be read.\n"

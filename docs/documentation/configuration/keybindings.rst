@@ -21,16 +21,20 @@ There are two ways to add a new keybinding:
 
 If you wish to replace a default keybinding, add a the new keybinding that
 overrides it. For example to replace the ``f : fullscreen`` binding with flip,
-bind ``f : flip``. To remove a default keybinding, map the key to the special
-``nop`` command that does nothing.
+bind ``f : flip``. To remove a default keybinding via ``keys.conf``, map the key to
+``unbind``. In case you would like to enforce a keybinding to do nothing, for example to
+remove a default Qt binding, use ``nop`` instead. ``:nop`` is a regular vimiv command
+that does nothing.
 
 .. note::
 
    When binding a command including the "%" wildcard which stands for the current file,
-   it must be escaped as "%%" as "%" is treated specially by the python ConfigParser.
-   See
-   `the python documentation <https://docs.python.org/3/library/configparser.html#interpolation-of-values>`_
-   for details.
+   it must be escaped as "%%" as "%" `is treated specially by the python ConfigParser
+   <https://docs.python.org/3/library/configparser.html#interpolation-of-values>`_.
+   Special care should be taken if paths could include whitespace as these get escaped
+   using single quotes to a path of the form 'path with space.jpg'. These single quotes
+   should not clash with other single quotes in the binding. We therefore recommend
+   using double quotes for keybindings that include wildcards as needed.
 
 It is also possible to bind mouse clicks and double clicks. The relevant names are
 ``<button-NAME>`` and ``<double-button-NAME>``. Here ``NAME`` stands for the name of the

@@ -1,13 +1,12 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Completion widget in the bar."""
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QSizePolicy
 
 from vimiv import api, widgets
 from vimiv.config import styles
@@ -45,19 +44,11 @@ class CompletionView(widgets.FlatTreeView):
     def __init__(self, parent):
         super().__init__(parent=parent)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setEditTriggers(self.NoEditTriggers)
         self.setModel(api.completion.FilterProxyModel())
 
-        self.hide()
-
         styles.apply(self)
-
-    def update_geometry(self, window_width, window_height):
-        """Rescale width when main window was resized."""
-        y = window_height - self.height()
-        self.setGeometry(0, y, window_width, self.height())
 
     @api.keybindings.register(
         "<shift><tab>", "complete --inverse", mode=api.modes.COMMAND
@@ -72,16 +63,16 @@ class CompletionView(widgets.FlatTreeView):
         optional arguments:
             * ``--inverse``: Complete in inverse direction.
         """
-        try:
-            row = self.row() - 1 if inverse else self.row() + 1
-        except IndexError:  # First trigger of completion
+        if self.row() == -1:  # First trigger of completion
             row = -1 if inverse else 0
+        else:
+            row = self.row() - 1 if inverse else self.row() + 1
         # No suggestions
         if not self.model().rowCount():
             return
         row = row % self.model().rowCount()
         self._select_row(row)
-        index = self.selectionModel().selectedIndexes()[0]
+        index = self.currentIndex()
         completion = index.data()
         self.activated.emit(completion.lstrip())
 
@@ -91,7 +82,7 @@ class CompletionView(widgets.FlatTreeView):
         self.update_column_widths()
 
     def update_column_widths(self):
-        """Resize columnds according to model."""
+        """Resize columns according to model."""
         for i in range(self.model().columnCount()):
             fraction = self.model().sourceModel().column_widths[i]
             self.setColumnWidth(i, int(fraction * self.width()))

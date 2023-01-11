@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Plugin enabling print support."""
@@ -9,7 +9,7 @@
 import abc
 from typing import Optional, Any, Union
 
-from PyQt5.QtCore import QObject, Qt, QSize, pyqtSignal
+from PyQt5.QtCore import QObject, Qt, QSize, pyqtBoundSignal
 from PyQt5.QtGui import QPixmap, QMovie, QPainter
 from PyQt5.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 
@@ -25,7 +25,7 @@ _logger = log.module_logger(__name__)
 class PrintHandler(QObject):
     """Printing class which adds the :print command.
 
-    The class connects to the differend loaded signals of imutils to create the correct
+    The class connects to the different loaded signals of imutils to create the correct
     PrintWidget for the currently displayed image type. Once print is called the
     QPrint(Preview)Dialog is started and upon confirmation the widget is printed.
 
@@ -67,7 +67,7 @@ class PrintHandler(QObject):
     def handle_print(
         widget: "PrintWidget",
         dialog: Union[QPrintPreviewDialog, QPrintDialog],
-        *signals: pyqtSignal,
+        *signals: pyqtBoundSignal,
         auto_apply_orientation: bool = False,
     ) -> None:
         """Handle a print request of widget for a specific dialog."""
@@ -158,7 +158,7 @@ class PrintSvg(PrintWidget):
 
 
 class PrintMovie(PrintWidget):
-    """Print class for anmiations."""
+    """Print class for animations."""
 
     def __init__(self, movie: QMovie):
         self._widget = movie

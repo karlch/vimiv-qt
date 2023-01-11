@@ -1,27 +1,31 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Various utility functions."""
 
+import abc
 import functools
 import inspect
 import re
-from abc import ABCMeta
 import typing
 
 from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
 from PyQt5.QtGui import QPixmap, QColor, QPainter
 
-from .customtypes import AnyT, FuncT, FuncNoneT, NumberT
+from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
 
 # Different location under PyQt < 5.11
 try:
     from PyQt5.sip import wrappertype
 except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
     from sip import wrappertype  # type: ignore
+
+
+RE_STR_NOT_ESCAPED = r"(?<!\\)"
+RE_STR_ESCAPED = r"\\"
 
 
 def add_html(text: str, *tags: str) -> str:
@@ -46,6 +50,18 @@ def wrap_style_span(style: str, text: str) -> str:
     return f"<span style='{style};'>{text}</span>"
 
 
+def format_html_table(content: typing.Iterable[typing.Sequence[str]]) -> str:
+    """Format a nice html table for content."""
+
+    def format_row(first: str, *other: str) -> str:
+        other_elems = "".join(
+            f"<td style='padding-left: 2ex'>{elem}</td>" for elem in other
+        )
+        return f"<tr><td>{first}</td>{other_elems}</tr>"
+
+    return add_html("\n".join(format_row(*cells) for cells in content), "table")
+
+
 def strip_html(text: str) -> str:
     """Strip all html tags from text.
 
@@ -59,7 +75,11 @@ def strip_html(text: str) -> str:
 
 
 def escape_html(text: str) -> str:
-    return text.replace("<", "&lt;").replace(">", "&gt;")
+    """Replace chars that have a special meaning in html with their html variant."""
+    replacements = ("<", "&lt;"), (">", "&gt;"), (" ", "&nbsp;")
+    for pattern, repl in replacements:
+        text = replace_unless_escaped(pattern, repl, text)
+    return text
 
 
 def escape_glob(text: str) -> str:
@@ -70,6 +90,13 @@ def escape_glob(text: str) -> str:
         return f"[{char}]"
 
     return re.sub(r"\\[\*\?\[\]]", escape_char, text)
+
+
+def replace_unless_escaped(pattern: str, repl: str, text: str):
+    """Replace pattern with repl in text unless prefixed by a backslash."""
+    text = re.sub(RE_STR_NOT_ESCAPED + pattern, repl, text)
+    text = re.sub(RE_STR_ESCAPED + pattern, pattern, text)
+    return text
 
 
 def contains_any(
@@ -86,6 +113,10 @@ def contains_any(
         return typing.cast(AnyT, elems) in sequence
 
 
+def quotedjoin(iterable: typing.Iterable[AnyT], joinchar: str = ", "):
+    return joinchar.join(f"'{elem}'" for elem in iterable)
+
+
 def clamp(
     value: NumberT, minimum: typing.Optional[NumberT], maximum: typing.Optional[NumberT]
 ) -> NumberT:
@@ -95,6 +126,15 @@ def clamp(
     if maximum is not None:
         value = min(value, maximum)
     return value
+
+
+def is_hex(text: str) -> bool:
+    """Return True if text is a hexadecimal digit."""
+    try:
+        int(text, base=16)
+        return True
+    except ValueError:
+        return False
 
 
 def parameter_names(function: typing.Callable) -> typing.Tuple[str, ...]:
@@ -165,7 +205,7 @@ def slot(function: FuncT) -> FuncT:
     annotations = typing.get_type_hints(function)
     args = _slot_args(function, annotations)
     kwargs = _slot_kwargs(annotations)
-    return pyqtSlot(*args, **kwargs)(function)
+    return pyqtSlot(*args, **kwargs)(function)  # type: ignore[return-value]
 
 
 def _slot_args(function, annotations):
@@ -305,42 +345,42 @@ def remove_prefix(text: str, prefix: str) -> str:
     return text
 
 
-def escape_ws(text: str, whitespace: str = " ", escape_char: str = "\\\\") -> str:
-    r"""Escape whitespace in a given string.
+def escape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:
+    r"""Escape set of characters in a given string.
 
     Example:
-        >>> escape_ws("some spaced text")
+        >>> escape_chars("some spaced text", " ")
         some\\ spaced\\ text
 
     Args:
         text: The text to escape whitespace in.
-        whitespace: All characters that are treated as whitespace.
+        chars: All characters that are escaped.
         escape_char: The character prepended to whitespace for escaping.
     Returns:
-        Text with the whitespace escaped.
+        Text with the characters escaped.
     """
-    # First part matches all whitespace characters that are not prepended by escape_char
-    # Second part replaces with the escape_char and the whitespace character
-    return re.sub(rf"(?<!{escape_char})([{whitespace}])", rf"{escape_char}\1", text)
+    # First part matches all chars
+    # Second part replaces with the escape_char and the matched char
+    return re.sub(rf"([{chars}])", rf"{escape_char}\1", text)
 
 
-def unescape_ws(text: str, whitespace: str = " ", escape_char: str = "\\\\") -> str:
+def unescape_chars(text: str, chars: str, escape_char: str = r"\\") -> str:
     r"""Undo escaping of whitespace in a given string.
 
     Example:
-        >>> unescape_ws("some\\ spaced\\ text")
+        >>> unescape_chars("some\\ spaced\\ text")
         some spaced text
 
     Args:
         text: The text to undo escaping of whitespace in.
-        whitespace: All characters that are treated as whitespace.
+        chars: All characters that are escaped.
         escape_char: The character prepended to whitespace for escaping.
     Returns:
-        Text with the whitespace escaping undone.
+        Text with the character escaping undone.
     """
-    # First part matches all whitespace characters that are prepended by escape_char
-    # Second part replaces with the whitespace character
-    return re.sub(rf"{escape_char}([{whitespace}])", r"\1", text)
+    # First part matches all chars that are prepended by escape_char
+    # Second part replaces with the matched char
+    return re.sub(rf"{escape_char}([{chars}])", r"\1", text)
 
 
 def create_pixmap(
@@ -372,6 +412,10 @@ def create_pixmap(
     return pixmap
 
 
+def qbytearray_to_str(qbytearray) -> str:
+    return qbytearray.data().decode()
+
+
 def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     """Run a shell command synchronously using QProcess.
 
@@ -391,9 +435,9 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
     if process.exitStatus() != QProcess.NormalExit or process.exitCode() != 0:
-        stderr = str(process.readAllStandardError(), "utf-8").strip()  # type: ignore
+        stderr = qbytearray_to_str(process.readAllStandardError()).strip()
         raise OSError(stderr)
-    return str(process.readAllStandardOutput(), "utf-8").strip()  # type: ignore
+    return qbytearray_to_str(process.readAllStandardOutput()).strip()
 
 
 def is_optional_type(typ: typing.Any) -> bool:
@@ -412,7 +456,7 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
     raise TypeError(f"{typ} is not of Optional type")
 
 
-class AbstractQObjectMeta(wrappertype, ABCMeta):
+class AbstractQObjectMeta(wrappertype, abc.ABCMeta):
     """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
@@ -482,3 +526,15 @@ class Throttle(QTimer):
         """Stop all running throttles."""
         for throttle in cls.throttles:
             throttle.stop()
+
+
+def natural_sort(text: str) -> typing.List[typing.Union[str, int]]:
+    """Key function for natural sort.
+
+    Credits to https://stackoverflow.com/a/5967539/5464989
+    """
+
+    def convert(t: str) -> typing.Union[str, int]:
+        return int(t) if t.isdigit() else t
+
+    return [convert(c) for c in re.split(r"(\d+)", text)]

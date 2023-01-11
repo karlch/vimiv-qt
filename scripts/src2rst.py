@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Generate reST documentation from source code docstrings."""
@@ -97,7 +97,7 @@ def generate_commandline_options():
     groups, titles = _get_options(argparser)
     # Synopsis
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
-    with open(filename_synopsis, "w") as f:
+    with open(filename_synopsis, "w", encoding="utf-8") as f:
         synopsis_options = ["[%s]" % (title) for title in titles]
         synopsis = "**vimiv** %s" % (" ".join(synopsis_options))
         f.write(synopsis)

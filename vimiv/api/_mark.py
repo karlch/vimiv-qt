@@ -1,21 +1,22 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Mark and tag images."""
 
 
+import enum
 import os
 import shutil
 from typing import Any, Callable, List, Optional
 
 from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
 
+from vimiv.api import commands, keybindings, objreg, status, settings, modes
 from vimiv.config import styles
 from vimiv.utils import files, xdg, remove_prefix, wrap_style_span, slot, log
-from . import commands, keybindings, objreg, status, settings, modes
 
 
 _logger = log.module_logger(__name__)
@@ -27,22 +28,38 @@ class Mark(QObject):
     Signals:
         marked: Emitted with the image path when an image was marked.
         unmarked: Emitted with the image path when an image was unmarked.
+        markdone: Emitted when all image of a given paths list are (un)marked.
 
     Attributes:
+        _indicator: Attribute to cache the evaluated mark indicator string.
         _marked: List of all currently marked images.
         _last_marked: List of images that were marked before clearing.
         _watcher: QFileSystemWatcher to monitor marked paths.
     """
 
+    class Action(enum.Enum):
+        """Valid action options for the mark command."""
+
+        Toggle = "toggle"
+        Mark = "mark"
+        Unmark = "unmark"
+
     marked = pyqtSignal(str)
     unmarked = pyqtSignal(str)
+    markdone = pyqtSignal()
 
     @objreg.register
     def __init__(self) -> None:
         super().__init__()
+        self._indicator: Optional[str] = None
         self._marked: List[str] = []
         self._last_marked: List[str] = []
         self._watcher: Optional[QFileSystemWatcher] = None
+        self._actions = {
+            Mark.Action.Toggle: self._toggle_mark,
+            Mark.Action.Mark: self._mark,
+            Mark.Action.Unmark: self._unmark,
+        }
 
     @property
     def tagdir(self) -> str:
@@ -58,27 +75,39 @@ class Mark(QObject):
         if self._watcher is None:
             _logger.debug("Creating watcher to monitor marked paths")
             self._watcher = QFileSystemWatcher()
-            self._watcher.fileChanged.connect(self._on_file_changed)  # type: ignore
+            self._watcher.fileChanged.connect(self._on_file_changed)
         return self._watcher
+
+    def is_marked(self, path: str) -> bool:
+        """Return True if the passed path is marked."""
+        return path in self._marked
 
     @keybindings.register("m", "mark %")
     @commands.register()
-    def mark(self, paths: List[str]) -> None:
+    def mark(self, paths: List[str], action: Action = Action.Toggle) -> None:
         """Mark one or more paths.
 
-        **syntax:** ``:mark path [path ...]``
-
-        If a path is currently marked, it is unmarked instead.
+        **syntax:** ``:mark path [path ...] [--action=ACTION]``
 
         .. hint:: ``:mark %`` marks the current path.
 
         positional arguments:
             * ``paths``: The path(s) to mark.
+
+        optional arguments:
+            * ``--action``: One of toggle/mark/unmark. Toggle, the default, inverses the
+              mark status of the path(s). Mark forces marking while unmark forces
+              removing the mark.
         """
-        _logger.debug("Marking %d paths", len(paths))
+        _logger.debug("Calling %s on %d paths", action.value, len(paths))
+        function = self._actions[action]
         for path in paths:
             if files.is_image(path):
-                self._toggle_mark(path)
+                try:
+                    function(path)
+                except ValueError:
+                    _logger.debug("Calling %s on '%s' failed", action.value, path)
+        self.markdone.emit()
 
     @commands.register()
     def mark_clear(self) -> None:
@@ -96,6 +125,7 @@ class Mark(QObject):
         for path in self._last_marked:
             self.unmarked.emit(path)
             _logger.debug("Unmarked '%s'", path)
+        self.markdone.emit()
 
     @commands.register()
     def mark_restore(self) -> None:
@@ -106,6 +136,7 @@ class Mark(QObject):
         for path in self._marked:
             self.marked.emit(path)
             _logger.debug("Marked '%s'", path)
+        self.markdone.emit()
 
     @commands.register()
     def tag_write(self, name: str) -> None:
@@ -148,7 +179,7 @@ class Mark(QObject):
             try:
                 operation(abspath)
             except PermissionError:
-                raise commands.CommandError(f"Permission denied")
+                raise commands.CommandError("Permission denied")
 
         if os.path.isfile(abspath):
             safe_delete(os.remove)
@@ -168,7 +199,7 @@ class Mark(QObject):
         .. hint:: You can open all marked images with ``:open %m``.
 
         positional arguments:
-            * ``name``: Name of the tag to delete.
+            * ``name``: Name of the tag to load.
         """
         _logger.debug("Loading tag '%s'", name)
         with Tag(name) as tag:
@@ -177,12 +208,29 @@ class Mark(QObject):
         for path in paths:
             self.marked.emit(path)
             _logger.debug("Marked '%s'", path)
+        self.markdone.emit()
+
+    @commands.register()
+    def tag_open(self, name: str) -> None:
+        """Open images from a tag in image mode.
+
+        **syntax:** ``tag-open name``
+
+        .. hint:: This is equivalent to ``:tag-load name && open %m``.
+
+        positional arguments:
+            * ``name``: Name of the tag to open.
+        """
+        from vimiv.api import open_paths  # Otherwise we have a circular import
+
+        self.tag_load(name)
+        open_paths(self._marked)
 
     @status.module("{mark-indicator}")
     def mark_indicator(self) -> str:
         """Indicator if the current image is marked."""
         if modes.current().current_path in self._marked:
-            return Mark.indicator()
+            return self.indicator
         return ""
 
     @status.module("{mark-count}")
@@ -198,22 +246,23 @@ class Mark(QObject):
         """Return list of currently marked paths."""
         return self._marked
 
-    @staticmethod
-    def indicator() -> str:
+    @property
+    def indicator(self) -> str:
         """Colored mark indicator."""
-        color = styles.get("mark.color")
-        return wrap_style_span(
-            f"color: {color}", settings.statusbar.mark_indicator.value
-        )
+        if self._indicator is None:
+            color = styles.get("mark.color")
+            self._indicator = wrap_style_span(
+                f"color: {color}", settings.statusbar.mark_indicator.value
+            )
+        return self._indicator
 
-    @staticmethod
-    def highlight(text: str, marked: bool = True) -> str:
+    def highlight(self, text: str, marked: bool = True) -> str:
         """Add/remove mark indicator from text.
 
         If marked is True, then the indicator is added to the left of the text.
         Otherwise it is removed.
         """
-        mark_str = Mark.indicator() + " "
+        mark_str = self.indicator + " "
         text = remove_prefix(text, mark_str)
         return mark_str + text if marked else text
 
@@ -239,6 +288,8 @@ class Mark(QObject):
 
     def _mark(self, path: str) -> None:
         """Mark the given path."""
+        if self.is_marked(path):
+            raise ValueError(f"Path '{path}' is already marked")
         self._marked.append(path)
         self.marked.emit(path)
         self.watcher.addPath(path)
@@ -285,7 +336,9 @@ class Tag:
         _logger.debug("Opened tag object: '%s'", self)
         xdg.makedirs(os.path.dirname(abspath))
         try:
-            self._file = open(abspath, self._mode)
+            # We are writing our own context-manager here
+            # pylint: disable=consider-using-with
+            self._file = open(abspath, self._mode, encoding="utf-8")
         except FileNotFoundError:  # For read-only if the file does not exist
             raise commands.CommandError(f"No tag called '{name}'")
         except OSError as e:

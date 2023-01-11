@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Default modes and utility functions for mode handling`.
@@ -34,6 +34,7 @@ from typing import cast, Any, Callable, List, Tuple
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
+from vimiv.api import settings
 from vimiv.utils import AbstractQObjectMeta, log
 
 
@@ -63,12 +64,12 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     Signals:
         first_entered: Emitted before the mode is entered the first time.
         entered: Emitted when this mode is entered.
-        left: Emitted when this mode is left.
+        closed: Emitted when this mode is closed.
     """
 
     first_entered = pyqtSignal()
     entered = pyqtSignal()
-    left = pyqtSignal()
+    closed = pyqtSignal()
 
     _ID = 0
     active = cast("Mode", None)  # Initialized during reading of the module
@@ -109,21 +110,22 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
         self.entered.emit()
         _logger.debug("Entered mode %s", self)
 
-    def leave(self) -> None:
-        """Leave this mode for the last mode."""
-        self.last.enter()
-        self.left.emit()
-        # Reset the last mode when leaving a specific mode as leaving means closing
-        # the widget and we do not want to re-open a closed widget implicitly
-        self.last.reset_last()
+    def close(self) -> None:
+        """Close this mode and enter the last mode if this mode is active."""
+        self.closed.emit()
+        if Mode.active == self:
+            self.last.enter()
+            # Reset the last mode when leaving a specific mode as leaving means closing
+            # the widget and we do not want to re-open a closed widget implicitly
+            self.last.reset_last()
 
     def toggle(self) -> None:
         """Toggle this mode.
 
-        If the mode is currently visible, leave it. Otherwise enter it.
+        If the mode is currently visible, close it. Otherwise enter it.
         """
-        if self.widget.isVisible():
-            self.leave()
+        if self.widget is not None and self.widget.isVisible():
+            self.close()
         else:
             self.enter()
 
@@ -210,9 +212,11 @@ class _ModeWidget(QWidget):
 
     def current(self) -> str:
         """Return the current path valid for this mode."""
+        raise NotImplementedError("Do not use _ModeWidget directly")
 
     def pathlist(self) -> List[str]:
         """Return the current list of paths valid for this mode."""
+        raise NotImplementedError("Do not use _ModeWidget directly")
 
 
 def widget(mode: Mode) -> Callable:
@@ -270,6 +274,17 @@ class _CommandMode(Mode):
             self._last = mode
 
 
+class _ManipulateMode(_MainMode):
+    """Manipulate mode class."""
+
+    def enter(self) -> None:
+        """Override enter to ensure we are not in read-only mode when manipulating."""
+        if settings.read_only:
+            log.error("Manipulate mode is disabled due to read-only being active")
+        else:
+            super().enter()
+
+
 # Create all modes
 GLOBAL = _MainMode("global")
 IMAGE = _MainMode("image")
@@ -277,7 +292,7 @@ Mode.active = IMAGE
 LIBRARY = _MainMode("library", last=IMAGE)
 THUMBNAIL = _MainMode("thumbnail", last=IMAGE)
 COMMAND = _CommandMode("command", last=IMAGE)
-MANIPULATE = _MainMode("manipulate", last=IMAGE)
+MANIPULATE = _ManipulateMode("manipulate", last=IMAGE)
 # This cannot be done in the constructor as the constructor of LIBRARY requires IMAGE
 # and vice-versa
 IMAGE.last = IMAGE.last_fallback = LIBRARY

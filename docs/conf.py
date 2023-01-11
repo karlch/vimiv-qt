@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 #
@@ -54,7 +54,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "vimiv"
-copyright = "2017-2020, Christian Karl"
+copyright = "2017-2023, Christian Karl"
 author = "Christian Karl"
 html_favicon = "_static/favicon.ico"
 
@@ -72,7 +72,7 @@ html_favicon = "_static/favicon.ico"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -186,7 +186,7 @@ texinfo_documents = [
 
 
 def setup(app):
-    app.add_stylesheet("custom.css")
+    app.add_css_file("custom.css")
     ignore_separator = "^" + 88 * "-" + "$"
     app.connect(
         "autodoc-process-docstring", autodoc.between(ignore_separator, exclude=True)

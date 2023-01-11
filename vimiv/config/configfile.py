@@ -1,18 +1,18 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions to read configurations from config file and update settings."""
 
 import configparser
+import re
 
 from vimiv import api, plugins
 from vimiv.commands import aliases
-from vimiv.utils import log
-
-from . import read_log_exception, parse_config, external_configparser
+from vimiv.config import read_log_exception, parse_config, external_configparser
+from vimiv.utils import log, quotedjoin
 
 
 _logger = log.module_logger(__name__)
@@ -25,7 +25,7 @@ def parse(cli_path: str) -> None:
 
 def dump(path: str) -> None:
     """Write default configurations to config file at path."""
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         get_default_parser().write(f)
     _logger.debug("Created default configuration file '%s'", path)
 
@@ -44,6 +44,12 @@ def get_default_parser() -> configparser.ConfigParser:
     parser.add_section("PLUGINS")
     parser["PLUGINS"] = plugins.get_plugins()
     parser.add_section("ALIASES")
+    # Only write the individual key sets, not the current keyset as the first of the
+    # individual options is chosen as the current one
+    del parser["METADATA"]["current_keyset"]
+    parser["METADATA"].update(
+        {f"keys{num:d}": value for num, value in api.settings.metadata.keysets.items()}
+    )
     return parser
 
 
@@ -63,6 +69,9 @@ def read(path: str) -> None:
     # Read plugins
     if "PLUGINS" in parser:
         _read_plugins(parser["PLUGINS"])
+    # Read metadata sets
+    if "METADATA" in parser:
+        _add_metadata(parser["METADATA"])
     _logger.debug("Read configuration from '%s'", path)
 
 
@@ -139,5 +148,23 @@ def _read_plugins(pluginsection):
     Args:
         pluginsection: PLUGINS section in the config file.
     """
-    _logger.debug("Plugins in config: %s", ", ".join(pluginsection))
+    _logger.debug("Plugins in config: %s", quotedjoin(pluginsection))
     plugins.add_plugins(**pluginsection)
+
+
+def _add_metadata(configsection):
+    """Set available metadata sets from config file.
+
+    Args:
+        configsection: METADATA section in the config file.
+    """
+    for name, value in configsection.items():
+        match = re.search(r"keys(\d+)", name)
+        if match:
+            number = int(match.group(1))
+            api.settings.metadata.keysets[number] = value
+            _logger.debug("Keyset %d: '%s' found", number, value)
+    if len(api.settings.metadata.keysets) > 0:
+        api.settings.metadata.current_keyset.value = api.settings.metadata.keysets[
+            min(api.settings.metadata.keysets.keys())
+        ]

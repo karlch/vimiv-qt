@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """`Utilities to load, edit, navigate and save images`.
@@ -38,10 +38,11 @@ The image widget in ``vimiv.gui.image`` connects to these signals and displays
 the appropriate Qt widget.
 """
 
-from . import exif
-from .filelist import current, pathlist
-from .filelist import SignalHandler as _FilelistSignalHandler
-from ._file_handler import ImageFileHandler as _ImageFileHandler
+from vimiv.imutils import exif
+from vimiv.imutils.edit_handler import EditHandler
+from vimiv.imutils.filelist import current, pathlist
+from vimiv.imutils.filelist import SignalHandler as _FilelistSignalHandler
+from vimiv.imutils._file_handler import ImageFileHandler as _ImageFileHandler
 
 
 def init():

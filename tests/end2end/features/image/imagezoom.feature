@@ -21,3 +21,9 @@ Feature: Zooming the image displayed.
         When I run zoom in
         And I run reload
         Then the zoom level should not be 1.0
+
+    Scenario: Keep zoom level with --keep-zoom flag.
+        Given I open any image of size 200x200
+        When I run zoom in
+        And I run next --keep-zoom
+        Then the zoom level should be 1.25

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.api.prompt."""
@@ -36,6 +36,6 @@ def test_ask_question(answer):
     title = "Question"
     body = "Does this test work?"
     answerer = QuestionAnswerer(title=title, body=body, answer=answer)
-    answer = prompt.ask_question(title=title, body=body)
+    received_answer = prompt.ask_question(title=title, body=body)
     assert answerer.answered
-    assert answer == answer
+    assert received_answer == answer

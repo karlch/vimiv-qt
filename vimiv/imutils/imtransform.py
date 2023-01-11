@@ -1,18 +1,17 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """*imtransform - transformations such as rotate and flip*."""
 
 import functools
 import math
-import weakref
 from typing import Optional
 
-from PyQt5.QtCore import Qt, QRect, QSize
-from PyQt5.QtGui import QTransform
+from PyQt5.QtCore import Qt, QRect, QSize, QObject, pyqtSignal
+from PyQt5.QtGui import QTransform, QPixmap
 
 from vimiv import api
 from vimiv.utils import log
@@ -33,7 +32,7 @@ def register_transform_command(**kwargs):
             func(self, *args, **kwargs)
             self.apply()
 
-        return api.commands.register(mode=api.modes.IMAGE, **kwargs)(inner)
+        return api.commands.register(mode=api.modes.IMAGE, edit=True, **kwargs)(inner)
 
     return decorator
 
@@ -45,13 +44,39 @@ class Transform(QTransform):
     to apply these transformations to the pixmap given by the handler.
 
     Attributes:
-        _handler: weak reference to ImageFileHandler used to retrieve/set updated files.
+        _current: Class to access the currently displayed pixmap.
+        _original: The original, untransformed, pixmap.
+
+    Signals:
+        transformed: Emitted with the transformed pixmap upon changes.
     """
 
+    class Signals(QObject):
+        """Signals for transformed required as QTransform is not a QObject."""
+
+        transformed = pyqtSignal(QPixmap)
+
+    _signals = Signals()
+    transformed = _signals.transformed
+
     @api.objreg.register
-    def __init__(self, handler):
+    def __init__(self, current_pixmap):
         super().__init__()
-        self._handler = weakref.ref(handler)
+        self._current = current_pixmap
+        self._original = None
+
+    @property
+    def current(self):
+        return self._current.pixmap
+
+    @property
+    def original(self):
+        return self._original
+
+    @original.setter
+    def original(self, pixmap):
+        self._original = pixmap
+        self.reset()
 
     @property
     def angle(self) -> float:
@@ -104,11 +129,9 @@ class Transform(QTransform):
             * ``width``: Width in pixels to resize the image to.
             * ``height``: Height in pixels to resize the image to. If not given, the
               aspectratio is preserved.
-
-        .. note:: This transforms the original image and writes to disk.
         """
-        dx = width / self._handler().transformed.width()
-        dy = dx if height is None else height / self._handler().transformed.height()
+        dx = width / self.current.width()
+        dy = dx if height is None else height / self.current.height()
         self.scale(dx, dy)
 
     @register_transform_command()
@@ -121,16 +144,13 @@ class Transform(QTransform):
             * ``dx``: Factor in x direction to scale the image by.
             * ``dy``: Factor in y direction to scale the image by. If not given, the
               aspectratio is preserved.
-
-        .. note:: This transforms the original image and writes to disk.
         """
         dy = dy if dy is not None else dx
         self.scale(dx, dy)
 
     def apply(self):
         """Apply all transformations to the original pixmap."""
-        original = self._handler().original
-        self._apply(original.transformed(self, mode=Qt.SmoothTransformation))
+        self._apply(self.original.transformed(self, mode=Qt.SmoothTransformation))
 
     def straighten(self, *, angle: int, original_size: QSize):
         """Straighten the original image.
@@ -142,16 +162,15 @@ class Transform(QTransform):
             angle: Rotation angle to straighten the original image by.
             original_size: Size of the original unstraightened image.
         """
-        original = self._handler().original
         self.rotate(angle)
-        transformed = original.transformed(self, mode=Qt.SmoothTransformation)
+        transformed = self.original.transformed(self, mode=Qt.SmoothTransformation)
         rect = self.largest_rect_in_rotated(
             original=original_size, rotated=transformed.size(), angle=angle
         )
         self._apply(transformed.copy(rect))
 
     def crop(self, rect):
-        self._apply(self._handler().transformed.copy(rect))
+        self._apply(self.current.copy(rect))
 
     def _apply(self, transformed):
         """Check the transformed pixmap for validity and apply it to the handler."""
@@ -160,17 +179,19 @@ class Transform(QTransform):
                 "Error transforming image, ignoring transformation.\n"
                 "Is the resulting image too large? Zero?."
             )
-        self._handler().transformed = transformed
+        self.transformed.emit(transformed)
 
     def _ensure_editable(self):
-        if not self._handler().editable:
+        if not self._current.editable:
             raise api.commands.CommandError("File format does not support transform")
 
     @property
     def changed(self):
         """True if transformations have been applied."""
         transformed = not self.isIdentity()
-        cropped = self._handler().transformed.rect() != self._handler().original.rect()
+        if self._original is None:
+            return transformed
+        cropped = self.current.rect() != self._original.rect()
         return transformed or cropped
 
     @property
@@ -187,13 +208,13 @@ class Transform(QTransform):
     @property
     def size(self) -> QSize:
         """Size of the transformed image."""
-        return self._handler().transformed.size()
+        return self.current.size()
 
-    @api.commands.register(mode=api.modes.IMAGE)
+    @register_transform_command()
     def undo_transformations(self):
         """Undo any transformation applied to the current image."""
         self.reset()
-        self._handler().transformed = self._handler().original
+        self.transformed.emit(self.original)
 
     @classmethod
     def largest_rect_in_rotated(
@@ -224,7 +245,7 @@ class Transform(QTransform):
             s = 0.5 * short
             wr, hr = (s / cos_a, s / sin_a) if is_portrait else (s / sin_a, s / cos_a)
         else:
-            cos_2a = cos_a ** 2 - sin_a ** 2
+            cos_2a = cos_a**2 - sin_a**2
             wr = (original.width() * cos_a - original.height() * sin_a) / cos_2a
             hr = (original.height() * cos_a - original.width() * sin_a) / cos_2a
 

@@ -27,3 +27,19 @@ Feature: Display status information in the statusbar
         When I run set statusbar.left {filesize}
         And I run command
         Then no crash should happen
+
+    Scenario: Correctly escape html for keybindings
+        Given I start vimiv
+        When I run bind << scroll down
+        And I press '<'
+        Then the right status should include &lt;
+
+    Scenario: Show read-only mode in statusbar
+        Given I start vimiv
+        When I run set read_only true
+        Then the left status should include [RO]
+
+    Scenario: Show cursor position in statusbar
+        Given I open any image
+        When I run set statusbar.right_image {cursor-position}
+        Then the image should have mouse tracking

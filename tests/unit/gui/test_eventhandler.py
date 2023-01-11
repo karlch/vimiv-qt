@@ -1,15 +1,15 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.gui.eventhandler."""
 
-import pytest
-
 from PyQt5.QtCore import QEvent, Qt, QPoint
 from PyQt5.QtGui import QKeyEvent, QMouseEvent
+
+import pytest
 
 from vimiv.gui import eventhandler
 
@@ -51,6 +51,7 @@ def test_temp_key_storage_clears_text(storage, qtbot):
         (Qt.Key_A, Qt.AltModifier, "a", ("<alt>", "a")),
         (Qt.Key_A, Qt.AltModifier | Qt.ControlModifier, "a", ("<ctrl>", "<alt>", "a")),
         (Qt.Key_Colon, Qt.NoModifier, ":", ("<colon>",)),
+        (Qt.Key_Equal, Qt.NoModifier, "=", ("<equal>",)),
     ],
 )
 def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):
@@ -61,7 +62,7 @@ def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):
 def test_keyevent_to_sequence_for_only_modifier():
     with pytest.raises(ValueError):
         event = QKeyEvent(QEvent.KeyPress, Qt.Key_Shift, Qt.ShiftModifier, "")
-        eventhandler.keyevent_to_sequence(event) == tuple()
+        assert eventhandler.keyevent_to_sequence(event) == tuple()
 
 
 @pytest.mark.parametrize(
@@ -70,7 +71,14 @@ def test_keyevent_to_sequence_for_only_modifier():
         (Qt.LeftButton, Qt.NoModifier, ("<button-left>",)),
         (Qt.MiddleButton, Qt.NoModifier, ("<button-middle>",)),
         (Qt.RightButton, Qt.NoModifier, ("<button-right>",)),
-        (Qt.LeftButton, Qt.ControlModifier, ("<ctrl>", "<button-left>",)),
+        (
+            Qt.LeftButton,
+            Qt.ControlModifier,
+            (
+                "<ctrl>",
+                "<button-left>",
+            ),
+        ),
     ],
 )
 def test_mouse_event_to_sequence(qtbutton, modifier, expected):

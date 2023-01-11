@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """ThumbnailManager to create thumbnails asynchronously.
@@ -12,17 +12,17 @@ with the index and the QPixmap of the generated thumbnail for the thumbnail
 widget to update.
 """
 
+import contextlib
 import hashlib
 import os
 import tempfile
-from contextlib import suppress
 from typing import Dict, List
 
-from PyQt5.QtCore import QRunnable, pyqtSignal, QObject, Qt
-from PyQt5.QtGui import QIcon, QPixmap, QImageReader, QImage
+from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
+from PyQt5.QtGui import QIcon, QPixmap, QImage
 
 import vimiv
-from vimiv.utils import xdg, Pool
+from vimiv.utils import xdg, imagereader, Pool
 
 
 KEY_URI = "Thumb::URI"
@@ -102,14 +102,18 @@ class ThumbnailCreator(QRunnable):
 
     def run(self) -> None:
         """Create thumbnail and emit the managers created signal."""
-        thumbnail_path = self._get_thumbnail_path(self._path)
-        with suppress(FileNotFoundError):
-            pixmap = (
-                self._maybe_recreate_thumbnail(self._path, thumbnail_path)
-                if os.path.exists(thumbnail_path)
-                else self._create_thumbnail(self._path, thumbnail_path)
-            )
-            self._manager.created.emit(self._index, QIcon(pixmap))
+        # Do not create thumbnails for thumbnails
+        if os.path.dirname(self._path) == self._manager.directory:
+            self._manager.created.emit(self._index, QIcon(self._path))
+        else:
+            thumbnail_path = self._get_thumbnail_path(self._path)
+            with contextlib.suppress(FileNotFoundError):
+                pixmap = (
+                    self._maybe_recreate_thumbnail(self._path, thumbnail_path)
+                    if os.path.exists(thumbnail_path)
+                    else self._create_thumbnail(self._path, thumbnail_path)
+                )
+                self._manager.created.emit(self._index, QIcon(pixmap))
 
     def _get_thumbnail_path(self, path: str) -> str:
         filename = self._get_thumbnail_filename(path)
@@ -121,7 +125,7 @@ class ThumbnailCreator(QRunnable):
 
     def _get_thumbnail_filename(self, path: str) -> str:
         uri = self._get_source_uri(path)
-        return hashlib.md5(bytes(uri, "UTF-8")).hexdigest() + ".png"
+        return hashlib.md5(uri.encode()).hexdigest() + ".png"
 
     @staticmethod
     def _get_source_mtime(path: str) -> int:
@@ -136,34 +140,28 @@ class ThumbnailCreator(QRunnable):
         Returns:
             The created QPixmap.
         """
-        # Cannot access source
-        if not os.access(path, os.R_OK):
-            return self._manager.fail_pixmap
         size = 256 if self._manager.large else 128
-        reader = QImageReader(path)
-        reader.setAutoTransform(True)  # Automatically apply exif orientation
-        if reader.canRead():
-            qsize = reader.size()
-            qsize.scale(size, size, Qt.KeepAspectRatio)
-            reader.setScaledSize(qsize)
-            image = reader.read()
-            # Image was deleted in the time between reader.read() and now
-            try:
-                attributes = self._get_thumbnail_attributes(path, image)
-            except FileNotFoundError:
-                return self._manager.fail_pixmap
-            for key, value in attributes.items():
-                image.setText(key, value)
-            # First create temporary file and then move it. This avoids
-            # problems with concurrent access of the thumbnail cache, since
-            # "move" is an atomic operation
-            handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
-            os.close(handle)
-            os.chmod(tmp_filename, 0o600)
-            image.save(tmp_filename, format="png")
-            os.replace(tmp_filename, thumbnail_path)
-            return QPixmap(image)
-        return self._manager.fail_pixmap
+        try:
+            reader = imagereader.get_reader(path)
+            image = reader.get_image(size)
+        except ValueError:
+            return self._manager.fail_pixmap
+        # Image was deleted in the time between reader.read() and now
+        try:
+            attributes = self._get_thumbnail_attributes(path, image)
+        except FileNotFoundError:
+            return self._manager.fail_pixmap
+        for key, value in attributes.items():
+            image.setText(key, value)
+        # First create temporary file and then move it. This avoids
+        # problems with concurrent access of the thumbnail cache, since
+        # "move" is an atomic operation
+        handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
+        os.close(handle)
+        os.chmod(tmp_filename, 0o600)
+        image.save(tmp_filename, format="png")
+        os.replace(tmp_filename, thumbnail_path)
+        return QPixmap(image)
 
     def _get_thumbnail_attributes(self, path: str, image: QImage) -> Dict[str, str]:
         """Return a dictionary filled with thumbnail attributes.

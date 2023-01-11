@@ -34,3 +34,19 @@ Feature: Expand wildcards when running commands
         Then the directory child_01 should exist
         And the directory child_02 should exist
         And a message should be displayed
+
+    Scenario: Expand tilde to home directory
+        Given I open a directory with 1 paths
+        When I run !cp -r % ~/mypath.jpg
+        Then the home directory should contain mypath.jpg
+
+    Scenario: Do not expand tilde when escaped
+        Given I open a directory with 1 paths
+        When I run !cp -r % \~
+        Then the directory ~ should exist
+
+    Scenario: Expand %f to the list of paths in the library
+        Given I open a directory with 2 paths
+        When I run !rmdir *
+        Then the directory child_01 should not exist
+        And the directory child_02 should not exist

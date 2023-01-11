@@ -8,4 +8,4 @@ Feature: Version command with pop up window.
     Scenario: Copy version information to clipboard.
         Given I start vimiv
         When I run version --copy
-        Then the clipboard should contain vimiv
+        Then the clipboard should contain 'vimiv'

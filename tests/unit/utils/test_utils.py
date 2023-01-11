@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils"""
@@ -9,11 +9,11 @@
 import inspect
 import os
 import typing
-from collections import namedtuple
 from typing import get_type_hints
 
+from PyQt5.QtCore import pyqtSignal, QObject, QByteArray
+
 import pytest
-from PyQt5.QtCore import pyqtSignal, QObject
 
 from vimiv import utils
 
@@ -55,6 +55,33 @@ def test_wrap_style_span():
     )
 
 
+@pytest.mark.parametrize("n_rows", (1, 5))
+def test_format_html_table(n_rows):
+    # Format by hand
+    iterable = list(range(n_rows))
+    row = "<tr><td>{num}</td><td style='padding-left: 2ex'>{numsq}</td></tr>"
+    text = "\n".join(row.format(num=num, numsq=num**2) for num in iterable)
+    expected = "<table>" + text + "</table>"
+    # Format using function
+    content = [(f"{num:d}", f"{num**2:d}") for num in iterable]
+    result = utils.format_html_table(content)
+    # Ensure equal
+    assert result == expected
+
+
+@pytest.mark.parametrize("escaped", (True, False))
+def test_replace_unless_escaped(escaped):
+    pattern = " "
+    repl = "&nbsp;"
+    text = f"before{pattern}after"
+    if escaped:
+        expected = text
+        text = text.replace(pattern, rf"\{pattern}")
+    else:
+        expected = text.replace(pattern, repl)
+    assert utils.replace_unless_escaped(pattern, repl, text) == expected
+
+
 @pytest.mark.parametrize(
     "sequence, elems, expected",
     [
@@ -70,6 +97,15 @@ def test_wrap_style_span():
 )
 def test_contains_any(sequence, elems, expected):
     assert utils.contains_any(sequence, elems) == expected
+
+
+@pytest.mark.parametrize("joinchar", (", ", ":"))
+@pytest.mark.parametrize("iterable", (range(4), "abcd"))
+def test_quotedjoin(iterable, joinchar):
+    iterable = list(iterable)
+    quoted_iterable = ("'" + str(elem) + "'" for elem in iterable)
+    expected = joinchar.join(quoted_iterable)
+    assert expected == utils.quotedjoin(iterable, joinchar=joinchar)
 
 
 @pytest.mark.parametrize("char", "*?[]")
@@ -145,8 +181,8 @@ def test_slot_fails_without_type_annotations():
     with pytest.raises(utils.AnnotationNotFound):
 
         @utils.slot
-        def test(x):
-            ...
+        def dummy(x):
+            """Dummy function to check for raising the exception."""
 
 
 def test_flatten():
@@ -179,52 +215,37 @@ def test_remove_prefix_not_found():
     assert utils.remove_prefix("start hello", "starter") == "start hello"
 
 
-@pytest.fixture(
-    params=[
-        ("a space", "a\\ space"),
-        ("more than one", "more\\ than\\ one"),
-        (" prepending", "\\ prepending"),
-        ("trailing ", "trailing\\ "),
-    ]
+@pytest.mark.parametrize(
+    "formattext",
+    ("in{char}between", "many{char}of{char}them", "{char}prepending", "trailing{char}"),
 )
-def escape_ws(request):
-    """Fixture to yield different tuples of escaped and unescaped text."""
-    yield namedtuple("EscapeWSInput", ["unescaped", "escaped"])(*request.param)
+@pytest.mark.parametrize("char", (" ", "%"))
+def test_escape_unescape_chars(formattext, char):
+    text = formattext.format(char=char)
+    expected = formattext.format(char="\\" + char)
+    _run_escape_unescape(text, char, expected)
 
 
-def test_escape_ws(escape_ws):
-    assert utils.escape_ws(escape_ws.unescaped) == escape_ws.escaped
+def test_escape_unescape_backslash():
+    # Required as separate test as the char is a single backslash r"\" but the character
+    # to escape needs double backslash r"\\" for the re module
+    text = "with\\backslash"
+    expected = text.replace("\\", "\\\\")
+    _run_escape_unescape(text, r"\\", expected)
 
 
-def test_unescape_ws(escape_ws):
-    assert utils.unescape_ws(escape_ws.escaped) == escape_ws.unescaped
+def test_escape_unescape_multiple_chars():
+    text = "a text:with\tsome;characters"
+    expected = "a\\ text\\:with\\\tsome\\;characters"
+    chars = " :;\t"
+    _run_escape_unescape(text, chars, expected)
 
 
-def test_unescape_escape_ws(escape_ws):
-    """Ensure unescaping escaped whitespace returns the initial text."""
-    assert (
-        utils.unescape_ws(utils.escape_ws(escape_ws.unescaped)) == escape_ws.unescaped
-    )
-
-
-def test_escape_unescape_ws(escape_ws):
-    """Ensure escaping unescaped whitespace returns the escaped text."""
-    assert utils.escape_ws(utils.unescape_ws(escape_ws.escaped)) == escape_ws.escaped
-
-
-def test_escape_escaped_ws(escape_ws):
-    """Ensure that escaped whitespace is not escaped twice."""
-    assert utils.escape_ws(escape_ws.escaped) == escape_ws.escaped
-
-
-def test_escape_other_char():
-    assert utils.escape_ws("a space", escape_char="!") == "a! space"
-
-
-def test_escape_additional_whitespace():
-    assert utils.escape_ws("a space\nand newline", whitespace=" \n") == (
-        "a\\ space\\\nand\\ newline"
-    )
+def _run_escape_unescape(text, chars, expected):
+    escaped = utils.escape_chars(text, chars)
+    assert expected == escaped
+    unescaped = utils.unescape_chars(escaped, chars)
+    assert unescaped == text
 
 
 def test_cached_method_result(cached_method_cls):
@@ -240,13 +261,21 @@ def test_cached_calls_expensive_once(cached_method_cls):
     cached_method_cls.mock.assert_called_once()
 
 
+def test_qbytearray_to_str():
+    text = "text"
+    qbytearray = QByteArray(text.encode())
+    assert utils.qbytearray_to_str(qbytearray) == text
+
+
 def test_run_qprocess():
     assert utils.run_qprocess("pwd") == os.getcwd()
 
 
-def test_run_qprocess_in_other_dir(tmpdir):
-    directory = str(tmpdir.mkdir("directory"))
-    assert utils.run_qprocess("pwd", cwd=directory) == directory
+def test_run_qprocess_in_other_dir(tmp_path):
+    directory = tmp_path / "directory"
+    directory.mkdir()
+    dirname = str(directory)
+    assert utils.run_qprocess("pwd", cwd=dirname) == dirname
 
 
 @pytest.mark.parametrize(
@@ -292,3 +321,29 @@ def test_call_throttled_function_once(qtbot, n_calls):
         local_task(i)
 
     qtbot.waitUntil(check_calls)
+
+
+@pytest.mark.parametrize("text", ("0x234", "0xAC7", "0x00", "AB67", "aC9e"))
+def test_is_hex_true(text):
+    assert utils.is_hex(text)
+
+
+@pytest.mark.parametrize("text", ("00x234", "0xGC7", "not-hex", "A-67", "a:9e"))
+def test_is_hex_false(text):
+    assert not utils.is_hex(text)
+
+
+@pytest.mark.parametrize(
+    "input_list, sorted_list",
+    (
+        (["a100a", "a10a", "a1a"], ["a1a", "a10a", "a100a"]),
+        (
+            ["a10a1a", "a1a10a", "a10a10a", "a1a1a"],
+            ["a1a1a", "a1a10a", "a10a1a", "a10a10a"],
+        ),
+        (["100", "50", "10", "20"], ["10", "20", "50", "100"]),
+        (["aa", "a", "aaa"], ["a", "aa", "aaa"]),
+    ),
+)
+def test_natural_sort(input_list, sorted_list):
+    assert sorted(input_list, key=utils.natural_sort) == sorted_list

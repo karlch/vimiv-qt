@@ -1,13 +1,14 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Unit tests for vimiv.checkversion."""
 
-import pytest
 import sys
+
+import pytest
 
 from vimiv import checkversion
 
@@ -54,6 +55,7 @@ def test_check_pyqt_available(capsys, monkeypatch):
 
 def build_message(software, required, version):
     """Helper to create the expected error message on too low software version."""
+    # pylint: disable=consider-using-f-string
     return "At least %s %s is required to run vimiv. Using %s.\n" % (
         software,
         ".".join(str(i) for i in required),

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Unit tests for vimiv.config."""
@@ -26,7 +26,7 @@ from vimiv.utils import customtypes
         ("[SECTION]\na=0\na=1\n", "duplicate key"),
     ],
 )
-def test_sysexit_on_broken_config(mocker, tmpdir, content, message):
+def test_sysexit_on_broken_config(mocker, tmp_path, content, message):
     """Ensure SystemExit is correctly raised for various broken config files.
 
     Args:
@@ -36,8 +36,8 @@ def test_sysexit_on_broken_config(mocker, tmpdir, content, message):
     print("Ensuring system exit with", message)
     mock_logger = mocker.Mock()
     parser = configparser.ConfigParser()
-    path = tmpdir.join("configfile")
-    path.write(content)
+    path = tmp_path / "configfile"
+    path.write_text(content)
     with pytest.raises(SystemExit, match=str(customtypes.Exit.err_config)):
         config.read_log_exception(parser, mock_logger, str(path))
     mock_logger.critical.assert_called_once()

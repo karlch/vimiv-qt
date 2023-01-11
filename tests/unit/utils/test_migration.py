@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.migration."""
@@ -17,10 +17,12 @@ TAGFILE_NAME = "tagfile"
 
 
 @pytest.fixture
-def mock_gtk_version(tmpdir, monkeypatch):
+def mock_gtk_version(tmp_path, monkeypatch):
     """Fixture to mock the xdg directories and fill them with gtk-version-like files."""
     for name in ("cache", "config", "data"):
-        monkeypatch.setenv(f"XDG_{name.upper()}_HOME", str(tmpdir.mkdir(name)))
+        directory = tmp_path / name
+        directory.mkdir()
+        monkeypatch.setenv(f"XDG_{name.upper()}_HOME", str(directory))
 
     for directory in (
         xdg.vimiv_config_dir(),
@@ -32,15 +34,15 @@ def mock_gtk_version(tmpdir, monkeypatch):
 
     for basename in ("vimivrc", "keys.conf"):
         abspath = xdg.vimiv_config_dir(basename)
-        with open(abspath, "w") as f:
+        with open(abspath, "w", encoding="utf-8") as f:
             f.write("option: value\n")
 
     tag_dir = xdg.vimiv_data_dir("Tags")
     os.mkdir(tag_dir)
     tag_file = os.path.join(tag_dir, TAGFILE_NAME)
-    with open(tag_file, "w") as f:
+    with open(tag_file, "w", encoding="utf-8") as f:
         for i in range(10):
-            f.write("test_{i:02d}.jpg\n")
+            f.write(f"test_{i:02d}.jpg\n")
 
     yield
     migration.WelcomePopUp.gtk_installed = False
@@ -56,15 +58,15 @@ def mock_backup(mocker):
 
 def test_run(mock_gtk_version, mock_backup):
     migration.run()
-    migration.backup.assert_called_once()
-    migration.migrate_tags.assert_called_once()
+    migration.backup.assert_called_once()  # pylint: disable=no-member
+    migration.migrate_tags.assert_called_once()  # pylint: disable=no-member
     assert migration.WelcomePopUp.gtk_installed
 
 
 def test_do_not_run(mocker, mock_backup):
     mocker.patch.object(migration, "gtk_version_installed", return_value=False)
     migration.run()
-    migration.backup.assert_not_called()
+    migration.backup.assert_not_called()  # pylint: disable=no-member
     assert not migration.WelcomePopUp.gtk_installed
 
 

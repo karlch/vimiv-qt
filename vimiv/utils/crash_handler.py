@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Handler for uncaught exceptions and signals."""
@@ -10,26 +10,27 @@ import functools
 import os
 import signal
 import sys
-from types import FrameType, TracebackType
-from typing import Callable, Type
+import types
+from typing import Callable, Optional, Type
 
 from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
 from PyQt5.QtWidgets import QApplication
 
-from . import log, customtypes
+from vimiv.utils import log, customtypes
 
 # Fails on windows
 # We do not officially support windows currently, but might do so in the future
 try:
     import fcntl
 except ImportError:
-    # Mypy does not approve that we assigne None to a module but that is exactly what we
+    # Mypy does not approve that we assign None to a module but that is exactly what we
     # want to do for the optional import
     fcntl = None  # type: ignore
 
-ExceptionHandler = Callable[[Type[BaseException], BaseException, TracebackType], None]
-# See https://github.com/PyCQA/pylint/issues/2804
-SignalHandler = Callable[[signal.Signals, FrameType], None]  # pylint: disable=no-member
+ExceptionHandler = Callable[
+    [Type[BaseException], BaseException, types.TracebackType], None
+]
+SignalHandler = Callable[[int, Optional[types.FrameType]], None]
 
 _logger = log.module_logger(__name__)
 
@@ -67,8 +68,7 @@ class CrashHandler(QObject):
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
         notifier = QSocketNotifier(read_fd, QSocketNotifier.Read, self)  # type: ignore
-        # Signal misinterpreted as a callable
-        notifier.activated.connect(lambda: None)  # type: ignore
+        notifier.activated.connect(lambda: None)
         signal.set_wakeup_fd(write_fd)
 
     def _setup_timer(self, timeout: int = 1000) -> None:
@@ -91,7 +91,7 @@ class CrashHandler(QObject):
         initial_handler: ExceptionHandler,
         exc_type: Type[BaseException],
         exc_value: BaseException,
-        traceback: TracebackType,
+        traceback: types.TracebackType,
     ) -> None:
         """Custom exception handler for uncaught exceptions.
 
@@ -109,12 +109,11 @@ class CrashHandler(QObject):
             log.fatal("Exception: %r", e)
             sys.exit(customtypes.Exit.err_suicide)
 
-    def handle_interrupt(self, signum: int, _frame: FrameType) -> None:
+    def handle_interrupt(self, signum: int, _frame: Optional[types.FrameType]) -> None:
         """Initial handler for interrupt signals to exit gracefully.
 
         Args:
             signum: Signal number of the interrupt signal retrieved.
-            _frame: Current stack frame.
         """
         _logger.debug("Interrupt handler called with signal %d", signum)
         _assign_interrupt_handler(self.handle_interrupt_forcefully)
@@ -124,12 +123,13 @@ class CrashHandler(QObject):
             0, functools.partial(self._app.exit, customtypes.Exit.signal + signum)
         )
 
-    def handle_interrupt_forcefully(self, signum: int, _frame: FrameType) -> None:
+    def handle_interrupt_forcefully(
+        self, signum: int, _frame: Optional[types.FrameType]
+    ) -> None:
         """Second handler for interrupt signals to exit forcefully.
 
         Args:
             signum: Signal number of the interrupt signal retrieved.
-            _frame: Current stack frame.
         """
         _logger.debug("Interrupt handler called a second time with %d", signum)
         log.fatal("Forceful kill signal retrieved... Hello darkness my old friend")

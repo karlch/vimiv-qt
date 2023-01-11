@@ -1,12 +1,13 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Fixtures and bdd-like steps for usage during end2end testing."""
 
 import os
+import pathlib
 
 from PyQt5.QtCore import Qt, QProcess, QTimer
 from PyQt5.QtGui import QFocusEvent, QMouseEvent
@@ -18,13 +19,13 @@ import pytest_bdd as bdd
 import vimiv.gui.library
 import vimiv.gui.thumbnail
 import vimiv.gui.mainwindow
+import vimiv.gui.message
 import vimiv.gui.commandline
-import vimiv.gui.bar
 import vimiv.gui.image
 import vimiv.gui.prompt
+import vimiv.gui.statusbar
 from vimiv import api
 from vimiv.commands import runners
-from vimiv.gui import statusbar
 from vimiv.imutils import filelist
 
 
@@ -33,32 +34,49 @@ from vimiv.imutils import filelist
 ########################################################################################
 @pytest.fixture()
 def library():
-    yield vimiv.gui.library.Library.instance
+    return vimiv.gui.library.Library.instance
 
 
 @pytest.fixture()
 def thumbnail():
-    yield vimiv.gui.thumbnail.ThumbnailView.instance
+    return vimiv.gui.thumbnail.ThumbnailView.instance
 
 
 @pytest.fixture()
 def mainwindow():
-    yield vimiv.gui.mainwindow.MainWindow.instance
+    return vimiv.gui.mainwindow.MainWindow.instance
 
 
 @pytest.fixture()
 def commandline():
-    yield vimiv.gui.commandline.CommandLine.instance
+    return vimiv.gui.commandline.CommandLine.instance
 
 
 @pytest.fixture()
-def bar():
-    yield vimiv.gui.bar.Bar.instance
+def statusbar(mainwindow):
+    return mainwindow._statusbar
 
 
 @pytest.fixture()
 def image():
-    yield vimiv.gui.image.ScrollableImage.instance
+    return vimiv.gui.image.ScrollableImage.instance
+
+
+@pytest.fixture()
+def message_widget(mainwindow):
+    return get_overlay(mainwindow, vimiv.gui.message.Message)
+
+
+@pytest.fixture()
+def overlay(mainwindow):
+    return lambda typ: get_overlay(mainwindow, typ)
+
+
+def get_overlay(mainwindow, typ):
+    for overlay in mainwindow._overlays:
+        if isinstance(overlay, typ):
+            return overlay
+    raise ValueError(f"{typ} not found")
 
 
 class Counter:
@@ -86,7 +104,7 @@ class Counter:
 @pytest.fixture(autouse=True)
 def counter():
     """Fixture to provide a clean counter class with the count command."""
-    yield Counter()
+    return Counter()
 
 
 @pytest.fixture()
@@ -148,7 +166,7 @@ def keypress(qtbot):
                 return key, keys.replace(name, "")
         return Qt.NoModifier, keys
 
-    def callable(widget, keys):
+    def press_impl(widget, keys):
         modifier, keys = get_modifier(keys)
         try:
             qkey = special_keys[keys]
@@ -156,7 +174,7 @@ def keypress(qtbot):
         except KeyError:
             qtbot.keyClicks(widget, keys, modifier=modifier)
 
-    return callable
+    return press_impl
 
 
 @pytest.fixture()
@@ -199,7 +217,7 @@ def run_command(command, qtbot):
     runners.run(command, mode=api.modes.current())
 
     # Wait for external command to complete if any was run
-    external_runner = runners.external._impl
+    external_runner = runners.external_runner._impl
     if external_runner is not None:
 
         def external_finished():
@@ -223,9 +241,9 @@ def enter_mode(mode):
     api.modes.get_by_name(mode).enter()
 
 
-@bdd.when(bdd.parsers.parse("I leave {mode} mode"))
+@bdd.when(bdd.parsers.parse("I close {mode} mode"))
 def leave_mode(mode):
-    api.modes.get_by_name(mode).leave()
+    api.modes.get_by_name(mode).close()
 
 
 @bdd.when(bdd.parsers.parse("I resize the window to {size}"))
@@ -266,17 +284,17 @@ def create_directory(name):
 
 @bdd.when(bdd.parsers.parse("I create the file '{name}'"))
 def create_file(name):
-    assert not os.path.exists(name), f"Not overriding existing file '{name}'"
-    with open(name, "w") as f:
-        f.write("")
+    path = pathlib.Path(name)
+    assert not path.exists(), f"Not overriding existing file '{name}'"
+    path.touch()
 
 
 @bdd.when(bdd.parsers.parse("I create the tag file '{name}'"))
 def create_tag_file(name):
-    os.makedirs(api.mark.tagdir, mode=0o700, exist_ok=True)
-    path = os.path.join(api.mark.tagdir, name)
-    with open(path, "w") as f:
-        f.write("")
+    directory = pathlib.Path(api.mark.tagdir)
+    directory.mkdir(mode=0o700, parents=True, exist_ok=True)
+    path = directory / name
+    path.touch()
 
 
 ###############################################################################
@@ -290,49 +308,42 @@ def no_crash(qtbot):
     qtbot.wait(1)
 
 
-@bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
-def check_statusbar_message(qtbot, message):
-    bar = statusbar.statusbar
-
-    def check_status():
-        assert message == bar.message.text(), "Message expected: '{message}'"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.message
-
-
 @bdd.then(bdd.parsers.parse("the {position} status should include {text}"))
-def check_left_status(qtbot, position, text):
-    bar = statusbar.statusbar
+def check_status_text(qtbot, statusbar, position, text):
     message = f"statusbar {position} should include {text}"
 
     def check_status():
-        assert text in getattr(bar.status, position).text(), message
+        assert text in getattr(statusbar, position).text(), message
 
     qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.status
+    assert statusbar.isVisible()
+
+
+@bdd.then(bdd.parsers.parse("the message\n'{message}'\nshould be displayed"))
+def check_message(qtbot, message_widget, message):
+    def check():
+        assert message == message_widget.text(), "Message expected: '{message}'"
+
+    qtbot.waitUntil(check, timeout=100)
+    assert message_widget.isVisible()
 
 
 @bdd.then("a message should be displayed")
-def check_a_statusbar_message(qtbot):
-    bar = statusbar.statusbar
+def check_any_message(qtbot, message_widget):
+    def check():
+        assert message_widget.text(), "Any message expected"
 
-    def check_status():
-        assert bar.message.text(), "Any message expected"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.message
+    qtbot.waitUntil(check, timeout=100)
+    assert message_widget.isVisible()
 
 
 @bdd.then("no message should be displayed")
-def check_no_statusbar_message(qtbot):
-    bar = statusbar.statusbar
+def check_no_message(qtbot, message_widget):
+    def check():
+        assert not message_widget.text(), "No message expected"
 
-    def check_status():
-        assert not bar.message.text(), "No message expected"
-
-    qtbot.waitUntil(check_status, timeout=100)
-    assert bar.stack.currentWidget() == bar.status
+    qtbot.waitUntil(check, timeout=100)
+    assert not message_widget.isVisible()
 
 
 @bdd.then(bdd.parsers.parse("the working directory should be {basename}"))
@@ -361,9 +372,9 @@ def check_row_number(library, row):
     assert library.row() + 1 == int(row)
 
 
-@bdd.then(bdd.parsers.parse("the image should have the index {index}"))
+@bdd.then(bdd.parsers.parse("the image should have the index {index:d}"))
 def check_image_index(index):
-    assert filelist.get_index() == index
+    assert int(filelist.get_index()) == index
 
 
 @bdd.given("I enter thumbnail mode")
@@ -372,9 +383,9 @@ def enter_thumbnail(thumbnail):
     thumbnail.setFixedWidth(400)  # Make sure width is as expected
 
 
-@bdd.then(bdd.parsers.parse("the thumbnail number {N:d} should be selected"))
-def check_selected_thumbnail(thumbnail, qtbot, N):
-    assert thumbnail.currentRow() + 1 == N
+@bdd.then(bdd.parsers.parse("the thumbnail number {number:d} should be selected"))
+def check_selected_thumbnail(thumbnail, qtbot, number):
+    assert thumbnail.currentRow() + 1 == number
 
 
 @bdd.then(bdd.parsers.parse("the pop up '{title}' should be displayed"))
@@ -392,7 +403,6 @@ def check_filelist_length(number):
 
 
 @bdd.then(bdd.parsers.parse("the file {name} should exist"))
-@bdd.then("the file <name> should exist")
 def check_file_exists(name):
     assert os.path.isfile(name)
 
@@ -424,5 +434,10 @@ def check_commandline_text(commandline, text):
 
 @bdd.then(bdd.parsers.parse("the boolean setting '{name}' should be '{value}'"))
 def check_boolean_setting(name, value):
-    bool_value = True if value.lower() == "true" else False
+    bool_value = value.lower() == "true"
     assert api.settings.get_value(name) is bool_value
+
+
+@bdd.then(bdd.parsers.parse("the home directory should contain {path}"))
+def check_path_in_home(home_directory, path):
+    assert path in os.listdir(home_directory)

@@ -1,12 +1,13 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.lazy."""
 
 import functools
+import sys
 
 import pytest
 
@@ -16,10 +17,12 @@ MODULE_NAME = "_module_for_lazy"
 
 
 @pytest.fixture(autouse=True)
-def clear_lazy_lru_cache():
-    """Fixture to clean the module lru_cache after every test."""
+def clear_imported_module():
+    """Fixture to clean the module lru_cache and the imported module."""
     yield
     lazy.Module.factory.cache_clear()
+    if MODULE_NAME in sys.modules:
+        del sys.modules[MODULE_NAME]
 
 
 @pytest.fixture()

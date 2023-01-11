@@ -1,11 +1,12 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.files."""
 
+import collections
 import imghdr
 import os
 import tarfile
@@ -30,10 +31,46 @@ def mockimghdr(mocker):
 
 
 @pytest.fixture()
-def tmpfile(tmpdir):
-    path = tmpdir.join("anything")
-    path.write("")
+def tmpfile(tmp_path):
+    path = tmp_path / "anything"
+    path.touch()
     yield str(path)
+
+
+@pytest.fixture()
+def directory_tree(tmp_path):
+    """Fixture to create a directory tree.
+
+    Tree structure:
+    .
+    ├── file0
+    ├── sub0
+    │   ├── file0
+    │   └── file1
+    ├── sub1
+    │   └── file0
+    └── sub2
+    """
+
+    def create_subdirectory(*, index: int, n_children: int):
+        subdirectory = tmp_path / f"sub{index:d}"
+        subdirectory.mkdir()
+        for i in range(n_children):
+            subdirectory.joinpath(f"file{i:d}").touch()
+
+    tmp_path.joinpath("file0").touch()  # File in root directory
+    create_subdirectory(index=0, n_children=2)  # Directory with 2 files
+    create_subdirectory(index=1, n_children=1)  # Directory with 1 file
+    create_subdirectory(index=2, n_children=0)  # Directory with 0 files
+
+    files = [
+        "file0",
+        os.path.join("sub0", "file0"),
+        os.path.join("sub0", "file1"),
+        os.path.join("sub1", "file0"),
+    ]
+
+    return collections.namedtuple("directorytree", ("root", "files"))(tmp_path, files)
 
 
 def test_listdir_wrapper(mocker):
@@ -48,12 +85,6 @@ def test_listdir_wrapper_returns_abspath(mocker):
     mocker.patch("os.path.abspath", return_value=dirname)
     expected = [os.path.join(dirname, path) for path in paths]
     assert files.listdir("directory") == expected
-
-
-def test_listdir_wrapper_sort(mocker):
-    mocker.patch("os.listdir", return_value=["b.txt", "a.txt"])
-    mocker.patch("os.path.abspath", return_value="")
-    assert files.listdir("directory") == ["a.txt", "b.txt"]
 
 
 def test_listdir_wrapper_remove_hidden(mocker):
@@ -85,28 +116,34 @@ def test_images_supported(mocker):
     assert not directories
 
 
-def test_tar_gz_not_an_image(tmpdir):
+def test_tar_gz_not_an_image(tmp_path):
     """Test if is_image for a tar.gz returns False.
 
     The default implementation of QImageReader.canRead returns True which is not
     correct.
     """
-    outfile = str(tmpdir.join("dummy.tar.gz"))
-    indirectory = str(tmpdir.mkdir("indir"))
-    with tarfile.open(outfile, mode="w:gz") as tar:
-        tar.add(indirectory, arcname=os.path.basename(indirectory))
-    assert files.is_image(outfile) is False
+    tarpath = tmp_path / "dummy.tar.gz"
+    tarred_directory = tmp_path / "indir"
+    tarred_directory.mkdir()
+    with tarfile.open(tarpath, mode="w:gz") as tar:
+        tar.add(tarred_directory, arcname=tarred_directory.name)
+    assert files.is_image(str(tarpath)) is False
 
 
-def test_is_image_on_error(tmpdir):
-    path = tmpdir.join("my_file")
-    path.write("")
-    path.chmod(0o00)
-    assert files.is_image(path) is False
+def test_is_image_on_error(tmp_path):
+    path = tmp_path / "my_file"
+    path.touch(mode=0o000)
+    assert files.is_image(str(path)) is False
+
+
+def test_is_image_on_fifo_file(qtbot, tmp_path):
+    path = tmp_path / "my_file"
+    os.mkfifo(path)
+    assert files.is_image(str(path)) is False
 
 
 @pytest.mark.parametrize(
-    "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024 ** 8, "3.0Y")]
+    "size, expected", [(510, "510B"), (2048, "2.0K"), (3 * 1024**8, "3.0Y")]
 )
 def test_sizeof_fmt(size, expected):
     assert files.sizeof_fmt(size) == expected
@@ -133,20 +170,9 @@ def test_get_size_with_permission_error(mocker):
     assert files.get_size("any") == "N/A"
 
 
-def test_listfiles(tmpdir):
-    tmpdir.join("file0").open("w")  # File in root directory
-    sub0 = tmpdir.mkdir("sub0")  # Sub-directory with two files
-    sub0.join("file0").open("w")
-    sub0.join("file1").open("w")
-    tmpdir.mkdir("sub1").join("file0").open("w")  # Sub-directory with one file
-    tmpdir.mkdir("sub2")  # Sub-directory with no files
-    expected = [
-        "file0",
-        os.path.join("sub0", "file0"),
-        os.path.join("sub0", "file1"),
-        os.path.join("sub1", "file0"),
-    ]
-    assert sorted(expected) == sorted(files.listfiles(str(tmpdir)))
+def test_listfiles(directory_tree):
+    expected = sorted(directory_tree.files)
+    assert expected == sorted(files.listfiles(str(directory_tree.root)))
 
 
 @pytest.mark.parametrize("name", SUPPORTED_IMAGE_FORMATS)

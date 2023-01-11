@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Widget to display partial matches above the statusbar."""
@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles
-from .eventhandler import EventHandlerMixin
+from vimiv.gui import eventhandler
 
 
 class KeyhintWidget(QLabel):
@@ -38,7 +38,6 @@ class KeyhintWidget(QLabel):
     }
     """
 
-    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
         self._show_timer = QTimer(self)
@@ -53,7 +52,7 @@ class KeyhintWidget(QLabel):
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
         self.setTextFormat(Qt.RichText)
 
-        partial_handler = EventHandlerMixin.partial_handler
+        partial_handler = eventhandler.EventHandlerMixin.partial_handler
         partial_handler.partial_matches.connect(self._on_partial_matches)
         partial_handler.partial_cleared.connect(self._on_partial_cleared)
         api.settings.keyhint.delay.changed.connect(self._on_delay_changed)
@@ -82,6 +81,8 @@ class KeyhintWidget(QLabel):
         text = ""
         for keybinding, command in matches:
             suffix = keybinding[len(prefix) :]
+            prefix = utils.escape_html(prefix)
+            suffix = utils.escape_html(suffix)
             text += (
                 "<tr>"
                 f"<td>{prefix}</td>"

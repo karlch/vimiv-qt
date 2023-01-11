@@ -1,29 +1,29 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Manipulate widget."""
 
 from typing import List, Optional
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QPoint
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
 from vimiv import api, utils, imutils
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
+from vimiv.gui import eventhandler
 from vimiv.utils import slot
-from .eventhandler import EventHandlerMixin
 
 
-class Manipulate(EventHandlerMixin, QTabWidget):
+class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
     """Manipulate widget displaying progress bars and labels.
 
     Attributes:
-        _error: String containing the current error message.
+        _image: ManipulateImage displayed at the top right of the manipulate widget.
     """
 
     STYLESHEET = """
@@ -41,8 +41,8 @@ class Manipulate(EventHandlerMixin, QTabWidget):
 
     @api.modes.widget(api.modes.MANIPULATE)
     @api.objreg.register
-    def __init__(self, parent):
-        super().__init__(parent=parent)
+    def __init__(self, mainwindow):
+        super().__init__(parent=mainwindow)
         self.setAttribute(Qt.WA_StyledBackground, True)
 
         styles.apply(self)
@@ -50,10 +50,15 @@ class Manipulate(EventHandlerMixin, QTabWidget):
         manipulator = immanipulate.Manipulator.instance
         for group in manipulator.manipulations.groups:
             self._add_group(group)
+
+        self._image = ManipulateImage(mainwindow, manipulator)
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
-        # Hide by default
-        self.hide()
+        api.modes.MANIPULATE.closed.connect(self._close)
+
+    @property
+    def _mainwindow(self):
+        return self.parentWidget()
 
     @api.keybindings.register("<tab>", "next-tab", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
@@ -98,8 +103,26 @@ class Manipulate(EventHandlerMixin, QTabWidget):
 
     def update_geometry(self, window_width, window_height):
         """Rescale width when main window was resized."""
-        y = window_height - self.sizeHint().height()
-        self.setGeometry(0, y, window_width, self.sizeHint().height())
+        if self.isVisible():
+            y = window_height - self.sizeHint().height()
+            self.setGeometry(0, y, window_width, self.sizeHint().height())
+            size_image = QSize(window_width // 2, window_height // 2)
+            y_image = window_height - self.currentWidget().height()
+            self._image.update_geometry(size_image, QPoint(window_width, y_image))
+
+    def show(self):
+        """Override show to also raise and show the image."""
+        super().show()
+        self._image.show()
+        self.update_geometry(self._mainwindow.width(), self._mainwindow.bottom)
+        self.raise_()
+        self._image.raise_()
+
+    @utils.slot
+    def _close(self):
+        """Hide manipulate widgets when closing manipulate mode."""
+        self.hide()
+        self._image.hide()
 
 
 class ManipulateImage(QLabel):
@@ -108,7 +131,7 @@ class ManipulateImage(QLabel):
     It is shown once manipulate mode is entered and hides afterwards.
 
     Attributes:
-        _manipulate: The manipulate widget to retrieve y-coordinate.
+        _bottom_right: Point describing the expected bottom right of this widget.
         _max_size: Maximum size to use up which corresponds to half the window size.
         _pixmap: The manipulated pixmap to display.
     """
@@ -120,43 +143,31 @@ class ManipulateImage(QLabel):
     }
     """
 
-    def __init__(self, parent, manipulate):
+    def __init__(self, parent, manipulator: immanipulate.Manipulator):
         super().__init__(parent=parent)
-        self._manipulate = manipulate
         self._max_size = QSize(0, 0)
         self._pixmap: Optional[QPixmap] = None
+        self._bottom_right = QPoint(0, 0)
         styles.apply(self)
 
-        api.modes.MANIPULATE.left.connect(self._on_left)
-        immanipulate.Manipulator.instance.updated.connect(self._update_pixmap)
+        manipulator.updated.connect(self._update_pixmap)
 
-        self.hide()
-
-    def update_geometry(self, window_width, window_height):
-        """Update position and size according to window size.
+    def update_geometry(self, size: QSize, bottom_right: QPoint):
+        """Update position and size according to size and bottom_right.
 
         The size is adapted to take up the lower right corner. This is then reduced
         accordingly by displayed pixmap if it is not perfectly square.
         """
-        self._max_size = QSize(window_width // 2, window_height // 2)
-        if self._pixmap is not None and self.isVisible():
+        self._max_size = size
+        self._bottom_right = bottom_right
+        if self._pixmap is not None:
             self._rescale()
 
     @slot
     def _update_pixmap(self, pixmap: QPixmap):
         """Update the manipulate pixmap and show manipulate widgets if needed."""
-        if not self.isVisible():
-            self._manipulate.raise_()
-            self.raise_()
-            self.show()
         self._pixmap = pixmap
         self._rescale()
-
-    @utils.slot
-    def _on_left(self):
-        """Hide manipulate widgets when leaving manipulate mode."""
-        self.hide()
-        self._manipulate.hide()
 
     def _rescale(self):
         """Rescale pixmap and geometry to fit."""
@@ -170,10 +181,6 @@ class ManipulateImage(QLabel):
         )
         self.setPixmap(pixmap)
         # Update geometry to only show pixmap
-        x = self._max_size.width() + (self._max_size.width() - pixmap.width())
-        y = (
-            self._max_size.height()
-            + (self._max_size.height() - pixmap.height())
-            - self._manipulate.currentWidget().sizeHint().height()
-        )
+        x = self._bottom_right.x() - pixmap.width()
+        y = self._bottom_right.y() - pixmap.height()
         self.setGeometry(x, y, pixmap.width(), pixmap.height())

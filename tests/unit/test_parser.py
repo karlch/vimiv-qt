@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for functions in vimiv.parser."""
@@ -95,3 +95,17 @@ def test_parse_settings(argparser):
         arglist.extend(("-s", name, value))
     args = argparser.parse_args(arglist)
     assert args.cmd_settings == settings
+
+
+@pytest.mark.parametrize(
+    "qtargs, expected",
+    [
+        ("--name floating", ["--name", "floating"]),
+        ("--name floating --reverse", ["--name", "floating", "--reverse"]),
+        ("--name 'has space'", ["--name", "has space"]),
+    ],
+)
+def test_parse_qt_args(argparser, qtargs, expected):
+    arglist = ["--qt-args", qtargs]
+    args = argparser.parse_args(arglist)
+    assert parser.get_qt_args(args) == expected

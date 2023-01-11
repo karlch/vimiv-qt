@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Functions to retrieve various version information.
@@ -10,18 +10,18 @@ Module Attributes:
     _license_str: GPL boilerplate including the licensing information.
 """
 
+import functools
 import os
 import sys
-from functools import lru_cache
 from typing import Optional
 
 from PyQt5.QtCore import QT_VERSION_STR, PYQT_VERSION_STR
 
 import vimiv
+from vimiv.imutils import exif
 from vimiv.utils import xdg, run_qprocess, lazy
 
 QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
-piexif = lazy.import_module("piexif", optional=True)
 
 
 def info() -> str:
@@ -41,8 +41,9 @@ def info() -> str:
         f"Python: {_python_version()}\n"
         f"Qt: {QT_VERSION_STR}\n"
         f"PyQt: {PYQT_VERSION_STR}\n\n"
-        f"Svg Support: {bool(QtSvg)} \n"
-        f"Piexif: {piexif.VERSION if piexif is not None else None}"
+        f"Svg Support: {bool(QtSvg)}\n"
+        f"Pyexiv2: {exif.pyexiv2.__version__ if exif.pyexiv2 is not None else None}\n"
+        f"Piexif: {exif.piexif.VERSION if exif.piexif is not None else None}"
     )
 
 
@@ -71,7 +72,7 @@ def _python_version() -> str:
     return "{info.major}.{info.minor}.{info.micro}".format(info=sys.version_info)
 
 
-@lru_cache(1)
+@functools.lru_cache(1)
 def _git_info() -> Optional[str]:
     """Return git current commit information if possible else None."""
     gitdir = os.path.realpath(

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Plugin enabling support for additional image formats.
@@ -26,19 +26,29 @@ To implement a new format::
        ``QImageReader.supportedImageFormats()``.
 """
 
-from typing import Any, BinaryIO
+from typing import Any, Optional, BinaryIO
 
 from vimiv.utils import log, files
 
 _logger = log.module_logger(__name__)
 
 
-def test_cr2(header: bytes, _f: BinaryIO) -> bool:
+def test_cr2(header: bytes, _f: Optional[BinaryIO]) -> bool:
     return header[:2] in (b"II", b"MM") and header[8:10] == b"CR"
+
+
+def test_avif(header: bytes, _f: Optional[BinaryIO]) -> bool:
+    return header[4:12] in (b"ftypavif", b"ftypavis")
+
+
+def test_jp2(header: bytes, _f: Optional[BinaryIO]) -> bool:
+    return header[:6] == b"\x00\x00\x00\x0cjP"
 
 
 FORMATS = {
     "cr2": test_cr2,
+    "avif": test_avif,
+    "jp2": test_jp2,
 }
 
 

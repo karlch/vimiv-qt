@@ -1,16 +1,16 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Tests for vimiv.utils.crash_handler."""
 
+import collections
 import functools
 import signal
 import sys
 import types
-from collections import namedtuple
 
 import pytest
 
@@ -34,7 +34,7 @@ def handler(mocker, print_logging):
     sys.excepthook = mock_excepthook
     app = mocker.Mock()
     instance = crash_handler.CrashHandler(app)
-    yield namedtuple("HandlerFixture", ["instance", "app", "excepthook"])(
+    yield collections.namedtuple("HandlerFixture", ["instance", "app", "excepthook"])(
         instance, app, mock_excepthook
     )
     sys.excepthook = initial_excepthook
@@ -45,7 +45,7 @@ def test_crash_handler_updates_excepthook(handler):
 
 
 def test_crash_handler_excepthook(capsys, handler):
-    # Call system exceptook with some error
+    # Call system excepthook with some error
     error = ValueError("Not a number")
     sys.excepthook(type(error), error, None)
     # Check log output
@@ -54,9 +54,9 @@ def test_crash_handler_excepthook(capsys, handler):
         captured.out == "Uncaught exception! Exiting gracefully and printing stack..."
     )
     # Check default excepthook called
-    assert handler.excepthook.called_once_with((type(error), error, None))
+    handler.excepthook.assert_called_once_with(type(error), error, None)
     # Check if graceful quit was called
-    assert handler.app.exit.called_once_with(1)
+    handler.app.exit.assert_called_once_with(1)
 
 
 def test_crash_handler_exception_in_excepthook(capsys, handler):
@@ -65,7 +65,7 @@ def test_crash_handler_exception_in_excepthook(capsys, handler):
         raise KeyError("I lost something")
 
     handler.app.exit = broken
-    # Call system exceptook with some error checking for system exit
+    # Call system excepthook with some error checking for system exit
     error = ValueError("Not a number")
     with pytest.raises(SystemExit, match=str(customtypes.Exit.err_suicide)):
         sys.excepthook(type(error), error, None)
@@ -75,13 +75,18 @@ def test_crash_handler_exception_in_excepthook(capsys, handler):
     assert "suicide" in captured.out
 
 
-def test_crash_handler_first_interrupt(capsys, handler):
+def test_crash_handler_first_interrupt(qtbot, capsys, handler):
     handler.instance.handle_interrupt(signal.SIGINT, None)
     # Check log output
     captured = capsys.readouterr()
     assert "SIGINT/SIGTERM" in captured.out
-    # Check if graceful quit was called
-    assert handler.app.exit.called_once_with(customtypes.Exit.signal + signal.SIGINT)
+
+    def check_app_exit():
+        exitstatus = customtypes.Exit.signal + signal.SIGINT
+        handler.app.exit.assert_called_once_with(exitstatus)
+
+    qtbot.waitUntil(check_app_exit)
+
     # Check if more forceful handler was installed
     assert (
         signal.getsignal(signal.SIGINT)

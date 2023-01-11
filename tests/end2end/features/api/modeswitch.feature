@@ -5,10 +5,10 @@ Feature: Switching between different modes.
         When I enter command mode
         Then the mode should be command
 
-    Scenario: Enter and leave command mode from library
+    Scenario: Enter and close command mode from library
         Given I open any directory
         When I enter command mode
-        And I leave command mode
+        And I close command mode
         Then the mode should be library
 
     Scenario: Enter image mode from library
@@ -49,3 +49,24 @@ Feature: Switching between different modes.
         And the message
             'enter: Entering command mode is ambiguous, please use :command or :search'
             should be displayed
+
+    Scenario: Do not switch mode when toggling inactive library mode
+        Given I start vimiv
+        When I toggle thumbnail mode
+        # This used to enter image as image was the mode "before" library
+        And I toggle library mode
+        Then the mode should be thumbnail
+
+    Scenario: Do not switch mode when toggling inactive thumbnail mode
+        Given I open 2 images
+        When I toggle thumbnail mode
+        When I toggle library mode
+        # This used to enter image as image was the mode "before" thumbnail
+        And I toggle thumbnail mode
+        Then the mode should be library
+
+    Scenario: Crash when toggling manipulate mode
+        Given I open 2 images
+        When I toggle manipulate mode
+        Then no crash should happen
+        And the mode should be manipulate

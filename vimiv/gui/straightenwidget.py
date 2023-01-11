@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Widget to display a grid for straightening and interact with image and transform."""
@@ -14,11 +14,10 @@ from PyQt5.QtWidgets import QStyleOption
 
 from vimiv import utils
 from vimiv.config import styles
+from vimiv.gui import transformwidget
 
-from .transform_widget import TransformWidget
 
-
-class StraightenWidget(TransformWidget):
+class StraightenWidget(transformwidget.TransformWidget):
     """Widget to display a grid for straightening and interact with image and transform.
 
     The grid is a visual helper for the user to straighten the image. An interaction

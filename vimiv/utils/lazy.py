@@ -1,15 +1,15 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Provides the import_module function for lazy importing."""
 
+import functools
 import sys
+import types
 import importlib.util
-from functools import lru_cache
-from types import ModuleType
 from typing import Any, Optional
 
 
@@ -24,10 +24,10 @@ class Module:
 
     def __init__(self, fullname: str):
         self.fullname = fullname
-        self._module: Optional[ModuleType] = None
+        self._module: Optional[types.ModuleType] = None
 
     @classmethod
-    @lru_cache(None)
+    @functools.lru_cache(None)
     def factory(cls, fullname: str, *, optional: bool = False) -> Optional["Module"]:
         """Create a new class instance for the module defined by fullname.
 
@@ -46,7 +46,7 @@ class Module:
         return cls(fullname)
 
     @property
-    def module(self) -> ModuleType:
+    def module(self) -> types.ModuleType:
         """The imported wrapped module."""
         if self._module is None:
             self._module = importlib.import_module(self.fullname)

@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Handles key and mouse events."""
@@ -202,7 +202,7 @@ class EventHandlerMixin:
     @api.status.module("{keys}")
     def unprocessed_keys():
         """Unprocessed keys that were pressed."""
-        return EventHandlerMixin.partial_handler.text
+        return utils.escape_html(EventHandlerMixin.partial_handler.text)
 
 
 def keyevent_to_sequence(event: QKeyEvent) -> SequenceT:
@@ -247,11 +247,7 @@ def _get_modifier_names(event: Union[QKeyEvent, QMouseEvent]) -> List[str]:
         Qt.MetaModifier: "<meta>",
     }
     modifiers = event.modifiers()
-    return [
-        mod_name
-        for mask, mod_name in modmask2str.items()
-        if modifiers & mask  # type: ignore
-    ]
+    return [mod_name for mask, mod_name in modmask2str.items() if modifiers & mask]
 
 
 def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
@@ -281,17 +277,19 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         Qt.Key_End: "<end>",
         Qt.Key_PageUp: "<page-up>",
         Qt.Key_PageDown: "<page-down>",
-        Qt.Key_Home: "<home>",
-        Qt.Key_End: "<end>",
+    }
+    separator_keys = {
+        Qt.Key_Colon: "<colon>",
+        Qt.Key_Equal: "<equal>",
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
         text = special_keys[event.key()]  # type: ignore
-        if event.modifiers() & Qt.ShiftModifier:  # type: ignore
+        if event.modifiers() & Qt.ShiftModifier:
             return "<shift>", text
         return (text,)
-    if event.key() == Qt.Key_Colon:  # Required as : is the separator
-        return ("<colon>",)
+    if event.key() in separator_keys:  # Required as configparser crashes otherwise
+        return (separator_keys[event.key()],)  # type: ignore
     if event.text().isprintable():
         return (event.text(),)
     return (QKeySequence(event.key()).toString().lower(),)
