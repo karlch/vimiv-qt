@@ -69,6 +69,7 @@ import types
 from typing import Dict, List
 
 from vimiv.utils import xdg, log, quotedjoin
+from vimiv import api
 
 
 _app_plugin_directory = os.path.dirname(__file__)
@@ -112,6 +113,7 @@ def load() -> None:
                 _user_plugin_directory,
             )
     _logger.debug("Plugin loading completed")
+    api.signals.plugins_loaded.emit()
 
 
 def cleanup() -> None:
