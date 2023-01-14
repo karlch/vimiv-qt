@@ -1,7 +1,7 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
 # This file is part of vimiv.
-# Copyright 2017-2020 Christian Karl (karlch) <karlch at protonmail dot com>
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 """Widget to display a rectangle for cropping and interact with image and transform."""
@@ -46,8 +46,8 @@ class CropWidget(TransformWidget):
         self._offset = QPoint(0, 0)
         self._overlay = CropOverlay(image)
 
-        scene_rect = self.image.sceneRect()
-        self._selected_rect = QRectF(scene_rect.center() * 0.5, scene_rect.center() * 1.5)
+        image_center = self.image.sceneRect().center()
+        self._selected_rect = QRectF(image_center * 0.5, image_center * 1.5)
 
         ResizeLayout(self, fixed_aspectratio=aspectratio is not None)
 

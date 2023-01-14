@@ -1,5 +1,9 @@
 # vim: ft=python fileencoding=utf-8 sw=4 et sts=4
 
+# This file is part of vimiv.
+# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
+# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
+
 """Utilities to make widgets nicely resizable using QSizeGrips."""
 
 from PyQt5.QtCore import Qt
@@ -20,7 +24,7 @@ class SizeGrip1D(QSizeGrip):
         self._minimum_size = parent.minimumSize()
         self._maximum_size = parent.maximumSize()
         self._override_cursor = Qt.SizeVerCursor if vertical else Qt.SizeHorCursor
-        self.destroyed.connect(QApplication.restoreOverrideCursor)  # type: ignore
+        self.destroyed.connect(QApplication.restoreOverrideCursor)
 
     @property
     def vertical(self):
