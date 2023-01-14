@@ -47,7 +47,7 @@ class CropWidget(TransformWidget):
         self._overlay = CropOverlay(image)
 
         scene_rect = self.image.sceneRect()
-        self._selected_rect = QRectF(scene_rect.topLeft(), scene_rect.center())
+        self._selected_rect = QRectF(scene_rect.center() * 0.5, scene_rect.center() * 1.5)
 
         ResizeLayout(self, fixed_aspectratio=aspectratio is not None)
 
