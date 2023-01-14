@@ -33,7 +33,8 @@ class CropWidget(TransformWidget):
     }
 
     QSizeGrip {
-        background-color: {crop.border.color};
+        background-color: {crop.grip.color};
+        border: {crop.grip.border} {crop.grip.border.color};
     }
     """
 

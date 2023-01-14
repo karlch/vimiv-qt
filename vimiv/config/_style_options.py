@@ -90,5 +90,8 @@ DEFAULT_OPTIONS = {
     # Crop
     "crop.shading": "#88000000",
     "crop.border": "{manipulate.image.border}",
-    "crop.border.color": "#88FFFFFF",
+    "crop.border.color": "#88AAAAAA",
+    "crop.grip.color": "#88FFFFFF",
+    "crop.grip.border": "{manipulate.image.border}",
+    "crop.grip.border.color": "{crop.border.color}",
 }
