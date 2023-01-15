@@ -6,13 +6,16 @@
 
 """Metadata plugin wrapping the available backends to only load one."""
 
+from typing import Any
+
 from vimiv.plugins import metadata_piexif, metadata_pyexiv2
 from vimiv.utils import log
 
 _logger = log.module_logger(__name__)
 
 
-def init(*args, **kwargs):
+def init(*_args: Any, **_kwargs: Any) -> None:
+    """Initialize metadata plugin depending on available backend."""
     if metadata_pyexiv2.pyexiv2 is not None:
         metadata_pyexiv2.init()
     elif metadata_piexif.piexif is not None:

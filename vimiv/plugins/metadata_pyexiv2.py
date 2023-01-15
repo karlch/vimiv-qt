@@ -131,6 +131,7 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
+    """Initialize pyexiv2 handler if pyexiv2 is available."""
     if pyexiv2 is not None:
         metadata.register(MetadataPyexiv2)
     else:

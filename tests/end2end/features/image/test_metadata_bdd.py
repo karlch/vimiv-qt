@@ -15,12 +15,11 @@ bdd.scenarios("metadata.feature")
 
 @pytest.fixture
 def metadatawidget():
-    if metadata.has_metadata_support:
+    if metadata.has_metadata_support():
         from vimiv.gui.metadatawidget import MetadataWidget
 
         return MetadataWidget.instance
-    else:
-        raise ValueError("No metadata support for metadata tests")
+    raise ValueError("No metadata support for metadata tests")
 
 
 @bdd.then("the metadata widget should be visible")

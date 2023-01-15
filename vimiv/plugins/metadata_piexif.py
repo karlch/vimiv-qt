@@ -146,6 +146,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
+    """Initialize piexif handler if piexif is available."""
     if piexif is not None:
         metadata.register(MetadataPiexif)
     else:
