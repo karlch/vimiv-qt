@@ -36,20 +36,6 @@ METADATA_MARKERS = (
 # fmt: on
 
 
-def apply_platform_markers(item):
-    """Apply markers that skip tests depending on the current platform."""
-    apply_markers_helper(item, PLATFORM_MARKERS)
-
-
-def apply_metadata_markers(item):
-    """Apply markers that skip tests depending on specific metadata support."""
-    if os.path.basename(item.fspath) in ("test_exif.py",):
-        for marker_name in "metadata", "pyexiv2", "piexif":
-            marker = getattr(pytest.mark, marker_name)
-            item.add_marker(marker)
-    apply_markers_helper(item, METADATA_MARKERS)
-
-
 def apply_markers_helper(item, markers):
     """Helper function to apply an iterable of markers to a test item."""
     for marker_name, fulfilled, reason in markers:
@@ -64,8 +50,8 @@ def apply_markers_helper(item, markers):
 def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
-        apply_platform_markers(item)
-        apply_metadata_markers(item)
+        apply_markers_helper(item, PLATFORM_MARKERS)
+        apply_markers_helper(item, METADATA_MARKERS)
 
 
 @pytest.fixture
