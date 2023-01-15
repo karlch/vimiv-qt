@@ -9,7 +9,6 @@
 import pytest
 
 from vimiv import version
-from vimiv.imutils import metadata
 
 
 @pytest.fixture
@@ -23,18 +22,3 @@ def test_svg_support_info():
 
 def test_no_svg_support_info(no_svg_support):
     assert "svg support: false" in version.info().lower()
-
-
-@pytest.mark.pyexiv2
-def test_pyexiv2_info(pyexiv2):
-    assert f"pyexiv2: {metadata._registry[0]('').version}" in version.info().lower()
-
-
-@pytest.mark.piexif
-def test_piexif_info(piexif):
-    assert f"piexif: {metadata._registry[0]('').version}" in version.info().lower()
-
-
-@pytest.mark.nometadata
-def test_no_metadata_support_info(no_metadata_support):
-    assert "metadata support: false" in version.info().lower()
