@@ -19,7 +19,7 @@ from typing import Any, Sequence, Iterable
 from vimiv.imutils import metadata
 from vimiv.utils import log, lazy
 
-piexif = lazy.import_module("piexif")
+piexif = lazy.import_module("piexif", optional=True)
 
 _logger = log.module_logger(__name__)
 
@@ -146,4 +146,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
-    metadata.register(MetadataPiexif)
+    if piexif is not None:
+        metadata.register(MetadataPiexif)
+    else:
+        _logger.warning("Please install piexif to use this plugin")

@@ -19,7 +19,7 @@ from typing import Any, Sequence, Iterable
 from vimiv.imutils import metadata
 from vimiv.utils import log, is_hex, lazy
 
-pyexiv2 = lazy.import_module("pyexiv2")
+pyexiv2 = lazy.import_module("pyexiv2", optional=True)
 
 _logger = log.module_logger(__name__)
 
@@ -131,4 +131,7 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
-    metadata.register(MetadataPyexiv2)
+    if pyexiv2 is not None:
+        metadata.register(MetadataPyexiv2)
+    else:
+        _logger.warning("Please install py3exiv2 to use this plugin")
