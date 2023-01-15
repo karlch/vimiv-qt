@@ -12,11 +12,14 @@ import urllib.request
 
 import pytest
 
-from vimiv.imutils import metadata
 from vimiv.plugins import metadata_pyexiv2, metadata_piexif
 
 
 CI = "CI" in os.environ
+
+HAS_PIEXIF = metadata_piexif.piexif is not None
+HAS_PYEXIV2 = metadata_pyexiv2.pyexiv2 is not None
+HAS_METADATA = HAS_PIEXIF or HAS_PYEXIV2
 
 # fmt: off
 PLATFORM_MARKERS = (
@@ -25,10 +28,10 @@ PLATFORM_MARKERS = (
 )
 
 METADATA_MARKERS = (
-    ("metadata", metadata.has_metadata_support(), "Only run with metadata support"),
-    ("nometadata", not metadata.has_metadata_support(), "Only run without metadata support"),
-    ("piexif", metadata_piexif.piexif is not None, "Only run with piexif"),
-    ("pyexiv2", metadata_pyexiv2.pyexiv2 is not None, "Only run with pyexiv2"),
+    ("metadata", HAS_METADATA, "Only run with metadata support"),
+    ("nometadata", not HAS_METADATA, "Only run without metadata support"),
+    ("piexif", HAS_PIEXIF, "Only run with piexif"),
+    ("pyexiv2", HAS_PYEXIV2, "Only run with pyexiv2"),
 )
 # fmt: on
 
