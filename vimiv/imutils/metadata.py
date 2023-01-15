@@ -104,7 +104,7 @@ def has_metadata_support() -> bool:
     """Indicate if `MetadataHandler` has `get_metadata()` and `get_keys()` capabilities.
 
     Returns:
-        True iff at least one metadata plugins has been registered.
+        True if at least one metadata plugins has been registered.
     """
     return bool(_registry)
 
@@ -121,7 +121,7 @@ class MetadataHandler:
 
     @property
     def has_copy_metadata(self) -> bool:
-        """True iff `MetadataHandler` has an implementation for `copy_metadata`."""
+        """True if `MetadataHandler` has an implementation for `copy_metadata`."""
         return any(
             list(
                 map(
@@ -132,7 +132,7 @@ class MetadataHandler:
 
     @property
     def has_get_date_time(self) -> bool:
-        """True iff `MetadataHandler` has an implementation for `get_date_time`."""
+        """True if `MetadataHandler` has an implementation for `get_date_time`."""
         return any(
             list(
                 map(
