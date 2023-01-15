@@ -75,7 +75,8 @@ from vimiv import api
 _app_plugin_directory = os.path.dirname(__file__)
 _user_plugin_directory = xdg.vimiv_data_dir("plugins")
 _plugins: Dict[str, str] = {
-    "print": "default"
+    "print": "default",
+    "metadata": "default",
 }  # key: name, value: additional information
 _loaded_plugins: Dict[str, types.ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
