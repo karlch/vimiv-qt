@@ -129,7 +129,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
                     self._metadata["0th"][
                         piexif.ImageIFD.Orientation
                     ] = metadata.ExifOrientation.Normal
-            exif_bytes = piexif.dump(metadata)
+            exif_bytes = piexif.dump(self._metadata)
             piexif.insert(exif_bytes, dest)
             return True
         except ValueError:
