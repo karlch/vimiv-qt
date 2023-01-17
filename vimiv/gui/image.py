@@ -42,6 +42,8 @@ _logger = log.module_logger(__name__)
 
 
 class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
+    # pylint: disable=too-many-public-methods
+    # TODO consider refactoring
     """QGraphicsView to display Image or Animation.
 
     Connects to the *_loaded signals to create the appropriate child widget.
