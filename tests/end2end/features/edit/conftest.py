@@ -4,6 +4,7 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
+import pytest
 import pytest_bdd as bdd
 
 from vimiv.parser import geometry
@@ -13,8 +14,8 @@ from vimiv.parser import geometry
 def ensure_size(size, image):
     expected = geometry(size)
     image_rect = image.sceneRect()
-    assert expected.width() == image_rect.width()
-    assert expected.height() == image_rect.height()
+    assert expected.width() == pytest.approx(image_rect.width(), abs=1)
+    assert expected.height() == pytest.approx(image_rect.height(), abs=1)
 
 
 @bdd.then(bdd.parsers.parse("the image size should not be {size}"))

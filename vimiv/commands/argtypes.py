@@ -11,8 +11,11 @@ Example for scroll direction:
         ...
 """
 
+import re
 import contextlib
 import enum
+
+from PyQt5.QtCore import QSize
 
 
 class Direction(enum.Enum):
@@ -79,3 +82,36 @@ class HistoryDirection(enum.Enum):
 
     Next = "next"
     Prev = "prev"
+
+
+class AspectRatio(QSize):
+    """Aspectratio defined as QSize with width and height from a valid string.
+
+    Valid definitions are strings with two integer values representing width and height
+    separated by one of the characters in SEPARATORS.
+
+    Examples:
+        4:3
+        16,9
+        5_4
+
+    Attributes:
+        keep: True if the aspectratio of the original image should be kept.
+    """
+
+    SEPARATORS = ":,-_"
+
+    def __init__(self, aspectratio: str):
+        if aspectratio.lower() == "keep":
+            self.keep = True
+            super().__init__()
+        else:
+            self.keep = False
+            split_re = "|".join(self.SEPARATORS)
+            try:
+                width, height = tuple(re.split(split_re, aspectratio))
+                super().__init__(int(width), int(height))
+            except ValueError:
+                raise ValueError(
+                    f"'Invalid aspectratio '{aspectratio}'. Use width:height, e.g. 4:3"
+                ) from None

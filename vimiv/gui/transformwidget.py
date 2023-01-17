@@ -9,14 +9,16 @@
 import abc
 import contextlib
 import functools
+from typing import cast
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QRect
 from PyQt5.QtWidgets import QWidget
 
 from vimiv.imutils import imtransform
 
 from vimiv import api, utils
 from vimiv.gui import eventhandler
+from .image import ScrollableImage
 
 
 class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
@@ -47,8 +49,10 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         image.transformation_module = self.status_info
 
         image.resized.connect(self.update_geometry)
-        self.update_geometry()
-        self.show()
+
+    @property
+    def image(self) -> ScrollableImage:
+        return cast(ScrollableImage, self.parent())
 
     @abc.abstractmethod
     def update_geometry(self):
@@ -67,13 +71,18 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
         if not accept:
             self.reset_transformations()
             self.transform.apply()
-        self.parent().transformation_module = None  # type: ignore
-        self.parent().setFocus()  # type: ignore
+        self.image.transformation_module = None
+        self.image.setFocus()
         self.deleteLater()
         api.status.update("transform widget left")
 
     def reset_transformations(self):
         self.transform.setMatrix(*self.previous_matrix)
+
+    @property
+    def image_rect(self) -> QRect:
+        """Rectangle occupied by the image within the parent widget."""
+        return self.image.mapFromScene(self.image.sceneRect()).boundingRect()
 
     def keyPressEvent(self, event):
         """Run binding from bindings dictionary."""

@@ -10,7 +10,7 @@ import os
 import pathlib
 
 from PyQt5.QtCore import Qt, QProcess, QTimer
-from PyQt5.QtGui import QFocusEvent
+from PyQt5.QtGui import QFocusEvent, QMouseEvent
 from PyQt5.QtWidgets import QApplication
 
 import pytest
@@ -175,6 +175,36 @@ def keypress(qtbot):
             qtbot.keyClicks(widget, keys, modifier=modifier)
 
     return press_impl
+
+
+@pytest.fixture()
+def mousedrag(qtbot):
+    """Fixture to emulate a mouse drag on a widget.
+
+    Workaround for https://bugreports.qt.io/browse/QTBUG-5232.
+    """
+
+    def drag(widget, *, start, diff):
+        end = start + diff
+
+        qtbot.mousePress(widget, Qt.LeftButton, pos=start)
+
+        global_end = widget.mapToGlobal(end)
+        button = buttons = Qt.NoButton
+        move_event = QMouseEvent(
+            QMouseEvent.MouseMove,
+            end,
+            global_end,
+            global_end,
+            button,
+            buttons,
+            Qt.NoModifier,
+        )
+        QApplication.sendEvent(widget, move_event)
+
+        qtbot.mouseRelease(widget, Qt.LeftButton, pos=end)
+
+    return drag
 
 
 ###############################################################################

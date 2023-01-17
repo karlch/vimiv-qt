@@ -87,4 +87,11 @@ DEFAULT_OPTIONS = {
     "prompt.border_radius": "{keyhint.border_radius}",
     "prompt.border": "{statusbar.message_border}",
     "prompt.border.color": "{statusbar.info}",
+    # Crop
+    "crop.shading": "#88000000",
+    "crop.border": "{manipulate.image.border}",
+    "crop.border.color": "#88AAAAAA",
+    "crop.grip.color": "#88FFFFFF",
+    "crop.grip.border": "{manipulate.image.border}",
+    "crop.grip.border.color": "{crop.border.color}",
 }

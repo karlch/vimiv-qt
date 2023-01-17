@@ -48,6 +48,9 @@ class StraightenWidget(transformwidget.TransformWidget):
         self.angle = 0.0
         self._init_size = self.transform.size
 
+        self.update_geometry()
+        self.show()
+
     def _add_rotate_binding(
         self, *keys: str, counter_clockwise: bool = False, angle: float
     ) -> None:
@@ -87,17 +90,7 @@ class StraightenWidget(transformwidget.TransformWidget):
 
     def update_geometry(self):
         """Update geometry of the grid to overlay the image."""
-        image_size = self.parent().sceneRect()
-        width = min(
-            int(image_size.width() * self.parent().zoom_level), self.parent().width()
-        )
-        height = min(
-            int(image_size.height() * self.parent().zoom_level), self.parent().height()
-        )
-        self.setFixedSize(width, height)
-        x = (self.parent().width() - width) // 2
-        y = (self.parent().height() - height) // 2
-        self.move(x, y)
+        self.setGeometry(self.image_rect)
 
     def status_info(self):
         """Display current rotation angle in the status bar."""
