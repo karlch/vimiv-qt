@@ -114,6 +114,7 @@
 </li>
 <li><a class="reference internal" href="#image">Image</a><ul>
 <li><a class="reference internal" href="#center">center</a></li>
+<li><a class="reference internal" href="#crop">crop</a></li>
 <li><a class="reference internal" href="#flip">flip</a></li>
 <li><a class="reference internal" href="#goto">goto</a></li>
 <li><a class="reference internal" href="#metadata">metadata</a></li>
@@ -894,52 +895,55 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-image-center"><span class="std std-ref">center</span></a></p></td>
 <td><p>Center the image in the viewport.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-flip"><span class="std std-ref">flip</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-crop"><span class="std std-ref">crop</span></a></p></td>
+<td><p>Display a widget to crop the current image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-flip"><span class="std std-ref">flip</span></a></p></td>
 <td><p>Flip the image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-goto"><span class="std std-ref">goto</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-goto"><span class="std std-ref">goto</span></a></p></td>
 <td><p>Select specific image in current filelist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-metadata"><span class="std std-ref">metadata</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-metadata"><span class="std std-ref">metadata</span></a></p></td>
 <td><p>Toggle display of exif metadata of current image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-metadata-list-keys"><span class="std std-ref">metadata-list-keys</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-metadata-list-keys"><span class="std std-ref">metadata-list-keys</span></a></p></td>
 <td><p>Display a list of all valid metadata keys for the current image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
 <td><p>Toggle between play and pause of animation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-reload"><span class="std std-ref">reload</span></a></p></td>
 <td><p>Reload the current image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rescale"><span class="std std-ref">rescale</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-rescale"><span class="std std-ref">rescale</span></a></p></td>
 <td><p>Rescale the original image to a new size.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-resize"><span class="std std-ref">resize</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-resize"><span class="std std-ref">resize</span></a></p></td>
 <td><p>Resize the original image to a new size.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-rotate"><span class="std std-ref">rotate</span></a></p></td>
 <td><p>Rotate the image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll"><span class="std std-ref">scroll</span></a></p></td>
 <td><p>Scroll the image in the given direction.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-scroll-edge"><span class="std std-ref">scroll-edge</span></a></p></td>
 <td><p>Scroll the image to one edge.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-slideshow"><span class="std std-ref">slideshow</span></a></p></td>
 <td><p>Toggle slideshow.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-straighten"><span class="std std-ref">straighten</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-straighten"><span class="std std-ref">straighten</span></a></p></td>
 <td><p>Display a grid to straighten the current image.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-undo-transformations"><span class="std std-ref">undo-transformations</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-undo-transformations"><span class="std std-ref">undo-transformations</span></a></p></td>
 <td><p>Undo any transformation applied to the current image.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-write"><span class="std std-ref">write</span></a></p></td>
 <td><p>Save the current image to disk.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-zoom"><span class="std std-ref">zoom</span></a></p></td>
 <td><p>Zoom the current widget.</p></td>
 </tr>
 </tbody>
@@ -947,6 +951,19 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <section id="center">
 <span id="ref-image-center"></span><h3>center<a class="headerlink" href="#center" title="Permalink to this heading">¶</a></h3>
 <p>Center the image in the viewport.</p>
+</section>
+<section id="crop">
+<span id="ref-image-crop"></span><h3>crop<a class="headerlink" href="#crop" title="Permalink to this heading">¶</a></h3>
+<p>Display a widget to crop the current image.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">crop</span> <span class="pre">[--aspectratio=ASPECTRATIO]</span></code></p>
+<dl class="simple">
+<dt>optional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--aspectratio</span></code>: Fix the cropping to the given aspectratio. Valid
+options are two integers separated by <code class="docutils literal notranslate"><span class="pre">:</span></code> or the special <code class="docutils literal notranslate"><span class="pre">keep</span></code> to
+keep the aspectratio of the current image.</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="flip">
 <span id="ref-image-flip"></span><h3>flip<a class="headerlink" href="#flip" title="Permalink to this heading">¶</a></h3>
