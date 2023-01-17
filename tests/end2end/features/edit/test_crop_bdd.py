@@ -57,7 +57,7 @@ def drag_crop_widget(qtbot, mousedrag, crop, dx, dy):
     dx = int(int(dx) * crop.image.zoom_level)
     dy = int(int(dy) * crop.image.zoom_level)
 
-    start = crop.pos() + QPoint(crop.width() // 2, crop.height() // 2)
+    start = QPoint(crop.width() // 2, crop.height() // 2)
     mousedrag(crop, start=start, diff=QPoint(dx, dy))
 
 

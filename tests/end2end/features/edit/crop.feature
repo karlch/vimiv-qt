@@ -32,10 +32,12 @@ Feature: Crop an image.
 
         Examples:
             | dx   | dy   | geometry        |
-            | 30   | 20   | 150x100+30+20   |
+            | 0    | 0    | 150x100+75+50   |
+            # small dx dy
+            | 30   | -20  | 150x100+105+30  |
             # dx only as far as the image allows
-            | 200  | 0    | 150x100+150+0   |
-            # dy ignored as it would move the selection out of the image
-            | 10    | -50  | 150x100+10+0     |
+            | 125  | 0    | 150x100+150+50  |
+            # dy only as far as the image allows
+            | 10   | -100 | 150x100+85+0   |
             # Ignored as dx/dy are outside of the image
-            | 1000 | 1000 | 150x100+0+0     |
+            | 1000 | 1000 | 150x100+75+50   |
