@@ -84,6 +84,11 @@ Added:
   feature is important!
 * New ``{cursor-position}`` statusbar module which tracks the mouse cursor position in
   image coordinates.
+* The ``:crop`` command which displays a rectangle to crop the curent image. The
+  rectangle can be dragged and resized using the mouse. As with ``:straighten``, accept
+  the changes with ``<return>`` and reject them with ``<escape>``. The
+  ``{transformation-info}`` status module displays the currently selected geometry of
+  the original image. Thanks `@Yutsuten`_ for reviving this!
 
 Changed:
 ^^^^^^^^
@@ -266,11 +271,6 @@ Added:
 * A new ``PromptSetting`` type which is essentially a boolean setting with the
   additional ``ask`` value. If the value is ``ask``, the user is prompted everytime the
   boolean state of this setting is requested.
-* The ``:crop`` command which displays a rectangle to crop the curent image. The
-  rectangle can be dragged and resized using the mouse. As with ``:straighten``, accept
-  the changes with ``<return>`` and reject them with ``<escape>``. The
-  ``{transformation-info}`` status module displays the currently selected geometry of
-  the original image.
 
 Changed:
 ^^^^^^^^
@@ -529,3 +529,4 @@ Initial release of the Qt version.
 .. _@ArtemSmaznov: https://github.com/ArtemSmaznov
 .. _@timsofteng: https://github.com/timsofteng
 .. _@kAldown: https://github.com/kaldown
+.. _@Yutsuten: https://github.com/Yutsuten
