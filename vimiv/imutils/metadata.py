@@ -46,17 +46,17 @@ class MetadataPlugin(ABC):
             _path: Path to current image.
         """
 
-    @property
+    @staticmethod
     @abstractmethod
-    def name(self) -> str:
+    def name() -> str:
         """Get the name of the used backend.
 
         If no backend is used, return the name of the plugin.
         """
 
-    @property
+    @staticmethod
     @abstractmethod
-    def version(self) -> str:
+    def version() -> str:
         """Get the version of the used backend.
 
         If no backend is used, return an empty string.
@@ -198,7 +198,7 @@ class MetadataHandler:
             with contextlib.suppress(NotImplementedError):
                 be = backend(self._path)
                 if not be.copy_metadata(dest, reset_orientation):
-                    failed.append(be.name)
+                    failed.append(be.name())
 
         if failed:
             _logger.warning(
@@ -248,10 +248,10 @@ def register(plugin: Type[MetadataPlugin]) -> None:
         plugin: Implementation of `MetadataPlugin`.
     """
 
-    _logger.debug(f"Registring metadata plugin implementation {plugin.name}")
+    _logger.debug(f"Registring metadata plugin implementation {plugin.name()}")
     if plugin in _registry:
         _logger.warning(
-            f"Metadata plugin {plugin.name} has already been registered. Ignoring it."
+            f"Metadata plugin {plugin.name()} has already been registered. Ignoring it."
         )
         return
 
@@ -264,7 +264,7 @@ def get_registrations() -> List[Tuple[str, str]]:
     Returns:
         List of tuple of the form (name of backend, version of backend).
     """
-    return [(e("").name, e("").version) for e in _registry]
+    return [(e.name(), e.version()) for e in _registry]
 
 
 class ExifOrientation:

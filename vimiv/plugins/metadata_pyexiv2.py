@@ -37,13 +37,13 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
             _logger.debug("File %s not found", path)
             self._metadata = None
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def name() -> str:
         """Get the name of the used backend."""
         return "pyexiv2"
 
-    @property
-    def version(self) -> str:
+    @staticmethod
+    def version() -> str:
         """Get the version of the used backend."""
         return pyexiv2.__version__
 
