@@ -156,9 +156,8 @@ class MetadataHandler:
         out: MetadataDictT = {}
 
         for backend in _registry:
-            with contextlib.suppress(NotImplementedError):
-                # TODO: from 3.9 on use: c = a | b
-                out = {**backend(self._path).get_metadata(keys), **out}
+            # TODO: from 3.9 on use: c = a | b
+            out = {**backend(self._path).get_metadata(keys), **out}
 
         # TODO: ensure keys are returned in the right order
         return out
@@ -172,8 +171,7 @@ class MetadataHandler:
         out: Iterable[str] = iter([])
 
         for backend in _registry:
-            with contextlib.suppress(NotImplementedError):
-                out = itertools.chain(out, backend(self._path).get_keys())
+            out = itertools.chain(out, backend(self._path).get_keys())
 
         return out
 
