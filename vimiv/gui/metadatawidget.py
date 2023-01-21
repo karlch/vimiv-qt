@@ -158,11 +158,14 @@ class MetadataWidget(QLabel):
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
         ]
         _logger.debug(f"Read metadata.current_keys {keys}")
-        data = self.handler.get_metadata(keys)
-        if data:
-            self.setText(utils.format_html_table(data.values()))
-        else:
-            self.setText("No matching metadata found")
+        try:
+            data = self.handler.get_metadata(keys)
+            if data:
+                self.setText(utils.format_html_table(data.values()))
+            else:
+                self.setText("No matching metadata found")
+        except metadata.MetadataError as e:
+            self.setText(str(e))
         self._update_geometry()
         self._current_set = api.settings.metadata.current_keyset.value
 

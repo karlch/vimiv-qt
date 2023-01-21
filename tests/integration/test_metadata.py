@@ -51,7 +51,7 @@ def test_handler_raises(nometadata, methodname, args):
 
     handler = metadata.MetadataHandler("path")
     method = getattr(handler, methodname)
-    with pytest.raises(metadata.UnsupportedMetadataOperation):
+    with pytest.raises(metadata.MetadataError):
         method(*args)
 
 

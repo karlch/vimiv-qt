@@ -210,10 +210,10 @@ def _write(pixmap, path, original_path):
     handle, filename = tempfile.mkstemp(suffix=ext)
     os.close(handle)
     pixmap.save(filename)
-    # Copy metadata info from original file to new file
+    # Best-effort copy metadata info from original file to new file
     try:
         imutils.metadata.MetadataHandler(original_path).copy_metadata(filename)
-    except imutils.metadata.UnsupportedMetadataOperation:
+    except imutils.metadata.MetadataError:
         pass
     shutil.move(filename, path)
     # Check if valid image was created

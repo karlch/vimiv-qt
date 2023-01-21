@@ -140,7 +140,13 @@ class MetadataHandler:
 
         Returns:
             Dictionary with retrieved metadata.
+
+        Raises:
+            MetadataError
         """
+        if not has_metadata_support():
+            MetadataHandler.raise_exception("get_metadata")
+
         out: MetadataDictT = {}
 
         for backend in _registry:
@@ -155,7 +161,13 @@ class MetadataHandler:
 
         Uses all registered metadata implementations to extract the available keys for
         the current image. The output off all methods is combined.
+
+        Raises:
+            MetadataError
         """
+        if not has_metadata_support():
+            MetadataHandler.raise_exception("get_keys")
+
         out: Iterable[str] = iter([])
 
         for backend in _registry:
@@ -173,9 +185,9 @@ class MetadataHandler:
             reset_orientation: If true, reset the exif orientation tag to normal.
 
         Raises:
-            UnsupportedMetadataOperation if no implementation supports this operation.
+            MetadataError
         """
-        if not self.has_copy_metadata:
+        if not has_metadata_support() or not self.has_copy_metadata:
             MetadataHandler.raise_exception("copy_metadata")
 
         failed = []
@@ -199,9 +211,9 @@ class MetadataHandler:
         Uses the first registered metadata implementations that supports this operation.
 
         Raises:
-            UnsupportedMetadataOperation if no implementation supports this operation.
+            MetadataError
         """
-        if not self.has_get_date_time:
+        if not has_metadata_support() or not self.has_get_date_time:
             MetadataHandler.raise_exception("get_date_time")
 
         for backend in _registry:
@@ -214,14 +226,14 @@ class MetadataHandler:
 
     @staticmethod
     def raise_exception(operation: str) -> NoReturn:
-        """Raise an exception for a operations without implementation."""
-        msg = f"{operation} has no implementation"
+        """Raise an exception if there is insufficient support for an operation."""
+        msg = f"Running {operation} is not possible. Insufficient metadata support"
         _logger.warning(msg, once=True)
-        raise UnsupportedMetadataOperation(msg)
+        raise MetadataError(msg)
 
 
-class UnsupportedMetadataOperation(NotImplementedError):
-    """Raised if for an Operations, no function implementation is registered."""
+class MetadataError(RuntimeError):
+    """Raised if for a function there is insufficient metadata support."""
 
 
 def register(plugin: Type[MetadataPlugin]) -> None:
