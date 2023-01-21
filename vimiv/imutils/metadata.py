@@ -16,7 +16,7 @@ Module Attributes:
     _registry: List of registered `MetadataPlugin` implementations.
 """
 
-from abc import ABC, abstractmethod
+import abc
 import contextlib
 import itertools
 from typing import Dict, Tuple, NoReturn, Sequence, Iterable, Type, List
@@ -30,7 +30,7 @@ _logger = log.module_logger(__name__)
 MetadataDictT = Dict[str, Tuple[str, str]]
 
 
-class MetadataPlugin(ABC):
+class MetadataPlugin(abc.ABC):
     """Abstract class implemented by plugins to provide metadata capabilities.
 
     Implementations of this class are required to overwrite `__init__`, `name`,
@@ -38,7 +38,7 @@ class MetadataPlugin(ABC):
     The implementations of `copy_metadata` and `get_date_time` is optional.
     """
 
-    @abstractmethod
+    @abc.abstractmethod
     def __init__(self, _path: str) -> None:
         """Initialize metadata handler for a specific image.
 
@@ -47,7 +47,7 @@ class MetadataPlugin(ABC):
         """
 
     @staticmethod
-    @abstractmethod
+    @abc.abstractmethod
     def name() -> str:
         """Get the name of the used backend.
 
@@ -55,14 +55,14 @@ class MetadataPlugin(ABC):
         """
 
     @staticmethod
-    @abstractmethod
+    @abc.abstractmethod
     def version() -> str:
         """Get the version of the used backend.
 
         If no backend is used, return an empty string.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_metadata(self, _keys: Sequence[str]) -> MetadataDictT:
         """Get value of all desired keys for the current image.
 
@@ -75,7 +75,7 @@ class MetadataPlugin(ABC):
             Dictionary with retrieved metadata.
         """
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_keys(self) -> Iterable[str]:
         """Get the keys for all metadata values available for the current image."""
 
