@@ -122,24 +122,12 @@ class MetadataHandler:
     @property
     def has_copy_metadata(self) -> bool:
         """True if `MetadataHandler` has an implementation for `copy_metadata`."""
-        return any(
-            list(
-                map(
-                    lambda e: e.copy_metadata != MetadataPlugin.copy_metadata, _registry
-                )
-            )
-        )
+        return any(e.copy_metadata != MetadataPlugin.copy_metadata for e in _registry)
 
     @property
     def has_get_date_time(self) -> bool:
         """True if `MetadataHandler` has an implementation for `get_date_time`."""
-        return any(
-            list(
-                map(
-                    lambda e: e.get_date_time != MetadataPlugin.get_date_time, _registry
-                )
-            )
-        )
+        return any(e.get_date_time != MetadataPlugin.get_date_time for e in _registry)
 
     def get_metadata(self, keys: Sequence[str]) -> MetadataDictT:
         """Get value of all desired keys from the current image.
