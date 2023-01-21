@@ -62,7 +62,8 @@ class MetadataPiexif(metadata.MetadataPlugin):
         """Get value of all desired keys for the current image."""
         out = {}
 
-        # TODO: remove
+        # The keys in the default config are of the form `group.subgroup.key`. However,
+        # piexif only uses `key` for the indexing. Strip `group.subgroup` prefix.
         desired_keys = [key.rpartition(".")[2] for key in desired_keys]
 
         if self._metadata is None:

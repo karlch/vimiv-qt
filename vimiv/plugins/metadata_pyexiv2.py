@@ -55,32 +55,30 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
         if self._metadata is None:
             return {}
 
-        for base_key in desired_keys:
+        for key in desired_keys:
             # TODO: potentially remove
             # For backwards compability, assume it has one of the following prefixes
-            for prefix in ["", "Exif.Image.", "Exif.Photo."]:
-                key = f"{prefix}{base_key}"
+            try:
+                key_name = self._metadata[key].name
+
                 try:
-                    key_name = self._metadata[key].name
+                    key_value = self._metadata[key].human_value
 
-                    try:
-                        key_value = self._metadata[key].human_value
+                # Not all metadata (i.e. IPTC) provide human_value, take raw_value
+                except AttributeError:
+                    value = self._metadata[key].raw_value
 
-                    # Not all metadata (i.e. IPTC) provide human_value, take raw_value
-                    except AttributeError:
-                        value = self._metadata[key].raw_value
+                    # For IPTC the raw_value is a list of strings
+                    if isinstance(value, list):
+                        key_value = ", ".join(value)
+                    else:
+                        key_value = value
 
-                        # For IPTC the raw_value is a list of strings
-                        if isinstance(value, list):
-                            key_value = ", ".join(value)
-                        else:
-                            key_value = value
+                out[key] = (key_name, key_value)
+                break
 
-                    out[key] = (key_name, key_value)
-                    break
-
-                except KeyError:
-                    _logger.debug("Key %s is invalid for the current image", key)
+            except KeyError:
+                _logger.debug("Key %s is invalid for the current image", key)
 
         return out
 
