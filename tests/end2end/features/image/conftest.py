@@ -19,6 +19,7 @@ except ImportError:
 
 @pytest.fixture()
 def exif_content():
+    assert piexif is not None, "piexif required create exif information."
     return {
         "0th": {
             piexif.ImageIFD.Make: b"vimiv-testsuite",
