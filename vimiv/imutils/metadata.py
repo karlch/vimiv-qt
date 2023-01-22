@@ -153,7 +153,6 @@ class MetadataHandler:
             # TODO: from 3.9 on use: c = a | b
             out = {**backend(self._path).get_metadata(keys), **out}
 
-        # TODO: ensure keys are returned in the right order
         return out
 
     def get_keys(self) -> Iterable[str]:

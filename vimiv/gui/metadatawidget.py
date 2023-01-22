@@ -157,11 +157,13 @@ class MetadataWidget(QLabel):
         keys = [
             e.strip() for e in api.settings.metadata.current_keyset.value.split(",")
         ]
-        _logger.debug(f"Read metadata.current_keys {keys}")
+        _logger.debug(f"Extracting metadata for keys: {keys}")
         try:
             data = self.handler.get_metadata(keys)
             if data:
-                self.setText(utils.format_html_table(data.values()))
+                # Sort data according to order provided in config
+                sorted_data = [data[key] for key in keys if key in data]
+                self.setText(utils.format_html_table(sorted_data))
             else:
                 self.setText("No matching metadata found")
         except metadata.MetadataError as e:
