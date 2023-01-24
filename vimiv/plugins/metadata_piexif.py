@@ -63,8 +63,9 @@ class MetadataPiexif(metadata.MetadataPlugin):
         out = {}
 
         # The keys in the default config are of the form `group.subgroup.key`. However,
-        # piexif only uses `key` for the indexing. Strip `group.subgroup` prefix.
-        desired_keys = [key.rpartition(".")[2] for key in desired_keys]
+        # piexif only uses `key` for the indexing. Strip `group.subgroup` prefix for the
+        # metadata extraction, but maintain the long key in the returned dict.
+        desired_keys_map = {key.rpartition(".")[2]: key for key in desired_keys}
 
         if self._metadata is None:
             return {}
@@ -78,7 +79,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
                     keyname = piexif.TAGS[ifd][tag]["name"]
                     keytype = piexif.TAGS[ifd][tag]["type"]
                     val = self._metadata[ifd][tag]
-                    if keyname not in desired_keys:
+                    if keyname not in desired_keys_map:
                         continue
                     if keytype in (
                         piexif.TYPES.Byte,
@@ -90,17 +91,17 @@ class MetadataPiexif(metadata.MetadataPlugin):
                         piexif.TYPES.Float,
                         piexif.TYPES.DFloat,
                     ):  # integer and float
-                        out[keyname] = (keyname, str(val))
+                        out[desired_keys_map[keyname]] = (keyname, str(val))
                     elif keytype in (
                         piexif.TYPES.Ascii,
                         piexif.TYPES.Undefined,
                     ):  # byte encoded
-                        out[keyname] = (keyname, val.decode())
+                        out[desired_keys_map[keyname]] = (keyname, val.decode())
                     elif keytype in (
                         piexif.TYPES.Rational,
                         piexif.TYPES.SRational,
                     ):  # (int, int) <=> numerator, denominator
-                        out[keyname] = (keyname, f"{val[0]}/{val[1]}")
+                        out[desired_keys_map[keyname]] = (keyname, f"{val[0]}/{val[1]}")
 
         except KeyError:
             return {}
