@@ -7,7 +7,7 @@
 """Tests for vimiv.utils.files."""
 
 import collections
-import imghdr
+import imghdr  # pylint: disable=deprecated-module
 import os
 import tarfile
 
