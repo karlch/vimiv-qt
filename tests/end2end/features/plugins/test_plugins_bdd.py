@@ -5,7 +5,7 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import contextlib
-import imghdr
+import imghdr  # pylint: disable=deprecated-module
 
 import pytest_bdd as bdd
 

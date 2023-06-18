@@ -16,8 +16,8 @@ import typing
 
 from vimiv import api, utils
 
-WildcardReturnT = typing.Union[str, typing.Iterable[str]]
-WildcardCallbackT = typing.Callable[..., WildcardReturnT]
+WildcardReturn = typing.Union[str, typing.Iterable[str]]
+WildcardCallbackT = typing.Callable[..., WildcardReturn]
 
 
 class Wildcard:
@@ -39,7 +39,7 @@ class Wildcard:
         self.description = description
         self._callback = callback
 
-    def __call__(self, mode: api.modes.Mode) -> WildcardReturnT:
+    def __call__(self, mode: api.modes.Mode) -> WildcardReturn:
         return self._callback(mode)
 
 

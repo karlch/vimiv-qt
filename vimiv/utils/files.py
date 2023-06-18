@@ -6,7 +6,7 @@
 
 """Functions dealing with files and paths."""
 
-import imghdr
+import imghdr  # pylint: disable=deprecated-module
 import functools
 import os
 from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
