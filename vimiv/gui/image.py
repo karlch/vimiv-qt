@@ -376,7 +376,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
             self.setMouseTracking(True)
             # We only want to override leaveEvent if we really have to
             # pylint: disable=invalid-name
-            self.leaveEvent = self._leave_event  # type: ignore[assignment]
+            self.leaveEvent = self._leave_event  # type: ignore[method-assign]
 
         rect = self.sceneRect().toRect()
         if rect.width() == 1:  # Empty
