@@ -29,14 +29,16 @@ jobs:
           - python: "3.9"
             toxenv: pyqt515
           - python: "3.10"
+            toxenv: pyqt515
+          - python: "3.11"
             toxenv: pyqt515-cov
-          - python: "3.10"
+          - python: "3.11"
             toxenv: pyqt515-piexif-cov
-          - python: "3.10"
+          - python: "3.11"
             toxenv: lint
-          - python: "3.10"
+          - python: "3.11"
             toxenv: packaging
-          - python: "3.10"
+          - python: "3.11"
             toxenv: mypy
       fail-fast: false
 
