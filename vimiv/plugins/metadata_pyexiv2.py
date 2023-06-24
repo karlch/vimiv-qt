@@ -56,8 +56,6 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
             return {}
 
         for key in desired_keys:
-            # TODO: potentially remove
-            # For backwards compability, assume it has one of the following prefixes
             try:
                 key_name = self._metadata[key].name
 
