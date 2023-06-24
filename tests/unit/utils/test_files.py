@@ -26,7 +26,7 @@ def mockimghdr(mocker):
     mocker.patch.object(
         QImageReader, "supportedImageFormats", return_value=SUPPORTED_IMAGE_FORMATS
     )
-    yield mocker.patch("imghdr.tests", [])
+    yield mocker.patch("vimiv.utils.imghdr.tests", [])
 
 
 @pytest.fixture()
@@ -109,7 +109,7 @@ def test_directories_supported(mocker):
 def test_images_supported(mocker):
     mocker.patch("os.path.isdir", return_value=False)
     mocker.patch("os.path.isfile", return_value=True)
-    mocker.patch("imghdr.what", return_value=True)
+    mocker.patch("vimiv.utils.imghdr.what", return_value=True)
     images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
