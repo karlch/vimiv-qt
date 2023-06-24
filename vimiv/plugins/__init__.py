@@ -98,6 +98,11 @@ def load() -> None:
     user_plugins = _get_plugins(_user_plugin_directory)
     _logger.debug("Available user plugins: %s", quotedjoin(user_plugins))
     for plugin, info in _plugins.items():
+        if plugin == "metadata":
+            # Skip metadata plugin and load it manually after all other plugins. This
+            # way the plugin can check whether another metadata plugin has been loaded
+            _logger.debug("Deffer loading of metadata plugin")
+            continue
         if plugin in app_plugins:
             _load_plugin(plugin, info, _app_plugin_directory)
         elif plugin in user_plugins:
@@ -113,6 +118,7 @@ def load() -> None:
                 quotedjoin(user_plugins),
                 _user_plugin_directory,
             )
+    _load_plugin("metadata", _plugins["metadata"], _app_plugin_directory)
     _logger.debug("Plugin loading completed")
     api.signals.plugins_loaded.emit()
 

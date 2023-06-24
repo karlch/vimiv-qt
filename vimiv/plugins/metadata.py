@@ -10,12 +10,22 @@ from typing import Any
 
 from vimiv.plugins import metadata_piexif, metadata_pyexiv2
 from vimiv.utils import log
+from vimiv.imutils import metadata
 
 _logger = log.module_logger(__name__)
 
 
 def init(*_args: Any, **_kwargs: Any) -> None:
-    """Initialize metadata plugin depending on available backend."""
+    """Initialize metadata plugin depending on available backend.
+
+    If any other backend has already been registered, do not register any new one.
+    """
+    if metadata.has_metadata_support():
+        _logger.info(
+            "Not loading a default metadata backend, as one has been loaded manually"
+        )
+        return
+
     if metadata_pyexiv2.pyexiv2 is not None:
         metadata_pyexiv2.init()
     elif metadata_piexif.piexif is not None:
