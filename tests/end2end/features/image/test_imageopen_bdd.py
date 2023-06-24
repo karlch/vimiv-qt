@@ -4,11 +4,10 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import imghdr  # pylint: disable=deprecated-module
-
 import pytest_bdd as bdd
 
 from vimiv import api
+from vimiv.utils import imghdr
 
 
 bdd.scenarios("imageopen.feature")

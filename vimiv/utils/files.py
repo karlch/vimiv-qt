@@ -6,14 +6,13 @@
 
 """Functions dealing with files and paths."""
 
-import imghdr  # pylint: disable=deprecated-module
 import functools
 import os
 from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
 from PyQt5.QtGui import QImageReader
 
-from vimiv.utils import imagereader
+from vimiv.utils import imagereader, imghdr
 
 
 ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]

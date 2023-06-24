@@ -5,11 +5,11 @@
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
 import contextlib
-import imghdr  # pylint: disable=deprecated-module
 
 import pytest_bdd as bdd
 
 from vimiv import plugins
+from vimiv.utils import imghdr
 
 
 bdd.scenarios("plugins.feature")

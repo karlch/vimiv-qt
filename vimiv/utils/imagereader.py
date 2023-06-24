@@ -12,7 +12,7 @@ from typing import Dict, Callable
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
 
-from .files import imghdr
+from vimiv.utils import imghdr
 
 external_handler: Dict[str, Callable[[str], QPixmap]] = {}
 

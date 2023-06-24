@@ -7,7 +7,6 @@
 """Tests for vimiv.utils.files."""
 
 import collections
-import imghdr  # pylint: disable=deprecated-module
 import os
 import tarfile
 
@@ -15,7 +14,7 @@ from PyQt5.QtGui import QImageReader
 
 import pytest
 
-from vimiv.utils import files
+from vimiv.utils import files, imghdr
 
 
 SUPPORTED_IMAGE_FORMATS = ["jpg", "png", "gif", "svg", "cr2"]
