@@ -1,171 +1,161 @@
+# vim: ft=python fileencoding=utf-8 sw=4 et sts=4
+
+
 """Recognize image file formats based on their first few bytes."""
 
-from os import PathLike
+from typing import Optional, BinaryIO, List, Callable
 
-__all__ = ["what"]
+# List containing all testing functions
+tests: List[Callable[[bytes, Optional[BinaryIO]], Optional[str]]] = []
 
 
-#-------------------------#
-# Recognize image headers #
-#-------------------------#
+def what(filename: str) -> Optional[str]:
+    """Determine type of image based on the magic bytes.
 
-def what(file, h=None):
+    Args:
+        filename: Name of file to determine type of.
+
+    Returns:
+        Filetype or None if unknown.
+    """
     f = None
-    try:
-        if h is None:
-            if isinstance(file, (str, PathLike)):
-                f = open(file, 'rb')
-                h = f.read(32)
-            else:
-                location = file.tell()
-                h = file.read(32)
-                file.seek(location)
+    with open(filename, "rb") as f:
+        h = f.read(32)
+
         for tf in tests:
             res = tf(h, f)
             if res:
                 return res
-    finally:
-        if f: f.close()
     return None
 
 
-#---------------------------------#
-# Subroutines per image file type #
-#---------------------------------#
+def _test_jpeg(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """JPEG data with JFIF or Exif markers; and raw JPEG."""
+    if h[6:10] in (b"JFIF", b"Exif"):
+        return "jpeg"
+    if h[:4] == b"\xff\xd8\xff\xdb":
+        return "jpeg"
+    return None
 
-tests = []
 
-def test_jpeg(h, f):
-    """JPEG data with JFIF or Exif markers; and raw JPEG"""
-    if h[6:10] in (b'JFIF', b'Exif'):
-        return 'jpeg'
-    elif h[:4] == b'\xff\xd8\xff\xdb':
-        return 'jpeg'
+tests.append(_test_jpeg)
 
-tests.append(test_jpeg)
 
-def test_png(h, f):
-    if h.startswith(b'\211PNG\r\n\032\n'):
-        return 'png'
+def _test_png(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """PNG."""
+    if h.startswith(b"\211PNG\r\n\032\n"):
+        return "png"
+    return None
 
-tests.append(test_png)
 
-def test_gif(h, f):
-    """GIF ('87 and '89 variants)"""
-    if h[:6] in (b'GIF87a', b'GIF89a'):
-        return 'gif'
+tests.append(_test_png)
 
-tests.append(test_gif)
 
-def test_tiff(h, f):
-    """TIFF (can be in Motorola or Intel byte order)"""
-    if h[:2] in (b'MM', b'II'):
-        return 'tiff'
+def _test_gif(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """GIF ('87 and '89 variants)."""
+    if h[:6] in (b"GIF87a", b"GIF89a"):
+        return "gif"
+    return None
 
-tests.append(test_tiff)
 
-def test_rgb(h, f):
-    """SGI image library"""
-    if h.startswith(b'\001\332'):
-        return 'rgb'
+tests.append(_test_gif)
 
-tests.append(test_rgb)
 
-def test_pbm(h, f):
-    """PBM (portable bitmap)"""
-    if len(h) >= 3 and \
-        h[0] == ord(b'P') and h[1] in b'14' and h[2] in b' \t\n\r':
-        return 'pbm'
+def _test_tiff(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """TIFF (can be in Motorola or Intel byte order)."""
+    if h[:2] in (b"MM", b"II"):
+        return "tiff"
+    return None
 
-tests.append(test_pbm)
 
-def test_pgm(h, f):
-    """PGM (portable graymap)"""
-    if len(h) >= 3 and \
-        h[0] == ord(b'P') and h[1] in b'25' and h[2] in b' \t\n\r':
-        return 'pgm'
+tests.append(_test_tiff)
 
-tests.append(test_pgm)
 
-def test_ppm(h, f):
-    """PPM (portable pixmap)"""
-    if len(h) >= 3 and \
-        h[0] == ord(b'P') and h[1] in b'36' and h[2] in b' \t\n\r':
-        return 'ppm'
+def _test_rgb(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """SGI image library."""
+    if h.startswith(b"\001\332"):
+        return "rgb"
+    return None
 
-tests.append(test_ppm)
 
-def test_rast(h, f):
-    """Sun raster file"""
-    if h.startswith(b'\x59\xA6\x6A\x95'):
-        return 'rast'
+tests.append(_test_rgb)
 
-tests.append(test_rast)
 
-def test_xbm(h, f):
-    """X bitmap (X10 or X11)"""
-    if h.startswith(b'#define '):
-        return 'xbm'
+def _test_pbm(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """PBM (portable bitmap)."""
+    if len(h) >= 3 and h[0] == ord(b"P") and h[1] in b"14" and h[2] in b" \t\n\r":
+        return "pbm"
+    return None
 
-tests.append(test_xbm)
 
-def test_bmp(h, f):
-    if h.startswith(b'BM'):
-        return 'bmp'
+tests.append(_test_pbm)
 
-tests.append(test_bmp)
 
-def test_webp(h, f):
-    if h.startswith(b'RIFF') and h[8:12] == b'WEBP':
-        return 'webp'
+def _test_pgm(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """PGM (portable graymap)."""
+    if len(h) >= 3 and h[0] == ord(b"P") and h[1] in b"25" and h[2] in b" \t\n\r":
+        return "pgm"
+    return None
 
-tests.append(test_webp)
 
-def test_exr(h, f):
-    if h.startswith(b'\x76\x2f\x31\x01'):
-        return 'exr'
+tests.append(_test_pgm)
 
-tests.append(test_exr)
 
-#--------------------#
-# Small test program #
-#--------------------#
+def _test_ppm(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """PPM (portable pixmap)."""
+    if len(h) >= 3 and h[0] == ord(b"P") and h[1] in b"36" and h[2] in b" \t\n\r":
+        return "ppm"
+    return None
 
-def test():
-    import sys
-    recursive = 0
-    if sys.argv[1:] and sys.argv[1] == '-r':
-        del sys.argv[1:2]
-        recursive = 1
-    try:
-        if sys.argv[1:]:
-            testall(sys.argv[1:], recursive, 1)
-        else:
-            testall(['.'], recursive, 1)
-    except KeyboardInterrupt:
-        sys.stderr.write('\n[Interrupted]\n')
-        sys.exit(1)
 
-def testall(list, recursive, toplevel):
-    import sys
-    import os
-    for filename in list:
-        if os.path.isdir(filename):
-            print(filename + '/:', end=' ')
-            if recursive or toplevel:
-                print('recursing down:')
-                import glob
-                names = glob.glob(os.path.join(glob.escape(filename), '*'))
-                testall(names, recursive, 0)
-            else:
-                print('*** directory (use -r) ***')
-        else:
-            print(filename + ':', end=' ')
-            sys.stdout.flush()
-            try:
-                print(what(filename))
-            except OSError:
-                print('*** not found ***')
+tests.append(_test_ppm)
 
-if __name__ == '__main__':
-    test()
+
+def _test_rast(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """Sun raster file."""
+    if h.startswith(b"\x59\xA6\x6A\x95"):
+        return "rast"
+    return None
+
+
+tests.append(_test_rast)
+
+
+def _test_xbm(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """X bitmap (X10 or X11)."""
+    if h.startswith(b"#define "):
+        return "xbm"
+    return None
+
+
+tests.append(_test_xbm)
+
+
+def _test_bmp(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """BMP."""
+    if h.startswith(b"BM"):
+        return "bmp"
+    return None
+
+
+tests.append(_test_bmp)
+
+
+def _test_webp(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """WEBP."""
+    if h.startswith(b"RIFF") and h[8:12] == b"WEBP":
+        return "webp"
+    return None
+
+
+tests.append(_test_webp)
+
+
+def _test_exr(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
+    """EXR."""
+    if h.startswith(b"\x76\x2f\x31\x01"):
+        return "exr"
+    return None
+
+
+tests.append(_test_exr)
