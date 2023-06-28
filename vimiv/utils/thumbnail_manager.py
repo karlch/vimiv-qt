@@ -22,6 +22,7 @@ from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
 from PyQt5.QtGui import QIcon, QPixmap, QImage
 
 import vimiv
+from vimiv import api
 from vimiv.utils import xdg, imagereader, Pool
 
 
@@ -131,6 +132,23 @@ class ThumbnailCreator(QRunnable):
     def _get_source_mtime(path: str) -> int:
         return int(os.path.getmtime(path))
 
+    def _save_thumbnail(self, image: QImage, thumbnail_path: str) -> None:
+        """Save the thumbnail file to the disk.
+        Args:
+            image: The QImage representing the thumbnail.
+            thumbnail_path: Path to which the thumbnail is stored.
+        Returns:
+            None.
+        """
+        # First create temporary file and then move it. This avoids
+        # problems with concurrent access of the thumbnail cache, since
+        # "move" is an atomic operation
+        handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
+        os.close(handle)
+        os.chmod(tmp_filename, 0o600)
+        image.save(tmp_filename, format="png")
+        os.replace(tmp_filename, thumbnail_path)
+
     def _create_thumbnail(self, path: str, thumbnail_path: str) -> QPixmap:
         """Create thumbnail for an image.
 
@@ -153,14 +171,8 @@ class ThumbnailCreator(QRunnable):
             return self._manager.fail_pixmap
         for key, value in attributes.items():
             image.setText(key, value)
-        # First create temporary file and then move it. This avoids
-        # problems with concurrent access of the thumbnail cache, since
-        # "move" is an atomic operation
-        handle, tmp_filename = tempfile.mkstemp(dir=self._manager.directory)
-        os.close(handle)
-        os.chmod(tmp_filename, 0o600)
-        image.save(tmp_filename, format="png")
-        os.replace(tmp_filename, thumbnail_path)
+        if api.settings.thumbnail.save:
+            self._save_thumbnail(image, thumbnail_path)
         return QPixmap(image)
 
     def _get_thumbnail_attributes(self, path: str, image: QImage) -> Dict[str, str]:
