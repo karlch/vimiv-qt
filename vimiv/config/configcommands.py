@@ -27,7 +27,7 @@ def set_command(name: str, value: List[str]):
 
     positional arguments:
         * ``name``: Name of the setting to set.
-        * ``!``: If the setting is a bool, toggle its value.
+        Append it with a ``!`` to toggle its value.
         * ``value``: Value to set the setting to. If not given, set to default.
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
