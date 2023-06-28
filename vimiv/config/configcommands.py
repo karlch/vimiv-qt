@@ -23,10 +23,11 @@ from vimiv import api
 def set_command(name: str, value: List[str]):
     """Set an option.
 
-    **syntax:** ``:set name [value]``
+    **syntax:** ``:set name[!] [value]``
 
     positional arguments:
         * ``name``: Name of the setting to set.
+        * ``!``: If the setting is a bool, toggle its value.
         * ``value``: Value to set the setting to. If not given, set to default.
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
