@@ -151,7 +151,7 @@ class BoolSetting(Setting):
         self.value = not self.value
 
     def suggestions(self) -> List[str]:
-        return ["True", "False"]
+        return ["True", "False", "Toggle"]
 
     def convertstr(self, text: str) -> bool:
         text = text.lower()
@@ -159,6 +159,8 @@ class BoolSetting(Setting):
             return True
         if text in ("no", "false", "0"):
             return False
+        if text == "toggle":
+            return not self.value
         raise ValueError
 
     def __str__(self) -> str:
