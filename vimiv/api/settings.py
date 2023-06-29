@@ -475,9 +475,9 @@ class thumbnail:  # pylint: disable=invalid-name
         True,
         desc="Save new thumbnails to disk in the shared icon cache for later use",
     )
-    max_behind = IntSetting("thumbnail.max_behind", 50, desc="Maximum number of thumbnails to render behind the currently selected one.")
-    max_ahead = IntSetting("thumbnail.max_ahead", 50, desc="Maximum number of thumbnails to render ahead of the currently selected one.")
-    max_count = IntSetting("thumbnail.max_count", 200, desc="Maximum number of thumbnails to render in general.")
+    max_behind = IntSetting("thumbnail.max_behind", 0, desc="Maximum number of thumbnails to render behind the currently selected one.")
+    max_ahead = IntSetting("thumbnail.max_ahead", 0, desc="Maximum number of thumbnails to render ahead of the currently selected one.")
+    max_count = IntSetting("thumbnail.max_count", 0, desc="Maximum number of thumbnails to render in general.")
 
 class slideshow:  # pylint: disable=invalid-name
     """Namespace for slideshow related settings."""
