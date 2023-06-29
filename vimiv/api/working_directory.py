@@ -61,7 +61,7 @@ Module Attributes:
 import os
 from typing import cast, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher
+from PyQt5.QtCore import pyqtSignal, QFileSystemWatcher, pyqtSlot
 
 from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
@@ -92,7 +92,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
 
     Attributes:
         _dir: The current working directory.
-        _images: Images in the current working directory.
+        _original_images: Originally specified layout of images in the current working directory.
+        _images: images in the current working directory.
         _directories: Directories in the current working directory.
     """
 
@@ -105,6 +106,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def __init__(self) -> None:
         super().__init__()
         self._dir = ""
+        self._original_images: List[str] = []
         self._images: List[str] = []
         self._directories: List[str] = []
 
@@ -113,6 +115,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         settings.sort.directory_order.changed.connect(self._reorder_directory)
         settings.sort.reverse.changed.connect(self._reorder_directory)
         settings.sort.ignore_case.changed.connect(self._reorder_directory)
+        signals.load_images.connect(self._load_parameter_images)
 
         self.directoryChanged.connect(self._reload_directory)
         self.fileChanged.connect(self._on_file_changed)
@@ -161,14 +164,18 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
     def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""
         self._dir = directory
-        self._images, self._directories = self._get_content(directory)
-        self.loaded.emit(self._images, self._directories)
+        images, directories = self._get_content(directory)
+        self._load_original_images(images)
+        self._images = list(self._original_images)
+        self.loaded.emit(self._original_images, self._directories)
 
     @throttled(delay_ms=WAIT_TIME_MS)
     def _reload_directory(self, _path: str) -> None:
         """Load new supported files when directory content has changed."""
         _logger.debug("Reloading working directory")
-        self._emit_changes(*self._get_content(self._dir))
+        images, directories = self._get_content(self._dir)
+        self._load_original_images(images)
+        self._emit_changes(*self._order_paths(self._original_images, directories))
 
     @slot
     def _on_new_image(self, path: str) -> None:
@@ -216,8 +223,8 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             self.images_changed.emit(images, added, removed)
         # Total filelist has changed, relevant for the library
         if images != self._images or directories != self._directories:
-            self._images = images
-            self._directories = directories
+            self._images = list(images)
+            self._directories = list(directories)
             self.changed.emit(images, directories)
 
     def _get_content(self, directory: str) -> Tuple[List[str], List[str]]:
@@ -231,11 +238,35 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         paths = files.listdir(directory, show_hidden=show_hidden)
         return self._order_paths(*files.supported(paths))
 
+    @pyqtSlot(list)
+    def _load_parameter_images(self, images: list[str]):
+        old_original_images = self._original_images
+        self._original_images = []
+        self._original_images.extend(images)
+        for i in old_original_images:
+            if i not in self._original_images:
+                self._original_images.append(i)
+        new_original_images = []
+        for i in self._original_images:
+            if i in old_original_images:
+                new_original_images.append(i)
+        self._original_images = new_original_images
+
+    def _load_original_images(self, images: list[str]):
+        for i in images:
+            if i not in self._original_images:
+                self._original_images.append(i)
+        new_original_images = []
+        for i in self._original_images:
+            if i in images:
+                new_original_images.append(i)
+        self._original_images = new_original_images
+
     @slot
     def _reorder_directory(self) -> None:
         """Reorder current files / directories."""
         _logger.debug("Reloading working directory")
-        self._emit_changes(*self._order_paths(self._images, self._directories))
+        self._emit_changes(*self._order_paths(self._original_images, self._directories))
 
     @staticmethod
     def _order_paths(images: List[str], dirs: List[str]) -> Tuple[List[str], List[str]]:
