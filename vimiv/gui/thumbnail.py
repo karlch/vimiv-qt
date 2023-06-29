@@ -226,6 +226,7 @@ class ThumbnailView(
             _logger.debug("No new images to load")
             return
         _logger.debug("Updating thumbnails...")
+        self._rendered_paths.clear()
         removed = set(self._paths) - set(paths)
         for path in removed:
             _logger.debug("Removing existing thumbnail '%s'", path)
@@ -233,8 +234,6 @@ class ThumbnailView(
             del self._paths[idx]  # Remove as the index also changes in the QListWidget
             if not self.takeItem(idx):
                 _logger.error("Error removing thumbnail for '%s'", path)
-            else:
-                self._rendered_paths.remove(path)
         size_hint = QSize(self.item_size(), self.item_size())
         for i, path in enumerate(paths):
             if path not in self._paths:  # Add new path
