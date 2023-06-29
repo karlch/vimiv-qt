@@ -173,7 +173,10 @@ class ThumbnailView(
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
         item = self.item(index)
-        if item is not None:  # Otherwise it has been deleted in the meanwhile
+		# Otherwise it has been deleted in the meanwhile
+        if item is not None and\
+		   (api.settings.thumbnail.max_count.value == 0 or\
+		   len(self._rendered_paths) > api.settings.thumbnail.max_count.value):
             item.setIcon(ThumbnailItem.default_icon())
             self._rendered_paths.discard(self._paths[index])
 
@@ -199,7 +202,6 @@ class ThumbnailView(
         indices = []
         for p, i in zip(self._paths[first_index:last_index], range(first_index, last_index)):
             if p not in self._rendered_paths:
-                self._rendered_paths.add(p)
                 desired_paths.append(p)
                 indices.append(i)
         self._manager.create_thumbnails_async(indices, desired_paths)
@@ -243,8 +245,6 @@ class ThumbnailView(
         first_index, last_index = self._index_range()
         self._manager.create_thumbnails_async(range(first_index, last_index),
                                               paths[first_index:last_index])
-        for p in paths[first_index:last_index]:
-            self._rendered_paths.add(p)
         _logger.debug("... update completed")
 
     @utils.slot
@@ -258,6 +258,7 @@ class ThumbnailView(
         item = self.item(index)
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
+            self._rendered_paths.add(self._paths[index])
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
