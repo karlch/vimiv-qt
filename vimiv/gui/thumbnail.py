@@ -187,7 +187,7 @@ class ThumbnailView(
 
     def _prune_icons_ahead(self) -> None:
         """Prune indexes after the current index."""
-        for index in range(self._last_index() + 1, len(self._paths)):
+        for index in reversed(range(self._last_index() + 1, len(self._paths))):
             self._prune_index(index)
 
     def _prune_icons(self) -> None:
