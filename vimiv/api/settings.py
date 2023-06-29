@@ -472,7 +472,7 @@ class thumbnail:  # pylint: disable=invalid-name
     save = BoolSetting("thumbnail.save", True, desc="Save thumbnails to disk")
     max_behind = IntSetting("thumbnail.max_behind", 50, desc="Maximum number of thumbnails to render behind the currently selected one.")
     max_ahead = IntSetting("thumbnail.max_ahead", 50, desc="Maximum number of thumbnails to render ahead of the currently selected one.")
-
+    max_count = IntSetting("thumbnail.max_count", 200, desc="Maximum number of thumbnails to render in general.")
 
 class slideshow:  # pylint: disable=invalid-name
     """Namespace for slideshow related settings."""
