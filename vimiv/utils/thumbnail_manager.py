@@ -72,14 +72,15 @@ class ThumbnailManager(QObject):
         xdg.makedirs(self.directory, self.fail_directory)
         self.fail_pixmap = fail_pixmap
 
-    def create_thumbnails_async(self, paths: List[str]) -> None:
+    def create_thumbnails_async(self, indices: List[int], paths: List[str]) -> None:
         """Start ThumbnailsCreator for each path to create thumbnails.
 
         Args:
+            indices: The corresponding index of the thumbnail for each path.
             paths: Paths to create thumbnails for.
         """
         self.pool.clear()
-        for i, path in enumerate(paths):
+        for i, path in zip(indices, paths):
             self.pool.start(ThumbnailCreator(i, path, self))
 
 
