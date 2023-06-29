@@ -173,10 +173,10 @@ class ThumbnailView(
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
         item = self.item(index)
-		# Otherwise it has been deleted in the meanwhile
+        # Otherwise it has been deleted in the meanwhile
         if item is not None and\
-		   (api.settings.thumbnail.max_count.value == 0 or\
-		   len(self._rendered_paths) > api.settings.thumbnail.max_count.value):
+           (api.settings.thumbnail.max_count.value == 0 or\
+           len(self._rendered_paths) > api.settings.thumbnail.max_count.value):
             item.setIcon(ThumbnailItem.default_icon())
             self._rendered_paths.discard(self._paths[index])
 
