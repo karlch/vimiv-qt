@@ -7,7 +7,7 @@ to the ``$XDG_CONFIG_HOME/vimiv/keys.conf`` on first start where
 ``$XDG_CONFIG_HOME`` is usually ``~/.config/`` if you have not updated it.
 
 The configuration file is structured into sections. Each section corresponds to
-the mode in which the keybindings arevalid. In each section the keybindings are
+the mode in which the keybindings are valid. In each section the keybindings are
 defined using ``keybinding : command to bind to``. Therefore ``f : fullscreen``
 maps the ``f`` key to the ``fullscreen`` command. Special keys like space must
 be wrapped in tags in the form of ``<space>`` to allow to differentiate them

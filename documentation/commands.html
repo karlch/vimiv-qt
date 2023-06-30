@@ -718,11 +718,15 @@ think <code class="docutils literal notranslate"><span class="pre">cd</span></co
 <section id="set">
 <span id="ref-global-set"></span><h3>set<a class="headerlink" href="#set" title="Permalink to this heading">¶</a></h3>
 <p>Set an option.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name[!]</span> <span class="pre">[[+|-]value]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.
+Append a <code class="docutils literal notranslate"><span class="pre">!</span></code> to toggle the value of boolean settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to.
+Prepend with <code class="docutils literal notranslate"><span class="pre">+</span></code> / <code class="docutils literal notranslate"><span class="pre">-</span></code> to increment/decrement the value of numerical
+settings.
+If not given, set to default.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1562,11 +1566,15 @@ a directory, the library is loaded for this directory.</p>
 <section id="ref-manipulate-set">
 <span id="id19"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Permalink to this heading">¶</a></h3>
 <p>Set an option.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name</span> <span class="pre">[value]</span></code></p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name[!]</span> <span class="pre">[[+|-]value]</span></code></p>
 <dl class="simple">
 <dt>positional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to. If not given, set to default.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: Name of the setting to set.
+Append a <code class="docutils literal notranslate"><span class="pre">!</span></code> to toggle the value of boolean settings.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value</span></code>: Value to set the setting to.
+Prepend with <code class="docutils literal notranslate"><span class="pre">+</span></code> / <code class="docutils literal notranslate"><span class="pre">-</span></code> to increment/decrement the value of numerical
+settings.
+If not given, set to default.</p></li>
 </ul>
 </dd>
 </dl>
