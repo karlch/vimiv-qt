@@ -23,12 +23,15 @@ from vimiv import api
 def set_command(name: str, value: List[str]):
     """Set an option.
 
-    **syntax:** ``:set name[!] [value]``
+    **syntax:** ``:set name[!] [[+|-]value]``
 
     positional arguments:
         * ``name``: Name of the setting to set.
-        Append it with a ``!`` to toggle its value.
-        * ``value``: Value to set the setting to. If not given, set to default.
+          Append a ``!`` to toggle the value of boolean settings.
+        * ``value``: Value to set the setting to.
+          Prepend with ``+`` / ``-`` to increment/decrement the value of numerical
+          settings.
+          If not given, set to default.
     """
     strvalue = " ".join(value)  # List comes from nargs='*'
     try:
