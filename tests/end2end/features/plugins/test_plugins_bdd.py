@@ -4,8 +4,6 @@
 # Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
 # License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
 
-import contextlib
-
 import pytest_bdd as bdd
 
 from vimiv import plugins
@@ -22,9 +20,6 @@ def load_plugin(name, info):
 
 @bdd.then(bdd.parsers.parse("The {name} format should be supported"))
 def check_format_supported(name):
-    for filetype, check in imageheader._registry:
-        with contextlib.suppress(IndexError):
-            format_name = check.__name__.split("_")[-1]
-            if format_name == name:
-                return
-    assert False, f"Image format {name} is not supported"
+    assert name in [
+        filetype for filetype, _ in imageheader._registry
+    ], f"Image format {name} is not supported"
