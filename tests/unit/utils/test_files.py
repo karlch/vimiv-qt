@@ -7,27 +7,12 @@
 """Tests for vimiv.utils.files."""
 
 import collections
-import imghdr  # pylint: disable=deprecated-module
 import os
 import tarfile
-
-from PyQt5.QtGui import QImageReader
 
 import pytest
 
 from vimiv.utils import files
-
-
-SUPPORTED_IMAGE_FORMATS = ["jpg", "png", "gif", "svg", "cr2"]
-
-
-@pytest.fixture()
-def mockimghdr(mocker):
-    """Fixture to mock imghdr.tests and QImageReader supportedImageFormats."""
-    mocker.patch.object(
-        QImageReader, "supportedImageFormats", return_value=SUPPORTED_IMAGE_FORMATS
-    )
-    yield mocker.patch("imghdr.tests", [])
 
 
 @pytest.fixture()
@@ -110,7 +95,7 @@ def test_directories_supported(mocker):
 def test_images_supported(mocker):
     mocker.patch("os.path.isdir", return_value=False)
     mocker.patch("os.path.isfile", return_value=True)
-    mocker.patch("imghdr.what", return_value=True)
+    mocker.patch("vimiv.utils.imageheader.detect", return_value=True)
     images, directories = files.supported(["a", "b"])
     assert images == ["a", "b"]
     assert not directories
@@ -173,19 +158,6 @@ def test_get_size_with_permission_error(mocker):
 def test_listfiles(directory_tree):
     expected = sorted(directory_tree.files)
     assert expected == sorted(files.listfiles(str(directory_tree.root)))
-
-
-@pytest.mark.parametrize("name", SUPPORTED_IMAGE_FORMATS)
-def test_add_supported_format(mockimghdr, tmpfile, name):
-    files.add_image_format(name, _test_dummy)
-    assert mockimghdr, "No test added by add image format"
-    assert imghdr.what(tmpfile) == name
-
-
-def test_add_unsupported_format(mockimghdr, tmpfile):
-    files.add_image_format("not_a_format", _test_dummy)
-    assert imghdr.what(tmpfile) is None
-    assert not mockimghdr, "Unsupported test not removed"
 
 
 def _test_dummy(h, f):
