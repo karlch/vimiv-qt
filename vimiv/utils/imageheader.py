@@ -49,10 +49,13 @@ https://en.wikipedia.org/wiki/List_of_file_signatures
 """
 
 import contextlib
+import functools
 
 from typing import Optional, List, Callable, Any, Tuple
 
-from vimiv.utils import log
+from PyQt5.QtGui import QImageReader
+
+from vimiv.utils import log, imagereader
 
 _logger = log.module_logger(__name__)
 
@@ -83,14 +86,42 @@ def detect(filename: str) -> Optional[str]:
     return None
 
 
-def register(filetype: str, check: Any, priority: bool = False) -> None:
+def register(
+    filetype: str, check: Any, priority: bool = False, validate: bool = True
+) -> None:
     """Register format test function.
 
     Args:
         filetype: Name of the format to register.
         check: Test function for that type.
         priority: Evaluate check before all previously registered checks if true.
+        validate: Validate that the type is supported at runtime.
     """
+
+    @functools.wraps(check)
+    def test(header: bytes) -> bool:
+        """Tests at runtime whether a filetype is actually supported.
+
+        If not, then the filetype check is unregistered.
+        """
+        if not validate:
+            return check(header)
+
+        if check(header):
+            if hasattr(test, "checked"):
+                return True
+            if (
+                filetype in QImageReader.supportedImageFormats()
+                or filetype in imagereader.external_handler
+            ):
+                setattr(test, "checked", True)
+                return True
+            _logger.warning(
+                f"Check for {filetype} was register, but display is not supported."
+                "Probably you need to install the required backend module."
+            )
+            _registry.remove((filetype, check))
+        return False
 
     if priority:
         _registry.insert(0, (filetype, check))
@@ -363,17 +394,18 @@ def _test_tga(h: bytes) -> bool:
 
 # Register all check functions. Check functions of more frequently used types should be
 # registered first, to make the detection more efficient.
-register("jpg", _test_jpg)
-register("png", _test_png)
-register("gif", _test_gif)
+# No need to validate natively supported type, but validate extended supported types.
+register("jpg", _test_jpg, validate=False)
+register("png", _test_png, validate=False)
+register("gif", _test_gif, validate=False)
 register("jp2", _test_jp2)
 register("webp", _test_webp)
 register("tiff", _test_tiff)
-register("svg", _test_svg)
+register("svg", _test_svg, validate=False)
 register("ico", _test_ico)
 register("icns", _test_icns)
-register("pbm", _test_pbm)
-register("pgm", _test_pgm)
-register("ppm", _test_ppm)
-register("bmp", _test_bmp)
-register("xpm", _test_xpm)
+register("pbm", _test_pbm, validate=False)
+register("pgm", _test_pgm, validate=False)
+register("ppm", _test_ppm, validate=False)
+register("bmp", _test_bmp, validate=False)
+register("xpm", _test_xpm, validate=False)
