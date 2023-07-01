@@ -6,17 +6,10 @@
 
 """Functions dealing with files and paths."""
 
-import imghdr  # pylint: disable=deprecated-module
-import functools
 import os
-from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
+from typing import List, Tuple, Iterable
 
-from PyQt5.QtGui import QImageReader
-
-from vimiv.utils import imagereader
-
-
-ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]
+from vimiv.utils import imageheader
 
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
@@ -121,7 +114,7 @@ def is_image(filename: str) -> bool:
         filename: Name of file to check.
     """
     try:
-        return os.path.isfile(filename) and imghdr.what(filename) is not None
+        return os.path.isfile(filename) and imageheader.detect(filename) is not None
     except OSError:
         return False
 
@@ -140,69 +133,3 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
         for root, _, files in os.walk(directory)
         for fname in files
     ]
-
-
-def add_image_format(name: str, check: ImghdrTestFuncT) -> None:
-    """Add a new image format to the checks performed in is_image.
-
-    Args:
-        name: Name of the image format, e.g. "svg".
-        check: Function used to determine if the file is of this format.
-    """
-
-    @functools.wraps(check)
-    def test(h: bytes, f: Optional[BinaryIO]) -> Optional[str]:
-        if check(h, f):
-            if hasattr(test, "checked"):
-                return name
-            if (
-                name in QImageReader.supportedImageFormats()
-                or name in imagereader.external_handler
-            ):
-                setattr(test, "checked", True)
-                return name
-            imghdr.tests.remove(test)
-        return None
-
-    imghdr.tests.insert(add_image_format.index, test)  # type: ignore
-    add_image_format.index += 1  # type: ignore
-
-
-add_image_format.index = 3  # type: ignore  # Start inserting after jpg, png and gif
-
-
-def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
-    return h.startswith((b"<?xml", b"<svg"))
-
-
-add_image_format("svg", test_svg)
-
-
-def test_ico(h: bytes, _f: Optional[BinaryIO]) -> bool:
-    return h.startswith(bytes.fromhex("00000100"))
-
-
-add_image_format("ico", test_ico)
-
-
-# We now directly override the jpg part of imghdr as it has some known limitations
-# See e.g. https://bugs.python.org/issue16512
-def test_jpg(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
-    """Custom jpg test function.
-
-    The one from the imghdr module fails with some jpgs that include ICC_PROFILE data.
-    """
-    if h[6:10] in (b"JFIF", b"Exif"):
-        return "jpg"
-    if h[:2] == b"\xff\xd8" and (b"JFIF" in h or b"8BIM" in h):
-        return "jpg"
-    return None
-
-
-def test_jpg_fallback(h: bytes, _f: Optional[BinaryIO]) -> Optional[str]:
-    """Fallback test for jpg files with no headers, only the two starting bits."""
-    return "jpg" if h[:2] == b"\xff\xd8" else None
-
-
-imghdr.tests[0] = test_jpg
-imghdr.tests.append(test_jpg_fallback)

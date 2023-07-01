@@ -12,7 +12,7 @@ from typing import Dict, Callable
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
 
-from .files import imghdr
+from vimiv.utils import imageheader
 
 external_handler: Dict[str, Callable[[str], QPixmap]] = {}
 
@@ -109,7 +109,7 @@ def get_reader(path: str) -> BaseReader:
     """Retrieve the appropriate image reader class for path."""
     error = ValueError(f"'{path}' cannot be read as image")
     try:
-        file_format = imghdr.what(path)
+        file_format = imageheader.detect(path)
     except OSError:
         raise error
     if file_format is None:
