@@ -99,7 +99,7 @@ def register(
     """
 
     @functools.wraps(check)
-    def test(header: bytes) -> bool:
+    def check_verified(header: bytes) -> bool:
         """Tests at runtime whether a filetype is actually supported.
 
         If not, then the filetype check is unregistered.
@@ -108,25 +108,25 @@ def register(
             return check(header)
 
         if check(header):
-            if hasattr(test, "checked"):
+            if hasattr(check_verified, "checked"):
                 return True
             if (
                 filetype in QImageReader.supportedImageFormats()
                 or filetype in imagereader.external_handler
             ):
-                setattr(test, "checked", True)
+                setattr(check_verified, "checked", True)
                 return True
             _logger.warning(
                 f"Check for {filetype} was register, but display is not supported."
                 "Probably you need to install the required backend module."
             )
-            _registry.remove((filetype, check))
+            _registry.remove((filetype, check_verified))
         return False
 
     if priority:
-        _registry.insert(0, (filetype, check))
+        _registry.insert(0, (filetype, check_verified))
     else:
-        _registry.append((filetype, check))
+        _registry.append((filetype, check_verified))
 
 
 def _test_jpg(h: bytes) -> bool:

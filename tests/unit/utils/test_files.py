@@ -158,8 +158,3 @@ def test_get_size_with_permission_error(mocker):
 def test_listfiles(directory_tree):
     expected = sorted(directory_tree.files)
     assert expected == sorted(files.listfiles(str(directory_tree.root)))
-
-
-def _test_dummy(h, f):
-    """Dummy image file test that always returns True."""
-    return True
