@@ -8,10 +8,12 @@
 
 import abc
 from typing import Dict, Callable
+from os.path import splitext
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
 
+from vimiv import api
 from .files import imghdr
 
 external_handler: Dict[str, Callable[[str], QPixmap]] = {}
@@ -109,7 +111,12 @@ def get_reader(path: str) -> BaseReader:
     """Retrieve the appropriate image reader class for path."""
     error = ValueError(f"'{path}' cannot be read as image")
     try:
-        file_format = imghdr.what(path)
+        if api.settings.image.id_by_extension:
+            file_format = splitext(path)[1].lower()[1:]
+            if file_format == 'jpg':
+                file_format = 'jpeg'
+        else:
+            file_format = imghdr.what(path)
     except OSError:
         raise error
     if file_format is None:

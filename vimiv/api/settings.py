@@ -450,6 +450,11 @@ class image:  # pylint: disable=invalid-name
         True,
         desc="Require holding the control modifier for zooming with the mouse wheel",
     )
+    id_by_extension = BoolSetting(
+        "image.id_by_extension",
+        False,
+        desc="Instead of scanning the image to determine that it's a compatible format, assume the extension accurately represents the format.",
+    )
 
 
 class library:  # pylint: disable=invalid-name
