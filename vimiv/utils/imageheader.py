@@ -37,7 +37,7 @@ Extended QT Support:
 | ICNS   | icns                      | yes                        |
 | ICNS   | cur                       | no (what are magic bytes?) |
 | JP2    | TODO: ?                   | yes                        |
-| MNG    | TODO: ?                   | no (what are magic bytes?) |
+| MNG    | TODO: ?                   | yes                        |
 | TGA    | tga                       | no (undetectable)          |
 | TIFF   | tif, tiff                 | yes                        |
 | WBMP   | wbmp                      | no (what are magic bytes?) |
@@ -370,12 +370,11 @@ def _test_mng(h: bytes) -> bool:
     Extension: .mng
 
     Magic Bytes:
-    - (I do not know)
+    - 8A 4D 4E 47 0D 0A 1A 0A
 
     Support: extended
     """
-    # TODO: implement check
-    raise NotImplementedError()
+    return h[:8] == b"\x8A\x4D\x4E\x47\x0D\x0A\x1A\x0A"
 
 
 def _test_tga(h: bytes) -> bool:
@@ -409,3 +408,4 @@ register("pgm", _test_pgm, validate=False)
 register("ppm", _test_ppm, validate=False)
 register("bmp", _test_bmp, validate=False)
 register("xpm", _test_xpm, validate=False)
+register("mng", _test_mng)
