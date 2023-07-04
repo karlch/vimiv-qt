@@ -186,7 +186,8 @@ def add_image_format(name: str, check: ImghdrTestFuncT) -> None:
             imghdr.tests.remove(test)
         return None
 
-    image_format_names.add(name)
+    global image_format_names
+    image_format_names.add(''.join(('.', name)))
     imghdr.tests.insert(add_image_format.index, test)  # type: ignore
     add_image_format.index += 1  # type: ignore
 
@@ -199,7 +200,6 @@ def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
 
 
 add_image_format("svg", test_svg)
-
 
 def test_ico(h: bytes, _f: Optional[BinaryIO]) -> bool:
     return h.startswith(bytes.fromhex("00000100"))
