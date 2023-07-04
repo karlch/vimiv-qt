@@ -51,7 +51,7 @@ https://en.wikipedia.org/wiki/List_of_file_signatures
 import contextlib
 import functools
 
-from typing import Optional, List, Callable, Any, Tuple
+from typing import Optional, List, Callable, Tuple, BinaryIO
 
 from PyQt5.QtGui import QImageReader
 
@@ -59,8 +59,9 @@ from vimiv.utils import log, imagereader
 
 _logger = log.module_logger(__name__)
 
+CheckFuncT = Callable[[bytes, BinaryIO], bool]
 # List containing all registered check functions
-_registry: List[Tuple[str, Callable[[bytes], bool]]] = []
+_registry: List[Tuple[str, CheckFuncT]] = []
 
 
 def detect(filename: str) -> Optional[str]:
@@ -81,13 +82,13 @@ def detect(filename: str) -> Optional[str]:
 
     for filetype, check in _registry:
         with contextlib.suppress(IndexError):
-            if check(header):
+            if check(header, f):
                 return filetype
     return None
 
 
 def register(
-    filetype: str, check: Any, priority: bool = False, validate: bool = True
+    filetype: str, check: CheckFuncT, priority: bool = False, validate: bool = True
 ) -> None:
     """Register format test function.
 
@@ -99,15 +100,15 @@ def register(
     """
 
     @functools.wraps(check)
-    def check_verified(header: bytes) -> bool:
+    def check_verified(header: bytes, file: BinaryIO) -> bool:
         """Tests at runtime whether a filetype is actually supported.
 
         If not, then the filetype check is unregistered.
         """
         if not validate:
-            return check(header)
+            return check(header, file)
 
-        if check(header):
+        if check(header, file):
             if hasattr(check_verified, "checked"):
                 return True
             if (
@@ -129,7 +130,7 @@ def register(
         _registry.append((filetype, check_verified))
 
 
-def _test_jpg(h: bytes) -> bool:
+def _test_jpg(h: bytes, _f: BinaryIO) -> bool:
     """Joint Photographic Experts Group (JPEG) in different kinds of "subtypes"(?).
 
     Extension: .jpeg, .jpg
@@ -149,7 +150,7 @@ def _test_jpg(h: bytes) -> bool:
     )
 
 
-def _test_png(h: bytes) -> bool:
+def _test_png(h: bytes, _f: BinaryIO) -> bool:
     """Portable Network Graphics (PNG).
 
     Extension: .png
@@ -162,7 +163,7 @@ def _test_png(h: bytes) -> bool:
     return h[:8] == b"\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"
 
 
-def _test_gif(h: bytes) -> bool:
+def _test_gif(h: bytes, _f: BinaryIO) -> bool:
     """Graphics Interchange Format (GIF).
 
     Extension: .gif
@@ -176,7 +177,7 @@ def _test_gif(h: bytes) -> bool:
     return h[:4] == b"\x47\x49\x46\x38" and h[4] in [0x37, 0x39] and h[5] == 0x61
 
 
-def _test_svg(h: bytes) -> bool:
+def _test_svg(h: bytes, _f: BinaryIO) -> bool:
     """Scalable Vector Graphics (SVG).
 
     Extension: .svg (TODO: also svgz?)
@@ -190,7 +191,7 @@ def _test_svg(h: bytes) -> bool:
     return h[:2] == b"\x3C\x3F" and (h[2:5] in [b"\x78\x6D\x6C", b"\x73\x76\x67"])
 
 
-def _test_pbm(h: bytes) -> bool:
+def _test_pbm(h: bytes, _f: BinaryIO) -> bool:
     """Portable BitMap (PBM) in ASCII and Binary.
 
     Extension: .pbm
@@ -204,7 +205,7 @@ def _test_pbm(h: bytes) -> bool:
     return h[0] == 0x50 and h[1] in [0x31, 0x34] and h[2] == 0x0A
 
 
-def _test_pgm(h: bytes) -> bool:
+def _test_pgm(h: bytes, _f: BinaryIO) -> bool:
     """Portable GrayMap (PGM) in ASCII and Binary.
 
     Extension: .pgm
@@ -218,7 +219,7 @@ def _test_pgm(h: bytes) -> bool:
     return h[0] == 0x50 and h[1] in [0x32, 0x35] and h[2] == 0x0A
 
 
-def _test_ppm(h: bytes) -> bool:
+def _test_ppm(h: bytes, _f: BinaryIO) -> bool:
     """Portable PixMap (PPM) in ASCII and Binary.
 
     Extension: .ppm
@@ -232,7 +233,7 @@ def _test_ppm(h: bytes) -> bool:
     return h[0] == 0x50 and h[1] in [0x33, 0x36] and h[2] == 0x0A
 
 
-def _test_bmp(h: bytes) -> bool:
+def _test_bmp(h: bytes, _f: BinaryIO) -> bool:
     """BitMaP (BMP).
 
     Extension: .bmp, .dib
@@ -245,7 +246,7 @@ def _test_bmp(h: bytes) -> bool:
     return h[0:2] == b"\x42\x4D"
 
 
-def _test_xbm(h: bytes) -> bool:
+def _test_xbm(h: bytes, _f: BinaryIO) -> bool:
     """X BitMap (XBM).
 
     Extension: .xbm
@@ -259,7 +260,7 @@ def _test_xbm(h: bytes) -> bool:
     raise NotImplementedError()
 
 
-def _test_xpm(h: bytes) -> bool:
+def _test_xpm(h: bytes, _f: BinaryIO) -> bool:
     """X PixMap (XPM).
 
     Extension: .xpm
@@ -272,7 +273,7 @@ def _test_xpm(h: bytes) -> bool:
     return h[:9] == b"\x2F\x2A\x20\x58\x50\x4D\x20\x2A\x2F"
 
 
-def _test_webp(h: bytes) -> bool:
+def _test_webp(h: bytes, _f: BinaryIO) -> bool:
     """Web Picture format (WebP).
 
     Raster graphics format intended to replace JPEG, PNG, GIF.
@@ -287,7 +288,7 @@ def _test_webp(h: bytes) -> bool:
     return h[:4] == b"\x52\x49\x46\x46" and h[8:12] == b"\x57\x45\x42\x50"
 
 
-def _test_tiff(h: bytes) -> bool:
+def _test_tiff(h: bytes, _f: BinaryIO) -> bool:
     """Tagged Image File Format (TIFF).
 
     Raster graphics format often used by professionals.
@@ -303,7 +304,7 @@ def _test_tiff(h: bytes) -> bool:
     return h[:4] in [b"\x49\x49\x2A\x00", b"\x4D\x4D\x00\x2A"]
 
 
-def _test_ico(h: bytes) -> bool:
+def _test_ico(h: bytes, _f: BinaryIO) -> bool:
     """ICOn (ICO).
 
     Windows' ICON format. Extended to CUR.
@@ -318,7 +319,7 @@ def _test_ico(h: bytes) -> bool:
     return h[:4] == b"\x00\x00\x01\x00"
 
 
-def _test_icns(h: bytes) -> bool:
+def _test_icns(h: bytes, _f: BinaryIO) -> bool:
     """Icon Container (ICNS).
 
     Apple's ICON format.
@@ -333,7 +334,7 @@ def _test_icns(h: bytes) -> bool:
     return h[:4] == b"\x69\x63\x6e\x73"
 
 
-def _test_jp2(h: bytes) -> bool:
+def _test_jp2(h: bytes, _f: BinaryIO) -> bool:
     """JPEP 2000.
 
     Extension: .jp2 (TODO: maybe also others)
@@ -346,7 +347,7 @@ def _test_jp2(h: bytes) -> bool:
     return h[:12] == b"\x00\x00\x00\x0C\x6A\x50\x20\x20\x0D\x0A\x87\x0A"
 
 
-def _test_cur(h: bytes) -> bool:
+def _test_cur(h: bytes, _f: BinaryIO) -> bool:
     """CURsor (CUR).
 
     Windows' ICON format. Extended from ICO.
@@ -362,7 +363,7 @@ def _test_cur(h: bytes) -> bool:
     raise NotImplementedError()
 
 
-def _test_mng(h: bytes) -> bool:
+def _test_mng(h: bytes, _f: BinaryIO) -> bool:
     """Multiple-image Network Graphics (MNG).
 
     Like PNG but supports animations.
@@ -377,7 +378,7 @@ def _test_mng(h: bytes) -> bool:
     return h[:8] == b"\x8A\x4D\x4E\x47\x0D\x0A\x1A\x0A"
 
 
-def _test_tga(h: bytes) -> bool:
+def _test_tga(h: bytes, _f: BinaryIO) -> bool:
     """Truevision Graphics Adapter (TGA).
 
     Extension: .tga, .icb, .vda, .vst

@@ -84,7 +84,7 @@ def open_paths(paths: Iterable[str]) -> None:
 
 def add_external_format(
     file_format: str,
-    test_func: Callable[[str], bool],
+    test_func: imageheader.CheckFuncT,
     load_func: Callable[[str], QPixmap],
 ) -> None:
     """Add support for new fileformat.

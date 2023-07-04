@@ -45,7 +45,7 @@ def test_test(qtbot, tmp_path, imagetype):
     assert imageheader.detect(filename) == imagetype
 
 
-def _check_dummy(h):
+def _check_dummy(h, f):
     """Dummy image file check that always returns True."""
     return True
 

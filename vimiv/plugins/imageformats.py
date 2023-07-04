@@ -31,7 +31,7 @@ To implement a new format::
        ``QImageReader.supportedImageFormats()``.
 """
 
-from typing import Any
+from typing import Any, BinaryIO
 
 
 from vimiv.utils import log, imageheader
@@ -39,7 +39,7 @@ from vimiv.utils import log, imageheader
 _logger = log.module_logger(__name__)
 
 
-def _test_cr2(h: bytes) -> bool:
+def _test_cr2(h: bytes, _f: BinaryIO) -> bool:
     """Canon Raw 2 (CR2).
 
     Extension: .cr2
@@ -52,7 +52,7 @@ def _test_cr2(h: bytes) -> bool:
     return h[:10] == b"\x49\x49\x2A\x00\x10\x00\x00\x00\x43\x52"
 
 
-def _test_avif(h: bytes) -> bool:
+def _test_avif(h: bytes, _f: BinaryIO) -> bool:
     """AV1 Image File (AVIF).
 
     Extension: .avif
