@@ -455,6 +455,11 @@ class image:  # pylint: disable=invalid-name
         False,
         desc="Instead of scanning the image to determine that it's a compatible format, assume the extension accurately represents the format.",
     )
+    imghdr_fallback = BoolSetting(
+        "image.imghdr_fallback",
+        True,
+        desc="If identifying a file by extension (when image.id_by_extension is set) files to open a file, try identifying it using imghdr before giving up."
+    )
 
 
 class library:  # pylint: disable=invalid-name
