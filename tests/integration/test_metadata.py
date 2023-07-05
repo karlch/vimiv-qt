@@ -55,13 +55,11 @@ def test_handler_raises(nometadata, methodname, args):
         method(*args)
 
 
-@pytest.mark.piexif
 def test_piexif_initializes(piexif):
     assert metadata_piexif.MetadataPiexif in metadata._registry
     assert metadata.has_metadata_support()
 
 
-@pytest.mark.pyexiv2
 def test_pyexiv2_initializes(pyexiv2):
     assert metadata_pyexiv2.MetadataPyexiv2 in metadata._registry
     assert metadata.has_metadata_support()

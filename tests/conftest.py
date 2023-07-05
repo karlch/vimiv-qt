@@ -36,6 +36,14 @@ METADATA_MARKERS = (
 # fmt: on
 
 
+def apply_fixture_markers(item, *names):
+    """Helper function to mark all tests using specific fixtures with that mark."""
+    for name in names:
+        marker = getattr(pytest.mark, name)
+        if name in item.fixturenames:
+            item.add_marker(marker)
+
+
 def apply_markers_helper(item, markers):
     """Helper function to apply an iterable of markers to a test item."""
     for marker_name, fulfilled, reason in markers:
@@ -50,6 +58,7 @@ def apply_markers_helper(item, markers):
 def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
+        apply_fixture_markers(item, "piexif", "pyexiv2")
         apply_markers_helper(item, PLATFORM_MARKERS)
         apply_markers_helper(item, METADATA_MARKERS)
 
