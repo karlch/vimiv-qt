@@ -59,6 +59,10 @@ the respective backend is installed. To disable this default behaviour, specify
    Better not rely on the default loading, but explicitly specify what backend you want.
    This is because the default loading may be dropped in future versions.
 
+.. note::
+   Multiple metadata plugins can be registered at the same time. If they use distinct
+   keys, the value of both is combined in the output of ``:metadata``.
+
 
 Comparison of Different Plugins
 -------------------------------
