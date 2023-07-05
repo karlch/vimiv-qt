@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Metadata &#8212; vimiv  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing Guidelines" href="contributing.html" />
+    <link rel="prev" title="Plugins" href="configuration/plugins.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html"><span><img src="../_static/vimiv.svg"></span>
+          vimiv</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Docs</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="../screenshots.html">Screenshots</a></li>
+                <li><a href="../changelog.html">Changelog</a></li>
+                <li><a href="contributing.html">Contributing</a></li>
+                <li><a href="https://github.com/karlch/vimiv-qt">GitHub</a></li>
+            
+            
+              
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Metadata</a><ul>
+<li><a class="reference internal" href="#enable-support">Enable Support</a></li>
+<li><a class="reference internal" href="#comparison-of-different-plugins">Comparison of Different Plugins</a></li>
+<li><a class="reference internal" href="#customize-keysets">Customize Keysets</a></li>
+<li><a class="reference internal" href="#create-own-plugins">Create Own Plugins</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <section id="metadata">
+<h1>Metadata<a class="headerlink" href="#metadata" title="Permalink to this heading">¶</a></h1>
+<p>Vimiv provides optional metadata support. If enabled, then:</p>
+<ol class="arabic simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command and the corresponding <code class="docutils literal notranslate"><span class="pre">i</span></code>-keybinding is available. It
+displays the metadata of the current image.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">{exif-date-time}</span></code> statusbar module is available. It displays the Exif
+creation time of the current image.</p></li>
+<li><p>Metadata is automatically copied from source to destination when writing images to
+disk.</p></li>
+</ol>
+<p>Vimiv provides full flexibility to users in terms of what metadata backend to use.
+Each backend comes with their advantages and disadvantages, and each user has different
+requirements, as well as different package support. Therefore, vimiv provides metadata
+backends as independent plugins, that can be loaded as one desires. In addition, users
+have the ability to extend vimiv’s metadata capabilities using
+<a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">custom plugins</span></a>, as described in
+<a class="reference internal" href="#create-own-plugins"><span class="std std-ref">a later section</span></a>.</p>
+<p>Vimiv comes with two default plugins:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code> is based on <a class="reference external" href="https://pypi.org/project/piexif/">piexif</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">metadata_pyexiv2</span></code> is based on <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a></p></li>
+</ul>
+<p>In addition, there are the following user metadata plugins available:</p>
+<span id="user-metadata-plugins"></span><table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Overview of user plugins</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name                                                     Description</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference external" href="https://github.com/jcjgraf/vimiv_metadata-gexiv2">metadata_gexiv2</a></p></td>
+<td><p>Based on <a class="reference external" href="https://gitlab.gnome.org/GNOME/gexiv2">gexiv2</a></p></td>
+</tr>
+</tbody>
+</table>
+<section id="enable-support">
+<h2>Enable Support<a class="headerlink" href="#enable-support" title="Permalink to this heading">¶</a></h2>
+<p>Metadata plugins are loaded as any other vimiv plugin. To enable one of the default
+plugins, simply list its name in the <code class="docutils literal notranslate"><span class="pre">PLUGINS</span></code> section of the configuration file. In
+addition, you need to ensure that the required backend is installed on your system.</p>
+<p>To enable a user metadata plugin, first you need to download it, and put it into the
+plugin folder. Afterwards loading is equivalent to the default plugins.</p>
+<p>For more information on how to load plugins, please refer to the
+<a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">plugin section</span></a>.</p>
+<p>If no metadata plugin is specified, vimiv will load one of the two default plugins, if
+the respective backend is installed. To disable this default behaviour, specify
+<code class="docutils literal notranslate"><span class="pre">metadata</span> <span class="pre">=</span> <span class="pre">none</span></code> in the <code class="docutils literal notranslate"><span class="pre">PLUGINS</span></code> section.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Default loading may be dropped in a future version. If you rely on metadata support,
+we recommend to explicitly specify what backend you want.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Multiple metadata plugins can be registered at the same time. If they use distinct
+keys, the value of both is combined in the output of <code class="docutils literal notranslate"><span class="pre">:metadata</span></code>.</p>
+</div>
+</section>
+<section id="comparison-of-different-plugins">
+<h2>Comparison of Different Plugins<a class="headerlink" href="#comparison-of-different-plugins" title="Permalink to this heading">¶</a></h2>
+<p>In short, <code class="docutils literal notranslate"><span class="pre">metadata_pyexiv2</span></code> is much more powerful than <code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code>, though
+the dependencies are also more involved to install.</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Comparison of the two libraries</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 15.0%" />
+<col style="width: 20.0%" />
+<col style="width: 45.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>PROPERTY</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">metadata_pyexiv2</span></code></p></th>
+<th class="head"><p>Note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Backend</p></td>
+<td><p><a class="reference external" href="https://pypi.org/project/piexif/">piexif</a></p></td>
+<td><p><a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Exif Support</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>pyexiv2 can potentially extract more data for the same image</p></td>
+</tr>
+<tr class="row-even"><td><p>ICMP Support</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>XMP Suppport</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Output Formatting</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>e.g. <code class="docutils literal notranslate"><span class="pre">FNumber:</span> <span class="pre">63/10</span></code> vs <code class="docutils literal notranslate"><span class="pre">FNumber:</span> <span class="pre">F6.3</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Supported File Types</p></td>
+<td><p>JPEG, TIFF</p></td>
+<td><p>Many common types</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Ease of installation</p></td>
+<td><p>Simple</p></td>
+<td><p>More complicated</p></td>
+<td><p>pyexiv2 requires some dependencies including the C++ library <a class="reference external" href="https://www.exiv2.org/index.html">exiv2</a></p></td>
+</tr>
+</tbody>
+</table>
+<p>We recommend to use <code class="docutils literal notranslate"><span class="pre">metadata_pyexiv2</span></code> if the installation of <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> is not too
+involved on your system and <code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code> as a fallback solution or in case you
+don’t need the full power of <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a> and prefer something more lightweight.
+Also consider the list of available
+<a class="reference internal" href="#user-metadata-plugins"><span class="std std-ref">user metadata plugins</span></a>.</p>
+</section>
+<section id="customize-keysets">
+<h2>Customize Keysets<a class="headerlink" href="#customize-keysets" title="Permalink to this heading">¶</a></h2>
+<p>You can configure the information displayed by the <code class="docutils literal notranslate"><span class="pre">:metadata</span></code> command by adding your
+own key sets to the <code class="docutils literal notranslate"><span class="pre">METADATA</span></code> section in your configfile like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keys2</span> <span class="o">=</span> <span class="n">someKey</span><span class="p">,</span><span class="n">anotherOne</span><span class="p">,</span><span class="n">lastOne</span>
+<span class="n">keys4</span> <span class="o">=</span> <span class="n">newKey</span><span class="p">,</span><span class="n">oneMore</span>
+</pre></div>
+</div>
+<p>where the values must be a comma-separated list of valid metadata keys.</p>
+<p>In case you are using <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a>, you can find a complete overview of valid keys on the
+<a class="reference external" href="https://www.exiv2.org/metadata.html">exiv2 webpage</a>. You can choose any of the Exif,
+IPTC, or XMP keys.</p>
+<p><a class="reference external" href="https://pypi.org/project/piexif/">Piexif</a> uses a simplified form of the key. It does not use the <code class="docutils literal notranslate"><span class="pre">Group.Subgroup</span></code>
+prefix, which is present in each of <a class="reference external" href="https://python3-exiv2.readthedocs.io">pyexiv2</a>’s keys. However, <code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code>
+automatically does this truncation, if the provided keys are in the long form.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">:metadata-list-keys</span></code> command provides a list of all valid metadata keys, that
+the currently loaded metadata plugins can read. This serves as an easy way to see what
+keys are available in the image.</p>
+</section>
+<section id="create-own-plugins">
+<span id="id1"></span><h2>Create Own Plugins<a class="headerlink" href="#create-own-plugins" title="Permalink to this heading">¶</a></h2>
+<p>One can extend vimiv’s metadata capabilities by creating own metadata plugins. This is
+useful if you want to use a different metadata backend.</p>
+<p>The rough steps are the following:</p>
+<ol class="arabic simple">
+<li><p>Create a plugin, that implements the abstract class
+<code class="docutils literal notranslate"><span class="pre">vimiv.imutils.metadata.MetadataPlugin</span></code></p>
+<ol class="arabic simple">
+<li><p>Implement all required methods</p></li>
+<li><p>Optionally, also implement the non-required methods</p></li>
+</ol>
+</li>
+<li><p>In the plugin’s init function, register the plugin using
+<code class="docutils literal notranslate"><span class="pre">vimiv.imutils.metadata.register</span></code></p></li>
+</ol>
+<p>Please see the default metadata plugins for an example implementation.</p>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      
+      <a href="configuration/plugins.html" title="Previous Chapter: Plugins"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; Plugins</span>
+      </a>
+      &nbsp;
+      &nbsp;
+      <a href="#">Back to top</a>
+      &nbsp;
+      &nbsp;
+      <a href="contributing.html" title="Next Chapter: Contributing Guidelines"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">Contributing ... &raquo;</span>
+      </a>
+      
+
+
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/documentation/metadata.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2023, Christian Karl.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br/>
+    </p>
+  </div>
+</footer>
+
+  </body>
+</html>

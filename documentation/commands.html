@@ -117,8 +117,6 @@
 <li><a class="reference internal" href="#crop">crop</a></li>
 <li><a class="reference internal" href="#flip">flip</a></li>
 <li><a class="reference internal" href="#goto">goto</a></li>
-<li><a class="reference internal" href="#metadata">metadata</a></li>
-<li><a class="reference internal" href="#metadata-list-keys">metadata-list-keys</a></li>
 <li><a class="reference internal" href="#play-or-pause">play-or-pause</a></li>
 <li><a class="reference internal" href="#reload">reload</a></li>
 <li><a class="reference internal" href="#rescale">rescale</a></li>
@@ -908,12 +906,6 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 <tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-goto"><span class="std std-ref">goto</span></a></p></td>
 <td><p>Select specific image in current filelist.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-image-metadata"><span class="std std-ref">metadata</span></a></p></td>
-<td><p>Toggle display of exif metadata of current image.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-image-metadata-list-keys"><span class="std std-ref">metadata-list-keys</span></a></p></td>
-<td><p>Display a list of all valid metadata keys for the current image.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-image-play-or-pause"><span class="std std-ref">play-or-pause</span></a></p></td>
 <td><p>Toggle between play and pause of animation.</p></td>
 </tr>
@@ -995,34 +987,6 @@ keep the aspectratio of the current image.</p></li>
 <p>-1 is the last image.</p>
 </div>
 <p><strong>count:</strong> Select [count]th image instead.</p>
-</section>
-<section id="metadata">
-<span id="ref-image-metadata"></span><h3>metadata<a class="headerlink" href="#metadata" title="Permalink to this heading">¶</a></h3>
-<p>Toggle display of exif metadata of current image.</p>
-<p><strong>count:</strong> Select the key set to display instead.</p>
-<div class="admonition hint">
-<p class="admonition-title">Hint</p>
-<p>5 default key sets are provided and mapped to the counts 1-5. To
-override them or add your own, extend the METADATA section in your
-configfile like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">keys2</span> <span class="o">=</span> <span class="n">Override</span><span class="p">,</span><span class="n">Second</span><span class="p">,</span><span class="n">Set</span>
-<span class="n">keys4</span> <span class="o">=</span> <span class="n">New</span><span class="p">,</span><span class="n">Fourth</span><span class="p">,</span><span class="n">Set</span>
-</pre></div>
-</div>
-<p>where the values must be a comma-separated list of valid metadata keys.</p>
-</div>
-</section>
-<section id="metadata-list-keys">
-<span id="ref-image-metadata-list-keys"></span><h3>metadata-list-keys<a class="headerlink" href="#metadata-list-keys" title="Permalink to this heading">¶</a></h3>
-<p>Display a list of all valid metadata keys for the current image.</p>
-<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:metadata-list-keys</span> <span class="pre">[--n-cols=NUMBER]</span> <span class="pre">[--to-term]</span></code></p>
-<dl class="simple">
-<dt>optional arguments:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">--n-cols</span></code>: Number of columns used to display the keys.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">--to-term</span></code>: Print the keys to the terminal instead.</p></li>
-</ul>
-</dd>
-</dl>
 </section>
 <section id="play-or-pause">
 <span id="ref-image-play-or-pause"></span><h3>play-or-pause<a class="headerlink" href="#play-or-pause" title="Permalink to this heading">¶</a></h3>

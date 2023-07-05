@@ -10,7 +10,7 @@ The following documents are available:
    getting_started
    commands
    configuration/index
-   exif
+   metadata
    contributing
    migrating
 

@@ -259,6 +259,11 @@ supported.</p></li>
 supported by our testing framework, and 5.11 is out since July 2018. Code will likely
 still work with these versions, but as it is no longer tested, there is no guarantee.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">shuffle</span></code> setting was moved into the <code class="docutils literal notranslate"><span class="pre">sort</span></code> group.</p></li>
+<li><p>Complete refactoring of metadata support. The handler functionality is moved out
+to the plugin space, allowing for full flexibility in choosing a suitable backend. By
+default, <code class="docutils literal notranslate"><span class="pre">metadata_pyexiv2</span></code> or <code class="docutils literal notranslate"><span class="pre">metadata_piexif</span></code> is loaded, if the respective
+backend is installed. The default behaviour can be overridden by explicitly loading a
+metadata plugin.</p></li>
 </ul>
 </section>
 <section id="fixed">
