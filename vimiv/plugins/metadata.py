@@ -33,4 +33,8 @@ def init(info: str, *_args: Any, **_kwargs: Any) -> None:
         _logger.debug("Auto-loading piexif metadata plugin")
         metadata_piexif.init()
     else:
-        _logger.warning("Please install either py3exiv2 or piexif for metadata support")
+        _logger.warning(
+            "Please install either py3exiv2 or piexif for metadata support.<br>\n"
+            "For more information see<br>\n"
+            "https://karlch.github.io/vimiv-qt/documentation/metadata.html",
+        )
