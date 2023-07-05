@@ -16,7 +16,7 @@ requirements, as well as different package support. Therefore, Vimiv provides me
 backends as independent plugins, that can be loaded as one desires. In addition, users
 have the ability to extend Vimiv's metadata capabilities using
 :ref:`custom plugins<Plugins>`, as described in
-:ref:`a later section<create_own_metadata_plugins>`.
+:ref:`a later section<create_own_plugins>`.
 
 Vimiv comes with two default plugins:
 
@@ -34,8 +34,8 @@ In addition, there are the following user metadata plugins available:
    ======================================================== ===========
 
 
-Enabling metadata plugins
--------------------------
+Enable Support
+--------------
 
 Metadata plugins are loaded as any other Vimiv plugin. To enable one of the default
 plugins, simply list its name in the ``PLUGINS`` section of the configuration file. In
@@ -48,8 +48,8 @@ For more information on how to load plugins, please refer to the
 :ref:`plugin section<Plugins>`.
 
 
-Advantages of the different metadata plugins
---------------------------------------------
+Comparison of Different Plugins
+-------------------------------
 
 In short, ``metadata_pyexiv2`` is much more powerful than ``metadata_piexif``, though
 the dependencies are also more involved to install.
@@ -74,8 +74,8 @@ involved on your system and ``metadata_piexif`` as a fallback solution or in cas
 don't need the full power of `pyexiv2`_ and prefer something more lightweight.
 
 
-Customizing metadata keysets
-----------------------------
+Customize Keysets
+-----------------
 
 You can configure the information displayed by the ``:metadata`` command by adding your
 own key sets to the ``METADATA`` section in your configfile like this::
@@ -98,10 +98,10 @@ the currently loaded metadata plugins can read. This serves as an easy way to se
 keys are available in the image.
 
 
-.. _create_own_metadata_plugins:
+.. _create_own_plugins:
 
-Create own metadata plugin
---------------------------
+Create Own Plugins
+------------------
 
 One can extend Vimiv's metadata capabilities by creating own metadata plugins. This is
 for example useful, if you want to use a different metadata backend.
