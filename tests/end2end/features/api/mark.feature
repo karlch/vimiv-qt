@@ -109,3 +109,26 @@ Feature: Mark and tag images.
         And I remove the delete permissions
         And I run tag-delete new_tag
         Then no crash should happen
+
+    Scenario Outline: Mark image with special characters in filename
+        Given I open the image '<name>'
+        When I run mark %
+        Then there should be 1 marked images
+        And <name> should be marked
+
+        Examples:
+            | name        |
+            | %.jpg       |
+            | \.jpg       |
+            | \%.jpg      |
+            | \\%.jpg     |
+            | \%m.jpg     |
+            | [a].jpg     |
+            | image\*.jpg |
+            | image\?.jpg |
+
+    Scenario: Do not mark multiple images when marking an image with wildcards in name
+        Given I open the images 'image.jpg? image.jpgz'
+        When I run mark %
+        Then there should be 1 marked images
+        And image.jpg? should be marked
