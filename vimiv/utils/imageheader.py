@@ -30,19 +30,19 @@ Native QT Support:
 | ---    | ---                       | ---                                     |
 
 Extended QT Support:
-| ---    | ---                       | ---                        |
-| Format | Extension according to QT | Vimiv Supported            |
-| ---    | ---                       | ---                        |
-| ICNS   | ico                       | yes                        |
-| ICNS   | icns                      | yes                        |
-| ICNS   | cur                       | no (what are magic bytes?) |
-| JP2    | TODO: ?                   | yes                        |
-| MNG    | TODO: ?                   | yes                        |
-| TGA    | tga                       | no (undetectable)          |
-| TIFF   | tif, tiff                 | yes                        |
-| WBMP   | wbmp                      | no (what are magic bytes?) |
-| WEBP   | webp                      | yes                        |
-| ---    | ---                       | ---                        |
+| ---    | ---                       | ---                               |
+| Format | Extension according to QT | Vimiv Supported                   |
+| ---    | ---                       | ---                               |
+| ICNS   | ico                       | yes                               |
+| ICNS   | icns                      | yes                               |
+| ICNS   | cur                       | yes (TODO: is it really correct?) |
+| JP2    | TODO: ?                   | yes                               |
+| MNG    | TODO: ?                   | yes                               |
+| TGA    | tga                       | no (undetectable)                 |
+| TIFF   | tif, tiff                 | yes                               |
+| WBMP   | wbmp                      | no (what are magic bytes?)        |
+| WEBP   | webp                      | yes                               |
+| ---    | ---                       | ---                               |
 
 A great list of magic bytes is provided here:
 https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -363,15 +363,17 @@ def _test_cur(h: bytes, _f: BinaryIO) -> bool:
 
     Windows' ICON format. Extended from ICO.
 
+    TODO: not sure if the bytes are correct, but should be according to
+    http://www.daubnet.com/en/file-format-cur
+
     Extension: .cur
 
     Magic Bytes:
-    - (I do not know)
+    - 00 00 02 00
 
     Support: extended
     """
-    # TODO: implement check
-    raise NotImplementedError()
+    return h[:4] == b"\x00\x00\x02\x00"
 
 
 def _test_mng(h: bytes, _f: BinaryIO) -> bool:
@@ -422,3 +424,4 @@ register("bmp", _test_bmp, validate=False)
 register("xbm", _test_xbm, validate=False)
 register("xpm", _test_xpm, validate=False)
 register("mng", _test_mng)
+register("cur", _test_cur)
