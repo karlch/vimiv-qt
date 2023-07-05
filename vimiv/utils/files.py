@@ -13,11 +13,26 @@ from typing import List, Tuple, Optional, BinaryIO, Iterable, Callable
 
 from PyQt5.QtGui import QImageReader
 
+from vimiv import api
 from vimiv.utils import imagereader
 
 
 ImghdrTestFuncT = Callable[[bytes, Optional[BinaryIO]], bool]
 
+image_format_names = set(('.rgb',
+                          '.gif',
+                          '.pbm',
+                          '.pgm',
+                          '.ppm',
+                          '.tiff',
+                          '.rast',
+                          '.xbm',
+                          '.jpeg',
+                          '.jpg',
+                          '.bmp',
+                          '.png',
+                          '.webp',
+                          '.exr'))
 
 def listdir(directory: str, show_hidden: bool = False) -> List[str]:
     """Wrapper around os.listdir.
@@ -121,7 +136,14 @@ def is_image(filename: str) -> bool:
         filename: Name of file to check.
     """
     try:
-        return os.path.isfile(filename) and imghdr.what(filename) is not None
+        if not os.path.isfile(filename):
+            return False
+        elif api.settings.image.id_by_extension:
+            return os.path.splitext(filename)[1].lower() in image_format_names
+        elif imghdr.what(filename) is not None:
+            return True
+        else:
+            return False
     except OSError:
         return False
 
@@ -164,6 +186,8 @@ def add_image_format(name: str, check: ImghdrTestFuncT) -> None:
             imghdr.tests.remove(test)
         return None
 
+    global image_format_names
+    image_format_names.add(''.join(('.', name)))
     imghdr.tests.insert(add_image_format.index, test)  # type: ignore
     add_image_format.index += 1  # type: ignore
 
@@ -176,7 +200,6 @@ def test_svg(h: bytes, _f: Optional[BinaryIO]) -> bool:
 
 
 add_image_format("svg", test_svg)
-
 
 def test_ico(h: bytes, _f: Optional[BinaryIO]) -> bool:
     return h.startswith(bytes.fromhex("00000100"))

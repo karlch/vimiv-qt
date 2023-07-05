@@ -8,10 +8,12 @@
 
 import abc
 from typing import Dict, Callable
+from os.path import splitext
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImageReader, QPixmap, QImage
 
+from vimiv import api
 from .files import imghdr
 
 external_handler: Dict[str, Callable[[str], QPixmap]] = {}
@@ -62,8 +64,20 @@ class QtReader(BaseReader):
         self._handler = QImageReader(path, file_format.encode())
         self._handler.setAutoTransform(True)
         if not self._handler.canRead():
-            # TODO
-            raise ValueError(f"'{path}' cannot be read as image")
+            if api.settings.image.id_by_extension and\
+               api.settings.image.imghdr_fallback:
+                try:
+                    self.file_format = imghdr.what(path)
+                    self._handler = QImageReader(path, self.file_format.encode())
+                    self._handler.setAutoTransform(True)
+                except OSError:
+                    raise ValueError(f"'{path}' cannot be read as image")
+                if not self._handler.canRead():
+                    # TODO
+                    raise ValueError(f"'{path}' cannot be read as image")
+            else:
+                # TODO
+                raise ValueError(f"'{path}' cannot be read as image")
 
     @classmethod
     def supports(cls, file_format: str) -> bool:
@@ -98,8 +112,20 @@ class ExternalReader(BaseReader):
         return file_format in external_handler
 
     def get_pixmap(self) -> QPixmap:
-        handler = external_handler[self.file_format]
-        return handler(self.path)
+        try:
+            return external_handler[self.file_format](self.path)
+        except ValueError:
+            if api.settings.image.id_by_extension and\
+               api.settings.image.imghdr_fallback:
+                try:
+                    self.file_format = imghdr.what(self.path)
+                except OSError:
+                    raise ValueError(f"'{self.path}' cannot be read as image")
+                try:
+                    return external_handler[self.file_format](self.path)
+                except ValueError:
+                    qtreader = QtReader(self.path, self.file_format)
+                    return qtreader.get_pixmap()
 
 
 READERS = [QtReader, ExternalReader]
@@ -109,7 +135,12 @@ def get_reader(path: str) -> BaseReader:
     """Retrieve the appropriate image reader class for path."""
     error = ValueError(f"'{path}' cannot be read as image")
     try:
-        file_format = imghdr.what(path)
+        if api.settings.image.id_by_extension:
+            file_format = splitext(path)[1].lower()[1:]
+            if file_format == 'jpg':
+                file_format = 'jpeg'
+        else:
+            file_format = imghdr.what(path)
     except OSError:
         raise error
     if file_format is None:

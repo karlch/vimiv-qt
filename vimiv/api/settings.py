@@ -325,6 +325,7 @@ class OrderSetting(Setting):
         "alphabetical": str,
         "natural": natural_sort,
         "recently-modified": os.path.getmtime,
+		"passthrough": None
     }
 
     STR_ORDER_TYPES = "alphabetical", "natural"
@@ -347,6 +348,8 @@ class OrderSetting(Setting):
 
     def sort(self, values: Iterable[str]) -> List[str]:
         """Sort values according to the current ordering."""
+        if self.value == "passthrough":
+            return values
         ordering = self._get_ordering()
         return sorted(values, key=ordering, reverse=sort.reverse.value)
 
@@ -447,6 +450,16 @@ class image:  # pylint: disable=invalid-name
         True,
         desc="Require holding the control modifier for zooming with the mouse wheel",
     )
+    id_by_extension = BoolSetting(
+        "image.id_by_extension",
+        False,
+        desc="Instead of scanning the image to determine that it's a compatible format, assume the extension accurately represents the format.",
+    )
+    imghdr_fallback = BoolSetting(
+        "image.imghdr_fallback",
+        True,
+        desc="If identifying a file by extension (when image.id_by_extension is set) files to open a file, try identifying it using imghdr before giving up."
+    )
 
 
 class library:  # pylint: disable=invalid-name
@@ -469,6 +482,10 @@ class thumbnail:  # pylint: disable=invalid-name
     """Namespace for thumbnail related settings."""
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
+    save = BoolSetting("thumbnail.save", True, desc="Save thumbnails to disk")
+    max_behind = IntSetting("thumbnail.max_behind", 0, desc="Maximum number of thumbnails to render behind the currently selected one.")
+    max_ahead = IntSetting("thumbnail.max_ahead", 0, desc="Maximum number of thumbnails to render ahead of the currently selected one.")
+    max_count = IntSetting("thumbnail.max_count", 0, desc="Maximum number of thumbnails to render in general.")
 
 
 class slideshow:  # pylint: disable=invalid-name
@@ -610,3 +627,4 @@ class sort:  # pylint: disable=invalid-name
         False,
         desc="Randomly shuffle images and ignoring all other sort settings",
     )
+
