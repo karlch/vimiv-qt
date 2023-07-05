@@ -43,7 +43,7 @@ class MetadataPiexif(metadata.MetadataPlugin):
                 "Piexif only supports the file types JPEG and TIFF.<br>\n"
                 "Please use another metadata plugin for better file type support.<br>\n"
                 "For more information see<br>\n"
-                "https://karlch.github.io/vimiv-qt/documentation/exif.html",
+                "https://karlch.github.io/vimiv-qt/documentation/metadata.html",
                 once=True,
             )
             self._metadata = None
