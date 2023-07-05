@@ -25,13 +25,16 @@ Vimiv comes with two default plugins:
 
 In addition, there are the following user metadata plugins available:
 
+.. _user_metadata_plugins:
+
 .. table:: Overview of user plugins
    :widths: 20 80
 
-   ======================================================== ===========
+   ===================================================================== ===========
    Name                                                     Description
-   ======================================================== ===========
-   ======================================================== ===========
+   ===================================================================== ===========
+   `metadata_gexiv2 <https://github.com/jcjgraf/vimiv_metadata-gexiv2>`_  Based on `gexiv2 <https://gitlab.gnome.org/GNOME/gexiv2>`_
+   ===================================================================== ===========
 
 
 Enable Support
@@ -81,6 +84,8 @@ the dependencies are also more involved to install.
 We recommend to use ``metadata_pyexiv2`` if the installation of `pyexiv2`_ is not too
 involved on your system and ``metadata_piexif`` as a fallback solution or in case you
 don't need the full power of `pyexiv2`_ and prefer something more lightweight.
+Also consider the list of available
+:ref:`user metadata plugins<user_metadata_plugins>`.
 
 
 Customize Keysets
