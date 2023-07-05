@@ -34,6 +34,8 @@ Fixed:
 * Binding the ``<delete>`` key as special key. Thanks `@xfzv`_!
 * Consecutive `:tag-write` would insert empty lines into the tag file, which would on
   `:tag-load` getting interpreted as file paths.
+* Handling of paths with the characters ``[]?*``. Thanks `@pglira`_ and `@TeaWhyDee`_
+  for pointing this out!
 
 
 v0.9.0 (2023-07-15)
@@ -577,3 +579,5 @@ Initial release of the Qt version.
 .. _@buzzingwires: https://github.com/buzzingwires
 .. _@xfzv: https://github.com/xfzv
 .. _@mozirilla213: https://github.com/mozirilla213
+.. _@pglira: https://github.com/pglira
+.. _@TeaWhyDee: https://github.com/TeaWhyDee
