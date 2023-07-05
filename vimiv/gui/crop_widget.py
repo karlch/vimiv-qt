@@ -6,9 +6,9 @@
 
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
-from PyQt5.QtCore import Qt, QPoint, QRect, QRectF, QSize
-from PyQt5.QtGui import QPainter, QColor, QImage
-from PyQt5.QtWidgets import QApplication, QStyle, QStyleOption, QWidget
+from vimiv.qt.core import Qt, QPoint, QRect, QRectF, QSize
+from vimiv.qt.gui import QPainter, QColor, QImage
+from vimiv.qt.widgets import QApplication, QStyle, QStyleOption, QWidget
 
 from vimiv import api
 from vimiv.config import styles
@@ -60,7 +60,7 @@ class CropWidget(TransformWidget):
     def moving(self) -> bool:
         """True if the widget is currently being dragged."""
         cursor = QApplication.overrideCursor()
-        return cursor is not None and cursor.shape() == Qt.ClosedHandCursor
+        return cursor is not None and cursor.shape() == Qt.CursorShape.ClosedHandCursor
 
     def crop_rect(self) -> QRect:
         """Rectangle of the image that would currently be cropped."""
@@ -86,7 +86,7 @@ class CropWidget(TransformWidget):
         """Update size fractions ensuring aspectratio."""
         if self._aspectratio.isValid():
             size = QSize(self._aspectratio)
-            size.scale(self.size(), Qt.KeepAspectRatio)
+            size.scale(self.size(), Qt.AspectRatioMode.KeepAspectRatio)
             self.resize(size)
         self.setGeometry(self.geometry() & self.image_rect)
         self.update_selected_rect()
@@ -103,7 +103,7 @@ class CropWidget(TransformWidget):
         """Start dragging the widget if we click within it."""
         if self.geometry().contains(event.pos() + self.pos()):
             self._offset = event.pos()
-            QApplication.setOverrideCursor(Qt.ClosedHandCursor)
+            QApplication.setOverrideCursor(Qt.CursorShape.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
         """Move the widget if it is currently being dragged.
@@ -139,7 +139,9 @@ class CropWidget(TransformWidget):
         opt = QStyleOption()
         opt.initFrom(self)
         painter = QPainter(self)
-        self.style().drawPrimitive(QStyle.PE_Widget, opt, painter, self)
+        self.style().drawPrimitive(
+            QStyle.PrimitiveElement.PE_Widget, opt, painter, self
+        )
 
 
 class CropOverlay(QWidget):
@@ -163,18 +165,20 @@ class CropOverlay(QWidget):
         selected_rect.moveTopLeft(selected_rect.topLeft() - rect.topLeft())
         self._selected_rect = selected_rect
         if rect.size() != self._draw_buffer.size():
-            self._draw_buffer = QImage(rect.size(), QImage.Format_ARGB32_Premultiplied)
+            self._draw_buffer = QImage(
+                rect.size(), QImage.Format.Format_ARGB32_Premultiplied
+            )
         self.setGeometry(rect)
 
     def paintEvent(self, _event):
         """Paint dark rectangle over image and then clear the selection."""
         painter = QPainter(self._draw_buffer)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
 
         painter.setBrush(self._shading_color)
-        painter.setCompositionMode(QPainter.CompositionMode_Source)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         painter.drawRect(self.rect())
 
-        painter.setCompositionMode(QPainter.CompositionMode_Clear)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
         painter.drawRect(self._selected_rect)
         QPainter(self).drawImage(0, 0, self._draw_buffer)

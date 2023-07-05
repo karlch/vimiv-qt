@@ -6,8 +6,8 @@
 
 import re
 
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.core import Qt, QPoint
+from vimiv.qt.widgets import QApplication
 
 import pytest
 import pytest_bdd as bdd

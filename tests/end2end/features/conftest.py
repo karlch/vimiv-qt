@@ -187,22 +187,22 @@ def mousedrag(qtbot):
     def drag(widget, *, start, diff):
         end = start + diff
 
-        qtbot.mousePress(widget, Qt.LeftButton, pos=start)
+        qtbot.mousePress(widget, Qt.MouseButton.LeftButton, pos=start)
 
         global_end = widget.mapToGlobal(end)
-        button = buttons = Qt.NoButton
+        button = buttons = Qt.MouseButton.NoButton
         move_event = QMouseEvent(
-            QMouseEvent.MouseMove,
+            QMouseEvent.Type.MouseMove,
             end,
             global_end,
             global_end,
             button,
             buttons,
-            Qt.NoModifier,
+            Qt.KeyboardModifier.NoModifier,
         )
         QApplication.sendEvent(widget, move_event)
 
-        qtbot.mouseRelease(widget, Qt.LeftButton, pos=end)
+        qtbot.mouseRelease(widget, Qt.MouseButton.LeftButton, pos=end)
 
     return drag
 

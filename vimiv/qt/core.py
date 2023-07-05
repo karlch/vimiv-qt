@@ -21,3 +21,12 @@ elif qt.USE_PYSIDE6:
     pyqtSignal = Signal
     pyqtSlot = Slot
     QT_VERSION_STR = qVersion()
+
+
+class Align:
+
+    Center = Qt.AlignmentFlag.AlignCenter
+    Left = Qt.AlignmentFlag.AlignLeft
+    Right = Qt.AlignmentFlag.AlignRight
+    Top = Qt.AlignmentFlag.AlignTop
+    Bottom = Qt.AlignmentFlag.AlignBottom

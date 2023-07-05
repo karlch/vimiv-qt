@@ -15,7 +15,7 @@ import re
 import contextlib
 import enum
 
-from PyQt5.QtCore import QSize
+from vimiv.qt.core import QSize
 
 
 class Direction(enum.Enum):
