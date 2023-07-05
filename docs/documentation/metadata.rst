@@ -47,6 +47,15 @@ plugin folder. Only then you can load it, similarly to the default plugins.
 For more information on how to load plugins, please refer to the
 :ref:`plugin section<Plugins>`.
 
+If no metadata plugin is specified, Vimiv will load one of the two default plugins, if
+the respective backend is installed. To disable this default behaviour, specify
+``metadata = none`` in the ``PLUGINS`` section.
+
+.. warning::
+
+   Better not rely on the default loading, but explicitly specify what backend you want.
+   This is because the default loading may be dropped in future versions.
+
 
 Comparison of Different Plugins
 -------------------------------
