@@ -20,7 +20,6 @@ from vimiv.gui.keyhintwidget import KeyhintWidget
 from vimiv.gui.library import Library
 from vimiv.gui.thumbnail import ThumbnailView
 from vimiv.gui.message import Message
-from vimiv.gui.metadatawidget import MetadataWidget
 from vimiv.gui.statusbar import StatusBar
 
 
@@ -50,13 +49,12 @@ class MainWindow(QWidget):
         self._overlays.append(KeyhintWidget(self))
         self._overlays.append(Message(self))
         self._overlays.append(CommandWidget(self))
-        if MetadataWidget is not None:  # Not defined if there is no exif support
-            self._overlays.append(MetadataWidget(self))
         # Connect signals
         api.status.signals.update.connect(self._set_title)
         api.settings.statusbar.show.changed.connect(self._update_overlay_geometry)
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         api.prompt.question_asked.connect(self._run_prompt)
+        api.signals.plugins_loaded.connect(self._init_metadata)
 
     @utils.slot
     def _init_manipulate(self):
@@ -65,6 +63,16 @@ class MainWindow(QWidget):
 
         manipulate_widget = Manipulate(self)
         self.add_overlay(manipulate_widget)
+
+    @utils.slot
+    def _init_metadata(self):
+        """Initialize metadata widget in case we have metadata support."""
+        from vimiv.imutils import metadata
+
+        if metadata.has_metadata_support():
+            from vimiv.gui.metadatawidget import MetadataWidget
+
+            self._overlays.append(MetadataWidget(self))
 
     @api.keybindings.register("f", "fullscreen", mode=api.modes.MANIPULATE)
     @api.keybindings.register("f", "fullscreen")

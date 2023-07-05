@@ -69,12 +69,14 @@ import types
 from typing import Dict, List
 
 from vimiv.utils import xdg, log, quotedjoin
+from vimiv import api
 
 
 _app_plugin_directory = os.path.dirname(__file__)
 _user_plugin_directory = xdg.vimiv_data_dir("plugins")
 _plugins: Dict[str, str] = {
-    "print": "default"
+    "print": "default",
+    "metadata": "default",
 }  # key: name, value: additional information
 _loaded_plugins: Dict[str, types.ModuleType] = {}  # key:name, value: loaded module
 _logger = log.module_logger(__name__)
@@ -112,6 +114,7 @@ def load() -> None:
                 _user_plugin_directory,
             )
     _logger.debug("Plugin loading completed")
+    api.signals.plugins_loaded.emit()
 
 
 def cleanup() -> None:
@@ -132,10 +135,18 @@ def cleanup() -> None:
 def add_plugins(**plugins: str) -> None:
     """Add plugins to the dictionary of plugins.
 
+    Note that the plugins are prepended, and take precedence above the existing plugins.
+
     Args:
         plugins: Dictionary of plugin names with metadata to add to plugins.
     """
-    _plugins.update(plugins)
+    global _plugins
+
+    for plugin, info in _plugins.items():
+        if plugin not in plugins:
+            plugins[plugin] = info
+
+    _plugins = plugins
 
 
 def get_plugins() -> Dict[str, str]:

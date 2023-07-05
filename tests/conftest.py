@@ -12,10 +12,14 @@ import urllib.request
 
 import pytest
 
-from vimiv.imutils import exif
+from vimiv.plugins import metadata_pyexiv2, metadata_piexif
 
 
 CI = "CI" in os.environ
+
+HAS_PIEXIF = metadata_piexif.piexif is not None
+HAS_PYEXIV2 = metadata_pyexiv2.pyexiv2 is not None
+HAS_METADATA = HAS_PIEXIF or HAS_PYEXIV2
 
 # fmt: off
 PLATFORM_MARKERS = (
@@ -23,27 +27,21 @@ PLATFORM_MARKERS = (
     ("ci_skip", not CI, "Skipped on ci"),
 )
 
-EXIF_MARKERS = (
-    ("exif", exif.has_exif_support, "Only run with exif support"),
-    ("noexif", not exif.has_exif_support, "Only run without exif support"),
-    ("pyexiv2", exif.pyexiv2 is not None, "Only run with pyexiv2"),
-    ("piexif", exif.piexif is not None, "Only run with piexif"),
+METADATA_MARKERS = (
+    ("metadata", HAS_METADATA, "Only run with metadata support"),
+    ("nometadata", not HAS_METADATA, "Only run without metadata support"),
+    ("piexif", HAS_PIEXIF, "Only run with piexif"),
+    ("pyexiv2", HAS_PYEXIV2, "Only run with pyexiv2"),
 )
 # fmt: on
 
 
-def apply_platform_markers(item):
-    """Apply markers that skip tests depending on the current platform."""
-    apply_markers_helper(item, PLATFORM_MARKERS)
-
-
-def apply_exif_markers(item):
-    """Apply markers that skip tests depending on specific exif support."""
-    if os.path.basename(item.fspath) in ("test_exif.py",):
-        for marker_name in "exif", "pyexiv2", "piexif":
-            marker = getattr(pytest.mark, marker_name)
+def apply_fixture_markers(item, *names):
+    """Helper function to mark all tests using specific fixtures with that mark."""
+    for name in names:
+        marker = getattr(pytest.mark, name)
+        if name in item.fixturenames:
             item.add_marker(marker)
-    apply_markers_helper(item, EXIF_MARKERS)
 
 
 def apply_markers_helper(item, markers):
@@ -60,8 +58,9 @@ def apply_markers_helper(item, markers):
 def pytest_collection_modifyitems(items):
     """Handle custom markers via pytest hook."""
     for item in items:
-        apply_platform_markers(item)
-        apply_exif_markers(item)
+        apply_fixture_markers(item, "piexif", "pyexiv2")
+        apply_markers_helper(item, PLATFORM_MARKERS)
+        apply_markers_helper(item, METADATA_MARKERS)
 
 
 @pytest.fixture
@@ -166,27 +165,16 @@ def tmpdir():
 
 
 @pytest.fixture()
-def piexif(monkeypatch):
-    """Pytest fixture to ensure only piexif is available."""
-    monkeypatch.setattr(exif, "pyexiv2", None)
-
-
-@pytest.fixture()
-def noexif(monkeypatch, piexif):
-    """Pytest fixture to ensure no exif library is available."""
-    monkeypatch.setattr(exif, "piexif", None)
-
-
-@pytest.fixture()
 def add_exif_information():
     """Fixture to retrieve a helper function that adds exif content to an image."""
 
     def add_exif_information_impl(path: str, content):
-        assert exif.piexif is not None, "piexif required to add exif information"
-        exif_dict = exif.piexif.load(path)
+        import piexif
+
+        exif_dict = piexif.load(path)
         for ifd, ifd_dict in content.items():
             for key, value in ifd_dict.items():
                 exif_dict[ifd][key] = value
-        exif.piexif.insert(exif.piexif.dump(exif_dict), path)
+        piexif.insert(piexif.dump(exif_dict), path)
 
     return add_exif_information_impl

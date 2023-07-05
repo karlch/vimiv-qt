@@ -1,6 +1,6 @@
 Feature: Ensure the application works correctly without optional dependencies
 
-    @noexif
+    @nometadata
     Scenario: No metadata command
         Given I open any image
         When I run metadata
