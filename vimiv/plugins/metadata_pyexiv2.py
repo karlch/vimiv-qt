@@ -73,7 +73,6 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
                         key_value = value
 
                 out[key] = (key_name, key_value)
-                break
 
             except KeyError:
                 _logger.debug("Key %s is invalid for the current image", key)
