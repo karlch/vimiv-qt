@@ -35,7 +35,7 @@ class MetadataPlugin(abc.ABC):
 
     Implementations of this class are required to overwrite `__init__`, `name`,
     `version`, `get_metadata` and `get_keys`.
-    The implementations of `copy_metadata` and `get_date_time` is optional.
+    The implementation of `copy_metadata` and `get_date_time` is optional.
     """
 
     @abc.abstractmethod
@@ -159,7 +159,7 @@ class MetadataHandler:
         """Get the keys for all metadata values available for the current image.
 
         Uses all registered metadata implementations to extract the available keys for
-        the current image. The output off all methods is combined.
+        the current image. The output of all methods is combined.
 
         Raises:
             MetadataError
@@ -259,7 +259,7 @@ def get_registrations() -> List[Tuple[str, str]]:
     """List of all registered metadata plugin implementations.
 
     Returns:
-        List of tuple of the form (name of backend, version of backend).
+        List of tuples of the form (name of backend, version of backend).
     """
     return [(e.name(), e.version()) for e in _registry]
 
