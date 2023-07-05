@@ -21,7 +21,7 @@ jobs:
           - python: "3.8"
             toxenv: pyqt514
           - python: "3.8"
-            toxenv: pyqt515
+            toxenv: pyqt515-piexif-pyexiv2-cov
           - python: "3.9"
             toxenv: pyqt513
           - python: "3.9"
@@ -60,6 +60,13 @@ jobs:
         sudo apt-get update && sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
         python -m pip install --upgrade pip
         pip install -r misc/requirements/requirements_tox.txt
+    - name: Install dependencies for pyexiv2
+      if: "contains(matrix.toxenv, 'pyexiv2')"
+      run: |
+        sudo apt-get install libexiv2-dev libboost-python-dev
+        sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python3.so /usr/lib/x86_64-linux-gnu/libboost_python${PY//./}.so
+      env:
+        PY: ${{ matrix.python-version }}
     - name: Test with tox
       run: |
         tox -e "${{ matrix.toxenv }}"
