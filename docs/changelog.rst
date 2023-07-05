@@ -105,10 +105,10 @@ Changed:
   supported by our testing framework, and 5.11 is out since July 2018. Code will likely
   still work with these versions, but as it is no longer tested, there is no guarantee.
 * The ``shuffle`` setting was moved into the ``sort`` group.
-* Complete refactoring of the metadata handling. The handler functionality is moved out
-  to plugin space, allowing for full flexibility in choosing a suitable backend. By
+* Complete refactoring of metadata support. The handler functionality is moved out
+  to the plugin space, allowing for full flexibility in choosing a suitable backend. By
   default, ``metadata_pyexiv2`` or ``metadata_piexif`` is loaded, if the respective
-  backend is installed. The default behaviour can be overwrite by explicitly loading a
+  backend is installed. The default behaviour can be overridden by explicitly loading a
   metadata plugin.
 
 Fixed:

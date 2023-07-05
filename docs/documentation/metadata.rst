@@ -12,9 +12,9 @@ Vimiv provides optional metadata support. If enabled, then:
 
 Vimiv provides full flexibility to users in terms of what metadata backend to use.
 Each backend comes with their advantages and disadvantages, and each user has different
-requirements, as well as different package support. Therefore, Vimiv provides metadata
+requirements, as well as different package support. Therefore, vimiv provides metadata
 backends as independent plugins, that can be loaded as one desires. In addition, users
-have the ability to extend Vimiv's metadata capabilities using
+have the ability to extend vimiv's metadata capabilities using
 :ref:`custom plugins<Plugins>`, as described in
 :ref:`a later section<create_own_plugins>`.
 
@@ -40,24 +40,24 @@ In addition, there are the following user metadata plugins available:
 Enable Support
 --------------
 
-Metadata plugins are loaded as any other Vimiv plugin. To enable one of the default
+Metadata plugins are loaded as any other vimiv plugin. To enable one of the default
 plugins, simply list its name in the ``PLUGINS`` section of the configuration file. In
 addition, you need to ensure that the required backend is installed on your system.
 
 To enable a user metadata plugin, first you need to download it, and put it into the
-plugin folder. Only then you can load it, similarly to the default plugins.
+plugin folder. Afterwards loading is equivalent to the default plugins.
 
 For more information on how to load plugins, please refer to the
 :ref:`plugin section<Plugins>`.
 
-If no metadata plugin is specified, Vimiv will load one of the two default plugins, if
+If no metadata plugin is specified, vimiv will load one of the two default plugins, if
 the respective backend is installed. To disable this default behaviour, specify
 ``metadata = none`` in the ``PLUGINS`` section.
 
 .. warning::
 
-   Better not rely on the default loading, but explicitly specify what backend you want.
-   This is because the default loading may be dropped in future versions.
+   Default loading may be dropped in a future version. If you rely on metadata support,
+   we recommend to explicitly specify what backend you want.
 
 .. note::
    Multiple metadata plugins can be registered at the same time. If they use distinct
@@ -121,8 +121,8 @@ keys are available in the image.
 Create Own Plugins
 ------------------
 
-One can extend Vimiv's metadata capabilities by creating own metadata plugins. This is
-for example useful, if you want to use a different metadata backend.
+One can extend vimiv's metadata capabilities by creating own metadata plugins. This is
+useful if you want to use a different metadata backend.
 
 The rough steps are the following:
 
