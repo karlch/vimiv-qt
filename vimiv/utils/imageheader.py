@@ -13,21 +13,21 @@ one shows which can be read when having the `qtimageformats` ad-on module instal
 This module allows to detect images of these types based on the magic bytes of the file.
 
 Native QT Support:
-| ---    | ---                       | ---                      |
-| Format | Extension according to QT | Vimiv Supported          |
-| ---    | ---                       | ---                      |
-| BMP    | bmp                       | yes                      |
-| GIF    | gif                       | yes                      |
-| JPG    | jpeg, jpg                 | yes                      |
-| PNG    | png                       | yes                      |
-| PBM    | pbm                       | yes                      |
-| PGM    | pgm                       | yes                      |
-| PPM    | ppm                       | yes                      |
-| XBM    | xbm                       | no (undetectable)        |
-| XPM    | xpm                       | yes                      |
-| SVG    | svg                       | yes                      |
-| SVG    | svgz                      | no (different from svg?) |
-| ---    | ---                       | ---                      |
+| ---    | ---                       | ---                                     |
+| Format | Extension according to QT | Vimiv Supported                         |
+| ---    | ---                       | ---                                     |
+| BMP    | bmp                       | yes                                     |
+| GIF    | gif                       | yes                                     |
+| JPG    | jpeg, jpg                 | yes                                     |
+| PNG    | png                       | yes                                     |
+| PBM    | pbm                       | yes                                     |
+| PGM    | pgm                       | yes                                     |
+| PPM    | ppm                       | yes                                     |
+| XBM    | xbm                       | yes (no distinct header, regex on file) |
+| XPM    | xpm                       | yes                                     |
+| SVG    | svg                       | yes                                     |
+| SVG    | svgz                      | no (different from svg?)                |
+| ---    | ---                       | ---                                     |
 
 Extended QT Support:
 | ---    | ---                       | ---                        |
@@ -80,10 +80,11 @@ def detect(filename: str) -> Optional[str]:
     with open(filename, "rb") as f:
         header = f.read(32)
 
-    for filetype, check in _registry:
-        with contextlib.suppress(IndexError):
-            if check(header, f):
-                return filetype
+        for filetype, check in _registry:
+            with contextlib.suppress(IndexError):
+                if check(header, f):
+                    _logger.debug(f"Detected {filename} as {filetype}")
+                    return filetype
     return None
 
 
@@ -246,18 +247,28 @@ def _test_bmp(h: bytes, _f: BinaryIO) -> bool:
     return h[0:2] == b"\x42\x4D"
 
 
-def _test_xbm(h: bytes, _f: BinaryIO) -> bool:
+def _test_xbm(h: bytes, f: BinaryIO) -> bool:
     """X BitMap (XBM).
+
+    Are valid C source files.
 
     Extension: .xbm
 
     Magic Bytes:
-    - ?? ?? (impossible to detect)
+    - None; Use regex on file
 
     Support: native
     """
-    # TODO: implement check
-    raise NotImplementedError()
+    # Regex match is expensive, only do when likely to succeed
+    if h[:7] == b"#define":
+        import re
+
+        h = h + f.read()
+        pattern = (
+            b"#define [a-zA-Z0-9]+_width [0-9]+\n#define [a-zA-Z0-9]+_height [0-9]+"
+        )
+        return re.search(pattern, h) is not None
+    return False
 
 
 def _test_xpm(h: bytes, _f: BinaryIO) -> bool:
@@ -408,5 +419,6 @@ register("pbm", _test_pbm, validate=False)
 register("pgm", _test_pgm, validate=False)
 register("ppm", _test_ppm, validate=False)
 register("bmp", _test_bmp, validate=False)
+register("xbm", _test_xbm, validate=False)
 register("xpm", _test_xpm, validate=False)
 register("mng", _test_mng)
