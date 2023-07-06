@@ -406,9 +406,13 @@ def _test_tga(_h: bytes, f: BinaryIO) -> bool:
     Support: extended
     """
     # Get signature located at end of file
-    f.seek(-18, 2)
-    h = f.read(16)
-    return h == b"\x54\x52\x55\x45\x56\x49\x53\x49\x4F\x4E\x2D\x58\x46\x49\x4C\x45"
+    # Seek relative to end of file for some files
+    try:
+        f.seek(-18, 2)
+        h = f.read(16)
+        return h == b"\x54\x52\x55\x45\x56\x49\x53\x49\x4F\x4E\x2D\x58\x46\x49\x4C\x45"
+    except OSError:
+        return False
 
 
 def _test_wbmp(h: bytes, _f: BinaryIO) -> bool:
