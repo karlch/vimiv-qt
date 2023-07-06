@@ -1,79 +1,57 @@
-/* Underline headers with differently sized blue lines */
-h1 {
-    border-bottom: solid 4px #1F7DE6;
+html[data-theme="light"] {
+    --pst-color-primary: #3F8DB4;
+    --pst-color-info: #3F8DB4;
+
+    --pst-color-secondary: #7AACBC;
+    --pst-color-link-hover: #7AACBC;
+
+    --pst-color-warning: #c79537;
+    --pst-color-success: #4aa56f;
+    --pst-color-attention: #f44336;
+    --pst-color-danger: #f44336;
+
+    --pst-color-background: rgb(244, 243, 245);
+    --pst-color-on-background: rgb(244, 243, 245);
+    --pst-color-surface: rgb(234, 233, 235);
+    --pst-color-on-surface: rgb(214, 213, 215);
+
+    --pst-color-text-base: #1F1D21;
 }
 
-h2 {
-    border-bottom: solid 2px #1F7DE6;
+html[data-theme="dark"] {
+    --pst-color-secondary: #9FE2F6;
+    --pst-color-link-hover: #9FE2F6;
+
+    --pst-color-primary: #89C3D4;
+    --pst-color-info: #89C3D4;
+
+    --pst-color-warning: #c79537;
+    --pst-color-success: #4aa56f;
+    --pst-color-attention: #f44336;
+    --pst-color-danger: #f44336;
+
+    --pst-color-background: #1F1D21;
+    --pst-color-on-background: #2b292d;
+    --pst-color-surface: #2e2c30;
+    --pst-color-on-surface: #444246;
+
+    --pst-color-text-base: #F4F3F6;
+    --pst-color-text-muted: rgb(208, 204, 212)
 }
 
-h3, h4, h5, h6 {
-    border-bottom: solid 1px #1F7DE6;
+img.bordered-image-light {
+    border: 3px solid #3F8DB4;
+    border-radius: 0px;
+    margin: 4px;
+    margin-top: 0px;
+    margin-bottom: 16px;
 }
 
-/* Add a margin around images */
-img {
-    margin: 8px;
-}
-
-/* But not in the navbar on the top */
-.navbar img {
-    margin: 0px;
-    margin-right: 4px;
-}
-
-/* Change navbar color to blue */
-.navbar {
-    background: #1861B3;
-    color: #FFFFFF;
-    border-bottom: solid 4px #1F7DE6;
-}
-
-.navbar-default .navbar-nav > li > a:hover,
-.navbar-default .navbar-nav > li > a:focus {
-  background-color: #1F7DE6;
-}
-
-.navbar-default .navbar-nav > .active > a,
-.navbar-default .navbar-nav > .active > a:hover,
-.navbar-default .navbar-nav > .active > a:focus {
-  background-color: #1F7DE6;
-}
-
-.navbar-default .navbar-toggle:hover,
-.navbar-default .navbar-toggle:focus {
-  background-color: #1F7DE6;
-}
-
-.navbar-default .navbar-nav > .open > a,
-.navbar-default .navbar-nav > .open > a:hover,
-.navbar-default .navbar-nav > .open > a:focus {
-  background-color: #1F7DE6;
-}
-
-@media (max-width: 767px) {
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
-    background-color: #1F7DE6;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover,
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
-    background-color: #1F7DE6;
-  }
-}
-
-/* Change info box color from purple to dark blue */
-.alert-info {
-    background-color: #1861B3;
-    color: #FFFFFF;
-}
-
-.alert-info a {
-    color: #999999;
-}
-
-.alert-info a:hover {
-    color: #BBBBBB;
-    text-decoration: underline;
+img.bordered-image-dark {
+    border: 3px solid #7AACBC;
+    border-radius: 0px;
+    filter: brightness(0.9) contrast(1.1);
+    margin: 4px;
+    margin-top: 0px;
+    margin-bottom: 16px;
 }

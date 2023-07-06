@@ -1,5 +1,5 @@
-Documentation
-=============
+Docs
+====
 
 The following documents are available:
 

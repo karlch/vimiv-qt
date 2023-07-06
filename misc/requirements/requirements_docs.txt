@@ -1,2 +1,2 @@
-sphinx==5.3.0
-sphinx-bootstrap-theme==0.8.1
+sphinx==6.2.1
+pydata-sphinx-theme

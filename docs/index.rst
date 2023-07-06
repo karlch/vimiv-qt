@@ -3,6 +3,12 @@
 .. image:: _static/vimiv/vimiv_banner_800.png
    :width: 400px
    :align: center
+   :class: only-light
+
+.. image:: _static/vimiv/vimiv_banner_darkmode_800.png
+   :width: 400px
+   :align: center
+   :class: only-dark
 
 .. note::
 
@@ -10,8 +16,7 @@
     there are already many improvements compared to the `gtk version
     <https://github.com/karlch/vimiv>`_. The old version is only recommended if you
     require a more stable software. In case there is anything you miss here, please
-    open an `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_. Check the
-    :ref:`roadmap` for more details.
+    open an `issue on github <https://github.com/karlch/vimiv-qt/issues/>`_.
 
 .. include:: description.rst
 
@@ -28,17 +33,37 @@ Light theme:
 
 .. image:: _static/scrots/image_light.png
    :width: 300px
+   :class: bordered-image-light only-light
 
 .. image:: _static/scrots/thumbnail_light.png
    :width: 300px
+   :class: bordered-image-light only-light
+
+.. image:: _static/scrots/image_light.png
+   :width: 300px
+   :class: bordered-image-dark only-dark
+
+.. image:: _static/scrots/thumbnail_light.png
+   :width: 300px
+   :class: bordered-image-dark only-dark
 
 Dark theme:
 
 .. image:: _static/scrots/library_dark.png
    :width: 300px
+   :class: bordered-image-light only-light
 
 .. image:: _static/scrots/command_dark.png
    :width: 300px
+   :class: bordered-image-light only-light
+
+.. image:: _static/scrots/library_dark.png
+   :width: 300px
+   :class: bordered-image-dark only-dark
+
+.. image:: _static/scrots/command_dark.png
+   :width: 300px
+   :class: bordered-image-dark only-dark
 
 Contents
 --------
@@ -47,9 +72,10 @@ Contents
    :maxdepth: 2
 
    documentation/index
-   changelog
-   roadmap
+   documentation/install
    screenshots
+   changelog
+   documentation/contributing
 
 .. include:: documentation/getting_help.rst
 
