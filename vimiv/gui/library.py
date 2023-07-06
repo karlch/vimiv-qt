@@ -470,10 +470,7 @@ class LibraryModel(QStandardItemModel):
         """
         get_size = files.get_size_directory if are_directories else files.get_size_file
         mark_prefix = api.mark.indicator + " "
-        # See https://github.com/PyCQA/pylint/issues/7963
-        # TODO remove once newer pylint version with fix was released
-        enum_start = self.rowCount() + 1
-        for i, path in enumerate(paths, start=enum_start):
+        for i, path in enumerate(paths, start=self.rowCount() + 1):
             name = os.path.basename(path)
             if are_directories:
                 name = utils.add_html(name + "/", "b")
