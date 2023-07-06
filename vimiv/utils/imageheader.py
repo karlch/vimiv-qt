@@ -263,9 +263,10 @@ def _test_xbm(h: bytes, f: BinaryIO) -> bool:
     if h[:7] == b"#define":
         import re
 
-        h = h + f.read()
+        f.seek(0, 0)
+        h = f.read()
         pattern = (
-            b"#define [a-zA-Z0-9]+_width [0-9]+\n#define [a-zA-Z0-9]+_height [0-9]+"
+            b"#define [a-zA-Z0-9]*_width [0-9]+\n#define [a-zA-Z0-9]*_height [0-9]+"
         )
         return re.search(pattern, h) is not None
     return False
