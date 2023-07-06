@@ -40,7 +40,7 @@ Extended QT Support:
 | MNG    | TODO: ?                   | yes                                             |
 | TGA    | tga                       | yes (only version 2, version 1 is undetectable) |
 | TIFF   | tif, tiff                 | yes                                             |
-| WBMP   | wbmp                      | no (what are magic bytes?)                      |
+| WBMP   | wbmp                      | no (is undetectable)                      |
 | WEBP   | webp                      | yes                                             |
 | ---    | ---                       | ---                                             |
 
@@ -409,6 +409,19 @@ def _test_tga(_h: bytes, f: BinaryIO) -> bool:
     f.seek(-18, 2)
     h = f.read(16)
     return h == b"\x54\x52\x55\x45\x56\x49\x53\x49\x4F\x4E\x2D\x58\x46\x49\x4C\x45"
+
+
+def _test_wbmp(h: bytes, _f: BinaryIO) -> bool:
+    """Wireless BitMaP (WBMP).
+
+    Extension: .wbmp
+
+    Magic Bytes:
+    - impossible to detect
+
+    Support: extended
+    """
+    raise NotImplementedError
 
 
 # Register all check functions. Check functions of more frequently used types should be
