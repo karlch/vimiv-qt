@@ -6,22 +6,42 @@
 
 """Tests for vimiv.utils.imageheader."""
 
-from PyQt5.QtGui import QPixmap, QImageReader
+from PyQt5.QtGui import QPixmap, QImageReader, QImageWriter
 
 import pytest
 
 
 from vimiv.utils import imageheader
 
-# Image types which QPixmap is capable of creating, and not what is supported by vimiv!
-SUPPORTED_IMAGE_FORMATS = ["jpg", "png", "pbm", "pgm", "ppm", "bmp"]
+# Formats that are detectable and not detectable by this module
+DETECT_FORMATS = [format for format, _ in imageheader._registry]
+NOT_DETECT_FORMATS = ["svgz", "wbmp"]
+
+# QT Formats that alias to others
+QT_ALIAS_FORMATS = ["jpeg", "tif"]
+
+# Formats that QT can create and that are also detectable
+QT_WRITE_DETECT_FORMATS = [
+    d.data().decode()
+    for d in QImageWriter.supportedImageFormats()
+    if d.data().decode() not in NOT_DETECT_FORMATS
+    and d.data().decode() not in QT_ALIAS_FORMATS
+    and d.data().decode() != "cur"  # CUR types created by QT are actually ICO?!
+]
+
+# Formats that QT can read
+QT_READ_FORMATS = [
+    d.data().decode()
+    for d in QImageReader.supportedImageFormats()
+    if d.data().decode() not in QT_ALIAS_FORMATS
+]
 
 
 @pytest.fixture()
 def mockimageheader(mocker):
     """Fixture to mock imageheader._registry and QImageReader supportedImageFormats."""
     mocker.patch.object(
-        QImageReader, "supportedImageFormats", return_value=SUPPORTED_IMAGE_FORMATS
+        QImageReader, "supportedImageFormats", return_value=QT_READ_FORMATS
     )
     yield mocker.patch("vimiv.utils.imageheader._registry", [])
 
@@ -37,8 +57,9 @@ def create_image(filename: str, *, size=(300, 300)):
     QPixmap(*size).save(filename)
 
 
-@pytest.mark.parametrize("imagetype", SUPPORTED_IMAGE_FORMATS)
-def test_test(qtbot, tmp_path, imagetype):
+@pytest.mark.parametrize("imagetype", QT_WRITE_DETECT_FORMATS)
+def test_detect(qtbot, tmp_path, imagetype):
+    """Only tests check functions for formats that QT can create samples for."""
     name = f"img.{imagetype}"
     filename = str(tmp_path / name)
     create_image(filename)
@@ -50,7 +71,7 @@ def _check_dummy(h, f):
     return True
 
 
-@pytest.mark.parametrize("name", SUPPORTED_IMAGE_FORMATS)
+@pytest.mark.parametrize("name", QT_READ_FORMATS)
 def test_register_supported_format(mockimageheader, tmpfile, name):
     imageheader.register(name, _check_dummy)
     assert mockimageheader, "No test added by add image format"
@@ -58,6 +79,13 @@ def test_register_supported_format(mockimageheader, tmpfile, name):
 
 
 def test_register_unsupported_format(mockimageheader, tmpfile):
+    """Test if check of invalid format gets removed after call to `detect`."""
     imageheader.register("not_a_format", _check_dummy)
     assert imageheader.detect(tmpfile) is None
     assert not mockimageheader, "Unsupported test not removed"
+
+
+@pytest.mark.parametrize("name", QT_READ_FORMATS)
+def test_full_support(name):
+    """Tests if all formats readable by QT are also detected."""
+    assert name in NOT_DETECT_FORMATS or name in DETECT_FORMATS, "Missing check"
