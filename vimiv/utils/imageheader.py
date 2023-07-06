@@ -192,7 +192,7 @@ def _test_svg(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_pbm(h: bytes, _f: BinaryIO) -> bool:
-    """Portable BitMap (PBM) in ASCII and Binary.
+    """Portable Bitmap (PBM) in ASCII and Binary.
 
     Extension: .pbm
 
@@ -206,7 +206,7 @@ def _test_pbm(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_pgm(h: bytes, _f: BinaryIO) -> bool:
-    """Portable GrayMap (PGM) in ASCII and Binary.
+    """Portable Graymap (PGM) in ASCII and Binary.
 
     Extension: .pgm
 
@@ -220,7 +220,7 @@ def _test_pgm(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_ppm(h: bytes, _f: BinaryIO) -> bool:
-    """Portable PixMap (PPM) in ASCII and Binary.
+    """Portable Pixmap (PPM) in ASCII and Binary.
 
     Extension: .ppm
 
@@ -234,7 +234,7 @@ def _test_ppm(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_bmp(h: bytes, _f: BinaryIO) -> bool:
-    """BitMaP (BMP).
+    """Bitmap (BMP).
 
     Extension: .bmp, .dib
 
@@ -247,7 +247,7 @@ def _test_bmp(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_xbm(h: bytes, f: BinaryIO) -> bool:
-    """X BitMap (XBM).
+    """X Bitmap (XBM).
 
     Are valid C source files.
 
@@ -272,7 +272,7 @@ def _test_xbm(h: bytes, f: BinaryIO) -> bool:
 
 
 def _test_xpm(h: bytes, _f: BinaryIO) -> bool:
-    """X PixMap (XPM).
+    """X Pixmap (XPM).
 
     Extension: .xpm
 
@@ -285,7 +285,7 @@ def _test_xpm(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_webp(h: bytes, _f: BinaryIO) -> bool:
-    """Web Picture format (WebP).
+    """Web Picture Format (WebP).
 
     Raster graphics format intended to replace JPEG, PNG, GIF.
 
@@ -316,7 +316,7 @@ def _test_tiff(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_ico(h: bytes, _f: BinaryIO) -> bool:
-    """ICOn (ICO).
+    """Icon (ICO).
 
     Windows' ICON format. Extended to CUR.
 
@@ -359,7 +359,7 @@ def _test_jp2(h: bytes, _f: BinaryIO) -> bool:
 
 
 def _test_cur(h: bytes, _f: BinaryIO) -> bool:
-    """CURsor (CUR).
+    """Cursor (CUR).
 
     Windows' ICON format. Extended from ICO.
 
@@ -416,7 +416,7 @@ def _test_tga(_h: bytes, f: BinaryIO) -> bool:
 
 
 def _test_wbmp(h: bytes, _f: BinaryIO) -> bool:
-    """Wireless BitMaP (WBMP).
+    """Wireless Bitmap (WBMP).
 
     Extension: .wbmp
 
