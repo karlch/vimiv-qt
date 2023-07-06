@@ -30,19 +30,19 @@ Native QT Support:
 | ---    | ---                       | ---                                     |
 
 Extended QT Support:
-| ---    | ---                       | ---                               |
-| Format | Extension according to QT | Vimiv Supported                   |
-| ---    | ---                       | ---                               |
-| ICNS   | ico                       | yes                               |
-| ICNS   | icns                      | yes                               |
-| ICNS   | cur                       | yes (TODO: is it really correct?) |
-| JP2    | TODO: ?                   | yes                               |
-| MNG    | TODO: ?                   | yes                               |
-| TGA    | tga                       | no (undetectable)                 |
-| TIFF   | tif, tiff                 | yes                               |
-| WBMP   | wbmp                      | no (what are magic bytes?)        |
-| WEBP   | webp                      | yes                               |
-| ---    | ---                       | ---                               |
+| ---    | ---                       | ---                                             |
+| Format | Extension according to QT | Vimiv Supported                                 |
+| ---    | ---                       | ---                                             |
+| ICNS   | ico                       | yes                                             |
+| ICNS   | icns                      | yes                                             |
+| ICNS   | cur                       | yes (TODO: is it really correct?)               |
+| JP2    | TODO: ?                   | yes                                             |
+| MNG    | TODO: ?                   | yes                                             |
+| TGA    | tga                       | yes (only version 2, version 1 is undetectable) |
+| TIFF   | tif, tiff                 | yes                                             |
+| WBMP   | wbmp                      | no (what are magic bytes?)                      |
+| WEBP   | webp                      | yes                                             |
+| ---    | ---                       | ---                                             |
 
 A great list of magic bytes is provided here:
 https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -391,18 +391,24 @@ def _test_mng(h: bytes, _f: BinaryIO) -> bool:
     return h[:8] == b"\x8A\x4D\x4E\x47\x0D\x0A\x1A\x0A"
 
 
-def _test_tga(h: bytes, _f: BinaryIO) -> bool:
+def _test_tga(_h: bytes, f: BinaryIO) -> bool:
     """Truevision Graphics Adapter (TGA).
+
+    There are two versions of this file. Version 1 has no signature, and hence, is
+    undetectable, while Version 2 has one at the end of the file.
 
     Extension: .tga, .icb, .vda, .vst
 
     Magic Bytes:
-    - ?? ?? ?? (impossible to detect)
+    - impossible to detect (Version 1)
+    - 54 52 55 45 56 49 53 49 4F 4E 2D 58 46 49 4C 45 (Version 2; footer at end of file)
 
     Support: extended
     """
-    # TODO: implement check
-    raise NotImplementedError()
+    # Get signature located at end of file
+    f.seek(-18, 2)
+    h = f.read(16)
+    return h == b"\x54\x52\x55\x45\x56\x49\x53\x49\x4F\x4E\x2D\x58\x46\x49\x4C\x45"
 
 
 # Register all check functions. Check functions of more frequently used types should be
@@ -417,6 +423,7 @@ register("tiff", _test_tiff)
 register("svg", _test_svg, validate=False)
 register("ico", _test_ico)
 register("icns", _test_icns)
+register("tga", _test_tga, validate=False)
 register("pbm", _test_pbm, validate=False)
 register("pgm", _test_pgm, validate=False)
 register("ppm", _test_ppm, validate=False)
