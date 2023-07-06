@@ -56,9 +56,11 @@ directories. The ordering principle is defined by the ``sort.image_order`` and
    natural                   Natural ordering by basename, i.e. image2.jpg comes before image11.jpg
    recently-modified         Ordering by modification time (``mtime``)
    size                      Ordering by filesize, in bytes for images, in number of files for directories
+   none                      Do not sort or reverse. Use the previous order of the images. If changed to from another sorting type, that order will be used.
    ========================= ===========
 
 In addition, the ordering can be reversed using ``sort.reverse`` and the string-like
 orderings (``alphabetical`` and ``natural``) can be made case-insensitive using
-``sort.ignore_case``. When ``sort.shuffle`` is set, the image filelist is shuffled
-regardless of the other orderings, but the library remains ordered.
+``sort.ignore_case`` except for when the ``none`` ordering type is used.
+When ``sort.shuffle`` is set, the image filelist is shuffled regardless of the other
+orderings, but the library remains ordered.

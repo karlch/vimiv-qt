@@ -8,6 +8,26 @@ Feature: Ordering the image filelist.
         And the image number 2 should be image_2.jpg
         And the image number 11 should be image_11.jpg
 
+	Scenario: Set none sorting after another sort
+        Given I open 12 images without leading zeros in their name
+        When I run set sort.image_order natural
+        Then the image should have the index 1
+        And the image number 1 should be image_1.jpg
+        And the image number 2 should be image_2.jpg
+        And the image number 11 should be image_11.jpg
+        When I run set sort.image_order none
+        Then the image should have the index 1
+        And the image number 1 should be image_1.jpg
+        And the image number 2 should be image_2.jpg
+        And the image number 11 should be image_11.jpg
+
+    Scenario: Reverse none sorting
+        Given I open 5 images
+        When I run set sort.image_order none
+        Then the image should have the index 1
+        When I run set sort.reverse
+        Then the image should have the index 1
+
     Scenario: Reverse current filelist
         Given I open 5 images
         When I run set sort.reverse!

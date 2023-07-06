@@ -325,6 +325,7 @@ class OrderSetting(Setting):
         "alphabetical": str,
         "natural": natural_sort,
         "recently-modified": os.path.getmtime,
+        "none": lambda x: 0
     }
 
     STR_ORDER_TYPES = "alphabetical", "natural"
