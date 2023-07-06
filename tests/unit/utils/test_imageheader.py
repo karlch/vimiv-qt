@@ -85,6 +85,14 @@ def test_register_unsupported_format(mockimageheader, tmpfile):
     assert not mockimageheader, "Unsupported test not removed"
 
 
+def test_register_unsupported_format_not_verify(mockimageheader, tmpfile):
+    """Test if check of invalid remains when registered without verification."""
+    dummy_format = "not_a_format"
+    imageheader.register(dummy_format, _check_dummy, validate=False)
+    assert imageheader.detect(tmpfile) == dummy_format
+    assert (dummy_format, _check_dummy) in imageheader._registry
+
+
 @pytest.mark.parametrize("name", QT_READ_FORMATS)
 def test_full_support(name):
     """Tests if all formats readable by QT are also detected."""

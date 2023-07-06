@@ -106,9 +106,6 @@ def register(
 
         If not, then the filetype check is unregistered.
         """
-        if not validate:
-            return check(header, file)
-
         if check(header, file):
             if hasattr(check_verified, "checked"):
                 return True
@@ -125,10 +122,12 @@ def register(
             _registry.remove((filetype, check_verified))
         return False
 
+    check_register = check_verified if validate else check
+
     if priority:
-        _registry.insert(0, (filetype, check_verified))
+        _registry.insert(0, (filetype, check_register))
     else:
-        _registry.append((filetype, check_verified))
+        _registry.append((filetype, check_register))
 
 
 def _test_jpg(h: bytes, _f: BinaryIO) -> bool:
