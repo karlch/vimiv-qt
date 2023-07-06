@@ -62,7 +62,6 @@ class QtReader(BaseReader):
         self._handler = QImageReader(path, file_format.encode())
         self._handler.setAutoTransform(True)
         if not self._handler.canRead():
-            # TODO
             raise ValueError(f"'{path}' cannot be read as image")
 
     @classmethod
