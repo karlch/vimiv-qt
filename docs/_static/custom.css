@@ -39,18 +39,15 @@ html[data-theme="dark"] {
     --pst-color-text-muted: rgb(208, 204, 212)
 }
 
-img.bordered-image-light {
+.bordered-image-light img {
     border: 3px solid #3F8DB4;
-    border-radius: 0px;
     margin: 4px;
     margin-top: 0px;
     margin-bottom: 16px;
 }
 
-img.bordered-image-dark {
+.bordered-image-dark img {
     border: 3px solid #7AACBC;
-    border-radius: 0px;
-    filter: brightness(0.9) contrast(1.1);
     margin: 4px;
     margin-top: 0px;
     margin-bottom: 16px;

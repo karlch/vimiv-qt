@@ -31,39 +31,47 @@ Screenshots
 
 Light theme:
 
-.. image:: _static/scrots/image_light.png
+.. thumbnail:: _static/scrots/image_light.png
    :width: 300px
+   :group: light-theme-screenshots-only-light
    :class: bordered-image-light only-light
 
-.. image:: _static/scrots/thumbnail_light.png
+.. thumbnail:: _static/scrots/thumbnail_light.png
    :width: 300px
    :class: bordered-image-light only-light
+   :group: light-theme-screenshots-only-light
 
-.. image:: _static/scrots/image_light.png
+.. thumbnail:: _static/scrots/image_light.png
    :width: 300px
    :class: bordered-image-dark only-dark
+   :group: light-theme-screenshots-only-dark
 
-.. image:: _static/scrots/thumbnail_light.png
+.. thumbnail:: _static/scrots/thumbnail_light.png
    :width: 300px
    :class: bordered-image-dark only-dark
+   :group: light-theme-screenshots-only-dark
 
 Dark theme:
 
-.. image:: _static/scrots/library_dark.png
+.. thumbnail:: _static/scrots/library_dark.png
    :width: 300px
    :class: bordered-image-light only-light
+   :group: dark-theme-screenshots-only-light
 
-.. image:: _static/scrots/command_dark.png
+.. thumbnail:: _static/scrots/command_dark.png
    :width: 300px
    :class: bordered-image-light only-light
+   :group: dark-theme-screenshots-only-light
 
-.. image:: _static/scrots/library_dark.png
+.. thumbnail:: _static/scrots/library_dark.png
    :width: 300px
    :class: bordered-image-dark only-dark
+   :group: dark-theme-screenshots-only-dark
 
-.. image:: _static/scrots/command_dark.png
+.. thumbnail:: _static/scrots/command_dark.png
    :width: 300px
    :class: bordered-image-dark only-dark
+   :group: dark-theme-screenshots-only-dark
 
 Contents
 --------
