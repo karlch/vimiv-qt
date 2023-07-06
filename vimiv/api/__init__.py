@@ -94,6 +94,7 @@ def add_external_format(
         test_func: Function returning True if load_func supports this type.
         load_func: Function to load a QPixmap from the passed path.
     """
-    # Priority to overwrite potential "default behaviour"
+    # Prioritize external formats over all default formats, to ensure that on signature
+    # collision, the explicitly registered handler is used.
     imageheader.register(file_format, test_func, priority=True)
     imagereader.external_handler[file_format] = load_func

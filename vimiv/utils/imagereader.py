@@ -102,9 +102,6 @@ class ExternalReader(BaseReader):
         return handler(self.path)
 
 
-READERS = [QtReader, ExternalReader]
-
-
 def get_reader(path: str) -> BaseReader:
     """Retrieve the appropriate image reader class for path."""
     error = ValueError(f"'{path}' cannot be read as image")
@@ -115,8 +112,14 @@ def get_reader(path: str) -> BaseReader:
     if file_format is None:
         raise error
 
-    for readercls in READERS:
-        if readercls.supports(file_format):
-            return readercls(path, file_format)
+    # Prioritize external reader over qt reader to ensure that a external reader can
+    # overwrite a default reader for the same image format.
+    # Used when one wants to use a different methods for generating the QPixmap than how
+    # Qt does it, for a given format.
+    if ExternalReader.supports(file_format):
+        return ExternalReader(path, file_format)
+
+    if QtReader.supports(file_format):
+        return QtReader(path, file_format)
 
     raise error
