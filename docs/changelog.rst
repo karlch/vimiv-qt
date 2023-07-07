@@ -537,3 +537,4 @@ Initial release of the Qt version.
 .. _@timsofteng: https://github.com/timsofteng
 .. _@kAldown: https://github.com/kaldown
 .. _@Yutsuten: https://github.com/Yutsuten
+.. _@buzzingwires: https://github.com/buzzingwires
