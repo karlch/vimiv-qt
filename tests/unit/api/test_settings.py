@@ -189,6 +189,17 @@ def test_order_setting_sort(
     assert sorted_values == expected_values
 
 
+@pytest.mark.parametrize("reverse", [True, False])
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_order_setting_sort_none(monkeypatch, reverse, ignore_case):
+    values = ["a5.j", "A6.j", "a11.j", "a3.j"]
+    monkeypatch.setattr(settings.sort.reverse, "value", reverse)
+    monkeypatch.setattr(settings.sort.ignore_case, "value", ignore_case)
+    o = settings.OrderSetting("order", "none")
+    sorted_values = o.sort(values)
+    assert sorted_values == values
+
+
 @pytest.mark.parametrize("ignore_case", [True, False])
 def test_order_setting_sort_ignore_case(monkeypatch, ignore_case):
     monkeypatch.setattr(settings.sort.ignore_case, "value", ignore_case)
