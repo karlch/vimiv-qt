@@ -89,6 +89,8 @@ Added:
   the changes with ``<return>`` and reject them with ``<escape>``. The
   ``{transformation-info}`` status module displays the currently selected geometry of
   the original image. Thanks `@Yutsuten`_ for reviving this!
+* Add the ``none`` sorting type for the ``sort.image_order`` and ``sort.directory_order``
+  options, implemented by `@buzzingwires`_
 
 Changed:
 ^^^^^^^^
