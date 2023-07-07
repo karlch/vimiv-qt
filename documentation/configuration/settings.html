@@ -256,12 +256,16 @@ directories. The ordering principle is defined by the <code class="docutils lite
 <tr class="row-odd"><td><p>size</p></td>
 <td><p>Ordering by filesize, in bytes for images, in number of files for directories</p></td>
 </tr>
+<tr class="row-even"><td><p>none</p></td>
+<td><p>Do not sort or reverse. Use the existing order of the images (including that of a previous sort type). This is mostly for keeping the order from the command line or stdin.</p></td>
+</tr>
 </tbody>
 </table>
 <p>In addition, the ordering can be reversed using <code class="docutils literal notranslate"><span class="pre">sort.reverse</span></code> and the string-like
 orderings (<code class="docutils literal notranslate"><span class="pre">alphabetical</span></code> and <code class="docutils literal notranslate"><span class="pre">natural</span></code>) can be made case-insensitive using
-<code class="docutils literal notranslate"><span class="pre">sort.ignore_case</span></code>. When <code class="docutils literal notranslate"><span class="pre">sort.shuffle</span></code> is set, the image filelist is shuffled
-regardless of the other orderings, but the library remains ordered.</p>
+<code class="docutils literal notranslate"><span class="pre">sort.ignore_case</span></code> except for when the <code class="docutils literal notranslate"><span class="pre">none</span></code> ordering type is used.
+When <code class="docutils literal notranslate"><span class="pre">sort.shuffle</span></code> is set, the image filelist is shuffled regardless of the other
+orderings, but the library remains ordered.</p>
 </section>
 </section>
 
