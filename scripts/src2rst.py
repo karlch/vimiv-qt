@@ -6,6 +6,7 @@
 
 """Generate reST documentation from source code docstrings."""
 
+import collections
 import inspect
 import importlib
 import os
@@ -102,30 +103,29 @@ def generate_commandline_options():
     # Synopsis Man Page
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
     with open(filename_synopsis, "w", encoding="utf-8") as f:
-        f.write(_generate_synopsis_man(arguments))
+        f.write(_generate_synopsis(arguments, emph="*", sep=r"\ \|\ "))
 
     # Synopsis Documentation
     filename_synopsis = "docs/documentation/cl_options/synopsis.rstsrc"
     with open(filename_synopsis, "w", encoding="utf-8") as f:
-        f.write(f".. code-block::\n\n {_generate_synopsis_doc(arguments)}")
+        raw_synopsis_doc = _generate_synopsis(arguments)
+        synopsis_doc = "\n ".join(textwrap.wrap(raw_synopsis_doc, width=79))
+        f.write(f".. code-block::\n\n {synopsis_doc}")
 
     # Command Listing
-    groups = {}
+    groups = collections.defaultdict(list)
     for arg in arguments:
-        try:
-            groups[arg.group].append(arg)
-        except KeyError:
-            groups[arg.group] = [arg]
+        groups[arg.group].append(arg)
 
     # Command Listing Man Page
     filename_options = "docs/manpage/options.rstsrc"
     with RSTFile(filename_options) as f:
-        _generate_commands_man(groups, f)
+        _generate_cli_man(groups, f)
 
     # Command Listing Documentation
     filename_options = "docs/documentation/cl_options/options.rstsrc"
     with RSTFile(filename_options) as f:
-        _generate_commands_doc(groups, f)
+        _generate_cli_doc(groups, f)
 
 
 class ParserArgument(NamedTuple):
@@ -151,28 +151,20 @@ class ParserArgument(NamedTuple):
 
     def get_metavar(self, formatter: str) -> str:
         """Retrieve metavar."""
-        return (
-            self._format(self.metavar, formatter)
-            if not isinstance(self.metavar, tuple)
-            else " ".join(map(lambda e: self._format(e, formatter), self.metavar))
-        )
+        if self.metavar is None:
+            return ""
+        if isinstance(self.metavar, tuple):
+            return " ".join(self._format(e, formatter) for e in self.metavar)
+        return self._format(self.metavar, formatter)
 
     def get_name_metavar(
         self, name_formatter: str, metavar_formatter: str
     ) -> List[str]:
         """Retrieve all not-none names and append metavar."""
-        return list(
-            map(
-                (
-                    lambda e: f"{e} {self.get_metavar(metavar_formatter)}"
-                    if self.metavar is not None
-                    else e
-                ),
-                [name for name in self.get_names(name_formatter)]
-                if len(self.get_names("")) > 0
-                else [self.get_metavar(metavar_formatter)],
-            )
-        )
+        names = self.get_names(name_formatter)
+        metavar = self.get_metavar(metavar_formatter)
+        lst = names if names else [metavar]
+        return [f"{e} {metavar}" if metavar else e for e in lst]
 
     def _format(self, element: str, formatter: str) -> str:
         """Wrap the element into the format string."""
@@ -212,45 +204,29 @@ def _get_arguments(argparser: parser.argparse.ArgumentParser) -> List[ParserArgu
     ]
 
 
-def _generate_synopsis_man(arguments: List[ParserArgument]) -> str:
-    """Generate synopsis of vimiv with man page formatting.
+def _generate_synopsis(arguments: List[ParserArgument], emph: str = "", sep="|") -> str:
+    """Generate formatted synopsis of vimiv.
 
     Args:
         arguments: List of instances of ParserArgument.
+        emph: Character used for emphasis.
+        sep: String used to separate different versions of the same argument, e.g. -o
+            and --output.
     Returns:
         Formatted synopsis for the man page.
     """
-    synopsis = "**vimiv**"
+    emph2 = 2 * emph
+    synopsis = f"{emph2}vimiv{emph2}"
     for arg in arguments:
         if arg.is_positional:
-            synopsis += f" [{arg.get_metavar('**')}]"
+            synopsis += f" [{arg.get_metavar(emph2)}]"
         else:
-            command = "\ \|\ ".join(arg.get_name_metavar("**", "*"))
+            command = sep.join(arg.get_name_metavar(emph2, emph))
             synopsis += f" [{command}]"
-
     return synopsis
 
 
-def _generate_synopsis_doc(arguments: List[ParserArgument]) -> str:
-    """Generate synopsis of vimiv with documentation formatting.
-
-    Args:
-        arguments: List of instances of ParserArgument.
-    Returns:
-        Formatted synopsis for the documentation.
-    """
-    synopsis = "vimiv"
-    for arg in arguments:
-        if arg.is_positional:
-            synopsis += f" [{arg.get_metavar('')}]"
-        else:
-            command = "|".join(arg.get_name_metavar("", ""))
-            synopsis += f" [{command}]"
-
-    return "\n ".join(textwrap.wrap(synopsis, width=79))
-
-
-def _generate_commands_man(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
+def _generate_cli_man(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
     """Generate commands listing with man page formatting.
 
     Args:
@@ -265,12 +241,11 @@ def _generate_commands_man(groups: Dict[str, List[ParserArgument]], f: RSTFile) 
             if arg.is_positional:
                 f.write(f"{arg.get_metavar('**')}\n\n\t{arg.description}\n\n")
             else:
-                f.write(
-                    f"{', '.join(arg.get_name_metavar('**', '*'))}\n\n\t{arg.description}\n\n"
-                )
+                f.write(f"{', '.join(arg.get_name_metavar('**', '*'))}\n\n")
+                f.write(f"\t{arg.description}\n\n")
 
 
-def _generate_commands_doc(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
+def _generate_cli_doc(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
     """Generate commands listing with documentation formatting.
 
     Args:
@@ -283,16 +258,10 @@ def _generate_commands_doc(groups: Dict[str, List[ParserArgument]], f: RSTFile) 
         rows = [("Command", "Description")]
         for arg in arguments:
             if arg.is_positional:
-                rows.append((arg.get_metavar("``"), arg.description))
+                name = arg.get_metavar("``")
             else:
-                rows.append(
-                    (
-                        ", ".join(
-                            map(lambda e: f"``{e}``", arg.get_name_metavar("", ""))
-                        ),
-                        arg.description,
-                    )
-                )
+                name = ", ".join(f"``{e}``" for e in arg.get_name_metavar("", ""))
+            rows.append((name, arg.description))
         f.write_table(rows, title=group.capitalize(), widths="50 50")
 
 
