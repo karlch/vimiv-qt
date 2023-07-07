@@ -68,12 +68,15 @@ def generate_settings():
     print("generating settings...")
     filename = "docs/documentation/configuration/settings_table.rstsrc"
     with RSTFile(filename) as f:
-        rows = [("Setting", "Description")]
+        rows = [("Setting", "Description", "Default", "Type")]
         for name in sorted(api.settings._storage.keys()):
             setting = api.settings._storage[name]
             if setting.desc:  # Otherwise the setting is meant to be hidden
-                rows.append((name, setting.desc))
-        f.write_table(rows, title="Overview of settings", widths="30 70")
+                default = str(setting.default)
+                if len(default) > 20:  # Cut very long defaults (exif)
+                    default = default[:17] + "..."
+                rows.append((name, setting.desc, default, setting.typ.__name__))
+        f.write_table(rows, title="Overview of settings", widths="20 60 15 5")
 
 
 def generate_keybindings():
