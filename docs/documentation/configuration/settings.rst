@@ -56,7 +56,7 @@ directories. The ordering principle is defined by the ``sort.image_order`` and
    natural                   Natural ordering by basename, i.e. image2.jpg comes before image11.jpg
    recently-modified         Ordering by modification time (``mtime``)
    size                      Ordering by filesize, in bytes for images, in number of files for directories
-   none                      Do not sort or reverse. Use the previous order of the images. If changed to from another sorting type, that order will be used.
+   none                      Do not sort or reverse. Use the existing order of the images (including that of a previous sort type). This is mostly for keeping the order from the command line or stdin.
    ========================= ===========
 
 In addition, the ordering can be reversed using ``sort.reverse`` and the string-like
