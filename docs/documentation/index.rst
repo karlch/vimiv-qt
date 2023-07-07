@@ -8,9 +8,9 @@ The following documents are available:
 
    install
    getting_started
-   cl_options/index
    commands
    configuration/index
+   cl_options/index
    metadata
    contributing
    migrating
