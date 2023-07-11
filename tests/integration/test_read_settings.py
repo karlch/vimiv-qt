@@ -19,7 +19,7 @@ from vimiv.config import configfile
 UPDATED_CONFIG = {
     "SORT": {"shuffle": "True"},
     "IMAGE": {"overzoom": "4.2"},
-    "THUMBNAIL": {"size": "64", "save": "False"},
+    "THUMBNAIL": {"size": "64"},
 }
 
 
@@ -46,7 +46,7 @@ UPDATED_EXIF_KEY_SETS = {
 UPDATED_CONFIG_INVALID = {
     "SORT": {"shuffle": "not a bool"},
     "IMAGE": {"overzoom": "not a float"},
-    "THUMBNAIL": {"size": "not an int", "save": "not a bool"},
+    "THUMBNAIL": {"size": "not an int"},
 }
 
 
@@ -86,7 +86,6 @@ def test_read_config(configpath):
     assert api.settings.sort.shuffle.value is True
     assert api.settings.image.overzoom.value == 4.2
     assert api.settings.thumbnail.size.value == 64
-    assert api.settings.thumbnail.save.value is False
 
 
 @pytest.mark.parametrize(
