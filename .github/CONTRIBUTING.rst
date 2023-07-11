@@ -1,5 +1,5 @@
-Contributing Guidelines
-=======================
+Contributing
+============
 
 You want to contribute to vimiv? Great! Every little help counts and is appreciated!
 
