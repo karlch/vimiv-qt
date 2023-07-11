@@ -81,6 +81,8 @@ should work.
 
 .. include:: dependency_info.rst
 
+.. include:: updating_icon_cache.rst
+
 .. _install_using_tox:
 
 Using Tox

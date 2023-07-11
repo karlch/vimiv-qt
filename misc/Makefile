@@ -37,7 +37,6 @@ install:
 	gzip -n -9 -f  $(MANDIR)/man1/vimiv.1
 	$(foreach i,$(ICONSIZES),install -Dm644 icons/vimiv_${i}x${i}.png $(DATADIR)/icons/hicolor/${i}x${i}/apps/vimiv.png;)
 	install -Dm644 icons/vimiv.svg $(DATADIR)/icons/hicolor/scalable/apps/vimiv.svg
-	-gtk-update-icon-cache $(DATADIR)/icons/hicolor
 
 uninstall:
 	scripts/uninstall_pythonpkg.sh
@@ -47,7 +46,6 @@ uninstall:
 	rm $(MANDIR)/man1/vimiv.1.gz
 	$(foreach i,$(ICONSIZES),rm $(DATADIR)/icons/hicolor/${i}x${i}/apps/vimiv.png;)
 	rm $(DATADIR)/icons/hicolor/scalable/apps/vimiv.svg
-	-gtk-update-icon-cache $(DATADIR)/icons/hicolor
 
 clean:
 	rm -rf build vimiv.egg-info/
