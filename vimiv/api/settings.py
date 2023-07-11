@@ -471,7 +471,9 @@ class thumbnail:  # pylint: disable=invalid-name
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
     save = BoolSetting(
-        "thumbnail.save", True, desc="Save new thumbnails to disk for later use"
+        "thumbnail.save",
+		True,
+		desc="Save new thumbnails to the disk in the shared icon cache for later use"
     )
 
 
