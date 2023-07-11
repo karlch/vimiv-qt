@@ -470,7 +470,9 @@ class thumbnail:  # pylint: disable=invalid-name
     """Namespace for thumbnail related settings."""
 
     size = ThumbnailSizeSetting("thumbnail.size", 128, desc="Size of thumbnails")
-    save = BoolSetting("thumbnail.save", True, desc="Save new thumbnails to disk for later use")
+    save = BoolSetting(
+        "thumbnail.save", True, desc="Save new thumbnails to disk for later use"
+    )
 
 
 class slideshow:  # pylint: disable=invalid-name
