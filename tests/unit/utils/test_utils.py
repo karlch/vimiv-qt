@@ -23,7 +23,6 @@ def cached_method_cls(mocker):
     """Fixture to retrieve a class with mock utilities and a cached method."""
 
     class CachedMethodCls:
-
         RESULT = 42
 
         def __init__(self):
@@ -143,7 +142,6 @@ def test_parameter_names(function):
 @pytest.mark.parametrize("type_hint", ("int", int))
 def test_slot(type_hint):
     class Dummy(QObject):
-
         signal = pyqtSignal(int)
 
         def __init__(self):
