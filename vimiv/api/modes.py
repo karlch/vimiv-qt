@@ -203,12 +203,7 @@ def get_by_name(name: str) -> Mode:
 
 
 class _ModeWidget(QWidget):
-    """Helper class defining the requirements for mode widgets.
-
-    This should in principle be solved using protocols, but these are only available
-    starting from python 3.8 and we still support python 3.6.
-    See https://docs.python.org/3/library/typing.html#typing.Protocol for more details.
-    """
+    """Helper class defining the requirements for mode widgets."""
 
     def current(self) -> str:
         """Return the current path valid for this mode."""
