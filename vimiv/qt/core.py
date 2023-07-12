@@ -19,6 +19,7 @@ elif qt.USE_PYSIDE6:
     from PySide6.QtCore import __version__ as PYQT_VERSION_STR
 
     pyqtSignal = Signal
+    pyqtBoundSignal = SignalInstance
     pyqtSlot = Slot
     QT_VERSION_STR = qVersion()
 
