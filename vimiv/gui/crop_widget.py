@@ -7,7 +7,7 @@
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
 from vimiv.qt import USE_PYQT5
-from vimiv.qt.core import Qt, QPoint, QPointF, QRect, QRectF, QSize
+from vimiv.qt.core import Qt, QPoint, QRect, QRectF, QSize
 from vimiv.qt.gui import QPainter, QColor, QImage
 from vimiv.qt.widgets import QApplication, QStyle, QStyleOption, QWidget
 

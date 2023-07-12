@@ -25,6 +25,7 @@ elif qt.USE_PYSIDE6:
 
 
 class Align:
+    """Namespace for easier access to the Qt alignment flags."""
 
     Center = Qt.AlignmentFlag.AlignCenter
     Left = Qt.AlignmentFlag.AlignLeft
