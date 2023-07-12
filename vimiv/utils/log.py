@@ -47,7 +47,7 @@ In case you want to ensure that a log message is only logged a single time, pass
 import logging
 from typing import Dict, List, Optional, Any, Set
 
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtCore import pyqtSignal, QObject, QLoggingCategory
 
 import vimiv
 
@@ -111,6 +111,11 @@ def setup_logging(level: int, *debug_modules: str) -> None:
     _app_logger.level = level
     _app_logger.handlers = [file_handler, console_handler, statusbar_loghandler]
     LazyLogger.handlers = [console_handler, file_handler]
+    # Disable qt logging at higher log levels
+    if level > logging.ERROR:
+        QLoggingCategory.setFilterRules("*.warning=false\n*.critical=false")
+    elif level > logging.WARNING:
+        QLoggingCategory.setFilterRules("*.warning=false")
     # Setup debug logging for specific module loggers
     _debug_loggers.extend(debug_modules)
     for name, logger in _module_loggers.items():
