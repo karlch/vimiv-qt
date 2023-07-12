@@ -113,6 +113,7 @@ Changed:
   default, ``metadata_pyexiv2`` or ``metadata_piexif`` is loaded, if the respective
   backend is installed. The default behaviour can be overridden by explicitly loading a
   metadata plugin.
+* Vimiv now requires at least Python 3.8 and thus PyQt 5.13.2.
 
 Fixed:
 ^^^^^^
