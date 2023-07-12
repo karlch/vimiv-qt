@@ -41,7 +41,9 @@ jobs:
           - python: "3.11"
             toxenv: packaging
           - python: "3.11"
-            toxenv: mypy
+            toxenv: mypy-pyqt5
+          - python: "3.11"
+            toxenv: mypy-pyqt6
       fail-fast: false
 
     steps:

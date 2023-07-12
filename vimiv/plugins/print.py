@@ -11,10 +11,15 @@ from typing import Optional, Any, Union
 
 from vimiv.qt.core import QObject, Qt, QSize, pyqtBoundSignal
 from vimiv.qt.gui import QPixmap, QMovie, QPainter
-from vimiv.qt.printsupport import QPrintDialog, QPrintPreviewDialog, QPrinter
+from vimiv.qt.printsupport import (
+    QPrintDialog,
+    QPrintPreviewDialog,
+    QPrinter,
+    Orientation,
+)
 from vimiv.qt.svg import QtSvg
 
-from vimiv import api
+from vimiv import api, qt
 from vimiv.utils import slot, log
 
 
@@ -101,7 +106,10 @@ class PrintWidget(abc.ABC):
     def print(self, printer: QPrinter, auto_apply_orientation: bool = False) -> None:
         """Print the widget."""
         if auto_apply_orientation and self.size.width() > self.size.height():
-            printer.setOrientation(QPrinter.Orientation.Landscape)
+            if qt.USE_PYQT5:
+                printer.setOrientation(Orientation.Landscape)
+            else:
+                printer.setPageOrientation(Orientation.Landscape)
         self.paint(printer)
 
     @abc.abstractmethod

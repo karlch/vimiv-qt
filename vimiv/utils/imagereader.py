@@ -61,7 +61,7 @@ class QtReader(BaseReader):
 
     def __init__(self, path: str, file_format: str):
         super().__init__(path, file_format)
-        self._handler = QImageReader(path, file_format.encode())
+        self._handler = QImageReader(path, file_format.encode())  # type: ignore[call-overload,unused-ignore]
         self._handler.setAutoTransform(True)
         if not self._handler.canRead():
             # TODO

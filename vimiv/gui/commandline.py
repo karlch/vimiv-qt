@@ -70,7 +70,7 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         self.textEdited.connect(self._on_text_edited)
         self.textChanged.connect(self._incremental_search)
         self.cursorPositionChanged.connect(self._on_cursor_position_changed)
-        QCoreApplication.instance().aboutToQuit.connect(  # type: ignore
+        QCoreApplication.instance().aboutToQuit.connect(  # type: ignore[arg-type,union-attr,unused-ignore]
             self._history.write
         )
 

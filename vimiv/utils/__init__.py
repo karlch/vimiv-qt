@@ -198,7 +198,7 @@ def slot(function: FuncT) -> FuncT:
     annotations = typing.get_type_hints(function)
     args = _slot_args(function, annotations)
     kwargs = _slot_kwargs(annotations)
-    return pyqtSlot(*args, **kwargs)(function)  # type: ignore[return-value]
+    return pyqtSlot(*args, **kwargs)(function)  # type: ignore[return-value,unused-ignore]
 
 
 def _slot_args(function, annotations):
