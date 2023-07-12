@@ -6,7 +6,8 @@
 
 """Widget to display a rectangle for cropping and interact with image and transform."""
 
-from vimiv.qt.core import Qt, QPoint, QRect, QRectF, QSize
+from vimiv.qt import USE_PYQT5
+from vimiv.qt.core import Qt, QPoint, QPointF, QRect, QRectF, QSize
 from vimiv.qt.gui import QPainter, QColor, QImage
 from vimiv.qt.widgets import QApplication, QStyle, QStyleOption, QWidget
 
@@ -112,7 +113,10 @@ class CropWidget(TransformWidget):
         is outside the parent widget, the movement is stopped.
         """
         if self.moving:
-            event_pos = event.globalPos()
+            if USE_PYQT5:
+                event_pos = event.globalPos()
+            else:
+                event_pos = event.globalPosition().toPoint()
             origin = self.image.mapToGlobal(QPoint(0, 0))
             if not self.image.geometry().contains(event_pos - origin):
                 return

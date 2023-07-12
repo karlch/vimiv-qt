@@ -12,7 +12,7 @@ import pathlib
 import pytest
 import pytest_bdd as bdd
 
-from vimiv.qt.core import Qt, QProcess, QTimer
+from vimiv.qt.core import Qt, QProcess, QTimer, QPointF
 from vimiv.qt.gui import QFocusEvent, QMouseEvent
 from vimiv.qt.widgets import QApplication
 
@@ -193,9 +193,9 @@ def mousedrag(qtbot):
         button = buttons = Qt.MouseButton.NoButton
         move_event = QMouseEvent(
             QMouseEvent.Type.MouseMove,
-            end,
-            global_end,
-            global_end,
+            QPointF(end),
+            QPointF(global_end),
+            QPointF(global_end),
             button,
             buttons,
             Qt.KeyboardModifier.NoModifier,
