@@ -325,7 +325,7 @@ class OrderSetting(Setting):
         "alphabetical": str,
         "natural": natural_sort,
         "recently-modified": os.path.getmtime,
-        "none": lambda x: 0
+        "none": lambda x: 0,
     }
 
     STR_ORDER_TYPES = "alphabetical", "natural"
@@ -473,7 +473,7 @@ class thumbnail:  # pylint: disable=invalid-name
     save = BoolSetting(
         "thumbnail.save",
         True,
-        desc="Save new thumbnails to the disk in the shared icon cache for later use"
+        desc="Save new thumbnails to disk in the shared icon cache for later use",
     )
 
 
