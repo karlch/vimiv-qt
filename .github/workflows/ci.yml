@@ -10,12 +10,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - python: "3.7"
-            toxenv: pyqt511
-          - python: "3.7"
-            toxenv: pyqt512
-          - python: "3.7"
-            toxenv: pyqt513
           - python: "3.8"
             toxenv: pyqt513
           - python: "3.8"

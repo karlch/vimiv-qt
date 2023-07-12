@@ -28,8 +28,8 @@ except ImportError:  # pragma: no cover  # PyQt is there in tests, using None is
     PYQT_VERSION = None  # type: ignore
 
 
-PYTHON_REQUIRED_VERSION = (3, 6)
-PYQT_REQUIRED_VERSION = (5, 9, 2)
+PYTHON_REQUIRED_VERSION = (3, 8)
+PYQT_REQUIRED_VERSION = (5, 13, 2)
 ERR_CODE = 2
 
 

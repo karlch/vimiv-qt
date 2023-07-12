@@ -38,8 +38,8 @@ def read_from_init(name):
 
 
 setuptools.setup(
-    python_requires=">=3.6",
-    install_requires=["PyQt5>=5.9.2"],
+    python_requires=">=3.8",
+    install_requires=["PyQt5>=5.13.2"],
     packages=setuptools.find_packages(),
     ext_modules=[manipulate_module],
     entry_points={"gui_scripts": ["vimiv = vimiv.startup:main"]},
@@ -67,8 +67,6 @@ setuptools.setup(
         "Natural Language :: English",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
