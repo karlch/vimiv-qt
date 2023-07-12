@@ -91,6 +91,7 @@ Added:
   the original image. Thanks `@Yutsuten`_ for reviving this!
 * Add the ``none`` sorting type for the ``sort.image_order`` and ``sort.directory_order``
   options, implemented by `@buzzingwires`_
+* Add the ``thumbnail.save`` option, implemented by `@buzzingwires`_
 
 Changed:
 ^^^^^^^^

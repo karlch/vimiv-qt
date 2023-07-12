@@ -11,6 +11,7 @@ from PyQt5.QtGui import QPixmap
 
 import pytest
 
+from vimiv.api import settings
 from vimiv.utils import thumbnail_manager
 
 
@@ -22,6 +23,28 @@ def manager(qtbot, tmp_path, mocker):
     mocker.patch("vimiv.utils.xdg.user_cache_dir", return_value=str(tmp_cache_dir))
     # Create thumbnail manager and yield the instance
     yield thumbnail_manager.ThumbnailManager(None)
+
+
+def test_thumbnail_save_disabled(monkeypatch, qtbot, tmp_path, manager):
+    monkeypatch.setattr(settings.thumbnail.save, "value", False)
+    no_thumbnail_path = str(tmp_path / "no_thumbnail.jpg")
+    QPixmap(300, 300).save(no_thumbnail_path, "jpg")
+    manager.create_thumbnails_async([no_thumbnail_path])
+    check_thumbails_created(qtbot, manager, 0)
+
+
+def test_thumbnail_save_disabled_no_delete_old(monkeypatch, qtbot, tmp_path, manager):
+    monkeypatch.setattr(settings.thumbnail.save, "value", True)
+    has_thumbnail_path = str(tmp_path / "has_thumbnail.jpg")
+    QPixmap(300, 300).save(has_thumbnail_path, "jpg")
+    manager.create_thumbnails_async([has_thumbnail_path])
+    check_thumbails_created(qtbot, manager, 1)
+
+    monkeypatch.setattr(settings.thumbnail.save, "value", False)
+    no_thumbnail_path = str(tmp_path / "no_thumbnail.jpg")
+    QPixmap(300, 300).save(no_thumbnail_path, "jpg")
+    manager.create_thumbnails_async([has_thumbnail_path, no_thumbnail_path])
+    check_thumbails_created(qtbot, manager, 1)
 
 
 @pytest.mark.parametrize("n_paths", (1, 5))
