@@ -23,6 +23,7 @@ class WRAPPERS(enum.Enum):
     PySide6 = "PySide6"
 
 
+_WRAPPERS_PYQT = [WRAPPERS.PyQt5, WRAPPERS.PyQt6]
 _WRAPPER_NAMES = [wrapper.value for wrapper in WRAPPERS]
 _WRAPPER_NAMES_STR = ", ".join(_WRAPPER_NAMES)
 
@@ -55,8 +56,11 @@ def _select_wrapper():
 
 
 def _autoselect_wrapper():
-    """Select a python Qt wrapper version based on availability and enum order."""
-    for wrapper in WRAPPERS:
+    """Select a python Qt wrapper version based on availability and enum order.
+
+    We do not auto-detect PySide6 yet, as there are still multiple issues.
+    """
+    for wrapper in _WRAPPERS_PYQT:
         try:
             importlib.import_module(wrapper.value)
             return wrapper
