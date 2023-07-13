@@ -6,8 +6,8 @@
 
 """Plugin enabling support for additional image formats.
 
-Adds support for image formats what are not natively or by qtimageformats supported, but
-though some other QT module.
+Adds support for image formats that are not supported by Qt natively or by the
+qtimageformats add-on, but instead require some other Qt module.
 
 The required Qt module is not installed by Vimiv and requires explicit installation.
 

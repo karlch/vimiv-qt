@@ -7,8 +7,8 @@
 
 """Image type detection based on magic bytes.
 
-The following table shows which image types can be read by QT natively, while the second
-one shows which can be read when having the `qtimageformats` ad-on module installed.
+The following table shows which image types can be read by Qt natively, while the second
+one shows which can be read when having the `qtimageformats` add-on module installed.
 
 This module allows to detect images of these types based on the magic bytes of the file.
 
@@ -67,7 +67,7 @@ def detect(filename: str) -> Optional[str]:
     """Determine type of image based on the magic bytes.
 
     Evaluates each registered check function in the order they were registered. If
-    registered with `priority`, then that check is evaluated before all checks with out
+    registered with `priority`, then that check is evaluated before all checks without
     `priority`.
 
     Args:
