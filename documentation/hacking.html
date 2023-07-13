@@ -636,9 +636,7 @@ can also solve this using the plugin system. A nice example of how to do this is
 raw images using <code class="docutils literal notranslate"><span class="pre">dcraw</span></code>.</p>
 <p>To make this work, you need to implement two functions:</p>
 <ol class="arabic simple">
-<li><p>A function which checks if a path is of your filetype. The function must be of the
-same form as used by the standard library module
-<a class="reference external" href="https://docs.python.org/3/library/imghdr.html">imghdr</a>.</p></li>
+<li><p>A function which checks if a path is of your filetype.</p></li>
 <li><p>The actual loading function which creates a <code class="docutils literal notranslate"><span class="pre">QPixmap</span></code> from the path.</p></li>
 </ol>
 <p>Finally, you tell vimiv about the newly supported filetype:</p>
