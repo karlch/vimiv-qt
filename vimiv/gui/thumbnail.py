@@ -9,7 +9,7 @@
 import contextlib
 import math
 import os
-from typing import List, Optional, Iterator, cast
+from typing import List, Optional, Iterator, cast, Set, Tuple
 
 from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
@@ -83,7 +83,7 @@ class ThumbnailView(
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         QListWidget.__init__(self)
 
-        self._rendered_paths = set()
+        self._rendered_paths: Set[str] = set()
         self._paths: List[str] = []
 
         fail_pixmap = create_pixmap(
@@ -150,8 +150,9 @@ class ThumbnailView(
         if api.settings.thumbnail.load_behind.value == -1:
             result = 0
         else:
-            result = max(0,
-                       self.current_index() - api.settings.thumbnail.load_behind.value)
+            result = max(
+                0, self.current_index() - api.settings.thumbnail.load_behind.value
+            )
         return result
 
     def _last_index(self) -> int:
@@ -162,21 +163,24 @@ class ThumbnailView(
         elif api.settings.thumbnail.load_ahead.value == -1:
             result = len(self._paths) - 1
         else:
-            result = min(len(self._paths) - 1,
-                       self.current_index() + api.settings.thumbnail.load_ahead.value)
+            result = min(
+                len(self._paths) - 1,
+                self.current_index() + api.settings.thumbnail.load_ahead.value,
+            )
         return result
 
-    def _index_range(self) -> tuple[int, int]:
-        """Return a tuple with the first index to be rendered, and last, plus one to match a typical Python range."""
+    def _index_range(self) -> Tuple[int, int]:
+        """Return the first and last indexes in a tuple fitting a Python range."""
         return (self._first_index(), self._last_index() + 1)
 
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
         item = self.item(index)
         # Otherwise it has been deleted in the meanwhile
-        if item is not None and\
-           (api.settings.thumbnail.unload_threshold.value == -1 or\
-           len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value):
+        if item is not None and (
+            api.settings.thumbnail.unload_threshold.value == -1
+            or len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
+        ):
             item.setIcon(ThumbnailItem.default_icon())
             self._rendered_paths.discard(self._paths[index])
 
@@ -200,7 +204,9 @@ class ThumbnailView(
         first_index, last_index = self._index_range()
         desired_paths = []
         indices = []
-        for p, i in zip(self._paths[first_index:last_index], range(first_index, last_index)):
+        for p, i in zip(
+            self._paths[first_index:last_index], range(first_index, last_index)
+        ):
             if p not in self._rendered_paths:
                 desired_paths.append(p)
                 indices.append(i)
@@ -242,8 +248,9 @@ class ThumbnailView(
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
         first_index, last_index = self._index_range()
-        self._manager.create_thumbnails_async(range(first_index, last_index),
-                                              paths[first_index:last_index])
+        self._manager.create_thumbnails_async(
+            range(first_index, last_index), paths[first_index:last_index]
+        )
         _logger.debug("... update completed")
 
     @utils.slot
@@ -306,8 +313,12 @@ class ThumbnailView(
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
-    @api.keybindings.register(("<ctrl>b",  "<page-up>"), "scroll page-up", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register(("<ctrl>f",  "<page-down>"), "scroll page-down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        ("<ctrl>b", "<page-up>"), "scroll page-up", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        ("<ctrl>f", "<page-down>"), "scroll page-down", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register(
         "<ctrl>u", "scroll half-page-up", mode=api.modes.THUMBNAIL
     )

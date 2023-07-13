@@ -62,4 +62,4 @@ Feature: Lazy load thumbnails
         Then there should be 6 rendered thumbnails
         And the first index should be 3
         And the last index should be 7
-		And image_8.jpg should be in the rendered thumbnails
+        And image_8.jpg should be in the rendered thumbnails
