@@ -48,7 +48,6 @@ A great list of magic bytes is provided here:
 https://en.wikipedia.org/wiki/List_of_file_signatures
 """
 
-import contextlib
 import functools
 
 from typing import Optional, List, Callable, Tuple, BinaryIO
@@ -81,10 +80,13 @@ def detect(filename: str) -> Optional[str]:
         header = f.read(32)
 
         for filetype, check in _registry:
-            with contextlib.suppress(IndexError):
+            # Use try instead of contextlib.suppress due to zero-overhead.
+            try:
                 if check(header, f):
                     _logger.debug(f"Detected {filename} as {filetype}")
                     return filetype
+            except IndexError:
+                pass
     return None
 
 
