@@ -475,9 +475,9 @@ class thumbnail:  # pylint: disable=invalid-name
         True,
         desc="Save new thumbnails to disk in the shared icon cache for later use",
     )
-    load_behind = IntSetting("thumbnail.load_behind", 0, desc="Maximum number of thumbnails to render behind the currently selected one.")
-    load_ahead = IntSetting("thumbnail.load_ahead", 0, desc="Maximum number of thumbnails to render ahead of the currently selected one.")
-    unload_threshold = IntSetting("thumbnail.unload_threshold", 0, desc="Don't unload thumbnails unless there are more than this number rendered.")
+    load_behind = IntSetting("thumbnail.load_behind", -1, desc="Maximum number of thumbnails to render behind the currently selected one. -1 means no limit.")
+    load_ahead = IntSetting("thumbnail.load_ahead", -1, desc="Maximum number of thumbnails to render ahead of the currently selected one. -1 means no limit.")
+    unload_threshold = IntSetting("thumbnail.unload_threshold", -1, desc="Don't unload thumbnails unless there are more than this number rendered. -1 means no limit.")
 
 class slideshow:  # pylint: disable=invalid-name
     """Namespace for slideshow related settings."""
