@@ -16,7 +16,7 @@ import contextlib
 import hashlib
 import os
 import tempfile
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
 from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
 from PyQt5.QtGui import QIcon, QPixmap, QImage
@@ -72,7 +72,7 @@ class ThumbnailManager(QObject):
         xdg.makedirs(self.directory, self.fail_directory)
         self.fail_pixmap = fail_pixmap
 
-    def create_thumbnails_async(self, indices: List[int], paths: List[str]) -> None:
+    def create_thumbnails_async(self, indices: Iterable[int], paths: List[str]) -> None:
         """Start ThumbnailsCreator for each path to create thumbnails.
 
         Args:
