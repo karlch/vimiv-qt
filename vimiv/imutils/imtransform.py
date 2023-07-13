@@ -59,11 +59,11 @@ class Transform(QTransform):
     _signals = Signals()
     transformed = _signals.transformed
 
-    @api.objreg.register
     def __init__(self, current_pixmap):
         super().__init__()
         self._current = current_pixmap
         self._original = None
+        api.objreg.register(self)
 
     @property
     def current(self):

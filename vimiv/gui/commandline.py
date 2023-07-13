@@ -47,8 +47,6 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
     }
     """
 
-    @api.modes.widget(api.modes.COMMAND)
-    @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
 
@@ -56,6 +54,9 @@ class CommandLine(eventhandler.EventHandlerMixin, QLineEdit):
         self._history = cast("history.History", None)
 
         api.modes.COMMAND.first_entered.connect(self.init)
+
+        api.objreg.register(self)
+        api.modes.assign_widget(self, api.modes.COMMAND)
 
     def init(self) -> None:
         """Lazy-initialize command-line when first entering command mode."""

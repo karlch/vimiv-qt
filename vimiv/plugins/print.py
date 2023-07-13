@@ -37,7 +37,6 @@ class PrintHandler(QObject):
         _widget: Currently displayed PrintWidget to print.
     """
 
-    @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
 
@@ -46,6 +45,7 @@ class PrintHandler(QObject):
         api.signals.pixmap_loaded.connect(self._on_pixmap_loaded)
         api.signals.movie_loaded.connect(self._on_movie_loaded)
         api.signals.svg_loaded.connect(self._on_svg_loaded)
+        api.objreg.register(self)
 
     @api.commands.register(mode=api.modes.IMAGE)
     def print(self, preview: bool = False) -> None:

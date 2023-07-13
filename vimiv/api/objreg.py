@@ -13,15 +13,15 @@ define an interface used by commands as well as statusbar modules to retrieve th
 ``self`` argument for methods that require an instance of the class.
 
 To register a new class for this purpose, the
-:func:`register` decorator can be used as following::
+:func:`register` function can be used as following::
 
     from vimiv.api import objreg
 
     class MyLongLivedClass:
 
-        @objreg.register
         def __init__(self):
             ...
+            objreg.register(self)
 
 This class is now ready to provide commands and statusbar modules using the regular
 decorators. In principle, you can now retrieve the instance of the class via::
@@ -33,7 +33,7 @@ method is to keep track of the instance otherwise.
 """
 
 import functools
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from vimiv.utils import log, is_method, class_that_defined_method
 from vimiv.utils.customtypes import AnyT
@@ -41,15 +41,26 @@ from vimiv.utils.customtypes import AnyT
 _logger = log.module_logger(__name__)
 
 
-def register(component_init: Callable) -> Callable:
-    """Decorator to register a class for the object registry.
+def register(arg: Any) -> Optional[Callable]:
+    """Register a new instance for the object registry."""
+    # New implementation, the class instance must be passed
+    if not hasattr(arg, "__code__"):
+        component = arg
+        cls = component.__class__
+        _logger.debug("Registering '%s.%s'", cls.__module__, cls.__qualname__)
+        cls.instance = component
+        return None
 
-    This decorates the ``__init__`` function of the class to register. The object is
-    stored in the registry right after ``__init__`` was called.
+    # Old implementation using register as decorator
+    # TODO remove before releasing v1.0.0
+    _logger.warning(
+        "\nUsing @api.objreg.register as decorator in '%s' is deprecated "
+        "and will be removed in v1.0.0.\n"
+        "Please use api.objreg.register(self) within the __init__ instead.",
+        arg.__module__,
+    )
 
-    Args:
-        component_init: The ``__init__`` function of the component.
-    """
+    component_init = arg
 
     def inside(component: Any, *args: Any, **kwargs: Any) -> None:
         """The decorated ``__init__`` function.

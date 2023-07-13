@@ -23,7 +23,6 @@ class CommandWidget(QWidget):
         _completion_widget: Completion widget to display completions.
     """
 
-    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
 
@@ -45,6 +44,8 @@ class CommandWidget(QWidget):
         self._commandline.editingFinished.connect(self.leave_commandline)
 
         self.hide()
+
+        api.objreg.register(self)
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")

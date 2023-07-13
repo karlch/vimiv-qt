@@ -37,7 +37,6 @@ class ImageFileHandler(QObject):
         _path: Path to the currently loaded QObject.
     """
 
-    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._path = ""
@@ -47,6 +46,8 @@ class ImageFileHandler(QObject):
         api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.signals.image_changed.connect(self.reload)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
+
+        api.objreg.register(self)
 
     @utils.slot
     def _on_new_image_opened(self, path: str, keep_zoom: bool):

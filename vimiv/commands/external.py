@@ -36,9 +36,9 @@ class ExternalRunner:
         _impl: The implementation class used to run external commands.
     """
 
-    @api.objreg.register
     def __init__(self):
         self._impl = None
+        api.objreg.register(self)
 
     def __call__(self, *args, **kwargs):
         """Wrapper function to pass arguments to initialized implementation class."""

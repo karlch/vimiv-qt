@@ -39,8 +39,6 @@ class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
     }
     """
 
-    @api.modes.widget(api.modes.MANIPULATE)
-    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
@@ -55,6 +53,9 @@ class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
         api.modes.MANIPULATE.closed.connect(self._close)
+        # Register
+        api.objreg.register(self)
+        api.modes.assign_widget(self, api.modes.MANIPULATE)
 
     @property
     def _mainwindow(self):

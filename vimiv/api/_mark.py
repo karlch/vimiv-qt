@@ -48,7 +48,6 @@ class Mark(QObject):
     unmarked = pyqtSignal(str)
     markdone = pyqtSignal()
 
-    @objreg.register
     def __init__(self) -> None:
         super().__init__()
         self._indicator: Optional[str] = None
@@ -60,6 +59,7 @@ class Mark(QObject):
             Mark.Action.Mark: self._mark,
             Mark.Action.Unmark: self._unmark,
         }
+        objreg.register(self)
 
     @property
     def tagdir(self) -> str:

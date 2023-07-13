@@ -160,7 +160,6 @@ class SignalHandler(QObject):
         * the working directory changed.
     """
 
-    @api.objreg.register
     def __init__(self):
         super().__init__()
         search.search.new_search.connect(self._on_new_search)
@@ -171,6 +170,7 @@ class SignalHandler(QObject):
         api.signals.load_images.connect(self._on_load_images)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
         api.settings.sort.shuffle.changed.connect(self._on_shuffle)
+        api.objreg.register(self)
 
     @pyqtSlot(list)
     def _on_load_images(self, paths: List[str]):
