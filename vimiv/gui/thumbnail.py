@@ -147,11 +147,11 @@ class ThumbnailView(
     def _first_index(self) -> int:
         """Return the index of the first thumbnail to be rendered."""
         result: int
-        if api.settings.thumbnail.max_behind.value == 0:
+        if api.settings.thumbnail.load_behind.value == 0:
             result = 0
         else:
             result = max(0,
-                       self.current_index() - api.settings.thumbnail.max_behind.value)
+                       self.current_index() - api.settings.thumbnail.load_behind.value)
         return result
 
     def _last_index(self) -> int:
@@ -159,11 +159,11 @@ class ThumbnailView(
         result: int
         if len(self._paths) == 0:
             result = 0
-        elif api.settings.thumbnail.max_ahead.value == 0:
+        elif api.settings.thumbnail.load_ahead.value == 0:
             result = len(self._paths) - 1
         else:
             result = min(len(self._paths) - 1,
-                       self.current_index() + api.settings.thumbnail.max_ahead.value)
+                       self.current_index() + api.settings.thumbnail.load_ahead.value)
         return result
 
     def _index_range(self) -> tuple[int, int]:
@@ -175,8 +175,8 @@ class ThumbnailView(
         item = self.item(index)
         # Otherwise it has been deleted in the meanwhile
         if item is not None and\
-           (api.settings.thumbnail.max_count.value == 0 or\
-           len(self._rendered_paths) > api.settings.thumbnail.max_count.value):
+           (api.settings.thumbnail.unload_threshold.value == 0 or\
+           len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value):
             item.setIcon(ThumbnailItem.default_icon())
             self._rendered_paths.discard(self._paths[index])
 
