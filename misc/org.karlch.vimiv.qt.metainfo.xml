@@ -44,15 +44,15 @@
     <url type="help">https://karlch.github.io/vimiv-qt/documentation</url>
     <update_contact>ankursinha AT fedoraproject.org</update_contact>
     <releases>
-        <!-- Add new releases here -->
-        <release version="0.8.0" date="2021-01-18"/>
-        <release version="0.7.0" date="2020-05-17"/>
-        <release version="0.6.1" date="2020-03-07"/>
-        <release version="0.6.0" date="2020-03-07"/>
-        <release version="0.5.0" date="2020-01-05"/>
-        <release version="0.4.0" date="2019-12-01"/>
-        <release version="0.3.0" date="2019-11-01"/>
-        <release version="0.2.0" date="2019-10-01"/>
-        <release version="0.1.0" date="2019-08-15"/>
+<!-- Add new releases here -->
+<release version="0.8.0" date="2021-01-18"/>
+<release version="0.7.0" date="2020-05-17"/>
+<release version="0.6.1" date="2020-03-07"/>
+<release version="0.6.0" date="2020-03-07"/>
+<release version="0.5.0" date="2020-01-05"/>
+<release version="0.4.0" date="2019-12-01"/>
+<release version="0.3.0" date="2019-11-01"/>
+<release version="0.2.0" date="2019-10-01"/>
+<release version="0.1.0" date="2019-08-15"/>
     </releases>
 </component>
