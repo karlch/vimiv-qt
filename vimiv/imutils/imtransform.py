@@ -188,6 +188,8 @@ class Transform(QTransform):
     @property
     def changed(self):
         """True if transformations have been applied."""
+        if self.current.rect().isNull():
+            return False
         transformed = not self.isIdentity()
         if self._original is None:
             return transformed

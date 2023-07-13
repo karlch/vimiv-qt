@@ -8,6 +8,19 @@ import pytest
 import pytest_bdd as bdd
 
 from vimiv.parser import geometry
+from vimiv.imutils import _ImageFileHandler
+
+
+@pytest.fixture()
+def file_handler():
+    """Fixture to retrieve the current instance of the edit handler."""
+    return _ImageFileHandler.instance
+
+
+@pytest.fixture()
+def edit_handler(file_handler):
+    """Fixture to retrieve the current instance of the edit handler."""
+    return file_handler._edit_handler
 
 
 @bdd.then(bdd.parsers.parse("the image size should be {size}"))
@@ -25,3 +38,8 @@ def ensure_size_not(size, image):
     width_neq = expected.width() != image_rect.width()
     height_neq = expected.height() != image_rect.height()
     assert width_neq or height_neq
+
+
+@bdd.then("the image should not be edited")
+def ensure_not_edited(edit_handler):
+    assert not edit_handler.changed

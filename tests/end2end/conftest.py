@@ -173,6 +173,13 @@ def start_vector_graphic(svg):
     start([svg])
 
 
+@bdd.given("I open an image and an animated gif")
+def start_image_and_animated_gif(tmp_path, gif):
+    imagename = str(tmp_path / "image.png")
+    create_image(imagename)
+    start([imagename, gif])
+
+
 @bdd.given("I open images from multiple directories")
 def start_multiple_directories(tmp_path):
     dir1 = tmp_path / "dir1"

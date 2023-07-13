@@ -41,3 +41,8 @@ Feature: Crop an image.
             | 10   | -100 | 150x100+85+0   |
             # Ignored as dx/dy are outside of the image
             | 1000 | 1000 | 150x100+75+50   |
+
+    Scenario: Crop does not automatically consider a gif edited
+        Given I open an image and an animated gif
+        When I run next
+        Then the image should not be edited
