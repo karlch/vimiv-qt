@@ -10,7 +10,7 @@ import os
 from typing import List, Iterable, Callable, BinaryIO
 from PyQt5.QtGui import QPixmap
 
-from vimiv.utils import files, imagereader
+from vimiv.utils import files, imagereader, imageheader
 
 from vimiv.api import (
     commands,
@@ -84,7 +84,7 @@ def open_paths(paths: Iterable[str]) -> None:
 
 def add_external_format(
     file_format: str,
-    test_func: files.ImghdrTestFuncT,
+    test_func: imageheader.CheckFuncT,
     load_func: Callable[[str], QPixmap],
 ) -> None:
     """Add support for new fileformat.
@@ -94,5 +94,7 @@ def add_external_format(
         test_func: Function returning True if load_func supports this type.
         load_func: Function to load a QPixmap from the passed path.
     """
-    files.add_image_format(file_format, test_func)
+    # Prioritize external formats over all default formats, to ensure that on signature
+    # collision, the explicitly registered handler is used.
+    imageheader.register(file_format, test_func, priority=True)
     imagereader.external_handler[file_format] = load_func

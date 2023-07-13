@@ -6,6 +6,11 @@
 
 """Plugin enabling support for additional image formats.
 
+Adds support for image formats that are not supported by Qt natively or by the
+qtimageformats add-on, but instead require some other Qt module.
+
+The required Qt module is not installed by Vimiv and requires explicit installation.
+
 Activate it by adding::
 
     imageformats = name, ...
@@ -26,29 +31,43 @@ To implement a new format::
        ``QImageReader.supportedImageFormats()``.
 """
 
-from typing import Any, Optional, BinaryIO
+from typing import Any, BinaryIO
 
-from vimiv.utils import log, files
+
+from vimiv.utils import log, imageheader
 
 _logger = log.module_logger(__name__)
 
 
-def test_cr2(header: bytes, _f: Optional[BinaryIO]) -> bool:
-    return header[:2] in (b"II", b"MM") and header[8:10] == b"CR"
+def _test_cr2(h: bytes, _f: BinaryIO) -> bool:
+    """Canon Raw 2 (CR2).
+
+    Extension: .cr2
+
+    Magic bytes:
+    - 49 49 2A 00 10 00 00 00 43 52
+
+    Support: QtRaw https://gitlab.com/mardy/qtraw
+    """
+    return h[:10] == b"\x49\x49\x2A\x00\x10\x00\x00\x00\x43\x52"
 
 
-def test_avif(header: bytes, _f: Optional[BinaryIO]) -> bool:
-    return header[4:12] in (b"ftypavif", b"ftypavis")
+def _test_avif(h: bytes, _f: BinaryIO) -> bool:
+    """AV1 Image File (AVIF).
 
+    Extension: .avif
 
-def test_jp2(header: bytes, _f: Optional[BinaryIO]) -> bool:
-    return header[:6] == b"\x00\x00\x00\x0cjP"
+    Magic bytes:
+    - ?
+
+    Support: qt-qvif-image-plugin https://github.com/novomesk/qt-avif-image-plugin
+    """
+    return h[4:12] in (b"ftypavif", b"ftypavis")
 
 
 FORMATS = {
-    "cr2": test_cr2,
-    "avif": test_avif,
-    "jp2": test_jp2,
+    "cr2": _test_cr2,
+    "avif": _test_avif,
 }
 
 
@@ -61,8 +80,9 @@ def init(names: str, *_args: Any, **_kwargs: Any) -> None:
     for name in names.split(","):
         name = name.lower().strip()
         try:
-            test = FORMATS[name]
-            files.add_image_format(name, test)
+            check = FORMATS[name]
+            # Set priority as these types are explicitly enables
+            imageheader.register(name, check, priority=True)
             _logger.debug("Added image format '%s'", name)
         except KeyError:
             _logger.error("Ignoring unknown image format '%s'", name)

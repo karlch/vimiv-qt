@@ -145,9 +145,7 @@ raw images using ``dcraw``.
 
 To make this work, you need to implement two functions:
 
-#. A function which checks if a path is of your filetype. The function must be of the
-   same form as used by the standard library module
-   `imghdr <https://docs.python.org/3/library/imghdr.html>`_.
+#. A function which checks if a path is of your filetype.
 #. The actual loading function which creates a ``QPixmap`` from the path.
 
 Finally, you tell vimiv about the newly supported filetype::
