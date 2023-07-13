@@ -46,13 +46,6 @@ def mockimageheader(mocker):
     yield mocker.patch("vimiv.utils.imageheader._registry", [])
 
 
-@pytest.fixture()
-def tmpfile(tmp_path):
-    path = tmp_path / "anything"
-    path.touch()
-    yield str(path)
-
-
 def create_image(filename: str, *, size=(300, 300)):
     QPixmap(*size).save(filename)
 

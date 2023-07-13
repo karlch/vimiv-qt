@@ -16,13 +16,6 @@ from vimiv.utils import files
 
 
 @pytest.fixture()
-def tmpfile(tmp_path):
-    path = tmp_path / "anything"
-    path.touch()
-    yield str(path)
-
-
-@pytest.fixture()
 def directory_tree(tmp_path):
     """Fixture to create a directory tree.
 
