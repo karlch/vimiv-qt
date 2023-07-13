@@ -45,6 +45,7 @@
     <update_contact>ankursinha AT fedoraproject.org</update_contact>
     <releases>
         <!-- Add new releases here -->
+        <release version="0.8.0" date="2021-01-18"/>
         <release version="0.7.0" date="2020-05-17"/>
         <release version="0.6.1" date="2020-03-07"/>
         <release version="0.6.0" date="2020-03-07"/>
