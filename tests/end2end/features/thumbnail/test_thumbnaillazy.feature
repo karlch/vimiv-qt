@@ -3,10 +3,11 @@ Feature: Lazy load thumbnails
     Scenario: Eager loading (default behavior)
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
+        Then there should be 10 rendered thumbnails
         When I run 5scroll right
-        Then the first index should be 0
+        Then there should be 10 rendered thumbnails
+        And the first index should be 0
         And the last index should be 9
-        And there should be 10 rendered thumbnails
 
     Scenario: Only display the selected thumbnail
         Given I open 10 images without leading zeros in their name
