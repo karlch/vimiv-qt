@@ -6,8 +6,8 @@
 
 """Pop-up window to display version information."""
 
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QPushButton
-from PyQt5.QtGui import QGuiApplication
+from vimiv.qt.widgets import QLabel, QVBoxLayout, QPushButton
+from vimiv.qt.gui import QGuiApplication
 
 import vimiv.version
 from vimiv.widgets import PopUp

@@ -8,11 +8,11 @@
 
 from typing import List, Optional
 
-from PyQt5.QtCore import Qt, QSize, QPoint
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QTabWidget
+from vimiv.qt.core import Qt, QSize, QPoint
+from vimiv.qt.gui import QPixmap
+from vimiv.qt.widgets import QWidget, QHBoxLayout, QLabel, QTabWidget
 
-from vimiv import api, utils, imutils
+from vimiv import api, utils, imutils, qt
 from vimiv.config import styles
 from vimiv.imutils import immanipulate
 from vimiv.gui import eventhandler
@@ -39,11 +39,9 @@ class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
     }
     """
 
-    @api.modes.widget(api.modes.MANIPULATE)
-    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
-        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
         styles.apply(self)
         # Add all manipulations from immanipulate
@@ -55,6 +53,9 @@ class Manipulate(eventhandler.EventHandlerMixin, QTabWidget):
         # Connect signals
         self.currentChanged.connect(manipulator.focus_group_index)
         api.modes.MANIPULATE.closed.connect(self._close)
+        # Register
+        api.objreg.register(self)
+        api.modes.assign_widget(self, api.modes.MANIPULATE)
 
     @property
     def _mainwindow(self):
@@ -173,12 +174,21 @@ class ManipulateImage(QLabel):
         """Rescale pixmap and geometry to fit."""
         assert self._pixmap is not None, "No pixmap to rescale"
         # Scale pixmap to fit into label
-        pixmap = self._pixmap.scaled(
-            self._max_size.width(),
-            self._max_size.height(),
-            aspectRatioMode=Qt.KeepAspectRatio,
-            transformMode=Qt.SmoothTransformation,
-        )
+        # Workaround for different keyword naming in PySide6
+        if qt.USE_PYSIDE6:
+            pixmap = self._pixmap.scaled(
+                self._max_size.width(),
+                self._max_size.height(),
+                aspectMode=Qt.AspectRatioMode.KeepAspectRatio,
+                mode=Qt.TransformationMode.SmoothTransformation,
+            )
+        else:
+            pixmap = self._pixmap.scaled(
+                self._max_size.width(),
+                self._max_size.height(),
+                aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+                transformMode=Qt.TransformationMode.SmoothTransformation,
+            )
         self.setPixmap(pixmap)
         # Update geometry to only show pixmap
         x = self._bottom_right.x() - pixmap.width()

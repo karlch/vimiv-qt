@@ -6,8 +6,8 @@
 
 """Command widget at the bottom including commandline and completion widget."""
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QSizePolicy, QVBoxLayout
+from vimiv.qt.core import Qt
+from vimiv.qt.widgets import QWidget, QSizePolicy, QVBoxLayout
 
 from vimiv import api
 from vimiv.completion import completer
@@ -23,11 +23,10 @@ class CommandWidget(QWidget):
         _completion_widget: Completion widget to display completions.
     """
 
-    @api.objreg.register
     def __init__(self, mainwindow):
         super().__init__(parent=mainwindow)
 
-        self.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Fixed)
 
         self._commandline = commandline.CommandLine()
         self._completion_widget = completionwidget.CompletionView(mainwindow)
@@ -40,11 +39,13 @@ class CommandWidget(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self._completion_widget)
         layout.addWidget(self._commandline)
-        layout.setAlignment(Qt.AlignBottom)
+        layout.setAlignment(Qt.AlignmentFlag.AlignBottom)
 
         self._commandline.editingFinished.connect(self.leave_commandline)
 
         self.hide()
+
+        api.objreg.register(self)
 
     @api.keybindings.register("<colon>", "command", mode=api.modes.MANIPULATE)
     @api.keybindings.register("<colon>", "command")

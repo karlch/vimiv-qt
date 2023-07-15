@@ -44,7 +44,7 @@ no-docstring-rgx=(^__|^main$|^test_|decorator|inside|^_on)
 [FORMAT]
 max-line-length=88
 max-module-lines=1000
-ignore-long-lines=(<?https?://|^# Copyright 201\d|# (pylint|flake8): disable=)
+ignore-long-lines=(<?https?://|^# Copyright 201\d|# (pylint|flake8): disable=|# type: ignore)
 expected-line-ending-format=LF
 
 [SIMILARITIES]
@@ -58,3 +58,6 @@ max-args=10
 
 [CLASSES]
 valid-metaclass-classmethod-first-arg=cls
+
+[TYPECHECK]
+ignored-modules=PyQt5,PyQt6,PySide6

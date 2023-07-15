@@ -6,8 +6,8 @@
 
 """Message widget to display temporary information to the user."""
 
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from vimiv.qt.core import Qt, QTimer
+from vimiv.qt.widgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles
@@ -34,8 +34,8 @@ class Message(QLabel):
         self._timer.setInterval(api.settings.statusbar.message_timeout.value)
         self._timer.setSingleShot(True)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-        self.setTextFormat(Qt.RichText)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.setTextFormat(Qt.TextFormat.RichText)
         self.setWordWrap(True)
 
         styles.apply(self)

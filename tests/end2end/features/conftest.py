@@ -9,12 +9,12 @@
 import os
 import pathlib
 
-from PyQt5.QtCore import Qt, QProcess, QTimer
-from PyQt5.QtGui import QFocusEvent, QMouseEvent
-from PyQt5.QtWidgets import QApplication
-
 import pytest
 import pytest_bdd as bdd
+
+from vimiv.qt.core import Qt, QProcess, QTimer, QPointF
+from vimiv.qt.gui import QFocusEvent, QMouseEvent
+from vimiv.qt.widgets import QApplication
 
 import vimiv.gui.library
 import vimiv.gui.thumbnail
@@ -124,10 +124,10 @@ def answer_prompt(qtbot, mainwindow):
 
     def function(key):
         keys = {
-            "y": Qt.Key_Y,
-            "n": Qt.Key_N,
-            "<return>": Qt.Key_Return,
-            "<escape>": Qt.Key_Escape,
+            "y": Qt.Key.Key_Y,
+            "n": Qt.Key.Key_N,
+            "<return>": Qt.Key.Key_Return,
+            "<escape>": Qt.Key.Key_Escape,
         }
         try:
             qkey = keys[key]
@@ -149,22 +149,22 @@ def answer_prompt(qtbot, mainwindow):
 def keypress(qtbot):
     """Fixture to press keys on a widget handling special keys appropriately."""
     special_keys = {
-        "<escape>": Qt.Key_Escape,
-        "<return>": Qt.Key_Return,
-        "<space>": Qt.Key_Space,
-        "<backspace>": Qt.Key_Backspace,
+        "<escape>": Qt.Key.Key_Escape,
+        "<return>": Qt.Key.Key_Return,
+        "<space>": Qt.Key.Key_Space,
+        "<backspace>": Qt.Key.Key_Backspace,
     }
 
     def get_modifier(keys):
         modifiers = {
-            "<ctrl>": Qt.ControlModifier,
-            "<alt>": Qt.AltModifier,
-            "<shift>": Qt.ShiftModifier,
+            "<ctrl>": Qt.KeyboardModifier.ControlModifier,
+            "<alt>": Qt.KeyboardModifier.AltModifier,
+            "<shift>": Qt.KeyboardModifier.ShiftModifier,
         }
         for name, key in modifiers.items():
             if keys.startswith(name):
                 return key, keys.replace(name, "")
-        return Qt.NoModifier, keys
+        return Qt.KeyboardModifier.NoModifier, keys
 
     def press_impl(widget, keys):
         modifier, keys = get_modifier(keys)
@@ -187,22 +187,22 @@ def mousedrag(qtbot):
     def drag(widget, *, start, diff):
         end = start + diff
 
-        qtbot.mousePress(widget, Qt.LeftButton, pos=start)
+        qtbot.mousePress(widget, Qt.MouseButton.LeftButton, pos=start)
 
         global_end = widget.mapToGlobal(end)
-        button = buttons = Qt.NoButton
+        button = buttons = Qt.MouseButton.NoButton
         move_event = QMouseEvent(
-            QMouseEvent.MouseMove,
-            end,
-            global_end,
-            global_end,
+            QMouseEvent.Type.MouseMove,
+            QPointF(end),
+            QPointF(global_end),
+            QPointF(global_end),
             button,
             buttons,
-            Qt.NoModifier,
+            Qt.KeyboardModifier.NoModifier,
         )
         QApplication.sendEvent(widget, move_event)
 
-        qtbot.mouseRelease(widget, Qt.LeftButton, pos=end)
+        qtbot.mouseRelease(widget, Qt.MouseButton.LeftButton, pos=end)
 
     return drag
 
@@ -222,7 +222,9 @@ def run_command(command, qtbot):
 
         def external_finished():
             state = external_runner.state()
-            assert state == QProcess.NotRunning, "external command timed out"
+            assert (
+                state == QProcess.ProcessState.NotRunning
+            ), "external command timed out"
 
         qtbot.waitUntil(external_finished, timeout=30000)
 
@@ -268,7 +270,7 @@ def focus_widget(image, library, widget_name):
         raise KeyError(
             f"Unknown widget '{widget_name}'. Currently supported: {', '.join(names)}"
         )
-    event = QFocusEvent(QFocusEvent.FocusOut)
+    event = QFocusEvent(QFocusEvent.Type.FocusOut)
     widget.focusOutEvent(event)
 
 

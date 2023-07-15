@@ -7,11 +7,10 @@
 import hashlib
 import os
 
-from PyQt5.QtGui import QPixmap
-
 import pytest
 
 from vimiv.api import settings
+from vimiv.qt.gui import QPixmap
 from vimiv.utils import thumbnail_manager
 
 

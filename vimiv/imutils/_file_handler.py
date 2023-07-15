@@ -11,13 +11,12 @@ import shutil
 import tempfile
 from typing import List
 
-from PyQt5.QtCore import QObject, QCoreApplication
-from PyQt5.QtGui import QPixmap, QImageReader, QMovie
+from vimiv.qt.core import QObject, QCoreApplication
+from vimiv.qt.gui import QPixmap, QImageReader, QMovie
+from vimiv.qt.svg import QtSvg
 
 from vimiv import api, utils, imutils
-from vimiv.utils import files, log, asyncrun, lazy, imagereader
-
-QtSvg = lazy.import_module("PyQt5.QtSvg", optional=True)
+from vimiv.utils import files, log, asyncrun, imagereader
 
 
 _logger = log.module_logger(__name__)
@@ -38,7 +37,6 @@ class ImageFileHandler(QObject):
         _path: Path to the currently loaded QObject.
     """
 
-    @api.objreg.register
     def __init__(self):
         super().__init__()
         self._path = ""
@@ -48,6 +46,8 @@ class ImageFileHandler(QObject):
         api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.signals.image_changed.connect(self.reload)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
+
+        api.objreg.register(self)
 
     @utils.slot
     def _on_new_image_opened(self, path: str, keep_zoom: bool):

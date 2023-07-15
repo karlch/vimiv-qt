@@ -10,16 +10,15 @@ Module attributes:
     _storage: Initialized Storage object to store settings globally.
 """
 
-import abc
 import contextlib
 import enum
 import os
 from typing import Any, Dict, ItemsView, List, Callable, Iterable
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from vimiv.qt.core import QObject, pyqtSignal
 
 from vimiv.api import prompt
-from vimiv.utils import clamp, AbstractQObjectMeta, log, customtypes, natural_sort
+from vimiv.utils import clamp, log, customtypes, natural_sort
 
 
 _storage: Dict[str, "Setting"] = {}
@@ -58,7 +57,7 @@ def items() -> ItemsView[str, "Setting"]:
     return _storage.items()
 
 
-class Setting(QObject, metaclass=AbstractQObjectMeta):
+class Setting(QObject):
     """Stores a setting and its attributes.
 
     This class can not be used directly. Instead it is used as BaseClass for
@@ -100,9 +99,9 @@ class Setting(QObject, metaclass=AbstractQObjectMeta):
         _storage[name] = self  # Store setting in storage
 
     @property
-    @abc.abstractmethod
     def typ(self) -> type:
         """The python type of this setting defined by the child class."""
+        raise NotImplementedError("Must be implemented by child class")
 
     @property
     def default(self) -> Any:

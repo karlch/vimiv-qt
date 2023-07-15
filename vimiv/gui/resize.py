@@ -6,8 +6,8 @@
 
 """Utilities to make widgets nicely resizable using QSizeGrips."""
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QSizeGrip, QGridLayout
+from vimiv.qt.core import Qt, Align
+from vimiv.qt.widgets import QApplication, QSizeGrip, QGridLayout
 
 
 class SizeGrip1D(QSizeGrip):
@@ -23,7 +23,9 @@ class SizeGrip1D(QSizeGrip):
         super().__init__(parent)
         self._minimum_size = parent.minimumSize()
         self._maximum_size = parent.maximumSize()
-        self._override_cursor = Qt.SizeVerCursor if vertical else Qt.SizeHorCursor
+        self._override_cursor = (
+            Qt.CursorShape.SizeVerCursor if vertical else Qt.CursorShape.SizeHorCursor
+        )
         self.destroyed.connect(QApplication.restoreOverrideCursor)
 
     @property
@@ -67,22 +69,22 @@ class ResizeLayout(QGridLayout):
 
     def _add_corners(self, parent):
         """Add one QSizeGrip to each corner."""
-        self.addWidget(QSizeGrip(parent), 0, 0, Qt.AlignLeft | Qt.AlignTop)
-        self.addWidget(QSizeGrip(parent), 2, 0, Qt.AlignLeft | Qt.AlignBottom)
-        self.addWidget(QSizeGrip(parent), 0, 2, Qt.AlignRight | Qt.AlignTop)
-        self.addWidget(QSizeGrip(parent), 2, 2, Qt.AlignRight | Qt.AlignBottom)
+        self.addWidget(QSizeGrip(parent), 0, 0, Align.Left | Align.Top)
+        self.addWidget(QSizeGrip(parent), 2, 0, Align.Left | Align.Bottom)
+        self.addWidget(QSizeGrip(parent), 0, 2, Align.Right | Align.Top)
+        self.addWidget(QSizeGrip(parent), 2, 2, Align.Right | Align.Bottom)
 
     def _add_edges(self, parent):
         """Add one QSizeGrip to each edge, constrained to the corresponding axis."""
         self.addWidget(
-            SizeGrip1D(parent, vertical=True), 0, 1, Qt.AlignCenter | Qt.AlignTop
+            SizeGrip1D(parent, vertical=True), 0, 1, Align.Center | Align.Top
         )
         self.addWidget(
-            SizeGrip1D(parent, vertical=True), 2, 1, Qt.AlignCenter | Qt.AlignBottom
+            SizeGrip1D(parent, vertical=True), 2, 1, Align.Center | Align.Bottom
         )
         self.addWidget(
-            SizeGrip1D(parent, vertical=False), 1, 0, Qt.AlignLeft | Qt.AlignCenter
+            SizeGrip1D(parent, vertical=False), 1, 0, Align.Left | Align.Center
         )
         self.addWidget(
-            SizeGrip1D(parent, vertical=False), 1, 2, Qt.AlignRight | Qt.AlignCenter
+            SizeGrip1D(parent, vertical=False), 1, 2, Align.Right | Align.Center
         )

@@ -6,7 +6,7 @@
 
 """Completion widget in the bar."""
 
-from PyQt5.QtCore import pyqtSignal, Qt
+from vimiv.qt.core import pyqtSignal, Qt
 
 from vimiv import api, widgets
 from vimiv.config import styles
@@ -40,15 +40,16 @@ class CompletionView(widgets.FlatTreeView):
 
     activated = pyqtSignal(str)
 
-    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
 
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setEditTriggers(self.NoEditTriggers)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setEditTriggers(self.EditTrigger.NoEditTriggers)
         self.setModel(api.completion.FilterProxyModel())
 
         styles.apply(self)
+
+        api.objreg.register(self)
 
     @api.keybindings.register(
         "<shift><tab>", "complete --inverse", mode=api.modes.COMMAND

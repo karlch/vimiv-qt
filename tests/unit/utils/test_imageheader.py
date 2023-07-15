@@ -6,11 +6,9 @@
 
 """Tests for vimiv.utils.imageheader."""
 
-from PyQt5.QtGui import QPixmap, QImageReader, QImageWriter
-
 import pytest
 
-
+from vimiv.qt.gui import QPixmap, QImageReader, QImageWriter
 from vimiv.utils import imageheader
 
 # Formats that are detectable and not detectable by this module

@@ -9,8 +9,8 @@
 import itertools
 from typing import Optional
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QSizePolicy, QWidget
+from vimiv.qt.core import Qt
+from vimiv.qt.widgets import QLabel, QSizePolicy, QWidget
 
 from vimiv import api, utils
 from vimiv.imutils import metadata
@@ -44,13 +44,12 @@ class MetadataWidget(QLabel):
     }
     """
 
-    @api.objreg.register
     def __init__(self, parent: QWidget):
         super().__init__(parent=parent)
         styles.apply(self)
 
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-        self.setTextFormat(Qt.RichText)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.setTextFormat(Qt.TextFormat.RichText)
 
         self._mainwindow_bottom = 0
         self._mainwindow_width = 0
@@ -60,6 +59,8 @@ class MetadataWidget(QLabel):
 
         api.signals.new_image_opened.connect(self._on_image_opened)
         api.settings.metadata.current_keyset.changed.connect(self._update_text)
+
+        api.objreg.register(self)
 
         self.hide()
 

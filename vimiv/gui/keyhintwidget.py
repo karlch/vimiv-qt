@@ -8,8 +8,8 @@
 
 from typing import Iterator, Tuple
 
-from PyQt5.QtCore import QTimer, Qt
-from PyQt5.QtWidgets import QLabel, QSizePolicy
+from vimiv.qt.core import QTimer, Qt
+from vimiv.qt.widgets import QLabel, QSizePolicy
 
 from vimiv import api, utils
 from vimiv.config import styles
@@ -49,8 +49,8 @@ class KeyhintWidget(QLabel):
         self._mainwindow_bottom = 0
 
         styles.apply(self)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Minimum)
-        self.setTextFormat(Qt.RichText)
+        self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.setTextFormat(Qt.TextFormat.RichText)
 
         partial_handler = eventhandler.EventHandlerMixin.partial_handler
         partial_handler.partial_matches.connect(self._on_partial_matches)

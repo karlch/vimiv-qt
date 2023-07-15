@@ -54,8 +54,9 @@ For an overview of implemented models, feel free to take a look at the ones defi
 import re
 from typing import cast, Dict, Iterable, Tuple
 
-from PyQt5.QtCore import QSortFilterProxyModel, Qt
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from vimiv import qt
+from vimiv.qt.core import QSortFilterProxyModel, Qt
+from vimiv.qt.gui import QStandardItemModel, QStandardItem
 
 from vimiv.api import modes, settings
 from vimiv.utils import log, escape_chars, unescape_chars
@@ -114,7 +115,7 @@ class FilterProxyModel(QSortFilterProxyModel):
     def __init__(self) -> None:
         super().__init__()
         self.setFilterKeyColumn(-1)  # Also filter in descriptions
-        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.unmatched = ""
         self._empty = BaseModel("")
 
@@ -162,14 +163,22 @@ class FilterProxyModel(QSortFilterProxyModel):
             command = parts[-1]
         regex = prefix + f" *.*{command}.*"
         regex = regex.replace("\\", "\\\\")
-        self.setFilterRegExp(regex)
+        self._set_regex(regex)
+
+    def _set_regex(self, regex: str) -> None:
+        """Set filter regex according to Qt wrapper version."""
+        # TODO remove once we drop support for PyQt < 5.15
+        if qt.USE_PYQT5:
+            self.setFilterRegExp(regex)
+        else:
+            self.setFilterRegularExpression(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
-        self.setFilterRegExp(".*".join(prefix + command))
+        self._set_regex(".*".join(prefix + command))
 
     def reset(self) -> None:
         """Reset regular expression, unmatched string and source model."""
-        self.setFilterRegExp("")
+        self._set_regex("")
         self.unmatched = ""
         self.setSourceModel(self._empty)
 

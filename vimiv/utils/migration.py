@@ -10,7 +10,7 @@ import os
 import shutil
 from typing import NamedTuple, Optional, List
 
-from PyQt5.QtWidgets import QLabel, QVBoxLayout, QWidget
+from vimiv.qt.widgets import QLabel, QVBoxLayout, QWidget
 
 import vimiv
 from vimiv.utils import xdg

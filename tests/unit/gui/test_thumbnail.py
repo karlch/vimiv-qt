@@ -6,10 +6,10 @@
 
 """Tests for vimiv.gui.thumbnail."""
 
-from PyQt5.QtCore import QSize
-from PyQt5.QtGui import QIcon
-
 import pytest
+
+from vimiv.qt.core import QSize
+from vimiv.qt.gui import QIcon
 
 from vimiv.gui.thumbnail import ThumbnailItem
 

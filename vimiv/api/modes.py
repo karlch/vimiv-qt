@@ -9,7 +9,7 @@
 Similar to vim, vimiv has the concept of ``modes``. The same command or
 keybinding can perform different actions depending on the mode it is executed
 in. Each mode is assigned to a ``QWidget`` class which is focused when this
-mode is active. To assign a widget to a mode, the :func:`widget` decorator is
+mode is active. To assign a widget to a mode, the :func:`assign_widget` function is
 used.
 
 The following modes exist:
@@ -28,14 +28,13 @@ All modes inherit from the common :class:`Mode` base class.
 """
 
 
-import abc
-from typing import cast, Any, Callable, List, Tuple
+from typing import cast, Any, List, Tuple
 
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QWidget
+from vimiv.qt.core import pyqtSignal, QObject
+from vimiv.qt.widgets import QWidget
 
 from vimiv.api import settings
-from vimiv.utils import AbstractQObjectMeta, log
+from vimiv.utils import log
 
 
 _logger = log.module_logger(__name__)
@@ -45,7 +44,7 @@ class InvalidMode(Exception):
     """Exception raised when no valid mode could be found."""
 
 
-class Mode(QObject, metaclass=AbstractQObjectMeta):
+class Mode(QObject):
     """Base class for modes.
 
     Class Attributes:
@@ -164,9 +163,9 @@ class Mode(QObject, metaclass=AbstractQObjectMeta):
     def current_path(self) -> str:
         return self.widget.current()
 
-    @abc.abstractmethod
     def _set_last(self, mode: "Mode") -> None:
         """Delegate storing the last mode to the child widget."""
+        raise NotImplementedError("Must be implemented by the child widget")
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, Mode):
@@ -214,41 +213,18 @@ class _ModeWidget(QWidget):
         raise NotImplementedError("Do not use _ModeWidget directly")
 
 
-def widget(mode: Mode) -> Callable:
-    """Decorator to assign a widget to a mode.
+def assign_widget(widget: QWidget, mode: Mode) -> None:
+    """Assign widget to a mode."""
+    assert hasattr(widget, "current"), "Mode widget must define 'current'"
+    assert hasattr(widget, "pathlist"), "Mode widget must define 'pathlist'"
 
-    The decorator decorates the __init__ function of a QWidget class storing
-    the created component as the widget associated to the mode. This is used
-    when entering a mode to focus the widget which is assigned to this mode.
-
-    Example::
-
-        class ImageWidget:
-
-        @modes.widget(modes.IMAGE)
-        def __init__(self):
-            ...
-
-    Args:
-        mode: The mode to associate the decorated widget with.
-    """
-
-    def decorator(component_init: Callable) -> Callable:
-        def inner(component: Any, *args: Any, **kwargs: Any) -> None:
-            mode.widget = component
-            _logger.debug(
-                "Set '%s.%s' as widget of '%s'",
-                component.__module__,
-                component.__class__.__qualname__,
-                mode,
-            )
-            component_init(component, *args, **kwargs)
-            assert hasattr(component, "current"), "Mode widget must define 'current'"
-            assert hasattr(component, "pathlist"), "Mode widget must define 'pathlist'"
-
-        return inner
-
-    return decorator
+    mode.widget = cast(_ModeWidget, widget)
+    _logger.debug(
+        "Set '%s.%s' as widget of '%s'",
+        widget.__module__,
+        widget.__class__.__qualname__,
+        mode,
+    )
 
 
 class _MainMode(Mode):

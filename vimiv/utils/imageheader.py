@@ -52,7 +52,7 @@ import functools
 
 from typing import Optional, List, Callable, Tuple, BinaryIO
 
-from PyQt5.QtGui import QImageReader
+from vimiv.qt.gui import QImageReader
 
 from vimiv.utils import log, imagereader
 

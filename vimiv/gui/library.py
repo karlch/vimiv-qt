@@ -11,9 +11,9 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple, cast
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
-from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
+from vimiv.qt.core import Qt, pyqtSlot
+from vimiv.qt.widgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
+from vimiv.qt.gui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search, number_for_command
@@ -85,8 +85,6 @@ class Library(
     }
     """
 
-    @api.modes.widget(api.modes.LIBRARY)
-    @api.objreg.register
     def __init__(self, mainwindow: QWidget):
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         widgets.FlatTreeView.__init__(self, parent=mainwindow)
@@ -94,8 +92,8 @@ class Library(
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Ignored)
 
         self.setModel(LibraryModel(self))
         self.setItemDelegate(LibraryDelegate())
@@ -113,6 +111,9 @@ class Library(
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
         styles.apply(self)
+
+        api.objreg.register(self)
+        api.modes.assign_widget(self, api.modes.LIBRARY)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -564,7 +565,7 @@ class LibraryDelegate(QStyledItemDelegate):
         color = self._get_background_color(index, option.state)
         painter.save()
         painter.setBrush(color)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
@@ -592,7 +593,7 @@ class LibraryDelegate(QStyledItemDelegate):
             index: Index of the element indicating even/odd/highlighted.
             state: State of the index indicating selected.
         """
-        if state & QStyle.State_Selected:
+        if state & QStyle.StateFlag.State_Selected:
             if api.modes.current() == api.modes.LIBRARY:
                 return self.selection_bg
             return self.selection_bg_unfocus
@@ -620,11 +621,15 @@ class LibraryDelegate(QStyledItemDelegate):
         # Html only surrounds the leading mark indicator as directories are never marked
         if text.startswith(self.mark_str):
             mark_stripped = strip_html(self.mark_str)
-            elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+            elided = font_metrics.elidedText(
+                html_stripped, Qt.TextElideMode.ElideMiddle, width
+            )
             return elided.replace(mark_stripped, self.mark_str)
         # Html surrounds the full text as the file may be a directory which is displayed
         # in bold
-        elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+        elided = font_metrics.elidedText(
+            html_stripped, Qt.TextElideMode.ElideMiddle, width
+        )
         return text.replace(html_stripped, elided)
 
 

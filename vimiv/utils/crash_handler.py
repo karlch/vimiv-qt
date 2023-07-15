@@ -13,8 +13,8 @@ import sys
 import types
 from typing import Callable, Optional, Type
 
-from PyQt5.QtCore import QTimer, QSocketNotifier, QObject
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.core import QTimer, QSocketNotifier, QObject
+from vimiv.qt.widgets import QApplication
 
 from vimiv.utils import log, customtypes
 
@@ -67,7 +67,9 @@ class CrashHandler(QObject):
         for fd in (read_fd, write_fd):
             flags = fcntl.fcntl(fd, fcntl.F_GETFL)
             fcntl.fcntl(fd, fcntl.F_SETFL, flags | os.O_NONBLOCK)
-        notifier = QSocketNotifier(read_fd, QSocketNotifier.Read, self)  # type: ignore
+        notifier = QSocketNotifier(
+            read_fd, QSocketNotifier.Type.Read, self  # type: ignore
+        )
         notifier.activated.connect(lambda: None)
         signal.set_wakeup_fd(write_fd)
 
