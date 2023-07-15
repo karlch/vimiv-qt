@@ -6,10 +6,13 @@
 
 """Generate reST documentation from source code docstrings."""
 
+import collections
 import inspect
 import importlib
 import os
 import sys
+import textwrap
+from typing import Any, Dict, List, NamedTuple
 
 # Startup is imported to create all the commands and keybindings via their decorators
 from vimiv import api, parser, startup  # pylint: disable=unused-import
@@ -65,12 +68,15 @@ def generate_settings():
     print("generating settings...")
     filename = "docs/documentation/configuration/settings_table.rstsrc"
     with RSTFile(filename) as f:
-        rows = [("Setting", "Description")]
+        rows = [("Setting", "Description", "Default", "Type")]
         for name in sorted(api.settings._storage.keys()):
             setting = api.settings._storage[name]
             if setting.desc:  # Otherwise the setting is meant to be hidden
-                rows.append((name, setting.desc))
-        f.write_table(rows, title="Overview of settings", widths="30 70")
+                default = str(setting.default)
+                if len(default) > 20:  # Cut very long defaults (exif)
+                    default = default[:17] + "..."
+                rows.append((name, setting.desc, default, setting.typ.__name__))
+        f.write_table(rows, title="Overview of settings", widths="20 60 15 5")
 
 
 def generate_keybindings():
@@ -93,105 +99,173 @@ def _gen_keybinding_rows(bindings):
 
 def generate_commandline_options():
     """Generate file including the command line options."""
+
     argparser = parser.get_argparser()
-    groups, titles = _get_options(argparser)
-    # Synopsis
+    arguments = _get_arguments(argparser)
+
+    # Synopsis Man Page
     filename_synopsis = "docs/manpage/synopsis.rstsrc"
     with open(filename_synopsis, "w", encoding="utf-8") as f:
-        synopsis_options = ["[%s]" % (title) for title in titles]
-        synopsis = "**vimiv** %s" % (" ".join(synopsis_options))
-        f.write(synopsis)
-    # Options
+        f.write(_generate_synopsis(arguments, emph="*", sep=r"\ \|\ "))
+
+    # Synopsis Documentation
+    filename_synopsis = "docs/documentation/cl_options/synopsis.rstsrc"
+    with open(filename_synopsis, "w", encoding="utf-8") as f:
+        raw_synopsis_doc = _generate_synopsis(arguments)
+        synopsis_doc = "\n ".join(textwrap.wrap(raw_synopsis_doc, width=79))
+        f.write(f".. code-block::\n\n {synopsis_doc}")
+
+    # Command Listing
+    groups = collections.defaultdict(list)
+    for arg in arguments:
+        groups[arg.group].append(arg)
+
+    # Command Listing Man Page
     filename_options = "docs/manpage/options.rstsrc"
     with RSTFile(filename_options) as f:
-        for title, argstr in groups.items():
-            f.write_section(title)
-            f.write(argstr)
+        _generate_cli_man(groups, f)
+
+    # Command Listing Documentation
+    filename_options = "docs/documentation/cl_options/options.rstsrc"
+    with RSTFile(filename_options) as f:
+        _generate_cli_doc(groups, f)
 
 
-def _get_options(argparser):
-    """Retrieve the options from the argument parser.
+class ParserArgument(NamedTuple):
+    """Storage class for a single command line argument."""
 
-    Returns:
-        groups: Dictionary of group titles and argument strings.
-        titles: List containing all argument titles.
-    """
-    groups = {}
-    titles = []
-    for group in argparser._action_groups:
-        argstr = ""
-        for action in group._group_actions:
-            argstr += (
-                _format_positional(action, titles)
-                if "positional" in group.title
-                else _format_optional(action, titles)
-            )
-        groups[group.title] = argstr
-    return groups, titles
+    group: str
+    longname: str
+    shortname: str
+    metavar: Any
+    description: str
 
+    @property
+    def is_positional(self):
+        return self.longname is self.shortname is None
 
-def _format_optional(action, titles):
-    """Format optional argument neatly.
+    def get_names(self, formatter: str) -> List[str]:
+        """Retrieve list of long and shortname which are not None."""
+        return [
+            self._format(name, formatter)
+            for name in [self.longname, self.shortname]
+            if name is not None
+        ]
 
-    Args:
-        action: The argparser action.
-        titles: List of titles to update with the title(s) of this argument.
-    Returns:
-        Formatted string of this argument.
-    """
-    _titles = _format_optional_title(action)
-    titles.extend(_titles)
-    title = ", ".join(_titles)
-    desc = action.help
-    return _format_option(title, desc)
+    def get_metavar(self, formatter: str) -> str:
+        """Retrieve metavar."""
+        if self.metavar is None:
+            return ""
+        if isinstance(self.metavar, tuple):
+            return " ".join(self._format(e, formatter) for e in self.metavar)
+        return self._format(self.metavar, formatter)
 
+    def get_name_metavar(
+        self, name_formatter: str, metavar_formatter: str
+    ) -> List[str]:
+        """Retrieve all not-none names and append metavar."""
+        names = self.get_names(name_formatter)
+        metavar = self.get_metavar(metavar_formatter)
+        lst = names if names else [metavar]
+        return [f"{e} {metavar}" if metavar else e for e in lst]
 
-def _format_positional(action, titles):
-    """Format positional argument neatly.
-
-    Args:
-        action: The argparser action.
-        titles: List of titles to update with the title of this argument.
-    Returns:
-        Formatted string of this argument.
-    """
-    title = "**%s**" % (action.metavar)
-    titles.append(title)
-    desc = action.help
-    return _format_option(title, desc)
+    def _format(self, element: str, formatter: str) -> str:
+        """Wrap the element into the format string."""
+        return formatter + element + formatter
 
 
-def _format_option(title, desc):
-    """Format an option neatly.
+def _get_arguments(argparser: parser.argparse.ArgumentParser) -> List[ParserArgument]:
+    """Retrieve all arguments from the passed argparser.
 
     Args:
-        title: The title of this option.
-        desc: The help description of this option.
+        argparser: Argument parser where the arguments get extracted from.
+
+    Returns:
+        List of ParserArgument where each element represents one argument of the parser.
     """
-    return "%s\n\n    %s\n\n" % (title, desc)
+
+    def argument_from_action(group, action):
+        if len(action.option_strings) == 2:
+            shortname, longname = action.option_strings
+        elif len(action.option_strings) == 1:
+            longname = action.option_strings[0]
+            shortname = None
+        else:
+            longname = shortname = None
+        return ParserArgument(
+            group=group.title,
+            longname=longname,
+            shortname=shortname,
+            metavar=action.metavar,
+            description=action.help,
+        )
+
+    return [
+        argument_from_action(group, action)
+        for group in argparser._action_groups
+        for action in group._group_actions
+    ]
 
 
-def _format_optional_title(action):
-    """Format the title of an optional argument neatly.
-
-    The title depends on the number of arguments this action requires.
+def _generate_synopsis(arguments: List[ParserArgument], emph: str = "", sep="|") -> str:
+    """Generate formatted synopsis of vimiv.
 
     Args:
-        action: The argparser action.
+        arguments: List of instances of ParserArgument.
+        emph: Character used for emphasis.
+        sep: String used to separate different versions of the same argument, e.g. -o
+            and --output.
     Returns:
-        Formatted title string of this argument.
+        Formatted synopsis for the man page.
     """
-    formats = []
-    for option in action.option_strings:
-        if isinstance(action.metavar, str):  # One argument
-            title = "**%s** *%s*" % (option, action.metavar)
-        elif isinstance(action.metavar, tuple):  # Multiple arguments
-            elems = ["*%s*" % (elem) for elem in action.metavar]
-            title = "**%s** %s" % (option, " ".join(elems))
-        else:  # No arguments
-            title = "**%s**" % (option)
-        formats.append(title)
-    return formats
+    emph2 = 2 * emph
+    synopsis = f"{emph2}vimiv{emph2}"
+    for arg in arguments:
+        if arg.is_positional:
+            synopsis += f" [{arg.get_metavar(emph2)}]"
+        else:
+            command = sep.join(arg.get_name_metavar(emph2, emph))
+            synopsis += f" [{command}]"
+    return synopsis
+
+
+def _generate_cli_man(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
+    """Generate commands listing with man page formatting.
+
+    Args:
+        groups: List of ParserArgument sorted by their respective group.
+        f: RSTFile to write to.
+    """
+    for group in groups.keys():
+        arguments = groups[group]
+
+        f.write_section(group.upper())
+        for arg in arguments:
+            if arg.is_positional:
+                f.write(f"{arg.get_metavar('**')}\n\n\t{arg.description}\n\n")
+            else:
+                f.write(f"{', '.join(arg.get_name_metavar('**', '*'))}\n\n")
+                f.write(f"\t{arg.description}\n\n")
+
+
+def _generate_cli_doc(groups: Dict[str, List[ParserArgument]], f: RSTFile) -> None:
+    """Generate commands listing with documentation formatting.
+
+    Args:
+        groups: List of ParserArgument sorted by their respective group.
+        f: RSTFile to write to.
+    """
+    for group in groups.keys():
+        arguments = groups[group]
+
+        rows = [("Command", "Description")]
+        for arg in arguments:
+            if arg.is_positional:
+                name = arg.get_metavar("``")
+            else:
+                name = ", ".join(f"``{e}``" for e in arg.get_name_metavar("", ""))
+            rows.append((name, arg.description))
+        f.write_table(rows, title=group.capitalize(), widths="50 50")
 
 
 def generate_plugins():
