@@ -412,7 +412,7 @@ document.write(`
 <h1>Vimiv man page<a class="headerlink" href="#vimiv-man-page" title="Permalink to this heading">#</a></h1>
 <section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this heading">#</a></h2>
-<p><strong>vimiv</strong> [<strong>PATH</strong>] [<strong>-h</strong>] [<strong>–help</strong>] [<strong>-f</strong>] [<strong>–fullscreen</strong>] [<strong>-v</strong>] [<strong>–version</strong>] [<strong>-g</strong> <em>WIDTHxHEIGHT</em>] [<strong>–geometry</strong> <em>WIDTHxHEIGHT</em>] [<strong>–temp-basedir</strong>] [<strong>–config</strong> <em>FILE</em>] [<strong>–keyfile</strong> <em>FILE</em>] [<strong>-s</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–set</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–log-level</strong> <em>LEVEL</em>] [<strong>–command</strong> <em>COMMAND</em>] [<strong>-b</strong> <em>DIRECTORY</em>] [<strong>–basedir</strong> <em>DIRECTORY</em>] [<strong>-o</strong> <em>TEXT</em>] [<strong>–output</strong> <em>TEXT</em>] [<strong>-i</strong>] [<strong>–input</strong>] [<strong>–debug</strong> <em>MODULE</em>] [<strong>–qt-args</strong> <em>ARGS</em>]</p>
+<p><strong>vimiv</strong> [<strong>PATH</strong>] [<strong>–help</strong>|<strong>-h</strong>] [<strong>–fullscreen</strong>|<strong>-f</strong>] [<strong>–version</strong>|<strong>-v</strong>] [<strong>–geometry</strong> <em>WIDTHxHEIGHT</em>|<strong>-g</strong> <em>WIDTHxHEIGHT</em>] [<strong>–temp-basedir</strong>] [<strong>–config</strong> <em>FILE</em>] [<strong>–keyfile</strong> <em>FILE</em>] [<strong>–set</strong> <em>OPTION</em> <em>VALUE</em>|<strong>-s</strong> <em>OPTION</em> <em>VALUE</em>] [<strong>–log-level</strong> <em>LEVEL</em>] [<strong>–command</strong> <em>COMMAND</em>] [<strong>–basedir</strong> <em>DIRECTORY</em>|<strong>-b</strong> <em>DIRECTORY</em>] [<strong>–output</strong> <em>TEXT</em>|<strong>-o</strong> <em>TEXT</em>] [<strong>–input</strong>|<strong>-i</strong>] [<strong>–debug</strong> <em>MODULE</em>] [<strong>–qt-args</strong> <em>ARGS</em>]</p>
 </section>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">#</a></h2>
@@ -432,27 +432,27 @@ features are:</p>
 <section id="options">
 <h2>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h2>
 <section id="positional-arguments">
-<h3>positional arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">#</a></h3>
+<h3>POSITIONAL ARGUMENTS<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">#</a></h3>
 <p><strong>PATH</strong></p>
 <blockquote>
 <div><p>Paths to open</p>
 </div></blockquote>
 </section>
 <section id="id1">
-<h3>options<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
-<p><strong>-h</strong>, <strong>–help</strong></p>
+<h3>OPTIONS<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p><strong>–help</strong>, <strong>-h</strong></p>
 <blockquote>
 <div><p>show this help message and exit</p>
 </div></blockquote>
-<p><strong>-f</strong>, <strong>–fullscreen</strong></p>
+<p><strong>–fullscreen</strong>, <strong>-f</strong></p>
 <blockquote>
 <div><p>Start fullscreen</p>
 </div></blockquote>
-<p><strong>-v</strong>, <strong>–version</strong></p>
+<p><strong>–version</strong>, <strong>-v</strong></p>
 <blockquote>
 <div><p>Print version information and exit</p>
 </div></blockquote>
-<p><strong>-g</strong> <em>WIDTHxHEIGHT</em>, <strong>–geometry</strong> <em>WIDTHxHEIGHT</em></p>
+<p><strong>–geometry</strong> <em>WIDTHxHEIGHT</em>, <strong>-g</strong> <em>WIDTHxHEIGHT</em></p>
 <blockquote>
 <div><p>Set the starting geometry</p>
 </div></blockquote>
@@ -468,7 +468,7 @@ features are:</p>
 <blockquote>
 <div><p>Use FILE as keybinding file</p>
 </div></blockquote>
-<p><strong>-s</strong> <em>OPTION</em> <em>VALUE</em>, <strong>–set</strong> <em>OPTION</em> <em>VALUE</em></p>
+<p><strong>–set</strong> <em>OPTION</em> <em>VALUE</em>, <strong>-s</strong> <em>OPTION</em> <em>VALUE</em></p>
 <blockquote>
 <div><p>Set a temporary setting</p>
 </div></blockquote>
@@ -480,21 +480,21 @@ features are:</p>
 <blockquote>
 <div><p>Run COMMAND on startup, usable multiple times</p>
 </div></blockquote>
-<p><strong>-b</strong> <em>DIRECTORY</em>, <strong>–basedir</strong> <em>DIRECTORY</em></p>
+<p><strong>–basedir</strong> <em>DIRECTORY</em>, <strong>-b</strong> <em>DIRECTORY</em></p>
 <blockquote>
 <div><p>Directory to use for all storage</p>
 </div></blockquote>
-<p><strong>-o</strong> <em>TEXT</em>, <strong>–output</strong> <em>TEXT</em></p>
+<p><strong>–output</strong> <em>TEXT</em>, <strong>-o</strong> <em>TEXT</em></p>
 <blockquote>
 <div><p>Wildcard expanded string to print to standard output upon quit</p>
 </div></blockquote>
-<p><strong>-i</strong>, <strong>–input</strong></p>
+<p><strong>–input</strong>, <strong>-i</strong></p>
 <blockquote>
 <div><p>Read paths to open from standard input</p>
 </div></blockquote>
 </section>
 <section id="development-arguments">
-<h3>development arguments<a class="headerlink" href="#development-arguments" title="Permalink to this heading">#</a></h3>
+<h3>DEVELOPMENT ARGUMENTS<a class="headerlink" href="#development-arguments" title="Permalink to this heading">#</a></h3>
 <p><strong>–debug</strong> <em>MODULE</em></p>
 <blockquote>
 <div><p>Force showing debug log messages of MODULE</p>
@@ -543,9 +543,9 @@ features are:</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#synopsis">Synopsis</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#description">Description</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#options">Options</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">positional arguments</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">options</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-arguments">development arguments</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments">POSITIONAL ARGUMENTS</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">OPTIONS</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#development-arguments">DEVELOPMENT ARGUMENTS</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#website">Website</a></li>

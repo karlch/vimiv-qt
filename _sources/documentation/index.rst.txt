@@ -10,6 +10,7 @@ The following documents are available:
    getting_started
    commands
    configuration/index
+   cl_options/index
    metadata
    contributing
    migrating

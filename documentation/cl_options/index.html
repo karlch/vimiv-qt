@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Settings &#8212; vimiv  documentation</title>
+    <title>Command Line Arguments &#8212; vimiv  documentation</title>
   
   
   
@@ -41,12 +41,12 @@
     <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2/dist/js/lightbox-plus-jquery.min.js"></script>
     <script src="../../_static/sphinxcontrib-images/LightBox2/lightbox2-customize/jquery-noconflict.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'documentation/configuration/settings';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'documentation/cl_options/index';</script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Keybindings" href="keybindings.html" />
-    <link rel="prev" title="Configuration" href="index.html" />
+    <link rel="next" title="Metadata" href="../metadata.html" />
+    <link rel="prev" title="Plugins" href="../configuration/plugins.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -396,10 +396,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Docs</a></li>
     
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Configuration</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page">Settings</li>
+    <li class="breadcrumb-item active" aria-current="page">Command Line Arguments</li>
   </ul>
 </nav>
 </div>
@@ -416,247 +413,147 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="settings">
-<h1>Settings<a class="headerlink" href="#settings" title="Permalink to this heading">#</a></h1>
-<p>Vimiv provides configurable settings.</p>
-<p>There are two ways to change a setting:</p>
-<ul class="simple">
-<li><p>Update the configuration file to change it permanently</p></li>
-<li><p>Run the <code class="docutils literal notranslate"><span class="pre">:set</span></code> command to change it temporarily</p></li>
-</ul>
-<p>The configuration file is <code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME/vimiv/vimiv.conf</span></code> where
-<code class="docutils literal notranslate"><span class="pre">$XDG_CONFIG_HOME</span></code> is usually <code class="docutils literal notranslate"><span class="pre">~/.config/</span></code> if you have not updated it.</p>
-<section id="referring-to-external-resources">
-<span id="external-resources"></span><h2>Referring to external resources<a class="headerlink" href="#referring-to-external-resources" title="Permalink to this heading">#</a></h2>
-<p>In the configuration file, it is possible to refer to external resources using the
-<code class="docutils literal notranslate"><span class="pre">option</span> <span class="pre">=</span> <span class="pre">${RESOURCE:variable}</span></code>
-syntax. Here <code class="docutils literal notranslate"><span class="pre">RESOURCE</span></code> defines the type of external resource, and <code class="docutils literal notranslate"><span class="pre">variable</span></code> is the
-corresponding variable name. The following options are available:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">${env:VARIABLE}</span></code> to retrieve the value of the environment variable <code class="docutils literal notranslate"><span class="pre">$VARIABLE</span></code></p></li>
+  <section id="command-line-arguments">
+<h1>Command Line Arguments<a class="headerlink" href="#command-line-arguments" title="Permalink to this heading">#</a></h1>
+<p>When starting vimiv form the command line you have the ability to pass a number of
+different argument to vimiv.</p>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<p>In the following we present a few use cases of command line arguments.</p>
+<ul>
+<li><p>Start in library view with the thumbnail grid displayed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="o">*</span> <span class="o">--</span><span class="n">command</span> <span class="s2">&quot;enter thumbnail&quot;</span> <span class="o">--</span><span class="n">command</span> <span class="s2">&quot;enter library&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Start in read-only mode. This prevents accidental modification (renaming, moving, editing etc.) of any images:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="o">--</span><span class="nb">set</span> <span class="n">read_only</span> <span class="n">true</span>
+</pre></div>
+</div>
+</li>
+<li><p>Change WM_CLASS_INSTANCE to identify a vimiv instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="o">--</span><span class="n">qt</span><span class="o">-</span><span class="n">args</span> <span class="s2">&quot;--name myVimivInstance&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Print the last selected image to STDOUT when quitting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="o">--</span><span class="n">output</span> <span class="s2">&quot;%&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Use vimiv as <em>Rofi for Images</em> to make a selection from candidate images:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mySel=$(echo $myCand | vimiv --input --output &quot;%m&quot; --command &quot;enter thumbnail&quot;)
+</pre></div>
+</div>
+</li>
+<li><p>Print debug logs of your amazing plugin you are writing and of the <cite>api._mark</cite> module which does not behave as you are expecting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="o">--</span><span class="n">debug</span> <span class="n">myAmazingPlugin</span> <span class="n">api</span><span class="o">.</span><span class="n">_mark</span>
+</pre></div>
+</div>
+</li>
 </ul>
 </section>
-<section id="overview-of-all-settings">
-<h2>Overview of all settings<a class="headerlink" href="#overview-of-all-settings" title="Permalink to this heading">#</a></h2>
-<p>The following table explains all available settings. All setting names are of the form
-<code class="docutils literal notranslate"><span class="pre">group.name</span></code> where <code class="docutils literal notranslate"><span class="pre">group</span></code> maps to the corresponding section in the configuration
-file and <code class="docutils literal notranslate"><span class="pre">name</span></code> is the name within this section. In case there is no <code class="docutils literal notranslate"><span class="pre">group</span></code>, the
-setting belongs into the <code class="docutils literal notranslate"><span class="pre">general</span></code> section.</p>
-<p>Note that all settings related to the statusbar content are described in detail in their
-own corresponding <a class="reference internal" href="statusbar.html#statusbar"><span class="std std-ref">document</span></a>.</p>
+<section id="id1">
+<h2>Command Line Arguments<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h2>
+<p>The general calling structure is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">vimiv</span> <span class="p">[</span><span class="n">PATH</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">help</span><span class="o">|-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">fullscreen</span><span class="o">|-</span><span class="n">f</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">version</span><span class="o">|-</span><span class="n">v</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">geometry</span>
+<span class="n">WIDTHxHEIGHT</span><span class="o">|-</span><span class="n">g</span> <span class="n">WIDTHxHEIGHT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">temp</span><span class="o">-</span><span class="n">basedir</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">config</span> <span class="n">FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">keyfile</span> <span class="n">FILE</span><span class="p">]</span>
+<span class="p">[</span><span class="o">--</span><span class="nb">set</span> <span class="n">OPTION</span> <span class="n">VALUE</span><span class="o">|-</span><span class="n">s</span> <span class="n">OPTION</span> <span class="n">VALUE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span> <span class="n">LEVEL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">command</span> <span class="n">COMMAND</span><span class="p">]</span>
+<span class="p">[</span><span class="o">--</span><span class="n">basedir</span> <span class="n">DIRECTORY</span><span class="o">|-</span><span class="n">b</span> <span class="n">DIRECTORY</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">output</span> <span class="n">TEXT</span><span class="o">|-</span><span class="n">o</span> <span class="n">TEXT</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="nb">input</span><span class="o">|-</span><span class="n">i</span><span class="p">]</span>
+<span class="p">[</span><span class="o">--</span><span class="n">debug</span> <span class="n">MODULE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">qt</span><span class="o">-</span><span class="n">args</span> <span class="n">ARGS</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The following is an exhaustive list of all available arguments:</p>
 <table class="table" id="id2">
-<caption><span class="caption-text">Overview of settings</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
+<caption><span class="caption-text">Positional arguments</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
 <colgroup>
-<col style="width: 20.0%" />
-<col style="width: 60.0%" />
-<col style="width: 15.0%" />
-<col style="width: 5.0%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
 <th class="head"><p>Description</p></th>
-<th class="head"><p>Default</p></th>
-<th class="head"><p>Type</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>command.history_limit</p></td>
-<td><p>Maximum number of commands to store in history</p></td>
-<td><p>100</p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-odd"><td><p>completion.fuzzy</p></td>
-<td><p>Use fuzzy matching in completion</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>image.autoplay</p></td>
-<td><p>Start playing animations on open</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>image.autowrite</p></td>
-<td><p>Save images on changes</p></td>
-<td><p>ask</p></td>
-<td><p>Options</p></td>
-</tr>
-<tr class="row-even"><td><p>image.overzoom</p></td>
-<td><p>Maximum scale to apply trying to fit image to window</p></td>
-<td><p>1.0</p></td>
-<td><p>float</p></td>
-</tr>
-<tr class="row-odd"><td><p>image.zoom_wheel_ctrl</p></td>
-<td><p>Require holding the control modifier for zooming with the mouse wheel</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>keyhint.delay</p></td>
-<td><p>Delay (in ms) until the keyhint widget is displayed</p></td>
-<td><p>500</p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-odd"><td><p>keyhint.timeout</p></td>
-<td><p>Time (in ms) after which partially typed keybindings are cleared</p></td>
-<td><p>5000</p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-even"><td><p>library.show_hidden</p></td>
-<td><p>Show hidden files in the library</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>library.width</p></td>
-<td><p>Width of the library as fraction of main window size</p></td>
-<td><p>0.3</p></td>
-<td><p>float</p></td>
-</tr>
-<tr class="row-even"><td><p>metadata.current_keyset</p></td>
-<td><p>Currently displayed metadata keyset</p></td>
-<td><p>Exif.Image.Make,E…</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-odd"><td><p>monitor_filesystem</p></td>
-<td><p>Monitor current directory for changes and reload widgets automatically</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>read_only</p></td>
-<td><p>Disable any commands that are able to edit files on disk</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>search.ignore_case</p></td>
-<td><p>Ignore case when searching, i.e. ‘A’ and ‘a’ are equal</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>search.incremental</p></td>
-<td><p>Automatically filter search results when typing</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>slideshow.delay</p></td>
-<td><p>Delay to next image in slideshow</p></td>
-<td><p>2.0</p></td>
-<td><p>float</p></td>
-</tr>
-<tr class="row-even"><td><p>slideshow.indicator</p></td>
-<td><p>Text to display in statusbar when slideshow is running</p></td>
-<td><p>slideshow:</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-odd"><td><p>sort.directory_order</p></td>
-<td><p>Ordering of directories, e.g. in the library</p></td>
-<td><p>alphabetical</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-even"><td><p>sort.ignore_case</p></td>
-<td><p>Ignore case when sorting, i.e. ‘A’ and ‘a’ are equal</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>sort.image_order</p></td>
-<td><p>Ordering of images, e.g. in the library</p></td>
-<td><p>alphabetical</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-even"><td><p>sort.reverse</p></td>
-<td><p>Reverse the order of sorting, i.e. z before a, largest first, etc.</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>sort.shuffle</p></td>
-<td><p>Randomly shuffle images and ignoring all other sort settings</p></td>
-<td><p>False</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>startup_library</p></td>
-<td><p>Enter library at startup if there are no images to show</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>statusbar.collapse_home</p></td>
-<td><p>Collapse /home/user to ~ in statusbar</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>statusbar.mark_indicator</p></td>
-<td><p>Text to display if the current image is marked</p></td>
-<td><p>&lt;b&gt;*&lt;/b&gt;</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-odd"><td><p>statusbar.message_timeout</p></td>
-<td><p>Time in ms until statusbar messages are removed</p></td>
-<td><p>60000</p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-even"><td><p>statusbar.show</p></td>
-<td><p>Always display the statusbar</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-odd"><td><p>thumbnail.save</p></td>
-<td><p>Save new thumbnails to disk in the shared icon cache for later use</p></td>
-<td><p>True</p></td>
-<td><p>bool</p></td>
-</tr>
-<tr class="row-even"><td><p>thumbnail.size</p></td>
-<td><p>Size of thumbnails</p></td>
-<td><p>128</p></td>
-<td><p>int</p></td>
-</tr>
-<tr class="row-odd"><td><p>title.fallback</p></td>
-<td><p>Default window title if no mode specific options exist</p></td>
-<td><p>vimiv</p></td>
-<td><p>str</p></td>
-</tr>
-<tr class="row-even"><td><p>title.image</p></td>
-<td><p>Window title in image mode</p></td>
-<td><p>vimiv - {basename}</p></td>
-<td><p>str</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">PATH</span></code></p></td>
+<td><p>Paths to open</p></td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="sorting">
-<span id="id1"></span><h2>Sorting<a class="headerlink" href="#sorting" title="Permalink to this heading">#</a></h2>
-<p>The settings in the <code class="docutils literal notranslate"><span class="pre">sort</span></code> group allow changing the ordering of images and
-directories. The ordering principle is defined by the <code class="docutils literal notranslate"><span class="pre">sort.image_order</span></code> and
-<code class="docutils literal notranslate"><span class="pre">sort.directory_order</span></code> settings which both have the following options:</p>
 <table class="table" id="id3">
-<caption><span class="caption-text">Overview of ordering types</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
+<caption><span class="caption-text">Options</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
 <colgroup>
-<col style="width: 30.0%" />
-<col style="width: 70.0%" />
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Ordering</p></th>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
 <th class="head"><p>Description</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>alphabetical</p></td>
-<td><p>Regular ordering by string basename</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--help</span></code>, <code class="docutils literal notranslate"><span class="pre">-h</span></code></p></td>
+<td><p>show this help message and exit</p></td>
 </tr>
-<tr class="row-odd"><td><p>natural</p></td>
-<td><p>Natural ordering by basename, i.e. image2.jpg comes before image11.jpg</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--fullscreen</span></code>, <code class="docutils literal notranslate"><span class="pre">-f</span></code></p></td>
+<td><p>Start fullscreen</p></td>
 </tr>
-<tr class="row-even"><td><p>recently-modified</p></td>
-<td><p>Ordering by modification time (<code class="docutils literal notranslate"><span class="pre">mtime</span></code>)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--version</span></code>, <code class="docutils literal notranslate"><span class="pre">-v</span></code></p></td>
+<td><p>Print version information and exit</p></td>
 </tr>
-<tr class="row-odd"><td><p>size</p></td>
-<td><p>Ordering by filesize, in bytes for images, in number of files for directories</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--geometry</span> <span class="pre">WIDTHxHEIGHT</span></code>, <code class="docutils literal notranslate"><span class="pre">-g</span> <span class="pre">WIDTHxHEIGHT</span></code></p></td>
+<td><p>Set the starting geometry</p></td>
 </tr>
-<tr class="row-even"><td><p>none</p></td>
-<td><p>Do not sort or reverse. Use the existing order of the images (including that of a previous sort type). This is mostly for keeping the order from the command line or stdin.</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--temp-basedir</span></code></p></td>
+<td><p>Use a temporary basedir</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--config</span> <span class="pre">FILE</span></code></p></td>
+<td><p>Use FILE as local configuration file</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--keyfile</span> <span class="pre">FILE</span></code></p></td>
+<td><p>Use FILE as keybinding file</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--set</span> <span class="pre">OPTION</span> <span class="pre">VALUE</span></code>, <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">OPTION</span> <span class="pre">VALUE</span></code></p></td>
+<td><p>Set a temporary setting</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--log-level</span> <span class="pre">LEVEL</span></code></p></td>
+<td><p>Set log level to LEVEL</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--command</span> <span class="pre">COMMAND</span></code></p></td>
+<td><p>Run COMMAND on startup, usable multiple times</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--basedir</span> <span class="pre">DIRECTORY</span></code>, <code class="docutils literal notranslate"><span class="pre">-b</span> <span class="pre">DIRECTORY</span></code></p></td>
+<td><p>Directory to use for all storage</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--output</span> <span class="pre">TEXT</span></code>, <code class="docutils literal notranslate"><span class="pre">-o</span> <span class="pre">TEXT</span></code></p></td>
+<td><p>Wildcard expanded string to print to standard output upon quit</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--input</span></code>, <code class="docutils literal notranslate"><span class="pre">-i</span></code></p></td>
+<td><p>Read paths to open from standard input</p></td>
 </tr>
 </tbody>
 </table>
-<p>In addition, the ordering can be reversed using <code class="docutils literal notranslate"><span class="pre">sort.reverse</span></code> and the string-like
-orderings (<code class="docutils literal notranslate"><span class="pre">alphabetical</span></code> and <code class="docutils literal notranslate"><span class="pre">natural</span></code>) can be made case-insensitive using
-<code class="docutils literal notranslate"><span class="pre">sort.ignore_case</span></code> except for when the <code class="docutils literal notranslate"><span class="pre">none</span></code> ordering type is used.
-When <code class="docutils literal notranslate"><span class="pre">sort.shuffle</span></code> is set, the image filelist is shuffled regardless of the other
-orderings, but the library remains ordered.</p>
+<table class="table" id="id4">
+<caption><span class="caption-text">Development arguments</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Command</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">MODULE</span></code></p></td>
+<td><p>Force showing debug log messages of MODULE</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--qt-args</span> <span class="pre">ARGS</span></code></p></td>
+<td><p>Arguments to pass to qt directly, use quotes to pass multiple arguments</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 
@@ -672,20 +569,20 @@ orderings, but the library remains ordered.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="../configuration/plugins.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Configuration</p>
+        <p class="prev-next-title">Plugins</p>
       </div>
     </a>
     <a class="right-next"
-       href="keybindings.html"
+       href="../metadata.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Keybindings</p>
+        <p class="prev-next-title">Metadata</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -707,15 +604,14 @@ orderings, but the library remains ordered.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#referring-to-external-resources">Referring to external resources</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview-of-all-settings">Overview of all settings</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sorting">Sorting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples">Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Command Line Arguments</a></li>
 </ul>
   </nav></div>
 
   <div class="sidebar-secondary-item">
   <div class="tocsection sourcelink">
-    <a href="../../_sources/documentation/configuration/settings.rst.txt">
+    <a href="../../_sources/documentation/cl_options/index.rst.txt">
       <i class="fa-solid fa-file-lines"></i> Show Source
     </a>
   </div>
