@@ -3,7 +3,6 @@ Feature: Lazy load thumbnails
     Scenario: Eager loading (default behavior)
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run 5scroll right
         Then there should be 10 rendered thumbnails
         And the first index should be 0
@@ -12,7 +11,6 @@ Feature: Lazy load thumbnails
     Scenario: Only display the selected thumbnail
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_behind 0
         And I run set thumbnail.load_ahead 0
         And I run set thumbnail.unload_threshold 0
@@ -24,7 +22,6 @@ Feature: Lazy load thumbnails
     Scenario: Display two thumbnails behind and all ahead
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_behind 2
         And I run 5scroll right
         Then there should be 7 rendered thumbnails
@@ -34,7 +31,6 @@ Feature: Lazy load thumbnails
     Scenario: Display two thumbnails ahead and all behind
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
         And I run 5scroll right
         Then there should be 8 rendered thumbnails
@@ -44,7 +40,6 @@ Feature: Lazy load thumbnails
     Scenario: Display two thumbnails ahead and behind
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
         And I run set thumbnail.load_behind 2
         And I run 5scroll right
@@ -55,7 +50,6 @@ Feature: Lazy load thumbnails
     Scenario: Display two thumbnails ahead and behind but don't unload less than six tumbnails
         Given I open 10 images without leading zeros in their name
         And I enter thumbnail mode
-        Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
         And I run set thumbnail.load_behind 2
         And I run set thumbnail.unload_threshold 6
