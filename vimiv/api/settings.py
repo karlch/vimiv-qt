@@ -488,8 +488,8 @@ class thumbnail:  # pylint: disable=invalid-name
     unload_threshold = IntSetting(
         "thumbnail.unload_threshold",
         -1,
-        desc="Don't unload currently rendered thumbnails unless more are loaded than"
-        " this. -1 is no limit",
+        desc="Don't unload currently rendered thumbnails unless the number loaded is"
+        " above this threshold. -1 is no limit",
     )
 
 
