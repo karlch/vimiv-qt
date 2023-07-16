@@ -7,7 +7,7 @@
 import pytest_bdd as bdd
 
 
-bdd.scenarios("test_thumbnaillazy.feature")
+bdd.scenarios("thumbnaillazy.feature")
 
 
 def wait_for_thumbnails_to_load(qtbot, thumbnail):
@@ -32,10 +32,10 @@ def check_rendered_thumbnail_amount(qtbot, thumbnail, number):
 @bdd.then(bdd.parsers.parse("the last index should be {number:d}"))
 def check_last_index(qtbot, thumbnail, number):
     wait_for_thumbnails_to_load(qtbot, thumbnail)
-    assert thumbnail._last_index() == number
+    assert thumbnail._last_rendered_index() == number
 
 
 @bdd.then(bdd.parsers.parse("the first index should be {number:d}"))
 def check_first_index(qtbot, thumbnail, number):
     wait_for_thumbnails_to_load(qtbot, thumbnail)
-    assert thumbnail._first_index() == number
+    assert thumbnail._first_rendered_index() == number

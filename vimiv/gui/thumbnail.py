@@ -144,34 +144,26 @@ class ThumbnailView(
         """Return the number of rows."""
         return math.ceil(self.count() / self.n_columns())
 
-    def _first_index(self) -> int:
+    def _first_rendered_index(self) -> int:
         """Return the index of the first thumbnail to be rendered."""
-        result: int
         if api.settings.thumbnail.load_behind.value == -1:
-            result = 0
-        else:
-            result = max(
-                0, self.current_index() - api.settings.thumbnail.load_behind.value
-            )
-        return result
+            return 0
+        return max(0, self.current_index() - api.settings.thumbnail.load_behind.value)
 
-    def _last_index(self) -> int:
+    def _last_rendered_index(self) -> int:
         """Return the index of the last thumbnail to be rendered."""
-        result: int
         if len(self._paths) == 0:
-            result = 0
-        elif api.settings.thumbnail.load_ahead.value == -1:
-            result = len(self._paths) - 1
-        else:
-            result = min(
-                len(self._paths) - 1,
-                self.current_index() + api.settings.thumbnail.load_ahead.value,
-            )
-        return result
+            return 0
+        if api.settings.thumbnail.load_ahead.value == -1:
+            return len(self._paths) - 1
+        return min(
+            len(self._paths) - 1,
+            self.current_index() + api.settings.thumbnail.load_ahead.value,
+        )
 
-    def _index_range(self) -> Tuple[int, int]:
+    def _rendered_index_range(self) -> Tuple[int, int]:
         """Return the first and last indexes in a tuple fitting a Python range."""
-        return (self._first_index(), self._last_index() + 1)
+        return (self._first_rendered_index(), self._last_rendered_index() + 1)
 
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
@@ -186,12 +178,12 @@ class ThumbnailView(
 
     def _prune_icons_behind(self) -> None:
         """Prune indexes before the current index."""
-        for index in range(0, self._first_index()):
+        for index in range(0, self._first_rendered_index()):
             self._prune_index(index)
 
     def _prune_icons_ahead(self) -> None:
         """Prune indexes after the current index."""
-        for index in reversed(range(self._last_index() + 1, len(self._paths))):
+        for index in reversed(range(self._last_rendered_index() + 1, len(self._paths))):
             self._prune_index(index)
 
     def _prune_icons(self) -> None:
@@ -201,7 +193,7 @@ class ThumbnailView(
 
     def _update_icon_position(self) -> None:
         """Adjust displayed range of icons to current position."""
-        first_index, last_index = self._index_range()
+        first_index, last_index = self._rendered_index_range()
         desired_paths = []
         indices = []
         for p, i in zip(
@@ -247,7 +239,7 @@ class ThumbnailView(
                 ThumbnailItem(self, i, size_hint=size_hint)
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
-        first_index, last_index = self._index_range()
+        first_index, last_index = self._rendered_index_range()
         self._manager.create_thumbnails_async(
             range(first_index, last_index), paths[first_index:last_index]
         )

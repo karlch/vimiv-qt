@@ -14,9 +14,9 @@ Feature: Lazy load thumbnails
         And I enter thumbnail mode
         Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_behind 0
-        When I run set thumbnail.load_ahead 0
-        When I run set thumbnail.unload_threshold 0
-        When I run 5scroll right
+        And I run set thumbnail.load_ahead 0
+        And I run set thumbnail.unload_threshold 0
+        And I run 5scroll right
         Then there should be 1 rendered thumbnails
         And the first index should be 5
         And the last index should be 5
@@ -26,7 +26,7 @@ Feature: Lazy load thumbnails
         And I enter thumbnail mode
         Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_behind 2
-        When I run 5scroll right
+        And I run 5scroll right
         Then there should be 7 rendered thumbnails
         And the first index should be 3
         And the last index should be 9
@@ -36,7 +36,7 @@ Feature: Lazy load thumbnails
         And I enter thumbnail mode
         Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
-        When I run 5scroll right
+        And I run 5scroll right
         Then there should be 8 rendered thumbnails
         And the first index should be 0
         And the last index should be 7
@@ -46,8 +46,8 @@ Feature: Lazy load thumbnails
         And I enter thumbnail mode
         Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
-        When I run set thumbnail.load_behind 2
-        When I run 5scroll right
+        And I run set thumbnail.load_behind 2
+        And I run 5scroll right
         Then there should be 5 rendered thumbnails
         And the first index should be 3
         And the last index should be 7
@@ -57,9 +57,9 @@ Feature: Lazy load thumbnails
         And I enter thumbnail mode
         Then there should be 10 rendered thumbnails
         When I run set thumbnail.load_ahead 2
-        When I run set thumbnail.load_behind 2
-        When I run set thumbnail.unload_threshold 6
-        When I run 5scroll right
+        And I run set thumbnail.load_behind 2
+        And I run set thumbnail.unload_threshold 6
+        And I run 5scroll right
         Then there should be 6 rendered thumbnails
         And the first index should be 3
         And the last index should be 7
