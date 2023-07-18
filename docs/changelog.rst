@@ -6,6 +6,11 @@ All notable changes to vimiv are documented in this file.
 v0.10.0 (unreleased)
 --------------------
 
+Fixed:
+^^^^^^
+
+* The SVG image header check to no longer return true for all XML files.
+
 
 v0.9.0 (2023-07-15)
 -------------------

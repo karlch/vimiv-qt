@@ -13,21 +13,21 @@ one shows which can be read when having the `qtimageformats` add-on module insta
 This module allows to detect images of these types based on the magic bytes of the file.
 
 Native QT Support:
-| ---    | ---                       | ---                                     |
-| Format | Extension according to QT | Vimiv Supported                         |
-| ---    | ---                       | ---                                     |
-| BMP    | bmp                       | yes                                     |
-| GIF    | gif                       | yes                                     |
-| JPG    | jpeg, jpg                 | yes                                     |
-| PNG    | png                       | yes                                     |
-| PBM    | pbm                       | yes                                     |
-| PGM    | pgm                       | yes                                     |
-| PPM    | ppm                       | yes                                     |
-| XBM    | xbm                       | yes (no distinct header, regex on file) |
-| XPM    | xpm                       | yes                                     |
-| SVG    | svg                       | yes                                     |
-| SVG    | svgz                      | no (different from svg?)                |
-| ---    | ---                       | ---                                     |
+| ---    | ---                       | ---                                         |
+| Format | Extension according to QT | Vimiv Supported                             |
+| ---    | ---                       | ---                                         |
+| BMP    | bmp                       | yes                                         |
+| GIF    | gif                       | yes                                         |
+| JPG    | jpeg, jpg                 | yes                                         |
+| PNG    | png                       | yes                                         |
+| PBM    | pbm                       | yes                                         |
+| PGM    | pgm                       | yes                                         |
+| PPM    | ppm                       | yes                                         |
+| XBM    | xbm                       | yes (no distinct header, regex on file)     |
+| XPM    | xpm                       | yes                                         |
+| SVG    | svg                       | yes                                         |
+| SVG    | svgz                      | no (is gzip compressed, how detect if svg?) |
+| ---    | ---                       | ---                                         |
 
 Extended QT Support:
 | ---    | ---                       | ---                                             |
@@ -194,20 +194,34 @@ def _test_gif(h: bytes, _f: BinaryIO) -> bool:
     return h[:4] == b"\x47\x49\x46\x38" and h[4] in [0x37, 0x39] and h[5] == 0x61
 
 
-def _test_svg(h: bytes, _f: BinaryIO) -> bool:
+def _test_svg(h: bytes, f: BinaryIO) -> bool:
     """Scalable Vector Graphics (SVG).
 
     Extension: .svg (TODO: also svgz?)
 
     Magic bytes:
-    --> 3C 3F 78 6D 6C
+    --> 3C 3F 78 6D 6C (if xml, but also need to verify if svg using regex)
      ->  <  ?  x  m  l
-    --> 3C 3F 73 76 67
+    --> 3C 3F 73 76 67 (with stripped xml header)
      ->  <  ?  s  v  g
 
     Native QT support.
     """
-    return h[:2] == b"\x3C\x3F" and (h[2:5] in [b"\x78\x6D\x6C", b"\x73\x76\x67"])
+    # Check if start with <?
+    if h[:2] != b"\x3C\x3F":
+        return False
+
+    # If stripped svg
+    if h[2:5] == b"\x73\x76\x67":
+        return True
+
+    # Check for svg start tag
+    import re
+
+    f.seek(0, 0)
+    h = f.read()
+    pattern = b"<svg"
+    return re.search(pattern, h) is not None
 
 
 def _test_pbm(h: bytes, _f: BinaryIO) -> bool:
