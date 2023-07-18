@@ -215,6 +215,7 @@ class ThumbnailView(
     def clear(self):
         """Override clear to also empty paths."""
         self._paths = []
+        self._rendered_paths.clear()
         super().clear()
 
     @pyqtSlot(list)
