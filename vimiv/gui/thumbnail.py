@@ -165,6 +165,16 @@ class ThumbnailView(
         """Return the first and last indexes in a tuple fitting a Python range."""
         return (self._first_rendered_index(), self._last_rendered_index() + 1)
 
+    def _rendered_thumbnail_pairs(self) -> List[Tuple[int, str]]:
+        """Return index/path pairs with those closest to current index first."""
+        current_index = self.current_index()
+        first_index, last_index = self._rendered_index_range()
+        pairs = list(
+            zip(range(first_index, last_index), self._paths[first_index:last_index])
+        )
+        pairs.sort(key=lambda p: abs(p[0] - current_index))
+        return pairs
+
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
         path = self._paths[index]
@@ -198,12 +208,10 @@ class ThumbnailView(
 
     def _update_icon_position(self) -> None:
         """Adjust displayed range of icons to current position."""
-        first_index, last_index = self._rendered_index_range()
         desired_paths = []
         indices = []
-        for p, i in zip(
-            self._paths[first_index:last_index], range(first_index, last_index)
-        ):
+        pairs = self._rendered_thumbnail_pairs()
+        for i, p in zip([p[0] for p in pairs], [p[1] for p in pairs]):
             if p not in self._rendered_paths:
                 desired_paths.append(p)
                 indices.append(i)
@@ -244,9 +252,9 @@ class ThumbnailView(
                 ThumbnailItem(self, i, size_hint=size_hint)
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
-        first_index, last_index = self._rendered_index_range()
+        pairs = self._rendered_thumbnail_pairs()
         self._manager.create_thumbnails_async(
-            range(first_index, last_index), paths[first_index:last_index]
+            [p[0] for p in pairs], [p[1] for p in pairs]
         )
         _logger.debug("... update completed")
 

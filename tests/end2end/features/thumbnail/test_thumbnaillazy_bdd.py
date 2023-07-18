@@ -39,3 +39,16 @@ def check_last_index(qtbot, thumbnail, number):
 def check_first_index(qtbot, thumbnail, number):
     wait_for_thumbnails_to_load(qtbot, thumbnail)
     assert thumbnail._first_rendered_index() == number
+
+
+@bdd.then(bdd.parsers.parse("thumbnails should load in order of closeness to selected"))
+def check_thumbnail_pair_order(qtbot, thumbnail):
+    wait_for_thumbnails_to_load(qtbot, thumbnail)
+    pairs = thumbnail._rendered_thumbnail_pairs()
+    current_index = thumbnail.current_index()
+    last_difference = -1
+    for p in pairs:
+        difference = abs(p[0] - current_index)
+        assert difference >= last_difference
+        last_difference = difference
+        assert p[1] == thumbnail._paths[p[0]]

@@ -7,6 +7,7 @@ Feature: Lazy load thumbnails
         Then there should be 10 rendered thumbnails
         And the first index should be 0
         And the last index should be 9
+		And thumbnails should load in order of closeness to selected
 
     Scenario: Only display the selected thumbnail
         Given I open 10 images without leading zeros in their name
@@ -18,6 +19,7 @@ Feature: Lazy load thumbnails
         Then there should be 1 rendered thumbnails
         And the first index should be 5
         And the last index should be 5
+		And thumbnails should load in order of closeness to selected
 
     Scenario: Display two thumbnails behind and all ahead
         Given I open 10 images without leading zeros in their name
@@ -27,6 +29,7 @@ Feature: Lazy load thumbnails
         Then there should be 7 rendered thumbnails
         And the first index should be 3
         And the last index should be 9
+		And thumbnails should load in order of closeness to selected
 
     Scenario: Display two thumbnails ahead and all behind
         Given I open 10 images without leading zeros in their name
@@ -36,6 +39,7 @@ Feature: Lazy load thumbnails
         Then there should be 8 rendered thumbnails
         And the first index should be 0
         And the last index should be 7
+		And thumbnails should load in order of closeness to selected
 
     Scenario: Display two thumbnails ahead and behind
         Given I open 10 images without leading zeros in their name
@@ -46,6 +50,7 @@ Feature: Lazy load thumbnails
         Then there should be 5 rendered thumbnails
         And the first index should be 3
         And the last index should be 7
+		And thumbnails should load in order of closeness to selected
 
     Scenario: Display two thumbnails ahead and behind but don't unload less than six tumbnails
         Given I open 10 images without leading zeros in their name
@@ -58,3 +63,4 @@ Feature: Lazy load thumbnails
         And the first index should be 3
         And the last index should be 7
         And image_8.jpg should be in the rendered thumbnails
+		And thumbnails should load in order of closeness to selected
