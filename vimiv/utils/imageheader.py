@@ -40,9 +40,16 @@ Extended QT Support:
 | MNG    | TODO: ?                   | yes                                             |
 | TGA    | tga                       | yes (only version 2, version 1 is undetectable) |
 | TIFF   | tif, tiff                 | yes                                             |
-| WBMP   | wbmp                      | no (is undetectable)                      |
+| WBMP   | wbmp                      | no (is undetectable)                            |
 | WEBP   | webp                      | yes                                             |
 | ---    | ---                       | ---                                             |
+
+The docstrings of the verification functions show the bytes that are used to detect the
+file. Plain numbers are in base16. Two question marks (??) represent a variable byte.
+
+The bytes are also listed when interpreted as alphanumerical characters. Two dots (..)
+represent a non-alphanumerical character. Two question marks (??) represent a variable
+byte.
 
 A great list of magic bytes is provided here:
 https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -138,11 +145,16 @@ def _test_jpg(h: bytes, _f: BinaryIO) -> bool:
     Extension: .jpeg, .jpg
 
     Magic bytes:
-    - FF D8 FF DB
-    - FF D8 FF E0 (only for JPG, but no need to differentiate)
-    - FF D8 FF E0 00 10 4A 46 49 46 00 01 (covered be prior)
-    - FF D8 FF EE
-    - FF D8 FF E1 ?? ?? 45 78 69 66 00 00
+    --> FF D8 FF DB
+     -> .. .. .. ..
+    --> FF D8 FF E0 (only for JPG and not JPEG, but no need to differentiate)
+     -> .. .. .. ..
+    --> FF D8 FF E0 00 10 4A 46 49 46 00 01 (covered be prior)
+     -> .. .. .. .. .. ..  J  F  I  F .. ..
+    --> FF D8 FF EE
+     -> .. .. .. ..
+    --> FF D8 FF E1 ?? ?? 45 78 69 66 00 00
+     -> .. .. .. .. .. ..  E  x  i  f .. ..
 
     Support: native
     """
@@ -158,7 +170,8 @@ def _test_png(h: bytes, _f: BinaryIO) -> bool:
     Extension: .png
 
     Magic bytes:
-    - 89 50 4E 47 0D 0A 1A 0A
+    --> 89 50 4E 47 0D 0A 1A 0A
+     -> ..  P  N  G .. .. .. ..
 
     Support: native
     """
@@ -171,8 +184,10 @@ def _test_gif(h: bytes, _f: BinaryIO) -> bool:
     Extension: .gif
 
     Magic bytes:
-    - 47 49 46 38 37 61
-    - 47 49 46 38 39 61
+    --> 47 49 46 38 37 61
+     ->  G  I  F  8  7  a
+    --> 47 49 46 38 39 61
+     ->  G  I  F  8  9  a
 
     Support: native
     """
@@ -185,8 +200,10 @@ def _test_svg(h: bytes, _f: BinaryIO) -> bool:
     Extension: .svg (TODO: also svgz?)
 
     Magic bytes:
-    - 3C 3F 78 6D 6C
-    - 3C 3F 73 76 67
+    --> 3C 3F 78 6D 6C
+     ->  <  ?  x  m  l
+    --> 3C 3F 73 76 67
+     ->  <  ?  s  v  g
 
     Native QT support.
     """
@@ -199,8 +216,10 @@ def _test_pbm(h: bytes, _f: BinaryIO) -> bool:
     Extension: .pbm
 
     Magic bytes:
-    - 50 31 0A
-    - 50 34 0A
+    --> 50 31 0A
+     ->  P  1 ..
+    --> 50 34 0A
+     ->  P  4 ..
 
     Support: native
     """
@@ -213,8 +232,10 @@ def _test_pgm(h: bytes, _f: BinaryIO) -> bool:
     Extension: .pgm
 
     Magic bytes:
-    - 50 32 0A
-    - 50 35 0A
+    --> 50 32 0A
+     ->  P  2 ..
+    --> 50 35 0A
+     ->  P  5 ..
 
     Support: native
     """
@@ -227,8 +248,10 @@ def _test_ppm(h: bytes, _f: BinaryIO) -> bool:
     Extension: .ppm
 
     Magic bytes:
-    - 50 33 0A
-    - 50 36 0A
+    --> 50 33 0A
+     ->  P  3 ..
+    --> 50 36 0A
+     ->  P  6 ..
 
     Support: native
     """
@@ -241,7 +264,8 @@ def _test_bmp(h: bytes, _f: BinaryIO) -> bool:
     Extension: .bmp, .dib
 
     Magic bytes:
-    - 42 4D
+    --> 42 4D
+     ->  B  M
 
     Support: native
     """
@@ -256,7 +280,7 @@ def _test_xbm(h: bytes, f: BinaryIO) -> bool:
     Extension: .xbm
 
     Magic Bytes:
-    - None; Use regex on file
+    --> None; Use regex on file
 
     Support: native
     """
@@ -279,7 +303,8 @@ def _test_xpm(h: bytes, _f: BinaryIO) -> bool:
     Extension: .xpm
 
     Magic Bytes:
-    - 2F 2A 20 58 50 4D 20 2A 2F
+    --> 2F 2A 20 58 50 4D 20 2A 2F
+     ->  /  *     X  P  M     *  /
 
     Support: native
     """
@@ -294,7 +319,8 @@ def _test_webp(h: bytes, _f: BinaryIO) -> bool:
     Extension: .webp
 
     Magic bytes:
-    - 52 49 46 46 ?? ?? ?? ?? 57 45 42 50
+    --> 52 49 46 46 ?? ?? ?? ?? 57 45 42 50
+     ->  R  I  F  F ?? ?? ?? ??  W  E  B  P
 
     Support: extended
     """
@@ -309,8 +335,10 @@ def _test_tiff(h: bytes, _f: BinaryIO) -> bool:
     Extension: .tiff, .tif
 
     Magic Bytes:
-    - 49 49 2A 00
-    - 4D 4D 00 2A
+    --> 49 49 2A 00
+     ->  I  I  * ..
+    --> 4D 4D 00 2A
+     ->  M  M ..  *
 
     Support: extended
     """
@@ -325,7 +353,8 @@ def _test_ico(h: bytes, _f: BinaryIO) -> bool:
     Extension: .ico
 
     Magic Bytes:
-    - 00 00 01 00
+    --> 00 00 01 00
+     -> .. .. .. ..
 
     Support: extended
     """
@@ -340,7 +369,8 @@ def _test_icns(h: bytes, _f: BinaryIO) -> bool:
     Extension: .icns
 
     Magic Bytes:
-    - 69 63 6e 73
+    --> 69 63 6e 73
+     ->  i  c  n  s
 
     Support: extended
     """
@@ -353,7 +383,8 @@ def _test_jp2(h: bytes, _f: BinaryIO) -> bool:
     Extension: .jp2 (TODO: maybe also others)
 
     Magic Bytes:
-    - 00 00 00 0C 6A 50 20 20 0D 0A 87 0A
+    --> 00 00 00 0C 6A 50 20 20 0D 0A 87 0A
+     -> .. .. .. ..  j  P       .. .. .. ..
 
     Support: extended
     """
@@ -371,7 +402,8 @@ def _test_cur(h: bytes, _f: BinaryIO) -> bool:
     Extension: .cur
 
     Magic Bytes:
-    - 00 00 02 00
+    --> 00 00 02 00
+     -> .. .. .. ..
 
     Support: extended
     """
@@ -386,7 +418,8 @@ def _test_mng(h: bytes, _f: BinaryIO) -> bool:
     Extension: .mng
 
     Magic Bytes:
-    - 8A 4D 4E 47 0D 0A 1A 0A
+    --> 8A 4D 4E 47 0D 0A 1A 0A
+     -> ..  M  N  G .. .. .. ..
 
     Support: extended
     """
@@ -402,8 +435,9 @@ def _test_tga(_h: bytes, f: BinaryIO) -> bool:
     Extension: .tga, .icb, .vda, .vst
 
     Magic Bytes:
-    - impossible to detect (Version 1)
-    - 54 52 55 45 56 49 53 49 4F 4E 2D 58 46 49 4C 45 (Version 2; footer at end of file)
+    --> impossible to detect (Version 1)
+    --> 54 52 55 45 56 49 53 49 4F 4E 2D 58 46 49 4C 45 (Version 2; footer at EOF)
+     ->  T  R  U  E  V  I  S  I  O  N  -  X  F  I  L  E
 
     Support: extended
     """
