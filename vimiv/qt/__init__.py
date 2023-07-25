@@ -32,11 +32,17 @@ WRAPPER = None
 
 def _select_wrapper():
     """Select a python Qt wrapper version based on environment variable and fallback."""
-    env_var = "VIMIV_QT_WRAPPER"
+    env_var = "QT_SELECT"
     env_wrapper = os.environ.get(env_var)
 
     if env_wrapper is None:
         return _autoselect_wrapper()
+
+    # Maps QT version number to corresponding wrapper
+    # TODO extend 6 to include PySide6 once also included in _autoselect_wrapper()
+    num_to_wrapper = {"5": WRAPPERS.PyQt5.value, "6": WRAPPERS.PyQt6.value}
+
+    env_wrapper = num_to_wrapper.get(env_wrapper, env_wrapper)
 
     if env_wrapper not in _WRAPPER_NAMES:
         raise ImportError(
