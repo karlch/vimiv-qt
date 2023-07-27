@@ -17,12 +17,6 @@ def wait_for_thumbnails_to_load(qtbot, thumbnail):
     qtbot.waitUntil(wait_thread, timeout=30000)
 
 
-@bdd.then(bdd.parsers.parse("{name} should be in the rendered thumbnails"))
-def check_name_in_rendered_thumbnails(tmp_path, qtbot, thumbnail, name):
-    wait_for_thumbnails_to_load(qtbot, thumbnail)
-    assert str(tmp_path / name) in thumbnail._rendered_paths
-
-
 @bdd.then(bdd.parsers.parse("there should be {number:d} rendered thumbnails"))
 def check_rendered_thumbnail_amount(qtbot, thumbnail, number):
     wait_for_thumbnails_to_load(qtbot, thumbnail)
