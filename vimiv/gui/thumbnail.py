@@ -9,7 +9,7 @@
 import contextlib
 import math
 import os
-from typing import List, Optional, Iterator, cast, Set, Tuple
+from typing import List, Optional, Iterator, cast, Set, Tuple, Dict
 
 from PyQt5.QtCore import Qt, QSize, QRect, pyqtSlot
 from PyQt5.QtWidgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
@@ -166,15 +166,13 @@ class ThumbnailView(
         """Return the first and last indexes in a tuple fitting a Python range."""
         return (self._first_rendered_index(), self._last_rendered_index() + 1)
 
-    def _rendered_thumbnail_pairs(self) -> List[Tuple[int, str]]:
+    def _rendered_thumbnail_pairs(self) -> Dict[int, str]:
         """Return index/path pairs with those closest to current index first."""
         current_index = self.current_index()
-        first_index, last_index = self._rendered_index_range()
-        pairs = list(
-            zip(range(first_index, last_index), self._paths[first_index:last_index])
+        indices = sorted(
+            range(*self._rendered_index_range()), key=lambda i: abs(i - current_index)
         )
-        pairs.sort(key=lambda p: abs(p[0] - current_index))
-        return pairs
+        return dict(zip(indices, [self._paths[i] for i in indices]))
 
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
@@ -212,7 +210,7 @@ class ThumbnailView(
         desired_paths = []
         indices = []
         pairs = self._rendered_thumbnail_pairs()
-        for i, p in zip([p[0] for p in pairs], [p[1] for p in pairs]):
+        for i, p in pairs.items():
             if p not in self._rendered_paths:
                 desired_paths.append(p)
                 indices.append(i)
@@ -254,9 +252,7 @@ class ThumbnailView(
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
         pairs = self._rendered_thumbnail_pairs()
-        self._manager.create_thumbnails_async(
-            [p[0] for p in pairs], [p[1] for p in pairs]
-        )
+        self._manager.create_thumbnails_async(pairs.keys(), pairs.values())
         _logger.debug("... update completed")
 
     @utils.slot

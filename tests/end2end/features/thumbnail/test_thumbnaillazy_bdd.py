@@ -41,8 +41,8 @@ def check_thumbnail_pair_order(qtbot, thumbnail):
     pairs = thumbnail._rendered_thumbnail_pairs()
     current_index = thumbnail.current_index()
     last_difference = -1
-    for p in pairs:
-        difference = abs(p[0] - current_index)
+    for i, p in pairs.items():
+        difference = abs(i - current_index)
         assert difference >= last_difference
         last_difference = difference
-        assert p[1] == thumbnail._paths[p[0]]
+        assert p == thumbnail._paths[i]
