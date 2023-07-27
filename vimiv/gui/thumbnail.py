@@ -112,6 +112,7 @@ class ThumbnailView(
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self.open_selected)
         self.doubleClicked.connect(self.open_selected)
+        self.itemPressed.connect(self._update_icon_position)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
         api.mark.markdone.connect(self.repaint)
