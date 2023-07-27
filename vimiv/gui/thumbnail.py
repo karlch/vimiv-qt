@@ -532,7 +532,6 @@ class ThumbnailView(
         """Update resize event to keep selected thumbnail centered."""
         super().resizeEvent(event)
         self.scrollTo(self.currentIndex())
-        self._update_icon_position()
 
     def _scroll_wheel_callback(self, steps_x, steps_y):
         """Callback function used by the scroll wheel mixin for mouse scrolling."""
