@@ -44,6 +44,7 @@ class MetadataWidget(QLabel):
     }
     """
 
+    @api.objreg.register
     def __init__(self, parent: QWidget):
         super().__init__(parent=parent)
         styles.apply(self)
@@ -59,8 +60,6 @@ class MetadataWidget(QLabel):
 
         api.signals.new_image_opened.connect(self._on_image_opened)
         api.settings.metadata.current_keyset.changed.connect(self._update_text)
-
-        api.objreg.register(self)
 
         self.hide()
 

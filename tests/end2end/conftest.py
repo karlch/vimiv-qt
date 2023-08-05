@@ -6,16 +6,21 @@
 
 """Fixtures and bdd-given steps related to setup and cleanup for end2end testing."""
 
+import logging
+
 import pytest
 import pytest_bdd as bdd
 
+import mockdecorators
+
 from vimiv.qt.gui import QPixmap
 
-from vimiv import api, startup, utils
-from vimiv.commands import runners
-from vimiv.imutils import filelist
-from vimiv.gui import eventhandler
-from vimiv.utils import trash_manager
+with mockdecorators.apply():
+    from vimiv import api, startup, utils
+    from vimiv.commands import runners
+    from vimiv.imutils import filelist
+    from vimiv.gui import eventhandler
+    from vimiv.utils import trash_manager
 
 
 ########################################################################################
@@ -49,18 +54,9 @@ def home_directory(tmp_path, mocker):
 
 
 @pytest.fixture(autouse=True)
-def cleanup(mocker):
+def cleanup():
     """Fixture to reset various vimiv properties at the end of each test."""
-    stored_classes = set()
-
-    def register_and_store(component):
-        component.__class__.instance = component
-        stored_classes.add(component.__class__)
-
-    mocker.patch("vimiv.api.objreg.register", register_and_store)
-
     yield
-
     utils.Throttle.stop_all()
     utils.Pool.clear()
     utils.Pool.wait(5000)
@@ -76,8 +72,13 @@ def cleanup(mocker):
     trash_manager.trash_info.cache_clear()
     eventhandler.EventHandlerMixin.partial_handler.clear_keys()
 
-    for cls in stored_classes:
-        cls.instance = None
+
+@pytest.fixture(autouse=True, scope="module")
+def cleanup_module():
+    """Fixture to reset properties on a module basis."""
+    yield
+    logging.getLogger().handlers = []  # Mainly to remove the statusbar handler
+    mockdecorators.mockregister_cleanup()
 
 
 @pytest.fixture(autouse=True, scope="session")

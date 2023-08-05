@@ -74,6 +74,8 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     MAX_SCALE = 8
     MIN_SCALE = 1 / 8
 
+    @api.modes.widget(api.modes.IMAGE)
+    @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
         styles.apply(self)
@@ -95,9 +97,6 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
         if QtSvg is not None:
             api.signals.svg_loaded.connect(self._load_svg)
         api.signals.all_images_cleared.connect(self._on_images_cleared)
-
-        api.objreg.register(self)
-        api.modes.assign_widget(self, api.modes.IMAGE)
 
     @staticmethod
     def current() -> str:

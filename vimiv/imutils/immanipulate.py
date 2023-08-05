@@ -92,8 +92,6 @@ class Manipulation(QObject):
 
         self.slider.valueChanged.connect(self._on_value_changed)
 
-        api.objreg.register(self)
-
     @property
     def value(self) -> int:
         """Current value of the manipulation.
@@ -363,6 +361,7 @@ class Manipulator(QObject):
     accepted = pyqtSignal(QPixmap)
     updated = pyqtSignal(QPixmap)
 
+    @api.objreg.register
     def __init__(self, current_pixmap: QPixmap):
         super().__init__()
 
@@ -379,7 +378,6 @@ class Manipulator(QObject):
         self.updated.connect(self._on_updated)
         for manipulation in self.manipulations:
             manipulation.updated.connect(self._apply_manipulation)
-        api.objreg.register(self)
 
     @property
     def _changed(self):

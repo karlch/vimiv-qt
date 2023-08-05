@@ -34,12 +34,12 @@ connect to these signals::
 
     class MyCustomClass(QObject):
 
+        @api.objreg.register
         def __init__(self):
             super().__init__()
             api.working_directory.handler.loaded.connect(self._on_dir_loaded)
             api.working_directory.handler.changed.connect(self._on_dir_changed)
             api.working_directory.handler.images_changed.connect(self._on_im_changed)
-            api.objreg.register(self)
 
         def _on_dir_loaded(self, images, directories):
             print("Loaded new images:", *images, sep="\n", end="\n\n")

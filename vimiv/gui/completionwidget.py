@@ -40,6 +40,7 @@ class CompletionView(widgets.FlatTreeView):
 
     activated = pyqtSignal(str)
 
+    @api.objreg.register
     def __init__(self, parent):
         super().__init__(parent=parent)
 
@@ -48,8 +49,6 @@ class CompletionView(widgets.FlatTreeView):
         self.setModel(api.completion.FilterProxyModel())
 
         styles.apply(self)
-
-        api.objreg.register(self)
 
     @api.keybindings.register(
         "<shift><tab>", "complete --inverse", mode=api.modes.COMMAND

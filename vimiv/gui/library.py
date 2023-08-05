@@ -85,6 +85,8 @@ class Library(
     }
     """
 
+    @api.modes.widget(api.modes.LIBRARY)
+    @api.objreg.register
     def __init__(self, mainwindow: QWidget):
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         widgets.FlatTreeView.__init__(self, parent=mainwindow)
@@ -111,9 +113,6 @@ class Library(
         synchronize.signals.new_thumbnail_path_selected.connect(self._select_path)
 
         styles.apply(self)
-
-        api.objreg.register(self)
-        api.modes.assign_widget(self, api.modes.LIBRARY)
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(

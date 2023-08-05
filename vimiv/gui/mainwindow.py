@@ -32,6 +32,7 @@ class MainWindow(QWidget):
         _statusbar: Statusbar object displayed at the bottom.
     """
 
+    @api.objreg.register
     def __init__(self) -> None:
         super().__init__()
         self._overlays: List[QWidget] = []
@@ -54,8 +55,6 @@ class MainWindow(QWidget):
         api.modes.MANIPULATE.first_entered.connect(self._init_manipulate)
         api.prompt.question_asked.connect(self._run_prompt)
         api.signals.plugins_loaded.connect(self._init_metadata)
-        # Register
-        api.objreg.register(self)
 
     @utils.slot
     def _init_manipulate(self):

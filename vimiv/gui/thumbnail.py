@@ -77,6 +77,8 @@ class ThumbnailView(
     }
     """
 
+    @api.modes.widget(api.modes.THUMBNAIL)
+    @api.objreg.register
     def __init__(self) -> None:
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         QListWidget.__init__(self)
@@ -115,9 +117,6 @@ class ThumbnailView(
         synchronize.signals.new_library_path_selected.connect(self._select_path)
 
         styles.apply(self)
-
-        api.objreg.register(self)
-        api.modes.assign_widget(self, api.modes.THUMBNAIL)
 
     def __iter__(self) -> Iterator["ThumbnailItem"]:
         for index in range(self.count()):

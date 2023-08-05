@@ -21,6 +21,7 @@ _logger = utils.log.module_logger(__name__)
 class Application(QApplication):
     """Main application class."""
 
+    @api.objreg.register
     def __init__(self, *qtargs: str) -> None:
         """Initialize the main Qt application.
 
@@ -32,7 +33,6 @@ class Application(QApplication):
         self.setApplicationVersion(vimiv.__version__)
         self.setDesktopFileName(vimiv.__name__)
         self._set_icon()
-        api.objreg.register(self)
 
     @staticmethod
     @api.keybindings.register("q", "quit")
