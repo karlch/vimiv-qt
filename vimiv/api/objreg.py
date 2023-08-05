@@ -59,8 +59,8 @@ def register(component_init: Callable) -> Callable:
         """
         cls = component.__class__
         _logger.debug("Registering '%s.%s'", cls.__module__, cls.__qualname__)
-        cls.instance = component
         component_init(component, *args, **kwargs)
+        cls.instance = component
 
     return inside
 
