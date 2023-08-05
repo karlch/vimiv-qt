@@ -172,7 +172,7 @@ class ThumbnailView(
         indices = sorted(
             range(*self._rendered_index_range()), key=lambda i: abs(i - current_index)
         )
-        return dict(zip(indices, [self._paths[i] for i in indices]))
+        return {i: self._paths[i] for i in indices}
 
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
