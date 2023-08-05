@@ -174,6 +174,12 @@ class ThumbnailView(
         )
         return {i: self._paths[i] for i in indices}
 
+    def _prunable_thumbnails_exist(self) -> bool:
+        return (
+            api.settings.thumbnail.unload_threshold.value == -1
+            or len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
+        )
+
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
         path = self._paths[index]
@@ -183,10 +189,7 @@ class ThumbnailView(
         if item is None:
             return
         # Otherwise it has been deleted in the meanwhile
-        if (
-            api.settings.thumbnail.unload_threshold.value == -1
-            or len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
-        ):
+        if self._prunable_thumbnails_exist():
             item.setIcon(ThumbnailItem.default_icon())
             self._rendered_paths.remove(path)
 
@@ -202,6 +205,8 @@ class ThumbnailView(
 
     def _prune_icons(self) -> None:
         """Prune indexes before and after the current index."""
+        if not self._prunable_thumbnails_exist():
+            return
         self._prune_icons_behind()
         self._prune_icons_ahead()
 
