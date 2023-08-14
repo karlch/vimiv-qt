@@ -11,9 +11,9 @@ import os
 import typing
 from typing import get_type_hints
 
-from PyQt5.QtCore import pyqtSignal, QObject, QByteArray
-
 import pytest
+
+from vimiv.qt.core import Signal, QObject, QByteArray
 
 from vimiv import utils
 
@@ -142,7 +142,7 @@ def test_parameter_names(function):
 @pytest.mark.parametrize("type_hint", ("int", int))
 def test_slot(type_hint):
     class Dummy(QObject):
-        signal = pyqtSignal(int)
+        signal = Signal(int)
 
         def __init__(self):
             super().__init__()

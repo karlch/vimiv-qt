@@ -6,13 +6,12 @@
 
 import re
 
-from PyQt5.QtCore import Qt, QPoint
-from PyQt5.QtWidgets import QApplication
-
 import pytest
 import pytest_bdd as bdd
 
 import vimiv.gui.crop_widget
+from vimiv.qt.core import Qt, QPoint
+from vimiv.qt.widgets import QApplication
 
 
 bdd.scenarios("crop.feature")

@@ -18,8 +18,8 @@ import os
 import tempfile
 from typing import Dict, List
 
-from PyQt5.QtCore import QRunnable, pyqtSignal, QObject
-from PyQt5.QtGui import QIcon, QPixmap, QImage
+from vimiv.qt.core import QRunnable, Signal, QObject
+from vimiv.qt.gui import QIcon, QPixmap, QImage
 
 import vimiv
 from vimiv import api
@@ -51,7 +51,7 @@ class ThumbnailManager(QObject):
         created: Emitted with index and pixmap when a thumbnail was created.
     """
 
-    created = pyqtSignal(int, QIcon)
+    created = Signal(int, QIcon)
     pool = Pool.get(globalinstance=False)
 
     def __init__(self, fail_pixmap: QPixmap, large: bool = True):

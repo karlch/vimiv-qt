@@ -20,9 +20,9 @@ def movie(image):
 
 @bdd.then("the animation should be playing")
 def check_animation_playing(movie):
-    assert movie.state() == movie.Running
+    assert movie.state() == movie.MovieState.Running
 
 
 @bdd.then("the animation should be paused")
 def check_animation_paused(movie):
-    assert movie.state() == movie.Paused
+    assert movie.state() == movie.MovieState.Paused

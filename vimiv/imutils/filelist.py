@@ -14,7 +14,7 @@ import os
 import random
 from typing import List, Iterable, Optional
 
-from PyQt5.QtCore import QObject, pyqtSlot
+from vimiv.qt.core import QObject, Slot
 
 from vimiv import api, utils, imutils
 from vimiv.commands import search, number_for_command
@@ -172,7 +172,7 @@ class SignalHandler(QObject):
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
         api.settings.sort.shuffle.changed.connect(self._on_shuffle)
 
-    @pyqtSlot(list)
+    @Slot(list)
     def _on_load_images(self, paths: List[str]):
         """Load new paths into the filelist.
 
@@ -193,7 +193,7 @@ class SignalHandler(QObject):
             _logger.debug("Image filelist: loading %d paths", len(paths))
             _load_paths(paths)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, _matches: List[str], mode: api.modes.Mode, incremental: bool
     ):
@@ -217,7 +217,7 @@ class SignalHandler(QObject):
         next_path()
         api.status.update("next image from slideshow event")
 
-    @pyqtSlot(list, list, list)
+    @Slot(list, list, list)
     def _on_images_changed(
         self, new_paths: List[str], added: List[str], removed: List[str]
     ):

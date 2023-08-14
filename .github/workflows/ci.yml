@@ -29,11 +29,15 @@ jobs:
           - python: "3.11"
             toxenv: pyqt515-piexif-cov
           - python: "3.11"
+            toxenv: pyqt6-cov
+          - python: "3.11"
             toxenv: lint
           - python: "3.11"
             toxenv: packaging
           - python: "3.11"
-            toxenv: mypy
+            toxenv: mypy-pyqt5
+          - python: "3.11"
+            toxenv: mypy-pyqt6
       fail-fast: false
 
     steps:
@@ -51,7 +55,7 @@ jobs:
         python-version: "${{ matrix.python }}"
     - name: Install dependencies
       run: |
-        sudo apt-get update && sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0
+        sudo apt-get install libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0 libxcb-shape0 libegl1 libxcb-cursor0
         python -m pip install --upgrade pip
         pip install -r misc/requirements/requirements_tox.txt
     - name: Install dependencies for pyexiv2

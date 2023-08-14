@@ -6,22 +6,15 @@
 
 """Various utility functions."""
 
-import abc
 import functools
 import inspect
 import re
 import typing
 
-from PyQt5.QtCore import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
-from PyQt5.QtGui import QPixmap, QColor, QPainter
+from vimiv.qt.core import Qt, Slot, QRunnable, QThreadPool, QProcess, QTimer
+from vimiv.qt.gui import QPixmap, QColor, QPainter
 
 from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
-
-# Different location under PyQt < 5.11
-try:
-    from PyQt5.sip import wrappertype
-except ImportError:  # pragma: no cover  # Covered in a different tox env during CI
-    from sip import wrappertype  # type: ignore
 
 
 RE_STR_NOT_ESCAPED = r"(?<!\\)"
@@ -192,9 +185,9 @@ class AnnotationNotFound(Exception):
 
 
 def slot(function: FuncT) -> FuncT:
-    """Annotation based slot decorator using pyqtSlot.
+    """Annotation based slot decorator using Slot.
 
-    Syntactic sugar for pyqtSlot so the parameter types do not have to be repeated when
+    Syntactic sugar for Slot so the parameter types do not have to be repeated when
     there are type annotations.
 
     Example:
@@ -205,17 +198,17 @@ def slot(function: FuncT) -> FuncT:
     annotations = typing.get_type_hints(function)
     args = _slot_args(function, annotations)
     kwargs = _slot_kwargs(annotations)
-    return pyqtSlot(*args, **kwargs)(function)  # type: ignore[return-value]
+    return Slot(*args, **kwargs)(function)  # type: ignore[return-value,unused-ignore]
 
 
 def _slot_args(function, annotations):
-    """Create arguments for pyqtSlot from function arguments.
+    """Create arguments for Slot from function arguments.
 
     Args:
         function: The python function for which the arguments are created.
         annotations: Function type annotations.
     Returns:
-        List of types of the function arguments as arguments for pyqtSlot.
+        List of types of the function arguments as arguments for Slot.
     """
     slot_args = []
     for parameter in parameter_names(function):
@@ -400,7 +393,7 @@ def create_pixmap(
     # Initialize
     pixmap = QPixmap(size, size)
     painter = QPainter(pixmap)
-    painter.setPen(Qt.NoPen)
+    painter.setPen(Qt.PenStyle.NoPen)
     # Frame
     painter.setBrush(QColor(frame_color))
     painter.drawRect(pixmap.rect())
@@ -434,7 +427,10 @@ def run_qprocess(cmd: str, *args: str, cwd=None) -> str:
     process.start(cmd, args)
     if not process.waitForFinished():
         raise OSError("Error waiting for process")
-    if process.exitStatus() != QProcess.NormalExit or process.exitCode() != 0:
+    if (
+        process.exitStatus() != QProcess.ExitStatus.NormalExit
+        or process.exitCode() != 0
+    ):
         stderr = qbytearray_to_str(process.readAllStandardError()).strip()
         raise OSError(stderr)
     return qbytearray_to_str(process.readAllStandardOutput()).strip()
@@ -454,10 +450,6 @@ def type_of_optional(typ: typing.Type) -> typing.Any:
         if not isinstance(elem, type(None)):
             return elem
     raise TypeError(f"{typ} is not of Optional type")
-
-
-class AbstractQObjectMeta(wrappertype, abc.ABCMeta):
-    """Metaclass to allow setting to be an ABC as well as a QObject."""
 
 
 def throttled(*, delay_ms: int):

@@ -9,8 +9,8 @@
 import abc
 from typing import Dict, Callable
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QImageReader, QPixmap, QImage
+from vimiv.qt.core import Qt
+from vimiv.qt.gui import QImageReader, QPixmap, QImage
 
 from vimiv.utils import imageheader
 
@@ -45,7 +45,9 @@ class BaseReader(abc.ABC):
 
     def get_image(self, size: int) -> QImage:
         """Read self.path from disk and return a scaled QImage."""
-        pixmap = self.get_pixmap().scaled(size, size, Qt.KeepAspectRatio)
+        pixmap = self.get_pixmap().scaled(
+            size, size, Qt.AspectRatioMode.KeepAspectRatio
+        )
         return pixmap.toImage()
 
     @classmethod
@@ -59,7 +61,7 @@ class QtReader(BaseReader):
 
     def __init__(self, path: str, file_format: str):
         super().__init__(path, file_format)
-        self._handler = QImageReader(path, file_format.encode())
+        self._handler = QImageReader(path, file_format.encode())  # type: ignore[call-overload,unused-ignore]
         self._handler.setAutoTransform(True)
         if not self._handler.canRead():
             raise ValueError(f"'{path}' cannot be read as image")
@@ -75,7 +77,7 @@ class QtReader(BaseReader):
     def get_pixmap(self) -> QPixmap:
         """Retrieve the pixmap directly from the image reader."""
         pixmap = QPixmap.fromImageReader(self._handler)
-        if self._handler.error():
+        if pixmap.isNull():
             raise ValueError(
                 f"Error reading image '{self.path}': {self._handler.errorString()}"
             )
@@ -84,7 +86,7 @@ class QtReader(BaseReader):
     def get_image(self, size: int) -> QImage:
         """Retrieve the down-scaled image directly from the image reader."""
         qsize = self._handler.size()
-        qsize.scale(size, size, Qt.KeepAspectRatio)
+        qsize.scale(size, size, Qt.AspectRatioMode.KeepAspectRatio)
         self._handler.setScaledSize(qsize)
         return self._handler.read()
 

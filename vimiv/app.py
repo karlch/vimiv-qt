@@ -8,8 +8,8 @@
 
 import os
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication
+from vimiv.qt.gui import QIcon
+from vimiv.qt.widgets import QApplication
 
 import vimiv
 from vimiv import api, utils

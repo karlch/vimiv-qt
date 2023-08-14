@@ -11,9 +11,9 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple, cast
 
-from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
-from PyQt5.QtGui import QStandardItemModel, QColor, QTextDocument, QStandardItem
+from vimiv.qt.core import Qt, Slot
+from vimiv.qt.widgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
+from vimiv.qt.gui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
 from vimiv import api, utils, widgets
 from vimiv.commands import argtypes, search, number_for_command
@@ -94,8 +94,8 @@ class Library(
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
 
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Ignored)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Ignored)
 
         self.setModel(LibraryModel(self))
         self.setItemDelegate(LibraryDelegate())
@@ -114,7 +114,7 @@ class Library(
 
         styles.apply(self)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, _matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
@@ -388,7 +388,7 @@ class LibraryModel(QStandardItemModel):
         api.working_directory.handler.changed.connect(self._on_directory_changed)
         api.working_directory.handler.loaded.connect(self._update_content)
 
-    @pyqtSlot(list, list)
+    @Slot(list, list)
     def _update_content(self, images: List[str], directories: List[str]):
         """Update library content with new images and directories.
 
@@ -401,7 +401,7 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(images, are_directories=False)
         self._library.load_directory()
 
-    @pyqtSlot(list, list)
+    @Slot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
         """Reload library when directory content has changed.
 
@@ -410,7 +410,7 @@ class LibraryModel(QStandardItemModel):
         self._library.store_position()
         self._update_content(images, directories)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, _index: int, matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
@@ -564,7 +564,7 @@ class LibraryDelegate(QStyledItemDelegate):
         color = self._get_background_color(index, option.state)
         painter.save()
         painter.setBrush(color)
-        painter.setPen(Qt.NoPen)
+        painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
@@ -592,7 +592,7 @@ class LibraryDelegate(QStyledItemDelegate):
             index: Index of the element indicating even/odd/highlighted.
             state: State of the index indicating selected.
         """
-        if state & QStyle.State_Selected:
+        if state & QStyle.StateFlag.State_Selected:
             if api.modes.current() == api.modes.LIBRARY:
                 return self.selection_bg
             return self.selection_bg_unfocus
@@ -620,11 +620,15 @@ class LibraryDelegate(QStyledItemDelegate):
         # Html only surrounds the leading mark indicator as directories are never marked
         if text.startswith(self.mark_str):
             mark_stripped = strip_html(self.mark_str)
-            elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+            elided = font_metrics.elidedText(
+                html_stripped, Qt.TextElideMode.ElideMiddle, width
+            )
             return elided.replace(mark_stripped, self.mark_str)
         # Html surrounds the full text as the file may be a directory which is displayed
         # in bold
-        elided = font_metrics.elidedText(html_stripped, Qt.ElideMiddle, width)
+        elided = font_metrics.elidedText(
+            html_stripped, Qt.TextElideMode.ElideMiddle, width
+        )
         return text.replace(html_stripped, elided)
 
 

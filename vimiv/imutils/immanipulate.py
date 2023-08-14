@@ -26,11 +26,11 @@ import abc
 import copy
 from typing import Optional, NamedTuple, List
 
-from PyQt5.QtCore import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
-from PyQt5.QtGui import QPixmap, QImage
-from PyQt5.QtWidgets import QLabel, QApplication
+from vimiv.qt.core import QObject, Signal, Qt, QSignalBlocker, QTimer
+from vimiv.qt.gui import QPixmap, QImage
+from vimiv.qt.widgets import QLabel, QApplication
 
-from vimiv import api, utils, widgets
+from vimiv import api, utils, widgets, qt
 from vimiv.config import styles
 
 # mypy cannot read the C extension
@@ -62,7 +62,7 @@ class Manipulation(QObject):
         _init_value: Initial value used for resetting.
     """
 
-    updated = pyqtSignal(object)
+    updated = Signal(object)
 
     def __init__(
         self,
@@ -77,7 +77,7 @@ class Manipulation(QObject):
             "{manipulate.slider.left}",
             "{manipulate.slider.handle}",
             "{manipulate.slider.right}",
-            Qt.Horizontal,
+            Qt.Orientation.Horizontal,
         )
         self.slider.setMinimum(lower)
         self.slider.setMaximum(upper)
@@ -298,11 +298,17 @@ class Manipulations(list):
             The manipulated pixmap.
         """
         _logger.debug("Manipulate: applying %d groups", len(groups))
-        # Convert original pixmap to python bytes
         image = pixmap.toImage()
         bits = image.constBits()
-        bits.setsize(image.byteCount())
-        data = bits.asstring()
+        # Convert original pixmap to python bytes
+        if qt.USE_PYSIDE6:
+            data = bits.tobytes()
+        elif qt.USE_PYQT6:
+            bits.setsize(image.sizeInBytes())
+            data = bits.asstring()
+        else:
+            bits.setsize(image.byteCount())
+            data = bits.asstring()
         # Apply changes on the byte-level
         for group in groups:
             data = self._apply_group(group, data)
@@ -352,8 +358,8 @@ class Manipulator(QObject):
     pool = utils.Pool.get(globalinstance=False)
     pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
-    accepted = pyqtSignal(QPixmap)
-    updated = pyqtSignal(QPixmap)
+    accepted = Signal(QPixmap)
+    updated = Signal(QPixmap)
 
     @api.objreg.register
     def __init__(self, current_pixmap: QPixmap):
@@ -534,13 +540,22 @@ class Manipulator(QObject):
                 0, lambda: utils.log.error("File format does not support manipulate")
             )
             return
-        screen_geometry = QApplication.desktop().screenGeometry()
-        self._pixmap = self._current_pixmap.pixmap.scaled(
-            screen_geometry.width(),
-            screen_geometry.height(),
-            aspectRatioMode=Qt.KeepAspectRatio,
-            transformMode=Qt.SmoothTransformation,
-        )
+        screen_geometry = QApplication.primaryScreen().geometry()
+        # Workaround for different keyword naming in PySide6
+        if qt.USE_PYSIDE6:
+            self._pixmap = self._current_pixmap.pixmap.scaled(
+                screen_geometry.width(),
+                screen_geometry.height(),
+                aspectMode=Qt.AspectRatioMode.KeepAspectRatio,
+                mode=Qt.TransformationMode.SmoothTransformation,
+            )
+        else:
+            self._pixmap = self._current_pixmap.pixmap.scaled(
+                screen_geometry.width(),
+                screen_geometry.height(),
+                aspectRatioMode=Qt.AspectRatioMode.KeepAspectRatio,
+                transformMode=Qt.TransformationMode.SmoothTransformation,
+            )
         self.updated.emit(self._pixmap)
 
     def _on_updated(self, pixmap):

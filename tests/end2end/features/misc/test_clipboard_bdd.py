@@ -6,9 +6,9 @@
 
 import os
 
-from PyQt5.QtGui import QClipboard
-
 import pytest_bdd as bdd
+
+from vimiv.qt.gui import QClipboard
 
 
 bdd.scenarios("clipboard.feature")
@@ -23,4 +23,4 @@ bdd.scenarios("clipboard.feature")
 )
 def check_clipboard_abspath(clipboard, text):
     text = os.path.abspath(text)
-    assert clipboard.text(mode=QClipboard.Clipboard) == text
+    assert clipboard.text(mode=QClipboard.Mode.Clipboard) == text

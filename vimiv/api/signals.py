@@ -6,8 +6,8 @@
 
 """Namespace for signals exposed via the api."""
 
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap, QMovie
+from vimiv.qt.core import QObject, Signal
+from vimiv.qt.gui import QPixmap, QMovie
 
 
 class _SignalHandler(QObject):
@@ -40,23 +40,23 @@ class _SignalHandler(QObject):
     """
 
     # Emitted when new images should be loaded
-    load_images = pyqtSignal(list)
+    load_images = Signal(list)
 
     # Emitted when new image path(s) were opened
-    new_image_opened = pyqtSignal(str, bool)
-    new_images_opened = pyqtSignal(list)
-    all_images_cleared = pyqtSignal()
+    new_image_opened = Signal(str, bool)
+    new_images_opened = Signal(list)
+    all_images_cleared = Signal()
 
     # Emitted when the current image changed on disk
-    image_changed = pyqtSignal()
+    image_changed = Signal()
 
     # Tell the image to get a new object to display
-    pixmap_loaded = pyqtSignal(QPixmap, bool)
-    movie_loaded = pyqtSignal(QMovie, bool)
-    svg_loaded = pyqtSignal(str, bool)
+    pixmap_loaded = Signal(QPixmap, bool)
+    movie_loaded = Signal(QMovie, bool)
+    svg_loaded = Signal(str, bool)
 
     # Plugins loaded
-    plugins_loaded = pyqtSignal()
+    plugins_loaded = Signal()
 
 
 _signal_handler = _SignalHandler()  # Instance of Qt signal handler to work with

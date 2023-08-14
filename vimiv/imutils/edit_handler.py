@@ -6,8 +6,8 @@
 
 """Handler class as man-in-the-middle between file handler and the edit classes."""
 
-from PyQt5.QtCore import QObject
-from PyQt5.QtGui import QPixmap
+from vimiv.qt.core import QObject
+from vimiv.qt.gui import QPixmap
 
 from vimiv import api, utils
 from vimiv.imutils import current_pixmap, imtransform

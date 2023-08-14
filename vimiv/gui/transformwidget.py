@@ -6,22 +6,21 @@
 
 """Base class for widgets which provide a gui for more complex transformations."""
 
-import abc
 import contextlib
 import functools
 from typing import cast
 
-from PyQt5.QtCore import Qt, QRect
-from PyQt5.QtWidgets import QWidget
+from vimiv.qt.core import Qt, QRect
+from vimiv.qt.widgets import QWidget
 
 from vimiv.imutils import imtransform
 
-from vimiv import api, utils
+from vimiv import api
 from vimiv.gui import eventhandler
 from .image import ScrollableImage
 
 
-class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
+class TransformWidget(QWidget):
     """Base class for widgets which provide a gui for more complex transformations.
 
     The child class must implement update_geometry to adapt to a resized image and
@@ -36,7 +35,7 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def __init__(self, image):
         super().__init__(parent=image)
         self.setObjectName(self.__class__.__qualname__)
-        self.setWindowFlags(Qt.SubWindow)
+        self.setWindowFlags(Qt.WindowType.SubWindow)
         self.setFocus()
 
         self.bindings = {
@@ -54,9 +53,9 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def image(self) -> ScrollableImage:
         return cast(ScrollableImage, self.parent())
 
-    @abc.abstractmethod
     def update_geometry(self):
         """Update geometry of the widget."""
+        raise NotImplementedError("Must be implemented by the actual transformation")
 
     def status_info(self) -> str:
         """Can be overridden by the child to display information in the status bar."""
@@ -96,8 +95,8 @@ class TransformWidget(QWidget, metaclass=utils.AbstractQObjectMeta):
     def focusOutEvent(self, event):
         """Leave the widget when the user focuses another widget."""
         ignored_reasons = (
-            Qt.ActiveWindowFocusReason,  # Unfocused the whole window
-            Qt.OtherFocusReason,  # Unfocused explicitly during leave
+            Qt.FocusReason.ActiveWindowFocusReason,  # Unfocused the whole window
+            Qt.FocusReason.OtherFocusReason,  # Unfocused explicitly during leave
         )
         if event.reason() not in ignored_reasons:
             self.leave(accept=False)

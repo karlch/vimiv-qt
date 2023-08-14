@@ -6,7 +6,7 @@
 
 """Completer class as man-in-the-middle between command line and completion."""
 
-from PyQt5.QtCore import QObject
+from vimiv.qt.core import QObject
 
 from vimiv import api, utils
 

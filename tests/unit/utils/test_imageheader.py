@@ -6,16 +6,14 @@
 
 """Tests for vimiv.utils.imageheader."""
 
-from PyQt5.QtGui import QPixmap, QImageReader, QImageWriter
-
 import pytest
 
-
+from vimiv.qt.gui import QPixmap, QImageReader, QImageWriter
 from vimiv.utils import imageheader
 
 # Formats that are detectable and not detectable by this module
 DETECT_FORMATS = [format for format, _ in imageheader._registry]
-NOT_DETECT_FORMATS = ["svgz", "wbmp"]
+NOT_DETECT_FORMATS = ["pdf", "svgz", "wbmp"]
 
 # QT Formats that alias to others
 QT_ALIAS_FORMATS = ["jpeg", "tif"]

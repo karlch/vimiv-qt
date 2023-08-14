@@ -8,7 +8,7 @@
 
 from typing import List, Tuple, Iterator, Set
 
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QLayout, QLineEdit
+from vimiv.qt.widgets import QLabel, QHBoxLayout, QVBoxLayout, QLayout, QLineEdit
 
 import vimiv
 from vimiv import api, utils
@@ -64,7 +64,7 @@ class KeybindingsPopUp(PopUp):
         self._search.setPlaceholderText("search")
 
         layout = QVBoxLayout()
-        layout.setSizeConstraint(QLayout.SetFixedSize)
+        layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         content_layout = QHBoxLayout()
         for _ in range(columns):
             label = QLabel()

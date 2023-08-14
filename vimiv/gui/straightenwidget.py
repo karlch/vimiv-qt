@@ -8,9 +8,9 @@
 
 import functools
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtWidgets import QStyleOption
+from vimiv.qt.core import Qt
+from vimiv.qt.gui import QPainter, QPen, QColor
+from vimiv.qt.widgets import QStyleOption
 
 from vimiv import utils
 from vimiv.config import styles
@@ -32,9 +32,9 @@ class StraightenWidget(transformwidget.TransformWidget):
     """
 
     LINES = (
-        (0.25, Qt.DashLine, 2),
-        (0.5, Qt.SolidLine, 4),
-        (0.75, Qt.DashLine, 2),
+        (0.25, Qt.PenStyle.DashLine, 2),
+        (0.5, Qt.PenStyle.SolidLine, 4),
+        (0.75, Qt.PenStyle.DashLine, 2),
     )
 
     def __init__(self, image):

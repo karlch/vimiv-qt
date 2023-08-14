@@ -8,7 +8,7 @@
 
 import os
 
-from PyQt5.QtCore import QStandardPaths
+from vimiv.qt.core import QStandardPaths
 
 import vimiv
 
@@ -37,15 +37,21 @@ def makedirs(*paths: str) -> None:
 
 
 def user_data_dir(*paths: str) -> str:
-    return _standardpath(QStandardPaths.GenericDataLocation, "data", *paths)
+    return _standardpath(
+        QStandardPaths.StandardLocation.GenericDataLocation, "data", *paths
+    )
 
 
 def user_config_dir(*paths: str) -> str:
-    return _standardpath(QStandardPaths.GenericConfigLocation, "config", *paths)
+    return _standardpath(
+        QStandardPaths.StandardLocation.GenericConfigLocation, "config", *paths
+    )
 
 
 def user_cache_dir(*paths: str) -> str:
-    return _standardpath(QStandardPaths.GenericCacheLocation, "cache", *paths)
+    return _standardpath(
+        QStandardPaths.StandardLocation.GenericCacheLocation, "cache", *paths
+    )
 
 
 def vimiv_data_dir(*paths: str) -> str:

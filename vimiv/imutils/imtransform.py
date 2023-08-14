@@ -10,8 +10,8 @@ import functools
 import math
 from typing import Optional
 
-from PyQt5.QtCore import Qt, QRect, QSize, QObject, pyqtSignal
-from PyQt5.QtGui import QTransform, QPixmap
+from vimiv.qt.core import Qt, QRect, QSize, QObject, Signal
+from vimiv.qt.gui import QTransform, QPixmap
 
 from vimiv import api
 from vimiv.utils import log
@@ -54,7 +54,7 @@ class Transform(QTransform):
     class Signals(QObject):
         """Signals for transformed required as QTransform is not a QObject."""
 
-        transformed = pyqtSignal(QPixmap)
+        transformed = Signal(QPixmap)
 
     _signals = Signals()
     transformed = _signals.transformed
@@ -150,7 +150,11 @@ class Transform(QTransform):
 
     def apply(self):
         """Apply all transformations to the original pixmap."""
-        self._apply(self.original.transformed(self, mode=Qt.SmoothTransformation))
+        self._apply(
+            self.original.transformed(
+                self, mode=Qt.TransformationMode.SmoothTransformation
+            )
+        )
 
     def straighten(self, *, angle: int, original_size: QSize):
         """Straighten the original image.
@@ -163,7 +167,9 @@ class Transform(QTransform):
             original_size: Size of the original unstraightened image.
         """
         self.rotate(angle)
-        transformed = self.original.transformed(self, mode=Qt.SmoothTransformation)
+        transformed = self.original.transformed(
+            self, mode=Qt.TransformationMode.SmoothTransformation
+        )
         rect = self.largest_rect_in_rotated(
             original=original_size, rotated=transformed.size(), angle=angle
         )

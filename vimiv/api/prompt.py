@@ -8,7 +8,7 @@
 
 import typing
 
-from PyQt5.QtCore import QObject, pyqtSignal
+from vimiv.qt.core import QObject, Signal
 
 from vimiv.utils import log
 
@@ -42,7 +42,7 @@ class _Bridge(QObject):
             arg1: The Question instance storing all information on the question.
     """
 
-    question_asked = pyqtSignal(Question)
+    question_asked = Signal(Question)
 
 
 def ask_question(*, title: str, body: str) -> typing.Any:

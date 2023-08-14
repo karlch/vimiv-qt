@@ -8,7 +8,7 @@
 
 from typing import List
 
-from PyQt5.QtWidgets import QWidget, QStackedWidget, QGridLayout
+from vimiv.qt.widgets import QWidget, QStackedWidget, QGridLayout
 
 from vimiv import api, utils
 from vimiv.utils import migration

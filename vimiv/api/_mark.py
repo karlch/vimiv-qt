@@ -12,7 +12,7 @@ import os
 import shutil
 from typing import Any, Callable, List, Optional
 
-from PyQt5.QtCore import QObject, pyqtSignal, QFileSystemWatcher, QDateTime
+from vimiv.qt.core import QObject, Signal, QFileSystemWatcher, QDateTime
 
 from vimiv.api import commands, keybindings, objreg, status, settings, modes
 from vimiv.config import styles
@@ -44,9 +44,9 @@ class Mark(QObject):
         Mark = "mark"
         Unmark = "unmark"
 
-    marked = pyqtSignal(str)
-    unmarked = pyqtSignal(str)
-    markdone = pyqtSignal()
+    marked = Signal(str)
+    unmarked = Signal(str)
+    markdone = Signal()
 
     @objreg.register
     def __init__(self) -> None:

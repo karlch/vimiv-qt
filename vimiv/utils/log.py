@@ -47,7 +47,7 @@ In case you want to ensure that a log message is only logged a single time, pass
 import logging
 from typing import Dict, List, Optional, Any, Set
 
-from PyQt5.QtCore import pyqtSignal, QObject, QLoggingCategory
+from vimiv.qt.core import Signal, QObject, QLoggingCategory
 
 import vimiv
 
@@ -200,7 +200,7 @@ class StatusbarLogHandler(QObject, logging.NullHandler):
         message: Emitted with severity and message on log message.
     """
 
-    message = pyqtSignal(str, str)
+    message = Signal(str, str)
 
     def handle(self, record: logging.LogRecord) -> bool:
         if record.levelno >= logging.INFO:  # Debug in the statusbar makes no sense
