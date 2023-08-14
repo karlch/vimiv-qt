@@ -9,7 +9,7 @@
 import string
 from typing import Union, Tuple, List, cast
 
-from vimiv.qt.core import Qt, QTimer, QObject, pyqtSignal
+from vimiv.qt.core import Qt, QTimer, QObject, Signal
 from vimiv.qt.gui import QKeySequence, QKeyEvent, QMouseEvent
 
 from vimiv import api, utils
@@ -89,8 +89,8 @@ class PartialHandler(QObject):
         partial_cleared: Emitted when the partial matches are cleared.
     """
 
-    partial_matches = pyqtSignal(str, object)
-    partial_cleared = pyqtSignal()
+    partial_matches = Signal(str, object)
+    partial_cleared = Signal()
 
     def __init__(self):
         super().__init__()

@@ -30,7 +30,7 @@ All modes inherit from the common :class:`Mode` base class.
 
 from typing import cast, Any, Callable, List, Tuple
 
-from vimiv.qt.core import pyqtSignal, QObject
+from vimiv.qt.core import Signal, QObject
 from vimiv.qt.widgets import QWidget
 
 from vimiv.api import settings
@@ -66,9 +66,9 @@ class Mode(QObject):
         closed: Emitted when this mode is closed.
     """
 
-    first_entered = pyqtSignal()
-    entered = pyqtSignal()
-    closed = pyqtSignal()
+    first_entered = Signal()
+    entered = Signal()
+    closed = Signal()
 
     _ID = 0
     active = cast("Mode", None)  # Initialized during reading of the module

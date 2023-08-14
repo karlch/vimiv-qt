@@ -19,10 +19,13 @@ elif qt.USE_PYSIDE6:
     from PySide6.QtCore import *
     from PySide6.QtCore import __version__ as PYQT_VERSION_STR
 
-    pyqtSignal = Signal
-    pyqtBoundSignal = SignalInstance
-    pyqtSlot = Slot
+    BoundSignal = SignalInstance
     QT_VERSION_STR = qVersion()
+
+if qt.USE_PYQT:  # Signal aliases
+    BoundSignal = pyqtBoundSignal
+    Signal = pyqtSignal
+    Slot = pyqtSlot
 
 
 class Align:

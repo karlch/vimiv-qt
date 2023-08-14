@@ -61,7 +61,7 @@ Module Attributes:
 import os
 from typing import cast, List, Tuple
 
-from vimiv.qt.core import pyqtSignal, QFileSystemWatcher
+from vimiv.qt.core import Signal, QFileSystemWatcher
 
 from vimiv.api import settings, signals, status
 from vimiv.utils import files, slot, log, throttled
@@ -96,9 +96,9 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         _directories: Directories in the current working directory.
     """
 
-    loaded = pyqtSignal(list, list)
-    changed = pyqtSignal(list, list)
-    images_changed = pyqtSignal(list, list, list)
+    loaded = Signal(list, list)
+    changed = Signal(list, list)
+    images_changed = Signal(list, list, list)
 
     WAIT_TIME_MS = 300
 

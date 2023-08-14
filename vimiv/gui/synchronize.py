@@ -11,12 +11,12 @@ Module Attributes:
 """
 
 
-from vimiv.qt.core import pyqtSignal, QObject
+from vimiv.qt.core import Signal, QObject
 
 
 class _Signals(QObject):
-    new_library_path_selected = pyqtSignal(str)
-    new_thumbnail_path_selected = pyqtSignal(str)
+    new_library_path_selected = Signal(str)
+    new_thumbnail_path_selected = Signal(str)
 
 
 signals = _Signals()

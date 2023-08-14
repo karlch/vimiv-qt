@@ -6,7 +6,7 @@
 
 """Completion widget in the bar."""
 
-from vimiv.qt.core import pyqtSignal, Qt
+from vimiv.qt.core import Signal, Qt
 
 from vimiv import api, widgets
 from vimiv.config import styles
@@ -38,7 +38,7 @@ class CompletionView(widgets.FlatTreeView):
     }
     """
 
-    activated = pyqtSignal(str)
+    activated = Signal(str)
 
     @api.objreg.register
     def __init__(self, parent):

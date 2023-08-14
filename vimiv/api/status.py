@@ -36,7 +36,7 @@ import functools
 import re
 from typing import Callable, TypeVar, Any, Dict
 
-from vimiv.qt.core import pyqtSignal, QObject
+from vimiv.qt.core import Signal, QObject
 
 from vimiv.api import objreg
 from vimiv.utils import log
@@ -137,8 +137,8 @@ class _Signals(QObject):
         clear: Emitted when any messages should be cleared.
     """
 
-    update = pyqtSignal()
-    clear = pyqtSignal()
+    update = Signal()
+    clear = Signal()
 
 
 signals = _Signals()

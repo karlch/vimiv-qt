@@ -26,7 +26,7 @@ import abc
 import copy
 from typing import Optional, NamedTuple, List
 
-from vimiv.qt.core import QObject, pyqtSignal, Qt, QSignalBlocker, QTimer
+from vimiv.qt.core import QObject, Signal, Qt, QSignalBlocker, QTimer
 from vimiv.qt.gui import QPixmap, QImage
 from vimiv.qt.widgets import QLabel, QApplication
 
@@ -62,7 +62,7 @@ class Manipulation(QObject):
         _init_value: Initial value used for resetting.
     """
 
-    updated = pyqtSignal(object)
+    updated = Signal(object)
 
     def __init__(
         self,
@@ -358,8 +358,8 @@ class Manipulator(QObject):
     pool = utils.Pool.get(globalinstance=False)
     pool.setMaxThreadCount(1)  # Only one manipulation is run in parallel
 
-    accepted = pyqtSignal(QPixmap)
-    updated = pyqtSignal(QPixmap)
+    accepted = Signal(QPixmap)
+    updated = Signal(QPixmap)
 
     @api.objreg.register
     def __init__(self, current_pixmap: QPixmap):

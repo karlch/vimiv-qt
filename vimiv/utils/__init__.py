@@ -11,7 +11,7 @@ import inspect
 import re
 import typing
 
-from vimiv.qt.core import Qt, pyqtSlot, QRunnable, QThreadPool, QProcess, QTimer
+from vimiv.qt.core import Qt, Slot, QRunnable, QThreadPool, QProcess, QTimer
 from vimiv.qt.gui import QPixmap, QColor, QPainter
 
 from vimiv.utils.customtypes import AnyT, FuncT, FuncNoneT, NumberT
@@ -185,9 +185,9 @@ class AnnotationNotFound(Exception):
 
 
 def slot(function: FuncT) -> FuncT:
-    """Annotation based slot decorator using pyqtSlot.
+    """Annotation based slot decorator using Slot.
 
-    Syntactic sugar for pyqtSlot so the parameter types do not have to be repeated when
+    Syntactic sugar for Slot so the parameter types do not have to be repeated when
     there are type annotations.
 
     Example:
@@ -198,17 +198,17 @@ def slot(function: FuncT) -> FuncT:
     annotations = typing.get_type_hints(function)
     args = _slot_args(function, annotations)
     kwargs = _slot_kwargs(annotations)
-    return pyqtSlot(*args, **kwargs)(function)  # type: ignore[return-value,unused-ignore]
+    return Slot(*args, **kwargs)(function)  # type: ignore[return-value,unused-ignore]
 
 
 def _slot_args(function, annotations):
-    """Create arguments for pyqtSlot from function arguments.
+    """Create arguments for Slot from function arguments.
 
     Args:
         function: The python function for which the arguments are created.
         annotations: Function type annotations.
     Returns:
-        List of types of the function arguments as arguments for pyqtSlot.
+        List of types of the function arguments as arguments for Slot.
     """
     slot_args = []
     for parameter in parameter_names(function):

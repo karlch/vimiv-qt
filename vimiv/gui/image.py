@@ -9,7 +9,7 @@
 import contextlib
 from typing import List, Union, Optional, Callable
 
-from vimiv.qt.core import Qt, QRectF, pyqtSignal
+from vimiv.qt.core import Qt, QRectF, Signal
 from vimiv.qt.widgets import (
     QGraphicsView,
     QGraphicsScene,
@@ -69,7 +69,7 @@ class ScrollableImage(eventhandler.EventHandlerMixin, QGraphicsView):
     }
     """
 
-    resized = pyqtSignal()
+    resized = Signal()
 
     MAX_SCALE = 8
     MIN_SCALE = 1 / 8

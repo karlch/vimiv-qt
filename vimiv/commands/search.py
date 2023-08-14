@@ -13,7 +13,7 @@ Module Attributes:
 import fnmatch
 import os
 
-from vimiv.qt.core import QObject, pyqtSignal
+from vimiv.qt.core import QObject, Signal
 
 from vimiv import api
 
@@ -50,8 +50,8 @@ class Search(QObject):
         cleared: Emitted when the search was cleared.
     """
 
-    new_search = pyqtSignal(int, list, api.modes.Mode, bool)
-    cleared = pyqtSignal()
+    new_search = Signal(int, list, api.modes.Mode, bool)
+    cleared = Signal()
 
     def __init__(self):
         super().__init__()

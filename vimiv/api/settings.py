@@ -15,7 +15,7 @@ import enum
 import os
 from typing import Any, Dict, ItemsView, List, Callable, Iterable
 
-from vimiv.qt.core import QObject, pyqtSignal
+from vimiv.qt.core import QObject, Signal
 
 from vimiv.api import prompt
 from vimiv.utils import clamp, log, customtypes, natural_sort
@@ -76,7 +76,7 @@ class Setting(QObject):
         changed: Emitted with the new value if the setting changed.
     """
 
-    changed = pyqtSignal(object)
+    changed = Signal(object)
 
     def __init__(
         self,

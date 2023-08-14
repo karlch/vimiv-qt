@@ -10,7 +10,7 @@ import functools
 import math
 from typing import Optional
 
-from vimiv.qt.core import Qt, QRect, QSize, QObject, pyqtSignal
+from vimiv.qt.core import Qt, QRect, QSize, QObject, Signal
 from vimiv.qt.gui import QTransform, QPixmap
 
 from vimiv import api
@@ -54,7 +54,7 @@ class Transform(QTransform):
     class Signals(QObject):
         """Signals for transformed required as QTransform is not a QObject."""
 
-        transformed = pyqtSignal(QPixmap)
+        transformed = Signal(QPixmap)
 
     _signals = Signals()
     transformed = _signals.transformed

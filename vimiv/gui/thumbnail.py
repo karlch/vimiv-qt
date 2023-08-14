@@ -11,7 +11,7 @@ import math
 import os
 from typing import List, Optional, Iterator, cast
 
-from vimiv.qt.core import Qt, QSize, QRect, pyqtSlot
+from vimiv.qt.core import Qt, QSize, QRect, Slot
 from vimiv.qt.widgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
 from vimiv.qt.gui import QColor, QIcon
 
@@ -151,7 +151,7 @@ class ThumbnailView(
         self._paths = []
         super().clear()
 
-    @pyqtSlot(list)
+    @Slot(list)
     def _on_new_images_opened(self, paths: List[str]):
         """Load new paths into thumbnail widget.
 
@@ -191,7 +191,7 @@ class ThumbnailView(
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):

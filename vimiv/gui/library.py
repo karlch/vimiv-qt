@@ -11,7 +11,7 @@ import math
 import os
 from typing import List, Optional, Dict, NamedTuple, cast
 
-from vimiv.qt.core import Qt, pyqtSlot
+from vimiv.qt.core import Qt, Slot
 from vimiv.qt.widgets import QStyledItemDelegate, QSizePolicy, QStyle, QWidget
 from vimiv.qt.gui import QStandardItemModel, QColor, QTextDocument, QStandardItem
 
@@ -114,7 +114,7 @@ class Library(
 
         styles.apply(self)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, index: int, _matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
@@ -388,7 +388,7 @@ class LibraryModel(QStandardItemModel):
         api.working_directory.handler.changed.connect(self._on_directory_changed)
         api.working_directory.handler.loaded.connect(self._update_content)
 
-    @pyqtSlot(list, list)
+    @Slot(list, list)
     def _update_content(self, images: List[str], directories: List[str]):
         """Update library content with new images and directories.
 
@@ -401,7 +401,7 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(images, are_directories=False)
         self._library.load_directory()
 
-    @pyqtSlot(list, list)
+    @Slot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
         """Reload library when directory content has changed.
 
@@ -410,7 +410,7 @@ class LibraryModel(QStandardItemModel):
         self._library.store_position()
         self._update_content(images, directories)
 
-    @pyqtSlot(int, list, api.modes.Mode, bool)
+    @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
         self, _index: int, matches: List[str], mode: api.modes.Mode, _incremental: bool
     ):
