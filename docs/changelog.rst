@@ -10,6 +10,7 @@ Fixed:
 ^^^^^^
 
 * The SVG image header check to no longer return true for all XML files.
+* Binding the ``<delete>`` key as special key. Thanks `@xfzv`_!
 
 
 v0.9.0 (2023-07-15)
@@ -551,3 +552,4 @@ Initial release of the Qt version.
 .. _@kAldown: https://github.com/kaldown
 .. _@Yutsuten: https://github.com/Yutsuten
 .. _@buzzingwires: https://github.com/buzzingwires
+.. _@xfzv: https://github.com/xfzv
