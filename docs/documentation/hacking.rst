@@ -118,6 +118,27 @@ And setup ``pre-commit`` using::
 
     pre-commit install
 
+
+Using Qt
+--------
+
+As vimiv supports multiple Qt versions and wrappers simultaneously, none should be
+imported directly. Instead, use the corresponding import from ``vimiv.qt`` directly.
+
+.. table:: How to import Qt modules
+   :widths: 50 50
+
+   ======================================= ========================================
+   Good                                    Bad
+   ======================================= ========================================
+   ``from vimiv.qt.core import QTimer``    ``from PyQt5.QtCore import QTimer``
+   ``from vimiv.qt.core import Signal``    ``from PyQt5.QtCore import pyqtSignal``
+   ``from vimiv.qt.core import Slot``      ``from PyQt5.QtCore import pyqtSlot``
+   ``from vimiv.qt.widgets import QLabel`` ``from PyQt5.QtWidgets import QLabel``
+   ``from vimiv.qt.gui import QPixmap``    ``from PyQt5.QtGui import QPixmap``
+   ======================================= ========================================
+
+
 .. _writing_plugins:
 
 Writing Plugins
