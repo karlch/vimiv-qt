@@ -129,7 +129,8 @@ def init_paths(args: argparse.Namespace) -> None:
     # Binary image passed via stdin
     elif args.binary_stdinput and not sys.stdin.isatty():
         global _tmppath
-
+        # We want the temporary image to stick around until the end
+        # pylint: disable=consider-using-with
         _tmppath = tempfile.NamedTemporaryFile(prefix="vimiv-stdin-")
         with open(_tmppath.name, "wb") as f:
             f.write(sys.stdin.buffer.read())
