@@ -140,28 +140,36 @@ def register(
 
 
 def _test_jpg(h: bytes, _f: BinaryIO) -> bool:
-    """Joint Photographic Experts Group (JPEG) in different kinds of "subtypes"(?).
+    """Joint Photographic Experts Group (JPEG).
 
-    Extension: .jpeg, .jpg
+    Extension: .jpeg, .jpg (and probably more)
+
+    Most JPEG images are of JPEG/JFIF or JPEG/Exif format, but every manufacturer can
+    create their own JPEG-based file formats. Therefore, there are many different JPEG-
+    based file formats.
+
+    JPEGs are a list of segments. Each segments starts with a 1 byte marker. Each marker
+    is preceded by byte 0xFF. Each valid JPEG starts with segment "Start of Image
+    (SOI)", which has marker 0xD8.
+
+    The SOI section is followed by the APP[0-14] section, which are used by different
+    file formats. Since there are more than 15 file formats, the APPn section often
+    starts with a header signature itself, like JFIF or Exif for JPEG/JFIF or JPEG/Exif,
+    respectively.
+
+    However, there are also "Raw" JPEGs, that do not start with APPn but with the image
+    data directly.
+
+    The only common denominator for all JPEG file formats seem to be the first three
+    bytes. As apparently, not even the end segment is consistently used.
 
     Magic bytes:
-    --> FF D8 FF DB
-     -> .. .. .. ..
-    --> FF D8 FF E0 (only for JPG and not JPEG, but no need to differentiate)
-     -> .. .. .. ..
-    --> FF D8 FF E0 00 10 4A 46 49 46 00 01 (covered be prior)
-     -> .. .. .. .. .. ..  J  F  I  F .. ..
-    --> FF D8 FF EE
-     -> .. .. .. ..
-    --> FF D8 FF E1 ?? ?? 45 78 69 66 00 00
-     -> .. .. .. .. .. ..  E  x  i  f .. ..
+        --> FF D8 FF
+         -> .. .. ..
 
     Support: native
     """
-    return h[:3] == b"\xFF\xD8\xFF" and (
-        h[3] in [0xDB, 0xE0, 0xEE]
-        or (h[3] == 0xE1 and h[6:12] == b"\x45\x78\x69\x66\x00\x00")
-    )
+    return h[:3] == b"\xFF\xD8\xFF"
 
 
 def _test_png(h: bytes, _f: BinaryIO) -> bool:
