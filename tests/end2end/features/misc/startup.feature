@@ -49,3 +49,10 @@ Feature: Startup vimiv with various flags
         Then no crash should happen
         And the mode should be library
         And the filelist should contain 0 images
+
+    Scenario: Read binary image from stdin
+        Given I patch stdin for a binary image
+        And I start vimiv with -
+        Then no crash should happen
+        And the mode should be image
+        And the filelist should contain 1 images
