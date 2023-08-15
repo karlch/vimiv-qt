@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# This file is part of vimiv.
-# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
-# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
-
 #
 # vimiv documentation build configuration file, created by
 # sphinx-quickstart on Sat Jan 13 12:17:12 2018.
