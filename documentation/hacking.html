@@ -409,7 +409,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="hacking-the-code">
-<span id="hacking"></span><h1><a class="toc-backref" href="#id3" role="doc-backlink">Hacking the Code</a><a class="headerlink" href="#hacking-the-code" title="Permalink to this heading">#</a></h1>
+<span id="hacking"></span><h1><a class="toc-backref" href="#id4" role="doc-backlink">Hacking the Code</a><a class="headerlink" href="#hacking-the-code" title="Permalink to this heading">#</a></h1>
 <p>This page contains some guidelines as well as a few tips on how to get started with the
 source code. If you feel like relevant information is missing, please open an
 <a class="reference external" href="https://github.com/karlch/vimiv-qt/issues/">issue on github</a>.</p>
@@ -421,38 +421,39 @@ or open an
 <nav class="contents" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#hacking-the-code" id="id3">Hacking the Code</a></p>
+<li><p><a class="reference internal" href="#hacking-the-code" id="id4">Hacking the Code</a></p>
 <ul>
-<li><p><a class="reference internal" href="#getting-the-source-code" id="id4">Getting the Source Code</a></p></li>
-<li><p><a class="reference internal" href="#submitting-changes" id="id5">Submitting Changes</a></p></li>
-<li><p><a class="reference internal" href="#running-the-development-version" id="id6">Running the Development Version</a></p></li>
-<li><p><a class="reference internal" href="#tests-and-checkers" id="id7">Tests and Checkers</a></p></li>
-<li><p><a class="reference internal" href="#style-and-formatting" id="id8">Style and Formatting</a></p></li>
-<li><p><a class="reference internal" href="#writing-plugins" id="id9">Writing Plugins</a></p>
+<li><p><a class="reference internal" href="#getting-the-source-code" id="id5">Getting the Source Code</a></p></li>
+<li><p><a class="reference internal" href="#submitting-changes" id="id6">Submitting Changes</a></p></li>
+<li><p><a class="reference internal" href="#running-the-development-version" id="id7">Running the Development Version</a></p></li>
+<li><p><a class="reference internal" href="#tests-and-checkers" id="id8">Tests and Checkers</a></p></li>
+<li><p><a class="reference internal" href="#style-and-formatting" id="id9">Style and Formatting</a></p></li>
+<li><p><a class="reference internal" href="#using-qt" id="id10">Using Qt</a></p></li>
+<li><p><a class="reference internal" href="#writing-plugins" id="id11">Writing Plugins</a></p>
 <ul>
-<li><p><a class="reference internal" href="#adding-support-for-new-imageformats" id="id10">Adding Support for New Imageformats</a></p></li>
+<li><p><a class="reference internal" href="#adding-support-for-new-imageformats" id="id12">Adding Support for New Imageformats</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#source-code-hints" id="id11">Source Code Hints</a></p>
+<li><p><a class="reference internal" href="#source-code-hints" id="id13">Source Code Hints</a></p>
 <ul>
-<li><p><a class="reference internal" href="#logging" id="id12">Logging</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api" id="id13">API Documentation</a></p>
+<li><p><a class="reference internal" href="#logging" id="id14">Logging</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api" id="id15">API Documentation</a></p>
 <ul>
-<li><p><a class="reference internal" href="#module-vimiv.api.objreg" id="id14">The Object Registry</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.modes" id="id15">Modes</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.commands" id="id16">Commands</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.keybindings" id="id17">Keybindings</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.status" id="id18">Status Modules</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.completion" id="id19">Completion</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.working_directory" id="id20">Working Directory</a></p></li>
-<li><p><a class="reference internal" href="#module-vimiv.api.prompt" id="id21">Prompt</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.objreg" id="id16">The Object Registry</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.modes" id="id17">Modes</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.commands" id="id18">Commands</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.keybindings" id="id19">Keybindings</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.status" id="id20">Status Modules</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.completion" id="id21">Completion</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.working_directory" id="id22">Working Directory</a></p></li>
+<li><p><a class="reference internal" href="#module-vimiv.api.prompt" id="id23">Prompt</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#module-vimiv.imutils" id="id22">Imutils Module</a></p>
+<li><p><a class="reference internal" href="#module-vimiv.imutils" id="id24">Imutils Module</a></p>
 <ul>
-<li><p><a class="reference internal" href="#the-image-loading-process" id="id23">The Image Loading Process</a></p></li>
-<li><p><a class="reference internal" href="#image-editing-modules" id="id24">Image Editing Modules</a></p></li>
-<li><p><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension" id="id25">Adding New Manipulations to the C-Extension</a></p></li>
+<li><p><a class="reference internal" href="#the-image-loading-process" id="id25">The Image Loading Process</a></p></li>
+<li><p><a class="reference internal" href="#image-editing-modules" id="id26">Image Editing Modules</a></p></li>
+<li><p><a class="reference internal" href="#adding-new-manipulations-to-the-c-extension" id="id27">Adding New Manipulations to the C-Extension</a></p></li>
 </ul>
 </li>
 </ul>
@@ -462,21 +463,21 @@ or open an
 </ul>
 </nav>
 <section id="getting-the-source-code">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Getting the Source Code</a><a class="headerlink" href="#getting-the-source-code" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Getting the Source Code</a><a class="headerlink" href="#getting-the-source-code" title="Permalink to this heading">#</a></h2>
 <p>To retrieve the source code you can clone the repository using git:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/karlch/vimiv-qt.git
 </pre></div>
 </div>
 </section>
 <section id="submitting-changes">
-<h2><a class="toc-backref" href="#id5" role="doc-backlink">Submitting Changes</a><a class="headerlink" href="#submitting-changes" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Submitting Changes</a><a class="headerlink" href="#submitting-changes" title="Permalink to this heading">#</a></h2>
 <p>The preferred way to submit changes is to
 <a class="reference external" href="https://help.github.com/articles/fork-a-repo/">fork the repository</a>
 and to
 <a class="reference external" href="https://help.github.com/articles/creating-a-pull-request/">submit a merge request</a>.</p>
 </section>
 <section id="running-the-development-version">
-<h2><a class="toc-backref" href="#id6" role="doc-backlink">Running the Development Version</a><a class="headerlink" href="#running-the-development-version" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Running the Development Version</a><a class="headerlink" href="#running-the-development-version" title="Permalink to this heading">#</a></h2>
 <p>The arguably cleanest method is to <a class="reference internal" href="install.html#install-using-tox"><span class="std std-ref">install vimiv using tox</span></a> and use the script from the virtual environment:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ .venv/bin/vimiv
 </pre></div>
@@ -504,7 +505,7 @@ enable debugging messages. As this can become very noisy, the <code class="docut
 to debug individual modules, e.g. <code class="docutils literal notranslate"><span class="pre">--debug</span> <span class="pre">config.configfile</span></code>.</p>
 </section>
 <section id="tests-and-checkers">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Tests and Checkers</a><a class="headerlink" href="#tests-and-checkers" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Tests and Checkers</a><a class="headerlink" href="#tests-and-checkers" title="Permalink to this heading">#</a></h2>
 <p>Vimiv runs it’s tests using
 <a class="reference external" href="https://tox.readthedocs.io/en/latest/">tox</a>. There are various different
 environments:</p>
@@ -544,7 +545,7 @@ with:</p>
 to run them. This is much slower and less direct though.</p>
 </section>
 <section id="style-and-formatting">
-<h2><a class="toc-backref" href="#id8" role="doc-backlink">Style and Formatting</a><a class="headerlink" href="#style-and-formatting" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Style and Formatting</a><a class="headerlink" href="#style-and-formatting" title="Permalink to this heading">#</a></h2>
 <p>Vimiv uses <a class="reference external" href="https://pre-commit.com/">pre-commit</a> for a consistent formatting. To
 format the python source code, the
 <a class="reference external" href="https://github.com/ambv/black">black code formatter</a> is used.</p>
@@ -558,8 +559,42 @@ format the python source code, the
 </pre></div>
 </div>
 </section>
+<section id="using-qt">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Using Qt</a><a class="headerlink" href="#using-qt" title="Permalink to this heading">#</a></h2>
+<p>As vimiv supports multiple Qt versions and wrappers simultaneously, none should be
+imported directly. Instead, use the corresponding import from <code class="docutils literal notranslate"><span class="pre">vimiv.qt</span></code> directly.</p>
+<table class="table" id="id3">
+<caption><span class="caption-text">How to import Qt modules</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Good</p></th>
+<th class="head"><p>Bad</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv.qt.core</span> <span class="pre">import</span> <span class="pre">QTimer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">PyQt5.QtCore</span> <span class="pre">import</span> <span class="pre">QTimer</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv.qt.core</span> <span class="pre">import</span> <span class="pre">Signal</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">PyQt5.QtCore</span> <span class="pre">import</span> <span class="pre">pyqtSignal</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv.qt.core</span> <span class="pre">import</span> <span class="pre">Slot</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">PyQt5.QtCore</span> <span class="pre">import</span> <span class="pre">pyqtSlot</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv.qt.widgets</span> <span class="pre">import</span> <span class="pre">QLabel</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">PyQt5.QtWidgets</span> <span class="pre">import</span> <span class="pre">QLabel</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">vimiv.qt.gui</span> <span class="pre">import</span> <span class="pre">QPixmap</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">PyQt5.QtGui</span> <span class="pre">import</span> <span class="pre">QPixmap</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="writing-plugins">
-<span id="id2"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">Writing Plugins</a><a class="headerlink" href="#writing-plugins" title="Permalink to this heading">#</a></h2>
+<span id="id2"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">Writing Plugins</a><a class="headerlink" href="#writing-plugins" title="Permalink to this heading">#</a></h2>
 <p>A great way to contribute to vimiv without having to work with the main source code is
 to write plugins. If you end up writing a plugin, please <a class="reference external" href="mailto:karlch&#37;&#52;&#48;protonmail&#46;com">let me know</a> so I can advertise it on the <a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">Plugins</span></a> page. The basic
 usage of plugins on described in the <a class="reference internal" href="configuration/plugins.html#plugins"><span class="std std-ref">Plugins</span></a> page as well, some hints on the
@@ -629,7 +664,7 @@ called.</p></li>
 </dd></dl>
 
 <section id="adding-support-for-new-imageformats">
-<span id="support-new-imageformats"></span><h3><a class="toc-backref" href="#id10" role="doc-backlink">Adding Support for New Imageformats</a><a class="headerlink" href="#adding-support-for-new-imageformats" title="Permalink to this heading">#</a></h3>
+<span id="support-new-imageformats"></span><h3><a class="toc-backref" href="#id12" role="doc-backlink">Adding Support for New Imageformats</a><a class="headerlink" href="#adding-support-for-new-imageformats" title="Permalink to this heading">#</a></h3>
 <p>If you would like to add support for a new image format that is not supported by Qt, you
 can also solve this using the plugin system. A nice example of how to do this is the
 <a class="reference external" href="https://github.com/jcjgraf/RawPrev">RawPrev</a> plugin which adds support for viewing
@@ -661,11 +696,11 @@ raw images using <code class="docutils literal notranslate"><span class="pre">dc
 </section>
 </section>
 <section id="source-code-hints">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">Source Code Hints</a><a class="headerlink" href="#source-code-hints" title="Permalink to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Source Code Hints</a><a class="headerlink" href="#source-code-hints" title="Permalink to this heading">#</a></h2>
 <p>The following paragraphs explain some of the core concepts of the source code
 which may be useful to understand before working on bigger changes.</p>
 <section id="logging">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">Logging</a><a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Logging</a><a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h3>
 <p>Logging is handled by the <code class="docutils literal notranslate"><span class="pre">vimiv.utils.log</span></code> module which wraps around the
 <a class="reference external" href="https://docs.python.org/3/howto/logging.html">standard python logging library</a>:</p>
 <span class="target" id="module-vimiv.utils.log"></span><p><cite>Utilities related to logging</cite>.</p>
@@ -706,12 +741,12 @@ create a module logger:</p>
 </div>
 </section>
 <section id="module-vimiv.api">
-<span id="api-documentation"></span><h3><a class="toc-backref" href="#id13" role="doc-backlink">API Documentation</a><a class="headerlink" href="#module-vimiv.api" title="Permalink to this heading">#</a></h3>
+<span id="api-documentation"></span><h3><a class="toc-backref" href="#id15" role="doc-backlink">API Documentation</a><a class="headerlink" href="#module-vimiv.api" title="Permalink to this heading">#</a></h3>
 <p><cite>Utilities to interact with the application</cite>.</p>
 <p>The following paragraphs provide an overview of the modules available in the
 <code class="docutils literal notranslate"><span class="pre">api</span></code> and give examples on how to use them.</p>
 <section id="module-vimiv.api.objreg">
-<span id="the-object-registry"></span><h4><a class="toc-backref" href="#id14" role="doc-backlink">The Object Registry</a><a class="headerlink" href="#module-vimiv.api.objreg" title="Permalink to this heading">#</a></h4>
+<span id="the-object-registry"></span><h4><a class="toc-backref" href="#id16" role="doc-backlink">The Object Registry</a><a class="headerlink" href="#module-vimiv.api.objreg" title="Permalink to this heading">#</a></h4>
 <p><em>Storage system for objects</em>.</p>
 <p>The object registry is a storage system for long-lived objects. These objects are stored
 and identified using their type. Therefore every stored object must be unique in its
@@ -751,7 +786,7 @@ stored in the registry right after <code class="docutils literal notranslate"><s
 
 </section>
 <section id="module-vimiv.api.modes">
-<span id="modes"></span><h4><a class="toc-backref" href="#id15" role="doc-backlink">Modes</a><a class="headerlink" href="#module-vimiv.api.modes" title="Permalink to this heading">#</a></h4>
+<span id="modes"></span><h4><a class="toc-backref" href="#id17" role="doc-backlink">Modes</a><a class="headerlink" href="#module-vimiv.api.modes" title="Permalink to this heading">#</a></h4>
 <p><cite>Default modes and utility functions for mode handling</cite>.</p>
 <p>Similar to vim, vimiv has the concept of <code class="docutils literal notranslate"><span class="pre">modes</span></code>. The same command or
 keybinding can perform different actions depending on the mode it is executed
@@ -818,7 +853,7 @@ when entering a mode to focus the widget which is assigned to this mode.</p>
 
 </section>
 <section id="module-vimiv.api.commands">
-<span id="commands"></span><h4><a class="toc-backref" href="#id16" role="doc-backlink">Commands</a><a class="headerlink" href="#module-vimiv.api.commands" title="Permalink to this heading">#</a></h4>
+<span id="commands"></span><h4><a class="toc-backref" href="#id18" role="doc-backlink">Commands</a><a class="headerlink" href="#module-vimiv.api.commands" title="Permalink to this heading">#</a></h4>
 <p><cite>Command storage and initialization</cite>.</p>
 <p>The user interacts with vimiv using commands. Creating a new command is done
 using the <a class="reference internal" href="#vimiv.api.commands.register" title="vimiv.api.commands.register"><code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code></a> decorator. The command name is directly inferred from
@@ -977,7 +1012,7 @@ command.</p>
 
 </section>
 <section id="module-vimiv.api.keybindings">
-<span id="keybindings"></span><h4><a class="toc-backref" href="#id17" role="doc-backlink">Keybindings</a><a class="headerlink" href="#module-vimiv.api.keybindings" title="Permalink to this heading">#</a></h4>
+<span id="keybindings"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Keybindings</a><a class="headerlink" href="#module-vimiv.api.keybindings" title="Permalink to this heading">#</a></h4>
 <p><cite>Utilities to map commands to a sequence of keys</cite>.</p>
 <p>Adding a new default keybinding is done using the <code class="xref py py-func docutils literal notranslate"><span class="pre">register()</span></code> decorator.
 This decorator requires the sequence of keys to bind to as first argument, the
@@ -1006,7 +1041,7 @@ earth with <code class="docutils literal notranslate"><span class="pre">ge</span
 </div>
 </section>
 <section id="module-vimiv.api.status">
-<span id="status-modules"></span><h4><a class="toc-backref" href="#id18" role="doc-backlink">Status Modules</a><a class="headerlink" href="#module-vimiv.api.status" title="Permalink to this heading">#</a></h4>
+<span id="status-modules"></span><h4><a class="toc-backref" href="#id20" role="doc-backlink">Status Modules</a><a class="headerlink" href="#module-vimiv.api.status" title="Permalink to this heading">#</a></h4>
 <p><em>Utilities to add status modules and retrieve status text</em>.</p>
 <p>Status objects in vimiv, e.g. the statusbar displayed at the bottom, are
 configurable using so called status modules. These are created using the
@@ -1093,7 +1128,7 @@ is, for example, always called after a command was run.</p>
 
 </section>
 <section id="module-vimiv.api.completion">
-<span id="completion"></span><h4><a class="toc-backref" href="#id19" role="doc-backlink">Completion</a><a class="headerlink" href="#module-vimiv.api.completion" title="Permalink to this heading">#</a></h4>
+<span id="completion"></span><h4><a class="toc-backref" href="#id21" role="doc-backlink">Completion</a><a class="headerlink" href="#module-vimiv.api.completion" title="Permalink to this heading">#</a></h4>
 <p><em>Utilities to work with completion modules</em>.</p>
 <p>A completion module offers a model with options for command line completion and a filter
 that decides which results are filtered depending on the text in the command line. All
@@ -1191,7 +1226,7 @@ description column is set up to take 30 % of the total width while the completio
 
 </section>
 <section id="module-vimiv.api.working_directory">
-<span id="working-directory"></span><h4><a class="toc-backref" href="#id20" role="doc-backlink">Working Directory</a><a class="headerlink" href="#module-vimiv.api.working_directory" title="Permalink to this heading">#</a></h4>
+<span id="working-directory"></span><h4><a class="toc-backref" href="#id22" role="doc-backlink">Working Directory</a><a class="headerlink" href="#module-vimiv.api.working_directory" title="Permalink to this heading">#</a></h4>
 <p>Handler to take care of the current working directory.</p>
 <p>The handler stores the current working directory and provides the <code class="xref py py-func docutils literal notranslate"><span class="pre">chdir()</span></code> method
 to change it:</p>
@@ -1212,7 +1247,7 @@ working directory as arguments, <code class="docutils literal notranslate"><span
 as the list of added and removed images.</p>
 <p>Thus, if your custom class needs to know the current images and/or directories, it can
 connect to these signals:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="n">QObject</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">vimiv.qt.core</span> <span class="kn">import</span> <span class="n">QObject</span>
 
 <span class="kn">from</span> <span class="nn">vimiv</span> <span class="kn">import</span> <span class="n">api</span>
 
@@ -1246,7 +1281,7 @@ connect to these signals:</p>
 </dl>
 </section>
 <section id="module-vimiv.api.prompt">
-<span id="prompt"></span><h4><a class="toc-backref" href="#id21" role="doc-backlink">Prompt</a><a class="headerlink" href="#module-vimiv.api.prompt" title="Permalink to this heading">#</a></h4>
+<span id="prompt"></span><h4><a class="toc-backref" href="#id23" role="doc-backlink">Prompt</a><a class="headerlink" href="#module-vimiv.api.prompt" title="Permalink to this heading">#</a></h4>
 <p>Prompt the user for a question.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="vimiv.api.prompt.ask_question">
@@ -1273,10 +1308,10 @@ The UI is blocked until the question was answered or aborted.</p>
 </section>
 </section>
 <section id="module-vimiv.imutils">
-<span id="imutils-module"></span><h3><a class="toc-backref" href="#id22" role="doc-backlink">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this heading">#</a></h3>
+<span id="imutils-module"></span><h3><a class="toc-backref" href="#id24" role="doc-backlink">Imutils Module</a><a class="headerlink" href="#module-vimiv.imutils" title="Permalink to this heading">#</a></h3>
 <p><cite>Utilities to load, edit, navigate and save images</cite>.</p>
 <section id="the-image-loading-process">
-<h4><a class="toc-backref" href="#id23" role="doc-backlink">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this heading">#</a></h4>
+<h4><a class="toc-backref" href="#id25" role="doc-backlink">The Image Loading Process</a><a class="headerlink" href="#the-image-loading-process" title="Permalink to this heading">#</a></h4>
 <p>The image loading process is started by emitting the <code class="docutils literal notranslate"><span class="pre">load_images</span></code> signal. It is for
 example emitted by the library when a new image path was selected, in thumbnail mode
 upon selection or by the <code class="docutils literal notranslate"><span class="pre">:open</span></code> command. There are a few different cases that are
@@ -1306,7 +1341,7 @@ widget has been created, the file handler emits one of:</p>
 the appropriate Qt widget.</p>
 </section>
 <section id="image-editing-modules">
-<h4><a class="toc-backref" href="#id24" role="doc-backlink">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this heading">#</a></h4>
+<h4><a class="toc-backref" href="#id26" role="doc-backlink">Image Editing Modules</a><a class="headerlink" href="#image-editing-modules" title="Permalink to this heading">#</a></h4>
 <p>This section gives a quick overview of the modules that deal with image editing and how
 to add new functionality to manipulate images.</p>
 <span class="target" id="module-vimiv.imutils.imtransform"></span><p><em>imtransform - transformations such as rotate and flip</em>.</p>
@@ -1384,7 +1419,7 @@ raw data.</p>
 
 </section>
 <section id="adding-new-manipulations-to-the-c-extension">
-<span id="c-extension"></span><h4><a class="toc-backref" href="#id25" role="doc-backlink">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this heading">#</a></h4>
+<span id="c-extension"></span><h4><a class="toc-backref" href="#id27" role="doc-backlink">Adding New Manipulations to the C-Extension</a><a class="headerlink" href="#adding-new-manipulations-to-the-c-extension" title="Permalink to this heading">#</a></h4>
 <p>To add new manipulations to the C-extension, two things must be done.</p>
 <p>First, you implement a new manipulate function in its own header such as
 <code class="docutils literal notranslate"><span class="pre">brightness_contrast.h</span></code>. The function should take the image data as pure bytes, the
@@ -1440,6 +1475,7 @@ and finally a short docstring.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-the-development-version">Running the Development Version</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tests-and-checkers">Tests and Checkers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#style-and-formatting">Style and Formatting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-qt">Using Qt</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-plugins">Writing Plugins</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vimiv.plugins.get_plugins"><code class="docutils literal notranslate"><span class="pre">get_plugins()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#vimiv.plugins.load"><code class="docutils literal notranslate"><span class="pre">load()</span></code></a></li>
