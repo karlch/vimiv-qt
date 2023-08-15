@@ -85,6 +85,12 @@ class MainWindow(QWidget):
         else:
             self.showFullScreen()
 
+    @api.keybindings.register("<escape>", "cancel")
+    @api.commands.register()
+    def cancel(self):
+        """Emit a generic cancel signal, e.g., to reset search or clear keys."""
+        api.signals.cancel.emit()
+
     @api.commands.register()
     def version(self, copy: bool = False) -> None:
         """Show a pop-up with version information.

@@ -13,7 +13,7 @@ from vimiv.qt.core import Qt, QTimer, QObject, Signal
 from vimiv.qt.gui import QKeySequence, QKeyEvent, QMouseEvent
 
 from vimiv import api, utils
-from vimiv.commands import runners, search
+from vimiv.commands import runners
 
 
 SequenceT = Tuple[str, ...]
@@ -97,6 +97,7 @@ class PartialHandler(QObject):
         self.count = TempKeyStorage()
         self.keys = TempKeyStorage()
         self.keys.timeout.connect(self.partial_cleared.emit)
+        api.signals.cancel.connect(self.clear_keys)
 
     def clear_keys(self):
         """Clear count and partially matched keys."""
@@ -128,15 +129,8 @@ class EventHandlerMixin:
             return
         mode = api.modes.current()
         keyname = "".join(keysequence)
-        # Handle escape separately as it affects multiple widgets and must clear partial
-        # matches instead of checking for them
-        if keyname == "<escape>" and mode in api.modes.GLOBALS:
-            _logger.debug("KeyPressEvent: handling <escape> key specially")
-            self.partial_handler.clear_keys()
-            search.search.clear()
-            api.status.update("escape pressed")
         # Count
-        elif keyname and keyname in string.digits and mode != api.modes.COMMAND:
+        if keyname and keyname in string.digits and mode != api.modes.COMMAND:
             _logger.debug("KeyPressEvent: adding digits to count")
             self.partial_handler.count.add_keys(keyname)
         elif not self._process_event(keysequence, mode=mode):
