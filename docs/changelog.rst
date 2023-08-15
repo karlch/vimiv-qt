@@ -17,6 +17,9 @@ Added:
   * ``PySide6``: Use PySide6 (Qt for Python). This is highly experimental and should be
     used with care.
 
+* The option to read binary images from stdin using ``vimiv -``. Thanks `@mozirilla213`_
+  for the idea and initial implementation!
+
 Fixed:
 ^^^^^^
 
@@ -564,3 +567,4 @@ Initial release of the Qt version.
 .. _@Yutsuten: https://github.com/Yutsuten
 .. _@buzzingwires: https://github.com/buzzingwires
 .. _@xfzv: https://github.com/xfzv
+.. _@mozirilla213: https://github.com/mozirilla213
