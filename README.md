@@ -23,7 +23,7 @@
 ---
 
 Vimiv is an image viewer with vim-like keybindings. It is written in python3
-using the Qt5 toolkit and is free software, licensed under the GPL.
+using the Qt toolkit and is free software, licensed under the GPL.
 
 ### Features
 
