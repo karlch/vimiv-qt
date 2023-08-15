@@ -36,6 +36,7 @@ from vimiv.config import configcommands  # pylint: disable=unused-import
 
 
 _tmpdir = None
+_tmppath = None
 _logger = log.module_logger(__name__)
 
 
@@ -122,12 +123,20 @@ def init_directories(args: argparse.Namespace) -> None:
 def init_paths(args: argparse.Namespace) -> None:
     """Open paths given from commandline or fallback to library if set."""
     _logger.debug("Opening paths")
-    read_stdin = args.stdinput and not sys.stdin.isatty()
-    paths = (
-        [os.path.realpath(line.strip()) for line in sys.stdin]
-        if read_stdin
-        else args.paths
-    )
+    # Path names passed via stdin
+    if args.stdinput and not sys.stdin.isatty():
+        paths = [os.path.realpath(line.strip()) for line in sys.stdin]
+    # Binary image passed via stdin
+    elif args.binary_stdinput and not sys.stdin.isatty():
+        global _tmppath
+
+        _tmppath = tempfile.NamedTemporaryFile(prefix="vimiv-stdin-")
+        with open(_tmppath.name, "wb") as f:
+            f.write(sys.stdin.buffer.read())
+        paths = [_tmppath.name]
+    # Default
+    else:
+        paths = args.paths
     try:
         api.open_paths(paths)
     except api.commands.CommandError:

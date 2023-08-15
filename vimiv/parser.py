@@ -96,6 +96,12 @@ def get_argparser() -> argparse.ArgumentParser:
         help="Read paths to open from standard input",
         dest="stdinput",
     )
+    parser.add_argument(
+        "-",
+        action="store_true",
+        help="Read binary image to open from standard input",
+        dest="binary_stdinput",
+    )
 
     devel = parser.add_argument_group("development arguments")
     devel.add_argument(
