@@ -107,6 +107,9 @@ class ThumbnailView(
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
+        api.settings.thumbnail.unload_threshold.changed.connect(
+            self._maybe_connect_pruning
+        )
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
@@ -117,6 +120,8 @@ class ThumbnailView(
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
         api.mark.markdone.connect(self.repaint)
         synchronize.signals.new_library_path_selected.connect(self._select_path)
+
+        self._maybe_connect_pruning(api.settings.thumbnail.unload_threshold.value)
 
         styles.apply(self)
 
@@ -175,10 +180,7 @@ class ThumbnailView(
         return {i: self._paths[i] for i in indices}
 
     def _prunable_thumbnails_exist(self) -> bool:
-        return (
-            api.settings.thumbnail.unload_threshold.value == -1
-            or len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
-        )
+        return len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
 
     def _prune_index(self, index) -> None:
         """Unload the icon associated with a particular path index."""
@@ -272,7 +274,6 @@ class ThumbnailView(
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
             self._rendered_paths.add(self._paths[index])
-        self._prune_icons()
 
     @pyqtSlot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -298,6 +299,11 @@ class ThumbnailView(
         for item in self:
             item.highlighted = False
         self.repaint()
+
+    def _maybe_connect_pruning(self, unload_threshold: int):
+        """Only connect pruning in case unloading should be performed."""
+        if unload_threshold > -1:
+            self._manager.created.connect(self._prune_icons)
 
     def _mark_highlight(self, path: str, marked: bool = True):
         """(Un-)Highlight a path if it was (un-)marked.

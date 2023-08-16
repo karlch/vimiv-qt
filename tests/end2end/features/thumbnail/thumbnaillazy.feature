@@ -24,6 +24,7 @@ Feature: Lazy load thumbnails
 
     Scenario: Display two thumbnails behind and all ahead
         When I run set thumbnail.load_behind 2
+        And I run set thumbnail.unload_threshold 0
         And I run 5scroll right
         Then there should be 7 rendered thumbnails
         And the first index should be 3
@@ -41,6 +42,7 @@ Feature: Lazy load thumbnails
     Scenario: Display two thumbnails ahead and behind
         When I run set thumbnail.load_ahead 2
         And I run set thumbnail.load_behind 2
+        And I run set thumbnail.unload_threshold 0
         And I run 5scroll right
         Then there should be 5 rendered thumbnails
         And the first index should be 3
