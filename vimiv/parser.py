@@ -89,14 +89,16 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TEXT",
         help="Wildcard expanded string to print to standard output upon quit",
     )
-    parser.add_argument(
+
+    stdin = parser.add_mutually_exclusive_group()
+    stdin.add_argument(
         "-i",
         "--input",
         action="store_true",
         help="Read paths to open from standard input",
         dest="stdinput",
     )
-    parser.add_argument(
+    stdin.add_argument(
         "-",
         action="store_true",
         help="Read binary image to open from standard input",
