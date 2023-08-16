@@ -49,8 +49,11 @@ master_doc = "index"
 
 # General information about the project.
 project = "vimiv"
-copyright = "2017-2023, Christian Karl"
-author = "Christian Karl"
+copyright = "The vimiv contributors, licensed under the GNU GPL v3"
+author = (
+    "vimiv was first developed and is maintained by Christian Karl. All contributors "
+    "are listed in the AUTHORS file distributed with vimiv."
+)
 html_favicon = "_static/favicon.ico"
 
 # The version info for the project you're documenting, acts as replacement for
