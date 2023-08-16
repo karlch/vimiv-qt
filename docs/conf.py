@@ -51,7 +51,7 @@ master_doc = "index"
 project = "vimiv"
 copyright = "The vimiv contributors, licensed under the GNU GPL v3"
 author = (
-    "vimiv was first developed and is maintained by Christian Karl. All contributors "
+    "vimiv was designed and written by Christian Karl. All contributors "
     "are listed in the AUTHORS file distributed with vimiv."
 )
 html_favicon = "_static/favicon.ico"
