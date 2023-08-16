@@ -17,6 +17,11 @@ Added:
   * ``PySide6``: Use PySide6 (Qt for Python). This is highly experimental and should be
     used with care.
 
+Changed:
+^^^^^^^^
+* The JPEG image header check was simplified to have a false negative rate of 0, while
+  maintaining a decently low false positive rate.
+
 Fixed:
 ^^^^^^
 
