@@ -11,15 +11,7 @@ jobs:
       matrix:
         include:
           - python: "3.8"
-            toxenv: pyqt513
-          - python: "3.8"
-            toxenv: pyqt514
-          - python: "3.8"
             toxenv: pyqt515-piexif-pyexiv2-cov
-          - python: "3.9"
-            toxenv: pyqt513
-          - python: "3.9"
-            toxenv: pyqt514
           - python: "3.9"
             toxenv: pyqt515
           - python: "3.10"
