@@ -36,6 +36,13 @@ and the latest development version with::
 
     $ pip install --user git+https://github.com/karlch/vimiv-qt/
 
+.. note::
+
+    This will not install a version of Qt or PyQt. Please install a valid combination
+    as described in :ref:`dependencies <install_dependencies>`, e.g., using::
+
+        $ pip install --user PyQt6
+
 .. include:: datafile_warning.rst
 
 
@@ -126,10 +133,13 @@ Dependencies
 ------------
 
 * `Python <http://www.python.org/>`_ 3.8 or newer with development extension
-* `Qt <http://qt.io/>`_   5.15 or newer
-    - QtCore / qtbase
-    - QtSvg (optional for svg support)
-* `PyQt5 <http://www.riverbankcomputing.com/software/pyqt/intro>`_  5.15 or newer
+* `Qt <http://qt.io/>`_   either 6.2.0 or newer, or 5.15.0 or newer
+
+  - QtCore / qtbase
+  - QtSvg (optional for svg support)
+
+* `PyQt <http://www.riverbankcomputing.com/software/pyqt/intro>`_  either 6.2.0 or
+  newer, (Qt 6) or 5.15.0 or newer (Qt 5)
 * `setuptools <https://pypi.python.org/pypi/setuptools/>`_ (for installation)
 * `pyexiv2 <https://python3-exiv2.readthedocs.io>`_ (optional for metadata support)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional alternative for metadata
