@@ -134,29 +134,3 @@ Dependencies
 * `pyexiv2 <https://python3-exiv2.readthedocs.io>`_ (optional for metadata support)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional alternative for metadata
   support)
-
-Package Names For Distributions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Installing the following packages should pull in all necessary dependencies for
-building and running vimiv.
-
-Arch Linux:
-    * qt5-imageformats (optional)
-    * qt5-svg (optional)
-    * python-pyqt5
-    * python-setuptools
-    * python-piexif (optional)
-    * python-exiv2 (optional, AUR)
-
-Fedora:
-    * Build time dependencies: `sudo dnf builddep vimiv-qt`.
-    * python3-qt5
-    * python3-piexif
-
-Debian/Ubuntu:
-    * python3-pyqt5
-    * python3-pyqt5.qtsvg (optional)
-    * python3-setuptools
-    * python3-dev (for building the C extension)
-    * python3-piexif (TODO not available...)
