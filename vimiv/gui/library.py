@@ -163,18 +163,20 @@ class Library(
         """
         self._open_path(self.current(), close)
 
-    def _open_path(self, path: str, close: bool):
+    def _open_path(self, path: str, close: bool, autoload_directory: bool = False):
         """Open a given path possibly closing the library."""
         if not path:
             log.warning("Library: selecting empty path")
         elif os.path.isdir(path):
-            self._open_directory(path)
+            self._open_directory(
+                path, reload_current=False, autoload=autoload_directory
+            )
         else:
             self._open_image(path, close)
 
-    def _open_directory(self, path, reload_current=False):
+    def _open_directory(self, path, reload_current=False, autoload=False):
         """Open a directory."""
-        api.working_directory.handler.chdir(path, reload_current)
+        api.working_directory.handler.chdir(path, reload_current, autoload)
 
     def _open_image(self, path, close):
         """Open an image."""
@@ -233,12 +235,16 @@ class Library(
         if direction == direction.Right:
             current = self.current()
             # Close library on double selection
-            self._open_path(current, close=current == self._last_selected)
+            self._open_path(
+                current,
+                close=current == self._last_selected,
+                autoload_directory=open_selected,
+            )
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
             self._positions[parent] = Position(os.getcwd())
-            api.working_directory.handler.chdir(parent)
+            api.working_directory.handler.chdir(parent, autoload=open_selected)
         else:
             row = self.row()
             if row == -1:  # Directory is empty
