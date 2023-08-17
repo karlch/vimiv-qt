@@ -417,8 +417,9 @@ document.write(`
 <section id="added">
 <h3>Added:<a class="headerlink" href="#added" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Support for PyQt6 and thus Qt6. The Qt version and wrapper can be selected with the
-<code class="docutils literal notranslate"><span class="pre">QT_SELECT</span></code> environment variable, using:</p>
+<li><p>Support for PyQt6 and thus Qt6. In case both are installed, vimiv prefers PyQt6 and
+only falls back to PyQt5 if PyQt6 is not available. The Qt version and wrapper can be
+selected explicitly with the <code class="docutils literal notranslate"><span class="pre">QT_SELECT</span></code> environment variable, using:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">5</span></code> or <code class="docutils literal notranslate"><span class="pre">PyQt5</span></code>: Use PyQt5.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">6</span></code> or <code class="docutils literal notranslate"><span class="pre">PyQt6</span></code>: Use PyQt6.</p></li>
@@ -433,6 +434,7 @@ used with care.</p></li>
 <ul class="simple">
 <li><p>The JPEG image header check was simplified to have a false negative rate of 0, while
 maintaining a decently low false positive rate.</p></li>
+<li><p>Support for PyQt5 &lt; 5.15 was dropped.</p></li>
 </ul>
 </section>
 <section id="fixed">
