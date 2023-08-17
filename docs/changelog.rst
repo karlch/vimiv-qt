@@ -20,8 +20,10 @@ Added:
 
 Changed:
 ^^^^^^^^
+
 * The JPEG image header check was simplified to have a false negative rate of 0, while
   maintaining a decently low false positive rate.
+* Support for PyQt5 < 5.15 was dropped.
 
 Fixed:
 ^^^^^^
