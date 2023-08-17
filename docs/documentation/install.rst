@@ -19,7 +19,7 @@ is available in the AUR.
 Fedora
 ------
 
-The `stable release <https://apps.fedoraproject.org/packages/vimiv-qt/overview/>`_ is available in the Fedora repositories.
+The `stable release <https://src.fedoraproject.org/rpms/vimiv-qt/>`_ is available in the Fedora repositories.
 It can be installed using the standard GUI software installers (Gnome
 Software/Discover/Dnfdragora) and also using `dnf`::
 
@@ -35,6 +35,13 @@ You can retrieve the latest stable release using::
 and the latest development version with::
 
     $ pip install --user git+https://github.com/karlch/vimiv-qt/
+
+.. note::
+
+    This will not install a version of Qt or PyQt. Please install a valid combination
+    as described in :ref:`dependencies <install_dependencies>`, e.g., using::
+
+        $ pip install --user PyQt6
 
 .. include:: datafile_warning.rst
 
@@ -126,37 +133,14 @@ Dependencies
 ------------
 
 * `Python <http://www.python.org/>`_ 3.8 or newer with development extension
-* `Qt <http://qt.io/>`_   5.13.2 or newer
-    - QtCore / qtbase
-    - QtSvg (optional for svg support)
-* `PyQt5 <http://www.riverbankcomputing.com/software/pyqt/intro>`_  5.13.2 or newer
+* `Qt <http://qt.io/>`_   either 6.2.0 or newer, or 5.15.0 or newer
+
+  - QtCore / qtbase
+  - QtSvg (optional for svg support)
+
+* `PyQt <http://www.riverbankcomputing.com/software/pyqt/intro>`_  either 6.2.0 or
+  newer, (Qt 6) or 5.15.0 or newer (Qt 5)
 * `setuptools <https://pypi.python.org/pypi/setuptools/>`_ (for installation)
 * `pyexiv2 <https://python3-exiv2.readthedocs.io>`_ (optional for metadata support)
 * `piexif <https://pypi.org/project/piexif/>`_ (optional alternative for metadata
   support)
-
-Package Names For Distributions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Installing the following packages should pull in all necessary dependencies for
-building and running vimiv.
-
-Arch Linux:
-    * qt5-imageformats (optional)
-    * qt5-svg (optional)
-    * python-pyqt5
-    * python-setuptools
-    * python-piexif (optional)
-    * python-exiv2 (optional, AUR)
-
-Fedora:
-    * Build time dependencies: `sudo dnf builddep vimiv-qt`.
-    * python3-qt5
-    * python3-piexif
-
-Debian/Ubuntu:
-    * python3-pyqt5
-    * python3-pyqt5.qtsvg (optional)
-    * python3-setuptools
-    * python3-dev (for building the C extension)
-    * python3-piexif (TODO not available...)

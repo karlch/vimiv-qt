@@ -54,7 +54,6 @@ For an overview of implemented models, feel free to take a look at the ones defi
 import re
 from typing import cast, Dict, Iterable, Tuple
 
-from vimiv import qt
 from vimiv.qt.core import QSortFilterProxyModel, Qt
 from vimiv.qt.gui import QStandardItemModel, QStandardItem
 
@@ -167,11 +166,7 @@ class FilterProxyModel(QSortFilterProxyModel):
 
     def _set_regex(self, regex: str) -> None:
         """Set filter regex according to Qt wrapper version."""
-        # TODO remove once we drop support for PyQt < 5.15
-        if qt.USE_PYQT5:
-            self.setFilterRegExp(regex)
-        else:
-            self.setFilterRegularExpression(regex)
+        self.setFilterRegularExpression(regex)
 
     def _set_fuzzy_completion_regex(self, prefix: str, command: str) -> None:
         self._set_regex(".*".join(prefix + command))

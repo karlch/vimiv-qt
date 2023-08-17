@@ -9,8 +9,9 @@ v0.10.0 (unreleased)
 Added:
 ^^^^^^
 
-* Support for PyQt6 and thus Qt6. The Qt version and wrapper can be selected with the
-  ``QT_SELECT`` environment variable, using:
+* Support for PyQt6 and thus Qt6. In case both are installed, vimiv prefers PyQt6 and
+  only falls back to PyQt5 if PyQt6 is not available. The Qt version and wrapper can be
+  selected explicitly with the ``QT_SELECT`` environment variable, using:
 
   * ``5`` or ``PyQt5``: Use PyQt5.
   * ``6`` or ``PyQt6``: Use PyQt6.

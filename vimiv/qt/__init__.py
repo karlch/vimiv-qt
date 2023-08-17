@@ -23,7 +23,7 @@ class WRAPPERS(enum.Enum):
     PySide6 = "PySide6"
 
 
-_WRAPPERS_PYQT = [WRAPPERS.PyQt5, WRAPPERS.PyQt6]
+_WRAPPERS_PYQT = [WRAPPERS.PyQt6, WRAPPERS.PyQt5]
 _WRAPPER_NAMES = [wrapper.value for wrapper in WRAPPERS]
 _WRAPPER_NAMES_STR = ", ".join(_WRAPPER_NAMES)
 
