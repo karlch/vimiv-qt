@@ -19,7 +19,7 @@ is available in the AUR.
 Fedora
 ------
 
-The `stable release <https://apps.fedoraproject.org/packages/vimiv-qt/overview/>`_ is available in the Fedora repositories.
+The `stable release <https://src.fedoraproject.org/rpms/vimiv-qt/>`_ is available in the Fedora repositories.
 It can be installed using the standard GUI software installers (Gnome
 Software/Discover/Dnfdragora) and also using `dnf`::
 
