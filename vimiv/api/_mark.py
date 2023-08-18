@@ -371,7 +371,9 @@ class Tag:
     def read(self) -> List[str]:
         """Read paths from the tag file."""
         paths = [
-            path.strip() for path in self._file if not path.startswith(Tag.COMMENTCHAR)
+            path.strip()
+            for path in self._file
+            if not path.startswith(Tag.COMMENTCHAR) and path.strip()
         ]
         _logger.debug("%s: read %d paths from tag", self, len(paths))
         return paths

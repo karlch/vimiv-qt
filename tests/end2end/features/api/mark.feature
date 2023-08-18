@@ -40,6 +40,14 @@ Feature: Mark and tag images.
         And I run tag-load test
         Then there should be 2 marked images
 
+    Scenario: Load a tag file with empty line
+        Given I open 5 images
+        When I run mark image_01.jpg image_02.jpg
+        And I run tag-write test
+        And I insert an empty line into the tag file test
+        And I run tag-load test
+        Then there should be 2 marked images
+
     Scenario: Delete a tag file
         Given I open 5 images
         When I run mark image_01.jpg image_02.jpg
