@@ -43,6 +43,13 @@ def check_tag_file(name, n_paths):
     assert len(paths) == n_paths
 
 
+@bdd.then(bdd.parsers.parse("the tag file {name} should not contain any empty lines"))
+def check_tag_file_no_empty_line(name):
+    assert os.path.isfile(Tag.path(name)), f"Tag file {name} does not exist"
+    with open(Tag.path(name), "r") as f:
+        assert all([line.strip() for line in f])
+
+
 @bdd.then(bdd.parsers.parse("the tag file {name} should not exist"))
 def check_tag_file_not_exists(name):
     assert not os.path.exists(Tag.path(name))

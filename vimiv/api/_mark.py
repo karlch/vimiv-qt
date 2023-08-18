@@ -365,8 +365,11 @@ class Tag:
         """Write paths to the tag file."""
         existing = {path.strip() for path in self.read()}
         new_paths = set(paths) - existing
-        _logger.debug("Adding %d paths to tag file", len(new_paths))
-        self._file.write("\n".join(sorted(new_paths)) + "\n")
+        if new_paths:
+            _logger.debug("Adding %d paths to tag file", len(new_paths))
+            self._file.write("\n".join(sorted(new_paths)) + "\n")
+        else:
+            _logger.debug("No new images to add to tag file")
 
     def read(self) -> List[str]:
         """Read paths from the tag file."""
