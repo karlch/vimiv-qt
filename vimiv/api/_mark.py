@@ -204,11 +204,7 @@ class Mark(QObject):
         _logger.debug("Loading tag '%s'", name)
         with Tag(name) as tag:
             paths = tag.read()
-        self._marked = paths
-        for path in paths:
-            self.marked.emit(path)
-            _logger.debug("Marked '%s'", path)
-        self.markdone.emit()
+        self.mark(paths, self.Action.Mark)
 
     @commands.register()
     def tag_open(self, name: str) -> None:
