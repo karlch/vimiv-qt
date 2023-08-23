@@ -30,7 +30,7 @@ def test_temp_key_storage_get_keys(storage):
     for key in keys:
         storage.add_keys(key)
     assert storage.get_keys() == keys
-    assert not storage.text  # Getting should clear
+    assert storage.text == "a1", "Getting should not clear"
 
 
 def test_temp_key_storage_clears_text(storage, qtbot):

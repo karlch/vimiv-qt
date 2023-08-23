@@ -56,7 +56,6 @@ class TempKeyStorage(QTimer):
     def get_keys(self):
         """Get tuple of keys from storage."""
         keys = tuple(self._keys)
-        self.clear()
         return keys
 
     def clear(self):
