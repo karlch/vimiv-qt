@@ -17,6 +17,7 @@ Added:
   * ``6`` or ``PyQt6``: Use PyQt6.
   * ``PySide6``: Use PySide6 (Qt for Python). This is highly experimental and should be
     used with care.
+* Support keybindings of more than 2 keys length.
 
 Changed:
 ^^^^^^^^
