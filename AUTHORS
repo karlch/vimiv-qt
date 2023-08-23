@@ -1,3 +1,10 @@
+vimiv was designed and written by Christian Karl (karlch).
+
+Copyright: the vimiv contributors, licensed under the GNU GPL v3.
+See the LICENSE file included with vimiv or https://www.gnu.org/licenses/gpl-3.0.html.
+
+All contributors of non-trivial code are listed here, in order of first contribution.
+
 Christian Karl (karlch) <karlch at protonmail dot com>
 Wolfgang Popp (woefe) <mail at wolfgang-popp dot de>
 Ankur Sinha (sanjayankur31) <ankursinha at fedoraproject dot org>
@@ -5,6 +12,5 @@ Jean-Claude Graf (jcjgraf) <jeanggi90 at gmail dot com>
 Mateus Etto (Yutsuten) <mateus dot etto at gmail dot com>
 buzzingwires (buzzingwires) <buzzingwires at outlook dot com>
 
-All contributors of non-trivial code are listed here. Please send an email to
-<karlch at protonmail dot com> or open an issue / pull request if you feel like your
-name is missing or in case of any other problems.
+Please send an email to <karlch at protonmail dot com> or open an issue / pull request
+if you feel like your name is missing or in case of any other problems.

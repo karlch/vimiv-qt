@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# This file is part of vimiv.
-# Copyright 2017-2023 Christian Karl (karlch) <karlch at protonmail dot com>
-# License: GNU GPL v3, see the "LICENSE" and "AUTHORS" files for details.
-
 #
 # vimiv documentation build configuration file, created by
 # sphinx-quickstart on Sat Jan 13 12:17:12 2018.
@@ -53,8 +49,11 @@ master_doc = "index"
 
 # General information about the project.
 project = "vimiv"
-copyright = "2017-2023, Christian Karl"
-author = "Christian Karl"
+copyright = "The vimiv contributors, licensed under the GNU GPL v3"
+author = (
+    "vimiv was designed and written by Christian Karl. All contributors "
+    "are listed in the AUTHORS file distributed with vimiv."
+)
 html_favicon = "_static/favicon.ico"
 
 # The version info for the project you're documenting, acts as replacement for
