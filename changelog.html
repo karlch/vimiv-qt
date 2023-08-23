@@ -442,6 +442,8 @@ maintaining a decently low false positive rate.</p></li>
 <ul class="simple">
 <li><p>The SVG image header check to no longer return true for all XML files.</p></li>
 <li><p>Binding the <code class="docutils literal notranslate"><span class="pre">&lt;delete&gt;</span></code> key as special key. Thanks <a class="reference external" href="https://github.com/xfzv">&#64;xfzv</a>!</p></li>
+<li><p>Consecutive <cite>:tag-write</cite> would insert empty lines into the tag file, which would on
+<cite>:tag-load</cite> getting interpreted as file paths.</p></li>
 </ul>
 </section>
 </section>
