@@ -200,11 +200,7 @@ class Mark(QObject):
         _logger.debug("Loading tag '%s'", name)
         with Tag(name) as tag:
             paths = tag.read()
-        self._marked = paths
-        for path in paths:
-            self.marked.emit(path)
-            _logger.debug("Marked '%s'", path)
-        self.markdone.emit()
+        self.mark(paths, self.Action.Mark)
 
     @commands.register()
     def tag_open(self, name: str) -> None:
@@ -361,13 +357,18 @@ class Tag:
         """Write paths to the tag file."""
         existing = {path.strip() for path in self.read()}
         new_paths = set(paths) - existing
-        _logger.debug("Adding %d paths to tag file", len(new_paths))
-        self._file.write("\n".join(sorted(new_paths)) + "\n")
+        if new_paths:
+            _logger.debug("Adding %d paths to tag file", len(new_paths))
+            self._file.write("\n".join(sorted(new_paths)) + "\n")
+        else:
+            _logger.debug("No new images to add to tag file")
 
     def read(self) -> List[str]:
         """Read paths from the tag file."""
         paths = [
-            path.strip() for path in self._file if not path.startswith(Tag.COMMENTCHAR)
+            path.strip()
+            for path in self._file
+            if not path.startswith(Tag.COMMENTCHAR) and path.strip()
         ]
         _logger.debug("%s: read %d paths from tag", self, len(paths))
         return paths

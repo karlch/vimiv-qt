@@ -24,12 +24,26 @@ def create_tag_with_permission(name, mode):
     os.chmod(path, 0o000)
 
 
+@bdd.when(bdd.parsers.parse("I insert an empty line into the tag file {name}"))
+def insert_empty_lines_into_tag_file(name):
+    assert os.path.isfile(Tag.path(name)), f"Tag file {name} does not exist"
+    with open(Tag.path(name), "a", encoding="utf-8") as f:
+        f.write("\n")
+
+
 @bdd.then(bdd.parsers.parse("the tag file {name} should exist with {n_paths:d} paths"))
 def check_tag_file(name, n_paths):
     assert os.path.isfile(Tag.path(name)), f"Tag file {name} does not exist"
     with Tag(name, "r") as tag:
         paths = tag.read()
     assert len(paths) == n_paths
+
+
+@bdd.then(bdd.parsers.parse("the tag file {name} should not contain any empty lines"))
+def check_tag_file_no_empty_line(name):
+    assert os.path.isfile(Tag.path(name)), f"Tag file {name} does not exist"
+    with open(Tag.path(name), "r", encoding="utf-8") as f:
+        assert all(line.strip() for line in f)
 
 
 @bdd.then(bdd.parsers.parse("the tag file {name} should not exist"))

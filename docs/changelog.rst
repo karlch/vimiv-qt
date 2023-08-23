@@ -30,6 +30,8 @@ Fixed:
 
 * The SVG image header check to no longer return true for all XML files.
 * Binding the ``<delete>`` key as special key. Thanks `@xfzv`_!
+* Consecutive `:tag-write` would insert empty lines into the tag file, which would on
+  `:tag-load` getting interpreted as file paths.
 
 
 v0.9.0 (2023-07-15)
