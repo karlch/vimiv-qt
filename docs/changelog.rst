@@ -26,6 +26,9 @@ Changed:
 * Support for PyQt5 < 5.15 was dropped.
 * The option to read binary images from stdin using ``vimiv -``. Thanks `@mozirilla213`_
   for the idea and initial implementation!
+* Command ``:copy-name`` takes the paths to copy as an argument. This allows to copy
+  e.g. all marked images, using ``:copy-name %m``. Keybinding for this new functionality
+  have been added.
 
 Fixed:
 ^^^^^^
