@@ -72,6 +72,11 @@ def keyhint_widget_contains(keyhint, command):
     assert command in keyhint.text()
 
 
+@bdd.then(bdd.parsers.parse("the keyhint widget should not contain {command}"))
+def keyhint_widget_does_not_contain(keyhint, command):
+    assert command not in keyhint.text()
+
+
 @bdd.then("the keyhint widget should be above the statusbar")
 def keyhint_widget_above_bar(keyhint, statusbar):
     keyhint_bottom = keyhint.y() + keyhint.height()
