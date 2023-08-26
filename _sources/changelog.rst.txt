@@ -24,6 +24,8 @@ Changed:
 * The JPEG image header check was simplified to have a false negative rate of 0, while
   maintaining a decently low false positive rate.
 * Support for PyQt5 < 5.15 was dropped.
+* The option to read binary images from stdin using ``vimiv -``. Thanks `@mozirilla213`_
+  for the idea and initial implementation!
 
 Fixed:
 ^^^^^^
@@ -574,3 +576,4 @@ Initial release of the Qt version.
 .. _@Yutsuten: https://github.com/Yutsuten
 .. _@buzzingwires: https://github.com/buzzingwires
 .. _@xfzv: https://github.com/xfzv
+.. _@mozirilla213: https://github.com/mozirilla213
