@@ -39,9 +39,7 @@ Feature: Startup vimiv with various flags
         Then the filelist should contain 1 images
 
     Scenario: Pipe paths to vimiv
-        Given I patch stdin for 3 images
-        And I open 5 images with -i
-        # Pipe takes preference over regular filelist with -i
+        Given I start vimiv passing 3 images via stdin
         Then the filelist should contain 3 images
 
     Scenario: Start with an invalid file
@@ -51,8 +49,6 @@ Feature: Startup vimiv with various flags
         And the filelist should contain 0 images
 
     Scenario: Read binary image from stdin
-        Given I patch stdin for a binary image
-        And I start vimiv with -
-        Then no crash should happen
-        And the mode should be image
+        Given I start vimiv passing a binary image via stdin
+        Then the mode should be image
         And the filelist should contain 1 images

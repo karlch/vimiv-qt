@@ -18,6 +18,25 @@ from vimiv.qt.core import QSize
 import vimiv
 
 
+def parse_args(argv: List[str]) -> argparse.Namespace:
+    """Parse command line arguments.
+
+    Manually makes PATHS mutually exclusive with passing images via stdinput using
+    --input/-i and -.
+
+    Args:
+        argv: sys.argv[1:] from the executable or argv passed by test suite.
+    """
+    argparser = get_argparser()
+    args = argparser.parse_args(argv)
+    # Manual mutually exclusive group for positional argument PATHS with -i / -
+    if args.paths and args.stdinput:
+        argparser.error("argument PATH: not allowed with argument -i/--input")
+    if args.paths and args.binary_stdinput:
+        argparser.error("argument PATH: not allowed with argument -")
+    return args
+
+
 def get_argparser() -> argparse.ArgumentParser:
     """Get the argparse parser."""
     parser = argparse.ArgumentParser(
