@@ -2,13 +2,16 @@
 
 """Fixtures and bdd-given steps related to setup and cleanup for end2end testing."""
 
+import io
 import logging
+import sys
 
 import pytest
 import pytest_bdd as bdd
 
 import mockdecorators
 
+from vimiv.qt.core import QBuffer
 from vimiv.qt.gui import QPixmap
 
 with mockdecorators.apply():
@@ -95,6 +98,27 @@ def start_vimiv(tmp_path):
 @bdd.given(bdd.parsers.parse("I start vimiv with {args}"))
 def start_vimiv_with_args(tmp_path, args):
     start_directory(tmp_path, args=args.split())
+
+
+@bdd.given(bdd.parsers.parse("I start vimiv passing {n_images:d} images via stdin"))
+def start_vimiv_stdin(monkeypatch, tmp_path, n_images):
+    paths = create_n_images(tmp_path, n_images)
+    stdin = io.StringIO("\n".join(str(path) for path in paths))
+    monkeypatch.setattr(sys, "stdin", stdin)
+    start(["-i"])
+
+
+@bdd.given("I start vimiv passing a binary image via stdin")
+def start_vimiv_binary_stdin(monkeypatch):
+    buf = QBuffer()
+    QPixmap(300, 300).save(buf, "jpg")
+
+    stdin = io.StringIO()
+    stdin.buffer = io.BytesIO(bytes(buf.data()))
+
+    monkeypatch.setattr(sys, "stdin", stdin)
+
+    start(["-"])
 
 
 @bdd.given("I run vimiv --version")

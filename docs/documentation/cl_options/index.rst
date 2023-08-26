@@ -33,6 +33,10 @@ In the following we present a few use cases of command line arguments.
 
     vimiv --debug myAmazingPlugin api._mark
 
+* Grab image from the web and open it::
+
+    curl https://i.imgur.com/somefile.png | vimiv -
+
 Command Line Arguments
 ----------------------
 

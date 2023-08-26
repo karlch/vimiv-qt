@@ -27,12 +27,12 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "VIMIV" "1" "Aug 16, 2023" "" "vimiv"
+.TH "VIMIV" "1" "Aug 26, 2023" "" "vimiv"
 .SH NAME
 vimiv \- an image viewer with vim-like keybindings
 .SH SYNOPSIS
 .sp
-\fBvimiv\fP [\fBPATH\fP] [\fB\-\-help\fP|\fB\-h\fP] [\fB\-\-fullscreen\fP|\fB\-f\fP] [\fB\-\-version\fP|\fB\-v\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP|\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP|\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-\-basedir\fP \fIDIRECTORY\fP|\fB\-b\fP \fIDIRECTORY\fP] [\fB\-\-output\fP \fITEXT\fP|\fB\-o\fP \fITEXT\fP] [\fB\-\-input\fP|\fB\-i\fP] [\fB\-\-debug\fP \fIMODULE\fP] [\fB\-\-qt\-args\fP \fIARGS\fP]
+\fBvimiv\fP [\fBPATH\fP] [\fB\-\-help\fP|\fB\-h\fP] [\fB\-\-fullscreen\fP|\fB\-f\fP] [\fB\-\-version\fP|\fB\-v\fP] [\fB\-\-geometry\fP \fIWIDTHxHEIGHT\fP|\fB\-g\fP \fIWIDTHxHEIGHT\fP] [\fB\-\-temp\-basedir\fP] [\fB\-\-config\fP \fIFILE\fP] [\fB\-\-keyfile\fP \fIFILE\fP] [\fB\-\-set\fP \fIOPTION\fP \fIVALUE\fP|\fB\-s\fP \fIOPTION\fP \fIVALUE\fP] [\fB\-\-log\-level\fP \fILEVEL\fP] [\fB\-\-command\fP \fICOMMAND\fP] [\fB\-\-basedir\fP \fIDIRECTORY\fP|\fB\-b\fP \fIDIRECTORY\fP] [\fB\-\-output\fP \fITEXT\fP|\fB\-o\fP \fITEXT\fP] [\fB\-\-input\fP|\fB\-i\fP] [\fB\-\fP] [\fB\-\-debug\fP \fIMODULE\fP] [\fB\-\-qt\-args\fP \fIARGS\fP]
 .SH DESCRIPTION
 .sp
 Vimiv is an image viewer with vim\-like keybindings. It is written in python3
@@ -152,6 +152,13 @@ Wildcard expanded string to print to standard output upon quit
 .INDENT 0.0
 .INDENT 3.5
 Read paths to open from standard input
+.UNINDENT
+.UNINDENT
+.sp
+\fB\-\fP
+.INDENT 0.0
+.INDENT 3.5
+Read binary image to open from standard input
 .UNINDENT
 .UNINDENT
 .SS DEVELOPMENT ARGUMENTS

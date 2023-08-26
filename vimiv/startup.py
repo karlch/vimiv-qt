@@ -32,6 +32,7 @@ from vimiv.config import configcommands  # pylint: disable=unused-import
 
 
 _tmpdir = None
+_tmppath = None
 _logger = log.module_logger(__name__)
 
 
@@ -58,7 +59,7 @@ def setup_pre_app(argv: List[str]) -> argparse.Namespace:
     Args:
         argv: sys.argv[1:] from the executable or argv passed by test suite.
     """
-    args = parser.get_argparser().parse_args(argv)
+    args = parser.parse_args(argv)
     if args.version:
         import vimiv.version
 
@@ -118,12 +119,25 @@ def init_directories(args: argparse.Namespace) -> None:
 def init_paths(args: argparse.Namespace) -> None:
     """Open paths given from commandline or fallback to library if set."""
     _logger.debug("Opening paths")
-    read_stdin = args.stdinput and not sys.stdin.isatty()
-    paths = (
-        [os.path.realpath(line.strip()) for line in sys.stdin]
-        if read_stdin
-        else args.paths
-    )
+    # Path names passed via stdin
+    if args.stdinput and not sys.stdin.isatty():
+        print("stdin")
+        paths = [os.path.realpath(line.strip()) for line in sys.stdin]
+    # Binary image passed via stdin
+    elif args.binary_stdinput and not sys.stdin.isatty():
+        print("binary stdin")
+        global _tmppath
+        # We want the temporary image to stick around until the end
+        # pylint: disable=consider-using-with
+        _tmppath = tempfile.NamedTemporaryFile(prefix="vimiv-stdin-")
+        with open(_tmppath.name, "wb") as f:
+            f.write(sys.stdin.buffer.read())
+        paths = [_tmppath.name]
+    # Default
+    else:
+        print("default")
+        paths = args.paths
+    print(paths)
     try:
         api.open_paths(paths)
     except api.commands.CommandError:

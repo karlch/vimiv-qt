@@ -14,6 +14,25 @@ from vimiv.qt.core import QSize
 import vimiv
 
 
+def parse_args(argv: List[str]) -> argparse.Namespace:
+    """Parse command line arguments.
+
+    Manually makes PATHS mutually exclusive with passing images via stdinput using
+    --input/-i and -.
+
+    Args:
+        argv: sys.argv[1:] from the executable or argv passed by test suite.
+    """
+    argparser = get_argparser()
+    args = argparser.parse_args(argv)
+    # Manual mutually exclusive group for positional argument PATHS with -i / -
+    if args.paths and args.stdinput:
+        argparser.error("argument PATH: not allowed with argument -i/--input")
+    if args.paths and args.binary_stdinput:
+        argparser.error("argument PATH: not allowed with argument -")
+    return args
+
+
 def get_argparser() -> argparse.ArgumentParser:
     """Get the argparse parser."""
     parser = argparse.ArgumentParser(
@@ -85,12 +104,20 @@ def get_argparser() -> argparse.ArgumentParser:
         metavar="TEXT",
         help="Wildcard expanded string to print to standard output upon quit",
     )
-    parser.add_argument(
+
+    stdin = parser.add_mutually_exclusive_group()
+    stdin.add_argument(
         "-i",
         "--input",
         action="store_true",
         help="Read paths to open from standard input",
         dest="stdinput",
+    )
+    stdin.add_argument(
+        "-",
+        action="store_true",
+        help="Read binary image to open from standard input",
+        dest="binary_stdinput",
     )
 
     devel = parser.add_argument_group("development arguments")

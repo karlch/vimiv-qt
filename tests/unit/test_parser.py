@@ -84,12 +84,12 @@ def test_fail_log_level():
         parser.loglevel("other")
 
 
-def test_parse_settings(argparser):
+def test_parse_settings():
     settings = [["statusbar.show", "false"], ["style", "default"]]
     arglist = []
     for name, value in settings:
         arglist.extend(("-s", name, value))
-    args = argparser.parse_args(arglist)
+    args = parser.parse_args(arglist)
     assert args.cmd_settings == settings
 
 
@@ -101,7 +101,14 @@ def test_parse_settings(argparser):
         ("--name 'has space'", ["--name", "has space"]),
     ],
 )
-def test_parse_qt_args(argparser, qtargs, expected):
+def test_parse_qt_args(qtargs, expected):
     arglist = ["--qt-args", qtargs]
-    args = argparser.parse_args(arglist)
+    args = parser.parse_args(arglist)
     assert parser.get_qt_args(args) == expected
+
+
+@pytest.mark.parametrize("stdin_arg", ["--input", "-"])
+def test_paths_and_stdin_mutually_exclusive(stdin_arg):
+    argv = os.getcwd(), stdin_arg
+    with pytest.raises(SystemExit):
+        parser.parse_args(argv)
