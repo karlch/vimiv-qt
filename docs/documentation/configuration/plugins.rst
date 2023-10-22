@@ -6,7 +6,8 @@ Plugins
 Vimiv provides the option to extend its functionality with python module plugins. To add
 a new plugin:
 
-#. Put the python module into the plugins folder ``$XDG_DATA_HOME/vimiv/plugins/``.
+#. Put the python module into the plugins folder ``$XDG_DATA_HOME/vimiv/plugins/``,
+   where ``$XDG_DATA_HOME`` is usually ``~/.local/share`` if you have not updated it.
 #. Activate it in the ``PLUGINS`` section of the configuration file by adding:
    ``plugin_name = any additional information`` where ``plugin_name`` is the name of the
    python module added and ``any additional information`` is passed on to the plugin
