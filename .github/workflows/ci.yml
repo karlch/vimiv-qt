@@ -48,7 +48,7 @@ jobs:
           ~/.cache/pip
         key: "${{ matrix.toxenv }}_${{ hashFiles('misc/requirements/requirements*.txt') }}_${{ hashFiles('scripts/maybe_build_cextension.py') }}_${{ hashFiles('scripts/lint_tests.py') }}"
     - name: Set up ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.7.0
+      uses: actions/setup-python@v4.7.1
       with:
         python-version: "${{ matrix.python }}"
     - name: Install dependencies
