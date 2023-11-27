@@ -3,14 +3,13 @@
 """Runner for external commands."""
 
 import os
-import glob
 import shlex
 from typing import List
 
 from vimiv.qt.core import QProcess, QCoreApplication
 
 from vimiv import api
-from vimiv.utils import log, flatten, contains_any, escape_glob, qbytearray_to_str
+from vimiv.utils import log, qbytearray_to_str
 
 
 _logger = log.module_logger(__name__)
@@ -44,7 +43,6 @@ class ExternalRunner:
 
     def run(self, text: str):
         """Run an external command text."""
-        text = escape_glob(text.strip())
         pipe = text.endswith("|")
         split = shlex.split(text.rstrip("|"))
         command, args = split[0], split[1:]
@@ -102,11 +100,8 @@ class _ExternalRunnerImpl(QProcess):
             log.warning("Closing running process '%s'", self.program())
             self.close()
         self._pipe = pipe
-        arglist: List[str] = flatten(
-            glob.glob(arg) if contains_any(arg, "*?[]") else (arg,) for arg in args
-        )
-        _logger.debug("Running external command '%s' with '%r'", command, arglist)
-        self.start(command, arglist)
+        _logger.debug("Running external command '%s' with '%r'", command, args)
+        self.start(command, args)
 
     def _on_finished(self, exitcode, exitstatus):
         """Check exit status and possibly process standard output on completion."""

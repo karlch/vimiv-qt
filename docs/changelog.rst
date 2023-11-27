@@ -26,6 +26,9 @@ Changed:
 * Support for PyQt5 < 5.15 was dropped.
 * The option to read binary images from stdin using ``vimiv -``. Thanks `@mozirilla213`_
   for the idea and initial implementation!
+* External commands started with ``:!`` no longer support globbing (e.g., ``*``). Use
+  the vimiv native options (``%``, ``%f``, ``%m``) or ``:spawn`` for native shell
+  globbing instead.
 
 Fixed:
 ^^^^^^

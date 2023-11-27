@@ -88,20 +88,6 @@ def replace_unless_escaped(pattern: str, repl: str, text: str):
     return text
 
 
-def contains_any(
-    sequence: typing.Iterable[AnyT], elems: typing.Union[typing.Iterable[AnyT], AnyT]
-) -> bool:
-    """Return True if the sequence contains any of the elems."""
-    if not sequence:
-        return False
-    try:
-        elems = typing.cast(typing.Iterable[AnyT], elems)
-        iter(elems)
-        return bool(set(sequence) & set(elems))
-    except TypeError:
-        return typing.cast(AnyT, elems) in sequence
-
-
 def quotedjoin(iterable: typing.Iterable[AnyT], joinchar: str = ", "):
     return joinchar.join(f"'{elem}'" for elem in iterable)
 

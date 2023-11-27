@@ -16,25 +16,6 @@ Feature: Expand wildcards when running commands
         Then the directory child_01_bak should not exist
         And a message should be displayed
 
-    Scenario: Expand * to the list of paths in the library
-        Given I open a directory with 2 paths
-        When I run !rmdir *
-        Then the directory child_01 should not exist
-        And the directory child_02 should not exist
-
-    Scenario: Expand * to the list of images in image mode
-        Given I open 2 images
-        When I run !rm *
-        Then the file image_01.jpg should not exist
-        And the file image_02.jpg should not exist
-
-    Scenario: Do not expand * when escaped
-        Given I open a directory with 2 paths
-        When I run !rmdir \*
-        Then the directory child_01 should exist
-        And the directory child_02 should exist
-        And a message should be displayed
-
     Scenario: Expand tilde to home directory
         Given I open a directory with 1 paths
         When I run !cp -r % ~/mypath.jpg
@@ -47,6 +28,6 @@ Feature: Expand wildcards when running commands
 
     Scenario: Expand %f to the list of paths in the library
         Given I open a directory with 2 paths
-        When I run !rmdir *
+        When I run !rmdir %f
         Then the directory child_01 should not exist
         And the directory child_02 should not exist
