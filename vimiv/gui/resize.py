@@ -26,7 +26,7 @@ class SizeGrip1D(QSizeGrip):
 
     @property
     def vertical(self):
-        return self._override_cursor == Qt.SizeVerCursor
+        return self._override_cursor == Qt.CursorShape.SizeVerCursor
 
     def mousePressEvent(self, event):
         """Constrain one axis when pressing the mouse."""
