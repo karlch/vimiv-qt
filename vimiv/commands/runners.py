@@ -62,13 +62,13 @@ def run(text: str, mode: api.modes.Mode, count: str = "") -> None:
     """
     _logger.debug("Running '%s'", text)
 
-    def update_part(text: str) -> str:
-        """Update aliases and % in final parts without separator."""
+    def update_aliases(text: str) -> str:
+        """Update aliases in final parts without separator."""
         if SEPARATOR in text:
             return text
-        return wildcards.expand_internal(alias(text.strip(), mode), mode)
+        return alias(text.strip(), mode)
 
-    textparts = utils.recursive_split(text, SEPARATOR, update_part)
+    textparts = utils.recursive_split(text, SEPARATOR, update_aliases)
     _logger.debug("Split text into parts '%s'", textparts)
     try:
         for i, cmdpart in enumerate(textparts):
@@ -88,10 +88,13 @@ def _run_single(text: str, mode: api.modes.Mode, count: str) -> None:
         mode: Mode to run the command in.
     """
     if text.startswith("!"):
-        external_runner.run(
-            wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~")
-        )
+        # Must expand ~ before internal expansion to properly work with paths that
+        # include a ~, e.g., 'image1.jpg~'
+        text = wildcards.expand(text.lstrip("!"), "~", os.path.expanduser, "~")
+        text = wildcards.expand_internal(text, mode)
+        external_runner.run(text)
     else:
+        text = wildcards.expand_internal(text, mode)
         command(count + text, mode)
 
 
