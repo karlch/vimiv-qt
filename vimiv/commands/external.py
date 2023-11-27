@@ -110,7 +110,7 @@ class _ExternalRunnerImpl(QProcess):
 
     def _on_finished(self, exitcode, exitstatus):
         """Check exit status and possibly process standard output on completion."""
-        if exitstatus != QProcess.ExitStatus.NormalExit or exitcode != 0:
+        if exitstatus != QProcess.ExitStatus.NormalExit or exitcode:
             log.error(
                 "Error running external process '%s':\n%s",
                 self.program(),

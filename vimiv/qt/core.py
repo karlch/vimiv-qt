@@ -19,6 +19,7 @@ elif qt.USE_PYSIDE6:
     QT_VERSION_STR = qVersion()
 
 if qt.USE_PYQT:  # Signal aliases
+    # pylint: disable=used-before-assignment
     BoundSignal = pyqtBoundSignal
     Signal = pyqtSignal
     Slot = pyqtSlot
@@ -27,6 +28,7 @@ if qt.USE_PYQT:  # Signal aliases
 class Align:
     """Namespace for easier access to the Qt alignment flags."""
 
+    # pylint: disable=used-before-assignment
     Center = Qt.AlignmentFlag.AlignCenter
     Left = Qt.AlignmentFlag.AlignLeft
     Right = Qt.AlignmentFlag.AlignRight
