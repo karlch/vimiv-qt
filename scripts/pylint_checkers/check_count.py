@@ -4,14 +4,11 @@
 
 import astroid
 
-from pylint.interfaces import IAstroidChecker
 from pylint.checkers import BaseChecker
 
 
 class CountComparedWithoutNone(BaseChecker):
     """Checker to ensure count is compared to None."""
-
-    __implements__ = IAstroidChecker
 
     name = "count-compared-directly"
 
@@ -42,8 +39,6 @@ class CountComparedWithoutNone(BaseChecker):
 
 class CountAssignedToZero(BaseChecker):
     """Checker to inform when default assigning count to zero."""
-
-    __implements__ = IAstroidChecker
 
     name = "count-default-zero"
 

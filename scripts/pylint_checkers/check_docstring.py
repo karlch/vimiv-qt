@@ -7,14 +7,11 @@ from typing import Set
 
 import astroid
 
-from pylint.interfaces import IAstroidChecker
 from pylint.checkers import BaseChecker
 
 
 class CommandMissingDocumentation(BaseChecker):
     """Checker to ensure command docstrings include all information for docs."""
-
-    __implements__ = IAstroidChecker
 
     name = "command-docstring"
 
