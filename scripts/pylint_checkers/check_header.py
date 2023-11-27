@@ -2,14 +2,11 @@
 
 """Checker to ensure each python file includes a modeline and no copyright notice."""
 
-from pylint.interfaces import IRawChecker
 from pylint.checkers import BaseChecker
 
 
 class FileHeaderChecker(BaseChecker):
     """Checker to ensure each python file includes a modeline and copyright notice."""
-
-    __implements__ = IRawChecker
 
     name = "file-header"
     name_modeline_missing = "modeline-missing"

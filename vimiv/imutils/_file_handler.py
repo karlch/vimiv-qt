@@ -103,7 +103,7 @@ class ImageFileHandler(QObject):
         # Gif
         elif reader.is_animation:
             movie = QMovie(path)
-            if not movie.isValid() or movie.frameCount() == 0:
+            if not movie.isValid() or not movie.frameCount():
                 log.error("Error reading animation %s: invalid data", path)
                 return
             api.signals.movie_loaded.emit(movie, keep_zoom)

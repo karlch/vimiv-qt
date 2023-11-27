@@ -4,14 +4,11 @@
 
 import astroid
 
-from pylint.interfaces import IAstroidChecker
 from pylint.checkers import BaseChecker
 
 
 class CountComparedWithoutNone(BaseChecker):
     """Checker to ensure count is compared to None."""
-
-    __implements__ = IAstroidChecker
 
     name = "count-compared-directly"
 
@@ -43,8 +40,6 @@ class CountComparedWithoutNone(BaseChecker):
 class CountAssignedToZero(BaseChecker):
     """Checker to inform when default assigning count to zero."""
 
-    __implements__ = IAstroidChecker
-
     name = "count-default-zero"
 
     # here we define our messages
@@ -65,6 +60,8 @@ class CountAssignedToZero(BaseChecker):
         In almost all cases None is what we want instead.
         """
         for name, default in zip(node.args.args[::-1], node.args.defaults[::-1]):
+            # We explicitly allow None, empty string, ...
+            # pylint: disable=use-implicit-booleaness-not-comparison-to-zero
             if name.name == "count" and default.value == 0:
                 self.add_message(self.name, node=node)
 

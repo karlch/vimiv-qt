@@ -7,14 +7,11 @@ from typing import Set
 
 import astroid
 
-from pylint.interfaces import IAstroidChecker
 from pylint.checkers import BaseChecker
 
 
 class CommandMissingDocumentation(BaseChecker):
     """Checker to ensure command docstrings include all information for docs."""
-
-    __implements__ = IAstroidChecker
 
     name = "command-docstring"
 
@@ -68,9 +65,10 @@ class CommandMissingDocumentation(BaseChecker):
             return
         argnames = {arg.name.replace("_", "-") for arg in node.args.args}
         regular_argnames = argnames - {"self", "count"}
-        self._check_args_section(node, regular_argnames)
-        self._check_count_section(node, argnames)
-        self._check_syntax_section(node, regular_argnames)
+        docstr = node.doc_node.value
+        self._check_args_section(node, docstr, regular_argnames)
+        self._check_count_section(node, docstr, argnames)
+        self._check_syntax_section(node, docstr, regular_argnames)
 
     @staticmethod
     def sections(docstr):
@@ -85,25 +83,25 @@ class CommandMissingDocumentation(BaseChecker):
                 content += line
         return sections
 
-    def _check_syntax_section(self, node, argnames):
+    def _check_syntax_section(self, node, docstr, argnames):
         """Check if a syntax section is available for commands with arguments."""
         if not argnames:
             return
-        for section in self.sections(node.doc):
+        for section in self.sections(docstr):
             if re.match(r"\*\*syntax:\*\* ``.*``", section.strip()):
                 return
         self.add_message(self.name_syntax, node=node, args=(node.name,))
 
-    def _check_count_section(self, node, argnames):
+    def _check_count_section(self, node, docstr, argnames):
         """Check if a count section is available for commands that support count."""
         if "count" not in argnames:
             return
-        if "**count:**" not in node.doc:
+        if "**count:**" not in docstr:
             self.add_message(self.name_count, node=node, args=(node.name,))
 
-    def _check_args_section(self, node, argnames):
+    def _check_args_section(self, node, docstr, argnames):
         """Check if all command arguments are documented."""
-        docstring_argnames = self._get_args_from_docstring(node)
+        docstring_argnames = self._get_args_from_docstring(node, docstr)
         difference = argnames - docstring_argnames
         for argname in difference:
             self.add_message(
@@ -145,7 +143,7 @@ class CommandMissingDocumentation(BaseChecker):
                 return True
         return False
 
-    def _get_args_from_docstring(self, node) -> Set[str]:
+    def _get_args_from_docstring(self, node, docstr) -> Set[str]:
         """Retrieve documented arguments from command docstring.
 
         If an argument is not correctly formatted in the documentation section, the
@@ -154,11 +152,10 @@ class CommandMissingDocumentation(BaseChecker):
         Returns:
             Set of all documented argument names.
         """
-        docstr = node.doc
         if docstr is None:
             self.add_message(self.name_missing, node=node, args=(node.name,))
             return set()
-        lines = [line.strip() for line in node.doc.split("\n")]
+        lines = [line.strip() for line in docstr.split("\n")]
 
         def _get_args(identifier, pattern):
             try:

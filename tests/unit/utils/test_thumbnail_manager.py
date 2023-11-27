@@ -74,7 +74,7 @@ def test_do_not_create_thumbnail_for_thumbnail(qtbot, manager):
 
 def check_thumbails_created(qtbot, manager, n_paths):
     def wait_thread():
-        assert manager.pool.activeThreadCount() == 0
+        assert not manager.pool.activeThreadCount()
 
     qtbot.waitUntil(wait_thread, timeout=30000)
     assert len(os.listdir(manager.directory)) == n_paths
