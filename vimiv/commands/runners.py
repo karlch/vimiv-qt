@@ -199,7 +199,7 @@ def alias(text: str, mode: api.modes.Mode) -> str:
         The replaced text if text was an alias else text.
     """
     cmd = text.split()[0]
-    if cmd in aliases.get(mode):
-        text = text.replace(cmd, aliases.get(mode)[cmd])
-        return wildcards.expand_internal(text, mode)
+    cmd_alias = aliases.get(mode).get(cmd, None)
+    if cmd_alias is not None:
+        return text.replace(cmd, cmd_alias)
     return text
