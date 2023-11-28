@@ -9,6 +9,7 @@ load-plugins=check_count,
              check_header,
              pylint.extensions.check_elif,
              pylint.extensions.overlapping_exceptions,
+             pylint.extensions.for_any_all,
 
 [MESSAGES CONTROL]
 enable=all

@@ -162,10 +162,7 @@ class ManipulationGroup(abc.ABC):
     @property
     def changed(self) -> bool:
         """True if any manipulation has been changed."""
-        for manipulation in self.manipulations:
-            if manipulation.changed:
-                return True
-        return False
+        return any(manipulation.changed for manipulation in self.manipulations)
 
     def apply(self, data: bytes) -> bytes:
         """Apply manipulation function to image data if any manipulation changed.
@@ -378,10 +375,7 @@ class Manipulator(QObject):
     @property
     def _changed(self):
         """True if anything was edited."""
-        for manipulation in self.manipulations:
-            if manipulation.changed:
-                return True
-        return False
+        return any(manipulation.changed for manipulation in self.manipulations)
 
     @api.keybindings.register("<return>", "accept", mode=api.modes.MANIPULATE)
     @api.commands.register(mode=api.modes.MANIPULATE)
