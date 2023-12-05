@@ -208,9 +208,14 @@ def _test_svg(h: bytes, f: BinaryIO) -> bool:
      ->  <  ?  x  m  l
     --> 3C 3F 73 76 67 (with stripped xml header)
      ->  <  ?  s  v  g
+    --> 3C 73 76 67 (inline without header)
+     ->  <  s  v  g
 
     Native QT support.
     """
+    if h[:4] == b"\x3C\x73\x76\x67":
+        return True
+
     # Check if start with <?
     if h[:2] != b"\x3C\x3F":
         return False
