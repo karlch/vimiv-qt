@@ -7,4 +7,4 @@ Icon=vimiv
 Terminal=false
 Exec=vimiv %F
 Categories=Graphics;
-MimeType=image/bmp;image/gif;image/jpeg;image/jp2;image/jpeg2000;image/jpx;image/png;image/svg;image/tiff;
+MimeType=image/bmp;image/gif;image/icns;image/jp2;image/jpeg;image/jpeg2000;image/jpx;image/png;image/svg;image/tiff;image/webp;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-greymap;image/x-portable-pixmap;image/x-tga;image/x-xbitmap;image/x-xpixmap;
