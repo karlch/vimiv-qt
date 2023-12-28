@@ -77,23 +77,6 @@ def test_replace_unless_escaped(escaped):
     assert utils.replace_unless_escaped(pattern, repl, text) == expected
 
 
-@pytest.mark.parametrize(
-    "sequence, elems, expected",
-    [
-        ("abc", "a", True),
-        ("abc", "d", False),
-        ("abc", "bc", True),
-        (range(5), 4, True),
-        (range(5), 10, False),
-        (range(5), (2, 3), True),
-        ("", "52", False),
-        ("imag*", "*?[]", True),
-    ],
-)
-def test_contains_any(sequence, elems, expected):
-    assert utils.contains_any(sequence, elems) == expected
-
-
 @pytest.mark.parametrize("joinchar", (", ", ":"))
 @pytest.mark.parametrize("iterable", (range(4), "abcd"))
 def test_quotedjoin(iterable, joinchar):

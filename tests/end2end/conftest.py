@@ -4,6 +4,7 @@
 
 import io
 import logging
+import os
 import sys
 
 import pytest
@@ -12,7 +13,7 @@ import pytest_bdd as bdd
 import mockdecorators
 
 from vimiv.qt.core import QBuffer
-from vimiv.qt.gui import QPixmap
+from vimiv.qt.gui import QImageWriter, QPixmap
 
 with mockdecorators.apply():
     from vimiv import api, startup, utils
@@ -175,12 +176,14 @@ def start_n_images_with_args(tmp_path, n_images, args):
     start_image(tmp_path, n_images=n_images, args=args.split())
 
 
-@bdd.given(bdd.parsers.parse("I open the image '<name>'"))
-@bdd.given(bdd.parsers.parse("I open the image '{name}'"))
-def start_image_name(tmp_path, name):
-    filename = str(tmp_path / name)
-    create_image(filename)
-    start([filename])
+@bdd.given(bdd.parsers.parse("I open the image '{names}'"))
+@bdd.given(bdd.parsers.parse("I open the images '{names}'"))
+def start_images_name(tmp_path, names):
+    filenames = [str(tmp_path / name) for name in names.split()]
+    for filename in filenames:
+        create_image(filename)
+        print(filename)
+    start(filenames)
 
 
 @bdd.given("I open an animated gif")
@@ -303,7 +306,9 @@ def create_n_images(
 
 
 def create_image(filename: str, *, size=(300, 300)):
-    QPixmap(*size).save(filename)
+    _path, ext = filename.rsplit(os.path.extsep, maxsplit=1)
+    fmt = ext if ext in QImageWriter.supportedImageFormats() else "jpg"
+    QPixmap(*size).save(filename, fmt)
 
 
 class Output:

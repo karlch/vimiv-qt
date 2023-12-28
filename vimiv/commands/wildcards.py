@@ -66,7 +66,7 @@ def escape_path(path: str):
 
     See https://github.com/karlch/vimiv-qt/issues/218.
     """
-    return shlex.quote(re.sub(r"([\\%])", r"\\\1", path))
+    return shlex.quote(re.sub(r"([\\%\[\]\?\*])", r"\\\1", path))
 
 
 def expand(

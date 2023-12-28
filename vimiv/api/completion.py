@@ -50,7 +50,7 @@ For an overview of implemented models, feel free to take a look at the ones defi
 import re
 from typing import cast, Dict, Iterable, Tuple
 
-from vimiv.qt.core import QSortFilterProxyModel, Qt
+from vimiv.qt.core import QSortFilterProxyModel, Qt, QRegularExpression
 from vimiv.qt.gui import QStandardItemModel, QStandardItem
 
 from vimiv.api import modes, settings
@@ -152,12 +152,12 @@ class FilterProxyModel(QSortFilterProxyModel):
             prefix: Current command line prefix character.
             command: Current command text in the command line.
         """
+        command = QRegularExpression.escape(command)
         parts = command.split()
         if len(parts) > 1:
             prefix = prefix + " ".join(parts[:-1])
             command = parts[-1]
-        regex = prefix + f" *.*{command}.*"
-        regex = regex.replace("\\", "\\\\")
+        regex = f"{prefix} *.*{command}.*"
         self._set_regex(regex)
 
     def _set_regex(self, regex: str) -> None:

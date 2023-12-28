@@ -26,6 +26,9 @@ Changed:
 * Support for PyQt5 < 5.15 was dropped.
 * The option to read binary images from stdin using ``vimiv -``. Thanks `@mozirilla213`_
   for the idea and initial implementation!
+* External commands started with ``:!`` no longer support globbing (e.g., ``*``). Use
+  the vimiv native options (``%``, ``%f``, ``%m``) or ``:spawn`` for native shell
+  globbing instead.
 
 Fixed:
 ^^^^^^
@@ -34,6 +37,8 @@ Fixed:
 * Binding the ``<delete>`` key as special key. Thanks `@xfzv`_!
 * Consecutive `:tag-write` would insert empty lines into the tag file, which would on
   `:tag-load` getting interpreted as file paths.
+* Handling of paths with the characters ``[]?*``. Thanks `@pglira`_ and `@TeaWhyDee`_
+  for pointing this out!
 
 
 v0.9.0 (2023-07-15)
@@ -577,3 +582,5 @@ Initial release of the Qt version.
 .. _@buzzingwires: https://github.com/buzzingwires
 .. _@xfzv: https://github.com/xfzv
 .. _@mozirilla213: https://github.com/mozirilla213
+.. _@pglira: https://github.com/pglira
+.. _@TeaWhyDee: https://github.com/TeaWhyDee
