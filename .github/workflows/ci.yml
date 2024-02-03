@@ -70,6 +70,6 @@ jobs:
         CI: Github-Actions
     - name: Upload coverage to codecov
       if: "endsWith(matrix.toxenv, '-cov')"
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
       with:
         name: "${{ matrix.toxenv }}"
