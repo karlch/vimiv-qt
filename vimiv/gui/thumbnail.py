@@ -328,6 +328,20 @@ class ThumbnailView(
         """Select the first thumbnail in the current row."""
         self._select_index(self.current_row() * self.n_columns())
 
+    @api.keybindings.register("zt", "move-view top", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("zz", "move-view center", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register("zb", "move-view bottom", mode=api.modes.THUMBNAIL)
+    @api.commands.register(mode=api.modes.THUMBNAIL)
+    def move_view(self, position: argtypes.ViewPosition):
+        """Move the view keeping the cursor on the same position.
+
+        **syntax:** ``:move-view position``
+
+        positional arguments:
+            * ``position``: Position to move the view to (top/center/bottom).
+        """
+        self.apply_move_view(position)
+
     @api.keybindings.register("-", "zoom out", mode=api.modes.THUMBNAIL)
     @api.keybindings.register("+", "zoom in", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)

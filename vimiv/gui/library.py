@@ -290,6 +290,20 @@ class Library(
             raise api.commands.CommandError(str(e))
         self._select_row(row, open_selected_image=open_selected)
 
+    @api.keybindings.register("zt", "move-view top", mode=api.modes.LIBRARY)
+    @api.keybindings.register("zz", "move-view center", mode=api.modes.LIBRARY)
+    @api.keybindings.register("zb", "move-view bottom", mode=api.modes.LIBRARY)
+    @api.commands.register(mode=api.modes.LIBRARY)
+    def move_view(self, position: argtypes.ViewPosition):
+        """Move the view keeping the cursor on the same position.
+
+        **syntax:** ``:move-view position``
+
+        positional arguments:
+            * ``position``: Position to move the view to (top/center/bottom).
+        """
+        self.apply_move_view(position)
+
     def update_width(self):
         """Resize width and columns when main window width changes."""
         width = self.parent().width() * api.settings.library.width.value

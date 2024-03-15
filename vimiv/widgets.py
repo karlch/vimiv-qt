@@ -9,12 +9,23 @@ from vimiv.qt.gui import QPainter, QFontMetrics
 from vimiv.qt.widgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
 from vimiv import api
+from vimiv.commands import argtypes
 from vimiv.config import styles
 from vimiv.utils import cached_method
 
 
 class ScrollToCenterMixin:
     """Mixin class to ensure the selected index stays at the center when scrolling."""
+
+    def apply_move_view(self, position: argtypes.ViewPosition):
+        """Helper to move the view keeping the cursor on the same index."""
+        hints = {
+            argtypes.ViewPosition.Top: self.ScrollHint.PositionAtTop,
+            argtypes.ViewPosition.Center: self.ScrollHint.PositionAtCenter,
+            argtypes.ViewPosition.Bottom: self.ScrollHint.PositionAtBottom,
+        }
+        hint = hints[position]
+        self.scrollTo(self.currentIndex(), hint=hint)
 
     def scrollTo(self, index, hint=None):
         if hint is None and api.settings.scroll_to_center.value:
