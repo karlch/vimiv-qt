@@ -8,6 +8,7 @@ from vimiv.qt.core import Qt, QTimer
 from vimiv.qt.gui import QPainter, QFontMetrics
 from vimiv.qt.widgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
+from vimiv import api
 from vimiv.config import styles
 from vimiv.utils import cached_method
 
@@ -15,8 +16,10 @@ from vimiv.utils import cached_method
 class ScrollToCenterMixin:
     """Mixin class to ensure the selected index stays at the center when scrolling."""
 
-    def scrollTo(self, index, _hint=None):
-        super().scrollTo(index, self.ScrollHint.PositionAtCenter)
+    def scrollTo(self, index, hint=None):
+        if hint is None and api.settings.scroll_to_center.value:
+            hint = self.ScrollHint.PositionAtCenter
+        super().scrollTo(index, hint)
 
 
 class ScrollWheelCumulativeMixin:
