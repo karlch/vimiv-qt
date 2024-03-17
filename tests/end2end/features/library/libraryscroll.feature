@@ -146,3 +146,16 @@ Feature: Scrolling the library.
         When I run scroll half-page-down
         And I run scroll half-page-up
         Then the library row should be 1
+
+    Scenario Outline: Move the view
+        Given I open a directory with 50 paths
+        When I run scroll half-page-down
+        And I run move-view <position>
+        # Simple test if we don't scroll and no crash happens
+        Then the library should be half a page down
+
+        Examples:
+            | position |
+            | top      |
+            | center   |
+            | bottom   |
