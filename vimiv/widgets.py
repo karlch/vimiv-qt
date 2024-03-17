@@ -28,9 +28,12 @@ class ScrollToCenterMixin:
         # currentIndex from library / thumbnail widget
         self.scrollTo(self.currentIndex(), hint=hint)  # type: ignore[attr-defined]
 
-    def scrollTo(self, index, hint=None):
+    def scrollTo(self, index, hint=QAbstractItemView.ScrollHint.EnsureVisible):
         """Override scrollTo to respect scroll_to_center setting."""
-        if hint is None and api.settings.scroll_to_center.value:
+        if (
+            hint == QAbstractItemView.ScrollHint.EnsureVisible
+            and api.settings.scroll_to_center.value
+        ):
             hint = QAbstractItemView.ScrollHint.PositionAtCenter
         super().scrollTo(index, hint)
 
