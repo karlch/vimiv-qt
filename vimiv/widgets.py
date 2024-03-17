@@ -20,17 +20,18 @@ class ScrollToCenterMixin:
     def apply_move_view(self, position: argtypes.ViewPosition):
         """Helper to move the view keeping the cursor on the same index."""
         hints = {
-            argtypes.ViewPosition.Top: self.ScrollHint.PositionAtTop,
-            argtypes.ViewPosition.Center: self.ScrollHint.PositionAtCenter,
-            argtypes.ViewPosition.Bottom: self.ScrollHint.PositionAtBottom,
+            argtypes.ViewPosition.Top: QAbstractItemView.ScrollHint.PositionAtTop,
+            argtypes.ViewPosition.Center: QAbstractItemView.ScrollHint.PositionAtCenter,
+            argtypes.ViewPosition.Bottom: QAbstractItemView.ScrollHint.PositionAtBottom,
         }
         hint = hints[position]
-        self.scrollTo(self.currentIndex(), hint=hint)
+        # currentIndex from library / thumbnail widget
+        self.scrollTo(self.currentIndex(), hint=hint)  # type: ignore[attr-defined]
 
     def scrollTo(self, index, hint=None):
         """Override scrollTo to respect scroll_to_center setting."""
         if hint is None and api.settings.scroll_to_center.value:
-            hint = self.ScrollHint.PositionAtCenter
+            hint = QAbstractItemView.ScrollHint.PositionAtCenter
         super().scrollTo(index, hint)
 
 
