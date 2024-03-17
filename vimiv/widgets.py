@@ -28,6 +28,7 @@ class ScrollToCenterMixin:
         self.scrollTo(self.currentIndex(), hint=hint)
 
     def scrollTo(self, index, hint=None):
+        """Override scrollTo to respect scroll_to_center setting."""
         if hint is None and api.settings.scroll_to_center.value:
             hint = self.ScrollHint.PositionAtCenter
         super().scrollTo(index, hint)
