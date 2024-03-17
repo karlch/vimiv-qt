@@ -118,6 +118,7 @@ html_theme_options = {
         },
     ],
     "navbar_start": ["navbar-logo"],
+    "navbar_align": "left",
 }
 
 html_sidebars = {
