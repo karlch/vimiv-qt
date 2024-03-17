@@ -33,6 +33,8 @@ class _SignalHandler(QObject):
             arg2: True if it is only reloaded.
 
         plugins_loaded: Emitted when the user plugins have been loaded.
+
+        cancel: Emitted when <escape> was pressed to initiate generic cancelling.
     """
 
     # Emitted when new images should be loaded
@@ -54,6 +56,9 @@ class _SignalHandler(QObject):
     # Plugins loaded
     plugins_loaded = Signal()
 
+    # Cancel initiated (via <escape>)
+    cancel = Signal()
+
 
 _signal_handler = _SignalHandler()  # Instance of Qt signal handler to work with
 
@@ -67,3 +72,4 @@ pixmap_loaded = _signal_handler.pixmap_loaded
 movie_loaded = _signal_handler.movie_loaded
 svg_loaded = _signal_handler.svg_loaded
 plugins_loaded = _signal_handler.plugins_loaded
+cancel = _signal_handler.cancel

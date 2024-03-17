@@ -53,6 +53,7 @@ class Search(QObject):
         super().__init__()
         self._text = ""
         self._reverse = False
+        api.signals.cancel.connect(self.clear)
 
     def __call__(
         self, text, mode, count=0, reverse=False, incremental=False
