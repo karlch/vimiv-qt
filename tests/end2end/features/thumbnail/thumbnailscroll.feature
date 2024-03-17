@@ -82,3 +82,24 @@ Feature: Scroll in thumbnail mode.
         When I run scroll right
         And I run first-of-line
         Then the thumbnail number 1 should be selected
+
+    Scenario Outline: Move the view
+        Given I open 10 images
+        And I enter thumbnail mode
+        When I run scroll half-page-down
+        And I run move-view <position>
+        # Simple test if we don't scroll and no crash happens
+        Then no crash should happen
+
+        Examples:
+            | position |
+            | top      |
+            | center   |
+            | bottom   |
+
+    Scenario: Crash on scroll when updating scroll_to_center setting
+        Given I open 10 images
+        And I enter thumbnail mode
+        When I run set scroll_to_center!
+        And I run scroll down
+        Then no crash should happen
