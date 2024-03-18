@@ -52,7 +52,6 @@ class TempKeyStorage(QTimer):
     def get_keys(self):
         """Get tuple of keys from storage."""
         keys = tuple(self._keys)
-        self.clear()
         return keys
 
     def clear(self):
@@ -170,11 +169,12 @@ class EventHandlerMixin:
             True if processing was successful, False otherwise.
         """
         mode = api.modes.current() if mode is None else mode
-        name = "".join(sequence)
+        stored_keys = self.partial_handler.keys.get_keys()
+        full_sequence = (*stored_keys, *sequence)
+        name = "".join(full_sequence)
         _logger.debug("EventHandlerMixin: handling %s for mode %s", name, mode.name)
         bindings = api.keybindings.get(mode)
-        stored_keys = self.partial_handler.keys.get_keys()
-        match = bindings.match((*stored_keys, *sequence))
+        match = bindings.match(full_sequence)
         # Complete match => run command
         if match.is_full_match:
             _logger.debug("EventHandlerMixin: found command for event")
