@@ -194,17 +194,27 @@ class Library(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
     )
     @api.keybindings.register(
-        ("p", "<button-back>"), "scroll up --open-selected", mode=api.modes.LIBRARY
+        ("p", "<button-back>", "<ctrl-k>"),
+        "scroll up --open-selected",
+        mode=api.modes.LIBRARY,
     )
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
-        ("n", "<button-forward>"), "scroll down --open-selected", mode=api.modes.LIBRARY
+        ("n", "<button-forward>", "<ctrl-j>"),
+        "scroll down --open-selected",
+        mode=api.modes.LIBRARY,
     )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
     @api.keybindings.register(
         ("h", "<button-right>"), "scroll left", mode=api.modes.LIBRARY
     )
+    @api.keybindings.register(
+        "<ctrl-h>", "scroll left --open-selected", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "<ctrl-l>", "scroll right --open-selected", mode=api.modes.LIBRARY
+    )
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(  # type: ignore[override]
         self,
