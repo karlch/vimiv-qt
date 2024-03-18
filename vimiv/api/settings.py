@@ -382,6 +382,11 @@ style = StrSetting("style", "default", hidden=True)
 read_only = BoolSetting(
     "read_only", False, desc="Disable any commands that are able to edit files on disk"
 )
+scroll_to_center = BoolSetting(
+    "scroll_to_center",
+    True,
+    desc="Ensure the cursor is always at the center of the screen when scrolling",
+)
 
 
 class command:  # pylint: disable=invalid-name

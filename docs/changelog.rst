@@ -18,6 +18,13 @@ Added:
   * ``PySide6``: Use PySide6 (Qt for Python). This is highly experimental and should be
     used with care.
 
+* The ``scroll_to_center`` setting. When set to true, always keep the cursor centered
+  when scrolling as previously hard-coded. Otherwise, cursor ends up at the top / bottom
+  when scrolling up / down. Thanks `@Markuzcha`_ for the idea!
+* The ``:move-view`` command to move the view in image and thumbnail mode to the top /
+  center / bottom along with the  ``zt``, ``zz`` and ``zb`` bindings. Thanks
+  `@Markuzcha`_ for the idea!
+
 Changed:
 ^^^^^^^^
 
@@ -577,3 +584,4 @@ Initial release of the Qt version.
 .. _@buzzingwires: https://github.com/buzzingwires
 .. _@xfzv: https://github.com/xfzv
 .. _@mozirilla213: https://github.com/mozirilla213
+.. _@Markuzcha: https://github.com/Markuzcha

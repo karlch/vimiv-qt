@@ -8,6 +8,8 @@ from vimiv.qt.core import Qt, QTimer
 from vimiv.qt.gui import QPainter, QFontMetrics
 from vimiv.qt.widgets import QTreeView, QAbstractItemView, QSlider, QDialog
 
+from vimiv import api
+from vimiv.commands import argtypes
 from vimiv.config import styles
 from vimiv.utils import cached_method
 
@@ -15,8 +17,25 @@ from vimiv.utils import cached_method
 class ScrollToCenterMixin:
     """Mixin class to ensure the selected index stays at the center when scrolling."""
 
-    def scrollTo(self, index, _hint=None):
-        super().scrollTo(index, self.ScrollHint.PositionAtCenter)
+    def apply_move_view(self, position: argtypes.ViewPosition):
+        """Helper to move the view keeping the cursor on the same index."""
+        hints = {
+            argtypes.ViewPosition.Top: QAbstractItemView.ScrollHint.PositionAtTop,
+            argtypes.ViewPosition.Center: QAbstractItemView.ScrollHint.PositionAtCenter,
+            argtypes.ViewPosition.Bottom: QAbstractItemView.ScrollHint.PositionAtBottom,
+        }
+        hint = hints[position]
+        # currentIndex from library / thumbnail widget
+        self.scrollTo(self.currentIndex(), hint=hint)  # type: ignore[attr-defined]
+
+    def scrollTo(self, index, hint=QAbstractItemView.ScrollHint.EnsureVisible):
+        """Override scrollTo to respect scroll_to_center setting."""
+        if (
+            hint == QAbstractItemView.ScrollHint.EnsureVisible
+            and api.settings.scroll_to_center.value
+        ):
+            hint = QAbstractItemView.ScrollHint.PositionAtCenter
+        super().scrollTo(index, hint)
 
 
 class ScrollWheelCumulativeMixin:

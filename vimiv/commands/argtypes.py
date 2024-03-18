@@ -111,3 +111,11 @@ class AspectRatio(QSize):
                 raise ValueError(
                     f"'Invalid aspectratio '{aspectratio}'. Use width:height, e.g. 4:3"
                 ) from None
+
+
+class ViewPosition(enum.Enum):
+    """Valid arguments for moving the view."""
+
+    Center = "center"
+    Top = "top"
+    Bottom = "bottom"
