@@ -440,8 +440,8 @@ can be run in <code class="docutils literal notranslate"><span class="pre">image
 <p>Below is a complete list of all commands in every mode.</p>
 <section id="global">
 <h2>Global<a class="headerlink" href="#global" title="Link to this heading">#</a></h2>
-<table class="table" id="id20">
-<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id20" title="Link to this table">#</a></caption>
+<table class="table" id="id21">
+<caption><span class="caption-text">Overview of global commands</span><a class="headerlink" href="#id21" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1111,8 +1111,8 @@ directory tree, e.g. <code class="docutils literal notranslate"><span class="pre
 </section>
 <section id="image">
 <h2>Image<a class="headerlink" href="#image" title="Link to this heading">#</a></h2>
-<table class="table" id="id21">
-<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id21" title="Link to this table">#</a></caption>
+<table class="table" id="id22">
+<caption><span class="caption-text">Overview of image commands</span><a class="headerlink" href="#id22" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1328,8 +1328,8 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 </section>
 <section id="library">
 <h2>Library<a class="headerlink" href="#library" title="Link to this heading">#</a></h2>
-<table class="table" id="id22">
-<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id22" title="Link to this table">#</a></caption>
+<table class="table" id="id23">
+<caption><span class="caption-text">Overview of library commands</span><a class="headerlink" href="#id23" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1343,10 +1343,13 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-library-goto"><span class="std std-ref">goto</span></a></p></td>
 <td><p>Select specific row in current filelist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-library-open-selected"><span class="std std-ref">open-selected</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-library-move-view"><span class="std std-ref">move-view</span></a></p></td>
+<td><p>Move the view keeping the cursor on the same position.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-library-open-selected"><span class="std std-ref">open-selected</span></a></p></td>
 <td><p>Open the currently selected path.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-library-scroll"><span class="std std-ref">scroll</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-library-scroll"><span class="std std-ref">scroll</span></a></p></td>
 <td><p>Scroll the library in the given direction.</p></td>
 </tr>
 </tbody>
@@ -1370,6 +1373,17 @@ keys and counter-clockwise with <code class="docutils literal notranslate"><span
 <p>-1 is the last row.</p>
 </div>
 <p><strong>count:</strong> Select [count]th element instead.</p>
+</section>
+<section id="move-view">
+<span id="ref-library-move-view"></span><h3>move-view<a class="headerlink" href="#move-view" title="Link to this heading">#</a></h3>
+<p>Move the view keeping the cursor on the same position.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:move-view</span> <span class="pre">position</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: Position to move the view to (top/center/bottom).</p></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section id="open-selected">
 <span id="ref-library-open-selected"></span><h3>open-selected<a class="headerlink" href="#open-selected" title="Link to this heading">#</a></h3>
@@ -1410,8 +1424,8 @@ a directory, the library is loaded for this directory.</p>
 </section>
 <section id="thumbnail">
 <h2>Thumbnail<a class="headerlink" href="#thumbnail" title="Link to this heading">#</a></h2>
-<table class="table" id="id23">
-<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id23" title="Link to this table">#</a></caption>
+<table class="table" id="id24">
+<caption><span class="caption-text">Overview of thumbnail commands</span><a class="headerlink" href="#id24" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1431,13 +1445,16 @@ a directory, the library is loaded for this directory.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-goto"><span class="std std-ref">goto</span></a></p></td>
 <td><p>Select specific thumbnail in current filelist.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-thumbnail-open-selected"><span class="std std-ref">open-selected</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-thumbnail-move-view"><span class="std std-ref">move-view</span></a></p></td>
+<td><p>Move the view keeping the cursor on the same position.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-open-selected"><span class="std std-ref">open-selected</span></a></p></td>
 <td><p>Open the currently selected thumbnail in image mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-scroll"><span class="std std-ref">scroll</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ref-thumbnail-scroll"><span class="std std-ref">scroll</span></a></p></td>
 <td><p>Scroll to another thumbnail in the given direction.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#ref-thumbnail-zoom"><span class="std std-ref">zoom</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#ref-thumbnail-zoom"><span class="std std-ref">zoom</span></a></p></td>
 <td><p>Zoom the current widget.</p></td>
 </tr>
 </tbody>
@@ -1466,12 +1483,23 @@ a directory, the library is loaded for this directory.</p>
 </div>
 <p><strong>count:</strong> Select [count]th thubnail instead.</p>
 </section>
+<section id="ref-thumbnail-move-view">
+<span id="id5"></span><h3>move-view<a class="headerlink" href="#ref-thumbnail-move-view" title="Link to this heading">#</a></h3>
+<p>Move the view keeping the cursor on the same position.</p>
+<p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:move-view</span> <span class="pre">position</span></code></p>
+<dl class="simple">
+<dt>positional arguments:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code>: Position to move the view to (top/center/bottom).</p></li>
+</ul>
+</dd>
+</dl>
+</section>
 <section id="ref-thumbnail-open-selected">
-<span id="id5"></span><h3>open-selected<a class="headerlink" href="#ref-thumbnail-open-selected" title="Link to this heading">#</a></h3>
+<span id="id6"></span><h3>open-selected<a class="headerlink" href="#ref-thumbnail-open-selected" title="Link to this heading">#</a></h3>
 <p>Open the currently selected thumbnail in image mode.</p>
 </section>
 <section id="ref-thumbnail-scroll">
-<span id="id6"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Link to this heading">#</a></h3>
+<span id="id7"></span><h3>scroll<a class="headerlink" href="#ref-thumbnail-scroll" title="Link to this heading">#</a></h3>
 <p>Scroll to another thumbnail in the given direction.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:scroll</span> <span class="pre">direction</span></code></p>
 <dl class="simple">
@@ -1484,7 +1512,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
 <section id="ref-thumbnail-zoom">
-<span id="id7"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Link to this heading">#</a></h3>
+<span id="id8"></span><h3>zoom<a class="headerlink" href="#ref-thumbnail-zoom" title="Link to this heading">#</a></h3>
 <p>Zoom the current widget.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:zoom</span> <span class="pre">direction</span></code></p>
 <dl class="simple">
@@ -1496,10 +1524,10 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
 </section>
-<section id="id8">
-<h2>Command<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
-<table class="table" id="id24">
-<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id24" title="Link to this table">#</a></caption>
+<section id="id9">
+<h2>Command<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<table class="table" id="id25">
+<caption><span class="caption-text">Overview of command commands</span><a class="headerlink" href="#id25" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1565,15 +1593,15 @@ a directory, the library is loaded for this directory.</p>
 <p>Leave command mode.</p>
 </section>
 <section id="ref-command-nop">
-<span id="id9"></span><h3>nop<a class="headerlink" href="#ref-command-nop" title="Link to this heading">#</a></h3>
+<span id="id10"></span><h3>nop<a class="headerlink" href="#ref-command-nop" title="Link to this heading">#</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove keys bound by Qt by explicitly binding them to nop.</p>
 </section>
 </section>
 <section id="manipulate">
 <h2>Manipulate<a class="headerlink" href="#manipulate" title="Link to this heading">#</a></h2>
-<table class="table" id="id25">
-<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id25" title="Link to this table">#</a></caption>
+<table class="table" id="id26">
+<caption><span class="caption-text">Overview of manipulate commands</span><a class="headerlink" href="#id26" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 75.0%" />
@@ -1639,7 +1667,7 @@ a directory, the library is loaded for this directory.</p>
 <p>Leave manipulate accepting the applied changes.</p>
 </section>
 <section id="ref-manipulate-command">
-<span id="id10"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Link to this heading">#</a></h3>
+<span id="id11"></span><h3>command<a class="headerlink" href="#ref-manipulate-command" title="Link to this heading">#</a></h3>
 <p>Enter command mode.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:command</span> <span class="pre">[--text=TEXT]</span></code></p>
 <dl class="simple">
@@ -1666,11 +1694,11 @@ a directory, the library is loaded for this directory.</p>
 <p>Discard any changes and leave manipulate.</p>
 </section>
 <section id="ref-manipulate-fullscreen">
-<span id="id11"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Link to this heading">#</a></h3>
+<span id="id12"></span><h3>fullscreen<a class="headerlink" href="#ref-manipulate-fullscreen" title="Link to this heading">#</a></h3>
 <p>Toggle fullscreen mode.</p>
 </section>
 <section id="ref-manipulate-goto">
-<span id="id12"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Link to this heading">#</a></h3>
+<span id="id13"></span><h3>goto<a class="headerlink" href="#ref-manipulate-goto" title="Link to this heading">#</a></h3>
 <p>Set the value of the current manipulation.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:goto</span> <span class="pre">value</span></code></p>
 <dl class="simple">
@@ -1682,7 +1710,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> Set the manipulation to [count] instead.</p>
 </section>
 <section id="ref-manipulate-help">
-<span id="id13"></span><h3>help<a class="headerlink" href="#ref-manipulate-help" title="Link to this heading">#</a></h3>
+<span id="id14"></span><h3>help<a class="headerlink" href="#ref-manipulate-help" title="Link to this heading">#</a></h3>
 <p>Show help on a command or setting.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:help</span> <span class="pre">topic</span></code></p>
 <dl class="simple">
@@ -1697,7 +1725,7 @@ a directory, the library is loaded for this directory.</p>
 </div>
 </section>
 <section id="ref-manipulate-history-clear">
-<span id="id14"></span><h3>history-clear<a class="headerlink" href="#ref-manipulate-history-clear" title="Link to this heading">#</a></h3>
+<span id="id15"></span><h3>history-clear<a class="headerlink" href="#ref-manipulate-history-clear" title="Link to this heading">#</a></h3>
 <p>Clear the command history.</p>
 <p>This clears the history of all modes unless <code class="docutils literal notranslate"><span class="pre">--mode</span></code> is passed.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:history-clear</span> <span class="pre">[--mode]</span></code></p>
@@ -1721,7 +1749,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
 <section id="ref-manipulate-keybindings">
-<span id="id15"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Link to this heading">#</a></h3>
+<span id="id16"></span><h3>keybindings<a class="headerlink" href="#ref-manipulate-keybindings" title="Link to this heading">#</a></h3>
 <p>Show a pop-up with keybindings information.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:keybindings</span> <span class="pre">[--columns=N]</span></code></p>
 <dl class="simple">
@@ -1732,7 +1760,7 @@ a directory, the library is loaded for this directory.</p>
 </dl>
 </section>
 <section id="ref-manipulate-next">
-<span id="id16"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Link to this heading">#</a></h3>
+<span id="id17"></span><h3>next<a class="headerlink" href="#ref-manipulate-next" title="Link to this heading">#</a></h3>
 <p>Focus the next manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
@@ -1742,12 +1770,12 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
 <section id="ref-manipulate-nop">
-<span id="id17"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Link to this heading">#</a></h3>
+<span id="id18"></span><h3>nop<a class="headerlink" href="#ref-manipulate-nop" title="Link to this heading">#</a></h3>
 <p>Do nothing.</p>
 <p>This is useful to remove keys bound by Qt by explicitly binding them to nop.</p>
 </section>
 <section id="ref-manipulate-prev">
-<span id="id18"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Link to this heading">#</a></h3>
+<span id="id19"></span><h3>prev<a class="headerlink" href="#ref-manipulate-prev" title="Link to this heading">#</a></h3>
 <p>Focus the previous manipulation in the current tab.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
@@ -1757,7 +1785,7 @@ a directory, the library is loaded for this directory.</p>
 <p><strong>count:</strong> multiplier</p>
 </section>
 <section id="ref-manipulate-set">
-<span id="id19"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Link to this heading">#</a></h3>
+<span id="id20"></span><h3>set<a class="headerlink" href="#ref-manipulate-set" title="Link to this heading">#</a></h3>
 <p>Set an option.</p>
 <p><strong>syntax:</strong> <code class="docutils literal notranslate"><span class="pre">:set</span> <span class="pre">name[!]</span> <span class="pre">[[+|-]value]</span></code></p>
 <dl class="simple">
@@ -1886,6 +1914,7 @@ If not given, set to default.</p></li>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#library">Library</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-library-goto">goto</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#move-view">move-view</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#open-selected">open-selected</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-library-scroll">scroll</a></li>
 </ul>
@@ -1894,12 +1923,13 @@ If not given, set to default.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#end-of-line">end-of-line</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#first-of-line">first-of-line</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-thumbnail-goto">goto</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-thumbnail-move-view">move-view</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-thumbnail-open-selected">open-selected</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-thumbnail-scroll">scroll</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ref-thumbnail-zoom">zoom</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">Command</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Command</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#complete">complete</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#history">history</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#history-substr-search">history-substr-search</a></li>
