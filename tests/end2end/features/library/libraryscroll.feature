@@ -167,3 +167,9 @@ Feature: Scrolling the library.
         And I run scroll right --open-selected
         Then the library row should be 2
         And the image should have the index 2
+
+    Scenario: Scroll left and clear the image list
+        Given I open a directory with 3 images
+        When I run scroll down --open-selected
+        And I run scroll left --open-selected
+        Then the image should have the index 0
