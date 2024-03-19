@@ -156,16 +156,14 @@ def test_slot(type_hint):
 
 
 def test_slot_ignore_self():
-    def test(self, name: str):
-        ...
+    def test(self, name: str): ...
 
     slot_args = utils._slot_args(test, get_type_hints(test))
     assert slot_args == [str]
 
 
 def test_slot_add_returntype():
-    def test(self, name: str) -> str:
-        ...
+    def test(self, name: str) -> str: ...
 
     slot_kwargs = utils._slot_kwargs(get_type_hints(test))
     assert slot_kwargs == {"result": str}

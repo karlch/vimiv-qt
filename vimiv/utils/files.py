@@ -123,9 +123,11 @@ def listfiles(directory: str, abspath: bool = False) -> List[str]:
         abspath: Return the absolute path to the files, not relative to directory.
     """
     return [
-        os.path.join(root, fname)
-        if abspath
-        else os.path.join(root.replace(directory, "").lstrip("/"), fname)
+        (
+            os.path.join(root, fname)
+            if abspath
+            else os.path.join(root.replace(directory, "").lstrip("/"), fname)
+        )
         for root, _, files in os.walk(directory)
         for fname in files
     ]
