@@ -159,3 +159,11 @@ Feature: Scrolling the library.
             | top      |
             | center   |
             | bottom   |
+
+    Scenario: Scroll right and open selected stored image
+        Given I open a directory with 3 images
+        When I run scroll down
+        When I run scroll left
+        And I run scroll right --open-selected
+        Then the library row should be 2
+        And the image should have the index 2
