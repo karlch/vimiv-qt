@@ -42,6 +42,8 @@ class Library(
     """Library widget.
 
     Attributes:
+        autoload: Load images of new working directory automatically.
+
         _last_selected: Name of the path that was selected last.
         _positions: Dictionary that stores positions in directories.
     """
@@ -87,6 +89,7 @@ class Library(
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         widgets.FlatTreeView.__init__(self, parent=mainwindow)
 
+        self.autoload = False
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
 
@@ -242,14 +245,14 @@ class Library(
         _logger.debug("Scrolling in direction '%s'", direction)
         if direction == direction.Right:
             current = self.current()
-            self.model().autoload = open_selected
+            self.autoload = open_selected
             # Close library on double selection
             self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
             self._positions[parent] = Position(os.getcwd())
-            self.model().autoload = open_selected
+            self.autoload = open_selected
             self._open_directory(path=parent)
         else:
             row = self.row()
@@ -393,7 +396,6 @@ class LibraryModel(QStandardItemModel):
 
     Attributes:
         paths: List of currently open paths in the library.
-        autoload: Load images of new working directory automatically.
 
         _highlighted: List of indices that are highlighted as search results.
         _library: Main library object to interact with.
@@ -404,7 +406,6 @@ class LibraryModel(QStandardItemModel):
         self._highlighted: List[int] = []
         self._library = library
         self.paths: List[str] = []
-        self.autoload = False
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.mark.marked.connect(self._mark_highlight)
@@ -424,9 +425,15 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
         self._library.load_directory()
-        if self.autoload and files.is_image(focused_path := self._library.current()):
-            api.signals.load_images.emit([focused_path])
-        self.autoload = False
+        if self._library.autoload:
+            focused_path = self._library.current()
+            if files.is_image(focused_path):
+                api.signals.load_images.emit([focused_path])
+            elif images:
+                api.signals.load_images.emit(images)
+            else:
+                api.signals.all_images_cleared.emit()
+        self._library.autoload = False
 
     @Slot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
