@@ -25,10 +25,12 @@ Added:
   center / bottom along with the  ``zt``, ``zz`` and ``zb`` bindings. Thanks
   `@Markuzcha`_ for the idea!
 * The ``--open-selected`` flag for ``:scroll left/right`` in the library. When using
-  this flag, any images in the new folder are automatically opened, in case the
-  focused path is an image. This comes with the new ``<ctrl-h/j/k/l>`` keybindings for
-  ``:scroll left/down/up/right`` for a consistent "move and select" flow. Thanks
+  this flag, any images in the new folder are automatically opened. If there are none,
+  any loaded images are cleared. This comes with the new ``<ctrl-h/j/k/l>`` keybindings
+  for ``:scroll left/down/up/right`` for a consistent "move and select" flow. Thanks
   `@mcp292`_ for the idea!
+* The ``--open-images`` flag for the ``:open`` command to emulate the
+  ``--open-selected`` behaviour in ``:scroll left/right`` in the library.
 
 Changed:
 ^^^^^^^^
