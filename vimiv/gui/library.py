@@ -42,6 +42,8 @@ class Library(
     """Library widget.
 
     Attributes:
+        autoload: Load images of new working directory automatically.
+
         _last_selected: Name of the path that was selected last.
         _positions: Dictionary that stores positions in directories.
     """
@@ -87,6 +89,7 @@ class Library(
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         widgets.FlatTreeView.__init__(self, parent=mainwindow)
 
+        self.autoload = False
         self._last_selected = ""
         self._positions: Dict[str, Position] = {}
 
@@ -168,7 +171,7 @@ class Library(
         if not path:
             log.warning("Library: selecting empty path")
         elif os.path.isdir(path):
-            self._open_directory(path)
+            self._open_directory(path, reload_current=False)
         else:
             self._open_image(path, close)
 
@@ -192,17 +195,27 @@ class Library(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.LIBRARY
     )
     @api.keybindings.register(
-        ("p", "<button-back>"), "scroll up --open-selected", mode=api.modes.LIBRARY
+        ("p", "<button-back>", "<ctrl-k>"),
+        "scroll up --open-selected",
+        mode=api.modes.LIBRARY,
     )
     @api.keybindings.register("k", "scroll up", mode=api.modes.LIBRARY)
     @api.keybindings.register(
-        ("n", "<button-forward>"), "scroll down --open-selected", mode=api.modes.LIBRARY
+        ("n", "<button-forward>", "<ctrl-j>"),
+        "scroll down --open-selected",
+        mode=api.modes.LIBRARY,
     )
     @api.keybindings.register("j", "scroll down", mode=api.modes.LIBRARY)
     @api.keybindings.register(
         ("h", "<button-right>"), "scroll left", mode=api.modes.LIBRARY
     )
+    @api.keybindings.register(
+        "<ctrl-h>", "scroll left --open-selected", mode=api.modes.LIBRARY
+    )
     @api.keybindings.register("l", "scroll right", mode=api.modes.LIBRARY)
+    @api.keybindings.register(
+        "<ctrl-l>", "scroll right --open-selected", mode=api.modes.LIBRARY
+    )
     @api.commands.register(mode=api.modes.LIBRARY)
     def scroll(  # type: ignore[override]
         self,
@@ -232,13 +245,15 @@ class Library(
         _logger.debug("Scrolling in direction '%s'", direction)
         if direction == direction.Right:
             current = self.current()
+            self.autoload = open_selected
             # Close library on double selection
             self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
             self._positions[parent] = Position(os.getcwd())
-            api.working_directory.handler.chdir(parent)
+            self.autoload = open_selected
+            self._open_directory(path=parent)
         else:
             row = self.row()
             if row == -1:  # Directory is empty
@@ -410,6 +425,15 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
         self._library.load_directory()
+        if self._library.autoload:
+            focused_path = self._library.current()
+            if files.is_image(focused_path):
+                api.signals.load_images.emit([focused_path])
+            elif images:
+                api.signals.load_images.emit(images)
+            else:
+                api.signals.all_images_cleared.emit()
+        self._library.autoload = False
 
     @Slot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):
