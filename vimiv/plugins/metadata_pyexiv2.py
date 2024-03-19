@@ -89,9 +89,9 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
 
         if reset_orientation:
             with contextlib.suppress(KeyError):
-                self._metadata[
-                    "Exif.Image.Orientation"
-                ] = metadata.ExifOrientation.Normal
+                self._metadata["Exif.Image.Orientation"] = (
+                    metadata.ExifOrientation.Normal
+                )
 
         try:
             dest_image = pyexiv2.ImageMetadata(dest)
