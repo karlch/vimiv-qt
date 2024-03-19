@@ -163,20 +163,18 @@ class Library(
         """
         self._open_path(self.current(), close)
 
-    def _open_path(self, path: str, close: bool, autoload_directory: bool = False):
+    def _open_path(self, path: str, close: bool):
         """Open a given path possibly closing the library."""
         if not path:
             log.warning("Library: selecting empty path")
         elif os.path.isdir(path):
-            self._open_directory(
-                path, reload_current=False, autoload=autoload_directory
-            )
+            self._open_directory(path, reload_current=False)
         else:
             self._open_image(path, close)
 
-    def _open_directory(self, path, reload_current=False, autoload=False):
+    def _open_directory(self, path, reload_current=False):
         """Open a directory."""
-        api.working_directory.handler.chdir(path, reload_current, autoload)
+        api.working_directory.handler.chdir(path, reload_current)
 
     def _open_image(self, path, close):
         """Open an image."""
@@ -244,17 +242,15 @@ class Library(
         _logger.debug("Scrolling in direction '%s'", direction)
         if direction == direction.Right:
             current = self.current()
+            self.model().autoload = open_selected
             # Close library on double selection
-            self._open_path(
-                current,
-                close=current == self._last_selected,
-                autoload_directory=open_selected,
-            )
+            self._open_path(current, close=current == self._last_selected)
         elif direction == direction.Left:
             self.store_position()
             parent = os.path.abspath(os.pardir)
             self._positions[parent] = Position(os.getcwd())
-            api.working_directory.handler.chdir(parent, autoload=open_selected)
+            self.model().autoload = open_selected
+            self._open_directory(path=parent)
         else:
             row = self.row()
             if row == -1:  # Directory is empty
@@ -397,6 +393,7 @@ class LibraryModel(QStandardItemModel):
 
     Attributes:
         paths: List of currently open paths in the library.
+        autoload: Load images of new working directory automatically.
 
         _highlighted: List of indices that are highlighted as search results.
         _library: Main library object to interact with.
@@ -407,6 +404,7 @@ class LibraryModel(QStandardItemModel):
         self._highlighted: List[int] = []
         self._library = library
         self.paths: List[str] = []
+        self.autoload = False
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         api.mark.marked.connect(self._mark_highlight)
@@ -426,6 +424,9 @@ class LibraryModel(QStandardItemModel):
         self._add_rows(directories, are_directories=True)
         self._add_rows(images, are_directories=False)
         self._library.load_directory()
+        if self.autoload and files.is_image(focused_path := self._library.current()):
+            api.signals.load_images.emit([focused_path])
+        self.autoload = False
 
     @Slot(list, list)
     def _on_directory_changed(self, images: List[str], directories: List[str]):

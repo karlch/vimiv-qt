@@ -120,9 +120,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
         """List of images in the current working directory."""
         return self._images
 
-    def chdir(
-        self, directory: str, reload_current: bool = False, autoload: bool = False
-    ) -> None:
+    def chdir(self, directory: str, reload_current: bool = False) -> None:
         """Change the current working directory to directory."""
         directory = os.path.realpath(directory)
         if directory != self._dir or reload_current:
@@ -131,7 +129,7 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
                 self.removePaths(self.directories())
             try:
                 os.chdir(directory)
-                self._load_directory(directory, autoload)
+                self._load_directory(directory)
                 self._monitor(directory)
             except PermissionError as e:
                 log.error("%s: Cannot access '%s'", str(e), directory)
@@ -156,13 +154,11 @@ class WorkingDirectoryHandler(QFileSystemWatcher):
             if self.directories() or self.files():
                 self.removePaths(self.directories() + self.files())
 
-    def _load_directory(self, directory: str, autoload: bool = False) -> None:
+    def _load_directory(self, directory: str) -> None:
         """Load supported files for new directory."""
         self._dir = directory
         self._images, self._directories = self._get_content(directory)
         self.loaded.emit(self._images, self._directories)
-        if autoload:
-            signals.load_images.emit(self._images)
 
     @throttled(delay_ms=WAIT_TIME_MS)
     def _reload_directory(self, _path: str) -> None:
