@@ -37,7 +37,7 @@ def check_pyqt_version():
             "Please install / configure a valid wrapper to run vimiv.\n"
         )
 
-    pyqt_version = tuple(map(int, PYQT_VERSION_STR.split(".")))
+    pyqt_version = tuple(map(int, PYQT_VERSION_STR.split(".")[:3]))
     if pyqt_version < PYQT_REQUIRED_VERSION:
         _exit_version("PyQt", PYQT_REQUIRED_VERSION, pyqt_version)
 
