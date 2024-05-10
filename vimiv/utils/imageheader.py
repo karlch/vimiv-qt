@@ -53,7 +53,7 @@ https://en.wikipedia.org/wiki/List_of_file_signatures
 
 import functools
 
-from typing import Optional, List, Callable, Tuple, BinaryIO
+from typing import Optional, List, Callable, Tuple, BinaryIO, cast
 
 from vimiv.qt.gui import QImageReader
 
@@ -127,7 +127,8 @@ def register(
             _registry.remove((filetype, check_verified))
         return False
 
-    check_register = check_verified if validate else check
+    # See: https://github.com/python/mypy/issues/12056
+    check_register = cast(CheckFuncT, check_verified if validate else check)
 
     if priority:
         _registry.insert(0, (filetype, check_register))
