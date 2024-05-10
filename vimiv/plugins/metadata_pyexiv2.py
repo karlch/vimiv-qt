@@ -32,7 +32,7 @@ class MetadataPyexiv2(metadata.MetadataPlugin):
         except FileNotFoundError:
             _logger.debug("File %s not found", path)
             self._metadata = None
-        except OSError as e:
+        except (OSError, TypeError) as e:
             _logger.warning(str(e))
             self._metadata = None
 
