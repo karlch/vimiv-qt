@@ -68,3 +68,9 @@ Feature: Metadata widget displaying image exif information
         And stdout should contain 'Make'
         And stdout should contain 'Model'
         And stdout should contain 'Copyright'
+
+    Scenario: Do not crash on svg files
+        Given I open a vector graphic
+        When I run metadata
+        Then no crash should happen
+        And the metadata text should contain 'No matching metadata found'
