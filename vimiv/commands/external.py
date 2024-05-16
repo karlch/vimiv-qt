@@ -45,10 +45,11 @@ class ExternalRunner:
     def run(self, text: str):
         """Run an external command text."""
         text = escape_glob(text.strip())
+        stdout = text.endswith(">")
         pipe = text.endswith("|")
-        split = shlex.split(text.rstrip("|"))
+        split = shlex.split(text.rstrip("|").rstrip(">"))
         command, args = split[0], split[1:]
-        self(command, *args, pipe=pipe)
+        self(command, *args, stdout=stdout, pipe=pipe)
 
     @api.commands.register()
     def spawn(self, command: List[str], shell: str = "sh", shellarg: str = "-c"):
@@ -90,17 +91,19 @@ class _ExternalRunnerImpl(QProcess):
 
     def __init__(self):
         super().__init__()
+        self._stdout = False
         self._pipe = False
         self.finished.connect(self._on_finished)
         self.errorOccurred.connect(self._on_error)
         QCoreApplication.instance().aboutToQuit.connect(self._on_quit)
         _logger.debug("Created implementation of external runner")
 
-    def __call__(self, command: str, *args: str, pipe=False) -> None:
+    def __call__(self, command: str, *args: str, stdout=False, pipe=False) -> None:
         """Run external command with arguments."""
         if self.state() == QProcess.ProcessState.Running:
             log.warning("Closing running process '%s'", self.program())
             self.close()
+        self._stdout = stdout
         self._pipe = pipe
         arglist: List[str] = flatten(
             glob.glob(arg) if contains_any(arg, "*?[]") else (arg,) for arg in args
@@ -118,6 +121,9 @@ class _ExternalRunnerImpl(QProcess):
             )
         elif self._pipe:
             self._process_pipe()
+        elif self._stdout:
+            stdout = self.readAllStandardOutput().data().decode().replace("\n", "<br>")
+            log.info("$ %s<br>%s", self.program(), stdout)
         else:
             _logger.debug("Finished external process '%s' succesfully", self.program())
 
