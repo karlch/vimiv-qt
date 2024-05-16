@@ -47,3 +47,10 @@ Feature: The keyhint overlay widget
         And I press 'g'
         Then the keyhint widget should contain &lt;space&gt;
         And the keyhint widget should contain &lt;tab&gt;
+
+    Scenario: Keyhint widget displays partial matches of long keybindings
+        When I run bind aaa test
+        And I run bind aca test
+        And I press 'ac'
+        Then the keyhint widget should contain <td>ac</td>
+        And the keyhint widget should not contain <td>c</td>
