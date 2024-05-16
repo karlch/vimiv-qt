@@ -7,7 +7,7 @@ corresponding objects.
 """
 
 import os
-from typing import List
+from typing import List, Iterable
 
 from vimiv.qt.core import QDateTime
 from vimiv.qt.gui import QGuiApplication, QClipboard
@@ -64,15 +64,24 @@ def toggle(mode: str) -> None:
     api.modes.get_by_name(mode).toggle()
 
 
-@api.keybindings.register("yA", "copy-name --abspath --primary")
-@api.keybindings.register("yY", "copy-name --primary")
-@api.keybindings.register("ya", "copy-name --abspath")
-@api.keybindings.register("yy", "copy-name")
+@api.keybindings.register("yA", "copy-name % --abspath --primary")
+@api.keybindings.register("yY", "copy-name % --primary")
+@api.keybindings.register("ya", "copy-name % --abspath")
+@api.keybindings.register("yy", "copy-name %")
+@api.keybindings.register("ymA", "copy-name %m --abspath --primary")
+@api.keybindings.register("ymY", "copy-name %m --primary")
+@api.keybindings.register("yma", "copy-name %m --abspath")
+@api.keybindings.register("ymy", "copy-name %m")
 @api.commands.register()
-def copy_name(abspath: bool = False, primary: bool = False) -> None:
-    """Copy name of current path to system clipboard.
+def copy_name(
+    paths: Iterable[str], abspath: bool = False, primary: bool = False
+) -> None:
+    """Copy file name or full path of provided paths(s) to system clipboard.
 
-    **syntax:** ``:copy-name [--abspath] [--primary]``
+    **syntax:** ``:copy-name path [path ...] [--abspath] [--primary]``
+
+    positional arguments:
+        * ``paths``: The path(s) to copy.
 
     optional arguments:
         * ``--abspath``: Copy absolute path instead of basename.
@@ -80,9 +89,8 @@ def copy_name(abspath: bool = False, primary: bool = False) -> None:
     """
     clipboard = QGuiApplication.clipboard()
     mode = QClipboard.Mode.Selection if primary else QClipboard.Mode.Clipboard
-    path = api.current_path()
-    name = path if abspath else os.path.basename(path)
-    clipboard.setText(name, mode=mode)
+    text = " ".join(path if abspath else os.path.basename(path) for path in paths)
+    clipboard.setText(text, mode=mode)
 
 
 @api.keybindings.register("yi", "copy-image")
