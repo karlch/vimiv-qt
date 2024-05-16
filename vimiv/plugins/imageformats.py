@@ -61,9 +61,23 @@ def _test_avif(h: bytes, _f: BinaryIO) -> bool:
     return h[4:12] in (b"ftypavif", b"ftypavis")
 
 
+def _test_heif(h: bytes, _f: BinaryIO) -> bool:
+    """HEIF High Efficiency Image File Format.
+
+    Extension: .heif
+
+    Magic bytes:
+    - 66 74 79 70 68 65 69 63
+
+    Support: qt-heif-image-plugin https://github.com/jakar/qt-heif-image-plugin
+    """
+    return h[4:12] == b"ftypheic"
+
+
 FORMATS = {
     "cr2": _test_cr2,
     "avif": _test_avif,
+    "heif": _test_heif,
 }
 
 
