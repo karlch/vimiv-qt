@@ -1,5 +1,5 @@
 flaky==3.8.1
-pytest==8.2.0
+pytest==8.2.2
 pytest-mock==3.14.0
 pytest-qt==4.4.0
 pytest-xvfb==3.0.0
