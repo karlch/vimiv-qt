@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
 
     steps:
-    - uses: actions/checkout@v4.1.5
+    - uses: actions/checkout@v4.1.7
     - uses: actions/cache@v4
       with:
         path: |
