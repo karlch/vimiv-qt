@@ -512,6 +512,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.fg = styles.get("library.fg")
         self.dir_fg = styles.get("library.directory.fg")
         self.search_fg = styles.get("library.search.highlighted.fg")
+        self.selected_fg = styles.get("library.selected.fg")
 
         # QColor options for background drawing
         self.selection_bg = QColor(styles.get("library.selected.bg"))
@@ -534,10 +535,11 @@ class LibraryDelegate(QStyledItemDelegate):
             option: The QStyleOptionViewItem.
             index: The QModelIndex.
         """
-        self._draw_background(painter, option, index)
-        self._draw_text(painter, option, index)
+        is_selected = option.state & QStyle.StateFlag.State_Selected
+        self._draw_background(painter, option, index, is_selected)
+        self._draw_text(painter, option, index, is_selected)
 
-    def _draw_text(self, painter, option, index):
+    def _draw_text(self, painter, option, index, is_selected: bool):
         """Draw text for the library.
 
         Sets the font and the foreground color using html. The foreground color
@@ -548,10 +550,11 @@ class LibraryDelegate(QStyledItemDelegate):
             painter: The QPainter.
             option: The QStyleOptionViewItem.
             index: The QModelIndex.
+            is_selected: True if the text is for a selected item.
         """
         text = index.model().data(index)
         painter.save()
-        color = self._get_foreground_color(index, text)
+        color = self._get_foreground_color(index, text, is_selected)
         text = self.elided(text, painter.fontMetrics(), option.rect.width() - 1)
         text = wrap_style_span(f"color: {color}; font: {self.font}", text)
         self.doc.setHtml(text)
@@ -560,7 +563,7 @@ class LibraryDelegate(QStyledItemDelegate):
         self.doc.drawContents(painter)
         painter.restore()
 
-    def _draw_background(self, painter, option, index):
+    def _draw_background(self, painter, option, index, is_selected: bool):
         """Draw the background rectangle of the text.
 
         The color depends on whether the item is selected, in an even row or in
@@ -570,15 +573,16 @@ class LibraryDelegate(QStyledItemDelegate):
             painter: The QPainter.
             option: The QStyleOptionViewItem.
             index: The QModelIndex.
+            is_selected: True if the background is for a selected item.
         """
-        color = self._get_background_color(index, option.state)
+        color = self._get_background_color(index, is_selected)
         painter.save()
         painter.setBrush(color)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.drawRect(option.rect)
         painter.restore()
 
-    def _get_foreground_color(self, index, text):
+    def _get_foreground_color(self, index, text, is_selected: bool):
         """Return the foreground color of an item.
 
         The color depends on highlighted as search result and whether it is a
@@ -587,12 +591,15 @@ class LibraryDelegate(QStyledItemDelegate):
         Args:
             index: Index of the element indicating even/odd/highlighted.
             text: Text indicating directory or not.
+            is_selected: True if the foreground is for a selected item.
         """
+        if is_selected:
+            return self.selected_fg
         if index.model().is_highlighted(index):
             return self.search_fg
         return self.dir_fg if text.endswith("/") else self.fg
 
-    def _get_background_color(self, index, state):
+    def _get_background_color(self, index, is_selected: bool):
         """Return the background color of an item.
 
         The color depends on selected, highlighted as search result and
@@ -600,9 +607,9 @@ class LibraryDelegate(QStyledItemDelegate):
 
         Args:
             index: Index of the element indicating even/odd/highlighted.
-            state: State of the index indicating selected.
+            is_selected: True if the background is for a selected item.
         """
-        if state & QStyle.StateFlag.State_Selected:
+        if is_selected:
             if api.modes.current() == api.modes.LIBRARY:
                 return self.selection_bg
             return self.selection_bg_unfocus

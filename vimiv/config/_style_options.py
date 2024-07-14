@@ -17,7 +17,7 @@ DEFAULT_OPTIONS = {
     "library.even.bg": "{base01}",
     "library.odd.bg": "{base01}",
     "library.selected.bg": "{base0d}",
-    "library.selected.fg": "{base07}",
+    "library.selected.fg": "{library.fg}",
     "library.search.highlighted.fg": "{base01}",
     "library.search.highlighted.bg": "{base04}",
     "library.scrollbar.width": "{image.scrollbar.width}",

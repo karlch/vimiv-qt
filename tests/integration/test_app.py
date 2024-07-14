@@ -9,6 +9,7 @@ import time
 import pytest
 
 import vimiv.app
+from vimiv import qt
 from vimiv.utils import asyncrun
 
 
@@ -18,6 +19,7 @@ def test_load_icon(qtbot):
     assert not icon.isNull()
 
 
+@pytest.mark.xfail(qt.USE_PYQT5, reason="flaky under PyQt 5.15.10")
 def test_wait_for_running_processes(mocker):
     """Ensure any running threads are completed before the app exits."""
 
