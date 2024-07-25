@@ -132,6 +132,9 @@ Added:
 * Add the ``none`` sorting type for the ``sort.image_order`` and ``sort.directory_order``
   options, implemented by `@buzzingwires`_
 * Add the ``thumbnail.save`` option, implemented by `@buzzingwires`_
+* Add the ability to lazy-load thumbnails, controlled by the ``thumbnail.load_behind``,
+  ``thumbnail.load_ahead``, and ``thumbnail.unload_threshold`` options. Implemented by
+  `@buzzingwires`_
 
 Changed:
 ^^^^^^^^
