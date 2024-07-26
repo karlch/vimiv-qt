@@ -53,6 +53,7 @@ def test_temp_key_storage_clears_text(storage, qtbot):
         ),
         (Qt.Key.Key_Colon, Qt.KeyboardModifier.NoModifier, ":", ("<colon>",)),
         (Qt.Key.Key_Equal, Qt.KeyboardModifier.NoModifier, "=", ("<equal>",)),
+        (Qt.Key.Key_Semicolon, Qt.KeyboardModifier.NoModifier, ";", ("<semicolon>",)),
     ],
 )
 def test_keyevent_to_sequence(qtkey, modifier, keyname, expected):
