@@ -275,9 +275,11 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         Qt.Key.Key_PageDown: "<page-down>",
         Qt.Key.Key_Delete: "<delete>",
     }
-    separator_keys = {
+    configparser_keys = {
         Qt.Key.Key_Colon: "<colon>",
         Qt.Key.Key_Equal: "<equal>",
+        Qt.Key.Key_Semicolon: "<semicolon>",
+        Qt.Key.Key_NumberSign: "<number>",
     }
     if event.key() in special_keys:
         # Parse shift here as the key does not support it otherwise
@@ -285,8 +287,8 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
             return "<shift>", text
         return (text,)
-    if event.key() in separator_keys:  # Required as configparser crashes otherwise
-        return (separator_keys[event.key()],)  # type: ignore
+    if event.key() in configparser_keys:  # Required as configparser crashes otherwise
+        return (configparser_keys[event.key()],)  # type: ignore
     if event.text().isprintable():
         return (event.text(),)
     return (QKeySequence(event.key()).toString().lower(),)
