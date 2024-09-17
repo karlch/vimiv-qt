@@ -12,7 +12,7 @@ import contextlib
 import hashlib
 import os
 import tempfile
-from typing import Dict, List
+from typing import Dict, Iterable
 
 from vimiv.qt.core import QRunnable, Signal, QObject
 from vimiv.qt.gui import QIcon, QPixmap, QImage
@@ -68,14 +68,17 @@ class ThumbnailManager(QObject):
         xdg.makedirs(self.directory, self.fail_directory)
         self.fail_pixmap = fail_pixmap
 
-    def create_thumbnails_async(self, paths: List[str]) -> None:
+    def create_thumbnails_async(
+        self, indices: Iterable[int], paths: Iterable[str]
+    ) -> None:
         """Start ThumbnailsCreator for each path to create thumbnails.
 
         Args:
+            indices: The corresponding index of the thumbnail for each path.
             paths: Paths to create thumbnails for.
         """
         self.pool.clear()
-        for i, path in enumerate(paths):
+        for i, path in zip(indices, paths):
             self.pool.start(ThumbnailCreator(i, path, self))
 
 

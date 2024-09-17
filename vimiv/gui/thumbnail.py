@@ -5,7 +5,7 @@
 import contextlib
 import math
 import os
-from typing import List, Optional, Iterator, cast
+from typing import List, Optional, Iterator, cast, Set, Tuple, Dict
 
 from vimiv.qt.core import Qt, QSize, QRect, Slot
 from vimiv.qt.widgets import QListWidget, QListWidgetItem, QStyle, QStyledItemDelegate
@@ -79,6 +79,7 @@ class ThumbnailView(
         widgets.ScrollWheelCumulativeMixin.__init__(self, self._scroll_wheel_callback)
         QListWidget.__init__(self)
 
+        self._rendered_paths: Set[str] = set()
         self._paths: List[str] = []
 
         fail_pixmap = create_pixmap(
@@ -102,15 +103,21 @@ class ThumbnailView(
         api.signals.new_image_opened.connect(self._select_path)
         api.signals.new_images_opened.connect(self._on_new_images_opened)
         api.settings.thumbnail.size.changed.connect(self._on_size_changed)
+        api.settings.thumbnail.unload_threshold.changed.connect(
+            self._maybe_connect_pruning
+        )
         search.search.new_search.connect(self._on_new_search)
         search.search.cleared.connect(self._on_search_cleared)
         self._manager.created.connect(self._on_thumbnail_created)
         self.activated.connect(self.open_selected)
         self.doubleClicked.connect(self.open_selected)
+        self.itemPressed.connect(self._update_icon_position)
         api.mark.marked.connect(self._mark_highlight)
         api.mark.unmarked.connect(lambda path: self._mark_highlight(path, marked=False))
         api.mark.markdone.connect(self.repaint)
         synchronize.signals.new_library_path_selected.connect(self._select_path)
+
+        self._maybe_connect_pruning(api.settings.thumbnail.unload_threshold.value)
 
         styles.apply(self)
 
@@ -139,12 +146,86 @@ class ThumbnailView(
         """Return the number of rows."""
         return math.ceil(self.count() / self.n_columns())
 
+    def _first_rendered_index(self) -> int:
+        """Return the index of the first thumbnail to be rendered."""
+        if api.settings.thumbnail.load_behind.value == -1:
+            return 0
+        return max(0, self.current_index() - api.settings.thumbnail.load_behind.value)
+
+    def _last_rendered_index(self) -> int:
+        """Return the index of the last thumbnail to be rendered."""
+        if len(self._paths) == 0:
+            return 0
+        if api.settings.thumbnail.load_ahead.value == -1:
+            return len(self._paths) - 1
+        return min(
+            len(self._paths) - 1,
+            self.current_index() + api.settings.thumbnail.load_ahead.value,
+        )
+
+    def _rendered_index_range(self) -> Tuple[int, int]:
+        """Return the first and last indexes in a tuple fitting a Python range."""
+        return (self._first_rendered_index(), self._last_rendered_index() + 1)
+
+    def _rendered_thumbnail_pairs(self) -> Dict[int, str]:
+        """Return index/path pairs with those closest to current index first."""
+        current_index = self.current_index()
+        indices = sorted(
+            range(*self._rendered_index_range()), key=lambda i: abs(i - current_index)
+        )
+        return {i: self._paths[i] for i in indices}
+
+    def _prunable_thumbnails_exist(self) -> bool:
+        return len(self._rendered_paths) > api.settings.thumbnail.unload_threshold.value
+
+    def _prune_index(self, index) -> None:
+        """Unload the icon associated with a particular path index."""
+        path = self._paths[index]
+        if path not in self._rendered_paths:
+            return
+        item = self.item(index)
+        if item is None:
+            return
+        # Otherwise it has been deleted in the meanwhile
+        if self._prunable_thumbnails_exist():
+            item.setIcon(ThumbnailItem.default_icon())
+            self._rendered_paths.remove(path)
+
+    def _prune_icons_behind(self) -> None:
+        """Prune indexes before the current index."""
+        for index in range(0, self._first_rendered_index()):
+            self._prune_index(index)
+
+    def _prune_icons_ahead(self) -> None:
+        """Prune indexes after the current index."""
+        for index in reversed(range(self._last_rendered_index() + 1, len(self._paths))):
+            self._prune_index(index)
+
+    def _prune_icons(self) -> None:
+        """Prune indexes before and after the current index."""
+        if not self._prunable_thumbnails_exist():
+            return
+        self._prune_icons_behind()
+        self._prune_icons_ahead()
+
+    def _update_icon_position(self) -> None:
+        """Adjust displayed range of icons to current position."""
+        desired_paths = []
+        indices = []
+        pairs = self._rendered_thumbnail_pairs()
+        for i, p in pairs.items():
+            if p not in self._rendered_paths:
+                desired_paths.append(p)
+                indices.append(i)
+        self._manager.create_thumbnails_async(indices, desired_paths)
+
     def item(self, index: int) -> "ThumbnailItem":
         return cast(ThumbnailItem, super().item(index))
 
     def clear(self):
         """Override clear to also empty paths."""
         self._paths = []
+        self._rendered_paths.clear()
         super().clear()
 
     @Slot(list)
@@ -158,6 +239,7 @@ class ThumbnailView(
             _logger.debug("No new images to load")
             return
         _logger.debug("Updating thumbnails...")
+        self._rendered_paths.clear()
         removed = set(self._paths) - set(paths)
         for path in removed:
             _logger.debug("Removing existing thumbnail '%s'", path)
@@ -172,7 +254,8 @@ class ThumbnailView(
                 ThumbnailItem(self, i, size_hint=size_hint)
             self.item(i).marked = path in api.mark.paths  # Ensure correct highlighting
         self._paths = paths
-        self._manager.create_thumbnails_async(paths)
+        pairs = self._rendered_thumbnail_pairs()
+        self._manager.create_thumbnails_async(pairs.keys(), pairs.values())
         _logger.debug("... update completed")
 
     @utils.slot
@@ -186,6 +269,7 @@ class ThumbnailView(
         item = self.item(index)
         if item is not None:  # Otherwise it has been deleted in the meanwhile
             item.setIcon(icon)
+            self._rendered_paths.add(self._paths[index])
 
     @Slot(int, list, api.modes.Mode, bool)
     def _on_new_search(
@@ -212,6 +296,11 @@ class ThumbnailView(
             item.highlighted = False
         self.repaint()
 
+    def _maybe_connect_pruning(self, unload_threshold: int):
+        """Only connect pruning in case unloading should be performed."""
+        if unload_threshold > -1:
+            self._manager.created.connect(self._prune_icons)
+
     def _mark_highlight(self, path: str, marked: bool = True):
         """(Un-)Highlight a path if it was (un-)marked.
 
@@ -234,21 +323,25 @@ class ThumbnailView(
         api.signals.load_images.emit([self.current()])
         api.modes.IMAGE.enter()
 
-    @api.keybindings.register("<ctrl>b", "scroll page-up", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("<ctrl>f", "scroll page-down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(
+        ("<ctrl>b", "<page-up>"), "scroll page-up", mode=api.modes.THUMBNAIL
+    )
+    @api.keybindings.register(
+        ("<ctrl>f", "<page-down>"), "scroll page-down", mode=api.modes.THUMBNAIL
+    )
     @api.keybindings.register(
         "<ctrl>u", "scroll half-page-up", mode=api.modes.THUMBNAIL
     )
     @api.keybindings.register(
         "<ctrl>d", "scroll half-page-down", mode=api.modes.THUMBNAIL
     )
-    @api.keybindings.register("k", "scroll up", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("j", "scroll down", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(("k", "<up>"), "scroll up", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(("j", "<down>"), "scroll down", mode=api.modes.THUMBNAIL)
     @api.keybindings.register(
-        ("h", "<button-back>"), "scroll left", mode=api.modes.THUMBNAIL
+        ("h", "<button-back>", "<left>"), "scroll left", mode=api.modes.THUMBNAIL
     )
     @api.keybindings.register(
-        ("l", "<button-forward>"), "scroll right", mode=api.modes.THUMBNAIL
+        ("l", "<button-forward>", "<right>"), "scroll right", mode=api.modes.THUMBNAIL
     )
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def scroll(  # type: ignore[override]
@@ -291,8 +384,8 @@ class ThumbnailView(
             last_in_col -= self.n_columns()
         return min(current + self.n_columns() * step, last_in_col)
 
-    @api.keybindings.register("gg", "goto 1", mode=api.modes.THUMBNAIL)
-    @api.keybindings.register("G", "goto -1", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(("gg", "<home>"), "goto 1", mode=api.modes.THUMBNAIL)
+    @api.keybindings.register(("G", "<end>"), "goto -1", mode=api.modes.THUMBNAIL)
     @api.commands.register(mode=api.modes.THUMBNAIL)
     def goto(self, index: Optional[int], count: Optional[int] = None):
         """Select specific thumbnail in current filelist.
@@ -385,6 +478,7 @@ class ThumbnailView(
         self.setCurrentRow(index)
         if emit:
             synchronize.signals.new_thumbnail_path_selected.emit(self._paths[index])
+        self._update_icon_position()
 
     def _on_size_changed(self, value: int):
         _logger.debug("Setting size to %d", value)
