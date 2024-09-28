@@ -165,6 +165,7 @@ class SignalHandler(QObject):
         slideshow.event.connect(self._on_slideshow_event)
 
         api.signals.load_images.connect(self._on_load_images)
+        api.signals.all_images_cleared.connect(self._on_images_cleared)
         api.working_directory.handler.images_changed.connect(self._on_images_changed)
         api.settings.sort.shuffle.changed.connect(self._on_shuffle)
 
@@ -227,7 +228,7 @@ class SignalHandler(QObject):
             _logger.debug("Adding %s to image filelist", added)
             paths = new_paths
         if not paths:
-            _clear()
+            api.signals.all_images_cleared.emit()
             api.status.update("Image filelist cleared")
         else:
             _load_paths(paths, current())
@@ -238,6 +239,13 @@ class SignalHandler(QObject):
         """Reload paths to force shuffling."""
         if _paths:
             _load_paths(_paths, current())
+
+    @utils.slot
+    def _on_images_cleared(self):
+        """Clear all images from the storage as all paths were removed."""
+        global _paths, _index
+        _paths = []
+        _index = 0
 
 
 def _set_index(index: int, previous: str = None, *, keep_zoom: bool = False) -> None:
@@ -286,11 +294,3 @@ def _load_paths(paths: Iterable[str], focused_path: str = None) -> None:
         else min(len(paths) - 1, _index)
     )
     _set_index(index, previous)
-
-
-def _clear() -> None:
-    """Clear all images from the storage as all paths were removed."""
-    global _paths, _index
-    _paths = []
-    _index = 0
-    api.signals.all_images_cleared.emit()

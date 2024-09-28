@@ -52,7 +52,7 @@ def pathlist(mode: modes.Mode = None) -> List[str]:
 
 @keybindings.register("o", "command --text='open '")
 @commands.register(name="open")
-def open_paths(paths: Iterable[str]) -> None:
+def open_paths(paths: Iterable[str], open_images: bool = False) -> None:
     """Open one or more paths.
 
     **syntax:** ``:open path [path ...]``
@@ -65,6 +65,9 @@ def open_paths(paths: Iterable[str]) -> None:
 
     positional arguments:
         * ``paths``: The path(s) to open.
+
+    optional arguments:
+        * ``--open-images``: If True, open any images in a new directory automatically.
     """
     images, directories = files.supported(paths)
     if images:
@@ -72,6 +75,8 @@ def open_paths(paths: Iterable[str]) -> None:
         signals.load_images.emit(images)
         modes.IMAGE.enter()
     elif directories:
+        # This is always the library, admittedly a bit hacky to access like this
+        modes.LIBRARY.widget.autoload = open_images  # type: ignore [attr-defined]
         working_directory.handler.chdir(directories[0])
         modes.LIBRARY.enter()
     else:

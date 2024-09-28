@@ -24,6 +24,13 @@ Added:
 * The ``:move-view`` command to move the view in image and thumbnail mode to the top /
   center / bottom along with the  ``zt``, ``zz`` and ``zb`` bindings. Thanks
   `@Markuzcha`_ for the idea!
+* The ``--open-selected`` flag for ``:scroll left/right`` in the library. When using
+  this flag, any images in the new folder are automatically opened. If there are none,
+  any loaded images are cleared. This comes with the new ``<ctrl-h/j/k/l>`` keybindings
+  for ``:scroll left/down/up/right`` for a consistent "move and select" flow. Thanks
+  `@mcp292`_ for the idea!
+* The ``--open-images`` flag for the ``:open`` command to emulate the
+  ``--open-selected`` behaviour in ``:scroll left/right`` in the library.
 
 Changed:
 ^^^^^^^^
@@ -585,3 +592,4 @@ Initial release of the Qt version.
 .. _@xfzv: https://github.com/xfzv
 .. _@mozirilla213: https://github.com/mozirilla213
 .. _@Markuzcha: https://github.com/Markuzcha
+.. _@mcp292: https://github.com/mcp292
