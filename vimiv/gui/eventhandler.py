@@ -289,6 +289,6 @@ def _get_base_keysequence(event: QKeyEvent) -> SequenceT:
         return (text,)
     if event.key() in configparser_keys:  # Required as configparser crashes otherwise
         return (configparser_keys[event.key()],)  # type: ignore
-    if event.text().isprintable():
+    if event.text().isalnum() and event.text().isascii():
         return (event.text(),)
     return (QKeySequence(event.key()).toString().lower(),)
