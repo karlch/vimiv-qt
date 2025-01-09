@@ -7,8 +7,10 @@ from vimiv import qt
 
 if qt.USE_PYQT5:
     from PyQt5.QtCore import *
+    MacDontSwapCtrlAndMeta = Qt.AA_MacDontSwapCtrlAndMeta
 elif qt.USE_PYQT6:
     from PyQt6.QtCore import *
+    MacDontSwapCtrlAndMeta = Qt.ApplicationAttribute.AA_MacDontSwapCtrlAndMeta
 elif qt.USE_PYSIDE6:
     # TODO remove useless-suppression once we add PySide6 back to pylint toxenv
     # pylint: disable=no-name-in-module,undefined-variable,useless-suppression
@@ -17,6 +19,7 @@ elif qt.USE_PYSIDE6:
 
     BoundSignal = SignalInstance
     QT_VERSION_STR = qVersion()
+    MacDontSwapCtrlAndMeta = None
 
 if qt.USE_PYQT:  # Signal aliases
     # pylint: disable=used-before-assignment

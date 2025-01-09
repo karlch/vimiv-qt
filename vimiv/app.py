@@ -6,6 +6,7 @@ import os
 
 from vimiv.qt.gui import QIcon
 from vimiv.qt.widgets import QApplication
+from vimiv.qt.core import MacDontSwapCtrlAndMeta
 
 import vimiv
 from vimiv import api, utils
@@ -25,6 +26,8 @@ class Application(QApplication):
             qtargs: Arguments passed directly to the QApplication.
         """
         _logger.debug("Passing %s to qt", utils.quotedjoin(qtargs))
+        if MacDontSwapCtrlAndMeta:
+            super().setAttribute(MacDontSwapCtrlAndMeta, True)
         super().__init__([vimiv.__name__, *qtargs])
         self.setApplicationVersion(vimiv.__version__)
         self.setDesktopFileName(vimiv.__name__)
